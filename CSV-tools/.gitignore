@@ -1,0 +1,4 @@
+bin
+.metadata 
+*.class
+.DS_Store
