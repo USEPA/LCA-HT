@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="harmonizationtool.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Perspective"
+            class="harmonizationtool.Perspective"
+            id="HarmonizationTool.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="harmonizationtool.View"
+            id="HarmonizationTool.view"
+            name="File"
+            restorable="true">
+      </view>
+      <view
+            class="harmonizationtool.QueryView"
+            id="HarmonizationTool.QueryViewID"
+            name="Query"
+            restorable="true">
+      </view>
+      <view
+            class="harmonizationtool.ViewData"
+            id="HarmonizationTool.viewData"
+            name="Data"
+            restorable="true">
+      </view>
+      <view
+            class="harmonizationtool.ResultsView"
+            id="HarmonizationTool.ResultsViewID"
+            name="Results"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+         <view
+               standalone="true"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               id="HarmonizationTool.view">
+         </view>
+         <view
+               standalone="true"
+               minimized="false"
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               id="HarmonizationTool.viewData">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               label="File">
+            <command
+                  commandId="org.eclipse.ui.file.exit"
+                  label="Exit">
+            </command>
+         </menu>
+         <menu
+               label="TDB">
+            <command
+                  commandId="harmonizationtool.tdb.select.id"
+                  label="Select"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:HarmonizationTool.QueryViewID">
+         <command
+               commandId="HarmonizationTool.extQueryID"
+               label="Query From File"
+               style="push"
+               tooltip="Run a (read-only) query from a file">
+         </command>
+         <command
+               commandId="HarmonizationTool.extUpdateID"
+               label="Update From File"
+               style="push"
+               tooltip="Run a (delete or insert) update from a file">
+         </command>
+         <command
+               commandId="HarmonizationTool.importTriplesID"
+               defaultHandler="harmonizationtool.handler.ImportTriplesHandler"
+               id="HarmonizationTool.importTriplesID"
+               label="Import Triples"
+               name="Import Triples"
+               style="push"
+               tooltip="Import triples from a .ttl file">
+         </command>
+         <command
+               commandId="HarmonizationTool.exportTriplesID"
+               label="Export Triples"
+               style="push">
+         </command>
+         <command
+               commandId="HarmonizationTool.TDB_Load"
+               label="Load TDB from RDF / XML"
+               style="push">
+         </command>
+         <command
+               commandId="HarmonizationTool.TDB_Dump"
+               label="Dump TDB to RDF/XML"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="HarmonizationTool.application"
+            name="Harmonization Tool">
+         <property
+               name="windowImages"
+               value="icons/alt_window_16.gif,icons/alt_window_32.gif">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="HarmonizationTool.importTriplesID"
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="harmonizationtool.comands.SelectTDB"
+            id="harmonizationtool.tdb.select.id"
+            name="SelectTDB">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ExtQueryHandler"
+            id="HarmonizationTool.extQueryID"
+            name="ExtQuery">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ExtUpdateHandler"
+            id="HarmonizationTool.extUpdateID"
+            name="Ext Update">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ImportTriplesHandler"
+            id="HarmonizationTool.importTriplesID"
+            name="Import Triples">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ExportTriplesHandler"
+            id="HarmonizationTool.exportTriplesID"
+            name="Export Triples">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ExportTDBHandler"
+            id="HarmonizationTool.TDB_Dump"
+            name="TDB Dump">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ImportTDBHandler"
+            id="HarmonizationTool.TDB_Load"
+            name="TDB Load">
+      </command>
+   </extension>
+
+</plugin>

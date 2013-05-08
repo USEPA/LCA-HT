@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HarmonizationTool
+Bundle-SymbolicName: HarmonizationTool; singleton:=true
+Bundle-Version: 1.0.0.20130309
+Bundle-Activator: harmonizationtool.Activator
+Bundle-Vendor: EMVL
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ CSV-tools;bundle-version="1.0.0",
+ Jena-tools;bundle-version="1.0.0";visibility:=reexport,
+ org.apache.commons.httpclient;bundle-version="3.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
