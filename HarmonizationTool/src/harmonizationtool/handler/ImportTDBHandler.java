@@ -59,7 +59,8 @@ public class ImportTDBHandler implements IHandler {
 		Model model = SelectTDB.model;
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*.rdf", "*.zip" });
+		fileDialog
+				.setFilterExtensions(new String[] { "*.rdf", "*.n3", "*.zip" });
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		String path = fileDialog.open();
@@ -67,14 +68,20 @@ public class ImportTDBHandler implements IHandler {
 		if (path != null) {
 			System.out.println("Input File=" + path);
 			long startTime = System.currentTimeMillis();
-			if (path.matches(".*\\.rdf.*")) {
+			if (!path.matches(".*\\.zip.*")) {
 				try {
+					String inputType = "RDF/XML";
+					if (path.matches(".*\\.n3.*")) {
+						inputType = "N3";
+					}
 					InputStream inputStream = new FileInputStream(path);
-					JenaReader jenaReader = new JenaReader();
+					model.read(inputStream, null, inputType);
+					// JenaReader jenaReader = new JenaReader();
 					// jenaReader.setProperty("n3", SA); // TEST THIS SOME DAY
 					// MAYBE?
-					jenaReader.read(model, inputStream, null); // DEFAULT IS RDF
-																// - XML
+					// jenaReader.read(model, inputStream, null); // DEFAULT IS
+					// RDF
+					// - XML
 
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -89,13 +96,23 @@ public class ImportTDBHandler implements IHandler {
 				try {
 					ZipFile zf = new ZipFile(path);
 					Enumeration entries = zf.entries();
-					JenaReader jenaReader = new JenaReader();
+//					JenaReader jenaReader = new JenaReader();
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
-						if (ze.getName().matches(".*\\.rdf.*")) {
-							System.out.println("Adding data from zipped file:" + ze.getName());
-							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
-							jenaReader.read(model, zipStream, null);
+						String inputType = "SKIP";
+						if (ze.getName().matches(".*\\.rdf.*")){
+							inputType="RDF/XML";
+						}
+						else if (ze.getName().matches(".*\\.n3.*")) {
+							inputType="N3";
+						}
+						if (inputType != "SKIP"){
+							System.out.println("Adding data from "+inputType+" zipped file:"
+									+ ze.getName());
+							BufferedReader zipStream = new BufferedReader(
+									new InputStreamReader(zf.getInputStream(ze)));
+							model.read(zipStream, null, inputType);
+//							jenaReader.read(model, zipStream, null);
 						}
 					}
 
@@ -104,7 +121,7 @@ public class ImportTDBHandler implements IHandler {
 				}
 			}
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-			System.out.println("Time elapsed: "+elapsedTimeSec);
+			System.out.println("Time elapsed: " + elapsedTimeSec);
 		}
 		long now = model.size();
 		long change = now - was;

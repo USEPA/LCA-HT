@@ -58,7 +58,7 @@ public class ExportTDBHandler implements IHandler {
 		// ModelProvider modelProvider = new ModelProvider();
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] { "*.rdf" });
+		fileDialog.setFilterExtensions(new String[] { "*.rdf", "*.n3" });
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		String path = fileDialog.open();
@@ -66,10 +66,15 @@ public class ExportTDBHandler implements IHandler {
 			long startTime = System.currentTimeMillis();
 
 			try {
+				String outType = "RDF/XML"; // DEFAULT
+				if (path.matches(".*\\.n3.*")){outType = "N3";}
 				System.out.println(path.toString());
 				FileOutputStream fout = new FileOutputStream(path);
-				RDFWriter rdfWriter = model.getWriter("RDF/XML");
-				rdfWriter.write(model, fout, null);
+//				RDFWriter rdfWriter = model.getWriter("RDF/XML");
+//				RDFWriter rdfWriter = model.getWriter(outType); // WORKED
+//				rdfWriter.write(model, fout, null);             // WORKED
+//				model.write(fout, path, outType);               // BAD
+				model.write(fout, outType); // TESTING
 				fout.close();
 				//
 
