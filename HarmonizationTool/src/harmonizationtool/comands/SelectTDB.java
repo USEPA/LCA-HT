@@ -51,9 +51,21 @@ public class SelectTDB implements IHandler {
 
 	public void finalize() {
 		System.out.println("closing dataset and model");
-		dataset.close();
-		model.close();
-		graphStore.close();
+		cleanUp();
+	}
+	private void  cleanUp(){
+		try {
+			dataset.close();
+		} catch (Exception e) {
+		}
+		try {
+			model.close();
+		} catch (Exception e) {
+		}
+		try {
+			graphStore.close();
+		} catch (Exception e) {
+		}		
 	}
 
 	@Override
@@ -70,12 +82,18 @@ public class SelectTDB implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+//		cleanUp();
 		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
 
 		System.out.println("Executing SelectTDB");
 		DirectoryDialog directoryDialog = new DirectoryDialog(PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow().getShell());
 		tdbDir = directoryDialog.open();
+		if(tdbDir != null){
+			cleanUp();
+		}else{
+			return null;
+		}
 		System.out.println("tdbDir=" + tdbDir);
 		try {
 			dataset = TDBFactory.createDataset(tdbDir);
@@ -84,8 +102,8 @@ public class SelectTDB implements IHandler {
 			e.printStackTrace();
 		}
 		
-		new PrefixMapping.Factory();
-		PrefixMapping prefixMapping = Factory.create();
+//		new PrefixMapping.Factory();
+//		PrefixMapping prefixMapping = Factory.create();
 //		prefixMapping.setNsPrefix("eco", "<http://ontology.earthster.org/eco/core#>");
 //		prefixMapping.setNsPrefix("ecou", "<http://ontology.earthster.org/eco/unit#>");
 //		prefixMapping.setNsPrefix("ethold", "<http://epa.gov/nrmrl/std/lca#>");
@@ -100,8 +118,9 @@ public class SelectTDB implements IHandler {
 //		
 //		//
 //		// System.out.println(prefixMapping.toString());
+		assert dataset != null : "dataset cannot be null";
 		model = dataset.getDefaultModel();
-		model.setNsPrefixes(prefixMapping);
+//		model.setNsPrefixes(prefixMapping);
 
 
 
