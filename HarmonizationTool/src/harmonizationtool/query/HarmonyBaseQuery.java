@@ -88,12 +88,12 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 						rdfNode = soln.get(header);
 						if(rdfNode == null){
 							row = row  + "\t";
-							System.out.println("row="+row);
+//							System.out.println("row="+row);
 							dataRow.add("");
 							
 						}else{
 							row = row + rdfNode.toString() + "\t";
-							System.out.println("row="+row);
+//							System.out.println("row="+row);
 							dataRow.add(rdfNode.toString());							
 						}
 					} catch (Exception e) {

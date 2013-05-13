@@ -18,9 +18,9 @@ import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
-import harmonizationtool.query.QMatchNameAndCAS;
-import harmonizationtool.query.QMatchNameNotCAS;
-import harmonizationtool.query.ZunusedDDataQuery;
+import harmonizationtool.query.QCountMatches;
+//import harmonizationtool.query.QMatchNameNotCAS;
+//import harmonizationtool.query.ZunusedDDataQuery;
 import harmonizationtool.query.UDelTestData;
 import harmonizationtool.query.QDataSources;
 import harmonizationtool.query.GenericUpdate;
@@ -83,8 +83,8 @@ public class QueryView extends ViewPart {
 	private UAdTestData uAdTestData = new UAdTestData();
 	private UDelTestData uDelTestData = new UDelTestData();
 	private QMatchCAS qMatchCAS = new QMatchCAS();
-	private QMatchNameAndCAS qMatchNameAndCAS = new QMatchNameAndCAS();
-	private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
+	private QCountMatches qCountMatches = new QCountMatches();
+//	private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
 
 	private Map<String,HarmonyQuery> queryMap = new HashMap<String,HarmonyQuery>();
 	
@@ -110,8 +110,8 @@ public class QueryView extends ViewPart {
 		addQuery(uAdTestData);
 		addQuery(uDelTestData);
 		addQuery(qMatchCAS);
-		addQuery(qMatchNameAndCAS);
-		addQuery(qMatchNameNotCAS);
+		addQuery(qCountMatches);
+//		addQuery(qMatchNameNotCAS);
 	}
 
 	@Override

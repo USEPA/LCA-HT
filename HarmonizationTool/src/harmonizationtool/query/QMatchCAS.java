@@ -2,7 +2,7 @@ package harmonizationtool.query;
 
 public class QMatchCAS extends HarmonyBaseQuery {
 	{
-		label = "Match CAS";
+		label = "Show CAS Matches";
 	}
 	{
 		StringBuilder b = new StringBuilder();
@@ -17,7 +17,8 @@ public class QMatchCAS extends HarmonyBaseQuery {
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append(" \n");
-		b.append("SELECT (afn:localname(?s1) as ?q_sub) (afn:localname(?s2) as ?db_sub) (afn:localname(?ds_match) as ?data_set) (str(?name) as ?q_name) (str(?name2) as ?db_name) (str(?cas) as ?same_cas) \n");
+		b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (afn:localname(?s2) as ?db_sub) (concat(afn:localname(?ds_match),\":\",str(?ds_name),\" \",str(?mj),\".\",str(?mn)) as ?from_data_set) \n");
+//		b.append("SELECT (afn:localname(?s1) as ?q_sub) (afn:localname(?s2) as ?db_sub) (afn:localname(?ds_match) as ?data_set) (str(?name) as ?q_name) (str(?name2) as ?db_name) (str(?cas) as ?same_cas) \n");
 		b.append(" \n");
 		b.append("WHERE { \n");
 		b.append("      ?s1 eco:hasDataSource eco:ds_001 . \n");
