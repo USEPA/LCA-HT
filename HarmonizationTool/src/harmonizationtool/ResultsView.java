@@ -19,6 +19,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -89,6 +93,12 @@ public class ResultsView extends ViewPart {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
+//		viewer.addDoubleClickListener(new IDoubleClickListener(){
+//			@Override
+//			public void doubleClick(DoubleClickEvent event) {
+//				ISelection selection = event.getSelection();
+//				System.out.println("selection=" + selection);
+//			}});
 	}
 
 	/**
@@ -187,6 +197,7 @@ public class ResultsView extends ViewPart {
 		column.setResizable(true);
 		column.setMoveable(true);
 		viewerColumn.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
+//		column.addListener(eventType, new Listener(){});
 		column.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -221,6 +232,7 @@ public class ResultsView extends ViewPart {
 		public MyColumnLabelProvider(int colNum) {
 			this.myColNum = colNum;
 		}
+
 
 		@Override
 		public String getText(Object element) {

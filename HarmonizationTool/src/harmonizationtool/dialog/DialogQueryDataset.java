@@ -15,20 +15,20 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class MyDialog extends TitleAreaDialog {
+public class DialogQueryDataset extends TitleAreaDialog {
 
 	private Text dataSourceIRIText;
-	private Text dataSourceNameText;
-	private Text majorVersionText;
-	private Text minorVersionText;
-	private Text commentText;
-	private String dataSourceName;
+//	private Text dataSourceNameText;
+//	private Text majorVersionText;
+//	private Text minorVersionText;
+//	private Text commentText;
+//	private String dataSourceName;
 	private String dataSourceIRI;
-	private String majorVersion;
-	private String minorVersion;
-	private String comment;
+//	private String majorVersion;
+//	private String minorVersion;
+//	private String comment;
 
-	public MyDialog(Shell parentShell) {
+	public DialogQueryDataset(Shell parentShell) {
 		super(parentShell);
 	}
 
@@ -36,7 +36,7 @@ public class MyDialog extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Export to TDB");
+		setTitle("Select dataset to run");
 		// Set the message
 		setMessage("Set Metadata", IMessageProvider.INFORMATION);
 
@@ -59,37 +59,37 @@ public class MyDialog extends TitleAreaDialog {
 		dataSourceIRIText = new Text(parent, SWT.BORDER);
 		dataSourceIRIText.setLayoutData(gridData);
 
-		Label label1 = new Label(parent, SWT.NONE);
-		label1.setText("Data Source Name");
-		dataSourceNameText = new Text(parent, SWT.BORDER);
-		dataSourceNameText.setLayoutData(gridData);
-
-		Label label2 = new Label(parent, SWT.NONE);
-		label2.setText("Major Version");
-		// You should not re-use GridData
-		gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		majorVersionText = new Text(parent, SWT.BORDER);
-		majorVersionText.setLayoutData(gridData);
-
-		Label label3 = new Label(parent, SWT.NONE);
-		label3.setText("Minor Version");
-		// You should not re-use GridData
-		gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		minorVersionText = new Text(parent, SWT.BORDER);
-		minorVersionText.setLayoutData(gridData);
-
-		Label label4 = new Label(parent, SWT.NONE);
-		label4.setText("Comment");
-		// You should not re-use GridData
-		gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		commentText = new Text(parent, SWT.BORDER);
-		commentText.setLayoutData(gridData);
+//		Label label1 = new Label(parent, SWT.NONE);
+//		label1.setText("Data Source Name");
+//		dataSourceNameText = new Text(parent, SWT.BORDER);
+//		dataSourceNameText.setLayoutData(gridData);
+//
+//		Label label2 = new Label(parent, SWT.NONE);
+//		label2.setText("Major Version");
+//		// You should not re-use GridData
+//		gridData = new GridData();
+//		gridData.grabExcessHorizontalSpace = true;
+//		gridData.horizontalAlignment = GridData.FILL;
+//		majorVersionText = new Text(parent, SWT.BORDER);
+//		majorVersionText.setLayoutData(gridData);
+//
+//		Label label3 = new Label(parent, SWT.NONE);
+//		label3.setText("Minor Version");
+//		// You should not re-use GridData
+//		gridData = new GridData();
+//		gridData.grabExcessHorizontalSpace = true;
+//		gridData.horizontalAlignment = GridData.FILL;
+//		minorVersionText = new Text(parent, SWT.BORDER);
+//		minorVersionText.setLayoutData(gridData);
+//
+//		Label label4 = new Label(parent, SWT.NONE);
+//		label4.setText("Comment");
+//		// You should not re-use GridData
+//		gridData = new GridData();
+//		gridData.grabExcessHorizontalSpace = true;
+//		gridData.horizontalAlignment = GridData.FILL;
+//		commentText = new Text(parent, SWT.BORDER);
+//		commentText.setLayoutData(gridData);
 		return parent;
 	}
 
@@ -149,22 +149,22 @@ public class MyDialog extends TitleAreaDialog {
 			setErrorMessage("Please set data source IRI");
 			valid = false;
 		}
-		if (dataSourceNameText.getText().length() == 0) {
-			setErrorMessage("Please set data source name");
-			valid = false;
-		}
-		if (majorVersionText.getText().length() == 0) {
-			setErrorMessage("Please set major version #");
-			valid = false;
-		}
-		if (minorVersionText.getText().length() == 0) {
-			setErrorMessage("Please set minor version #");
-			valid = false;
-		}
-		if (commentText.getText().length() == 0) {
-			setErrorMessage("Please set comment");
-			valid = false;
-		}
+//		if (dataSourceNameText.getText().length() == 0) {
+//			setErrorMessage("Please set data source name");
+//			valid = false;
+//		}
+//		if (majorVersionText.getText().length() == 0) {
+//			setErrorMessage("Please set major version #");
+//			valid = false;
+//		}
+//		if (minorVersionText.getText().length() == 0) {
+//			setErrorMessage("Please set minor version #");
+//			valid = false;
+//		}
+//		if (commentText.getText().length() == 0) {
+//			setErrorMessage("Please set comment");
+//			valid = false;
+//		}
 		return valid;
 	}
 
@@ -177,10 +177,10 @@ public class MyDialog extends TitleAreaDialog {
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
 		dataSourceIRI = dataSourceIRIText.getText();
-		dataSourceName = dataSourceNameText.getText();
-		majorVersion = majorVersionText.getText();
-		minorVersion = minorVersionText.getText();
-		comment = commentText.getText();
+//		dataSourceName = dataSourceNameText.getText();
+//		majorVersion = majorVersionText.getText();
+//		minorVersion = minorVersionText.getText();
+//		comment = commentText.getText();
 	}
 
 	@Override
@@ -193,19 +193,19 @@ public class MyDialog extends TitleAreaDialog {
 		return dataSourceIRI;
 	}
 
-	public String getDataSourceName() {
-		return dataSourceName;
-	}
-
-	public String getMajorVersion() {
-		return majorVersion;
-	}
-
-	public String getMinorVersion() {
-		return minorVersion;
-	}
-
-	public String getComment() {
-		return comment;
-	}
+//	public String getDataSourceName() {
+//		return dataSourceName;
+//	}
+//
+//	public String getMajorVersion() {
+//		return majorVersion;
+//	}
+//
+//	public String getMinorVersion() {
+//		return minorVersion;
+//	}
+//
+//	public String getComment() {
+//		return comment;
+//	}
 }

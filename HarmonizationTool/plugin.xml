@@ -24,7 +24,7 @@
       <view
             class="harmonizationtool.View"
             id="HarmonizationTool.view"
-            name="File"
+            name="Data File(s)"
             restorable="true">
       </view>
       <view
@@ -36,7 +36,7 @@
       <view
             class="harmonizationtool.ViewData"
             id="HarmonizationTool.viewData"
-            name="Data"
+            name="Data View"
             restorable="true">
       </view>
       <view
@@ -99,20 +99,6 @@
                label="Update From File"
                style="push"
                tooltip="Run a (delete or insert) update from a file">
-         </command>
-         <command
-               commandId="HarmonizationTool.importTriplesID"
-               defaultHandler="harmonizationtool.handler.ImportTriplesHandler"
-               id="HarmonizationTool.importTriplesID"
-               label="Import Triples"
-               name="Import Triples"
-               style="push"
-               tooltip="Import triples from a .ttl file">
-         </command>
-         <command
-               commandId="HarmonizationTool.exportTriplesID"
-               label="Export Triples"
-               style="push">
          </command>
          <command
                commandId="HarmonizationTool.TDB_Load"

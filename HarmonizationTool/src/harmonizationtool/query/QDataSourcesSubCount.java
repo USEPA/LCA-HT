@@ -29,6 +29,7 @@ public class QDataSourcesSubCount extends HarmonyBaseQuery {
 		b.append("    ?sub a eco:Substance . \n");
 		b.append("  } \n");
 		b.append("group by ?s ?label ?mj ?mi ?com \n");
+		b.append("order by ?s \n");
 		queryStr = b.toString();
 
 	}

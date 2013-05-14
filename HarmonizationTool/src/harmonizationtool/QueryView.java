@@ -20,7 +20,7 @@ import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
-//import harmonizationtool.query.ZunusedDDataQuery;
+import harmonizationtool.query.QCasNotInDB;
 import harmonizationtool.query.UDelTestData;
 import harmonizationtool.query.QDataSources;
 import harmonizationtool.query.GenericUpdate;
@@ -82,8 +82,10 @@ public class QueryView extends ViewPart {
 	private QDataSourcesSubCountB qDataSourcesSubCountB = new QDataSourcesSubCountB();
 	private UAdTestData uAdTestData = new UAdTestData();
 	private UDelTestData uDelTestData = new UDelTestData();
-	private QMatchCAS qMatchCAS = new QMatchCAS();
+
 	private QCountMatches qCountMatches = new QCountMatches();
+	private QMatchCAS qMatchCAS = new QMatchCAS();
+	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
 //	private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
 
 	private Map<String,HarmonyQuery> queryMap = new HashMap<String,HarmonyQuery>();
@@ -105,13 +107,13 @@ public class QueryView extends ViewPart {
 		makeActions();
 		hookContextMenu();
 		addQuery(qDataSources);
-		addQuery(qDataSourcesSubCount);
+//		addQuery(qDataSourcesSubCount);
 		addQuery(qDataSourcesSubCountB);
-		addQuery(uAdTestData);
-		addQuery(uDelTestData);
+//		addQuery(uAdTestData);
+//		addQuery(uDelTestData);
 		addQuery(qMatchCAS);
 		addQuery(qCountMatches);
-//		addQuery(qMatchNameNotCAS);
+		addQuery(qCasNotInDB);
 	}
 
 	@Override

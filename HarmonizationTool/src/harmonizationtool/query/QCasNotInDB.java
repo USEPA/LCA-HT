@@ -1,11 +1,10 @@
 package harmonizationtool.query;
 
-public class QCountMatches extends HarmonyBaseQuery {
+public class QCasNotInDB extends HarmonyBaseQuery {
 	{
-		label = "Count CAS matches";
+		label = "Show CAS not in DB";
 	}
 	{
-		
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -18,46 +17,32 @@ public class QCountMatches extends HarmonyBaseQuery {
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append(" \n");
-		b.append("select ?cas_plus_name ?cas_minus_name ?data_set \n");
-		b.append("WHERE { \n");
+		b.append("SELECT (str(afn:localname(?s1)) as ?sub) (str(?cas) as ?cas_not_in_db) (str(?label) as ?name) \n");
+		b.append("WHERE{ \n");
 		b.append(" \n");
-		b.append("{SELECT (str(count(distinct(?s1))) as ?cas_plus_name) (str(afn:localname(?ds_match)) as ?data_set) \n");
-		b.append(" \n");
+		b.append("{SELECT ?s1 ?cas ?label \n");
+		b.append("  WHERE { \n");
+		b.append("  ?s1 eco:hasDataSource eco:ds_001 . \n");
+		b.append("  ?s1 a eco:Substance .  \n");
+		b.append("  ?s1 eco:casNumber ?cas . \n");
+		b.append("  ?s1 rdfs:label ?label . \n");
+		b.append("  } \n");
+		b.append("} \n");
+		b.append("MINUS  \n");
+		b.append("{SELECT ?s1 \n");
 		b.append("  WHERE { \n");
 		b.append("  ?s1 eco:hasDataSource eco:ds_001 . \n");
 		b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
 		b.append("  ?s1 eco:casNumber ?cas .  \n");
 		b.append("  ?s2 eco:casNumber ?cas .   \n");
-		b.append("  ?s1 rdfs:label ?name . \n");
-		b.append("  ?s2 rdfs:label ?name2 .  \n");
-		b.append("  filter (fn:upper-case(?name) = fn:upper-case(?name2)) \n");
-		b.append("  #filter (?name != ?name2) \n");
 		b.append("  ?s1 a eco:Substance .  \n");
 		b.append("  ?s2 a eco:Substance .  \n");
-		b.append(" \n");
 		b.append("  filter(str(afn:localname(?ds_match)) != \"ds_001\") \n");
 		b.append("  } \n");
-		b.append("  group by ?ds_match \n");
-		b.append("} \n");
-		b.append(" \n");
-		b.append("{SELECT (str(count(distinct(?s1))) as ?cas_minus_name) (str(afn:localname(?ds_match)) as ?data_set) \n");
-		b.append(" \n");
-		b.append("  WHERE { \n");
-		b.append("  ?s1 eco:hasDataSource eco:ds_001 . \n");
-		b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
-		b.append("  ?s1 eco:casNumber ?cas .  \n");
-		b.append("  ?s2 eco:casNumber ?cas .   \n");
-		b.append("  ?s1 rdfs:label ?name . \n");
-		b.append("  ?s2 rdfs:label ?name2 .  \n");
-		b.append("  filter (fn:upper-case(?name) != fn:upper-case(?name2)) \n");
-		b.append("  ?s1 a eco:Substance .  \n");
-		b.append("  ?s2 a eco:Substance .  \n");
-		b.append(" \n");
-		b.append("  filter(str(afn:localname(?ds_match)) != \"ds_001\") \n");
-		b.append("  } \n");
-		b.append("group by ?ds_match \n");
 		b.append("} \n");
 		b.append("} \n");
+		b.append("order by ?s1 \n");
+
 		queryStr = b.toString();
 	}
 }
