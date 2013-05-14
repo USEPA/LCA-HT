@@ -53,6 +53,7 @@ public class ResultsView extends ViewPart {
 	private TableViewer viewer;
 	private static List<Object> columns = new ArrayList<Object>();
 	private TableColumn columnSelected = null;
+	private QueryResults queryResults = null;
 
 	/**
 	 * The content provider class is responsible for providing objects to the view. It can wrap
@@ -112,6 +113,7 @@ public class ResultsView extends ViewPart {
 	}
 
 	public void update(QueryResults queryResults) {
+		this.queryResults = queryResults;
 		System.err.println("queryResults="+queryResults);
 		System.err.println("queryResults.getColumnHeaders()="+queryResults.getColumnHeaders());
 		System.out.println("queryResults.getColumnHeaders().toString()="+queryResults.getColumnHeaders().toString());
@@ -255,6 +257,10 @@ public class ResultsView extends ViewPart {
 			}
 			return s;
 		}
+	}
+
+	public QueryResults getQueryResults() {
+		return queryResults;
 	}
 
 

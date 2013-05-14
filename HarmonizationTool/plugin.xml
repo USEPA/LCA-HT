@@ -73,6 +73,12 @@
          <menu
                label="File">
             <command
+                  commandId="HarmonizationTool.SaveResults"
+                  id="HarmonizationTool.SaveResults"
+                  label="Save Results"
+                  style="push">
+            </command>
+            <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
             </command>
@@ -165,6 +171,11 @@
             defaultHandler="harmonizationtool.handler.ImportTDBHandler"
             id="HarmonizationTool.TDB_Load"
             name="TDB Load">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.SaveResultsHandler"
+            id="HarmonizationTool.SaveResults"
+            name="Save Results">
       </command>
    </extension>
 

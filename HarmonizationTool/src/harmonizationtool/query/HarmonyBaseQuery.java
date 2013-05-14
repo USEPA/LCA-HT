@@ -112,7 +112,7 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 		}
 		if (data != null) {
 			System.out.println("data.size()=" + data.size());
-			System.out.println("data.toString()=" + data.toString());
+//			System.out.println("data.toString()=" + data.toString());
 		}else{
 			System.out.println("data is null");
 		}

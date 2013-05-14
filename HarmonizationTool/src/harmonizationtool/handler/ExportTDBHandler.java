@@ -58,7 +58,7 @@ public class ExportTDBHandler implements IHandler {
 		// ModelProvider modelProvider = new ModelProvider();
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] { "*.rdf", "*.n3" });
+		fileDialog.setFilterExtensions(new String[] {"*.n3","*.rdf"});
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		String path = fileDialog.open();

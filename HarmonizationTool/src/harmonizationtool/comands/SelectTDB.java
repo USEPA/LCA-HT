@@ -1,5 +1,8 @@
 package harmonizationtool.comands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import harmonizationtool.Activator;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -43,11 +46,21 @@ import com.hp.hpl.jena.update.GraphStoreFactory;
 //import com.hp.hpl.jena.rdf.model.Resource;
 //import com.hp.hpl.jena.tdb.TDBFactory;
 
-public class SelectTDB implements IHandler {
+public class SelectTDB implements IHandler, ISelectedTDB {
 	public static Model model = null;
 	public static Dataset dataset = null;
 	public static String tdbDir = null;
 	public static GraphStore graphStore = null;
+	private static SelectTDB instance = null;
+	private List<ISelectedTDBListener> selectedTDBListeners = new ArrayList<ISelectedTDBListener>();
+	
+	public SelectTDB(){
+		System.out.println("created SelectTDB");
+		instance = this;
+	}
+	public static SelectTDB getInstance(){
+		return instance;
+	}
 
 	public void finalize() {
 		System.out.println("closing dataset and model");
@@ -70,8 +83,7 @@ public class SelectTDB implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-
+		System.out.println("added listener: "+handlerListener);
 	}
 
 	@Override
@@ -153,6 +165,9 @@ public class SelectTDB implements IHandler {
 		// qexec.close();
 		// }
 		// }
+		for(ISelectedTDBListener listener : selectedTDBListeners){
+			listener.TDBchanged(tdbDir);
+		}
 
 		return null;
 	}
@@ -172,6 +187,16 @@ public class SelectTDB implements IHandler {
 	public void removeHandlerListener(IHandlerListener handlerListener) {
 		// TODO Auto-generated method stub
 
+	}
+	@Override
+	public void addSelectedTDBListener(ISelectedTDBListener listener) {
+		System.out.println("Added TDBListener = "+listener);
+		selectedTDBListeners.add(listener);
+	}
+	@Override
+	public void removeSelectedTDBListener(ISelectedTDBListener listener) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -60,7 +60,7 @@ public class ImportTDBHandler implements IHandler {
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog
-				.setFilterExtensions(new String[] { "*.rdf", "*.n3", "*.zip" });
+				.setFilterExtensions(new String[] {"*.zip","*.n3","*.rdf"});
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		String path = fileDialog.open();

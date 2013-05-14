@@ -9,24 +9,22 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+
 public class DialogQueryDataset extends TitleAreaDialog {
 
-	private Text dataSourceIRIText;
-//	private Text dataSourceNameText;
-//	private Text majorVersionText;
-//	private Text minorVersionText;
-//	private Text commentText;
-//	private String dataSourceName;
-	private String dataSourceIRI;
-//	private String majorVersion;
-//	private String minorVersion;
-//	private String comment;
+	private Combo combo;
+	private List list;
+	private String primaryDataset = null;
+	private String[] refDatasets = null;
+
 
 	public DialogQueryDataset(Shell parentShell) {
 		super(parentShell);
@@ -41,55 +39,60 @@ public class DialogQueryDataset extends TitleAreaDialog {
 		setMessage("Set Metadata", IMessageProvider.INFORMATION);
 
 	}
+	public String getPrimaryDataset(){
+		return primaryDataset;
+	}
+	public String[] getReferenceDatasets(){
+		return refDatasets;
+	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		// layout.horizontalAlignment = GridData.FILL;
-		parent.setLayout(layout);
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(null);
 
-		// The text fields will grow with the size of the dialog
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
+		combo = new Combo(composite, SWT.NONE);
+		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("e.item=" + e.item);
+			}
+		});
+		combo.setBounds(204, 106, 133, 22);
 
-		Label label0 = new Label(parent, SWT.NONE);
-		label0.setText("Data Source IRI");
-		dataSourceIRIText = new Text(parent, SWT.BORDER);
-		dataSourceIRIText.setLayoutData(gridData);
+		combo.add("ds_001");
+		combo.add("ds_002");
+		combo.add("ds_003");
+		combo.add("ds_004");
+		combo.add("ds_005");
+		combo.add("ds_010");
+		combo.setText("ds_001");
 
-//		Label label1 = new Label(parent, SWT.NONE);
-//		label1.setText("Data Source Name");
-//		dataSourceNameText = new Text(parent, SWT.BORDER);
-//		dataSourceNameText.setLayoutData(gridData);
-//
-//		Label label2 = new Label(parent, SWT.NONE);
-//		label2.setText("Major Version");
-//		// You should not re-use GridData
-//		gridData = new GridData();
-//		gridData.grabExcessHorizontalSpace = true;
-//		gridData.horizontalAlignment = GridData.FILL;
-//		majorVersionText = new Text(parent, SWT.BORDER);
-//		majorVersionText.setLayoutData(gridData);
-//
-//		Label label3 = new Label(parent, SWT.NONE);
-//		label3.setText("Minor Version");
-//		// You should not re-use GridData
-//		gridData = new GridData();
-//		gridData.grabExcessHorizontalSpace = true;
-//		gridData.horizontalAlignment = GridData.FILL;
-//		minorVersionText = new Text(parent, SWT.BORDER);
-//		minorVersionText.setLayoutData(gridData);
-//
-//		Label label4 = new Label(parent, SWT.NONE);
-//		label4.setText("Comment");
-//		// You should not re-use GridData
-//		gridData = new GridData();
-//		gridData.grabExcessHorizontalSpace = true;
-//		gridData.horizontalAlignment = GridData.FILL;
-//		commentText = new Text(parent, SWT.BORDER);
-//		commentText.setLayoutData(gridData);
+		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
+		lblPrimaryDataSet.setBounds(59, 114, 122, 14);
+		lblPrimaryDataSet.setText("Primary Data Set:");
+
+		list = new List(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL
+				| SWT.MULTI);
+		list.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("List selected");
+			}
+		});
+		list.setBounds(204, 155, 133, 66);
+		list.add("ds_001");
+		list.add("ds_002");
+		list.add("ds_003");
+		list.add("ds_004");
+		list.add("ds_005");
+		list.add("ds_010");
+
+
+		Label lblCompareTo = new Label(composite, SWT.RIGHT);
+		lblCompareTo.setBounds(38, 155, 143, 14);
+		lblCompareTo.setText("Refernce Data Sets:");
+
 		return parent;
 	}
 
@@ -119,7 +122,8 @@ public class DialogQueryDataset extends TitleAreaDialog {
 		});
 	}
 
-	protected Button createOkButton(Composite parent, int id, String label, boolean defaultButton) {
+	protected Button createOkButton(Composite parent, int id, String label,
+			boolean defaultButton) {
 		// increment the number of columns in the button bar
 		((GridLayout) parent.getLayout()).numColumns++;
 		Button button = new Button(parent, SWT.PUSH);
@@ -145,26 +149,6 @@ public class DialogQueryDataset extends TitleAreaDialog {
 
 	private boolean isValidInput() {
 		boolean valid = true;
-		if (dataSourceIRIText.getText().length() == 0) {
-			setErrorMessage("Please set data source IRI");
-			valid = false;
-		}
-//		if (dataSourceNameText.getText().length() == 0) {
-//			setErrorMessage("Please set data source name");
-//			valid = false;
-//		}
-//		if (majorVersionText.getText().length() == 0) {
-//			setErrorMessage("Please set major version #");
-//			valid = false;
-//		}
-//		if (minorVersionText.getText().length() == 0) {
-//			setErrorMessage("Please set minor version #");
-//			valid = false;
-//		}
-//		if (commentText.getText().length() == 0) {
-//			setErrorMessage("Please set comment");
-//			valid = false;
-//		}
 		return valid;
 	}
 
@@ -176,11 +160,8 @@ public class DialogQueryDataset extends TitleAreaDialog {
 	// Coyy textFields because the UI gets disposed
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
-		dataSourceIRI = dataSourceIRIText.getText();
-//		dataSourceName = dataSourceNameText.getText();
-//		majorVersion = majorVersionText.getText();
-//		minorVersion = minorVersionText.getText();
-//		comment = commentText.getText();
+		primaryDataset = combo.getText();
+		refDatasets = list.getSelection();
 	}
 
 	@Override
@@ -189,23 +170,5 @@ public class DialogQueryDataset extends TitleAreaDialog {
 		super.okPressed();
 	}
 
-	public String getDataSourceIRI() {
-		return dataSourceIRI;
-	}
 
-//	public String getDataSourceName() {
-//		return dataSourceName;
-//	}
-//
-//	public String getMajorVersion() {
-//		return majorVersion;
-//	}
-//
-//	public String getMinorVersion() {
-//		return minorVersion;
-//	}
-//
-//	public String getComment() {
-//		return comment;
-//	}
 }
