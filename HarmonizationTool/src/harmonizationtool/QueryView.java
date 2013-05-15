@@ -91,15 +91,15 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	// private Action actionExtUpdate;
 
 	private QDataSources qDataSources = new QDataSources();
-	private QDataSourcesSubCount qDataSourcesSubCount = new QDataSourcesSubCount();
 	private QDataSourcesSubCountB qDataSourcesSubCountB = new QDataSourcesSubCountB();
-	private UAdTestData uAdTestData = new UAdTestData();
-	private UDelTestData uDelTestData = new UDelTestData();
-
+	// private QDataSourcesSubCount qDataSourcesSubCount = new
+	// QDataSourcesSubCount();
+	// private UAdTestData uAdTestData = new UAdTestData();
+	// private UDelTestData uDelTestData = new UDelTestData();
+	// private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
 	private QCountMatches qCountMatches = new QCountMatches();
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
-	// private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private List<String> paramQueries = new ArrayList<String>();
@@ -121,8 +121,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		makeActions();
 		hookContextMenu();
 		addQuery(qDataSources);
-		// addQuery(qDataSourcesSubCount);
 		addQuery(qDataSourcesSubCountB);
+		// addQuery(qDataSourcesSubCount);
 		// addQuery(uAdTestData);
 		// addQuery(uDelTestData);
 		addQuery(qMatchCAS);

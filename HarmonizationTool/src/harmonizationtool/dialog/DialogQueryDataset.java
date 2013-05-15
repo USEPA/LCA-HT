@@ -34,9 +34,9 @@ public class DialogQueryDataset extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Select dataset to run");
+		setTitle("Select datasets to analyze");
 		// Set the message
-		setMessage("Set Metadata", IMessageProvider.INFORMATION);
+		setMessage("Metadata", IMessageProvider.INFORMATION);
 
 	}
 	public String getPrimaryDataset(){
@@ -58,18 +58,22 @@ public class DialogQueryDataset extends TitleAreaDialog {
 				System.out.println("e.item=" + e.item);
 			}
 		});
-		combo.setBounds(204, 106, 133, 22);
+		combo.setBounds(174, 25, 133, 22);
 
 		combo.add("ds_001");
 		combo.add("ds_002");
 		combo.add("ds_003");
 		combo.add("ds_004");
 		combo.add("ds_005");
+		combo.add("ds_006");
+		combo.add("ds_007");
+		combo.add("ds_008");
+		combo.add("ds_009");
 		combo.add("ds_010");
 		combo.setText("ds_001");
 
 		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
-		lblPrimaryDataSet.setBounds(59, 114, 122, 14);
+		lblPrimaryDataSet.setBounds(29, 25, 122, 14);
 		lblPrimaryDataSet.setText("Primary Data Set:");
 
 		list = new List(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL
@@ -80,17 +84,21 @@ public class DialogQueryDataset extends TitleAreaDialog {
 				System.out.println("List selected");
 			}
 		});
-		list.setBounds(204, 155, 133, 66);
+		list.setBounds(174, 70, 133, 100);
 		list.add("ds_001");
 		list.add("ds_002");
 		list.add("ds_003");
 		list.add("ds_004");
 		list.add("ds_005");
+		list.add("ds_006");
+		list.add("ds_007");
+		list.add("ds_008");
+		list.add("ds_009");
 		list.add("ds_010");
 
 
 		Label lblCompareTo = new Label(composite, SWT.RIGHT);
-		lblCompareTo.setBounds(38, 155, 143, 14);
+		lblCompareTo.setBounds(8, 70, 143, 14);
 		lblCompareTo.setText("Refernce Data Sets:");
 
 		return parent;

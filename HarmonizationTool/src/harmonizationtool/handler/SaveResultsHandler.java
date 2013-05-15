@@ -17,8 +17,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.csv.writer.CSVConfig;
+import org.apache.commons.csv.writer.CSVWriter;
+import org.apache.commons.csv.writer.CSVField;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -57,138 +64,92 @@ public class SaveResultsHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		// {
-//-------------------------
+		// -------------------------
 		System.out.println("Saving Results");
 		IWorkbenchPage page = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
-		ResultsView resultsView = (ResultsView) page
-				.findView(ResultsView.ID);
+		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		QueryResults queryResults = resultsView.getQueryResults();
-		List<DataRow>  dataRows = queryResults.getModelProvider().getData();
+		DataRow headerRow = queryResults.getColumnHeaders();
+		List<DataRow> dataRows = queryResults.getModelProvider().getData();
 		System.out.println(dataRows.get(0).toString());
-		
 
-//		ISelection iSelection = viewer.getSelection();
-//		Object obj = ((IStructuredSelection) iSelection).getFirstElement();
-//		System.out.println("saving file: " + obj);
-//		Shell shell = getViewSite().getShell();
-//		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-//		String[] filterNames = new String[] { "Image Files", "All Files (*)" };
-//		String[] filterExtensions = new String[] { "*.csv", "*" };
-//		String filterPath = "/";
-//		String platform = SWT.getPlatform();
-//		if (platform.equals("win32") || platform.equals("wpf")) {
-//			filterNames = new String[] { "Image Files", "All Files (*.*)" };
-//			filterExtensions = new String[] {
-//					"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
-//			filterPath = "c:\\";
-//		}
-//		dialog.setFilterNames(filterNames);
-//		dialog.setFilterExtensions(filterExtensions);
-//		dialog.setFilterPath(filterPath);
-//		dialog.setFileName("myfile");
-//		String saveTo = dialog.open();
-//		System.out.println("Save to: " + saveTo);
-//
-//		try {
-//			File file = new File(saveTo);
-//			if (!file.exists()) {
-//				file.createNewFile();
-//			}
-//
-//			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//			BufferedWriter bw = new BufferedWriter(fw);
-//			bw.write("this is the content");
-//			bw.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		// ISelection iSelection = viewer.getSelection();
+		// Object obj = ((IStructuredSelection) iSelection).getFirstElement();
+		// System.out.println("saving file: " + obj);
+		// Shell shell = getViewSite().getShell();
+		Shell shell = HandlerUtil.getActiveShell(event);
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		String[] filterNames = new String[] { "Text Files", "All Files (*)" };
+		String[] filterExtensions = new String[] { "*.txt", "*" };
+		String filterPath = "/";
+		String platform = SWT.getPlatform();
+		if (platform.equals("win32") || platform.equals("wpf")) {
+			filterNames = new String[] { "Text Files", "All Files (*.*)" };
+			filterExtensions = new String[] {
+					"*.txt", "*.*" };
+			filterPath = "c:\\";
+		}
+		else if (platform.equals("macosx")) {
+			filterNames = new String[] { "Text Files", "All Files (*.*)" };
+			filterExtensions = new String[] {
+					"*.txt", "*.*" };
+			filterPath = "~/";
+		}
 
-		//-------------------------
-		
-//		System.out.println("executing Export Triples");
-//		Model model = SelectTDB.model;
-//		// ModelProvider modelProvider = new ModelProvider();
-//		FileDialog fileDialog = new FileDialog(HandlerUtil
-//				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-//		fileDialog.setFilterExtensions(new String[] { "*.ttl", "*.n3" });
-//		String homeDir = System.getProperty("user.home");
-//		fileDialog.setFilterPath(homeDir);
-//		String path = fileDialog.open();
-//		if (path != null) {
-//			try {
-//
-//				System.out.println(path.toString());
-//				FileOutputStream fout = new FileOutputStream(path);
-//				// model.write(fout,"TURTLE");
-//				// model.write(fout, "TURTLE", null);
-//				model.write(fout, "N3", null);
-//				// The built-in languages are "RDF/XML"
-//				// "RDF/XML-ABBREV"
-//				// "N-TRIPLE"
-//				// "N3"
-//				// "TURTLE"
-//				// In addition, for N3 output the language can be specified as:
-//				// "N3-PP", "N3-PLAIN" or "N3-TRIPLE", which controls the style
-//				// of N3 produced.
-//
-//				fout.close();
-//				//
-//
-//			} catch (FileNotFoundException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			} catch (Exception e) {
-//
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			//
-//			// StringBuilder b = new StringBuilder();
-//			// FileReader fileReader = null;
-//			// try {
-//			// fileReader = new FileReader(path);
-//			// BufferedReader br = new BufferedReader(fileReader);
-//			// String s;
-//			//
-//			// while ((s = br.readLine()) != null) {
-//			// // System.out.println(s);
-//			// b.append(s+"\n");
-//			// }
-//			// fileReader.close();
-//			// } catch (FileNotFoundException e1) {
-//			// // TODO Auto-generated catch block
-//			// e1.printStackTrace();
-//			// } catch (IOException e) {
-//			// // TODO Auto-generated catch block
-//			// e.printStackTrace();
-//			// }
-//
-//			// String queryStr = b.toString();
-//			// GenericUpdate iGenericInsert = new
-//			// GenericUpdate(queryStr,"Ext. File Update");
-//
-//			// addFilename(path);
-//			IWorkbenchPage page = PlatformUI.getWorkbench()
-//					.getActiveWorkbenchWindow().getActivePage();
-//			ResultsView resultsView = (ResultsView) page
-//					.findView(ResultsView.ID);
-//			String title = resultsView.getTitle();
-//			System.out.println("title= " + title);
-//
-//			// resultsView.update(iGenericInsert.getData());
-//			// resultsView.update(iGenericInsert.getQueryResults());
-//			// ViewData.setKey(path);
-//			// TableViewer tableViewer = viewData.getViewer();
-//			// tableViewer.setInput(new Object[] {""});
-//			// resultsView.update(path);
+		dialog.setFilterNames(filterNames);
+		dialog.setFilterExtensions(filterExtensions);
+		dialog.setFilterPath(filterPath);
+		dialog.setFileName("query_results");
+		String saveTo = dialog.open();
+		System.out.println("Save to: " + saveTo);
 
-//		}
-		// }
-		// };
-		// actionExtUpdate.setText("Exec. Update...");
-		// actionExtUpdate.setToolTipText("SPARQL Update in .ttl file");
-		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		try {
+			CSVWriter csvWriter = new CSVWriter();
+			CSVConfig csvConfig = new CSVConfig();
+			csvConfig.setDelimiter('\t');
+//			csvConfig.setIgnoreValueDelimiter(true);
+//			csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
+
+			// configure file for output
+			File file = new File(saveTo);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			Writer fileWriter = new FileWriter(file);
+			csvWriter.setWriter(fileWriter);
+
+			// configure fields
+			for (String header : headerRow.getColumnValues()) {
+				csvConfig.addField(new CSVField(header.trim()));
+			}
+			csvWriter.setConfig(csvConfig);
+
+			// prepare and write headers
+			Map<String, String> map = new HashMap<String, String>();
+			for (String header : headerRow.getColumnValues()) {
+				map.put(header.trim(), header.trim());
+			}
+			csvWriter.writeRecord(map);
+
+			// prepare and write data
+			for (DataRow dataRow : dataRows) {
+				map.clear();
+				for (int i = 0; i < dataRow.getColumnValues().size(); i++) {
+					String fieldName = headerRow.getColumnValues().get(i).trim();
+					String value = dataRow.getColumnValues().get(i);
+					map.put(fieldName, value);
+				}
+				csvWriter.writeRecord(map);
+			}
+
+			// flush and close writer
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
