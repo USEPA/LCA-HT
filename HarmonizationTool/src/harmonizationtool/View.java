@@ -309,6 +309,20 @@ public class View extends ViewPart {
 							String casrn = null;
 							String name = null;
 							String altName = null;
+							String cat = null;
+							String subcat = null;
+							String impactCat = null;
+							String impactCatRefUnit = null;
+							Double charFactor = null;
+							String flowUnit = null;
+
+//							CAT_HDR = "Category";
+//							SUBCAT_HDR = "Subcategory";
+//							IMPACT_CAT_HDR = "Impact_Category";
+//							IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit";
+//							CHAR_FACTOR_HDR = "Characterization_factor";
+//							FLOW_UNIT_HDR = "Flow_Unit";
+							
 							{
 								int index = headers.indexOf(ViewData.CASRN_HDR);
 								if (index > -1) {
@@ -334,19 +348,75 @@ public class View extends ViewPart {
 									altName = Util.escape(unescAltName);
 									// System.out.println("altName=" + altName);
 								}
-
-								// System.out.println("altName=" + altName);
 							}
-							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, "" + rowNumber);
+							{
+								int index = headers.indexOf(ViewData.CAT_HDR);
+								if (index > -1) {
+									String unescCat = dataRow.getColumnValues().get(index);
+									cat = Util.escape(unescCat);
+									// System.out.println("cat=" + cat);
+								}
+							}
+							{
+								int index = headers.indexOf(ViewData.SUBCAT_HDR);
+								if (index > -1) {
+									String unescSubcat = dataRow.getColumnValues().get(index);
+									subcat = Util.escape(unescSubcat);
+									// System.out.println("subcat=" + subcat);
+								}
+							}
+							{
+								int index = headers.indexOf(ViewData.IMPACT_CAT_HDR);
+								if (index > -1) {
+									String unescImpactCat = dataRow.getColumnValues().get(index);
+									impactCat = Util.escape(unescImpactCat);
+									// System.out.println("impactCat=" + impactCat);
+								}
+							}
+							{
+								int index = headers.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
+								if (index > -1) {
+									String unescImpactCatRefUnit = dataRow.getColumnValues().get(index);
+									impactCatRefUnit = Util.escape(unescImpactCatRefUnit);
+									// System.out.println("impactCatRefUnit=" + impactCatRefUnit);
+								}
+							}
+							{
+								int index = headers.indexOf(ViewData.CHAR_FACTOR_HDR);
+								if (index > -1) {
+									try {
+										charFactor = Double.valueOf(dataRow.getColumnValues().get(index));
+									} catch (NumberFormatException e) {
+										charFactor = 0.0;
+//										e.printStackTrace();
+									}
+									// System.out.println("charFactor=" + charFactor);
+								}
+							}
+							{
+								int index = headers.indexOf(ViewData.FLOW_UNIT_HDR);
+								if (index > -1) {
+									String unescFlowUnit = dataRow.getColumnValues().get(index);
+									flowUnit = Util.escape(unescFlowUnit);
+									// System.out.println("flowUnit=" + flowUnit);
+								}
+							}
+
+							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
 							String insertTriples = idsRowQuery.getInsertTriples();
 							b.append(insertTriples);
+//							b.append(idsRowQuery.toString());
+
+//							if (Integer.valueOf(rowNumber) == 5) {
+//								System.out.println("Triples: "+insertTriples);
+//							}
 							if ((rowNumber % N == 0) || (rowNumber == dataRowList.size())) {
 								// add prefix
 								String prefix = idsRowQuery.getPrefix();
 								prefix += "\n INSERT DATA \n { \n";
 								b.insert(0, prefix);
 								b.append(" } \n");
-//								System.out.println(b.toString());
+								System.out.println(b.toString().substring(0, 5000));
 //								GenericQuery iGenericQuery = new GenericQuery(b.toString(), "bundled insert");
 								GenericUpdate iGenericUpdate = new GenericUpdate(b.toString(), "bundled insert");
 								List<String> results = iGenericUpdate.getData();

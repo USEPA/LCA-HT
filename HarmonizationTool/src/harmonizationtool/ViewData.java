@@ -52,6 +52,15 @@ public class ViewData extends ViewPart {
 	public static final String CASRN_HDR = "CASRN";
 	public static final String NAME_HDR = "Name";
 	public static final String ALT_NAME_HDR = "Alt_Name";
+	public static final String CAT_HDR = "Category";                            // e.g. air
+	public static final String SUBCAT_HDR = "Subcategory";                      // e.g. low population
+	public static final String IMPACT_CAT_HDR = "Impact_Category";              // e.g. global warming
+	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit"; // e.g. kg CO2 eq
+	public static final String CHAR_FACTOR_HDR = "Characterization_factor";     // THIS THE NUMBER
+	public static final String FLOW_UNIT_HDR = "Flow_Unit";                     // e.g. kg (assumed to be one of these)
+
+
+//	public static final String ALT_NAME_HDR = "Alt_Name";
 	public static final String IGNORE_HDR = "Ignore";
 
 	public TableViewer getViewer() {
@@ -275,18 +284,45 @@ public class ViewData extends ViewPart {
 		MenuItem menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CASRN_HDR);
+		
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(NAME_HDR);
+		
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(ALT_NAME_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(CAT_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(SUBCAT_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);		
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CAT_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);		
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(CHAR_FACTOR_HDR);
+		
+		menuItem = new MenuItem(parent, SWT.NORMAL);		
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(FLOW_UNIT_HDR);
+		
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IGNORE_HDR);
-		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText("Custom...");
+//		menuItem = new MenuItem(parent, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.setText("Custom...");
 	}
 
 	/**

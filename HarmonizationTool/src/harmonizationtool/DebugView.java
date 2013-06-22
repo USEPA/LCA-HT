@@ -337,22 +337,22 @@ public class DebugView extends ViewPart {
 
 								// System.out.println("altName=" + altName);
 							}
-							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, "" + rowNumber);
-							String insertTriples = idsRowQuery.getInsertTriples();
-							b.append(insertTriples);
-							if ((rowNumber % N == 0) || (rowNumber == dataRowList.size())) {
-								// add prefix
-								String prefix = idsRowQuery.getPrefix();
-								prefix += "\n INSERT DATA \n { \n";
-								b.insert(0, prefix);
-								b.append(" } \n");
-//								System.out.println(b.toString());
-//								GenericQuery iGenericQuery = new GenericQuery(b.toString(), "bundled insert");
-								GenericUpdate iGenericUpdate = new GenericUpdate(b.toString(), "bundled insert");
-								List<String> results = iGenericUpdate.getData();
-//								System.out.println(results.toString());
-								b.setLength(0);
-							}
+//							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, "" + rowNumber);
+//							String insertTriples = idsRowQuery.getInsertTriples();
+//							b.append(insertTriples);
+//							if ((rowNumber % N == 0) || (rowNumber == dataRowList.size())) {
+//								// add prefix
+//								String prefix = idsRowQuery.getPrefix();
+//								prefix += "\n INSERT DATA \n { \n";
+//								b.insert(0, prefix);
+//								b.append(" } \n");
+////								System.out.println(b.toString());
+////								GenericQuery iGenericQuery = new GenericQuery(b.toString(), "bundled insert");
+//								GenericUpdate iGenericUpdate = new GenericUpdate(b.toString(), "bundled insert");
+//								List<String> results = iGenericUpdate.getData();
+////								System.out.println(results.toString());
+//								b.setLength(0);
+//							}
 							rowNumber++;
 						}
 
