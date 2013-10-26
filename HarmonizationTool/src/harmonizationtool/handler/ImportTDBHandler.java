@@ -58,28 +58,43 @@ public class ImportTDBHandler implements IHandler {
 		System.out.println("executing TDB load");
 		Model model = SelectTDB.model;
 		FileDialog fileDialog = new FileDialog(HandlerUtil
-				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
+				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
+				| SWT.MULTI);
 		fileDialog
-				.setFilterExtensions(new String[] {"*.zip","*.n3","*.rdf"});
+				.setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
-		String path = fileDialog.open();
-		long was = model.size();
-		if (path != null) {
-			System.out.println("Input File=" + path);
+		System.out.println("Ready to open");
+		// ----------------- TOMMY HELP FIX THIS (BELOW) ----------------------
+		// String path = fileDialog.open(); // INPUT FROM USER
+		fileDialog.open(); // INPUT FROM USER
+		String path = fileDialog.getFilterPath();
+		String[] fileList = fileDialog.getFileNames();
+
+		String nextFile = null;
+		for (int iterator = 0; iterator < fileList.length; iterator++) {
+			nextFile = fileList[iterator];
+			String fullFile = path + "/" + nextFile; // ESPECIALLY WRONG
+			System.out.println("fullFile: "+fullFile);
+			System.out.println("File: " + nextFile + " from path: " + path);
+			// ----------------- TOMMY HELP FIX THIS (ABOVE) ----------------------
+
+			long was = model.size();
 			long startTime = System.currentTimeMillis();
-			if (!path.matches(".*\\.zip.*")) {
+			if (!fullFile.matches(".*\\.zip.*")) {
 				try {
 					String inputType = "RDF/XML";
-					if (path.matches(".*\\.n3.*")) {
+					if (fullFile.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					}
-					InputStream inputStream = new FileInputStream(path);
+					InputStream inputStream = new FileInputStream(fullFile);
 					model.read(inputStream, null, inputType);
 					// JenaReader jenaReader = new JenaReader();
-					// jenaReader.setProperty("n3", SA); // TEST THIS SOME DAY
+					// jenaReader.setProperty("n3", SA); // TEST THIS SOME
+					// DAY
 					// MAYBE?
-					// jenaReader.read(model, inputStream, null); // DEFAULT IS
+					// jenaReader.read(model, inputStream, null); // DEFAULT
+					// IS
 					// RDF
 					// - XML
 
@@ -91,28 +106,27 @@ public class ImportTDBHandler implements IHandler {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if (path.matches(".*\\.zip.*")) {
+			} else if (nextFile.matches(".*\\.zip.*")) {
 				// System.out.println("Got a zip file");
 				try {
-					ZipFile zf = new ZipFile(path);
+					ZipFile zf = new ZipFile(fullFile);
 					Enumeration entries = zf.entries();
-//					JenaReader jenaReader = new JenaReader();
+					// JenaReader jenaReader = new JenaReader();
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
-						if (ze.getName().matches(".*\\.rdf.*")){
-							inputType="RDF/XML";
+						if (ze.getName().matches(".*\\.rdf.*")) {
+							inputType = "RDF/XML";
+						} else if (ze.getName().matches(".*\\.n3.*")) {
+							inputType = "N3";
 						}
-						else if (ze.getName().matches(".*\\.n3.*")) {
-							inputType="N3";
-						}
-						if (inputType != "SKIP"){
-							System.out.println("Adding data from "+inputType+" zipped file:"
-									+ ze.getName());
+						if (inputType != "SKIP") {
+							System.out.println("Adding data from " + inputType
+									+ " zipped file:" + ze.getName());
 							BufferedReader zipStream = new BufferedReader(
 									new InputStreamReader(zf.getInputStream(ze)));
 							model.read(zipStream, null, inputType);
-//							jenaReader.read(model, zipStream, null);
+							// jenaReader.read(model, zipStream, null);
 						}
 					}
 
@@ -122,14 +136,16 @@ public class ImportTDBHandler implements IHandler {
 			}
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
+
+			long now = model.size();
+			long change = now - was;
+			System.out.println("Was:" + was + " Added:" + change + " Now:"
+					+ now);
 		}
-		long now = model.size();
-		long change = now - was;
-		System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
 		// GenericUpdate iGenericInsert = new
 		// GenericUpdate(queryStr,"Ext. File Update");
 
-		// addFilename(path);
+		// addFilename(fullFile);
 		IWorkbenchPage page = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
@@ -138,10 +154,10 @@ public class ImportTDBHandler implements IHandler {
 
 		// resultsView.update(iGenericInsert.getData());
 		// resultsView.update(iGenericInsert.getQueryResults());
-		// ViewData.setKey(path);
+		// ViewData.setKey(fullFile);
 		// TableViewer tableViewer = viewData.getViewer();
 		// tableViewer.setInput(new Object[] {""});
-		// resultsView.update(path);
+		// resultsView.update(fullFile);
 
 		// }
 

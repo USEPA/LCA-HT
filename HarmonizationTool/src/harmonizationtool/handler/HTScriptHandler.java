@@ -38,7 +38,7 @@ public class HTScriptHandler implements IHandler {
 		System.out.println("executing an external query");
 //		ModelProvider modelProvider = new ModelProvider();
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*.rq" });
+		fileDialog.setFilterExtensions(new String[] { "*.txt" });
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		String path = fileDialog.open();
