@@ -20,7 +20,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public class HTScriptHandler implements IHandler {
-
+    // THIS CLASS IS A COPY OF ExtQuerHandler BUT HAS NOT BEEN EDITED YET
+	// THE GOAL IS TO HAVE ALLOW THE HT TO READ A "SCRIPT" FILE WITH A SEQUENCE OF COMMANDS
+	// E.G.: LOAD file1.n3, LOAD file2.n3, LOAD file3.n3, RUN update1.rq AND update2.rq, THEN DISPLAY RESULTS OF query1.rq
+	// TODO: DETERMINE WHAT "COMMAND NAMES" ARE, WHAT THE SHOULD SO, AND WHAT PARAMETERS THEY REQUIRE
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 		// TODO Auto-generated method stub

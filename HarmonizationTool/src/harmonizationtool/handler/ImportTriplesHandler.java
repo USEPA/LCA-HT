@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportTriplesHandler implements IHandler {
+	// TODO: REMOVE THIS OR DETERMINE HOW IT IS DIFFERENT FROM ImportTDBHandler
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {

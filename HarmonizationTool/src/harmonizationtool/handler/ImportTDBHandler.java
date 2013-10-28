@@ -39,7 +39,7 @@ import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportTDBHandler implements IHandler {
-
+	// TODO: REFACTOR TO CALL THIS SOMETHING MORE LIKE: ImportRDFHandler
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 		// TODO Auto-generated method stub
@@ -60,8 +60,11 @@ public class ImportTDBHandler implements IHandler {
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
+//		fileDialog
+//				.setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		fileDialog
-				.setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
+		.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS ALL TYPES IN ONE WINDOW
+
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
 		System.out.println("Ready to open");
@@ -75,9 +78,10 @@ public class ImportTDBHandler implements IHandler {
 		for (int iterator = 0; iterator < fileList.length; iterator++) {
 			nextFile = fileList[iterator];
 			String fullFile = path + "/" + nextFile; // ESPECIALLY WRONG
-			System.out.println("fullFile: "+fullFile);
+			System.out.println("fullFile: " + fullFile);
 			System.out.println("File: " + nextFile + " from path: " + path);
-			// ----------------- TOMMY HELP FIX THIS (ABOVE) ----------------------
+			// ----------------- TOMMY HELP FIX THIS (ABOVE)
+			// ----------------------
 
 			long was = model.size();
 			long startTime = System.currentTimeMillis();
