@@ -73,25 +73,34 @@ public class ImportTDBHandler implements IHandler {
 		fileDialog.open(); // INPUT FROM USER
 		String path = fileDialog.getFilterPath();
 		String[] fileList = fileDialog.getFileNames();
+		
+		String sep = System.getProperty("file.separator");
+		System.out.println("path= "+path);
+		for(String fileName : fileList){
+			System.out.println("fileName= "+fileName);
+			if(!fileName.startsWith(sep)){
+				fileName = path + sep + fileName;
+			}
+//		}
 
-		String nextFile = null;
-		for (int iterator = 0; iterator < fileList.length; iterator++) {
-			nextFile = fileList[iterator];
-			String fullFile = path + "/" + nextFile; // ESPECIALLY WRONG
-			System.out.println("fullFile: " + fullFile);
-			System.out.println("File: " + nextFile + " from path: " + path);
-			// ----------------- TOMMY HELP FIX THIS (ABOVE)
-			// ----------------------
+//		String nextFile = null;
+//		for (int iterator = 0; iterator < fileList.length; iterator++) {
+//			nextFile = fileList[iterator];
+//			String fileName = path + "/" + nextFile; // ESPECIALLY WRONG
+//			System.out.println("fileName: " + fileName);
+//			System.out.println("File: " + nextFile + " from path: " + path);
+//			// ----------------- TOMMY HELP FIX THIS (ABOVE)
+//			// ----------------------
 
 			long was = model.size();
 			long startTime = System.currentTimeMillis();
-			if (!fullFile.matches(".*\\.zip.*")) {
+			if (!fileName.matches(".*\\.zip.*")) {
 				try {
 					String inputType = "RDF/XML";
-					if (fullFile.matches(".*\\.n3.*")) {
+					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					}
-					InputStream inputStream = new FileInputStream(fullFile);
+					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					// JenaReader jenaReader = new JenaReader();
 					// jenaReader.setProperty("n3", SA); // TEST THIS SOME
@@ -110,10 +119,10 @@ public class ImportTDBHandler implements IHandler {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if (nextFile.matches(".*\\.zip.*")) {
+			} else if (fileName.matches(".*\\.zip.*")) {
 				// System.out.println("Got a zip file");
 				try {
-					ZipFile zf = new ZipFile(fullFile);
+					ZipFile zf = new ZipFile(fileName);
 					Enumeration entries = zf.entries();
 					// JenaReader jenaReader = new JenaReader();
 					while (entries.hasMoreElements()) {
@@ -149,7 +158,7 @@ public class ImportTDBHandler implements IHandler {
 		// GenericUpdate iGenericInsert = new
 		// GenericUpdate(queryStr,"Ext. File Update");
 
-		// addFilename(fullFile);
+		// addFilename(fileName);
 		IWorkbenchPage page = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
@@ -158,10 +167,10 @@ public class ImportTDBHandler implements IHandler {
 
 		// resultsView.update(iGenericInsert.getData());
 		// resultsView.update(iGenericInsert.getQueryResults());
-		// ViewData.setKey(fullFile);
+		// ViewData.setKey(fileName);
 		// TableViewer tableViewer = viewData.getViewer();
 		// tableViewer.setInput(new Object[] {""});
-		// resultsView.update(fullFile);
+		// resultsView.update(fileName);
 
 		// }
 
