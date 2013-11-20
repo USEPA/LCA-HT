@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
@@ -63,7 +64,17 @@ public class ExtQueryHandler implements IHandler {
 				e.printStackTrace();
 			}
 
+			//--------------------------- NOW PUT QUERY INTO QUERY WINDOW ------
 			String queryStr = b.toString();
+			{
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+				queryView.setTextAreaContent(queryStr);
+//				System.out.println("Contents of window: = "+ queryView.toString());
+			}
+			
+			//--------------------------- NOW RUN THE THING ------
+			
             GenericQuery iGenericQuery = new GenericQuery(queryStr,"Ext. File Query");
 
 //			addFilename(path);
@@ -84,6 +95,7 @@ public class ExtQueryHandler implements IHandler {
 //		actionExtQuery.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		return null;
 	}
+	
 
 	@Override
 	public boolean isEnabled() {

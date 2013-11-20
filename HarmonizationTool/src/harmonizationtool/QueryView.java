@@ -1,5 +1,7 @@
 package harmonizationtool;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,21 +23,22 @@ import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
 import harmonizationtool.query.IParamQuery;
 import harmonizationtool.query.QCasNotInDB;
-import harmonizationtool.query.UDelTestData;
+//import harmonizationtool.query.UDelTestData;
 import harmonizationtool.query.QDataSources;
-import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QDataSourcesSubCount;
-import harmonizationtool.query.ZunusedGCasNameSourceQuery;
+//import harmonizationtool.query.GenericUpdate;
+//import harmonizationtool.query.GenericQuery;
+//import harmonizationtool.query.QDataSourcesSubCount;
+//import harmonizationtool.query.ZunusedGCasNameSourceQuery;
 import harmonizationtool.query.HarmonyQuery;
-import harmonizationtool.query.UAdTestData;
-import harmonizationtool.query.ZunusedNonSubstanceQuery;
+//import harmonizationtool.query.UAdTestData;
+//import harmonizationtool.query.ZunusedNonSubstanceQuery;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -59,7 +62,13 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -79,6 +88,13 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.widgets.Table;
 
 public class QueryView extends ViewPart implements ISelectedTDBListener {
 	public static final String ID = "HarmonizationTool.QueryViewID";
@@ -103,6 +119,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private List<String> paramQueries = new ArrayList<String>();
+	private Text txtTextArea;
 
 	public QueryView() {
 		paramQueries.add("Show CAS Matches");
@@ -112,31 +129,81 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		parent.setLayout(null);
+
+		Button btnNewButton = new Button(parent, SWT.BORDER);
+		// btnNewButton.setBounds(149, 0, 148, 469);
+		btnNewButton.setBounds(20, 150, 100, 30);
+		btnNewButton.setAlignment(SWT.LEFT);
+		btnNewButton.setText("Run Query");
+		btnNewButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+//				txtTextArea.setText("new text");
+				String queryStr = txtTextArea.getText();
+	            GenericQuery iGenericQuery = new GenericQuery(queryStr,"Ext. File Query");
+
+//				addFilename(path);
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+				String title = resultsView.getTitle();
+				System.out.println("title= " + title);
+
+				resultsView.update(iGenericQuery.getData());
+				resultsView.update(iGenericQuery.getQueryResults());
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		txtTextArea = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		txtTextArea.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+		// txtTextArea.setBounds(297, 0, 148, 469);
+		txtTextArea.setBounds(150, 0, 600, 500);
+		txtTextArea.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_INFO_BACKGROUND));
+		txtTextArea.setText("(query editor)");
+		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
+		Table table = viewer.getTable();
+		// table.setBounds(445, 0, 149, 469);
+		table.setBounds(0, 0, 150, 500);
 		viewer.setContentProvider(new QueryViewContentProvider(viewer));
+
+		// queryWindow.append("Query Window");
 		viewer.setLabelProvider(new QueryViewLabelProvider());
 		viewer.setInput(getViewSite());
+		txtTextArea.addKeyListener(new org.eclipse.swt.events.KeyListener() {
+			@Override
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+			}
+		});
+
+		Device device = Display.getCurrent();
+		Cursor cursor = new Cursor(device, 19);
+		// Color red = new Color (device, 255, 0, 0);
+		Color queryWindowColor = new Color(device, 255, 255, 200);
 
 		makeActions();
 		hookContextMenu();
 		addQuery(qDataSources);
 		addQuery(qDataSourcesSubCountB);
-		// addQuery(qDataSourcesSubCount);
-		// addQuery(uAdTestData);
-		// addQuery(uDelTestData);
+
 		addQuery(qMatchCAS);
 		addQuery(qCountMatches);
 		addQuery(qCasNotInDB);
 
-		// ICommandService commandService = (ICommandService) PlatformUI
-		// .getWorkbench().getActiveWorkbenchWindow()
-		// .getService(ICommandService.class);
-		// Command command = commandService
-		// .getCommand("harmonizationtool.tdb.select.id");
-		// IHandler handler = command.getHandler();
-		// System.out.println(handler.getClass().getName());
-		// handler.addHandlerListener(this);
 		SelectTDB.getInstance().addSelectedTDBListener(this);
 	}
 
@@ -232,137 +299,137 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	private void makeActions() {
-		actionImport = new Action() {
-			public void run() {
-				System.out.println("executing actionImport");
-				ModelProvider modelProvider = new ModelProvider();
-				FileDialog fileDialog = new FileDialog(
-						getViewSite().getShell(), SWT.OPEN);
-				fileDialog.setFilterExtensions(new String[] { "*.csv" });
-				String homeDir = System.getProperty("user.home");
-				fileDialog.setFilterPath(homeDir);
-				String path = fileDialog.open();
-				if (path != null) {
-					FileReader fileReader = null;
-					try {
-						fileReader = new FileReader(path);
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
-					if (fileReader != null) {
-						CSVParser parser = new CSVParser(fileReader,
-								CSVStrategy.EXCEL_STRATEGY);
-						String[] values = null;
-						try {
-							values = parser.getLine();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						while (values != null) {
-							// printValues(parser.getLineNumber(),values);
-							DataRow dataRow = initDataRow(values);
-							modelProvider.addDataRow(dataRow);
-							ModelKeeper.saveModelProvider(path, modelProvider);
-							// System.out.println(dataRow);
-							try {
-								values = parser.getLine();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+//		actionImport = new Action() {
+//			public void run() {
+//				System.out.println("executing actionImport");
+//				ModelProvider modelProvider = new ModelProvider();
+//				FileDialog fileDialog = new FileDialog(
+//						getViewSite().getShell(), SWT.OPEN);
+//				fileDialog.setFilterExtensions(new String[] { "*.csv" });
+//				String homeDir = System.getProperty("user.home");
+//				fileDialog.setFilterPath(homeDir);
+//				String path = fileDialog.open();
+//				if (path != null) {
+//					FileReader fileReader = null;
+//					try {
+//						fileReader = new FileReader(path);
+//					} catch (FileNotFoundException e) {
+//						e.printStackTrace();
+//					}
+//					if (fileReader != null) {
+//						CSVParser parser = new CSVParser(fileReader,
+//								CSVStrategy.EXCEL_STRATEGY);
+//						String[] values = null;
+//						try {
+//							values = parser.getLine();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+//						while (values != null) {
+//							// printValues(parser.getLineNumber(),values);
+//							DataRow dataRow = initDataRow(values);
+//							modelProvider.addDataRow(dataRow);
+//							ModelKeeper.saveModelProvider(path, modelProvider);
+//							// System.out.println(dataRow);
+//							try {
+//								values = parser.getLine();
+//							} catch (IOException e) {
+//								e.printStackTrace();
+//							}
+//
+//						}
+//					}
+//					addFilename(path);
+//					IWorkbenchPage page = PlatformUI.getWorkbench()
+//							.getActiveWorkbenchWindow().getActivePage();
+//					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+//					String title = viewData.getTitle();
+//					System.out.println("title= " + title);
+//					// ViewData.setKey(path);
+//					// TableViewer tableViewer = viewData.getViewer();
+//					// tableViewer.setInput(new Object[] {""});
+//					viewData.update(path);
+//				}
+//				CSVParser c = null;
+//				// addFilename("filename");
+//			}
+//		};
+//		actionImport.setText("Import...");
+//		actionImport.setToolTipText("Import CSV");
+//		actionImport.setImageDescriptor(PlatformUI.getWorkbench()
+//				.getSharedImages()
+//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-						}
-					}
-					addFilename(path);
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
-					String title = viewData.getTitle();
-					System.out.println("title= " + title);
-					// ViewData.setKey(path);
-					// TableViewer tableViewer = viewData.getViewer();
-					// tableViewer.setInput(new Object[] {""});
-					viewData.update(path);
-				}
-				CSVParser c = null;
-				// addFilename("filename");
-			}
-		};
-		actionImport.setText("Import...");
-		actionImport.setToolTipText("Import CSV");
-		actionImport.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+//		actionSave = new Action() {
+//			public void run() {
+//				System.out.println("executing actionSave");
+//				ISelection iSelection = viewer.getSelection();
+//				Object obj = ((IStructuredSelection) iSelection)
+//						.getFirstElement();
+//				System.out.println("saving file: " + obj);
+//				Shell shell = getViewSite().getShell();
+//				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+//				String[] filterNames = new String[] { "Image Files",
+//						"All Files (*)" };
+//				String[] filterExtensions = new String[] { "*.csv", "*" };
+//				String filterPath = "/";
+//				String platform = SWT.getPlatform();
+//				if (platform.equals("win32") || platform.equals("wpf")) {
+//					filterNames = new String[] { "Image Files",
+//							"All Files (*.*)" };
+//					filterExtensions = new String[] {
+//							"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
+//					filterPath = "c:\\";
+//				}
+//				dialog.setFilterNames(filterNames);
+//				dialog.setFilterExtensions(filterExtensions);
+//				dialog.setFilterPath(filterPath);
+//				dialog.setFileName("myfile");
+//				String saveTo = dialog.open();
+//				System.out.println("Save to: " + saveTo);
+//
+//				try {
+//					File file = new File(saveTo);
+//					if (!file.exists()) {
+//						file.createNewFile();
+//					}
+//
+//					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+//					BufferedWriter bw = new BufferedWriter(fw);
+//					bw.write("this is the content");
+//					bw.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//
+//			}
+//		};
+//		actionSave.setText("Save...");
+//		actionSave.setToolTipText("Save CSV");
+//		actionSave.setImageDescriptor(PlatformUI.getWorkbench()
+//				.getSharedImages()
+//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-		actionSave = new Action() {
-			public void run() {
-				System.out.println("executing actionSave");
-				ISelection iSelection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) iSelection)
-						.getFirstElement();
-				System.out.println("saving file: " + obj);
-				Shell shell = getViewSite().getShell();
-				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				String[] filterNames = new String[] { "Image Files",
-						"All Files (*)" };
-				String[] filterExtensions = new String[] { "*.csv", "*" };
-				String filterPath = "/";
-				String platform = SWT.getPlatform();
-				if (platform.equals("win32") || platform.equals("wpf")) {
-					filterNames = new String[] { "Image Files",
-							"All Files (*.*)" };
-					filterExtensions = new String[] {
-							"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
-					filterPath = "c:\\";
-				}
-				dialog.setFilterNames(filterNames);
-				dialog.setFilterExtensions(filterExtensions);
-				dialog.setFilterPath(filterPath);
-				dialog.setFileName("myfile");
-				String saveTo = dialog.open();
-				System.out.println("Save to: " + saveTo);
-
-				try {
-					File file = new File(saveTo);
-					if (!file.exists()) {
-						file.createNewFile();
-					}
-
-					FileWriter fw = new FileWriter(file.getAbsoluteFile());
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.write("this is the content");
-					bw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			}
-		};
-		actionSave.setText("Save...");
-		actionSave.setToolTipText("Save CSV");
-		actionSave.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
-
-		actionClose = new Action() {
-			public void run() {
-				System.out.println("executing actionClose");
-				ISelection iSelection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) iSelection)
-						.getFirstElement();
-				String key = (String) obj;
-				ModelKeeper.remove(key);
-				removeFilename(obj);
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-				viewData.clearView(key);
-			}
-		};
-		actionClose.setText("Close");
-		actionClose.setToolTipText("Close CSV");
-		actionClose.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+//		actionClose = new Action() {
+//			public void run() {
+//				System.out.println("executing actionClose");
+//				ISelection iSelection = viewer.getSelection();
+//				Object obj = ((IStructuredSelection) iSelection)
+//						.getFirstElement();
+//				String key = (String) obj;
+//				ModelKeeper.remove(key);
+//				removeFilename(obj);
+//				IWorkbenchPage page = PlatformUI.getWorkbench()
+//						.getActiveWorkbenchWindow().getActivePage();
+//				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+//				viewData.clearView(key);
+//			}
+//		};
+//		actionClose.setText("Close");
+//		actionClose.setToolTipText("Close CSV");
+//		actionClose.setImageDescriptor(PlatformUI.getWorkbench()
+//				.getSharedImages()
+//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -446,6 +513,11 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			return;
 
 		viewer.remove(element);
+	}
+
+	public void setTextAreaContent(String s) {
+		txtTextArea.setText(s);
+		return;
 	}
 
 	@Override

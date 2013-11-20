@@ -86,6 +86,7 @@ public class HarmonyBaseInsert implements HarmonyQuery {
 //		model.getResource(arg0);
 		long startTime = System.currentTimeMillis();
 		String sparqlUpdateString = queryStr;
+		System.out.println("query = " + sparqlUpdateString.toString());
 		UpdateRequest request = UpdateFactory.create(sparqlUpdateString);
 		UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 		try {

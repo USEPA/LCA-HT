@@ -4,8 +4,13 @@ import harmonizationtool.ResultsView;
 import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
 import harmonizationtool.comands.SelectTDB;
+import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.query.QGetNextDSIndex;
+import harmonizationtool.query.QueryResults;
+import harmonizationtool.query.UAssignDSIndex_with_param;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,6 +21,7 @@ import java.util.regex.Pattern;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -52,18 +58,28 @@ public class ImportTDBHandler implements IHandler {
 
 	}
 
+	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
+	private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
+
+	// qGetNextDSIndex.
+
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
+
 		Model model = SelectTDB.model;
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
-//		fileDialog
-//				.setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
-		fileDialog
-		.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS ALL TYPES IN ONE WINDOW
+		// fileDialog
+		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
+		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
+																				// ALL
+																				// TYPES
+																				// IN
+																				// ONE
+																				// WINDOW
 
 		String homeDir = System.getProperty("user.home");
 		fileDialog.setFilterPath(homeDir);
@@ -73,35 +89,67 @@ public class ImportTDBHandler implements IHandler {
 		fileDialog.open(); // INPUT FROM USER
 		String path = fileDialog.getFilterPath();
 		String[] fileList = fileDialog.getFileNames();
-		
+
 		String sep = System.getProperty("file.separator");
-		System.out.println("path= "+path);
-		for(String fileName : fileList){
-			System.out.println("fileName= "+fileName);
-			if(!fileName.startsWith(sep)){
+		System.out.println("path= " + path);
+		for (String fileName : fileList) {
+			System.out.println("fileName= " + fileName);
+			if (!fileName.startsWith(sep)) {
 				fileName = path + sep + fileName;
 			}
-//		}
-
-//		String nextFile = null;
-//		for (int iterator = 0; iterator < fileList.length; iterator++) {
-//			nextFile = fileList[iterator];
-//			String fileName = path + "/" + nextFile; // ESPECIALLY WRONG
-//			System.out.println("fileName: " + fileName);
-//			System.out.println("File: " + nextFile + " from path: " + path);
-//			// ----------------- TOMMY HELP FIX THIS (ABOVE)
-//			// ----------------------
+			// }
 
 			long was = model.size();
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
+					int next = 1;
 					String inputType = "RDF/XML";
 					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
+					// NEED TO DETERINE WHAT THE NEXT DATA SET LOCAL INDEX
+					// NUMBER IS
+					GenericQuery iGenericQuery = new GenericQuery(
+							qGetNextDSIndex.getQuery(), "Internal Query");
+					iGenericQuery.getData();
+					QueryResults parts = iGenericQuery.getQueryResults();
+					List<DataRow> resultRow = parts.getModelProvider()
+							.getData();
+					// if(resultRow.size() > 0){
+					DataRow row = resultRow.get(0);
+					List<String> valueList = row.getColumnValues();
+					String indexStr = valueList.get(0);
+					next = Integer.parseInt(indexStr);
+					// }
+
+					System.out.println("resultRow = " + resultRow.toString());
+
+					// String[] strarray = (String[]) parts.toArray();
+					// System.out.println("strarray.toString() = "+strarray.toString()
+					// );
+
+					// System.out.println("iGenericQuery.getData().toString() = "+iGenericQuery.getData().toString());
+
+					// int next =
+					// Integer.parseInt(parts.toArray()[1].toString());
+
+					// int next = 1*Integer.parseInt(parts.subList(1,
+					// 1).toString());
+					// int next = Integer.parseInt(parts[1].toString());
+					System.out.println("next = " + next);
+
+					
+					uAssignDSIndex_with_param.setNext(next);
+					uAssignDSIndex_with_param.getQuery();
+					
+					System.out.println("success setting 'next'");
+					uAssignDSIndex_with_param.getData();
+
+					// UAssignDSIndex_with_param.
+
 					// JenaReader jenaReader = new JenaReader();
 					// jenaReader.setProperty("n3", SA); // TEST THIS SOME
 					// DAY
@@ -177,6 +225,8 @@ public class ImportTDBHandler implements IHandler {
 		// actionExtUpdate.setText("Exec. Update...");
 		// actionExtUpdate.setToolTipText("SPARQL Update in .ttl file");
 		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		// System.out.println("qGetNextDSIndex = "+qGetNextDSIndex.toString());
+
 		return null;
 	}
 

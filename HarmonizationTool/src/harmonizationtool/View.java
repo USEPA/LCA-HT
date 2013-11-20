@@ -281,17 +281,19 @@ public class View extends ViewPart {
 					MyDialog dialog = new MyDialog(Display.getCurrent().getActiveShell());
 					dialog.create();
 					if (dialog.open() == Window.OK) {
+//						String dataSourceIRI = dialog.getDataSourceIRI();
 						System.out.println(dialog.getDataSourceName());
 						System.out.println(dialog.getMajorVersion());
 						System.out.println(dialog.getMinorVersion());
 						System.out.println(dialog.getComment());
-						String dataSourceIRI = dialog.getDataSourceIRI();
 						String dataSourceName = dialog.getDataSourceName();
 						String majorNumber = dialog.getMajorVersion();
 						String minorNumber = dialog.getMinorVersion();
 						String comment = dialog.getComment();
 
-						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceIRI, dataSourceName, majorNumber, minorNumber, comment);
+//						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceIRI, dataSourceName, majorNumber, minorNumber, comment);
+						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceName, majorNumber, minorNumber, comment);
+
 						List<String> resultList = idsInfoQuery.getData();
 //						System.out.println(resultList.toString());
 //						System.out.println(idsInfoQuery.getQuery());
@@ -401,8 +403,10 @@ public class View extends ViewPart {
 									// System.out.println("flowUnit=" + flowUnit);
 								}
 							}
-
+							String dataSourceIRI = "dude";
 							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
+//							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
+//
 							String insertTriples = idsRowQuery.getInsertTriples();
 							b.append(insertTriples);
 //							b.append(idsRowQuery.toString());

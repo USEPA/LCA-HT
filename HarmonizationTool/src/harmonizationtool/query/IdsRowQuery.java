@@ -2,7 +2,7 @@ package harmonizationtool.query;
 
 public class IdsRowQuery extends HarmonyBaseInsert {
 	private final String casrn;
-	private final String dataSourceIRI;
+//	private final String dataSourceIRI;
 	private final String name;
 	private final String altName;
 	private final String cat;
@@ -11,11 +11,12 @@ public class IdsRowQuery extends HarmonyBaseInsert {
 	private final String impactCatRefUnit;
 	private final Double charFactor;
 	private final String flowUnit;
-
+	private String dataSourceIRI = "ds_999"; 
 
 	private final String rowNumber;
 
 	public String getPrefix() {
+		
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ei:     <http://ontology.earthster.org/eco/ecoinvent#> \n");

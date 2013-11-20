@@ -45,6 +45,12 @@
             name="Results"
             restorable="true">
       </view>
+      <view
+            class="harmonizationtool.QueryEditor"
+            id="HarmonizationTool.QueryEditorID"
+            name="Query Editor"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
