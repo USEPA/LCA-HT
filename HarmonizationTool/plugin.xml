@@ -97,6 +97,17 @@
                   style="push">
             </command>
          </menu>
+         <menu
+               label="Window">
+            <menu
+                  label="Show View">
+               <command
+                     commandId="HarmonizationTool.ShowDataView"
+                     label="Show Data View"
+                     style="push">
+               </command>
+            </menu>
+         </menu>
       </menuContribution>
       <menuContribution
             locationURI="popup:HarmonizationTool.QueryViewID">
@@ -182,6 +193,11 @@
             defaultHandler="harmonizationtool.handler.SaveResultsHandler"
             id="HarmonizationTool.SaveResults"
             name="Save Results">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowDataViewHandler"
+            id="HarmonizationTool.ShowDataView"
+            name="Show Data View">
       </command>
    </extension>
 

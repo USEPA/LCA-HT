@@ -42,6 +42,7 @@ import org.eclipse.ui.part.ViewPart;
  * 
  */
 public class ViewData extends ViewPart {
+
 	public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
 	private TableViewer viewer;
@@ -52,15 +53,24 @@ public class ViewData extends ViewPart {
 	public static final String CASRN_HDR = "CASRN";
 	public static final String NAME_HDR = "Name";
 	public static final String ALT_NAME_HDR = "Alt_Name";
-	public static final String CAT_HDR = "Category";                            // e.g. air
-	public static final String SUBCAT_HDR = "Subcategory";                      // e.g. low population
-	public static final String IMPACT_CAT_HDR = "Impact_Category";              // e.g. global warming
-	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit"; // e.g. kg CO2 eq
-	public static final String CHAR_FACTOR_HDR = "Characterization_factor";     // THIS THE NUMBER
-	public static final String FLOW_UNIT_HDR = "Flow_Unit";                     // e.g. kg (assumed to be one of these)
+	public static final String CAT_HDR = "Category"; // e.g. air
+	public static final String SUBCAT_HDR = "Subcategory"; // e.g. low
+															// population
+	public static final String IMPACT_CAT_HDR = "Impact_Category"; // e.g.
+																	// global
+																	// warming
+	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit"; // e.g.
+																				// kg
+																				// CO2
+																				// eq
+	public static final String CHAR_FACTOR_HDR = "Characterization_factor"; // THIS
+																			// THE
+																			// NUMBER
+	public static final String FLOW_UNIT_HDR = "Flow_Unit"; // e.g. kg (assumed
+															// to be one of
+															// these)
 
-
-//	public static final String ALT_NAME_HDR = "Alt_Name";
+	// public static final String ALT_NAME_HDR = "Alt_Name";
 	public static final String IGNORE_HDR = "Ignore";
 
 	public TableViewer getViewer() {
@@ -68,10 +78,11 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the
+	 * view. It can wrap existing objects in adapters or simply return objects
+	 * as-is. These objects may be sensitive to the current input of the view,
+	 * or ignore it and always show the same content (like Task List, for
+	 * example).
 	 */
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -88,14 +99,24 @@ public class ViewData extends ViewPart {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		System.out.println("\n\n***********dispose() HarmonizationTool.viewData************\n\n");
+		super.dispose();
+	}
+
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(final SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) event
+						.getSelection();
 				System.out.println("============row selected=======");
 				System.out.println(selection.getClass().getName());
 				Object element = selection.getFirstElement();
@@ -128,8 +149,8 @@ public class ViewData extends ViewPart {
 		table.setLinesVisible(true);
 		viewer.setContentProvider(new ArrayContentProvider());
 		ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-//		System.out.println("modelProvider.getData()="+modelProvider.getData());
-//		System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
+		// System.out.println("modelProvider.getData()="+modelProvider.getData());
+		// System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
 		viewer.setInput(modelProvider.getData());
 		// viewer.refresh();
 
@@ -193,7 +214,8 @@ public class ViewData extends ViewPart {
 				boundsArray[indx++] = integer;
 			}
 			for (int i = 0; i < titles.size(); i++) {
-				TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
+				TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+						boundsArray[i], i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// modelProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
@@ -203,7 +225,8 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -245,21 +268,25 @@ public class ViewData extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
+	private TableViewerColumn createTableViewerColumn(String title, int bound,
+			final int colNumber) {
+		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
+				SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
 		column.setText(title);
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-		viewerColumn.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
+		viewerColumn
+				.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
 		column.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (e.getSource() instanceof TableColumn) {
 					TableColumn col = (TableColumn) e.getSource();
-					//set columnSelected; this is used when editing the column headers
+					// set columnSelected; this is used when editing the column
+					// headers
 					columnSelected = col;
 				}
 			}
@@ -274,7 +301,8 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a
+	 * ColumnSelectionListener
 	 * 
 	 * @param parent
 	 *            headerMenu which allows user to rename the columns
@@ -284,51 +312,52 @@ public class ViewData extends ViewPart {
 		MenuItem menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CASRN_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(NAME_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(ALT_NAME_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(SUBCAT_HDR);
-		
-		menuItem = new MenuItem(parent, SWT.NORMAL);		
+
+		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_HDR);
-		
-		menuItem = new MenuItem(parent, SWT.NORMAL);		
+
+		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CHAR_FACTOR_HDR);
-		
-		menuItem = new MenuItem(parent, SWT.NORMAL);		
+
+		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(FLOW_UNIT_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IGNORE_HDR);
-//		menuItem = new MenuItem(parent, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-//		menuItem.setText("Custom...");
+		// menuItem = new MenuItem(parent, SWT.NORMAL);
+		// menuItem.addListener(SWT.Selection, colListener);
+		// menuItem.setText("Custom...");
 	}
 
 	/**
-	 * once the user has selected a column header for change this Listener will set the column
-	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
-	 * displayed so the user can enter a custom value for the column header.
+	 * once the user has selected a column header for change this Listener will
+	 * set the column header to the value selected by the user. If the user
+	 * selects "Custom...", then a dialog is displayed so the user can enter a
+	 * custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -338,12 +367,15 @@ public class ViewData extends ViewPart {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+		 * @see
+		 * org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets
+		 * .Event)
 		 * 
-		 * this event handler is called when the user right clicks on the column to change the
-		 * column header name. columnSelected.setText(menuItemText) will set the column header to
-		 * the value of the menu item selected. If "Custom..." is selected, then the user can set a
-		 * custom name for the column header.
+		 * this event handler is called when the user right clicks on the column
+		 * to change the column header name.
+		 * columnSelected.setText(menuItemText) will set the column header to
+		 * the value of the menu item selected. If "Custom..." is selected, then
+		 * the user can set a custom name for the column header.
 		 */
 		@Override
 		public void handleEvent(Event event) {
@@ -352,7 +384,9 @@ public class ViewData extends ViewPart {
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite()
+								.getShell(), "Column Name Dialog",
+								"Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -364,7 +398,8 @@ public class ViewData extends ViewPart {
 					}
 
 				}
-				// save the column names to the ModelProvider in case the data table needs to be
+				// save the column names to the ModelProvider in case the data
+				// table needs to be
 				// re-displayed
 				saveColumnNames();
 			}
@@ -373,8 +408,9 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column components and passes
-	 * them to the ModelProvider so they can be retrieved when the data table is re-displayed
+	 * this method retrieves the column header text values from the column
+	 * components and passes them to the ModelProvider so they can be retrieved
+	 * when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
