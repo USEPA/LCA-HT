@@ -101,7 +101,6 @@ public class ViewData extends ViewPart {
 
 	@Override
 	public void dispose() {
-		System.out.println("\n\n***********dispose() HarmonizationTool.viewData************\n\n");
 		super.dispose();
 	}
 

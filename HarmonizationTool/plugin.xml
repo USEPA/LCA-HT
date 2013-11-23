@@ -111,6 +111,11 @@
                      label="Show Results View"
                      style="push">
                </command>
+               <command
+                     commandId="HarmonizationTool.ShowQueryView"
+                     label="Show Query View"
+                     style="push">
+               </command>
             </menu>
          </menu>
       </menuContribution>
@@ -208,6 +213,11 @@
             defaultHandler="harmonizationtool.handler.ShowResultsViewHandler"
             id="HarmonizationTool.ShowResultsView"
             name="Show Results View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowQueryViewHandler"
+            id="HarmonizationTool.ShowQueryView"
+            name="Show Query View">
       </command>
    </extension>
 
