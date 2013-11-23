@@ -1,5 +1,11 @@
 package harmonizationtool.utils;
 
+import harmonizationtool.ViewData;
+
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+
 public class Util {
 	private Util() {
 	}
@@ -27,5 +33,11 @@ public class Util {
 		}
 		return b.toString();
 	}
-
+    public static IViewPart findView(String viewID){
+    	IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
+    	return view;
+    }
+    public static void showView(String viewID) throws PartInitException{
+    	PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
+    }
 }
