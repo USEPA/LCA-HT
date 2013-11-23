@@ -116,6 +116,11 @@
                      label="Show Query View"
                      style="push">
                </command>
+               <command
+                     commandId="HarmonizationTool.ShowDataFilesView"
+                     label="Show Data File(s) View"
+                     style="push">
+               </command>
             </menu>
          </menu>
       </menuContribution>
@@ -218,6 +223,11 @@
             defaultHandler="harmonizationtool.handler.ShowQueryViewHandler"
             id="HarmonizationTool.ShowQueryView"
             name="Show Query View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowDataFilesView"
+            id="HarmonizationTool.ShowDataFilesView"
+            name="Show Data File(s) View">
       </command>
    </extension>
 
