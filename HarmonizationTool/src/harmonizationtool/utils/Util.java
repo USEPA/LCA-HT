@@ -1,7 +1,9 @@
 package harmonizationtool.utils;
 
+import harmonizationtool.Activator;
 import harmonizationtool.ViewData;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -39,5 +41,8 @@ public class Util {
     }
     public static void showView(String viewID) throws PartInitException{
     	PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
+    }
+    public static IPreferenceStore getPreferenceStore(){
+    	return Activator.getDefault().getPreferenceStore();
     }
 }

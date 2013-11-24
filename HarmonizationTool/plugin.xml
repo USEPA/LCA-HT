@@ -85,6 +85,11 @@
                   style="push">
             </command>
             <command
+                  commandId="org.eclipse.ui.window.preferences"
+                  label="Preferences"
+                  style="push">
+            </command>
+            <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
             </command>
@@ -229,6 +234,25 @@
             id="HarmonizationTool.ShowDataFilesView"
             name="Show Data File(s) View">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="harmonizationtool.preferences.UserPreferences"
+            id="harmonizationtool.preferences.UserPreferences"
+            name="User Preferences">
+      </page>
+      <page
+            class="harmonizationtool.preferences.DirectoryPreferences"
+            id="harmonizationtool.preferences.DirectoryPreferences"
+            name="Directories">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="harmonizationtool.preferences.Initializer">
+      </initializer>
    </extension>
 
 </plugin>
