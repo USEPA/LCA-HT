@@ -1,9 +1,13 @@
 package harmonizationtool.comands;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import harmonizationtool.Activator;
+import harmonizationtool.QueryView;
+import harmonizationtool.ViewData;
+import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -14,9 +18,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.osgi.framework.Bundle;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
 //import com.hp.hpl.jena.query.Query;
 //import com.hp.hpl.jena.query.QueryExecution;
 //import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -53,12 +59,13 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	public static GraphStore graphStore = null;
 	private static SelectTDB instance = null;
 	private List<ISelectedTDBListener> selectedTDBListeners = new ArrayList<ISelectedTDBListener>();
-	
-	public SelectTDB(){
+
+	public SelectTDB() {
 		System.out.println("created SelectTDB");
 		instance = this;
 	}
-	public static SelectTDB getInstance(){
+
+	public static SelectTDB getInstance() {
 		return instance;
 	}
 
@@ -66,24 +73,28 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		System.out.println("closing dataset and model");
 		cleanUp();
 	}
-	private void  cleanUp(){
+
+	private void cleanUp() {
 		try {
 			dataset.close();
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		try {
 			model.close();
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		try {
 			graphStore.close();
 		} catch (Exception e) {
-		}		
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		System.out.println("added listener: "+handlerListener);
+		System.out.println("added listener: " + handlerListener);
 	}
 
 	@Override
@@ -94,51 +105,90 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-//		cleanUp();
-		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
+		File defaultTDBFile = new File(defaultTDB);
+		if (defaultTDBFile.isDirectory()) {
+			System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
+			try {
+				dataset = TDBFactory.createDataset(defaultTDBFile.getPath());
+				assert dataset != null : "dataset cannot be null";
+				model = dataset.getDefaultModel();
+				graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE NEED
 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	// @Override
+	public Object executeOLD(ExecutionEvent event) throws ExecutionException {
+		String msg = "SelectTDB.execute()";
+		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		System.out.println(msg);
+		// cleanUp();
+		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
 		System.out.println("Executing SelectTDB");
-		DirectoryDialog directoryDialog = new DirectoryDialog(PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow().getShell());
+		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
+		File defaultTDBFile = new File(defaultTDB);
+		DirectoryDialog directoryDialog = new DirectoryDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		System.out.println("defaultTDBFile.isDirectory() = " + defaultTDBFile.isDirectory());
+		if (defaultTDBFile.isDirectory()) {
+			System.out.println("calling directoryDialog.setFilterPath(" + defaultTDBFile.getPath() + ")");
+			directoryDialog.setFilterPath(defaultTDBFile.getPath());
+		}
 		tdbDir = directoryDialog.open();
-		if(tdbDir != null){
+		if (tdbDir != null) {
 			cleanUp();
-		}else{
+		} else {
 			return null;
 		}
 		System.out.println("tdbDir=" + tdbDir);
 		try {
 			dataset = TDBFactory.createDataset(tdbDir);
-//			TDBFactory.createDataset(tdbDir); // FIXME DO WE NEED THIS?
+			// TDBFactory.createDataset(tdbDir); // FIXME DO WE NEED THIS?
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-//		new PrefixMapping.Factory();
-//		PrefixMapping prefixMapping = Factory.create();
-//		prefixMapping.setNsPrefix("eco", "<http://ontology.earthster.org/eco/core#>");
-//		prefixMapping.setNsPrefix("ecou", "<http://ontology.earthster.org/eco/unit#>");
-//		prefixMapping.setNsPrefix("ethold", "<http://epa.gov/nrmrl/std/lca#>");
-//		prefixMapping.setNsPrefix("afn", "<http://jena.hpl.hp.com/ARQ/function#>");
-//		prefixMapping.setNsPrefix("fn", "<http://www.w3.org/2005/xpath-functions#>");
-//		prefixMapping.setNsPrefix("owl", "<http://www.w3.org/2002/07/owl#>");
-//		prefixMapping.setNsPrefix("skos", "<http://www.w3.org/2004/02/skos/core#>");
-//		prefixMapping.setNsPrefix("rdf", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
-//		prefixMapping.setNsPrefix("rdfs", "<http://www.w3.org/2000/01/rdf-schema#>");
-//		prefixMapping.setNsPrefix("xml", "<http://www.w3.org/XML/1998/namespace>");
-//		prefixMapping.setNsPrefix("xsd", "<http://www.w3.org/2001/XMLSchema#>");
-//		
-//		//
-//		// System.out.println(prefixMapping.toString());
+
+		// new PrefixMapping.Factory();
+		// PrefixMapping prefixMapping = Factory.create();
+		// prefixMapping.setNsPrefix("eco",
+		// "<http://ontology.earthster.org/eco/core#>");
+		// prefixMapping.setNsPrefix("ecou",
+		// "<http://ontology.earthster.org/eco/unit#>");
+		// prefixMapping.setNsPrefix("ethold",
+		// "<http://epa.gov/nrmrl/std/lca#>");
+		// prefixMapping.setNsPrefix("afn",
+		// "<http://jena.hpl.hp.com/ARQ/function#>");
+		// prefixMapping.setNsPrefix("fn",
+		// "<http://www.w3.org/2005/xpath-functions#>");
+		// prefixMapping.setNsPrefix("owl", "<http://www.w3.org/2002/07/owl#>");
+		// prefixMapping.setNsPrefix("skos",
+		// "<http://www.w3.org/2004/02/skos/core#>");
+		// prefixMapping.setNsPrefix("rdf",
+		// "<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
+		// prefixMapping.setNsPrefix("rdfs",
+		// "<http://www.w3.org/2000/01/rdf-schema#>");
+		// prefixMapping.setNsPrefix("xml",
+		// "<http://www.w3.org/XML/1998/namespace>");
+		// prefixMapping.setNsPrefix("xsd",
+		// "<http://www.w3.org/2001/XMLSchema#>");
+		//
+		// //
+		// // System.out.println(prefixMapping.toString());
 		assert dataset != null : "dataset cannot be null";
 		model = dataset.getDefaultModel();
-//		model.setNsPrefixes(prefixMapping);
+		// HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(ViewData.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(
+		// msg);
+		// model.setNsPrefixes(prefixMapping);
 
-
-
-		graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE NEED THIS?
+		graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE NEED
+														// THIS?
 
 		System.err.printf("Model size is: %s\n", model.size());
+		msg = "TDB loading complete. Model size is:" + model.size();
 
 		// boolean doQuery = false;
 		// if (doQuery) {
@@ -165,7 +215,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		// qexec.close();
 		// }
 		// }
-		for(ISelectedTDBListener listener : selectedTDBListeners){
+		for (ISelectedTDBListener listener : selectedTDBListeners) {
 			listener.TDBchanged(tdbDir);
 		}
 
@@ -188,15 +238,17 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		// TODO Auto-generated method stub
 
 	}
+
 	@Override
 	public void addSelectedTDBListener(ISelectedTDBListener listener) {
-		System.out.println("Added TDBListener = "+listener);
+		System.out.println("Added TDBListener = " + listener);
 		selectedTDBListeners.add(listener);
 	}
+
 	@Override
 	public void removeSelectedTDBListener(ISelectedTDBListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -101,6 +101,11 @@
                   label="Select"
                   style="push">
             </command>
+            <command
+                  commandId="harmonizationtool.handler.CloseTDB"
+                  label="Close TDB"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="Window">
@@ -233,6 +238,11 @@
             defaultHandler="harmonizationtool.handler.ShowDataFilesView"
             id="HarmonizationTool.ShowDataFilesView"
             name="Show Data File(s) View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.CloseTDB"
+            id="harmonizationtool.handler.CloseTDB"
+            name="Close TDB">
       </command>
    </extension>
    <extension

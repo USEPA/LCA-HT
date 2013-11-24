@@ -26,9 +26,7 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 	@Override
 	protected void createFieldEditors() {
 		addField(new DirectoryFieldEditor("workingDir", "Working Direcotry:", getFieldEditorParent()));
-
-		addField(new StringFieldEditor("defaultTDB", "Default TDB:", getFieldEditorParent()));
-
+		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB::", getFieldEditorParent()));
 	}
 
 }

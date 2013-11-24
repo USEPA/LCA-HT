@@ -45,4 +45,9 @@ public class Util {
     public static IPreferenceStore getPreferenceStore(){
     	return Activator.getDefault().getPreferenceStore();
     }
+//    public static IStatusLineManager getStatusLine(){
+//    	PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().
+//    	PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getV
+//    	getViewSite().getActionBars().getStatusLineManager();
+//    }
 }
