@@ -1,8 +1,10 @@
 package harmonizationtool.query;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,11 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 		// create QueryResults to hold the query results
 		queryResults = new QueryResults();
 		data = null;
+		if(SelectTDB.model== null){
+			String msg = "ERROR no TDB open";
+			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			return;
+		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(query, SelectTDB.model);
 //		System.out.println("model.getNsPrefixMap()"+SelectTDB.model.getNsPrefixMap().toString());

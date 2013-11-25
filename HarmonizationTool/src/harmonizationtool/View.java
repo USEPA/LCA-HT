@@ -8,7 +8,10 @@ import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.IdsInfoQuery;
 import harmonizationtool.query.IdsRowQuery;
+import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.Util;
+import harmonizationtool.query.QGetNextDSIndex;
+
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -58,6 +61,7 @@ public class View extends ViewPart {
 	private Action actionSave;
 	private Action actionClose;
 	private Action actionExportToTDB;
+	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
 
 	/**
 	 * The content provider class is responsible for providing objects to the view. It can wrap
@@ -160,8 +164,10 @@ public class View extends ViewPart {
 				ModelProvider modelProvider = new ModelProvider();
 				FileDialog fileDialog = new FileDialog(getViewSite().getShell(), SWT.OPEN);
 				fileDialog.setFilterExtensions(new String[] { "*.csv" });
-				String homeDir = System.getProperty("user.home");
-				fileDialog.setFilterPath(homeDir);
+				String workingDir = Util.getPreferenceStore().getString("workingDir");
+				fileDialog.setFilterPath(workingDir);
+//				String homeDir = System.getProperty("user.home");
+//				fileDialog.setFilterPath(homeDir);
 				String path = fileDialog.open();
 				if (path != null) {
 					FileReader fileReader = null;
@@ -282,6 +288,7 @@ public class View extends ViewPart {
 					dialog.create();
 					if (dialog.open() == Window.OK) {
 //						String dataSourceIRI = dialog.getDataSourceIRI();
+						String dataSourceLid = dialog.getDataSourceLid();
 						System.out.println(dialog.getDataSourceName());
 						System.out.println(dialog.getMajorVersion());
 						System.out.println(dialog.getMinorVersion());
@@ -290,9 +297,23 @@ public class View extends ViewPart {
 						String majorNumber = dialog.getMajorVersion();
 						String minorNumber = dialog.getMinorVersion();
 						String comment = dialog.getComment();
+						
+						int next = 1;
+						GenericQuery iGenericQuery = new GenericQuery(
+								qGetNextDSIndex.getQuery(), "Internal Query");
+						iGenericQuery.getData();
+						QueryResults parts = iGenericQuery.getQueryResults();
+						List<DataRow> resultRow = parts.getModelProvider()
+								.getData();
+						// if(resultRow.size() > 0){
+						DataRow row = resultRow.get(0);
+						List<String> valueList = row.getColumnValues();
+						dataSourceLid = valueList.get(0);
+//						next = Integer.parseInt(indexStr);
+						
 
-//						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceIRI, dataSourceName, majorNumber, minorNumber, comment);
-						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceName, majorNumber, minorNumber, comment);
+						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceLid, dataSourceName, majorNumber, minorNumber, comment);
+//						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(dataSourceName, majorNumber, minorNumber, comment);
 
 						List<String> resultList = idsInfoQuery.getData();
 //						System.out.println(resultList.toString());
@@ -403,8 +424,8 @@ public class View extends ViewPart {
 									// System.out.println("flowUnit=" + flowUnit);
 								}
 							}
-							String dataSourceIRI = "dude";
-							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceIRI, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
+//							String dataSourceIRI = "dude";
+							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, dataSourceLid, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
 //							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn, name, altName, cat, subcat, impactCat, impactCatRefUnit, charFactor, flowUnit, "" + rowNumber);
 //
 							String insertTriples = idsRowQuery.getInsertTriples();

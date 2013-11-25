@@ -1,8 +1,10 @@
 package harmonizationtool.query;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +54,11 @@ public class HarmonyBaseInsert implements HarmonyQuery {
 	private void executeQuery() {
 //		Query query = QueryFactory.create(queryStr);
 		Model model = SelectTDB.model;
+		if(model== null){
+			String msg = "ERROR no TDB open";
+			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			return;
+		}
 //		String tdbDir = SelectTDB.tdbDir;
 		Dataset dataset = SelectTDB.dataset;
 		queryResults = new QueryResults();

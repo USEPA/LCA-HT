@@ -1,11 +1,13 @@
 package harmonizationtool.handler;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -52,6 +54,11 @@ public class ExportTDBHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		// {
+		if(SelectTDB.model== null){
+			String msg = "ERROR no TDB open";
+			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			return null;
+		}
 
 		System.out.println("executing TDB Dump");
 		Model model = SelectTDB.model;

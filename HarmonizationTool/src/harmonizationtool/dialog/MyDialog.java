@@ -17,13 +17,13 @@ import org.eclipse.swt.widgets.Text;
 
 public class MyDialog extends TitleAreaDialog {
 
-	private Text dataSourceIRIText;
+	private Text dataSourceLidText;
 	private Text dataSourceNameText;
 	private Text majorVersionText;
 	private Text minorVersionText;
 	private Text commentText;
 	private String dataSourceName;
-	private String dataSourceIRI;
+	private String dataSourceLid;
 	private String majorVersion;
 	private String minorVersion;
 	private String comment;
@@ -55,9 +55,14 @@ public class MyDialog extends TitleAreaDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 
 		Label label0 = new Label(parent, SWT.NONE);
-		label0.setText("Data Source IRI");
-		dataSourceIRIText = new Text(parent, SWT.BORDER);
-		dataSourceIRIText.setLayoutData(gridData);
+		label0.setText("Data Source Local ID");
+		dataSourceLidText = new Text(parent, SWT.BORDER);
+		dataSourceLidText.setLayoutData(gridData);
+		dataSourceLidText.setText("(auto)");
+		dataSourceLidText.setEnabled(false);
+		label0.setEnabled(false);
+		
+		dataSourceLidText.setEnabled(false);
 
 		Label label1 = new Label(parent, SWT.NONE);
 		label1.setText("Data Source Name");
@@ -145,7 +150,7 @@ public class MyDialog extends TitleAreaDialog {
 
 	private boolean isValidInput() {
 		boolean valid = true;
-		if (dataSourceIRIText.getText().length() == 0) {
+		if (dataSourceLidText.getText().length() == 0) {
 			setErrorMessage("Please set data source IRI");
 			valid = false;
 		}
@@ -176,7 +181,7 @@ public class MyDialog extends TitleAreaDialog {
 	// Coyy textFields because the UI gets disposed
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
-		dataSourceIRI = dataSourceIRIText.getText();
+		dataSourceLid = dataSourceLidText.getText();
 		dataSourceName = dataSourceNameText.getText();
 		majorVersion = majorVersionText.getText();
 		minorVersion = minorVersionText.getText();
@@ -189,8 +194,8 @@ public class MyDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 
-	public String getDataSourceIRI() {
-		return dataSourceIRI;
+	public String getDataSourceLid() {
+		return dataSourceLid;
 	}
 
 	public String getDataSourceName() {
@@ -208,4 +213,5 @@ public class MyDialog extends TitleAreaDialog {
 	public String getComment() {
 		return comment;
 	}
+
 }

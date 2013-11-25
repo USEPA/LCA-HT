@@ -1,11 +1,13 @@
 package harmonizationtool.handler;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -50,6 +52,11 @@ public class ExportTriplesHandler implements IHandler {
 //	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 				System.out.println("executing Export Triples");
+				if(SelectTDB.model== null){
+					String msg = "ERROR no TDB open";
+					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+					return null;
+				}
 				Model model = SelectTDB.model;
 //				ModelProvider modelProvider = new ModelProvider();
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);

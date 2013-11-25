@@ -98,7 +98,7 @@
                label="TDB">
             <command
                   commandId="harmonizationtool.tdb.select.id"
-                  label="Select"
+                  label="Open TDB"
                   style="push">
             </command>
             <command

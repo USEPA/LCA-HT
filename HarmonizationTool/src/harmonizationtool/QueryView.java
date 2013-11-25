@@ -434,8 +434,6 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				System.out.println("Double click action");
-				getViewSite ().getActionBars ().getStatusLineManager ().setMessage ("Double click action");
 				IStructuredSelection selection = (IStructuredSelection) viewer
 						.getSelection();
 				if (selection.isEmpty())

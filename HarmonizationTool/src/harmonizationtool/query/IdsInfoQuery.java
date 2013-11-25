@@ -3,7 +3,7 @@ package harmonizationtool.query;
 import com.sun.jmx.snmp.Timestamp;
 
 public class IdsInfoQuery extends HarmonyBaseInsert {
-//	private final String dataSourceIRI;
+	private final String dataSourceLid;
 	private final String dataSourceName;
 	private final String majorNumber;
 	private final String minorNumber;
@@ -11,17 +11,17 @@ public class IdsInfoQuery extends HarmonyBaseInsert {
 
 	// public IdsInfoQuery(String dataSourceIRI, String dataSourceName, String
 	// majorNumber, String minorNumber, String comment){
-	public IdsInfoQuery(String dataSourceName, String majorNumber,
+	public IdsInfoQuery(String dataSourceLid, String dataSourceName, String majorNumber,
 			String minorNumber, String comment) {
 
-		// this.dataSourceIRI = dataSourceIRI;
+		this.dataSourceLid = dataSourceLid;
 		this.dataSourceName = dataSourceName;
 		this.majorNumber = majorNumber;
 		this.minorNumber = minorNumber;
 		this.comment = comment;
-		Timestamp timestamp = new Timestamp();
-		String ts = timestamp.toString();
-		System.out.println(ts.toString());
+//		Timestamp timestamp = new Timestamp();
+//		String ts = timestamp.toString();
+//		System.out.println(ts.toString());
 
 		label = this.dataSourceName;
 
@@ -43,9 +43,8 @@ public class IdsInfoQuery extends HarmonyBaseInsert {
 		b.append(" \n");
 		b.append("INSERT DATA  \n");
 		b.append("{ \n");
-		b.append("eco:" + ts
-				+ " rdf:type eco:DataSource ,  \n");
-		b.append("                   owl:NamedIndividual ; \n");
+		b.append("_:b0 rdf:type eco:DataSource ;  \n");
+		b.append("          ethold:localSerialNumber " + this.dataSourceLid.toString() +" ; \n");
 		b.append("          rdfs:label \"" + this.dataSourceName.toString()
 				+ "\"^^xsd:string ;  \n");
 		b.append("          rdfs:comment \"" + this.comment.toString()

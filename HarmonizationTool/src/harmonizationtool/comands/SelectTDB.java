@@ -105,6 +105,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		String msg = "Opening TDB: "+Util.getPreferenceStore().getString("defaultTDB");
+		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
 		File defaultTDBFile = new File(defaultTDB);
 		if (defaultTDBFile.isDirectory()) {
@@ -119,6 +121,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				e.printStackTrace();
 			}
 		}
+		 msg = "Using TDB: "+Util.getPreferenceStore().getString("defaultTDB");
+			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 		return null;
 	}
 

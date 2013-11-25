@@ -1,5 +1,6 @@
 package harmonizationtool.handler;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
@@ -11,6 +12,7 @@ import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.QGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.query.UAssignDSIndex_with_param;
+import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -67,11 +69,18 @@ public class ImportTDBHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
+		if(SelectTDB.model== null){
+			String msg = "ERROR no TDB open";
+			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			return null;
+		}
 
 		Model model = SelectTDB.model;
+		String workingDir = Util.getPreferenceStore().getString("workingDir");
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
+		fileDialog.setFilterPath(workingDir);
 		// fileDialog
 		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
@@ -81,8 +90,8 @@ public class ImportTDBHandler implements IHandler {
 																				// ONE
 																				// WINDOW
 
-		String homeDir = System.getProperty("user.home");
-		fileDialog.setFilterPath(homeDir);
+//		String homeDir = System.getProperty("user.home");
+//		fileDialog.setFilterPath(homeDir);
 		System.out.println("Ready to open");
 		// ----------------- TOMMY HELP FIX THIS (BELOW) ----------------------
 		// String path = fileDialog.open(); // INPUT FROM USER
@@ -227,6 +236,10 @@ public class ImportTDBHandler implements IHandler {
 		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		// System.out.println("qGetNextDSIndex = "+qGetNextDSIndex.toString());
 
+		String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
+		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+
+		
 		return null;
 	}
 

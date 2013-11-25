@@ -113,21 +113,25 @@ public class ResultsView extends ViewPart {
 	}
 
 	public void update(QueryResults queryResults) {
-		this.queryResults = queryResults;
-		System.err.println("queryResults="+queryResults);
-		System.err.println("queryResults.getColumnHeaders()="+queryResults.getColumnHeaders());
-		System.out.println("queryResults.getColumnHeaders().toString()="+queryResults.getColumnHeaders().toString());
-		viewer.setContentProvider(new ArrayContentProvider());
-		final Table table = viewer.getTable();
-		removeColumns(table);
-		createColumns(viewer, queryResults);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		viewer.setContentProvider(new ArrayContentProvider());
-		ModelProvider modelProvider = queryResults.getModelProvider();
-		System.out.println("modelProvider.getData().size()="+modelProvider.getData().size());
-		System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
-		viewer.setInput(modelProvider.getData());
+		try {
+			this.queryResults = queryResults;
+			System.err.println("queryResults="+queryResults);
+			System.err.println("queryResults.getColumnHeaders()="+queryResults.getColumnHeaders());
+			System.out.println("queryResults.getColumnHeaders().toString()="+queryResults.getColumnHeaders().toString());
+			viewer.setContentProvider(new ArrayContentProvider());
+			final Table table = viewer.getTable();
+			removeColumns(table);
+			createColumns(viewer, queryResults);
+			table.setHeaderVisible(true);
+			table.setLinesVisible(true);
+			viewer.setContentProvider(new ArrayContentProvider());
+			ModelProvider modelProvider = queryResults.getModelProvider();
+			System.out.println("modelProvider.getData().size()="+modelProvider.getData().size());
+			System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
+			viewer.setInput(modelProvider.getData());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 	/**
