@@ -1,5 +1,13 @@
 package harmonizationtool.dialog;
 
+import java.util.ArrayList;
+
+import harmonizationtool.model.DataRow;
+import harmonizationtool.query.GenericQuery;
+import harmonizationtool.query.QDataSets;
+import harmonizationtool.query.QGetNextDSIndex;
+import harmonizationtool.query.QueryResults;
+
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -46,6 +54,8 @@ public class DialogQueryDataset extends TitleAreaDialog {
 		return refDatasets;
 	}
 
+	private QDataSets qDataSets = new QDataSets();
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -58,24 +68,11 @@ public class DialogQueryDataset extends TitleAreaDialog {
 				System.out.println("e.item=" + e.item);
 			}
 		});
+		
+	
 		combo.setBounds(174, 25, 133, 22);
-
-		combo.add("ds_001");
-		combo.add("ds_002");
-		combo.add("ds_003");
-		combo.add("ds_004");
-		combo.add("ds_005");
-		combo.add("ds_006");
-		combo.add("ds_007");
-		combo.add("ds_008");
-		combo.add("ds_009");
-		combo.add("ds_010");
-		combo.setText("ds_001");
-
-		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
-		lblPrimaryDataSet.setBounds(29, 25, 122, 14);
-		lblPrimaryDataSet.setText("Primary Data Set:");
-
+//		combo.setText("ds_001");
+		
 		list = new List(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.MULTI);
 		list.addSelectionListener(new SelectionAdapter() {
@@ -85,17 +82,25 @@ public class DialogQueryDataset extends TitleAreaDialog {
 			}
 		});
 		list.setBounds(174, 70, 133, 100);
-		list.add("ds_001");
-		list.add("ds_002");
-		list.add("ds_003");
-		list.add("ds_004");
-		list.add("ds_005");
-		list.add("ds_006");
-		list.add("ds_007");
-		list.add("ds_008");
-		list.add("ds_009");
-		list.add("ds_010");
-
+		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
+		lblPrimaryDataSet.setBounds(29, 25, 122, 14);
+		lblPrimaryDataSet.setText("Primary Data Set:");
+		
+		GenericQuery iGenericQuery = new GenericQuery(
+				qDataSets.getQuery(), "Internal Query");
+		iGenericQuery.getData();
+		QueryResults parts = iGenericQuery.getQueryResults();
+		java.util.List<DataRow> resultRow = parts.getModelProvider().getData();
+		for (int i=0;i < resultRow.size();i++){
+			DataRow row = resultRow.get(i);
+			java.util.List<String> valueList = row.getColumnValues();
+		    String dataSet="";
+			for(int j = 0; j<valueList.size();j++){
+				dataSet = dataSet + valueList.get(j);
+			}
+			combo.add(dataSet);
+			list.add(dataSet);
+		}
 
 		Label lblCompareTo = new Label(composite, SWT.RIGHT);
 		lblCompareTo.setBounds(8, 70, 143, 14);

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Harmonization Tool" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0.20130515" useFeatures="false" includeLaunchers="true">
+<product name="Harmonization Tool" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0.20131125" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-XX:MaxPermSize=256m -Xms40m -Xmx1024m</vmArgs>
+      <vmArgs>-XX:MaxPermSize=256m -Xms40m -Xmx2048m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 

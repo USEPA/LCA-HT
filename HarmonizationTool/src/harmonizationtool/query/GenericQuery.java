@@ -7,8 +7,8 @@ public class GenericQuery extends HarmonyBaseQuery {
 		queryStr = query;
 		this.label = label;
 		System.out.println("Running a generic query:");
-		if (queryStr.length() >500){
-			System.out.println(queryStr.substring(0, 500)+" ....");
+		if (queryStr.length() >5000){
+			System.out.println(queryStr.substring(0, 5000)+" ....");
 		}
 		else {
 			System.out.println(queryStr);

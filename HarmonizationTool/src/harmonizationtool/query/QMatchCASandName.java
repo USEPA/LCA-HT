@@ -3,31 +3,17 @@ package harmonizationtool.query;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
+public class QMatchCASandName extends HarmonyBaseQuery implements IParamQuery {
 //	private String primaryDataset;
 	private int primaryID;
 //	private String[] refDatasets;
 	private int[] refIds;
 	private String regex = "^(\\d+)\\s";
-//	private String regex = "(\\d+)";
 
 	private Pattern firstInt = Pattern.compile(regex);
 
-	// String s ="xyz: 123a-45";
-	// String patternStr="xyz:[ \\t]*([\\S ]+)";
-	// Pattern p = Pattern.compile(patternStr);
-	// Matcher m = p.matcher(s);
-	// //System.err.println(s);
-	// if(m.find()){
-	// int count = m.groupCount();
-	// System.out.println("group count is "+count);
-	// for(int i=0;i<count;i++){
-	// System.out.println(m.group(i));
-	// }
-	// }
-
 	{
-		label = "Show CAS Matches";
+		label = "Show CAS + Name Matches";
 	}
 
 	@Override
@@ -35,9 +21,9 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 //		this.primaryDataset = primaryDataset ;
 		Matcher m = firstInt.matcher(primaryDataset);
 		m.find();
-//		System.out.println("Trying to match " + primaryDataset + " to " + m.toString());
+		System.out.println("Trying to match " + primaryDataset + " to " + m.toString());
 		this.primaryID = Integer.parseInt(m.group(0).trim());
-//		System.out.println("primaryDataset = " + primaryDataset);
+		System.out.println("primaryDataset = " + primaryDataset);
 	}
 
 	@Override
@@ -68,7 +54,7 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 				b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 				b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 				b.append(" \n");
-				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (str(?match_lid) as ?lid) \n");
+				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?match_lid) as ?lid) \n");
 				b.append(" \n");
 				b.append("WHERE { \n");
 				b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");
@@ -79,17 +65,17 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 				b.append("      ?s1 eco:casNumber ?cas .  \n");
 				b.append("      ?s2 eco:casNumber ?cas .   \n");
 				b.append("      ?s1 rdfs:label ?name . \n");
-				b.append("      ?s2 rdfs:label ?name2 .  \n");
+				b.append("      ?s2 rdfs:label ?name .  \n");
 				b.append("      ?s1 a eco:Substance .  \n");
 				b.append("      ?s2 a eco:Substance .  \n");
 				b.append(" \n");
 				b.append("      filter( \n");
 //				System.out.println("refDatasets size = "+refDatasets.length);
 				for (int i : refIds) {
-					b.append(" ?match_lid  = " + i
-							+ " || \n");
+					b.append(" ?match_lid  = " + i	+ " || \n");
 				}
-				b.append("false) \n"); // THE false ALLOWS THE TRAILING OR (||) TO BE VALID
+				b.append("false) \n"); // THE false ALLOWS THE TRAILING OR
+											// (||) TO BE VALID
 				b.append("} \n");
 				b.append("order by ?s1 ?ds_match \n");
 				queryStr = b.toString();

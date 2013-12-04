@@ -26,6 +26,9 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
+import harmonizationtool.query.QMatchCASandName;
+
+
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
 import harmonizationtool.query.IParamQuery;
@@ -115,6 +118,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	// private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
 	private QCountMatches qCountMatches = new QCountMatches();
 	private QMatchCAS qMatchCAS = new QMatchCAS();
+	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
+
 	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
@@ -123,6 +128,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 	public QueryView() {
 		paramQueries.add("Show CAS Matches");
+		paramQueries.add("Show CAS + Name Matches");		
 		paramQueries.add("Count CAS matches");
 		paramQueries.add("Show CAS not in DB");
 	}
@@ -201,6 +207,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		addQuery(qDataSourcesSubCountB);
 
 		addQuery(qMatchCAS);
+		addQuery(qMatchCASandName);
+
+		
 		addQuery(qCountMatches);
 		addQuery(qCasNotInDB);
 
@@ -299,137 +308,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	private void makeActions() {
-//		actionImport = new Action() {
-//			public void run() {
-//				System.out.println("executing actionImport");
-//				ModelProvider modelProvider = new ModelProvider();
-//				FileDialog fileDialog = new FileDialog(
-//						getViewSite().getShell(), SWT.OPEN);
-//				fileDialog.setFilterExtensions(new String[] { "*.csv" });
-//				String homeDir = System.getProperty("user.home");
-//				fileDialog.setFilterPath(homeDir);
-//				String path = fileDialog.open();
-//				if (path != null) {
-//					FileReader fileReader = null;
-//					try {
-//						fileReader = new FileReader(path);
-//					} catch (FileNotFoundException e) {
-//						e.printStackTrace();
-//					}
-//					if (fileReader != null) {
-//						CSVParser parser = new CSVParser(fileReader,
-//								CSVStrategy.EXCEL_STRATEGY);
-//						String[] values = null;
-//						try {
-//							values = parser.getLine();
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
-//						while (values != null) {
-//							// printValues(parser.getLineNumber(),values);
-//							DataRow dataRow = initDataRow(values);
-//							modelProvider.addDataRow(dataRow);
-//							ModelKeeper.saveModelProvider(path, modelProvider);
-//							// System.out.println(dataRow);
-//							try {
-//								values = parser.getLine();
-//							} catch (IOException e) {
-//								e.printStackTrace();
-//							}
-//
-//						}
-//					}
-//					addFilename(path);
-//					IWorkbenchPage page = PlatformUI.getWorkbench()
-//							.getActiveWorkbenchWindow().getActivePage();
-//					ViewData viewData = (ViewData) page.findView(ViewData.ID);
-//					String title = viewData.getTitle();
-//					System.out.println("title= " + title);
-//					// ViewData.setKey(path);
-//					// TableViewer tableViewer = viewData.getViewer();
-//					// tableViewer.setInput(new Object[] {""});
-//					viewData.update(path);
-//				}
-//				CSVParser c = null;
-//				// addFilename("filename");
-//			}
-//		};
-//		actionImport.setText("Import...");
-//		actionImport.setToolTipText("Import CSV");
-//		actionImport.setImageDescriptor(PlatformUI.getWorkbench()
-//				.getSharedImages()
-//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-//		actionSave = new Action() {
-//			public void run() {
-//				System.out.println("executing actionSave");
-//				ISelection iSelection = viewer.getSelection();
-//				Object obj = ((IStructuredSelection) iSelection)
-//						.getFirstElement();
-//				System.out.println("saving file: " + obj);
-//				Shell shell = getViewSite().getShell();
-//				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-//				String[] filterNames = new String[] { "Image Files",
-//						"All Files (*)" };
-//				String[] filterExtensions = new String[] { "*.csv", "*" };
-//				String filterPath = "/";
-//				String platform = SWT.getPlatform();
-//				if (platform.equals("win32") || platform.equals("wpf")) {
-//					filterNames = new String[] { "Image Files",
-//							"All Files (*.*)" };
-//					filterExtensions = new String[] {
-//							"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
-//					filterPath = "c:\\";
-//				}
-//				dialog.setFilterNames(filterNames);
-//				dialog.setFilterExtensions(filterExtensions);
-//				dialog.setFilterPath(filterPath);
-//				dialog.setFileName("myfile");
-//				String saveTo = dialog.open();
-//				System.out.println("Save to: " + saveTo);
-//
-//				try {
-//					File file = new File(saveTo);
-//					if (!file.exists()) {
-//						file.createNewFile();
-//					}
-//
-//					FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//					BufferedWriter bw = new BufferedWriter(fw);
-//					bw.write("this is the content");
-//					bw.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//
-//			}
-//		};
-//		actionSave.setText("Save...");
-//		actionSave.setToolTipText("Save CSV");
-//		actionSave.setImageDescriptor(PlatformUI.getWorkbench()
-//				.getSharedImages()
-//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
-
-//		actionClose = new Action() {
-//			public void run() {
-//				System.out.println("executing actionClose");
-//				ISelection iSelection = viewer.getSelection();
-//				Object obj = ((IStructuredSelection) iSelection)
-//						.getFirstElement();
-//				String key = (String) obj;
-//				ModelKeeper.remove(key);
-//				removeFilename(obj);
-//				IWorkbenchPage page = PlatformUI.getWorkbench()
-//						.getActiveWorkbenchWindow().getActivePage();
-//				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-//				viewData.clearView(key);
-//			}
-//		};
-//		actionClose.setText("Close");
-//		actionClose.setToolTipText("Close CSV");
-//		actionClose.setImageDescriptor(PlatformUI.getWorkbench()
-//				.getSharedImages()
-//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
