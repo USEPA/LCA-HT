@@ -24,9 +24,12 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
+import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QMatchCASandName;
+import harmonizationtool.query.UDelDataSet;
 
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
@@ -118,35 +121,43 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private QCountMatches qCountMatches = new QCountMatches();
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
+	
+	private UDelDataSet uDelDataSet = new UDelDataSet();
 
 	// private QCasNotInDB qCasNotInDB = new QCasNotInDB();
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
+	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
 	private List<String> paramQueries = new ArrayList<String>();
-	private Text txtTextArea;
+	private List<String> paramUpdates = new ArrayList<String>();
+
+	private Text windowQueryUpdate;
 
 	public QueryView() {
 		paramQueries.add("Show CAS Matches");
 		paramQueries.add("Show CAS + Name Matches");
 		paramQueries.add("Count CAS matches");
 		// paramQueries.add("Show CAS not in DB");
+		paramUpdates.add("Delete data set...");
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(null);
 
-		Button btnNewButton = new Button(parent, SWT.BORDER);
+		Device device = Display.getCurrent();
+
+		Button queryButton = new Button(parent, SWT.BORDER);
 		// btnNewButton.setBounds(149, 0, 148, 469);
-		btnNewButton.setBounds(20, 150, 100, 30);
-		btnNewButton.setAlignment(SWT.LEFT);
-		btnNewButton.setText("Run Query");
-		btnNewButton.addSelectionListener(new SelectionListener() {
+		queryButton.setBounds(20, 150, 100, 30);
+		queryButton.setAlignment(SWT.LEFT);
+		queryButton.setText("Run Query");
+		queryButton.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// txtTextArea.setText("new text");
-				String queryStr = txtTextArea.getText();
+				String queryStr = windowQueryUpdate.getText();
 				GenericQuery iGenericQuery = new GenericQuery(queryStr,
 						"Ext. File Query");
 
@@ -169,18 +180,52 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			}
 		});
+		Button updateButton = new Button(parent, SWT.BORDER);
+		updateButton.setForeground(SWTResourceManager
+				.getColor(SWT.COLOR_DARK_RED));
+		updateButton.setBounds(20, 190, 100, 30);
+		updateButton.setAlignment(SWT.LEFT);
+		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
+		// NOT WORK IN WINDOWS
+		updateButton.setText("Run Update");
+		updateButton.addSelectionListener(new SelectionListener() {
 
-		txtTextArea = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// txtTextArea.setText("new text");
+				String updateStr = windowQueryUpdate.getText();
+				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
+
+				// addFilename(path);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
+				String title = resultsView.getTitle();
+				System.out.println("title= " + title);
+
+				resultsView.update(iGenericUpdate.getData());
+				resultsView.update(iGenericUpdate.getQueryResults());
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		txtTextArea
+		windowQueryUpdate
 				.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 		// txtTextArea.setBounds(297, 0, 148, 469);
-		txtTextArea.setBounds(150, 0, 600, 500);
+		windowQueryUpdate.setBounds(150, 0, 600, 500);
 
-		Device device = Display.getCurrent();
-//		Color queryWindowColor = new Color(device, 255, 255, 200);
-		txtTextArea.setBackground(new Color(device, 255, 255, 200));
-		txtTextArea.setText("(query editor)");
+		// Color queryWindowColor = new Color(device, 255, 255, 200);
+		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
+		windowQueryUpdate.setText("(query editor)");
 		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
@@ -192,7 +237,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		// queryWindow.append("Query Window");
 		viewer.setLabelProvider(new QueryViewLabelProvider());
 		viewer.setInput(getViewSite());
-		txtTextArea.addKeyListener(new org.eclipse.swt.events.KeyListener() {
+		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
 			@Override
 			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
 			}
@@ -213,6 +258,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		addQuery(qMatchCAS);
 		addQuery(qMatchCASandName);
 		addQuery(qCountMatches);
+		addUpdate(uDelDataSet);
+//		addUpdate(uDelDataSet);
 		// addQuery(qCasNotInDB);
 
 		SelectTDB.getInstance().addSelectedTDBListener(this);
@@ -355,6 +402,18 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							System.out.println("done");
 						}
 					}
+				} else if (paramUpdates.contains(key)) {
+
+					// GET THE UPDATE STRING (BUT DON'T RUN IT)
+					HarmonyUpdate u = updateMap.get(key);
+					 System.out.println("u is:"+u.toString());
+					String updateStr = u.getQuery();
+					
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+					queryView.setTextAreaContent(updateStr);
+					
+					System.out.println("done");
 
 				} else {
 
@@ -386,6 +445,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		viewer.add(query.getLabel());
 		queryMap.put(query.getLabel(), query);
 	}
+	public void addUpdate(HarmonyUpdate update) {
+		viewer.add(update.getLabel());
+		updateMap.put(update.getLabel(), update);
+	}
 
 	public void removeFilename(Object element) {
 		if (element == null)
@@ -395,7 +458,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	public void setTextAreaContent(String s) {
-		txtTextArea.setText(s);
+		windowQueryUpdate.setText(s);
 		return;
 	}
 
@@ -418,14 +481,4 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		System.out.println("done");
 
 	}
-
-	// @Override
-	// public void handlerChanged(HandlerEvent handlerEvent) {
-	// System.out.println("query event handled");
-	// IHandler handler = handlerEvent.getHandler();
-	// if( handler instanceof SelectTDB){
-	// System.out.println("tdbDir+"+((SelectTDB)handler).tdbDir);
-	// }
-	// }
-
 }
