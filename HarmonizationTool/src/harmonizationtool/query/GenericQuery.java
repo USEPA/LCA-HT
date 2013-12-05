@@ -1,10 +1,18 @@
 package harmonizationtool.query;
 
+import harmonizationtool.QueryView;
+
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+
 public class GenericQuery extends HarmonyBaseQuery {
 
 
 	public GenericQuery(String query, String label) {
 		queryStr = query;
+//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//		QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+//		queryView.setTextAreaContent(queryStr);
 		this.label = label;
 		System.out.println("Running a generic query:");
 		if (queryStr.length() >5000){

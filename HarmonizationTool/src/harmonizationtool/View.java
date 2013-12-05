@@ -10,7 +10,7 @@ import harmonizationtool.query.IdsInfoQuery;
 import harmonizationtool.query.IdsRowQuery;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.Util;
-import harmonizationtool.query.QGetNextDSIndex;
+import harmonizationtool.query.ZGetNextDSIndex;
 
 
 import java.io.BufferedWriter;
@@ -61,7 +61,7 @@ public class View extends ViewPart {
 	private Action actionSave;
 	private Action actionClose;
 	private Action actionExportToTDB;
-	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
+	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
 	/**
 	 * The content provider class is responsible for providing objects to the view. It can wrap

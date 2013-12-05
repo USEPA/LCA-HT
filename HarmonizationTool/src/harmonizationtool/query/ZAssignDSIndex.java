@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class UAssignDSIndex extends HarmonyBaseQuery {
+public class ZAssignDSIndex extends HarmonyBaseQuery {
 	{
 		label = "Assign the next localSerialNumber to an unassigned dataset";
 	}

@@ -66,12 +66,13 @@ public class ExtQueryHandler implements IHandler {
 
 			//--------------------------- NOW PUT QUERY INTO QUERY WINDOW ------
 			String queryStr = b.toString();
-			{
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
-				queryView.setTextAreaContent(queryStr);
-//				System.out.println("Contents of window: = "+ queryView.toString());
-			}
+//			{
+//			THIS IS NOW IN THE GenericQuery CLASS
+//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//				QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+//				queryView.setTextAreaContent(queryStr);
+////				System.out.println("Contents of window: = "+ queryView.toString());
+//			}
 			
 			//--------------------------- NOW RUN THE THING ------
 			

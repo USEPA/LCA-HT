@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QDataSets;
-import harmonizationtool.query.QGetNextDSIndex;
+import harmonizationtool.query.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;

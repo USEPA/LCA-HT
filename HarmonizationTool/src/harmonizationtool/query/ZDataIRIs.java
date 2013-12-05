@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class QDataIRIs extends HarmonyBaseQuery {
+public class ZDataIRIs extends HarmonyBaseQuery {
 	{
 		label = "Show Data Sources";
 	}

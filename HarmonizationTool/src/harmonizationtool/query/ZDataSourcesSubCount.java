@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class QDataSourcesSubCount extends HarmonyBaseQuery {
+public class ZDataSourcesSubCount extends HarmonyBaseQuery {
 	{
 		label = "Show Sources + Counts";
 	}

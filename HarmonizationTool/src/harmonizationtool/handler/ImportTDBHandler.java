@@ -9,9 +9,9 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.QGetNextDSIndex;
+import harmonizationtool.query.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
-import harmonizationtool.query.UAssignDSIndex_with_param;
+import harmonizationtool.query.ZAssignDSIndex_with_param;
 import harmonizationtool.query.XNumberDataSets;
 import harmonizationtool.utils.Util;
 

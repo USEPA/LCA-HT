@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class QMatchNameAndCAS extends HarmonyBaseQuery {
+public class ZMatchNameAndCAS extends HarmonyBaseQuery {
 	{
 		label = "Match CAS+Name";
 	}

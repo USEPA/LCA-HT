@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class UAdTestData extends HarmonyBaseInsert {
+public class ZAdTestData extends HarmonyBaseInsert {
 
 	{
 		label = "test insert";

@@ -9,6 +9,9 @@ import harmonizationtool.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -53,6 +56,11 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 
 	private void executeQuery() {
 		Query query = QueryFactory.create(queryStr);
+		
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+		queryView.setTextAreaContent(queryStr);
+		
 		// create QueryResults to hold the query results
 		queryResults = new QueryResults();
 		data = null;

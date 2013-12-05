@@ -28,7 +28,6 @@ import harmonizationtool.query.QDataSourcesSubCountB;
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QMatchCASandName;
 
-
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
 import harmonizationtool.query.IParamQuery;
@@ -120,7 +119,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
 
-//	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
+	// private QCasNotInDB qCasNotInDB = new QCasNotInDB();
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private List<String> paramQueries = new ArrayList<String>();
@@ -128,9 +127,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 	public QueryView() {
 		paramQueries.add("Show CAS Matches");
-		paramQueries.add("Show CAS + Name Matches");		
+		paramQueries.add("Show CAS + Name Matches");
 		paramQueries.add("Count CAS matches");
-//		paramQueries.add("Show CAS not in DB");
+		// paramQueries.add("Show CAS not in DB");
 	}
 
 	@Override
@@ -146,13 +145,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-//				txtTextArea.setText("new text");
+				// txtTextArea.setText("new text");
 				String queryStr = txtTextArea.getText();
-	            GenericQuery iGenericQuery = new GenericQuery(queryStr,"Ext. File Query");
+				GenericQuery iGenericQuery = new GenericQuery(queryStr,
+						"Ext. File Query");
 
-//				addFilename(path);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+				// addFilename(path);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -168,12 +170,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-		txtTextArea = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		txtTextArea.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+		txtTextArea = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		txtTextArea
+				.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 		// txtTextArea.setBounds(297, 0, 148, 469);
 		txtTextArea.setBounds(150, 0, 600, 500);
-		txtTextArea.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_INFO_BACKGROUND));
+
+		Device device = Display.getCurrent();
+//		Color queryWindowColor = new Color(device, 255, 255, 200);
+		txtTextArea.setBackground(new Color(device, 255, 255, 200));
 		txtTextArea.setText("(query editor)");
 		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
@@ -196,10 +202,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-		Device device = Display.getCurrent();
-		Cursor cursor = new Cursor(device, 19);
+		// Cursor cursor = new Cursor(device, 19);
 		// Color red = new Color (device, 255, 0, 0);
-		Color queryWindowColor = new Color(device, 255, 255, 200);
 
 		makeActions();
 		hookContextMenu();
@@ -209,7 +213,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		addQuery(qMatchCAS);
 		addQuery(qMatchCASandName);
 		addQuery(qCountMatches);
-//		addQuery(qCasNotInDB);
+		// addQuery(qCasNotInDB);
 
 		SelectTDB.getInstance().addSelectedTDBListener(this);
 	}
@@ -306,7 +310,6 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	private void makeActions() {
-
 
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
