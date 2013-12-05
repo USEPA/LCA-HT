@@ -29,14 +29,14 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class HarmonyBaseInsert implements HarmonyQuery {
+public class HarmonyBaseUpdate implements HarmonyQuery {
 
 	protected String label = null;
 	protected String queryStr = null;
 	private List<String> data = null;
 	private QueryResults queryResults = null;
 
-	public HarmonyBaseInsert() {
+	public HarmonyBaseUpdate() {
 		super();
 	}
 

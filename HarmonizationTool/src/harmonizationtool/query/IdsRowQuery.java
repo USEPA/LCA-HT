@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class IdsRowQuery extends HarmonyBaseInsert {
+public class IdsRowQuery extends HarmonyBaseUpdate {
 	private final String casrn;
 //	private final String dataSourceIRI;
 	private final String name;

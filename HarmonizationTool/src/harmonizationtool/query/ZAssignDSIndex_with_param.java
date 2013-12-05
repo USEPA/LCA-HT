@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class ZAssignDSIndex_with_param extends HarmonyBaseInsert implements IIntQuery {
+public class ZAssignDSIndex_with_param extends HarmonyBaseUpdate implements IIntQuery {
 	private int next;
 //	private String primaryDataset;
 //	private String[] refDatasets;

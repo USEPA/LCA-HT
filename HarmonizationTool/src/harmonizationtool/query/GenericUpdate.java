@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class GenericUpdate extends HarmonyBaseInsert {
+public class GenericUpdate extends HarmonyBaseUpdate {
 
 
 	public GenericUpdate(String query, String label) {

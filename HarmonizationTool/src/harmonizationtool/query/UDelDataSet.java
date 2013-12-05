@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class UDelDataSet extends HarmonyBaseInsert implements HarmonyUpdate {
+public class UDelDataSet extends HarmonyBaseUpdate implements HarmonyUpdate {
 
 	{
 		label = "Delete data set...";
@@ -19,11 +19,11 @@ public class UDelDataSet extends HarmonyBaseInsert implements HarmonyUpdate {
 		b.append("prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>\n");
 		b.append("\n");
 		b.append("delete {\n");
-		b.append("  ?ds ?p1 ?o1 .\n");
+		b.append("#  ?ds ?p1 ?o1 .\n");
 		b.append("  ?s2 ?p2 ?o2 .\n");
 		b.append("}\n");
 		b.append("where {\n");
-		b.append("  ?ds ?p1 ?o1 .\n");
+		b.append("#  ?ds ?p1 ?o1 .\n");
 		b.append("  ?s2 ?p2 ?o2 .\n");
 		b.append("  ?ds a eco:DataSource .\n");
 		b.append("  ?ds ethold:localSerialNumber <<local_id>> .\n");

@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class URenumberDataSet extends HarmonyBaseInsert {
+public class URenumberDataSet extends HarmonyBaseUpdate {
 
 	{
 		label = "Rename a Data Set";

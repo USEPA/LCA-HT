@@ -225,7 +225,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 		// Color queryWindowColor = new Color(device, 255, 255, 200);
 		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
-		windowQueryUpdate.setText("(query editor)");
+		windowQueryUpdate.setText("(query / update editor)");
 		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
