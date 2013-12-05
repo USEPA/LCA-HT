@@ -12,6 +12,7 @@ import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.QGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.query.UAssignDSIndex_with_param;
+import harmonizationtool.query.XNumberDataSets;
 import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
@@ -60,8 +61,9 @@ public class ImportTDBHandler implements IHandler {
 
 	}
 
-	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
-	private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
+//	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
+//	private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
+	private XNumberDataSets xNumberDataSets = new XNumberDataSets();
 
 	// qGetNextDSIndex.
 
@@ -120,21 +122,21 @@ public class ImportTDBHandler implements IHandler {
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					// NEED TO DETERINE WHAT THE NEXT DATA SET LOCAL INDEX
-					// NUMBER IS
-					GenericQuery iGenericQuery = new GenericQuery(
-							qGetNextDSIndex.getQuery(), "Internal Query");
-					iGenericQuery.getData();
-					QueryResults parts = iGenericQuery.getQueryResults();
-					List<DataRow> resultRow = parts.getModelProvider()
-							.getData();
-					// if(resultRow.size() > 0){
-					DataRow row = resultRow.get(0);
-					List<String> valueList = row.getColumnValues();
-					String indexStr = valueList.get(0);
-					next = Integer.parseInt(indexStr);
+//					// NUMBER IS
+//					GenericQuery iGenericQuery = new GenericQuery(
+//							qGetNextDSIndex.getQuery(), "Internal Query");
+//					iGenericQuery.getData();
+//					QueryResults parts = iGenericQuery.getQueryResults();
+//					List<DataRow> resultRow = parts.getModelProvider()
+//							.getData();
+//					// if(resultRow.size() > 0){
+//					DataRow row = resultRow.get(0);
+//					List<String> valueList = row.getColumnValues();
+//					String indexStr = valueList.get(0);
+//					next = Integer.parseInt(indexStr);
 					// }
 
-					System.out.println("resultRow = " + resultRow.toString());
+//					System.out.println("resultRow = " + resultRow.toString());
 
 					// String[] strarray = (String[]) parts.toArray();
 					// System.out.println("strarray.toString() = "+strarray.toString()
@@ -148,14 +150,15 @@ public class ImportTDBHandler implements IHandler {
 					// int next = 1*Integer.parseInt(parts.subList(1,
 					// 1).toString());
 					// int next = Integer.parseInt(parts[1].toString());
-					System.out.println("next = " + next);
+//					System.out.println("next = " + next);
+//
+//					
+//					uAssignDSIndex_with_param.setNext(next);
+//					uAssignDSIndex_with_param.getQuery();
+//					
+//					System.out.println("success setting 'next'");
+//					uAssignDSIndex_with_param.getData();
 
-					
-					uAssignDSIndex_with_param.setNext(next);
-					uAssignDSIndex_with_param.getQuery();
-					
-					System.out.println("success setting 'next'");
-					uAssignDSIndex_with_param.getData();
 
 					// UAssignDSIndex_with_param.
 
@@ -204,6 +207,7 @@ public class ImportTDBHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
+			xNumberDataSets.execute();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 

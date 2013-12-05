@@ -30,7 +30,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("    bind (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) \n");
 		b.append("  } \n");
 		b.append("group by ?lid ?data_set  \n");
-		b.append("order by ?data_set \n");
+		b.append("order by ?lid \n");
 		
 		queryStr = b.toString();
 

@@ -51,7 +51,7 @@ public class QCountMatches extends HarmonyBaseQuery implements IParamQuery {
 				b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 				b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 				b.append(" \n");
-				b.append("select ?cas_plus_name ?cas_minus_name (str(?match_lid) as ?lid) \n");
+				b.append("select  (str(?match_lid) as ?local_id) ?cas_plus_name ?cas_minus_name \n");
 				b.append("WHERE { \n");
 				b.append(" \n");
 				b.append("{SELECT (str(count(distinct(?s1))) as ?cas_plus_name) ?match_lid \n");

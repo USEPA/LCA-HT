@@ -54,7 +54,7 @@ public class QMatchCASandName extends HarmonyBaseQuery implements IParamQuery {
 				b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 				b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 				b.append(" \n");
-				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?match_lid) as ?lid) \n");
+				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?match_lid) as ?local_id) \n");
 				b.append(" \n");
 				b.append("WHERE { \n");
 				b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");

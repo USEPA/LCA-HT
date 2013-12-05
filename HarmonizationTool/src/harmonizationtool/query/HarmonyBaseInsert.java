@@ -60,7 +60,7 @@ public class HarmonyBaseInsert implements HarmonyQuery {
 			return;
 		}
 //		String tdbDir = SelectTDB.tdbDir;
-		Dataset dataset = SelectTDB.dataset;
+//		Dataset dataset = SelectTDB.dataset;
 		queryResults = new QueryResults();
 		GraphStore graphStore = SelectTDB.graphStore;
 		DataRow columnHeaders = new DataRow();

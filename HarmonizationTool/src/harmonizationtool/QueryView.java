@@ -120,7 +120,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
 
-	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
+//	private QCasNotInDB qCasNotInDB = new QCasNotInDB();
 
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private List<String> paramQueries = new ArrayList<String>();
@@ -130,7 +130,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		paramQueries.add("Show CAS Matches");
 		paramQueries.add("Show CAS + Name Matches");		
 		paramQueries.add("Count CAS matches");
-		paramQueries.add("Show CAS not in DB");
+//		paramQueries.add("Show CAS not in DB");
 	}
 
 	@Override
@@ -208,10 +208,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 		addQuery(qMatchCAS);
 		addQuery(qMatchCASandName);
-
-		
 		addQuery(qCountMatches);
-		addQuery(qCasNotInDB);
+//		addQuery(qCasNotInDB);
 
 		SelectTDB.getInstance().addSelectedTDBListener(this);
 	}
