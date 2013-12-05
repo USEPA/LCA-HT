@@ -8,6 +8,7 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.QueryResults;
+import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -97,10 +98,18 @@ public class SaveResultsHandler implements IHandler {
 			filterPath = "~/";
 		}
 
+		String workingDir = Util.getPreferenceStore().getString(
+				"workingDir");
+		if (workingDir.length() > 0) {
+			dialog.setFilterPath(workingDir);
+		} else {
+			dialog.setFilterPath(filterPath);
+		}
+		
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
-		dialog.setFilterPath(filterPath);
 		dialog.setFileName("query_results");
+		
 		String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
 
