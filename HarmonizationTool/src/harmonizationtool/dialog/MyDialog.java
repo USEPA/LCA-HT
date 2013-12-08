@@ -22,8 +22,8 @@ public class MyDialog extends TitleAreaDialog {
 	private Text majorVersionText;
 	private Text minorVersionText;
 	private Text commentText;
-	private String dataSourceName;
 	private String dataSourceLid;
+	private String dataSourceName;
 	private String majorVersion;
 	private String minorVersion;
 	private String comment;
@@ -58,11 +58,11 @@ public class MyDialog extends TitleAreaDialog {
 		label0.setText("Data Source Local ID");
 		dataSourceLidText = new Text(parent, SWT.BORDER);
 		dataSourceLidText.setLayoutData(gridData);
-		dataSourceLidText.setText("(auto)");
-		dataSourceLidText.setEnabled(false);
-		label0.setEnabled(false);
+		dataSourceLidText.setText("(new)");
+		dataSourceLidText.setEnabled(true);
+		label0.setEnabled(true);
 		
-		dataSourceLidText.setEnabled(false);
+//		dataSourceLidText.setEnabled(false);
 
 		Label label1 = new Label(parent, SWT.NONE);
 		label1.setText("Data Source Name");
