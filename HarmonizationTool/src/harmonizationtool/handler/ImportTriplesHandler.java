@@ -65,7 +65,14 @@ public class ImportTriplesHandler implements IHandler {
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 				fileDialog.setFilterExtensions(new String[] { "*.n3" });
 				String homeDir = System.getProperty("user.home");
-				fileDialog.setFilterPath(homeDir);
+				String workingDir = Util.getPreferenceStore().getString(
+						"workingDir");
+				if (workingDir.length() > 0) {
+					fileDialog.setFilterPath(workingDir);
+				} else {
+					fileDialog.setFilterPath(homeDir);
+				}
+				
 				String path = fileDialog.open();
 //				JenaReader jenaReader = new JenaReader();// maybe here FIXME
 //				jenaReader.this;
@@ -73,17 +80,17 @@ public class ImportTriplesHandler implements IHandler {
 					StringBuilder b = new StringBuilder();
 //					FileReader fileReader = null;
 					try {
-//						fileReader = new FileReader(path);
-//						BufferedReader br = new BufferedReader(fileReader);
-//						String s;
-//						while ((s = br.readLine()) != null) {
-////							System.out.println(s);
-//							if (s.toLowerCase().matches("prefix")){
-//								System.out.println("PREFIX LINE");
-//							}
-//							b.append(s+"\n");
-//						}
-//						fileReader.close();
+				// fileReader = new FileReader(path);
+				// BufferedReader br = new BufferedReader(fileReader);
+				// String s;
+				// while ((s = br.readLine()) != null) {
+				// // System.out.println(s);
+				// if (s.toLowerCase().matches("prefix")){
+				// System.out.println("PREFIX LINE");
+				// }
+				// b.append(s+"\n");
+				// }
+				// fileReader.close();
 							
 						InputStream inputStream = new FileInputStream(path);
 //							JenaReader jenaReader = new JenaReader();

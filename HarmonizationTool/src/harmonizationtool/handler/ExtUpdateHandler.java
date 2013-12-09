@@ -5,6 +5,7 @@ import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -48,7 +49,13 @@ public class ExtUpdateHandler implements IHandler {
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 				fileDialog.setFilterExtensions(new String[] { "*.rq" });
 				String homeDir = System.getProperty("user.home");
-				fileDialog.setFilterPath(homeDir);
+				String workingDir = Util.getPreferenceStore().getString(
+						"workingDir");
+				if (workingDir.length() > 0) {
+					fileDialog.setFilterPath(workingDir);
+				} else {
+					fileDialog.setFilterPath(homeDir);
+				}
 				String path = fileDialog.open();
 				if (path != null) {
 					StringBuilder b = new StringBuilder();

@@ -59,7 +59,7 @@ public class MyDialog extends TitleAreaDialog {
 		dataSourceLidText = new Text(parent, SWT.BORDER);
 		dataSourceLidText.setLayoutData(gridData);
 		dataSourceLidText.setText("(new)");
-		dataSourceLidText.setEnabled(true);
+		dataSourceLidText.setEnabled(false);
 		label0.setEnabled(true);
 		
 //		dataSourceLidText.setEnabled(false);
@@ -150,26 +150,26 @@ public class MyDialog extends TitleAreaDialog {
 
 	private boolean isValidInput() {
 		boolean valid = true;
-		if (dataSourceLidText.getText().length() == 0) {
-			setErrorMessage("Please set data source IRI");
-			valid = false;
-		}
+//		if (dataSourceLidText.getText().length() == 0) {
+//			setErrorMessage("Please set data source IRI");
+//			valid = false;
+//		}
 		if (dataSourceNameText.getText().length() == 0) {
-			setErrorMessage("Please set data source name");
+			setErrorMessage("Each data set must have a name");
 			valid = false;
 		}
-		if (majorVersionText.getText().length() == 0) {
-			setErrorMessage("Please set major version #");
-			valid = false;
-		}
-		if (minorVersionText.getText().length() == 0) {
-			setErrorMessage("Please set minor version #");
-			valid = false;
-		}
-		if (commentText.getText().length() == 0) {
-			setErrorMessage("Please set comment");
-			valid = false;
-		}
+//		if (majorVersionText.getText().length() == 0) {
+//			setErrorMessage("Please set major version #");
+//			valid = false;
+//		}
+//		if (minorVersionText.getText().length() == 0) {
+//			setErrorMessage("Please set minor version #");
+//			valid = false;
+//		}
+//		if (commentText.getText().length() == 0) {
+//			setErrorMessage("Please set comment");
+//			valid = false;
+//		}
 		return valid;
 	}
 

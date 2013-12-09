@@ -64,6 +64,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
@@ -155,7 +156,7 @@ public class View extends ViewPart {
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actionImport);
-//		manager.add(actionExportToTDB); // NEEDS REPAIR TODO
+		// manager.add(actionExportToTDB); // NEEDS REPAIR TODO
 		manager.add(actionExportSubsToTDB);
 		manager.add(actionSave);
 		manager.add(actionClose);
@@ -621,25 +622,20 @@ public class View extends ViewPart {
 						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 						String fn_p = "http://www.w3.org/2005/xpath-functions#";
-						// String owl_p = "http://www.w3.org/2002/07/owl#";
 						String skos_p = "http://www.w3.org/2004/02/skos/core#";
 						String sumo_p = "http://www.ontologyportal.org/SUMO.owl.rdf#";
+						String xml_p = "http://www.w3.org/XML/1998/namespace";
+						// THE FOLLOWING ARE IN Vocabulary
+						// String owl_p = "http://www.w3.org/2002/07/owl#";
 						// String rdf_p =
 						// "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 						// String rdfs_p =
 						// "http://www.w3.org/2000/01/rdf-schema#";
-						String xml_p = "http://www.w3.org/XML/1998/namespace";
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
 						Resource ds = model.getResource(eco_p + "DataSource");
 						Resource substance = model.getResource(eco_p
 								+ "Substance");
-						// Property a = model.getProperty(rdf_p + "type");
-						// Property label = model.getProperty(rdfs_p + "label");
-						// Property comm = model.getProperty(rdfs_p +
-						// "comment");
-
-						Property label = RDFS.label;
 						Property altLabel = model.getProperty(skos_p
 								+ "altLabel");
 						Property majV = model.getProperty(eco_p
@@ -733,135 +729,118 @@ public class View extends ViewPart {
 
 						// LOOP THROUGH EACH DATA SET TO SEE IF THE LOCAL ID IS
 						// ALREADY THERE
-						System.out.println("it worked this time...");
+						// System.out.println("it worked this time...");
 
 						while (dataSetResources.hasNext()) {
 							Resource dsResource = dataSetResources.next();
+							System.out.println("going...");
 							if (model.contains(dsResource, lid, dsLidLit)) {
 								dsResourceHandle = dsResource;
 							}
 						}
+						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
+						// THIS LID, MAKE ONE
 						if (dsResourceHandle == null) {
 							Resource tempHandle = model.createResource();
 							model.add(tempHandle, RDF.type, ds);
-							model.add(tempHandle, RDFS.label, dsNameLit);
-							model.add(tempHandle, lid, dsLidLit);
-							model.add(tempHandle, majV, dsMajLit);
-							model.add(tempHandle, minV, dsMinLit);
-							model.add(tempHandle, RDFS.comment, dsCommLit);
+							model.add(tempHandle, RDFS.label, dsNameLit); // REQUIRED
+							model.add(tempHandle, lid, dsLidLit); // REQUIRED
+							if (dsMajLit != null) {
+								model.add(tempHandle, majV, dsMajLit); // OPTIONAL
+							}
+							if (dsMinLit != null) {
+
+								model.add(tempHandle, minV, dsMinLit); // OPTIONAL
+							}
+							if (dsCommLit != null) {
+
+								model.add(tempHandle, RDFS.comment, dsCommLit); // OPTIONAL
+							}
 							dsResourceHandle = tempHandle;
 						}
-
-						// int max = 0;
-						// while (dataSets.hasNext()) {
-						// HERE HERE THIS IS WHERE WE NEED TO
-						// A) CHECK TO SEE IF THIS SUBSTANCE IS NEW
-						// B1) IF SO, ADD IT:
-						// B1a) NEW BN,
-						// <bn> a eco:Substance ;
-						// rdfs:label <name> ;
-						// skos:altLabel <altname> ;
-						// eco:casNumber <cas> ;
-						// ethold:sourceRowNumber <row> ;
-						// eco:hasDataSource _b0 .
-						// B2) IF NOT, FIND THE ORGIINAL, AND ADD A ROW NUMBER
-
-						//
-						// // }
-						// rowNumber++;
 
 						Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
 
 						System.out.println("Ready to iterate...");
-						int csvRow = -1;
+						int csvRow = 0;
 						for (DataRow csvDataRow : dataRowList) {
-							csvRow++;
+							if (csvRow % 10000 == 0) {
+								System.out
+										.println("Finished reading data file row: "
+												+ csvRow);
+							}
+
 							Literal drRowLit = model.createTypedLiteral(csvRow);
 
-							String casrn = null;
-							String name = null;
-							String altName = null;
+							String name = null; // REQUIRED
+							String altName = null; // OPTIONAL
+							String casrn = null; // OPTIONAL
 
-							Literal drCasLit = null;
 							Literal drNameLit = null;
 							Literal drAltNameLit = null;
+							Literal drCasLit = null;
 
-							// String cat = null;
-							// String subcat = null;
-							// String impactCat = null;
-							// String impactCatRefUnit = null;
-							// Double charFactor = null;
-							// String flowUnit = null;
+							try {
+								int index = headers.indexOf(ViewData.NAME_HDR);
+								if (index > -1) {
+									String unescName = csvDataRow
+											.getColumnValues().get(index);
+									name = Util.escape(unescName);
+									// System.out.println("name=" + name);
+									drNameLit = model.createTypedLiteral(name);
+								} else {
+									String msg = "Substances must have a \"Name\" field!";
+									Util.findView(QueryView.ID).getViewSite()
+											.getActionBars()
+											.getStatusLineManager()
+											.setMessage(msg);
+									return; // FIXME -- IS THERE A "RIGHT" WAY
+											// TO LEAVE
 
-							// CAT_HDR = "Category";
-							// SUBCAT_HDR = "Subcategory";
-							// IMPACT_CAT_HDR = "Impact_Category";
-							// IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit";
-							// CHAR_FACTOR_HDR = "Characterization_factor";
-							// FLOW_UNIT_HDR = "Flow_Unit";
+								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 
-							{
-								try {
-									int index = headers
-											.indexOf(ViewData.CASRN_HDR);
-									if (index > -1) {
-										String unescCasrn = csvDataRow
-												.getColumnValues().get(index);
-										casrn = Util.escape(unescCasrn);
-										casrn = casrn
-												.replaceFirst(
-														"[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
-														"$1-$2-$3"); // REMOVE
-																		// LEADING
-																		// STUFF,
-										// System.out.println("casrn=" + casrn);
-										// casrn.replaceFirst(regex,
-										// replacement)
-										drCasLit = model
-												.createTypedLiteral(casrn);
-									}
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+							try {
+								int index = headers
+										.indexOf(ViewData.ALT_NAME_HDR);
+								if (index > -1) {
+									String unescAltName = csvDataRow
+											.getColumnValues().get(index);
+									altName = Util.escape(unescAltName);
+									// System.out.println("altName=" +
+									// altName);
+									drAltNameLit = model
+											.createTypedLiteral(altName);
 								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-							{
-								try {
-									int index = headers
-											.indexOf(ViewData.NAME_HDR);
-									if (index > -1) {
-										String unescName = csvDataRow
-												.getColumnValues().get(index);
-										name = Util.escape(unescName);
-										// System.out.println("name=" + name);
-										drNameLit = model
-												.createTypedLiteral(name);
-									}
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+
+							try {
+								int index = headers.indexOf(ViewData.CASRN_HDR);
+								if (index > -1) {
+									String unescCasrn = csvDataRow
+											.getColumnValues().get(index);
+									casrn = Util.escape(unescCasrn);
+									casrn = casrn
+											.replaceFirst(
+													"[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
+													"$1-$2-$3"); // REMOVE
+																	// LEADING
+																	// STUFF,
+									drCasLit = model.createTypedLiteral(casrn);
 								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-							{
-								try {
-									int index = headers
-											.indexOf(ViewData.ALT_NAME_HDR);
-									if (index > -1) {
-										String unescAltName = csvDataRow
-												.getColumnValues().get(index);
-										altName = Util.escape(unescAltName);
-										// System.out.println("altName=" +
-										// altName);
-										drAltNameLit = model
-												.createTypedLiteral(altName);
-									}
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-							System.out.println("name, cas, altName: " + name
-									+ ", " + casrn + ", " + altName);
+
+							// System.out.println("name, cas, altName: " + name
+							// + ", " + casrn + ", " + altName);
 
 							Resource subResourceHandle = null;
 
@@ -873,15 +852,19 @@ public class View extends ViewPart {
 								Resource newSub = model.createResource();
 								newSub.addProperty(RDF.type, substance);
 								newSub.addLiteral(RDFS.label, drNameLit);
-								newSub.addLiteral(altLabel, drAltNameLit);
-								newSub.addLiteral(casNumber, drCasLit);
+								if (altName != null) {
+									newSub.addLiteral(altLabel, drAltNameLit);
+								}
+								if (casrn != null) {
+									newSub.addLiteral(casNumber, drCasLit);
+								}
 								newSub.addProperty(hasDataSource,
 										dsResourceHandle);
 								subResourceHandle = newSub;
 								str2res.put(combined_str, subResourceHandle);
 							}
-
 							subResourceHandle.addLiteral(foundOnRow, drRowLit);
+							csvRow++;
 						}
 						// -----------------------------------------
 						DataRow resDataRow2 = new DataRow();

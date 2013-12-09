@@ -9,6 +9,7 @@ import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
+import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -41,7 +42,13 @@ public class ExtQueryHandler implements IHandler {
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.rq" });
 		String homeDir = System.getProperty("user.home");
-		fileDialog.setFilterPath(homeDir);
+		String workingDir = Util.getPreferenceStore().getString(
+				"workingDir");
+		if (workingDir.length() > 0) {
+			fileDialog.setFilterPath(workingDir);
+		} else {
+			fileDialog.setFilterPath(homeDir);
+		}
 		String path = fileDialog.open();
 		if (path != null) {
 			StringBuilder b = new StringBuilder();

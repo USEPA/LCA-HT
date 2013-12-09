@@ -83,27 +83,28 @@ public class SaveResultsHandler implements IHandler {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Text Files", "All Files (*)" };
 		String[] filterExtensions = new String[] { "*.txt", "*" };
-		String filterPath = "/";
-		String platform = SWT.getPlatform();
-		if (platform.equals("win32") || platform.equals("wpf")) {
-			filterNames = new String[] { "Text Files", "All Files (*.*)" };
-			filterExtensions = new String[] {
-					"*.txt", "*.*" };
-			filterPath = "c:\\";
-		}
-		else if (platform.equals("macosx")) {
-			filterNames = new String[] { "Text Files", "All Files (*.*)" };
-			filterExtensions = new String[] {
-					"*.txt", "*.*" };
-			filterPath = "~/";
-		}
+//		String filterPath = "/";
+//		String platform = SWT.getPlatform();
+//		if (platform.equals("win32") || platform.equals("wpf")) {
+//			filterNames = new String[] { "Text Files", "All Files (*.*)" };
+//			filterExtensions = new String[] {
+//					"*.txt", "*.*" };
+//			filterPath = "c:\\";
+//		}
+//		else if (platform.equals("macosx")) {
+//			filterNames = new String[] { "Text Files", "All Files (*.*)" };
+//			filterExtensions = new String[] {
+//					"*.txt", "*.*" };
+//			filterPath = "~/";
+//		}
+		String homeDir = System.getProperty("user.home");
 
 		String workingDir = Util.getPreferenceStore().getString(
 				"workingDir");
 		if (workingDir.length() > 0) {
 			dialog.setFilterPath(workingDir);
 		} else {
-			dialog.setFilterPath(filterPath);
+			dialog.setFilterPath(homeDir);
 		}
 		
 		dialog.setFilterNames(filterNames);

@@ -78,11 +78,18 @@ public class ImportTDBHandler implements IHandler {
 		}
 
 		Model model = SelectTDB.model;
-		String workingDir = Util.getPreferenceStore().getString("workingDir");
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
-		fileDialog.setFilterPath(workingDir);
+		String homeDir = System.getProperty("user.home");
+		String workingDir = Util.getPreferenceStore().getString(
+				"workingDir");
+		if (workingDir.length() > 0) {
+			fileDialog.setFilterPath(workingDir);
+		} else {
+			fileDialog.setFilterPath(homeDir);
+		}
+
 		// fileDialog
 		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
