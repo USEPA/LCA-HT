@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +63,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+//import com.hp.hpl.jena.vocabulary.NFO; // DOES NOT EXIST!!
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -165,6 +165,10 @@ public class View extends ViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
+	private long filesizeLong = 0;
+	private int filesizeInt = 0;
+	private String filenameStr = ""; // FIXME: SHOULD USE THIS IN THE DATA SET
+
 	private static void printValues(int lineNumber, String[] as) {
 		System.out.println("Line " + lineNumber + " has " + as.length
 				+ " values:");
@@ -197,6 +201,13 @@ public class View extends ViewPart {
 				// fileDialog.setFilterPath(homeDir);
 				String path = fileDialog.open();
 				if (path != null) {
+					File file = new File(path);
+					if (file.exists()) {
+						filesizeLong = file.length();
+						filesizeInt = (int) filesizeLong;
+						System.out.println("Size long= " + filesizeLong
+								+ ". int = " + filesizeInt);
+					}
 					FileReader fileReader = null;
 					try {
 						fileReader = new FileReader(path);
@@ -622,6 +633,7 @@ public class View extends ViewPart {
 						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 						String fn_p = "http://www.w3.org/2005/xpath-functions#";
+						String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
 						String skos_p = "http://www.w3.org/2004/02/skos/core#";
 						String sumo_p = "http://www.ontologyportal.org/SUMO.owl.rdf#";
 						String xml_p = "http://www.w3.org/XML/1998/namespace";
@@ -650,6 +662,8 @@ public class View extends ViewPart {
 								+ "casNumber");
 						Property hasDataSource = model.getProperty(eco_p
 								+ "hasDataSource");
+						Property fileSize = model.getProperty(nfo_p
+								+ "fileSize");
 						Literal dsLidLit = model
 								.createTypedLiteral(dataSourceLidInt);
 						Literal dsNameLit = model
@@ -659,6 +673,8 @@ public class View extends ViewPart {
 						Literal dsMinLit = model
 								.createTypedLiteral(minorNumber);
 						Literal dsCommLit = model.createTypedLiteral(comment);
+						Literal dsFileSizeLit = model
+								.createTypedLiteral(filesizeInt);
 
 						// Dataset dataset = SelectTDB.dataset;
 						// GraphStore graphStore = SelectTDB.graphStore;
@@ -756,6 +772,9 @@ public class View extends ViewPart {
 
 								model.add(tempHandle, RDFS.comment, dsCommLit); // OPTIONAL
 							}
+							if (filesizeInt > 0) {
+								model.add(tempHandle, fileSize, dsFileSizeLit);
+							}
 							dsResourceHandle = tempHandle;
 						}
 
@@ -852,10 +871,10 @@ public class View extends ViewPart {
 								Resource newSub = model.createResource();
 								newSub.addProperty(RDF.type, substance);
 								newSub.addLiteral(RDFS.label, drNameLit);
-								if (altName != null) {
+								if (altName != null && altName.length() > 0) {
 									newSub.addLiteral(altLabel, drAltNameLit);
 								}
-								if (casrn != null) {
+								if (casrn != null && casrn.length() > 0) {
 									newSub.addLiteral(casNumber, drCasLit);
 								}
 								newSub.addProperty(hasDataSource,
