@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +64,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.function.library.date;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 //import com.hp.hpl.jena.vocabulary.NFO; // DOES NOT EXIST!!
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -167,7 +170,10 @@ public class View extends ViewPart {
 
 	private long filesizeLong = 0;
 	private int filesizeInt = 0;
-	private String filenameStr = ""; // FIXME: SHOULD USE THIS IN THE DATA SET
+	// private date filedate_rdf = null;
+	// private Date filedate_java = null;
+	private Calendar filedate_java = null;
+	private String filenameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
 
 	private static void printValues(int lineNumber, String[] as) {
 		System.out.println("Line " + lineNumber + " has " + as.length
@@ -203,10 +209,17 @@ public class View extends ViewPart {
 				if (path != null) {
 					File file = new File(path);
 					if (file.exists()) {
+						filenameStr = file.getName();
 						filesizeLong = file.length();
 						filesizeInt = (int) filesizeLong;
 						System.out.println("Size long= " + filesizeLong
 								+ ". int = " + filesizeInt);
+						filedate_java = Calendar.getInstance();
+						filedate_java.setTime(new Date(file.lastModified()));
+						System.out.println("filedate_java = "
+								+ filedate_java.toString());
+						System.out.println("filedate_java timeZone = "
+								+ filedate_java.getTimeZone());
 					}
 					FileReader fileReader = null;
 					try {
@@ -658,12 +671,26 @@ public class View extends ViewPart {
 								+ "localSerialNumber");
 						Property foundOnRow = model.getProperty(ethold_p
 								+ "foundOnRow");
+						Property HTusername = model.getProperty(ethold_p
+								+ "HTusername");
+						Property HTuserAffiliation = model.getProperty(ethold_p
+								+ "HTuserAffiliation");
+						Property HTuserPhone = model.getProperty(ethold_p
+								+ "HTuserPhone");
+						Property HTuserEmail = model.getProperty(ethold_p
+								+ "HTuserEmail");
+						Property dataParseTimeStamp = model
+								.getProperty(ethold_p + "dataParseTimeStamp");
 						Property casNumber = model.getProperty(eco_p
 								+ "casNumber");
 						Property hasDataSource = model.getProperty(eco_p
 								+ "hasDataSource");
+						Property fileName = model.getProperty(nfo_p
+								+ "fileName");
 						Property fileSize = model.getProperty(nfo_p
 								+ "fileSize");
+						Property fileLastModified = model.getProperty(nfo_p
+								+ "fileLastModified");
 						Literal dsLidLit = model
 								.createTypedLiteral(dataSourceLidInt);
 						Literal dsNameLit = model
@@ -673,8 +700,22 @@ public class View extends ViewPart {
 						Literal dsMinLit = model
 								.createTypedLiteral(minorNumber);
 						Literal dsCommLit = model.createTypedLiteral(comment);
+						Literal dsFileNameLit = model
+								.createTypedLiteral(filenameStr);
 						Literal dsFileSizeLit = model
 								.createTypedLiteral(filesizeInt);
+						Literal dsFileDateLit = model
+								.createTypedLiteral(filedate_java);
+
+						Literal dsHTusername = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("username"));
+						Literal dsHTuserAffiliation = model
+								.createTypedLiteral(Util.getPreferenceStore()
+										.getString("userAffiliation"));
+						Literal dsHTuserPhone = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userPhone"));
+						Literal dsHTuserEmail = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userEmail"));
 
 						// Dataset dataset = SelectTDB.dataset;
 						// GraphStore graphStore = SelectTDB.graphStore;
@@ -772,9 +813,37 @@ public class View extends ViewPart {
 
 								model.add(tempHandle, RDFS.comment, dsCommLit); // OPTIONAL
 							}
+							if (filenameStr != null) {
+								model.add(tempHandle, fileName, dsFileNameLit);
+							}
 							if (filesizeInt > 0) {
 								model.add(tempHandle, fileSize, dsFileSizeLit);
 							}
+							if (filedate_java != null) {
+								model.add(tempHandle, fileLastModified,
+										dsFileDateLit);
+							}
+							if (Util.getPreferenceStore().getString("username")
+									.length() > 0) {
+								model.add(tempHandle, HTusername, dsHTusername);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userAffiliation").length() > 0) {
+								model.add(tempHandle, HTuserAffiliation,
+										dsHTuserAffiliation);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userPhone").length() > 0) {
+								model.add(tempHandle, HTuserPhone,
+										dsHTuserPhone);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userEmail").length() > 0) {
+								model.add(tempHandle, HTuserEmail,
+										dsHTuserEmail);
+							}
+							model.add(tempHandle, dataParseTimeStamp, model
+									.createTypedLiteral(Calendar.getInstance()));
 							dsResourceHandle = tempHandle;
 						}
 
