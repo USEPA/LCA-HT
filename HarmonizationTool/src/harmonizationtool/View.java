@@ -19,8 +19,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +66,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.function.library.date;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 //import com.hp.hpl.jena.vocabulary.NFO; // DOES NOT EXIST!!
@@ -168,12 +172,13 @@ public class View extends ViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	private long filesizeLong = 0;
-	private int filesizeInt = 0;
+	private long filesizeLong;
+	private int filesizeInt;
 	// private date filedate_rdf = null;
 	// private Date filedate_java = null;
-	private Calendar filedate_java = null;
-	private String filenameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
+	private Calendar filedate_java;
+	private String filenameStr; // FIXME: SHOULD USE THIS IN THE DATA SET
+	private List<Resource> dsList = new ArrayList<Resource>();
 
 	private static void printValues(int lineNumber, String[] as) {
 		System.out.println("Line " + lineNumber + " has " + as.length
@@ -587,6 +592,7 @@ public class View extends ViewPart {
 				ISelection iSelection = viewer.getSelection();
 				System.out.println("iSelection=" + iSelection);
 				if (!iSelection.isEmpty()) {
+
 					Object obj = ((IStructuredSelection) iSelection)
 							.getFirstElement();
 					String key = (String) obj;
@@ -615,22 +621,24 @@ public class View extends ViewPart {
 
 						if (dataSourceLid.matches("^\\d+$")) {
 							dataSourceLidInt = Integer.parseInt(dataSourceLid);
-						} else {
-							GenericQuery iGenericQuery = new GenericQuery(
-									qGetNextDSIndex.getQuery(),
-									"Internal Query");
-							iGenericQuery.getData();
-							QueryResults parts = iGenericQuery
-									.getQueryResults();
-							List<DataRow> resultRow = parts.getModelProvider()
-									.getData();
-							if (resultRow.size() > 0) {
-								DataRow row = resultRow.get(0);
-								List<String> valueList = row.getColumnValues();
-								dataSourceLidInt = Integer.parseInt(valueList
-										.get(0));
-							}
 						}
+
+						// else {
+						// GenericQuery iGenericQuery = new GenericQuery(
+						// qGetNextDSIndex.getQuery(),
+						// "Internal Query");
+						// iGenericQuery.getData();
+						// QueryResults parts = iGenericQuery
+						// .getQueryResults();
+						// List<DataRow> resultRow = parts.getModelProvider()
+						// .getData();
+						// if (resultRow.size() > 0) {
+						// DataRow row = resultRow.get(0);
+						// List<String> valueList = row.getColumnValues();
+						// dataSourceLidInt = Integer.parseInt(valueList
+						// .get(0));
+						// }
+						// }
 						// ---------------------------------
 						Model model = SelectTDB.model;
 						if (model == null) {
@@ -768,6 +776,7 @@ public class View extends ViewPart {
 						List<DataRow> dataRowList = modelProvider.getData();
 						System.out.println("dataRowList.size = "
 								+ dataRowList.size());
+						// List<Resource> dataSetHandles = null;
 
 						// String eco = model.expandPrefix("eco");
 						// -----------------------------------------
@@ -780,17 +789,45 @@ public class View extends ViewPart {
 
 						// ResIterator dataSetResources = model
 						// .listSubjectsWithProperty(RDF.type, ds);
-						ResIterator dataSetResources = model
-								.listResourcesWithProperty(RDF.type,
-										ds.asNode());
 
 						// LOOP THROUGH EACH DATA SET TO SEE IF THE LOCAL ID IS
 						// ALREADY THERE
 						// System.out.println("it worked this time...");
+						// HashSet<Resource> dsHashLids = new
+						// HashSet<Resource>();
+						// List<Resource> dsList = null;
+						// dsList.
 
+						// dsList = new List<Resource>();
+						ResIterator dataSetResources = model
+								.listSubjectsWithProperty(RDF.type, ds);
 						while (dataSetResources.hasNext()) {
 							Resource dsResource = dataSetResources.next();
-							System.out.println("going...");
+							// dataSetHandles.add(dsResource);
+							StmtIterator lidIterator = dsResource
+									.listProperties(lid);
+							if (lidIterator.hasNext()) {
+								Statement stmt = lidIterator.next();
+								System.out.println("getLiteral().getInt = "
+										+ stmt.getLiteral().getInt());
+
+								System.out.println("getInt = " + stmt.getInt());
+								// dsList.add(dsResource);
+								while (dsList.size() < stmt.getInt()) {
+									dsList.add(null);
+								}
+								dsList.add(stmt.getLiteral().getInt(),
+										dsResource);
+								System.out.println("got lid: "
+										+ dsList.indexOf(dsResource));
+							} else {
+								// THIS RESOURCE HAS NO LID
+								System.out.println("This resource had no LID");
+							}
+							if (lidIterator.hasNext()) {
+								System.out.println("This resource had no LID");
+								// THIS RESOURCE HAS MORE THAN ONE LID
+							}
 							if (model.contains(dsResource, lid, dsLidLit)) {
 								dsResourceHandle = dsResource;
 							}
@@ -938,16 +975,25 @@ public class View extends ViewPart {
 								subResourceHandle = str2res.get(combined_str);
 							} else {
 								Resource newSub = model.createResource();
-								newSub.addProperty(RDF.type, substance);
-								newSub.addLiteral(RDFS.label, drNameLit);
+								model.add(newSub, RDF.type, substance);
+								model.addLiteral(newSub, RDFS.label, drNameLit);
+								// newSub.addProperty(RDF.type, substance);
+								// newSub.addLiteral(RDFS.label, drNameLit);
 								if (altName != null && altName.length() > 0) {
-									newSub.addLiteral(altLabel, drAltNameLit);
+									// newSub.addLiteral(altLabel,
+									// drAltNameLit);
+									model.addLiteral(newSub, altLabel,
+											drAltNameLit);
 								}
 								if (casrn != null && casrn.length() > 0) {
-									newSub.addLiteral(casNumber, drCasLit);
+									model.addLiteral(newSub, casNumber,
+											drCasLit);
+									// newSub.addLiteral(casNumber, drCasLit);
 								}
-								newSub.addProperty(hasDataSource,
+								model.add(newSub, hasDataSource,
 										dsResourceHandle);
+								// newSub.addProperty(hasDataSource,
+								// dsResourceHandle);
 								subResourceHandle = newSub;
 								str2res.put(combined_str, subResourceHandle);
 							}

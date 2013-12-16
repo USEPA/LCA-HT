@@ -46,6 +46,9 @@ import org.eclipse.ui.part.ViewPart;
 import com.hp.hpl.jena.*;
 import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ImportTDBHandler implements IHandler {
 	// TODO: REFACTOR TO CALL THIS SOMETHING MORE LIKE: ImportRDFHandler
@@ -90,6 +93,14 @@ public class ImportTDBHandler implements IHandler {
 			fileDialog.setFilterPath(homeDir);
 		}
 
+//		Class dataSource = model.getClass();
+//		Resource dsIRI = model.createResource();
+//		Property hasDataSource = model.getProperty(RDF.type);
+		
+//		ResIterator dataSetResources = model
+//				.listResourcesWithProperty(RDF.type,
+//						ds.asNode());
+		
 		// fileDialog
 		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
