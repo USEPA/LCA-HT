@@ -97,13 +97,17 @@ public class SaveResultsHandler implements IHandler {
 //					"*.txt", "*.*" };
 //			filterPath = "~/";
 //		}
-		String homeDir = System.getProperty("user.home");
-
-		String workingDir = Util.getPreferenceStore().getString(
-				"workingDir");
-		if (workingDir.length() > 0) {
-			dialog.setFilterPath(workingDir);
+		
+		String outputDir = Util.getPreferenceStore().getString(
+				"outputDir");
+		if (outputDir.startsWith("(same as") || outputDir.length() == 0) {
+			outputDir = Util.getPreferenceStore().getString(
+					"workingDir");
+		}
+		if (outputDir.length() > 0) {
+			dialog.setFilterPath(outputDir);
 		} else {
+			String homeDir = System.getProperty("user.home");
 			dialog.setFilterPath(homeDir);
 		}
 		

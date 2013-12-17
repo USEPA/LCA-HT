@@ -2,6 +2,7 @@ package harmonizationtool;
 
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.dialog.MyDialog;
+import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
@@ -56,6 +57,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -259,9 +261,16 @@ public class View extends ViewPart {
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
 					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+
 					String title = viewData.getTitle();
 					System.out.println("title= " + title);
 					viewData.update(path);
+					try {
+						Util.showView(ViewData.ID);
+					} catch (PartInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				CSVParser c = null;
 			}
@@ -621,24 +630,22 @@ public class View extends ViewPart {
 
 						if (dataSourceLid.matches("^\\d+$")) {
 							dataSourceLidInt = Integer.parseInt(dataSourceLid);
+						} else {
+							GenericQuery iGenericQuery = new GenericQuery(
+									qGetNextDSIndex.getQuery(),
+									"Internal Query");
+							iGenericQuery.getData();
+							QueryResults parts = iGenericQuery
+									.getQueryResults();
+							List<DataRow> resultRow = parts.getModelProvider()
+									.getData();
+							if (resultRow.size() > 0) {
+								DataRow row = resultRow.get(0);
+								List<String> valueList = row.getColumnValues();
+								dataSourceLidInt = Integer.parseInt(valueList
+										.get(0));
+							}
 						}
-
-						// else {
-						// GenericQuery iGenericQuery = new GenericQuery(
-						// qGetNextDSIndex.getQuery(),
-						// "Internal Query");
-						// iGenericQuery.getData();
-						// QueryResults parts = iGenericQuery
-						// .getQueryResults();
-						// List<DataRow> resultRow = parts.getModelProvider()
-						// .getData();
-						// if (resultRow.size() > 0) {
-						// DataRow row = resultRow.get(0);
-						// List<String> valueList = row.getColumnValues();
-						// dataSourceLidInt = Integer.parseInt(valueList
-						// .get(0));
-						// }
-						// }
 						// ---------------------------------
 						Model model = SelectTDB.model;
 						if (model == null) {
@@ -749,15 +756,7 @@ public class View extends ViewPart {
 						// ---------------------------------
 
 						// int next = 1;
-						GenericQuery iGenericQuery = new GenericQuery(
-								qGetNextDSIndex.getQuery(), "Internal Query");
-						iGenericQuery.getData();
-						QueryResults parts = iGenericQuery.getQueryResults();
-						List<DataRow> resultRow = parts.getModelProvider()
-								.getData();
-						// if(resultRow.size() > 0){
-						DataRow row = resultRow.get(0);
-						List<String> valueList = row.getColumnValues();
+
 
 						// IdsInfoQuery idsInfoQuery = new IdsInfoQuery(
 						// dataSourceLid, dataSourceName, majorNumber,
@@ -801,37 +800,37 @@ public class View extends ViewPart {
 						// dsList = new List<Resource>();
 						ResIterator dataSetResources = model
 								.listSubjectsWithProperty(RDF.type, ds);
-						while (dataSetResources.hasNext()) {
-							Resource dsResource = dataSetResources.next();
-							// dataSetHandles.add(dsResource);
-							StmtIterator lidIterator = dsResource
-									.listProperties(lid);
-							if (lidIterator.hasNext()) {
-								Statement stmt = lidIterator.next();
-								System.out.println("getLiteral().getInt = "
-										+ stmt.getLiteral().getInt());
-
-								System.out.println("getInt = " + stmt.getInt());
-								// dsList.add(dsResource);
-								while (dsList.size() < stmt.getInt()) {
-									dsList.add(null);
-								}
-								dsList.add(stmt.getLiteral().getInt(),
-										dsResource);
-								System.out.println("got lid: "
-										+ dsList.indexOf(dsResource));
-							} else {
-								// THIS RESOURCE HAS NO LID
-								System.out.println("This resource had no LID");
-							}
-							if (lidIterator.hasNext()) {
-								System.out.println("This resource had no LID");
-								// THIS RESOURCE HAS MORE THAN ONE LID
-							}
-							if (model.contains(dsResource, lid, dsLidLit)) {
-								dsResourceHandle = dsResource;
-							}
-						}
+//						while (dataSetResources.hasNext()) {
+//							Resource dsResource = dataSetResources.next();
+//							// dataSetHandles.add(dsResource);
+//							StmtIterator lidIterator = dsResource
+//									.listProperties(lid);
+//							if (lidIterator.hasNext()) {
+//								Statement stmt = lidIterator.next();
+//								System.out.println("getLiteral().getInt = "
+//										+ stmt.getLiteral().getInt());
+//
+//								System.out.println("getInt = " + stmt.getInt());
+//								// dsList.add(dsResource);
+//								while (dsList.size() < stmt.getInt()) {
+//									dsList.add(null);
+//								}
+//								dsList.add(stmt.getLiteral().getInt(),
+//										dsResource);
+//								System.out.println("got lid: "
+//										+ dsList.indexOf(dsResource));
+//							} else {
+//								// THIS RESOURCE HAS NO LID
+//								System.out.println("This resource had no LID");
+//							}
+//							if (lidIterator.hasNext()) {
+//								System.out.println("This resource had no LID");
+//								// THIS RESOURCE HAS MORE THAN ONE LID
+//							}
+//							if (model.contains(dsResource, lid, dsLidLit)) {
+//								dsResourceHandle = dsResource;
+//							}
+//						}
 						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
 						// THIS LID, MAKE ONE
 						if (dsResourceHandle == null) {
@@ -1027,6 +1026,12 @@ public class View extends ViewPart {
 						System.out.println("Time elapsed: " + elapsedTimeSec);
 						System.err.printf("After Update: %s\n", model.size());
 						System.out.println("done");
+						try {
+							Util.showView(ResultsView.ID);
+						} catch (PartInitException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
 					}
 

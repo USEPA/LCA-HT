@@ -19,7 +19,7 @@ public class Initializer extends AbstractPreferenceInitializer {
         store.setDefault("userPhone", "");
         store.setDefault("userEmail", "");
         store.setDefault("workingDirectory", "");
+        store.setDefault("outputDirectory", "(same as working)");
         store.setDefault("defaultTDB", "");
 	}
-
 }
