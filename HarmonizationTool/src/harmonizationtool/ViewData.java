@@ -53,9 +53,10 @@ public class ViewData extends ViewPart {
 	public static final String CASRN_HDR = "CASRN";
 	public static final String NAME_HDR = "Name";
 	public static final String ALT_NAME_HDR = "Alt_Name";
-	public static final String CAT_HDR = "Category"; // e.g. air
-	public static final String SUBCAT_HDR = "Subcategory"; // e.g. low
-															// population
+	public static final String CAT1_HDR = "Category"; // e.g. air
+	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
+	public static final String CAT3_HDR = "Sub-subcategory"; 
+															
 	public static final String IMPACT_CAT_HDR = "Impact_Category"; // e.g.
 																	// global
 																	// warming
@@ -322,12 +323,16 @@ public class ViewData extends ViewPart {
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(CAT_HDR);
+		menuItem.setText(CAT1_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(SUBCAT_HDR);
+		menuItem.setText(CAT2_HDR);
 
+		menuItem = new MenuItem(parent, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(CAT3_HDR);
+		
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_HDR);

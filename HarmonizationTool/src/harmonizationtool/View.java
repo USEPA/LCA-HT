@@ -86,7 +86,8 @@ public class View extends ViewPart {
 	private Action actionSave;
 	private Action actionClose;
 	private Action actionExportToTDB;
-	private Action actionExportSubsToTDB;
+	private Action actionParseSubstancesToTDB;
+	private Action actionParseCategoriesToTDB;
 
 	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
@@ -166,7 +167,8 @@ public class View extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actionImport);
 		// manager.add(actionExportToTDB); // NEEDS REPAIR TODO
-		manager.add(actionExportSubsToTDB);
+		manager.add(actionParseSubstancesToTDB);
+		manager.add(actionParseCategoriesToTDB);
 		manager.add(actionSave);
 		manager.add(actionClose);
 
@@ -438,6 +440,7 @@ public class View extends ViewPart {
 
 							// CAT_HDR = "Category";
 							// SUBCAT_HDR = "Subcategory";
+							// SUBSUBCAT_HDR = "Sub-subcategory";
 							// IMPACT_CAT_HDR = "Impact_Category";
 							// IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit";
 							// CHAR_FACTOR_HDR = "Characterization_factor";
@@ -479,7 +482,7 @@ public class View extends ViewPart {
 								}
 							}
 							{
-								int index = headers.indexOf(ViewData.CAT_HDR);
+								int index = headers.indexOf(ViewData.CAT1_HDR);
 								if (index > -1) {
 									String unescCat = dataRow.getColumnValues()
 											.get(index);
@@ -489,7 +492,7 @@ public class View extends ViewPart {
 							}
 							{
 								int index = headers
-										.indexOf(ViewData.SUBCAT_HDR);
+										.indexOf(ViewData.CAT2_HDR);
 								if (index > -1) {
 									String unescSubcat = dataRow
 											.getColumnValues().get(index);
@@ -595,9 +598,9 @@ public class View extends ViewPart {
 				.getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-		actionExportSubsToTDB = new Action() {
+		actionParseSubstancesToTDB = new Action() {
 			public void run() {
-				System.out.println("executing actionExportSubsToTDB");
+				System.out.println("executing actionParseSubsToTDB");
 				ISelection iSelection = viewer.getSelection();
 				System.out.println("iSelection=" + iSelection);
 				if (!iSelection.isEmpty()) {
@@ -613,17 +616,20 @@ public class View extends ViewPart {
 							.getActiveShell());
 					dialog.create();
 					if (dialog.open() == Window.OK) {
-						System.out.println(dialog.getDataSourceLid());
-						System.out.println(dialog.getDataSourceName());
-						System.out.println(dialog.getMajorVersion());
-						System.out.println(dialog.getMinorVersion());
-						System.out.println(dialog.getComment());
 
 						String dataSourceLid = dialog.getDataSourceLid();
 						String dataSourceName = dialog.getDataSourceName();
 						String majorNumber = dialog.getMajorVersion();
 						String minorNumber = dialog.getMinorVersion();
 						String comment = dialog.getComment();
+						
+						System.out.println(dataSourceLid);
+						System.out.println(dataSourceName);
+						System.out.println(majorNumber);
+						System.out.println(minorNumber);
+						System.out.println(comment);
+						
+						
 						int dataSourceLidInt = 1; // DEFAULT IF NOT SPECIFIED
 													// AND NO DATA SETS ARE
 													// THERE
@@ -757,7 +763,6 @@ public class View extends ViewPart {
 
 						// int next = 1;
 
-
 						// IdsInfoQuery idsInfoQuery = new IdsInfoQuery(
 						// dataSourceLid, dataSourceName, majorNumber,
 						// minorNumber, comment);
@@ -800,37 +805,37 @@ public class View extends ViewPart {
 						// dsList = new List<Resource>();
 						ResIterator dataSetResources = model
 								.listSubjectsWithProperty(RDF.type, ds);
-//						while (dataSetResources.hasNext()) {
-//							Resource dsResource = dataSetResources.next();
-//							// dataSetHandles.add(dsResource);
-//							StmtIterator lidIterator = dsResource
-//									.listProperties(lid);
-//							if (lidIterator.hasNext()) {
-//								Statement stmt = lidIterator.next();
-//								System.out.println("getLiteral().getInt = "
-//										+ stmt.getLiteral().getInt());
-//
-//								System.out.println("getInt = " + stmt.getInt());
-//								// dsList.add(dsResource);
-//								while (dsList.size() < stmt.getInt()) {
-//									dsList.add(null);
-//								}
-//								dsList.add(stmt.getLiteral().getInt(),
-//										dsResource);
-//								System.out.println("got lid: "
-//										+ dsList.indexOf(dsResource));
-//							} else {
-//								// THIS RESOURCE HAS NO LID
-//								System.out.println("This resource had no LID");
-//							}
-//							if (lidIterator.hasNext()) {
-//								System.out.println("This resource had no LID");
-//								// THIS RESOURCE HAS MORE THAN ONE LID
-//							}
-//							if (model.contains(dsResource, lid, dsLidLit)) {
-//								dsResourceHandle = dsResource;
-//							}
-//						}
+						while (dataSetResources.hasNext()) {
+							Resource dsResource = dataSetResources.next();
+							// dataSetHandles.add(dsResource);
+							StmtIterator lidIterator = dsResource
+									.listProperties(lid);
+							if (lidIterator.hasNext()) {
+								Statement stmt = lidIterator.next();
+								System.out.println("getLiteral().getInt = "
+										+ stmt.getLiteral().getInt());
+
+								System.out.println("getInt = " + stmt.getInt());
+								// dsList.add(dsResource);
+								while (dsList.size() < stmt.getInt()) {
+									dsList.add(null);
+								}
+								dsList.add(stmt.getLiteral().getInt(),
+										dsResource);
+								System.out.println("got lid: "
+										+ dsList.indexOf(dsResource));
+							} else {
+								// THIS RESOURCE HAS NO LID
+								System.out.println("This resource had no LID");
+							}
+							if (lidIterator.hasNext()) {
+								System.out.println("This resource had more than one LID");
+								// THIS RESOURCE HAS MORE THAN ONE LID
+							}
+							if (model.contains(dsResource, lid, dsLidLit)) {
+								dsResourceHandle = dsResource;
+							}
+						}
 						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
 						// THIS LID, MAKE ONE
 						if (dsResourceHandle == null) {
@@ -1040,9 +1045,433 @@ public class View extends ViewPart {
 			}
 
 		};
-		actionExportSubsToTDB.setText("Export Subs");
-		actionExportSubsToTDB.setToolTipText("Export only substances to TDB");
-		actionExportSubsToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+		actionParseSubstancesToTDB.setText("Parse Substances");
+		actionParseSubstancesToTDB.setToolTipText("Parse substances to TDB");
+		actionParseSubstancesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+
+		actionParseCategoriesToTDB = new Action() {
+			public void run() {
+				System.out.println("executing actionParseCatsToTDB");
+				ISelection iSelection = viewer.getSelection();
+				System.out.println("iSelection=" + iSelection);
+				if (!iSelection.isEmpty()) {
+
+					Object obj = ((IStructuredSelection) iSelection)
+							.getFirstElement();
+					String key = (String) obj;
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
+					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+					System.out.println("key=" + key);
+					MyDialog dialog = new MyDialog(Display.getCurrent()
+							.getActiveShell());
+					dialog.create();
+					if (dialog.open() == Window.OK) {
+						String dataSourceLid = dialog.getDataSourceLid();
+						String dataSourceName = dialog.getDataSourceName();
+						String majorNumber = dialog.getMajorVersion();
+						String minorNumber = dialog.getMinorVersion();
+						String comment = dialog.getComment();
+						
+						System.out.println(dataSourceLid);
+						System.out.println(dataSourceName);
+						System.out.println(majorNumber);
+						System.out.println(minorNumber);
+						System.out.println(comment);
+						
+						int dataSourceLidInt = 1; // DEFAULT IF NOT SPECIFIED
+													// AND NO DATA SETS ARE
+													// THERE
+
+						if (dataSourceLid.matches("^\\d+$")) {
+							dataSourceLidInt = Integer.parseInt(dataSourceLid);
+						} else {
+							GenericQuery iGenericQuery = new GenericQuery(
+									qGetNextDSIndex.getQuery(),
+									"Internal Query");
+							iGenericQuery.getData();
+							QueryResults parts = iGenericQuery
+									.getQueryResults();
+							List<DataRow> resultRow = parts.getModelProvider()
+									.getData();
+							if (resultRow.size() > 0) {
+								DataRow row = resultRow.get(0);
+								List<String> valueList = row.getColumnValues();
+								dataSourceLidInt = Integer.parseInt(valueList
+										.get(0));
+							}
+						}
+						// ---------------------------------
+						Model model = SelectTDB.model;
+						if (model == null) {
+							String msg = "ERROR no TDB open";
+							Util.findView(QueryView.ID).getViewSite()
+									.getActionBars().getStatusLineManager()
+									.setMessage(msg);
+							return;
+						}
+						System.out.println("Running ExportSubsToTDB internals");
+
+						String eco_p = "http://ontology.earthster.org/eco/core#";
+						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
+						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
+						String fn_p = "http://www.w3.org/2005/xpath-functions#";
+						String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
+						String skos_p = "http://www.w3.org/2004/02/skos/core#";
+						String sumo_p = "http://www.ontologyportal.org/SUMO.owl.rdf#";
+						String xml_p = "http://www.w3.org/XML/1998/namespace";
+						// THE FOLLOWING ARE IN Vocabulary
+						// String owl_p = "http://www.w3.org/2002/07/owl#";
+						// String rdf_p =
+						// "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+						// String rdfs_p =
+						// "http://www.w3.org/2000/01/rdf-schema#";
+						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
+
+						Resource ds = model.getResource(eco_p + "DataSource");
+						Resource category = model.getResource(ethold_p
+								+ "Category");
+						Property majV = model.getProperty(eco_p
+								+ "hasMajorVersionNumber");
+						Property minV = model.getProperty(eco_p
+								+ "hasMinorVersionNumber");
+						Property lid = model.getProperty(ethold_p
+								+ "localSerialNumber");
+						Property foundOnRow = model.getProperty(ethold_p
+								+ "foundOnRow");
+						Property HTusername = model.getProperty(ethold_p
+								+ "HTusername");
+						Property HTuserAffiliation = model.getProperty(ethold_p
+								+ "HTuserAffiliation");
+						Property HTuserPhone = model.getProperty(ethold_p
+								+ "HTuserPhone");
+						Property HTuserEmail = model.getProperty(ethold_p
+								+ "HTuserEmail");
+						Property dataParseTimeStamp = model
+								.getProperty(ethold_p + "dataParseTimeStamp");
+						Property cat1Prop = model.getProperty(ethold_p
+								+ "cat1Prop");
+						Property cat2Prop = model.getProperty(ethold_p
+								+ "cat2Prop");
+						Property cat3Prop = model.getProperty(ethold_p
+								+ "cat3Prop");
+						Property hasDataSource = model.getProperty(eco_p
+								+ "hasDataSource");
+						Property fileName = model.getProperty(nfo_p
+								+ "fileName");
+						Property fileSize = model.getProperty(nfo_p
+								+ "fileSize");
+						Property fileLastModified = model.getProperty(nfo_p
+								+ "fileLastModified");
+						Literal dsLidLit = model
+								.createTypedLiteral(dataSourceLidInt);
+						Literal dsNameLit = model
+								.createTypedLiteral(dataSourceName);
+						Literal dsMajLit = model
+								.createTypedLiteral(majorNumber);
+						Literal dsMinLit = model
+								.createTypedLiteral(minorNumber);
+						Literal dsCommLit = model.createTypedLiteral(comment);
+						Literal dsFileNameLit = model
+								.createTypedLiteral(filenameStr);
+						Literal dsFileSizeLit = model
+								.createTypedLiteral(filesizeInt);
+						Literal dsFileDateLit = model
+								.createTypedLiteral(filedate_java);
+
+						Literal dsHTusername = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("username"));
+						Literal dsHTuserAffiliation = model
+								.createTypedLiteral(Util.getPreferenceStore()
+										.getString("userAffiliation"));
+						Literal dsHTuserPhone = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userPhone"));
+						Literal dsHTuserEmail = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userEmail"));
+
+						// Dataset dataset = SelectTDB.dataset;
+						// GraphStore graphStore = SelectTDB.graphStore;
+						DataRow columnHeaders = new DataRow();
+						// queryResults.setColumnHeaders(columnHeaders);
+
+						long change = model.size();
+
+						columnHeaders.add("Model");
+						columnHeaders.add("Size");
+
+						System.err.printf("Before Update: %s\n", model.size());
+
+						ModelProvider resultsViewModel = new ModelProvider();
+						// queryResults.setModelProvider(modelProvider);
+						DataRow resDataRow = new DataRow();
+						resultsViewModel.addDataRow(resDataRow);
+						resDataRow.add("Before Update");
+						resDataRow.add("" + model.size());
+
+
+						ModelProvider modelProvider = ModelKeeper
+								.getModelProvider(key);
+						List<String> headers = modelProvider.getHeaderNames();
+						System.out.println(headers.toString());
+						List<DataRow> dataRowList = modelProvider.getData();
+						System.out.println("dataRowList.size = "
+								+ dataRowList.size());
+
+						Resource dsResourceHandle = null;
+						System.out
+								.println("Now to find a list of data sources...");
+
+						ResIterator dataSetResources = model
+								.listSubjectsWithProperty(RDF.type, ds);
+						while (dataSetResources.hasNext()) {
+							Resource dsResource = dataSetResources.next();
+							// dataSetHandles.add(dsResource);
+							StmtIterator lidIterator = dsResource
+									.listProperties(lid);
+							if (lidIterator.hasNext()) {
+								Statement stmt = lidIterator.next();
+								System.out.println("getLiteral().getInt = "
+										+ stmt.getLiteral().getInt());
+
+								System.out.println("getInt = " + stmt.getInt());
+								// dsList.add(dsResource);
+								while (dsList.size() < stmt.getInt()) {
+									dsList.add(null);
+								}
+								dsList.add(stmt.getLiteral().getInt(),
+										dsResource);
+								System.out.println("got lid: "
+										+ dsList.indexOf(dsResource));
+							} else {
+								// THIS RESOURCE HAS NO LID
+								System.out.println("This resource had no LID");
+							}
+							if (lidIterator.hasNext()) {
+								System.out.println("This resource had more than one LID");
+								// THIS RESOURCE HAS MORE THAN ONE LID
+							}
+							if (model.contains(dsResource, lid, dsLidLit)) {
+								dsResourceHandle = dsResource;
+							}
+						}
+
+
+						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
+						// THIS LID, MAKE ONE
+						if (dsResourceHandle == null) {
+							Resource tempHandle = model.createResource();
+							model.add(tempHandle, RDF.type, ds);
+							model.add(tempHandle, RDFS.label, dsNameLit); // REQUIRED
+							model.add(tempHandle, lid, dsLidLit); // REQUIRED
+							if (dsMajLit != null) {
+								model.add(tempHandle, majV, dsMajLit); // OPTIONAL
+							}
+							if (dsMinLit != null) {
+
+								model.add(tempHandle, minV, dsMinLit); // OPTIONAL
+							}
+							if (dsCommLit != null) {
+
+								model.add(tempHandle, RDFS.comment, dsCommLit); // OPTIONAL
+							}
+							if (filenameStr != null) {
+								model.add(tempHandle, fileName, dsFileNameLit);
+							}
+							if (filesizeInt > 0) {
+								model.add(tempHandle, fileSize, dsFileSizeLit);
+							}
+							if (filedate_java != null) {
+								model.add(tempHandle, fileLastModified,
+										dsFileDateLit);
+							}
+							if (Util.getPreferenceStore().getString("username")
+									.length() > 0) {
+								model.add(tempHandle, HTusername, dsHTusername);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userAffiliation").length() > 0) {
+								model.add(tempHandle, HTuserAffiliation,
+										dsHTuserAffiliation);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userPhone").length() > 0) {
+								model.add(tempHandle, HTuserPhone,
+										dsHTuserPhone);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userEmail").length() > 0) {
+								model.add(tempHandle, HTuserEmail,
+										dsHTuserEmail);
+							}
+							model.add(tempHandle, dataParseTimeStamp, model
+									.createTypedLiteral(Calendar.getInstance()));
+							dsResourceHandle = tempHandle;
+						}
+
+						Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
+
+						System.out.println("Ready to iterate...");
+						int csvRow = 0;
+						for (DataRow csvDataRow : dataRowList) {
+							if (csvRow % 10000 == 0) {
+								System.out
+										.println("Finished reading data file row: "
+												+ csvRow);
+							}
+
+							Literal drRowLit = model.createTypedLiteral(csvRow);
+
+							String cat1 = null; // REQUIRED
+							String cat2 = null; // OPTIONAL
+							String cat3 = null; // OPTIONAL
+
+							Literal drCat1Lit = null;
+							Literal drCat2Lit = null;
+							Literal drCat3Lit = null;
+
+							try {
+								int index = headers.indexOf(ViewData.CAT1_HDR);
+								if (index > -1) {
+									String unescCat1 = csvDataRow
+											.getColumnValues().get(index);
+									cat1 = Util.escape(unescCat1);
+									// System.out.println("cat=" + cat);
+									drCat1Lit = model.createTypedLiteral(cat1);
+								}
+
+								else {
+									String msg = "Categories must have a \"Cat1\" field!";
+									Util.findView(QueryView.ID).getViewSite()
+											.getActionBars()
+											.getStatusLineManager()
+											.setMessage(msg);
+									return; // FIXME -- IS THERE A "RIGHT"
+											// WAY
+											// TO LEAVE
+
+								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							try {
+								{
+									int index = headers
+											.indexOf(ViewData.CAT2_HDR);
+									if (index > -1) {
+										String unescCat2 = csvDataRow
+												.getColumnValues().get(index);
+										cat2 = Util.escape(unescCat2);
+										drCat2Lit = model.createTypedLiteral(cat2);
+										// System.out.println("subcat=" +
+										// subcat);
+									}
+								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							try {
+								{
+									int index = headers
+											.indexOf(ViewData.CAT3_HDR);
+									if (index > -1) {
+										String unescCat3 = csvDataRow
+												.getColumnValues().get(index);
+										cat3 = Util.escape(unescCat3);
+										drCat3Lit = model.createTypedLiteral(cat3);
+										// System.out.println("subcat=" +
+										// subcat);
+									}
+								}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							// System.out.println("name, cas, altName: " + name
+							// + ", " + casrn + ", " + altName);
+
+							Resource catResourceHandle = null;
+
+							String combined_str = cat1 + cat2 + cat3;
+							combined_str.hashCode();
+							if (str2res.containsKey(combined_str)) {
+								catResourceHandle = str2res.get(combined_str);
+							} else {
+								Resource newCat = model.createResource();
+								model.add(newCat, RDF.type, category);
+								model.addLiteral(newCat, cat1Prop, drCat1Lit);
+								// newSub.addProperty(RDF.type, substance);
+								// newSub.addLiteral(RDFS.label, drNameLit);
+								if (cat2 != null && cat2.length() > 0) {
+									// newSub.addLiteral(altLabel,
+									// drAltNameLit);
+									model.addLiteral(newCat, cat2Prop,
+											drCat2Lit);
+								}
+								if (cat3 != null && cat3.length() > 0) {
+									model.addLiteral(newCat, cat3Prop,
+											drCat3Lit);
+									// newSub.addLiteral(casNumber, drCasLit);
+								}
+								model.add(newCat, hasDataSource,
+										dsResourceHandle);
+								// newSub.addProperty(hasDataSource,
+								// dsResourceHandle);
+								catResourceHandle = newCat;
+								str2res.put(combined_str, catResourceHandle);
+							}
+							catResourceHandle.addLiteral(foundOnRow, drRowLit);
+							csvRow++;
+						}
+						// -----------------------------------------
+						DataRow resDataRow2 = new DataRow();
+						modelProvider.addDataRow(resDataRow2);
+						resDataRow2.add("After Update");
+						resDataRow2.add("" + model.size());
+
+						change = model.size() - change;
+						System.err.printf("Net Increase: %s\n", change);
+						DataRow resDataRow3 = new DataRow();
+						modelProvider.addDataRow(resDataRow3);
+
+						String increase = "New Triples:";
+
+						if (change < 0) {
+							increase = "Triples removed:";
+							change = 0 - change;
+						}
+						// data.add(increase);
+						// data.add("" + change);
+						resDataRow3.add(increase);
+						resDataRow3.add("" + change);
+
+						long startTime = System.currentTimeMillis();
+						float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
+						System.out.println("Time elapsed: " + elapsedTimeSec);
+						System.err.printf("After Update: %s\n", model.size());
+						System.out.println("done");
+						try {
+							Util.showView(ResultsView.ID);
+						} catch (PartInitException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+
+				}
+
+			}
+
+		};
+		actionParseCategoriesToTDB.setText("Parse Categories");
+		actionParseCategoriesToTDB.setToolTipText("Parse Categories to TDB");
+		actionParseCategoriesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 

@@ -59,7 +59,7 @@ public class MyDialog extends TitleAreaDialog {
 		dataSourceLidText = new Text(parent, SWT.BORDER);
 		dataSourceLidText.setLayoutData(gridData);
 		dataSourceLidText.setText("(new)");
-		dataSourceLidText.setEnabled(false);
+		dataSourceLidText.setEnabled(true);
 		label0.setEnabled(true);
 		
 //		dataSourceLidText.setEnabled(false);
