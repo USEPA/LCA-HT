@@ -82,10 +82,10 @@ public class View extends ViewPart {
 	public static final String ID = "HarmonizationTool.view";
 
 	private TableViewer viewer;
-	private Action actionImport;
+//	private Action actionImport;
 	private Action actionSave;
 	private Action actionClose;
-	private Action actionExportToTDB;
+//	private Action actionExportToTDB;
 	private Action actionParseFlowablesToTDB;
 	private Action actionParseCategoriesToTDB;
 
@@ -165,7 +165,7 @@ public class View extends ViewPart {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(actionImport);
+//		manager.add(actionImport);
 		// manager.add(actionExportToTDB); // NEEDS REPAIR TODO
 		manager.add(actionParseFlowablesToTDB);
 		manager.add(actionParseCategoriesToTDB);
@@ -202,87 +202,87 @@ public class View extends ViewPart {
 	}
 
 	private void makeActions() {
-		actionImport = new Action() {
-			public void run() {
-				System.out.println("executing actionImport");
-				ModelProvider modelProvider = new ModelProvider();
-				FileDialog fileDialog = new FileDialog(
-						getViewSite().getShell(), SWT.OPEN);
-				fileDialog.setFilterExtensions(new String[] { "*.csv" });
-				String workingDir = Util.getPreferenceStore().getString(
-						"workingDir");
-				fileDialog.setFilterPath(workingDir);
-				// String homeDir = System.getProperty("user.home");
-				// fileDialog.setFilterPath(homeDir);
-				String path = fileDialog.open();
-				if (path != null) {
-					File file = new File(path);
-					if (file.exists()) {
-						filenameStr = file.getName();
-						filesizeLong = file.length();
-						filesizeInt = (int) filesizeLong;
-						System.out.println("Size long= " + filesizeLong
-								+ ". int = " + filesizeInt);
-						filedate_java = Calendar.getInstance();
-						filedate_java.setTime(new Date(file.lastModified()));
-						System.out.println("filedate_java = "
-								+ filedate_java.toString());
-						System.out.println("filedate_java timeZone = "
-								+ filedate_java.getTimeZone());
-					}
-					FileReader fileReader = null;
-					try {
-						fileReader = new FileReader(path);
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
-					if (fileReader != null) {
-						CSVParser parser = new CSVParser(fileReader,
-								CSVStrategy.EXCEL_STRATEGY);
-						String[] values = null;
-						try {
-							values = parser.getLine();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						while (values != null) {
-							// printValues(parser.getLineNumber(),values);
-							DataRow dataRow = initDataRow(values);
-							modelProvider.addDataRow(dataRow);
-							ModelKeeper.saveModelProvider(path, modelProvider);
-							// System.out.println(dataRow);
-							try {
-								values = parser.getLine();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-
-						}
-					}
-					addFilename(path);
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
-
-					String title = viewData.getTitle();
-					System.out.println("title= " + title);
-					viewData.update(path);
-					try {
-						Util.showView(ViewData.ID);
-					} catch (PartInitException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				CSVParser c = null;
-			}
-		};
-		actionImport.setText("Import...");
-		actionImport.setToolTipText("Import CSV");
-		actionImport.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
-
+//		actionImport = new Action() {
+//			public void run() {
+//				System.out.println("executing actionImport");
+//				ModelProvider modelProvider = new ModelProvider();
+//				FileDialog fileDialog = new FileDialog(
+//						getViewSite().getShell(), SWT.OPEN);
+//				fileDialog.setFilterExtensions(new String[] { "*.csv" });
+//				String workingDir = Util.getPreferenceStore().getString(
+//						"workingDir");
+//				fileDialog.setFilterPath(workingDir);
+//				// String homeDir = System.getProperty("user.home");
+//				// fileDialog.setFilterPath(homeDir);
+//				String path = fileDialog.open();
+//				if (path != null) {
+//					File file = new File(path);
+//					if (file.exists()) {
+//						filenameStr = file.getName();
+//						filesizeLong = file.length();
+//						filesizeInt = (int) filesizeLong;
+//						System.out.println("Size long= " + filesizeLong
+//								+ ". int = " + filesizeInt);
+//						filedate_java = Calendar.getInstance();
+//						filedate_java.setTime(new Date(file.lastModified()));
+//						System.out.println("filedate_java = "
+//								+ filedate_java.toString());
+//						System.out.println("filedate_java timeZone = "
+//								+ filedate_java.getTimeZone());
+//					}
+//					FileReader fileReader = null;
+//					try {
+//						fileReader = new FileReader(path);
+//					} catch (FileNotFoundException e) {
+//						e.printStackTrace();
+//					}
+//					if (fileReader != null) {
+//						CSVParser parser = new CSVParser(fileReader,
+//								CSVStrategy.EXCEL_STRATEGY);
+//						String[] values = null;
+//						try {
+//							values = parser.getLine();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+//						while (values != null) {
+//							// printValues(parser.getLineNumber(),values);
+//							DataRow dataRow = initDataRow(values);
+//							modelProvider.addDataRow(dataRow);
+//							ModelKeeper.saveModelProvider(path, modelProvider);
+//							// System.out.println(dataRow);
+//							try {
+//								values = parser.getLine();
+//							} catch (IOException e) {
+//								e.printStackTrace();
+//							}
+//
+//						}
+//					}
+//					addFilename(path);
+//					IWorkbenchPage page = PlatformUI.getWorkbench()
+//							.getActiveWorkbenchWindow().getActivePage();
+//					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+//
+//					String title = viewData.getTitle();
+//					System.out.println("title= " + title);
+//					viewData.update(path);
+//					try {
+//						Util.showView(ViewData.ID);
+//					} catch (PartInitException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//				CSVParser c = null;
+//			}
+//		};
+//		actionImport.setText("Import...");
+//		actionImport.setToolTipText("Import CSV");
+//		actionImport.setImageDescriptor(PlatformUI.getWorkbench()
+//				.getSharedImages()
+//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+//
 		actionSave = new Action() {
 			public void run() {
 				System.out.println("executing actionSave");
@@ -364,239 +364,239 @@ public class View extends ViewPart {
 				.getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-		actionExportToTDB = new Action() {
-			public void run() {
-				System.out.println("executing actionExportToTDB");
-				ISelection iSelection = viewer.getSelection();
-				System.out.println("iSelection=" + iSelection);
-				if (!iSelection.isEmpty()) {
-					Object obj = ((IStructuredSelection) iSelection)
-							.getFirstElement();
-					String key = (String) obj;
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
-					System.out.println("key=" + key);
-					MyDialog dialog = new MyDialog(Display.getCurrent()
-							.getActiveShell());
-					dialog.create();
-					if (dialog.open() == Window.OK) {
-						// String dataSourceIRI = dialog.getDataSourceIRI();
-						String dataSourceLid = dialog.getDataSourceLid();
-						System.out.println(dialog.getDataSourceName());
-						System.out.println(dialog.getMajorVersion());
-						System.out.println(dialog.getMinorVersion());
-						System.out.println(dialog.getComment());
-						String dataSourceName = dialog.getDataSourceName();
-						String majorNumber = dialog.getMajorVersion();
-						String minorNumber = dialog.getMinorVersion();
-						String comment = dialog.getComment();
-
-						// int next = 1;
-						GenericQuery iGenericQuery = new GenericQuery(
-								qGetNextDSIndex.getQuery(), "Internal Query");
-						iGenericQuery.getData();
-						QueryResults parts = iGenericQuery.getQueryResults();
-						List<DataRow> resultRow = parts.getModelProvider()
-								.getData();
-						// if(resultRow.size() > 0){
-						DataRow row = resultRow.get(0);
-						List<String> valueList = row.getColumnValues();
-						dataSourceLid = valueList.get(0);
-						// next = Integer.parseInt(indexStr);
-
-						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(
-								dataSourceLid, dataSourceName, majorNumber,
-								minorNumber, comment);
-						// IdsInfoQuery idsInfoQuery = new
-						// IdsInfoQuery(dataSourceName, majorNumber,
-						// minorNumber, comment);
-
-						List<String> resultList = idsInfoQuery.getData();
-						// System.out.println(resultList.toString());
-						// System.out.println(idsInfoQuery.getQuery());
-						ModelProvider modelProvider = ModelKeeper
-								.getModelProvider(key);
-						List<String> headers = modelProvider.getHeaderNames();
-						System.out.println(headers.toString());
-						List<DataRow> dataRowList = modelProvider.getData();
-						int rowNumber = 1;
-						System.out.println("dataRowList.size = "
-								+ dataRowList.size());
-
-						int N = 50000; // MAYBE SHOULD BE OPTIMIZED FIXME
-						StringBuilder b = new StringBuilder();
-
-						for (DataRow dataRow : dataRowList) {
-							String casrn = null;
-							String name = null;
-							String altName = null;
-							String cat = null;
-							String subcat = null;
-							String impactCat = null;
-							String impactCatRefUnit = null;
-							Double charFactor = null;
-							String flowUnit = null;
-
-							// CAT_HDR = "Category";
-							// SUBCAT_HDR = "Subcategory";
-							// SUBSUBCAT_HDR = "Sub-subcategory";
-							// IMPACT_CAT_HDR = "Impact_Category";
-							// IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit";
-							// CHAR_FACTOR_HDR = "Characterization_factor";
-							// FLOW_UNIT_HDR = "Flow_Unit";
-
-							{
-								int index = headers.indexOf(ViewData.CASRN_HDR);
-								if (index > -1) {
-									String unescCasrn = dataRow
-											.getColumnValues().get(index);
-									casrn = Util.escape(unescCasrn);
-									casrn = casrn
-											.replaceFirst(
-													"[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
-													"$1-$2-$3"); // REMOVE
-																	// LEADING
-																	// STUFF,
-									// System.out.println("casrn=" + casrn);
-									// casrn.replaceFirst(regex, replacement)
-								}
-							}
-							{
-								int index = headers.indexOf(ViewData.NAME_HDR);
-								if (index > -1) {
-									String unescName = dataRow
-											.getColumnValues().get(index);
-									name = Util.escape(unescName);
-									// System.out.println("name=" + name);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.ALT_NAME_HDR);
-								if (index > -1) {
-									String unescAltName = dataRow
-											.getColumnValues().get(index);
-									altName = Util.escape(unescAltName);
-									// System.out.println("altName=" + altName);
-								}
-							}
-							{
-								int index = headers.indexOf(ViewData.CAT1_HDR);
-								if (index > -1) {
-									String unescCat = dataRow.getColumnValues()
-											.get(index);
-									cat = Util.escape(unescCat);
-									// System.out.println("cat=" + cat);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.CAT2_HDR);
-								if (index > -1) {
-									String unescSubcat = dataRow
-											.getColumnValues().get(index);
-									subcat = Util.escape(unescSubcat);
-									// System.out.println("subcat=" + subcat);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.IMPACT_CAT_HDR);
-								if (index > -1) {
-									String unescImpactCat = dataRow
-											.getColumnValues().get(index);
-									impactCat = Util.escape(unescImpactCat);
-									// System.out.println("impactCat=" +
-									// impactCat);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
-								if (index > -1) {
-									String unescImpactCatRefUnit = dataRow
-											.getColumnValues().get(index);
-									impactCatRefUnit = Util
-											.escape(unescImpactCatRefUnit);
-									// System.out.println("impactCatRefUnit=" +
-									// impactCatRefUnit);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.CHAR_FACTOR_HDR);
-								if (index > -1) {
-									try {
-										charFactor = Double.valueOf(dataRow
-												.getColumnValues().get(index));
-									} catch (NumberFormatException e) {
-										charFactor = 0.0;
-										// e.printStackTrace();
-									}
-									// System.out.println("charFactor=" +
-									// charFactor);
-								}
-							}
-							{
-								int index = headers
-										.indexOf(ViewData.FLOW_UNIT_HDR);
-								if (index > -1) {
-									String unescFlowUnit = dataRow
-											.getColumnValues().get(index);
-									flowUnit = Util.escape(unescFlowUnit);
-									// System.out.println("flowUnit=" +
-									// flowUnit);
-								}
-							}
-							// String dataSourceIRI = "dude";
-							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn,
-									dataSourceLid, name, altName, cat, subcat,
-									impactCat, impactCatRefUnit, charFactor,
-									flowUnit, "" + rowNumber);
-							// IdsRowQuery idsRowQuery = new IdsRowQuery(casrn,
-							// name, altName, cat, subcat, impactCat,
-							// impactCatRefUnit, charFactor, flowUnit, "" +
-							// rowNumber);
-							//
-							String insertTriples = idsRowQuery
-									.getInsertTriples();
-							b.append(insertTriples);
-							// b.append(idsRowQuery.toString());
-
-							// if (Integer.valueOf(rowNumber) == 5) {
-							// System.out.println("Triples: "+insertTriples);
-							// }
-							if ((rowNumber % N == 0)
-									|| (rowNumber == dataRowList.size())) {
-								// add prefix
-								String prefix = idsRowQuery.getPrefix();
-								prefix += "\n INSERT DATA \n { \n";
-								b.insert(0, prefix);
-								b.append(" } \n");
-								System.out.println(b.toString().substring(0,
-										5000));
-								// GenericQuery iGenericQuery = new
-								// GenericQuery(b.toString(), "bundled insert");
-								GenericUpdate iGenericUpdate = new GenericUpdate(
-										b.toString(), "bundled insert");
-								List<String> results = iGenericUpdate.getData();
-								// System.out.println(results.toString());
-								b.setLength(0);
-							}
-							rowNumber++;
-						}
-
-					}
-
-				}
-			}
-		};
-		actionExportToTDB.setText("Export");
-		actionExportToTDB.setToolTipText("Export to TDB");
-		actionExportToTDB.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+//		actionExportToTDB = new Action() {
+//			public void run() {
+//				System.out.println("executing actionExportToTDB");
+//				ISelection iSelection = viewer.getSelection();
+//				System.out.println("iSelection=" + iSelection);
+//				if (!iSelection.isEmpty()) {
+//					Object obj = ((IStructuredSelection) iSelection)
+//							.getFirstElement();
+//					String key = (String) obj;
+//					IWorkbenchPage page = PlatformUI.getWorkbench()
+//							.getActiveWorkbenchWindow().getActivePage();
+//					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+//					System.out.println("key=" + key);
+//					MyDialog dialog = new MyDialog(Display.getCurrent()
+//							.getActiveShell());
+//					dialog.create();
+//					if (dialog.open() == Window.OK) {
+//						// String dataSourceIRI = dialog.getDataSourceIRI();
+//						String dataSourceLid = dialog.getDataSourceLid();
+//						System.out.println(dialog.getDataSourceName());
+//						System.out.println(dialog.getMajorVersion());
+//						System.out.println(dialog.getMinorVersion());
+//						System.out.println(dialog.getComment());
+//						String dataSourceName = dialog.getDataSourceName();
+//						String majorNumber = dialog.getMajorVersion();
+//						String minorNumber = dialog.getMinorVersion();
+//						String comment = dialog.getComment();
+//
+//						// int next = 1;
+//						GenericQuery iGenericQuery = new GenericQuery(
+//								qGetNextDSIndex.getQuery(), "Internal Query");
+//						iGenericQuery.getData();
+//						QueryResults parts = iGenericQuery.getQueryResults();
+//						List<DataRow> resultRow = parts.getModelProvider()
+//								.getData();
+//						// if(resultRow.size() > 0){
+//						DataRow row = resultRow.get(0);
+//						List<String> valueList = row.getColumnValues();
+//						dataSourceLid = valueList.get(0);
+//						// next = Integer.parseInt(indexStr);
+//
+//						IdsInfoQuery idsInfoQuery = new IdsInfoQuery(
+//								dataSourceLid, dataSourceName, majorNumber,
+//								minorNumber, comment);
+//						// IdsInfoQuery idsInfoQuery = new
+//						// IdsInfoQuery(dataSourceName, majorNumber,
+//						// minorNumber, comment);
+//
+//						List<String> resultList = idsInfoQuery.getData();
+//						// System.out.println(resultList.toString());
+//						// System.out.println(idsInfoQuery.getQuery());
+//						ModelProvider modelProvider = ModelKeeper
+//								.getModelProvider(key);
+//						List<String> headers = modelProvider.getHeaderNames();
+//						System.out.println(headers.toString());
+//						List<DataRow> dataRowList = modelProvider.getData();
+//						int rowNumber = 1;
+//						System.out.println("dataRowList.size = "
+//								+ dataRowList.size());
+//
+//						int N = 50000; // MAYBE SHOULD BE OPTIMIZED FIXME
+//						StringBuilder b = new StringBuilder();
+//
+//						for (DataRow dataRow : dataRowList) {
+//							String casrn = null;
+//							String name = null;
+//							String altName = null;
+//							String cat = null;
+//							String subcat = null;
+//							String impactCat = null;
+//							String impactCatRefUnit = null;
+//							Double charFactor = null;
+//							String flowUnit = null;
+//
+//							// CAT_HDR = "Category";
+//							// SUBCAT_HDR = "Subcategory";
+//							// SUBSUBCAT_HDR = "Sub-subcategory";
+//							// IMPACT_CAT_HDR = "Impact_Category";
+//							// IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit";
+//							// CHAR_FACTOR_HDR = "Characterization_factor";
+//							// FLOW_UNIT_HDR = "Flow_Unit";
+//
+//							{
+//								int index = headers.indexOf(ViewData.CASRN_HDR);
+//								if (index > -1) {
+//									String unescCasrn = dataRow
+//											.getColumnValues().get(index);
+//									casrn = Util.escape(unescCasrn);
+//									casrn = casrn
+//											.replaceFirst(
+//													"[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
+//													"$1-$2-$3"); // REMOVE
+//																	// LEADING
+//																	// STUFF,
+//									// System.out.println("casrn=" + casrn);
+//									// casrn.replaceFirst(regex, replacement)
+//								}
+//							}
+//							{
+//								int index = headers.indexOf(ViewData.NAME_HDR);
+//								if (index > -1) {
+//									String unescName = dataRow
+//											.getColumnValues().get(index);
+//									name = Util.escape(unescName);
+//									// System.out.println("name=" + name);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.ALT_NAME_HDR);
+//								if (index > -1) {
+//									String unescAltName = dataRow
+//											.getColumnValues().get(index);
+//									altName = Util.escape(unescAltName);
+//									// System.out.println("altName=" + altName);
+//								}
+//							}
+//							{
+//								int index = headers.indexOf(ViewData.CAT1_HDR);
+//								if (index > -1) {
+//									String unescCat = dataRow.getColumnValues()
+//											.get(index);
+//									cat = Util.escape(unescCat);
+//									// System.out.println("cat=" + cat);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.CAT2_HDR);
+//								if (index > -1) {
+//									String unescSubcat = dataRow
+//											.getColumnValues().get(index);
+//									subcat = Util.escape(unescSubcat);
+//									// System.out.println("subcat=" + subcat);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.IMPACT_CAT_HDR);
+//								if (index > -1) {
+//									String unescImpactCat = dataRow
+//											.getColumnValues().get(index);
+//									impactCat = Util.escape(unescImpactCat);
+//									// System.out.println("impactCat=" +
+//									// impactCat);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
+//								if (index > -1) {
+//									String unescImpactCatRefUnit = dataRow
+//											.getColumnValues().get(index);
+//									impactCatRefUnit = Util
+//											.escape(unescImpactCatRefUnit);
+//									// System.out.println("impactCatRefUnit=" +
+//									// impactCatRefUnit);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.CHAR_FACTOR_HDR);
+//								if (index > -1) {
+//									try {
+//										charFactor = Double.valueOf(dataRow
+//												.getColumnValues().get(index));
+//									} catch (NumberFormatException e) {
+//										charFactor = 0.0;
+//										// e.printStackTrace();
+//									}
+//									// System.out.println("charFactor=" +
+//									// charFactor);
+//								}
+//							}
+//							{
+//								int index = headers
+//										.indexOf(ViewData.FLOW_UNIT_HDR);
+//								if (index > -1) {
+//									String unescFlowUnit = dataRow
+//											.getColumnValues().get(index);
+//									flowUnit = Util.escape(unescFlowUnit);
+//									// System.out.println("flowUnit=" +
+//									// flowUnit);
+//								}
+//							}
+//							// String dataSourceIRI = "dude";
+//							IdsRowQuery idsRowQuery = new IdsRowQuery(casrn,
+//									dataSourceLid, name, altName, cat, subcat,
+//									impactCat, impactCatRefUnit, charFactor,
+//									flowUnit, "" + rowNumber);
+//							// IdsRowQuery idsRowQuery = new IdsRowQuery(casrn,
+//							// name, altName, cat, subcat, impactCat,
+//							// impactCatRefUnit, charFactor, flowUnit, "" +
+//							// rowNumber);
+//							//
+//							String insertTriples = idsRowQuery
+//									.getInsertTriples();
+//							b.append(insertTriples);
+//							// b.append(idsRowQuery.toString());
+//
+//							// if (Integer.valueOf(rowNumber) == 5) {
+//							// System.out.println("Triples: "+insertTriples);
+//							// }
+//							if ((rowNumber % N == 0)
+//									|| (rowNumber == dataRowList.size())) {
+//								// add prefix
+//								String prefix = idsRowQuery.getPrefix();
+//								prefix += "\n INSERT DATA \n { \n";
+//								b.insert(0, prefix);
+//								b.append(" } \n");
+//								System.out.println(b.toString().substring(0,
+//										5000));
+//								// GenericQuery iGenericQuery = new
+//								// GenericQuery(b.toString(), "bundled insert");
+//								GenericUpdate iGenericUpdate = new GenericUpdate(
+//										b.toString(), "bundled insert");
+//								List<String> results = iGenericUpdate.getData();
+//								// System.out.println(results.toString());
+//								b.setLength(0);
+//							}
+//							rowNumber++;
+//						}
+//
+//					}
+//
+//				}
+//			}
+//		};
+//		actionExportToTDB.setText("Export");
+//		actionExportToTDB.setToolTipText("Export to TDB");
+//		actionExportToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+//				.getSharedImages()
+//				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		actionParseFlowablesToTDB = new Action() {
 			public void run() {
