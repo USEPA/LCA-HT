@@ -51,8 +51,8 @@ public class ViewData extends ViewPart {
 	private Menu headerMenu;
 	private TableColumn columnSelected = null;
 	public static final String CASRN_HDR = "CASRN";
-	public static final String NAME_HDR = "Name";
-	public static final String ALT_NAME_HDR = "Alt_Name";
+	public static final String NAME_HDR = "Flowable Name";
+	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
 	public static final String CAT3_HDR = "Sub-subcategory"; 

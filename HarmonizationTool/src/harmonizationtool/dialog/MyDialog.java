@@ -36,7 +36,7 @@ public class MyDialog extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Export to TDB");
+		setTitle("Parse to TDB");
 		// Set the message
 		setMessage("Set Metadata", IMessageProvider.INFORMATION);
 
@@ -61,8 +61,8 @@ public class MyDialog extends TitleAreaDialog {
 		dataSourceLidText.setText("(new)");
 		dataSourceLidText.setEnabled(true);
 		label0.setEnabled(true);
-		
-//		dataSourceLidText.setEnabled(false);
+
+		// dataSourceLidText.setEnabled(false);
 
 		Label label1 = new Label(parent, SWT.NONE);
 		label1.setText("Data Source Name");
@@ -124,7 +124,8 @@ public class MyDialog extends TitleAreaDialog {
 		});
 	}
 
-	protected Button createOkButton(Composite parent, int id, String label, boolean defaultButton) {
+	protected Button createOkButton(Composite parent, int id, String label,
+			boolean defaultButton) {
 		// increment the number of columns in the button bar
 		((GridLayout) parent.getLayout()).numColumns++;
 		Button button = new Button(parent, SWT.PUSH);
@@ -150,26 +151,28 @@ public class MyDialog extends TitleAreaDialog {
 
 	private boolean isValidInput() {
 		boolean valid = true;
-//		if (dataSourceLidText.getText().length() == 0) {
-//			setErrorMessage("Please set data source IRI");
-//			valid = false;
-//		}
+		// if (dataSourceLidText.getText().length() == 0) {
+		// setErrorMessage("Please set data source IRI");
+		// valid = false;
+		// }
 		if (dataSourceNameText.getText().length() == 0) {
-			setErrorMessage("Each data set must have a name");
-			valid = false;
+			if (!dataSourceLid.matches("^\\d+$")) { // IF THE DATA SET IS INT, NAME NOT NECESSARY
+				setErrorMessage("Each data set must have a name");
+				valid = false;
+			}
 		}
-//		if (majorVersionText.getText().length() == 0) {
-//			setErrorMessage("Please set major version #");
-//			valid = false;
-//		}
-//		if (minorVersionText.getText().length() == 0) {
-//			setErrorMessage("Please set minor version #");
-//			valid = false;
-//		}
-//		if (commentText.getText().length() == 0) {
-//			setErrorMessage("Please set comment");
-//			valid = false;
-//		}
+		// if (majorVersionText.getText().length() == 0) {
+		// setErrorMessage("Please set major version #");
+		// valid = false;
+		// }
+		// if (minorVersionText.getText().length() == 0) {
+		// setErrorMessage("Please set minor version #");
+		// valid = false;
+		// }
+		// if (commentText.getText().length() == 0) {
+		// setErrorMessage("Please set comment");
+		// valid = false;
+		// }
 		return valid;
 	}
 

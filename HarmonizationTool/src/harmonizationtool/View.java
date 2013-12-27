@@ -86,7 +86,7 @@ public class View extends ViewPart {
 	private Action actionSave;
 	private Action actionClose;
 	private Action actionExportToTDB;
-	private Action actionParseSubstancesToTDB;
+	private Action actionParseFlowablesToTDB;
 	private Action actionParseCategoriesToTDB;
 
 	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
@@ -167,7 +167,7 @@ public class View extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actionImport);
 		// manager.add(actionExportToTDB); // NEEDS REPAIR TODO
-		manager.add(actionParseSubstancesToTDB);
+		manager.add(actionParseFlowablesToTDB);
 		manager.add(actionParseCategoriesToTDB);
 		manager.add(actionSave);
 		manager.add(actionClose);
@@ -598,7 +598,7 @@ public class View extends ViewPart {
 				.getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-		actionParseSubstancesToTDB = new Action() {
+		actionParseFlowablesToTDB = new Action() {
 			public void run() {
 				System.out.println("executing actionParseSubsToTDB");
 				ISelection iSelection = viewer.getSelection();
@@ -680,8 +680,8 @@ public class View extends ViewPart {
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
 						Resource ds = model.getResource(eco_p + "DataSource");
-						Resource substance = model.getResource(eco_p
-								+ "Substance");
+						Resource flowable = model.getResource(eco_p
+								+ "Flowable");
 						Property altLabel = model.getProperty(skos_p
 								+ "altLabel");
 						Property majV = model.getProperty(eco_p
@@ -918,7 +918,7 @@ public class View extends ViewPart {
 									// System.out.println("name=" + name);
 									drNameLit = model.createTypedLiteral(name);
 								} else {
-									String msg = "Substances must have a \"Name\" field!";
+									String msg = "Flowables must have a \"Name\" field!";
 									Util.findView(QueryView.ID).getViewSite()
 											.getActionBars()
 											.getStatusLineManager()
@@ -979,9 +979,9 @@ public class View extends ViewPart {
 								subResourceHandle = str2res.get(combined_str);
 							} else {
 								Resource newSub = model.createResource();
-								model.add(newSub, RDF.type, substance);
+								model.add(newSub, RDF.type, flowable);
 								model.addLiteral(newSub, RDFS.label, drNameLit);
-								// newSub.addProperty(RDF.type, substance);
+								// newSub.addProperty(RDF.type, flowable);
 								// newSub.addLiteral(RDFS.label, drNameLit);
 								if (altName != null && altName.length() > 0) {
 									// newSub.addLiteral(altLabel,
@@ -1045,9 +1045,9 @@ public class View extends ViewPart {
 			}
 
 		};
-		actionParseSubstancesToTDB.setText("Parse Substances");
-		actionParseSubstancesToTDB.setToolTipText("Parse substances to TDB");
-		actionParseSubstancesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+		actionParseFlowablesToTDB.setText("Parse Flowables");
+		actionParseFlowablesToTDB.setToolTipText("Parse flowables to TDB");
+		actionParseFlowablesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
@@ -1405,7 +1405,7 @@ public class View extends ViewPart {
 								Resource newCat = model.createResource();
 								model.add(newCat, RDF.type, category);
 								model.addLiteral(newCat, cat1Prop, drCat1Lit);
-								// newSub.addProperty(RDF.type, substance);
+								// newSub.addProperty(RDF.type, flowable);
 								// newSub.addLiteral(RDFS.label, drNameLit);
 								if (cat2 != null && cat2.length() > 0) {
 									// newSub.addLiteral(altLabel,

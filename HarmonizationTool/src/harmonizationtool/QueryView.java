@@ -43,7 +43,6 @@ import harmonizationtool.query.QDataSources;
 //import harmonizationtool.query.ZunusedGCasNameSourceQuery;
 import harmonizationtool.query.HarmonyQuery;
 //import harmonizationtool.query.UAdTestData;
-//import harmonizationtool.query.ZunusedNonSubstanceQuery;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
