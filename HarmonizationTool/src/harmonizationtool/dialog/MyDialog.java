@@ -124,7 +124,7 @@ public class MyDialog extends TitleAreaDialog {
 		});
 	}
 
-	protected Button createOkButton(Composite parent, int id, String label,
+	public Button createOkButton(Composite parent, int id, String label,
 			boolean defaultButton) {
 		// increment the number of columns in the button bar
 		((GridLayout) parent.getLayout()).numColumns++;

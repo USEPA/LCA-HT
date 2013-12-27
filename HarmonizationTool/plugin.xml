@@ -79,6 +79,11 @@
          <menu
                label="File">
             <command
+                  commandId="HarmonizationTool.ImportCSV"
+                  label="Import CSV"
+                  style="push">
+            </command>
+            <command
                   commandId="HarmonizationTool.SaveResults"
                   id="HarmonizationTool.SaveResults"
                   label="Save Results"
@@ -243,6 +248,11 @@
             defaultHandler="harmonizationtool.handler.CloseTDB"
             id="harmonizationtool.handler.CloseTDB"
             name="Close TDB">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ImportCSV"
+            id="HarmonizationTool.ImportCSV"
+            name="Import CSV">
       </command>
    </extension>
    <extension
