@@ -17,7 +17,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append(" \n");
-		b.append("SELECT  (str(?lid) as ?local_id) ?data_set (str(count(distinct ?sub)) as ?Substances)\n");
+		b.append("SELECT  (str(?lid) as ?local_id) ?data_set (str(count(distinct ?sub)) as ?Flowables)\n");
 		b.append("WHERE \n");
 //		b.append("  { ?s ?p ?o . \n");
 		b.append("  { ?s a eco:DataSource . \n");
@@ -26,7 +26,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
 		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
 		b.append("    ?sub eco:hasDataSource ?s . \n");
-		b.append("    ?sub a eco:Substance . \n");
+		b.append("    ?sub a eco:Flowable . \n");
 		b.append("    bind (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) \n");
 		b.append("  } \n");
 		b.append("group by ?lid ?data_set  \n");

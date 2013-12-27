@@ -67,8 +67,8 @@ public class QCountMatches extends HarmonyBaseQuery implements IParamQuery {
 				b.append("  ?s1 rdfs:label ?name . \n");
 				b.append("  ?s2 rdfs:label ?name2 .  \n");
 				b.append("  filter (fn:upper-case(?name) = fn:upper-case(?name2)) \n");
-				b.append("  ?s1 a eco:Substance .  \n");
-				b.append("  ?s2 a eco:Substance .  \n");
+				b.append("  ?s1 a eco:Flowable .  \n");
+				b.append("  ?s2 a eco:Flowable .  \n");
 				b.append("      filter( \n");
 				for (int i : refIds) {
 					b.append(" ?match_lid  = " + i	+ " || \n");
@@ -92,8 +92,8 @@ public class QCountMatches extends HarmonyBaseQuery implements IParamQuery {
 				b.append("  ?s1 rdfs:label ?name . \n");
 				b.append("  ?s2 rdfs:label ?name2 .  \n");
 				b.append("  filter (fn:upper-case(?name) != fn:upper-case(?name2)) \n");
-				b.append("  ?s1 a eco:Substance .  \n");
-				b.append("  ?s2 a eco:Substance .  \n");
+				b.append("  ?s1 a eco:Flowable .  \n");
+				b.append("  ?s2 a eco:Flowable .  \n");
 				b.append("      filter( \n");
 				for (int i : refIds) {
 					b.append(" ?match_lid  = " + i	+ " || \n");

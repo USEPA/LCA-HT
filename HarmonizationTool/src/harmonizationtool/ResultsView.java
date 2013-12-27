@@ -145,7 +145,11 @@ public class ResultsView extends ViewPart {
 		while (table.getColumnCount() > 0) {
 			table.getColumns()[0].dispose();
 		}
-		table.setRedraw(true);
+		try {
+			table.setRedraw(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	private void createColumns(final TableViewer viewer,QueryResults queryResults) {
 		DataRow columnHeaders = queryResults.getColumnHeaders();

@@ -61,7 +61,7 @@ public class QCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 				b.append("      ?ds_match ethold:localSerialNumber ?match_lid . \n");
 				b.append("      filter (?ds_prim != ?ds_match) \n");
 //				b.append("  ?s1 eco:hasDataSource eco:"+primaryDataset+" . \n");
-				b.append("  ?s1 a eco:Substance .  \n");
+				b.append("  ?s1 a eco:Flowable .  \n");
 				b.append("  ?s1 eco:casNumber ?cas . \n");
 				b.append("  ?s1 rdfs:label ?label . \n");
 				b.append("  } \n");
@@ -77,8 +77,8 @@ public class QCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 				b.append("      filter (?ds_prim != ?ds_match) \n");
 				b.append("  ?s1 eco:casNumber ?cas .  \n");
 				b.append("  ?s2 eco:casNumber ?cas .   \n");
-				b.append("  ?s1 a eco:Substance .  \n");
-				b.append("  ?s2 a eco:Substance .  \n");
+				b.append("  ?s1 a eco:Flowable .  \n");
+				b.append("  ?s2 a eco:Flowable .  \n");
 
 				b.append("      filter( \n");
 //				System.out.println("refDatasets size = "+refDatasets.length);

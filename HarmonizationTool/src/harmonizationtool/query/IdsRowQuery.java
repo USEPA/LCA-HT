@@ -37,7 +37,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 
 	public String getInsertTriples() {
 		StringBuilder b = new StringBuilder();
-//		b.append("ds:substance_" + this.rowNumber + " a eco:Substance , \n");
+//		b.append("ds:flowable_" + this.rowNumber + " a eco:Flowable , \n");
 //		b.append("                         owl:NamedIndividual ;\n");
 //		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
 //			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ;\n");
@@ -50,7 +50,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 //		}
 //		b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .\n");
 		
-		b.append("ds:substance_" + this.rowNumber + " a eco:Substance , \n"); 
+		b.append("ds:flowable_" + this.rowNumber + " a eco:Flowable , \n"); 
 		b.append("                         owl:NamedIndividual ; \n");
 		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
 			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ; \n");
@@ -136,7 +136,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 //		b.append(" \n");
 //		b.append("INSERT DATA  \n");
 //		b.append("{ \n");
-//		b.append("ds:" + this.rowNumber + " a eco:Substance , \n");
+//		b.append("ds:" + this.rowNumber + " a eco:Flowable , \n");
 //		b.append("                         owl:NamedIndividual ; \n");
 //		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
 //			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ; \n");
@@ -152,10 +152,10 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 //		b.append(" \n");
 //		b.append("INSERT DATA  \n");
 //		b.append("{ \n");
-//		b.append("ds:" + this.rowNumber + " a eco:Substance , \n");
-		//------------------- SUBSTANCE INFO
+//		b.append("ds:" + this.rowNumber + " a eco:Flowable , \n");
+		//------------------- Flowable INFO
 		
-		b.append("ds:substance_" + this.rowNumber + " a eco:Substance , \n"); 
+		b.append("ds:flowable_" + this.rowNumber + " a eco:Flowable , \n"); 
 		b.append("                         owl:NamedIndividual ; \n");
 		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
 			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ; \n");
