@@ -8,11 +8,28 @@ import java.util.Map;
 public class ModelProvider {
 	private List<DataRow> data = new ArrayList<DataRow>();
 	private List<String> headerNames = null;
+	private Map<String,Object> metaMap = new HashMap<String , Object>(); 
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
 	}
+	public void setMetaValue(String key, Object value){
+		metaMap.put(key,value);
+	}
+	public void setMetaMap(Map<String,Object> inMetaMap){
+		metaMap = inMetaMap;
+	}
+	public Object getMetaValue(String key){
+		return metaMap.get(key);
+	}
+	public Map<String, Object> getMetaMap(){
+		return metaMap;
+	}
 
+	public Object getMeta(String key){
+		return metaMap.get(key);
+	}
+	
 	public List<DataRow> getData() {
 		return data;
 	}
