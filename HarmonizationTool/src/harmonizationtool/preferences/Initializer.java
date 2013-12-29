@@ -14,7 +14,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-        store.setDefault("username", "");
+        store.setDefault("userName", "");
         store.setDefault("userAffiliation", "");
         store.setDefault("userPhone", "");
         store.setDefault("userEmail", "");

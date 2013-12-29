@@ -28,14 +28,10 @@ public class UserPreferences extends FieldEditorPreferencePage implements IWorkb
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new StringFieldEditor("username", "Name:", getFieldEditorParent()));
-
+		addField(new StringFieldEditor("userName", "Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor("userAffiliation", "Affiliation:", getFieldEditorParent()));
-
-		addField(new StringFieldEditor("userPhone", "Phone:", getFieldEditorParent()));
-
 		addField(new StringFieldEditor("userEmail", "Email:", getFieldEditorParent()));
-
+		addField(new StringFieldEditor("userPhone", "Phone:", getFieldEditorParent()));
 	}
 
 }
