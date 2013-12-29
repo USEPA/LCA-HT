@@ -2,34 +2,19 @@ package harmonizationtool.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ModelProvider {
-	private List<DataRow> data = new ArrayList<DataRow>();
+	public Map<String, String> metaData = new LinkedHashMap<String, String>();
 	private List<String> headerNames = null;
-	private Map<String,Object> metaMap = new HashMap<String , Object>(); 
+	private List<DataRow> data = new ArrayList<DataRow>();
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
 	}
-	public void setMetaValue(String key, Object value){
-		metaMap.put(key,value);
-	}
-	public void setMetaMap(Map<String,Object> inMetaMap){
-		metaMap = inMetaMap;
-	}
-	public Object getMetaValue(String key){
-		return metaMap.get(key);
-	}
-	public Map<String, Object> getMetaMap(){
-		return metaMap;
-	}
 
-	public Object getMeta(String key){
-		return metaMap.get(key);
-	}
-	
 	public List<DataRow> getData() {
 		return data;
 	}
@@ -52,5 +37,4 @@ public class ModelProvider {
 			headerNames.add(name);
 		}
 	}
-
 }

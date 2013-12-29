@@ -1,5 +1,6 @@
 package harmonizationtool.handler;
 
+import harmonizationtool.QueryView;
 import harmonizationtool.View;
 import harmonizationtool.ViewData;
 import harmonizationtool.dialog.CSVImportDialog;
@@ -15,6 +16,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVParser;
@@ -27,6 +30,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -52,7 +56,7 @@ public class ImportCSV implements IHandler {
 		System.out.println("executing Import CSV");
 		ModelProvider modelProvider = new ModelProvider();
 		long filesizeLong = 0;
-		// int filesizeInt;
+		int filesizeInt = 0;
 		Calendar filedateJava = null;
 		String fileNameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
 
@@ -73,13 +77,13 @@ public class ImportCSV implements IHandler {
 				fileNameStr = file.getName();
 				System.out.println("parsed filename as:" + fileNameStr);
 				filesizeLong = file.length();
-				// filesizeInt = (int) filesizeLong;
+				filesizeInt = (int) filesizeLong;
 				System.out.println("Size long= " + filesizeLong);
 				filedateJava = Calendar.getInstance();
 				filedateJava.setTime(new Date(file.lastModified()));
 				System.out.println("filedateJava = " + filedateJava.toString());
 				System.out.println("filedateJava timeZone = " + filedateJava.getTimeZone());
-				System.out.println("filedataJava UTC?? = "+filedateJava.getTime());
+				System.out.println("filedataJava UTC?? = " + filedateJava.getTime());
 			}
 		}
 
@@ -89,30 +93,43 @@ public class ImportCSV implements IHandler {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		if (fileReader != null) {
-			CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
-			String[] values = null;
+		if (fileReader == null) {
+			String msg = "Can not read CSV file!";
+			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			System.out.println(msg);
+			return null;
+		}
+		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
+		String[] values = null;
+		try {
+			values = parser.getLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (values == null) {
+			String msg = "No content in CSV file!";
+			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			System.out.println(msg);
+			return null;
+		}
+		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
+		ModelKeeper.saveModelProvider(path, modelProvider); // SUPPOSED TO SAVE ONLY IF
+															// CONTENT, BUT DOESN'T WORK
+
+		View view = (View) Util.findView(View.ID);
+		view.addFilename(path);
+
+		while (values != null) {
+			// printValues(parser.getLineNumber(),values);
+			DataRow dataRow = initDataRow(values);
+			modelProvider.addDataRow(dataRow);
+			// System.out.println(dataRow);
 			try {
 				values = parser.getLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			while (values != null) {
-				// printValues(parser.getLineNumber(),values);
-				DataRow dataRow = initDataRow(values);
-				modelProvider.addDataRow(dataRow);
-				ModelKeeper.saveModelProvider(path, modelProvider);
-				// System.out.println(dataRow);
-				try {
-					values = parser.getLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			}
 		}
-		View view = (View) Util.findView(View.ID);
-		view.addFilename(path);
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		ViewData viewData = (ViewData) page.findView(ViewData.ID);
@@ -120,6 +137,7 @@ public class ImportCSV implements IHandler {
 		String title = viewData.getTitle();
 		System.out.println("title= " + title);
 		viewData.update(path);
+
 		// BRING UP THE DATA FILE VIEW
 		try {
 			Util.showView(View.ID);
@@ -136,33 +154,38 @@ public class ImportCSV implements IHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		String msg = "Read file: " + path;
+		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+
 		// NOW OPEN DIALOG AND PRE-POPULATE SOME
 		CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
-		// dialog.setBytes(filesizeInt.)
-		dialog.setFilename(fileNameStr);
-		dialog.setBytes("" + filesizeLong);
-		dialog.setLastModified(filedateJava.getTime()+"");
+		dialog.metaData.put("fileName", fileNameStr);
+		dialog.metaData.put("fileSize", "" + filesizeLong);
+		dialog.metaData.put("fileLastModified", filedateJava.getTime().toString());
+		// dialog.setFilename(fileNameStr);
+		// dialog.setBytes("" + filesizeLong);
+		// dialog.setLastModified(filedateJava.getTime() + "");
 
 		dialog.create();
 
 		if (dialog.open() == Window.OK) {
-			Map<String, Object> metaMap = dialog.getMetaMap();
-			modelProvider.setMetaMap(metaMap);
+			Iterator<String> keySeq = dialog.metaData.keySet().iterator();
+			Iterator<Text> valueSeq = dialog.dialogValues.iterator();
+			while (valueSeq.hasNext()) {
+				Text textBox = valueSeq.next();
+				String key = keySeq.next();
+				// String metaValue = dialog.metaData.get(key);
+				dialog.metaData.put(key, textBox.toString());
+			}
+			modelProvider.metaData = dialog.metaData;
+			// Map<String, Object> metaMap = dialog.getMetaMap();
+			// System.out.println("metaMap: "+ metaMap.toString());
+			// System.out.println("filename: "+ metaMap.get("filename").toString());
+			//
+			// modelProvider.setMetaMap(metaMap);
 			System.out.println("yeah");
 		}
 
-//		 String dataSourceLid = dialog.getDataSourceLid();
-		// String dataSourceName = dialog.getDataSourceName();
-		// String majorNumber = dialog.getMajorVersion();
-		// String minorNumber = dialog.getMinorVersion();
-		// String comment = dialog.getComment();
-		//
-		// System.out.println(dataSourceLid);
-		// System.out.println(dataSourceName);
-		// System.out.println(majorNumber);
-		// System.out.println(minorNumber);
-		// System.out.println(comment);
-		// }
 		return null;
 	}
 

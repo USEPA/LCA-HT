@@ -292,15 +292,17 @@ public class View extends ViewPart {
 					return;
 				String key = (String) selection.toList().get(0);
 				ModelProvider csvFile = ModelKeeper.getModelProvider(key);
-				Map<String, Object> metaMap = csvFile.getMetaMap();
+				Map<String, String> metaData = csvFile.metaData;
 				CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
 				// dialog.setBytes(filesizeInt.)
-				dialog.setMetaMap(metaMap);
+				System.out.println("e.g. filename"+metaData.get("fileName"));
+
+				dialog.metaData = metaData;
 				dialog.create();
 
 				if (dialog.open() == Window.OK) {
-					Map<String, Object> metaMap2 = dialog.getMetaMap();
-					csvFile.setMetaMap(metaMap2);
+//					Map<String, Object> metaMap2 = dialog.getMetaMap();
+//					csvFile.setMetaMap(metaMap2);
 					System.out.println("yeah");
 				}
 
@@ -310,6 +312,11 @@ public class View extends ViewPart {
 
 			}
 		};
+		editMeta.setText("Edit Meta Data");
+		editMeta.setToolTipText("See / Change data for this file");
+		editMeta.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		actionSave = new Action() {
 			public void run() {
 				System.out.println("executing actionSave");
@@ -691,7 +698,7 @@ public class View extends ViewPart {
 						Property minV = model.getProperty(eco_p + "hasMinorVersionNumber");
 						Property lid = model.getProperty(ethold_p + "localSerialNumber");
 						Property foundOnRow = model.getProperty(ethold_p + "foundOnRow");
-						Property HTusername = model.getProperty(ethold_p + "HTusername");
+						Property HTuserName = model.getProperty(ethold_p + "HTuserName");
 						Property HTuserAffiliation = model.getProperty(ethold_p + "HTuserAffiliation");
 						Property HTuserPhone = model.getProperty(ethold_p + "HTuserPhone");
 						Property HTuserEmail = model.getProperty(ethold_p + "HTuserEmail");
@@ -710,7 +717,7 @@ public class View extends ViewPart {
 						Literal dsFileSizeLit = model.createTypedLiteral(filesizeInt);
 						Literal dsFileDateLit = model.createTypedLiteral(filedate_java);
 
-						Literal dsHTusername = model.createTypedLiteral(Util.getPreferenceStore().getString("username"));
+						Literal dsHTuserName = model.createTypedLiteral(Util.getPreferenceStore().getString("userName"));
 						Literal dsHTuserAffiliation = model.createTypedLiteral(Util.getPreferenceStore().getString("userAffiliation"));
 						Literal dsHTuserPhone = model.createTypedLiteral(Util.getPreferenceStore().getString("userPhone"));
 						Literal dsHTuserEmail = model.createTypedLiteral(Util.getPreferenceStore().getString("userEmail"));
@@ -832,8 +839,8 @@ public class View extends ViewPart {
 							if (filedate_java != null) {
 								model.add(tempHandle, fileLastModified, dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("username").length() > 0) {
-								model.add(tempHandle, HTusername, dsHTusername);
+							if (Util.getPreferenceStore().getString("userName").length() > 0) {
+								model.add(tempHandle, HTuserName, dsHTuserName);
 							}
 							if (Util.getPreferenceStore().getString("userAffiliation").length() > 0) {
 								model.add(tempHandle, HTuserAffiliation, dsHTuserAffiliation);
@@ -1068,7 +1075,7 @@ public class View extends ViewPart {
 						Property minV = model.getProperty(eco_p + "hasMinorVersionNumber");
 						Property lid = model.getProperty(ethold_p + "localSerialNumber");
 						Property foundOnRow = model.getProperty(ethold_p + "foundOnRow");
-						Property HTusername = model.getProperty(ethold_p + "HTusername");
+						Property HTuserName = model.getProperty(ethold_p + "HTuserName");
 						Property HTuserAffiliation = model.getProperty(ethold_p + "HTuserAffiliation");
 						Property HTuserPhone = model.getProperty(ethold_p + "HTuserPhone");
 						Property HTuserEmail = model.getProperty(ethold_p + "HTuserEmail");
@@ -1089,7 +1096,7 @@ public class View extends ViewPart {
 						Literal dsFileSizeLit = model.createTypedLiteral(filesizeInt);
 						Literal dsFileDateLit = model.createTypedLiteral(filedate_java);
 
-						Literal dsHTusername = model.createTypedLiteral(Util.getPreferenceStore().getString("username"));
+						Literal dsHTuserName = model.createTypedLiteral(Util.getPreferenceStore().getString("userName"));
 						Literal dsHTuserAffiliation = model.createTypedLiteral(Util.getPreferenceStore().getString("userAffiliation"));
 						Literal dsHTuserPhone = model.createTypedLiteral(Util.getPreferenceStore().getString("userPhone"));
 						Literal dsHTuserEmail = model.createTypedLiteral(Util.getPreferenceStore().getString("userEmail"));
@@ -1178,8 +1185,8 @@ public class View extends ViewPart {
 							if (filedate_java != null) {
 								model.add(tempHandle, fileLastModified, dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("username").length() > 0) {
-								model.add(tempHandle, HTusername, dsHTusername);
+							if (Util.getPreferenceStore().getString("userName").length() > 0) {
+								model.add(tempHandle, HTuserName, dsHTuserName);
 							}
 							if (Util.getPreferenceStore().getString("userAffiliation").length() > 0) {
 								model.add(tempHandle, HTuserAffiliation, dsHTuserAffiliation);
@@ -1394,8 +1401,8 @@ public class View extends ViewPart {
 		viewer.getControl().setFocus();
 	}
 
-	public void addFilename(final String url) {
-		viewer.add(url);
+	public void addFilename(final String path) {
+		viewer.add(path);
 	}
 
 	public void removeFilename(Object element) {

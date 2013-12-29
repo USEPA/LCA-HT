@@ -13,6 +13,10 @@ public class ModelKeeper {
 	public static ModelProvider getModelProvider(String key) {
 		return map.get(key);
 	}
+	public static int getModelKeeperSize(){
+		int size = map.size();
+		return size;
+	}
 	public static  void remove(String key) {
 		if(map.containsKey(key)){
 			System.out.println("ModelKeeper removing key: "+key);
