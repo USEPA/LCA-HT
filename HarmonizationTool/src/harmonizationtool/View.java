@@ -1,7 +1,7 @@
 package harmonizationtool;
 
 import harmonizationtool.comands.SelectTDB;
-import harmonizationtool.dialog.CSVImportDialog;
+import harmonizationtool.dialog.CSVMetaDialog;
 import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
@@ -96,10 +96,11 @@ public class View extends ViewPart {
 	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the
+	 * view. It can wrap existing objects in adapters or simply return objects
+	 * as-is. These objects may be sensitive to the current input of the view,
+	 * or ignore it and always show the same content (like Task List, for
+	 * example).
 	 */
 	class ViewContentProvider implements IStructuredContentProvider {
 		Viewer v;
@@ -122,7 +123,8 @@ public class View extends ViewPart {
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -132,15 +134,18 @@ public class View extends ViewPart {
 		}
 
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages()
+					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider(viewer));
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(getViewSite());
@@ -185,7 +190,8 @@ public class View extends ViewPart {
 	private List<Resource> dsList = new ArrayList<Resource>();
 
 	private static void printValues(int lineNumber, String[] as) {
-		System.out.println("Line " + lineNumber + " has " + as.length + " values:");
+		System.out.println("Line " + lineNumber + " has " + as.length
+				+ " values:");
 		for (String s : as) {
 			System.out.println("\t|" + s + "|");
 		}
@@ -287,56 +293,48 @@ public class View extends ViewPart {
 			public void run() {
 				System.out.println("edit Meta Data");
 
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) viewer
+						.getSelection();
 				if (selection.isEmpty())
 					return;
 				String key = (String) selection.toList().get(0);
-				ModelProvider csvFile = ModelKeeper.getModelProvider(key);
-//				Map<String, String> metaData = csvFile.metaData;
-//				CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
-//				// dialog.setBytes(filesizeInt.)
-//				System.out.println("e.g. filename"+metaData.get("fileName"));
-//
-//				dialog.metaData = metaData;
-//				dialog.create();
-//
-//				if (dialog.open() == Window.OK) {
-////					Map<String, Object> metaMap2 = dialog.getMetaMap();
-////					csvFile.setMetaMap(metaMap2);
-//					System.out.println("yeah");
-//				}
-//
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-//				viewData.update(key);
-
+				ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
+				// Map<String, String> metaData = csvFile.metaData;
+				CSVMetaDialog dialog = new CSVMetaDialog(Display
+						.getCurrent().getActiveShell(), modelProvider);
+				dialog.create();
+				dialog.open();
 			}
 		};
 		editMeta.setText("Edit Meta Data");
 		editMeta.setToolTipText("See / Change data for this file");
-		editMeta.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
+		editMeta.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		actionSave = new Action() {
 			public void run() {
 				System.out.println("executing actionSave");
 				ISelection iSelection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) iSelection).getFirstElement();
+				Object obj = ((IStructuredSelection) iSelection)
+						.getFirstElement();
 				System.out.println("saving file: " + obj);
 				Shell shell = getViewSite().getShell();
 				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				String[] filterNames = new String[] { "Image Files", "All Files (*)" };
+				String[] filterNames = new String[] { "Image Files",
+						"All Files (*)" };
 				String[] filterExtensions = new String[] { "*.csv", "*" };
 				String filterPath = "/";
 				String platform = SWT.getPlatform();
 
 				if (platform.equals("win32") || platform.equals("wpf")) {
-					filterNames = new String[] { "Image Files", "All Files (*.*)" };
-					filterExtensions = new String[] { "*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
+					filterNames = new String[] { "Image Files",
+							"All Files (*.*)" };
+					filterExtensions = new String[] {
+							"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*" };
 					filterPath = "c:\\";
 				}
 
-				String workingDir = Util.getPreferenceStore().getString("workingDir");
+				String workingDir = Util.getPreferenceStore().getString(
+						"workingDir");
 				if (workingDir.length() > 0) {
 					dialog.setFilterPath(workingDir);
 				} else {
@@ -368,24 +366,30 @@ public class View extends ViewPart {
 		};
 		actionSave.setText("Save...");
 		actionSave.setToolTipText("Save CSV");
-		actionSave.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionSave.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		actionClose = new Action() {
 			public void run() {
 				System.out.println("executing actionClose");
 				ISelection iSelection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) iSelection).getFirstElement();
+				Object obj = ((IStructuredSelection) iSelection)
+						.getFirstElement();
 				String key = (String) obj;
 				ModelKeeper.remove(key);
 				removeFilename(obj);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 				ViewData viewData = (ViewData) page.findView(ViewData.ID);
 				viewData.clearView(key);
 			}
 		};
 		actionClose.setText("Close");
 		actionClose.setToolTipText("Close CSV");
-		actionClose.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionClose.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		// actionExportToTDB = new Action() {
 		// public void run() {
@@ -628,12 +632,15 @@ public class View extends ViewPart {
 				System.out.println("iSelection=" + iSelection);
 				if (!iSelection.isEmpty()) {
 
-					Object obj = ((IStructuredSelection) iSelection).getFirstElement();
+					Object obj = ((IStructuredSelection) iSelection)
+							.getFirstElement();
 					String key = (String) obj;
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
 					ViewData viewData = (ViewData) page.findView(ViewData.ID);
 					System.out.println("key=" + key);
-					MyDialog dialog = new MyDialog(Display.getCurrent().getActiveShell());
+					MyDialog dialog = new MyDialog(Display.getCurrent()
+							.getActiveShell());
 					dialog.create();
 					if (dialog.open() == Window.OK) {
 
@@ -656,21 +663,28 @@ public class View extends ViewPart {
 						if (dataSourceLid.matches("^\\d+$")) {
 							dataSourceLidInt = Integer.parseInt(dataSourceLid);
 						} else {
-							GenericQuery iGenericQuery = new GenericQuery(qGetNextDSIndex.getQuery(), "Internal Query");
+							GenericQuery iGenericQuery = new GenericQuery(
+									qGetNextDSIndex.getQuery(),
+									"Internal Query");
 							iGenericQuery.getData();
-							QueryResults parts = iGenericQuery.getQueryResults();
-							List<DataRow> resultRow = parts.getModelProvider().getData();
+							QueryResults parts = iGenericQuery
+									.getQueryResults();
+							List<DataRow> resultRow = parts.getModelProvider()
+									.getData();
 							if (resultRow.size() > 0) {
 								DataRow row = resultRow.get(0);
 								List<String> valueList = row.getColumnValues();
-								dataSourceLidInt = Integer.parseInt(valueList.get(0));
+								dataSourceLidInt = Integer.parseInt(valueList
+										.get(0));
 							}
 						}
 						// ---------------------------------
 						Model model = SelectTDB.model;
 						if (model == null) {
 							String msg = "ERROR no TDB open";
-							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							Util.findView(QueryView.ID).getViewSite()
+									.getActionBars().getStatusLineManager()
+									.setMessage(msg);
 							return;
 						}
 						System.out.println("Running ExportSubsToTDB internals");
@@ -692,35 +706,63 @@ public class View extends ViewPart {
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
 						Resource ds = model.getResource(eco_p + "DataSource");
-						Resource flowable = model.getResource(eco_p + "Flowable");
-						Property altLabel = model.getProperty(skos_p + "altLabel");
-						Property majV = model.getProperty(eco_p + "hasMajorVersionNumber");
-						Property minV = model.getProperty(eco_p + "hasMinorVersionNumber");
-						Property lid = model.getProperty(ethold_p + "localSerialNumber");
-						Property foundOnRow = model.getProperty(ethold_p + "foundOnRow");
-						Property HTuserName = model.getProperty(ethold_p + "HTuserName");
-						Property HTuserAffiliation = model.getProperty(ethold_p + "HTuserAffiliation");
-						Property HTuserPhone = model.getProperty(ethold_p + "HTuserPhone");
-						Property HTuserEmail = model.getProperty(ethold_p + "HTuserEmail");
-						Property dataParseTimeStamp = model.getProperty(ethold_p + "dataParseTimeStamp");
-						Property casNumber = model.getProperty(eco_p + "casNumber");
-						Property hasDataSource = model.getProperty(eco_p + "hasDataSource");
-						Property fileName = model.getProperty(nfo_p + "fileName");
-						Property fileSize = model.getProperty(nfo_p + "fileSize");
-						Property fileLastModified = model.getProperty(nfo_p + "fileLastModified");
-						Literal dsLidLit = model.createTypedLiteral(dataSourceLidInt);
-						Literal dsNameLit = model.createTypedLiteral(dataSourceName);
-						Literal dsMajLit = model.createTypedLiteral(majorNumber);
-						Literal dsMinLit = model.createTypedLiteral(minorNumber);
+						Resource flowable = model.getResource(eco_p
+								+ "Flowable");
+						Property altLabel = model.getProperty(skos_p
+								+ "altLabel");
+						Property majV = model.getProperty(eco_p
+								+ "hasMajorVersionNumber");
+						Property minV = model.getProperty(eco_p
+								+ "hasMinorVersionNumber");
+						Property lid = model.getProperty(ethold_p
+								+ "localSerialNumber");
+						Property foundOnRow = model.getProperty(ethold_p
+								+ "foundOnRow");
+						Property HTuserName = model.getProperty(ethold_p
+								+ "HTuserName");
+						Property HTuserAffiliation = model.getProperty(ethold_p
+								+ "HTuserAffiliation");
+						Property HTuserPhone = model.getProperty(ethold_p
+								+ "HTuserPhone");
+						Property HTuserEmail = model.getProperty(ethold_p
+								+ "HTuserEmail");
+						Property dataParseTimeStamp = model
+								.getProperty(ethold_p + "dataParseTimeStamp");
+						Property casNumber = model.getProperty(eco_p
+								+ "casNumber");
+						Property hasDataSource = model.getProperty(eco_p
+								+ "hasDataSource");
+						Property fileName = model.getProperty(nfo_p
+								+ "fileName");
+						Property fileSize = model.getProperty(nfo_p
+								+ "fileSize");
+						Property fileLastModified = model.getProperty(nfo_p
+								+ "fileLastModified");
+						Literal dsLidLit = model
+								.createTypedLiteral(dataSourceLidInt);
+						Literal dsNameLit = model
+								.createTypedLiteral(dataSourceName);
+						Literal dsMajLit = model
+								.createTypedLiteral(majorNumber);
+						Literal dsMinLit = model
+								.createTypedLiteral(minorNumber);
 						Literal dsCommLit = model.createTypedLiteral(comment);
-						Literal dsFileNameLit = model.createTypedLiteral(filenameStr);
-						Literal dsFileSizeLit = model.createTypedLiteral(filesizeInt);
-						Literal dsFileDateLit = model.createTypedLiteral(filedate_java);
+						Literal dsFileNameLit = model
+								.createTypedLiteral(filenameStr);
+						Literal dsFileSizeLit = model
+								.createTypedLiteral(filesizeInt);
+						Literal dsFileDateLit = model
+								.createTypedLiteral(filedate_java);
 
-						Literal dsHTuserName = model.createTypedLiteral(Util.getPreferenceStore().getString("userName"));
-						Literal dsHTuserAffiliation = model.createTypedLiteral(Util.getPreferenceStore().getString("userAffiliation"));
-						Literal dsHTuserPhone = model.createTypedLiteral(Util.getPreferenceStore().getString("userPhone"));
-						Literal dsHTuserEmail = model.createTypedLiteral(Util.getPreferenceStore().getString("userEmail"));
+						Literal dsHTuserName = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userName"));
+						Literal dsHTuserAffiliation = model
+								.createTypedLiteral(Util.getPreferenceStore()
+										.getString("userAffiliation"));
+						Literal dsHTuserPhone = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userPhone"));
+						Literal dsHTuserEmail = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userEmail"));
 
 						// Dataset dataset = SelectTDB.dataset;
 						// GraphStore graphStore = SelectTDB.graphStore;
@@ -757,11 +799,13 @@ public class View extends ViewPart {
 						// List<String> resultList = idsInfoQuery.getData();
 						// System.out.println(resultList.toString());
 						// System.out.println(idsInfoQuery.getQuery());
-						ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
+						ModelProvider modelProvider = ModelKeeper
+								.getModelProvider(key);
 						List<String> headers = modelProvider.getHeaderNames();
 						System.out.println(headers.toString());
 						List<DataRow> dataRowList = modelProvider.getData();
-						System.out.println("dataRowList.size = " + dataRowList.size());
+						System.out.println("dataRowList.size = "
+								+ dataRowList.size());
 						// List<Resource> dataSetHandles = null;
 
 						// String eco = model.expandPrefix("eco");
@@ -770,7 +814,8 @@ public class View extends ViewPart {
 						// System.out.println("eco means: " + eco);
 						// LOOP ONCE TO GET LARGEST ALREADY PRESENT
 						Resource dsResourceHandle = null;
-						System.out.println("Now to find a list of data sources...");
+						System.out
+								.println("Now to find a list of data sources...");
 
 						// ResIterator dataSetResources = model
 						// .listSubjectsWithProperty(RDF.type, ds);
@@ -784,28 +829,34 @@ public class View extends ViewPart {
 						// dsList.
 
 						// dsList = new List<Resource>();
-						ResIterator dataSetResources = model.listSubjectsWithProperty(RDF.type, ds);
+						ResIterator dataSetResources = model
+								.listSubjectsWithProperty(RDF.type, ds);
 						while (dataSetResources.hasNext()) {
 							Resource dsResource = dataSetResources.next();
 							// dataSetHandles.add(dsResource);
-							StmtIterator lidIterator = dsResource.listProperties(lid);
+							StmtIterator lidIterator = dsResource
+									.listProperties(lid);
 							if (lidIterator.hasNext()) {
 								Statement stmt = lidIterator.next();
-								System.out.println("getLiteral().getInt = " + stmt.getLiteral().getInt());
+								System.out.println("getLiteral().getInt = "
+										+ stmt.getLiteral().getInt());
 
 								System.out.println("getInt = " + stmt.getInt());
 								// dsList.add(dsResource);
 								while (dsList.size() < stmt.getInt()) {
 									dsList.add(null);
 								}
-								dsList.add(stmt.getLiteral().getInt(), dsResource);
-								System.out.println("got lid: " + dsList.indexOf(dsResource));
+								dsList.add(stmt.getLiteral().getInt(),
+										dsResource);
+								System.out.println("got lid: "
+										+ dsList.indexOf(dsResource));
 							} else {
 								// THIS RESOURCE HAS NO LID
 								System.out.println("This resource had no LID");
 							}
 							if (lidIterator.hasNext()) {
-								System.out.println("This resource had more than one LID");
+								System.out
+										.println("This resource had more than one LID");
 								// THIS RESOURCE HAS MORE THAN ONE LID
 							}
 							if (model.contains(dsResource, lid, dsLidLit)) {
@@ -837,21 +888,30 @@ public class View extends ViewPart {
 								model.add(tempHandle, fileSize, dsFileSizeLit);
 							}
 							if (filedate_java != null) {
-								model.add(tempHandle, fileLastModified, dsFileDateLit);
+								model.add(tempHandle, fileLastModified,
+										dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("userName").length() > 0) {
+							if (Util.getPreferenceStore().getString("userName")
+									.length() > 0) {
 								model.add(tempHandle, HTuserName, dsHTuserName);
 							}
-							if (Util.getPreferenceStore().getString("userAffiliation").length() > 0) {
-								model.add(tempHandle, HTuserAffiliation, dsHTuserAffiliation);
+							if (Util.getPreferenceStore()
+									.getString("userAffiliation").length() > 0) {
+								model.add(tempHandle, HTuserAffiliation,
+										dsHTuserAffiliation);
 							}
-							if (Util.getPreferenceStore().getString("userPhone").length() > 0) {
-								model.add(tempHandle, HTuserPhone, dsHTuserPhone);
+							if (Util.getPreferenceStore()
+									.getString("userPhone").length() > 0) {
+								model.add(tempHandle, HTuserPhone,
+										dsHTuserPhone);
 							}
-							if (Util.getPreferenceStore().getString("userEmail").length() > 0) {
-								model.add(tempHandle, HTuserEmail, dsHTuserEmail);
+							if (Util.getPreferenceStore()
+									.getString("userEmail").length() > 0) {
+								model.add(tempHandle, HTuserEmail,
+										dsHTuserEmail);
 							}
-							model.add(tempHandle, dataParseTimeStamp, model.createTypedLiteral(Calendar.getInstance()));
+							model.add(tempHandle, dataParseTimeStamp, model
+									.createTypedLiteral(Calendar.getInstance()));
 							dsResourceHandle = tempHandle;
 						}
 
@@ -861,7 +921,9 @@ public class View extends ViewPart {
 						int csvRow = 0;
 						for (DataRow csvDataRow : dataRowList) {
 							if (csvRow % 10000 == 0) {
-								System.out.println("Finished reading data file row: " + csvRow);
+								System.out
+										.println("Finished reading data file row: "
+												+ csvRow);
 							}
 
 							Literal drRowLit = model.createTypedLiteral(csvRow);
@@ -877,13 +939,17 @@ public class View extends ViewPart {
 							try {
 								int index = headers.indexOf(ViewData.NAME_HDR);
 								if (index > -1) {
-									String unescName = csvDataRow.getColumnValues().get(index);
+									String unescName = csvDataRow
+											.getColumnValues().get(index);
 									name = Util.escape(unescName);
 									// System.out.println("name=" + name);
 									drNameLit = model.createTypedLiteral(name);
 								} else {
 									String msg = "Flowables must have a \"Name\" field!";
-									Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+									Util.findView(QueryView.ID).getViewSite()
+											.getActionBars()
+											.getStatusLineManager()
+											.setMessage(msg);
 									return; // FIXME -- IS THERE A "RIGHT" WAY
 											// TO LEAVE
 
@@ -894,13 +960,16 @@ public class View extends ViewPart {
 							}
 
 							try {
-								int index = headers.indexOf(ViewData.ALT_NAME_HDR);
+								int index = headers
+										.indexOf(ViewData.ALT_NAME_HDR);
 								if (index > -1) {
-									String unescAltName = csvDataRow.getColumnValues().get(index);
+									String unescAltName = csvDataRow
+											.getColumnValues().get(index);
 									altName = Util.escape(unescAltName);
 									// System.out.println("altName=" +
 									// altName);
-									drAltNameLit = model.createTypedLiteral(altName);
+									drAltNameLit = model
+											.createTypedLiteral(altName);
 								}
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
@@ -910,11 +979,15 @@ public class View extends ViewPart {
 							try {
 								int index = headers.indexOf(ViewData.CASRN_HDR);
 								if (index > -1) {
-									String unescCasrn = csvDataRow.getColumnValues().get(index);
+									String unescCasrn = csvDataRow
+											.getColumnValues().get(index);
 									casrn = Util.escape(unescCasrn);
-									casrn = casrn.replaceFirst("[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$", "$1-$2-$3"); // REMOVE
-																														// LEADING
-																														// STUFF,
+									casrn = casrn
+											.replaceFirst(
+													"[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
+													"$1-$2-$3"); // REMOVE
+																	// LEADING
+																	// STUFF,
 									drCasLit = model.createTypedLiteral(casrn);
 								}
 							} catch (Exception e) {
@@ -940,13 +1013,16 @@ public class View extends ViewPart {
 								if (altName != null && altName.length() > 0) {
 									// newSub.addLiteral(altLabel,
 									// drAltNameLit);
-									model.addLiteral(newSub, altLabel, drAltNameLit);
+									model.addLiteral(newSub, altLabel,
+											drAltNameLit);
 								}
 								if (casrn != null && casrn.length() > 0) {
-									model.addLiteral(newSub, casNumber, drCasLit);
+									model.addLiteral(newSub, casNumber,
+											drCasLit);
 									// newSub.addLiteral(casNumber, drCasLit);
 								}
-								model.add(newSub, hasDataSource, dsResourceHandle);
+								model.add(newSub, hasDataSource,
+										dsResourceHandle);
 								// newSub.addProperty(hasDataSource,
 								// dsResourceHandle);
 								subResourceHandle = newSub;
@@ -998,7 +1074,9 @@ public class View extends ViewPart {
 		};
 		actionParseFlowablesToTDB.setText("Parse Flowables");
 		actionParseFlowablesToTDB.setToolTipText("Parse flowables to TDB");
-		actionParseFlowablesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionParseFlowablesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		actionParseCategoriesToTDB = new Action() {
 			public void run() {
@@ -1007,12 +1085,15 @@ public class View extends ViewPart {
 				System.out.println("iSelection=" + iSelection);
 				if (!iSelection.isEmpty()) {
 
-					Object obj = ((IStructuredSelection) iSelection).getFirstElement();
+					Object obj = ((IStructuredSelection) iSelection)
+							.getFirstElement();
 					String key = (String) obj;
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
 					ViewData viewData = (ViewData) page.findView(ViewData.ID);
 					System.out.println("key=" + key);
-					MyDialog dialog = new MyDialog(Display.getCurrent().getActiveShell());
+					MyDialog dialog = new MyDialog(Display.getCurrent()
+							.getActiveShell());
 					dialog.create();
 					if (dialog.open() == Window.OK) {
 						String dataSourceLid = dialog.getDataSourceLid();
@@ -1034,21 +1115,28 @@ public class View extends ViewPart {
 						if (dataSourceLid.matches("^\\d+$")) {
 							dataSourceLidInt = Integer.parseInt(dataSourceLid);
 						} else {
-							GenericQuery iGenericQuery = new GenericQuery(qGetNextDSIndex.getQuery(), "Internal Query");
+							GenericQuery iGenericQuery = new GenericQuery(
+									qGetNextDSIndex.getQuery(),
+									"Internal Query");
 							iGenericQuery.getData();
-							QueryResults parts = iGenericQuery.getQueryResults();
-							List<DataRow> resultRow = parts.getModelProvider().getData();
+							QueryResults parts = iGenericQuery
+									.getQueryResults();
+							List<DataRow> resultRow = parts.getModelProvider()
+									.getData();
 							if (resultRow.size() > 0) {
 								DataRow row = resultRow.get(0);
 								List<String> valueList = row.getColumnValues();
-								dataSourceLidInt = Integer.parseInt(valueList.get(0));
+								dataSourceLidInt = Integer.parseInt(valueList
+										.get(0));
 							}
 						}
 						// ---------------------------------
 						Model model = SelectTDB.model;
 						if (model == null) {
 							String msg = "ERROR no TDB open";
-							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							Util.findView(QueryView.ID).getViewSite()
+									.getActionBars().getStatusLineManager()
+									.setMessage(msg);
 							return;
 						}
 						System.out.println("Running ExportSubsToTDB internals");
@@ -1070,36 +1158,65 @@ public class View extends ViewPart {
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
 						Resource ds = model.getResource(eco_p + "DataSource");
-						Resource category = model.getResource(ethold_p + "Category");
-						Property majV = model.getProperty(eco_p + "hasMajorVersionNumber");
-						Property minV = model.getProperty(eco_p + "hasMinorVersionNumber");
-						Property lid = model.getProperty(ethold_p + "localSerialNumber");
-						Property foundOnRow = model.getProperty(ethold_p + "foundOnRow");
-						Property HTuserName = model.getProperty(ethold_p + "HTuserName");
-						Property HTuserAffiliation = model.getProperty(ethold_p + "HTuserAffiliation");
-						Property HTuserPhone = model.getProperty(ethold_p + "HTuserPhone");
-						Property HTuserEmail = model.getProperty(ethold_p + "HTuserEmail");
-						Property dataParseTimeStamp = model.getProperty(ethold_p + "dataParseTimeStamp");
-						Property cat1Prop = model.getProperty(ethold_p + "cat1Prop");
-						Property cat2Prop = model.getProperty(ethold_p + "cat2Prop");
-						Property cat3Prop = model.getProperty(ethold_p + "cat3Prop");
-						Property hasDataSource = model.getProperty(eco_p + "hasDataSource");
-						Property fileName = model.getProperty(nfo_p + "fileName");
-						Property fileSize = model.getProperty(nfo_p + "fileSize");
-						Property fileLastModified = model.getProperty(nfo_p + "fileLastModified");
-						Literal dsLidLit = model.createTypedLiteral(dataSourceLidInt);
-						Literal dsNameLit = model.createTypedLiteral(dataSourceName);
-						Literal dsMajLit = model.createTypedLiteral(majorNumber);
-						Literal dsMinLit = model.createTypedLiteral(minorNumber);
+						Resource category = model.getResource(ethold_p
+								+ "Category");
+						Property majV = model.getProperty(eco_p
+								+ "hasMajorVersionNumber");
+						Property minV = model.getProperty(eco_p
+								+ "hasMinorVersionNumber");
+						Property lid = model.getProperty(ethold_p
+								+ "localSerialNumber");
+						Property foundOnRow = model.getProperty(ethold_p
+								+ "foundOnRow");
+						Property HTuserName = model.getProperty(ethold_p
+								+ "HTuserName");
+						Property HTuserAffiliation = model.getProperty(ethold_p
+								+ "HTuserAffiliation");
+						Property HTuserPhone = model.getProperty(ethold_p
+								+ "HTuserPhone");
+						Property HTuserEmail = model.getProperty(ethold_p
+								+ "HTuserEmail");
+						Property dataParseTimeStamp = model
+								.getProperty(ethold_p + "dataParseTimeStamp");
+						Property cat1Prop = model.getProperty(ethold_p
+								+ "cat1Prop");
+						Property cat2Prop = model.getProperty(ethold_p
+								+ "cat2Prop");
+						Property cat3Prop = model.getProperty(ethold_p
+								+ "cat3Prop");
+						Property hasDataSource = model.getProperty(eco_p
+								+ "hasDataSource");
+						Property fileName = model.getProperty(nfo_p
+								+ "fileName");
+						Property fileSize = model.getProperty(nfo_p
+								+ "fileSize");
+						Property fileLastModified = model.getProperty(nfo_p
+								+ "fileLastModified");
+						Literal dsLidLit = model
+								.createTypedLiteral(dataSourceLidInt);
+						Literal dsNameLit = model
+								.createTypedLiteral(dataSourceName);
+						Literal dsMajLit = model
+								.createTypedLiteral(majorNumber);
+						Literal dsMinLit = model
+								.createTypedLiteral(minorNumber);
 						Literal dsCommLit = model.createTypedLiteral(comment);
-						Literal dsFileNameLit = model.createTypedLiteral(filenameStr);
-						Literal dsFileSizeLit = model.createTypedLiteral(filesizeInt);
-						Literal dsFileDateLit = model.createTypedLiteral(filedate_java);
+						Literal dsFileNameLit = model
+								.createTypedLiteral(filenameStr);
+						Literal dsFileSizeLit = model
+								.createTypedLiteral(filesizeInt);
+						Literal dsFileDateLit = model
+								.createTypedLiteral(filedate_java);
 
-						Literal dsHTuserName = model.createTypedLiteral(Util.getPreferenceStore().getString("userName"));
-						Literal dsHTuserAffiliation = model.createTypedLiteral(Util.getPreferenceStore().getString("userAffiliation"));
-						Literal dsHTuserPhone = model.createTypedLiteral(Util.getPreferenceStore().getString("userPhone"));
-						Literal dsHTuserEmail = model.createTypedLiteral(Util.getPreferenceStore().getString("userEmail"));
+						Literal dsHTuserName = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userName"));
+						Literal dsHTuserAffiliation = model
+								.createTypedLiteral(Util.getPreferenceStore()
+										.getString("userAffiliation"));
+						Literal dsHTuserPhone = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userPhone"));
+						Literal dsHTuserEmail = model.createTypedLiteral(Util
+								.getPreferenceStore().getString("userEmail"));
 
 						// Dataset dataset = SelectTDB.dataset;
 						// GraphStore graphStore = SelectTDB.graphStore;
@@ -1120,37 +1237,46 @@ public class View extends ViewPart {
 						resDataRow.add("Before Update");
 						resDataRow.add("" + model.size());
 
-						ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
+						ModelProvider modelProvider = ModelKeeper
+								.getModelProvider(key);
 						List<String> headers = modelProvider.getHeaderNames();
 						System.out.println(headers.toString());
 						List<DataRow> dataRowList = modelProvider.getData();
-						System.out.println("dataRowList.size = " + dataRowList.size());
+						System.out.println("dataRowList.size = "
+								+ dataRowList.size());
 
 						Resource dsResourceHandle = null;
-						System.out.println("Now to find a list of data sources...");
+						System.out
+								.println("Now to find a list of data sources...");
 
-						ResIterator dataSetResources = model.listSubjectsWithProperty(RDF.type, ds);
+						ResIterator dataSetResources = model
+								.listSubjectsWithProperty(RDF.type, ds);
 						while (dataSetResources.hasNext()) {
 							Resource dsResource = dataSetResources.next();
 							// dataSetHandles.add(dsResource);
-							StmtIterator lidIterator = dsResource.listProperties(lid);
+							StmtIterator lidIterator = dsResource
+									.listProperties(lid);
 							if (lidIterator.hasNext()) {
 								Statement stmt = lidIterator.next();
-								System.out.println("getLiteral().getInt = " + stmt.getLiteral().getInt());
+								System.out.println("getLiteral().getInt = "
+										+ stmt.getLiteral().getInt());
 
 								System.out.println("getInt = " + stmt.getInt());
 								// dsList.add(dsResource);
 								while (dsList.size() < stmt.getInt()) {
 									dsList.add(null);
 								}
-								dsList.add(stmt.getLiteral().getInt(), dsResource);
-								System.out.println("got lid: " + dsList.indexOf(dsResource));
+								dsList.add(stmt.getLiteral().getInt(),
+										dsResource);
+								System.out.println("got lid: "
+										+ dsList.indexOf(dsResource));
 							} else {
 								// THIS RESOURCE HAS NO LID
 								System.out.println("This resource had no LID");
 							}
 							if (lidIterator.hasNext()) {
-								System.out.println("This resource had more than one LID");
+								System.out
+										.println("This resource had more than one LID");
 								// THIS RESOURCE HAS MORE THAN ONE LID
 							}
 							if (model.contains(dsResource, lid, dsLidLit)) {
@@ -1183,21 +1309,30 @@ public class View extends ViewPart {
 								model.add(tempHandle, fileSize, dsFileSizeLit);
 							}
 							if (filedate_java != null) {
-								model.add(tempHandle, fileLastModified, dsFileDateLit);
+								model.add(tempHandle, fileLastModified,
+										dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("userName").length() > 0) {
+							if (Util.getPreferenceStore().getString("userName")
+									.length() > 0) {
 								model.add(tempHandle, HTuserName, dsHTuserName);
 							}
-							if (Util.getPreferenceStore().getString("userAffiliation").length() > 0) {
-								model.add(tempHandle, HTuserAffiliation, dsHTuserAffiliation);
+							if (Util.getPreferenceStore()
+									.getString("userAffiliation").length() > 0) {
+								model.add(tempHandle, HTuserAffiliation,
+										dsHTuserAffiliation);
 							}
-							if (Util.getPreferenceStore().getString("userPhone").length() > 0) {
-								model.add(tempHandle, HTuserPhone, dsHTuserPhone);
+							if (Util.getPreferenceStore()
+									.getString("userPhone").length() > 0) {
+								model.add(tempHandle, HTuserPhone,
+										dsHTuserPhone);
 							}
-							if (Util.getPreferenceStore().getString("userEmail").length() > 0) {
-								model.add(tempHandle, HTuserEmail, dsHTuserEmail);
+							if (Util.getPreferenceStore()
+									.getString("userEmail").length() > 0) {
+								model.add(tempHandle, HTuserEmail,
+										dsHTuserEmail);
 							}
-							model.add(tempHandle, dataParseTimeStamp, model.createTypedLiteral(Calendar.getInstance()));
+							model.add(tempHandle, dataParseTimeStamp, model
+									.createTypedLiteral(Calendar.getInstance()));
 							dsResourceHandle = tempHandle;
 						}
 
@@ -1207,7 +1342,9 @@ public class View extends ViewPart {
 						int csvRow = 0;
 						for (DataRow csvDataRow : dataRowList) {
 							if (csvRow % 10000 == 0) {
-								System.out.println("Finished reading data file row: " + csvRow);
+								System.out
+										.println("Finished reading data file row: "
+												+ csvRow);
 							}
 
 							Literal drRowLit = model.createTypedLiteral(csvRow);
@@ -1223,7 +1360,8 @@ public class View extends ViewPart {
 							try {
 								int index = headers.indexOf(ViewData.CAT1_HDR);
 								if (index > -1) {
-									String unescCat1 = csvDataRow.getColumnValues().get(index);
+									String unescCat1 = csvDataRow
+											.getColumnValues().get(index);
 									cat1 = Util.escape(unescCat1);
 									// System.out.println("cat=" + cat);
 									drCat1Lit = model.createTypedLiteral(cat1);
@@ -1231,7 +1369,10 @@ public class View extends ViewPart {
 
 								else {
 									String msg = "Categories must have a \"Cat1\" field!";
-									Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+									Util.findView(QueryView.ID).getViewSite()
+											.getActionBars()
+											.getStatusLineManager()
+											.setMessage(msg);
 									return; // FIXME -- IS THERE A "RIGHT"
 											// WAY
 											// TO LEAVE
@@ -1244,11 +1385,14 @@ public class View extends ViewPart {
 
 							try {
 								{
-									int index = headers.indexOf(ViewData.CAT2_HDR);
+									int index = headers
+											.indexOf(ViewData.CAT2_HDR);
 									if (index > -1) {
-										String unescCat2 = csvDataRow.getColumnValues().get(index);
+										String unescCat2 = csvDataRow
+												.getColumnValues().get(index);
 										cat2 = Util.escape(unescCat2);
-										drCat2Lit = model.createTypedLiteral(cat2);
+										drCat2Lit = model
+												.createTypedLiteral(cat2);
 										// System.out.println("subcat=" +
 										// subcat);
 									}
@@ -1259,11 +1403,14 @@ public class View extends ViewPart {
 							}
 							try {
 								{
-									int index = headers.indexOf(ViewData.CAT3_HDR);
+									int index = headers
+											.indexOf(ViewData.CAT3_HDR);
 									if (index > -1) {
-										String unescCat3 = csvDataRow.getColumnValues().get(index);
+										String unescCat3 = csvDataRow
+												.getColumnValues().get(index);
 										cat3 = Util.escape(unescCat3);
-										drCat3Lit = model.createTypedLiteral(cat3);
+										drCat3Lit = model
+												.createTypedLiteral(cat3);
 										// System.out.println("subcat=" +
 										// subcat);
 									}
@@ -1291,13 +1438,16 @@ public class View extends ViewPart {
 								if (cat2 != null && cat2.length() > 0) {
 									// newSub.addLiteral(altLabel,
 									// drAltNameLit);
-									model.addLiteral(newCat, cat2Prop, drCat2Lit);
+									model.addLiteral(newCat, cat2Prop,
+											drCat2Lit);
 								}
 								if (cat3 != null && cat3.length() > 0) {
-									model.addLiteral(newCat, cat3Prop, drCat3Lit);
+									model.addLiteral(newCat, cat3Prop,
+											drCat3Lit);
 									// newSub.addLiteral(casNumber, drCasLit);
 								}
-								model.add(newCat, hasDataSource, dsResourceHandle);
+								model.add(newCat, hasDataSource,
+										dsResourceHandle);
 								// newSub.addProperty(hasDataSource,
 								// dsResourceHandle);
 								catResourceHandle = newCat;
@@ -1349,7 +1499,9 @@ public class View extends ViewPart {
 		};
 		actionParseCategoriesToTDB.setText("Parse Categories");
 		actionParseCategoriesToTDB.setToolTipText("Parse Categories to TDB");
-		actionParseCategoriesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionParseCategoriesToTDB.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		// viewer.addDoubleClickListener(new IDoubleClickListener() {
 		// // viewer.add
@@ -1372,11 +1524,13 @@ public class View extends ViewPart {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) viewer
+						.getSelection();
 				if (selection.isEmpty())
 					return;
 				String key = (String) selection.toList().get(0);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 				ViewData viewData = (ViewData) page.findView(ViewData.ID);
 				viewData.update(key);
 				// ... AND BRING UP THE DATA CONTENTS VIEW

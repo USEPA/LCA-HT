@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ModelProvider {
 	private Map<String, String> metaData = new LinkedHashMap<String, String>();
@@ -19,6 +20,9 @@ public class ModelProvider {
 	}
 	public Boolean hasMetaKey(String key){
 		return metaData.keySet().contains(key);
+	}
+	public Set<String> getKeys(){
+		return metaData.keySet();
 	}
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
