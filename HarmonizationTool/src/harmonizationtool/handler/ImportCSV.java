@@ -56,11 +56,12 @@ public class ImportCSV implements IHandler {
 		System.out.println("executing Import CSV");
 		ModelProvider modelProvider = new ModelProvider();
 		long filesizeLong = 0;
-		int filesizeInt = 0;
+		// int filesizeInt = 0;
 		Calendar filedateJava = null;
 		String fileNameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
 
-		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
+		FileDialog fileDialog = new FileDialog(HandlerUtil
+				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 		String workingDir = Util.getPreferenceStore().getString("workingDir");
 		if (workingDir.length() > 0) {
@@ -77,13 +78,15 @@ public class ImportCSV implements IHandler {
 				fileNameStr = file.getName();
 				System.out.println("parsed filename as:" + fileNameStr);
 				filesizeLong = file.length();
-				filesizeInt = (int) filesizeLong;
+//				filesizeInt = (int) filesizeLong;
 				System.out.println("Size long= " + filesizeLong);
 				filedateJava = Calendar.getInstance();
 				filedateJava.setTime(new Date(file.lastModified()));
 				System.out.println("filedateJava = " + filedateJava.toString());
-				System.out.println("filedateJava timeZone = " + filedateJava.getTimeZone());
-				System.out.println("filedataJava UTC?? = " + filedateJava.getTime());
+				System.out.println("filedateJava timeZone = "
+						+ filedateJava.getTimeZone());
+				System.out.println("filedataJava UTC?? = "
+						+ filedateJava.getTime());
 			}
 		}
 
@@ -95,7 +98,8 @@ public class ImportCSV implements IHandler {
 		}
 		if (fileReader == null) {
 			String msg = "Can not read CSV file!";
-			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			Util.findView(View.ID).getViewSite().getActionBars()
+					.getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
 			return null;
 		}
@@ -108,13 +112,16 @@ public class ImportCSV implements IHandler {
 		}
 		if (values == null) {
 			String msg = "No content in CSV file!";
-			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			Util.findView(View.ID).getViewSite().getActionBars()
+					.getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
 			return null;
 		}
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
-		ModelKeeper.saveModelProvider(path, modelProvider); // SUPPOSED TO SAVE ONLY IF
-															// CONTENT, BUT DOESN'T WORK
+		ModelKeeper.saveModelProvider(path, modelProvider); // SUPPOSED TO SAVE
+															// ONLY IF
+															// CONTENT, BUT
+															// DOESN'T WORK
 
 		View view = (View) Util.findView(View.ID);
 		view.addFilename(path);
@@ -131,7 +138,8 @@ public class ImportCSV implements IHandler {
 			}
 		}
 
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
 		ViewData viewData = (ViewData) page.findView(ViewData.ID);
 
 		String title = viewData.getTitle();
@@ -155,34 +163,35 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		String msg = "Read file: " + path;
-		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		Util.findView(View.ID).getViewSite().getActionBars()
+				.getStatusLineManager().setMessage(msg);
 
 		// NOW OPEN DIALOG AND PRE-POPULATE SOME
-		CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
-		dialog.metaData.put("fileName", fileNameStr);
-		dialog.metaData.put("fileSize", "" + filesizeLong);
-		dialog.metaData.put("fileLastModified", filedateJava.getTime().toString());
-		// dialog.setFilename(fileNameStr);
-		// dialog.setBytes("" + filesizeLong);
-		// dialog.setLastModified(filedateJava.getTime() + "");
+		CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent()
+				.getActiveShell());
+		modelProvider.setMetaKeyValue("fileName", fileNameStr);
+		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
+		modelProvider.setMetaKeyValue("fileLastModified", ""
+				+ filedateJava.getTime().toString());
 
 		dialog.create();
 
 		if (dialog.open() == Window.OK) {
-			Iterator<String> keySeq = dialog.metaData.keySet().iterator();
-			Iterator<Text> valueSeq = dialog.dialogValues.iterator();
-			while (valueSeq.hasNext()) {
-				Text textBox = valueSeq.next();
-				String key = keySeq.next();
-				// String metaValue = dialog.metaData.get(key);
-				dialog.metaData.put(key, textBox.toString());
-			}
-			modelProvider.metaData = dialog.metaData;
-			// Map<String, Object> metaMap = dialog.getMetaMap();
-			// System.out.println("metaMap: "+ metaMap.toString());
-			// System.out.println("filename: "+ metaMap.get("filename").toString());
-			//
-			// modelProvider.setMetaMap(metaMap);
+			// Iterator<String> keySeq = dialog.metaData.keySet().iterator();
+			// Iterator<Text> valueSeq = dialog.dialogValues.iterator();
+			// while (valueSeq.hasNext()) {
+			// Text textBox = valueSeq.next();
+			// String key = keySeq.next();
+			// // String metaValue = dialog.metaData.get(key);
+			// dialog.metaData.put(key, textBox.toString());
+			// }
+			// modelProvider.metaData = dialog.metaData;
+			// // Map<String, Object> metaMap = dialog.getMetaMap();
+			// // System.out.println("metaMap: "+ metaMap.toString());
+			// // System.out.println("filename: "+
+			// metaMap.get("filename").toString());
+			// //
+			// // modelProvider.setMetaMap(metaMap);
 			System.out.println("yeah");
 		}
 
