@@ -7,10 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 public class ModelProvider {
-	public Map<String, String> metaData = new LinkedHashMap<String, String>();
+	private Map<String, String> metaData = new LinkedHashMap<String, String>();
 	private List<String> headerNames = null;
 	private List<DataRow> data = new ArrayList<DataRow>();
 
+	public void setMetaKeyValue(String key,String value) {
+		metaData.put(key, value);
+	}
+	public String getMetaValue(String key) {
+		return metaData.get(key);
+	}
+	public Boolean hasMetaKey(String key){
+		return metaData.keySet().contains(key);
+	}
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
 	}

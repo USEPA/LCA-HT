@@ -292,23 +292,23 @@ public class View extends ViewPart {
 					return;
 				String key = (String) selection.toList().get(0);
 				ModelProvider csvFile = ModelKeeper.getModelProvider(key);
-				Map<String, String> metaData = csvFile.metaData;
-				CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
-				// dialog.setBytes(filesizeInt.)
-				System.out.println("e.g. filename"+metaData.get("fileName"));
-
-				dialog.metaData = metaData;
-				dialog.create();
-
-				if (dialog.open() == Window.OK) {
-//					Map<String, Object> metaMap2 = dialog.getMetaMap();
-//					csvFile.setMetaMap(metaMap2);
-					System.out.println("yeah");
-				}
-
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-				viewData.update(key);
+//				Map<String, String> metaData = csvFile.metaData;
+//				CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent().getActiveShell());
+//				// dialog.setBytes(filesizeInt.)
+//				System.out.println("e.g. filename"+metaData.get("fileName"));
+//
+//				dialog.metaData = metaData;
+//				dialog.create();
+//
+//				if (dialog.open() == Window.OK) {
+////					Map<String, Object> metaMap2 = dialog.getMetaMap();
+////					csvFile.setMetaMap(metaMap2);
+//					System.out.println("yeah");
+//				}
+//
+//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+//				viewData.update(key);
 
 			}
 		};
