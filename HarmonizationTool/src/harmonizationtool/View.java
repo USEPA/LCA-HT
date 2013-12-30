@@ -12,6 +12,7 @@ import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.IdsInfoQuery;
 import harmonizationtool.query.IdsRowQuery;
 import harmonizationtool.query.QueryResults;
+import harmonizationtool.utils.DataSetMap;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.ZGetNextDSIndex;
 
@@ -643,7 +644,10 @@ public class View extends ViewPart {
 							.getActiveShell());
 					dialog.create();
 					if (dialog.open() == Window.OK) {
-
+//						Dat /aSetMgr dataSetMgr = new DataSetMgr();
+						DataSetMap dataSetMap = DataSetMap.getInstance();
+						
+//						dataS /etMgr.
 						String dataSourceLid = dialog.getDataSourceLid();
 						String dataSourceName = dialog.getDataSourceName();
 						String majorNumber = dialog.getMajorVersion();
