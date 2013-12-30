@@ -3,7 +3,7 @@ package harmonizationtool.handler;
 import harmonizationtool.QueryView;
 import harmonizationtool.View;
 import harmonizationtool.ViewData;
-import harmonizationtool.dialog.CSVImportDialog;
+import harmonizationtool.dialog.CSVMetaDialog;
 import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelKeeper;
@@ -110,7 +110,7 @@ public class ImportCSV implements IHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (values == null) {
+		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
 			String msg = "No content in CSV file!";
 			Util.findView(View.ID).getViewSite().getActionBars()
 					.getStatusLineManager().setMessage(msg);
@@ -118,10 +118,7 @@ public class ImportCSV implements IHandler {
 			return null;
 		}
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
-		ModelKeeper.saveModelProvider(path, modelProvider); // SUPPOSED TO SAVE
-															// ONLY IF
-															// CONTENT, BUT
-															// DOESN'T WORK
+		ModelKeeper.saveModelProvider(path, modelProvider);
 
 		View view = (View) Util.findView(View.ID);
 		view.addFilename(path);
@@ -162,38 +159,20 @@ public class ImportCSV implements IHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String msg = "Read file: " + path;
+		String msg = "Finished reading file: " + path;
 		Util.findView(View.ID).getViewSite().getActionBars()
 				.getStatusLineManager().setMessage(msg);
 
 		// NOW OPEN DIALOG AND PRE-POPULATE SOME
-		CSVImportDialog dialog = new CSVImportDialog(Display.getCurrent()
-				.getActiveShell());
+		CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
+				.getActiveShell(), modelProvider);
 		modelProvider.setMetaKeyValue("fileName", fileNameStr);
 		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
 		modelProvider.setMetaKeyValue("fileLastModified", ""
 				+ filedateJava.getTime().toString());
 
 		dialog.create();
-
-		if (dialog.open() == Window.OK) {
-			// Iterator<String> keySeq = dialog.metaData.keySet().iterator();
-			// Iterator<Text> valueSeq = dialog.dialogValues.iterator();
-			// while (valueSeq.hasNext()) {
-			// Text textBox = valueSeq.next();
-			// String key = keySeq.next();
-			// // String metaValue = dialog.metaData.get(key);
-			// dialog.metaData.put(key, textBox.toString());
-			// }
-			// modelProvider.metaData = dialog.metaData;
-			// // Map<String, Object> metaMap = dialog.getMetaMap();
-			// // System.out.println("metaMap: "+ metaMap.toString());
-			// // System.out.println("filename: "+
-			// metaMap.get("filename").toString());
-			// //
-			// // modelProvider.setMetaMap(metaMap);
-			System.out.println("yeah");
-		}
+		dialog.open();
 
 		return null;
 	}
