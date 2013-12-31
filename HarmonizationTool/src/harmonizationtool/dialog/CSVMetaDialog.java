@@ -14,8 +14,10 @@ import java.util.Set;
 import harmonizationtool.ViewData;
 import harmonizationtool.handler.ImportCSV;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -27,6 +29,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,6 +42,7 @@ import org.eclipse.ui.PlatformUI;
 public class CSVMetaDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
+	private  Combo combo = null;
 
 	public Map<String, String> metaData = new LinkedHashMap<String, String>();
 
@@ -45,7 +50,15 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		metaData = map;
 	}
 
+	private String[] getDataSetInfo(){
+		String[] list = null;
+		ResourceIdMgr.getResource(0);
+		return list;
+	}
 	private void addMetaDataSet() {
+		if (!modelProvider.hasMetaKey(ModelProvider.DATA_SET_NAME )) {
+			modelProvider.setMetaKeyValue(ModelProvider.DATA_SET_NAME, "");
+		}
 		if (!modelProvider.hasMetaKey("dataSetName")) {
 			modelProvider.setMetaKeyValue("dataSetName", "");
 		}
@@ -89,6 +102,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	}
 
 	private List<Text> dialogValues = new ArrayList<Text>();
+	private boolean initialCreate;
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -102,19 +116,29 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		Label lblAssociatedDataSet = new Label(composite, SWT.NONE);
 		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lblAssociatedDataSet.setText("Data Set");
-
-		final Combo combo = new Combo(composite, SWT.NONE);
+		
+		combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+//		combo.add("New", 1);
 		combo.setItems(new String[] { "4: (new data set)", "1: ReCiPe 108e",
 				"2: TRACI 2.1", "3: GaBi 1.1" });
-		// combo.setBounds(0, 15, 400, 50);
+		if(initialCreate){
+			combo.setText("Choose...");
+			// combo.setBounds(0, 15, 400, 50);
+		}else{
+			modelProvider.getMetaValue("");
+			combo.setText("1: ReCiPe 108e");
+			combo.setEnabled(false);
+			
+		}
 
 		combo.addModifyListener(new ModifyListener() {
 		      public void modifyText(ModifyEvent e) {
 		    	  populateMeta(combo.getText());
+		    	  getButton(IDialogConstants.OK_ID).setEnabled(true);
 		    	  System.out.println("choice is "+combo.getSelectionIndex()+" with value: "+combo.getText());
 		        }
 		      });
-		combo.setText("Choose");
+
 
 		composite.setLayout(new GridLayout(2, false));
 
@@ -135,13 +159,18 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			dialogValues.get(dialogValues.size() - 1).setText(
 					modelProvider.getMetaValue(key));
 		}
-
 		return super.createDialogArea(parent);
 	}
 
 	public CSVMetaDialog(Shell parentShell, ModelProvider modelProvider) {
 		super(parentShell);
 		this.modelProvider = modelProvider;
+	}
+
+	public CSVMetaDialog(Shell parentShell, ModelProvider modelProvider, boolean initialCreate) {
+		super(parentShell);
+		this.modelProvider = modelProvider;
+		this.initialCreate = initialCreate;
 	}
 
 	@Override
@@ -152,6 +181,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	@Override
 	protected void okPressed() {
 		Iterator<Text> dialogSeq = dialogValues.iterator();
+		String comboText = combo.getText();
+		
 		for (String key : modelProvider.getKeys()) {
 			Text nextText = dialogSeq.next();
 			modelProvider.setMetaKeyValue(key, nextText.getText());
@@ -162,7 +193,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	protected void populateMeta(String data_choice) {
 		System.out.println("The person chose a new data set...");
 
-		if (data_choice.startsWith("4")){
+		if (data_choice.startsWith("x")){
 			System.out.println("... it is new");
 			Set<String> keySet = modelProvider.getKeys();
 			int index = -1;
@@ -176,6 +207,12 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			}
 		}
 		
+	}
+
+	@Override
+	public int open() {
+		getButton(IDialogConstants.OK_ID).setEnabled(false);
+		return super.open();
 	}
 
 }

@@ -14,6 +14,7 @@ import harmonizationtool.query.IdsInfoQuery;
 import harmonizationtool.query.IdsRowQuery;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.DataSetMap;
+import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.ZGetNextDSIndex;
 
@@ -641,27 +642,24 @@ public class View extends ViewPart {
 							.getActiveWorkbenchWindow().getActivePage();
 					ViewData viewData = (ViewData) page.findView(ViewData.ID);
 					System.out.println("key=" + key);
-//					MyDialog dialog = new MyDialog(Display.getCurrent()
-//							.getActiveShell());
-					PlayArea dialog = new PlayArea(Display.getCurrent().getActiveShell(), null);
+					MyDialog dialog = new MyDialog(Display.getCurrent()
+							.getActiveShell());
+//					PlayArea dialog = new PlayArea(Display.getCurrent().getActiveShell(), null);
 					
 					dialog.create();
 					if (dialog.open() == Window.OK) {
-//						Dat /aSetMgr dataSetMgr = new DataSetMgr();
-						DataSetMap dataSetMap = DataSetMap.getInstance();
-						
-//						dataS /etMgr.
-//						String dataSourceLid = dialog.getDataSourceLid();
-//						String dataSourceName = dialog.getDataSourceName();
-//						String majorNumber = dialog.getMajorVersion();
-//						String minorNumber = dialog.getMinorVersion();
-//						String comment = dialog.getComment();
-						String dataSourceLid = "lid";
-						String dataSourceName = "dsName";
-						String majorNumber = "major";
-						String minorNumber = "minor";
-						String comment = "comment";
+//						DataSetMap dataSetMap = DataSetMap.getInstance();
 
+						String dataSourceLid = dialog.getDataSourceLid();
+						String dataSourceName = dialog.getDataSourceName();
+						String majorNumber = dialog.getMajorVersion();
+						String minorNumber = dialog.getMinorVersion();
+						String comment = dialog.getComment();
+//						String dataSourceLid = "lid";
+//						String dataSourceName = "dsName";
+//						String majorNumber = "major";
+//						String minorNumber = "minor";
+//						String comment = "comment";
 
 						System.out.println(dataSourceLid);
 						System.out.println(dataSourceName);
@@ -669,6 +667,15 @@ public class View extends ViewPart {
 						System.out.println(minorNumber);
 						System.out.println(comment);
 
+						Model model = SelectTDB.model;
+						if (model == null) {
+							String msg = "ERROR no TDB open";
+							Util.findView(QueryView.ID).getViewSite()
+									.getActionBars().getStatusLineManager()
+									.setMessage(msg);
+							return;
+						}
+						
 						int dataSourceLidInt = 1; // DEFAULT IF NOT SPECIFIED
 													// AND NO DATA SETS ARE
 													// THERE
@@ -692,14 +699,7 @@ public class View extends ViewPart {
 							}
 						}
 						// ---------------------------------
-						Model model = SelectTDB.model;
-						if (model == null) {
-							String msg = "ERROR no TDB open";
-							Util.findView(QueryView.ID).getViewSite()
-									.getActionBars().getStatusLineManager()
-									.setMessage(msg);
-							return;
-						}
+
 						System.out.println("Running ExportSubsToTDB internals");
 
 						String eco_p = "http://ontology.earthster.org/eco/core#";
@@ -827,6 +827,62 @@ public class View extends ViewPart {
 						// System.out.println("eco means: " + eco);
 						// LOOP ONCE TO GET LARGEST ALREADY PRESENT
 						Resource dsResourceHandle = null;
+						if (ResourceIdMgr.contains(dataSourceLidInt)){
+							dsResourceHandle = ResourceIdMgr.getResource(dataSourceLidInt);
+						}
+						else{
+							dsResourceHandle = model.createResource();
+							model.add(dsResourceHandle, RDF.type, ds);
+							model.add(dsResourceHandle, RDFS.label, dsNameLit); // REQUIRED
+							model.add(dsResourceHandle, lid, dsLidLit); // TO REMOVE
+							if (dsMajLit != null) {
+								model.add(dsResourceHandle, majV, dsMajLit); // OPTIONAL
+							}
+							if (dsMinLit != null) {
+
+								model.add(dsResourceHandle, minV, dsMinLit); // OPTIONAL
+							}
+							if (dsCommLit != null) {
+
+								model.add(dsResourceHandle, RDFS.comment, dsCommLit); // OPTIONAL
+							}
+							if (filenameStr != null) {
+								model.add(dsResourceHandle, fileName, dsFileNameLit);
+							}
+							if (filesizeInt > 0) {
+								model.add(dsResourceHandle, fileSize, dsFileSizeLit);
+							}
+							if (filedate_java != null) {
+								model.add(dsResourceHandle, fileLastModified,
+										dsFileDateLit);
+							}
+							if (Util.getPreferenceStore().getString("userName")
+									.length() > 0) {
+								model.add(dsResourceHandle, HTuserName, dsHTuserName);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userAffiliation").length() > 0) {
+								model.add(dsResourceHandle, HTuserAffiliation,
+										dsHTuserAffiliation);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userPhone").length() > 0) {
+								model.add(dsResourceHandle, HTuserPhone,
+										dsHTuserPhone);
+							}
+							if (Util.getPreferenceStore()
+									.getString("userEmail").length() > 0) {
+								model.add(dsResourceHandle, HTuserEmail,
+										dsHTuserEmail);
+							}
+							model.add(dsResourceHandle, dataParseTimeStamp, model
+									.createTypedLiteral(Calendar.getInstance()));
+
+							ResourceIdMgr.add(dsResourceHandle);
+						}
+//						Resource 
+//						ResourceIdMgr.add(resource);
+//						Resource dsResourceHandle = null;
 						System.out
 								.println("Now to find a list of data sources...");
 
@@ -842,90 +898,43 @@ public class View extends ViewPart {
 						// dsList.
 
 						// dsList = new List<Resource>();
-						ResIterator dataSetResources = model
-								.listSubjectsWithProperty(RDF.type, ds);
-						while (dataSetResources.hasNext()) {
-							Resource dsResource = dataSetResources.next();
-							// dataSetHandles.add(dsResource);
-							StmtIterator lidIterator = dsResource
-									.listProperties(lid);
-							if (lidIterator.hasNext()) {
-								Statement stmt = lidIterator.next();
-								System.out.println("getLiteral().getInt = "
-										+ stmt.getLiteral().getInt());
-
-								System.out.println("getInt = " + stmt.getInt());
-								// dsList.add(dsResource);
-								while (dsList.size() < stmt.getInt()) {
-									dsList.add(null);
-								}
-								dsList.add(stmt.getLiteral().getInt(),
-										dsResource);
-								System.out.println("got lid: "
-										+ dsList.indexOf(dsResource));
-							} else {
-								// THIS RESOURCE HAS NO LID
-								System.out.println("This resource had no LID");
-							}
-							if (lidIterator.hasNext()) {
-								System.out
-										.println("This resource had more than one LID");
-								// THIS RESOURCE HAS MORE THAN ONE LID
-							}
-							if (model.contains(dsResource, lid, dsLidLit)) {
-								dsResourceHandle = dsResource;
-							}
-						}
+//						ResIterator dataSetResources = model
+//								.listSubjectsWithProperty(RDF.type, ds);
+//						while (dataSetResources.hasNext()) {
+//							Resource dsResource = dataSetResources.next();
+//							// dataSetHandles.add(dsResource);
+//							StmtIterator lidIterator = dsResource
+//									.listProperties(lid);
+//							if (lidIterator.hasNext()) {
+//								Statement stmt = lidIterator.next();
+//								System.out.println("getLiteral().getInt = "
+//										+ stmt.getLiteral().getInt());
+//
+//								System.out.println("getInt = " + stmt.getInt());
+//								// dsList.add(dsResource);
+//								while (dsList.size() < stmt.getInt()) {
+//									dsList.add(null);
+//								}
+//								dsList.add(stmt.getLiteral().getInt(),
+//										dsResource);
+//								System.out.println("got lid: "
+//										+ dsList.indexOf(dsResource));
+//							} else {
+//								// THIS RESOURCE HAS NO LID
+//								System.out.println("This resource had no LID");
+//							}
+//							if (lidIterator.hasNext()) {
+//								System.out
+//										.println("This resource had more than one LID");
+//								// THIS RESOURCE HAS MORE THAN ONE LID
+//							}
+//							if (model.contains(dsResource, lid, dsLidLit)) {
+//								dsResourceHandle = dsResource;
+//							}
+//						}
 						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
 						// THIS LID, MAKE ONE
 						if (dsResourceHandle == null) {
-							Resource tempHandle = model.createResource();
-							model.add(tempHandle, RDF.type, ds);
-							model.add(tempHandle, RDFS.label, dsNameLit); // REQUIRED
-							model.add(tempHandle, lid, dsLidLit); // REQUIRED
-							if (dsMajLit != null) {
-								model.add(tempHandle, majV, dsMajLit); // OPTIONAL
-							}
-							if (dsMinLit != null) {
-
-								model.add(tempHandle, minV, dsMinLit); // OPTIONAL
-							}
-							if (dsCommLit != null) {
-
-								model.add(tempHandle, RDFS.comment, dsCommLit); // OPTIONAL
-							}
-							if (filenameStr != null) {
-								model.add(tempHandle, fileName, dsFileNameLit);
-							}
-							if (filesizeInt > 0) {
-								model.add(tempHandle, fileSize, dsFileSizeLit);
-							}
-							if (filedate_java != null) {
-								model.add(tempHandle, fileLastModified,
-										dsFileDateLit);
-							}
-							if (Util.getPreferenceStore().getString("userName")
-									.length() > 0) {
-								model.add(tempHandle, HTuserName, dsHTuserName);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userAffiliation").length() > 0) {
-								model.add(tempHandle, HTuserAffiliation,
-										dsHTuserAffiliation);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userPhone").length() > 0) {
-								model.add(tempHandle, HTuserPhone,
-										dsHTuserPhone);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userEmail").length() > 0) {
-								model.add(tempHandle, HTuserEmail,
-										dsHTuserEmail);
-							}
-							model.add(tempHandle, dataParseTimeStamp, model
-									.createTypedLiteral(Calendar.getInstance()));
-							dsResourceHandle = tempHandle;
 						}
 
 						Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
