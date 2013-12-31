@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 public class PlayArea extends TitleAreaDialog {
 
@@ -103,6 +105,12 @@ public class PlayArea extends TitleAreaDialog {
 		combo.setItems(new String[] {"4: (new data set)", "1: ReCiPe 108e", "2: TRACI 2.1", "3: GaBi 1.1"});
 		combo.setBounds(0, 15, 400, 50);
 		combo.setText("4 (new data set)");
+		
+		ToolBar toolBar = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);
+		toolBar.setBounds(0, 50, 400, 80);
+		
+		ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
+		tltmDropdownItem.setText("DropDown Item\nItem 2\nItme 3");
 //		combo.add("option 1", 0);
 //		combo.add("option 2", 1);
 
