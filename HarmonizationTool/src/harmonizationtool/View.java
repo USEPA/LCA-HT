@@ -3,6 +3,7 @@ package harmonizationtool;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.dialog.CSVMetaDialog;
 import harmonizationtool.dialog.MyDialog;
+import harmonizationtool.dialog.PlayArea;
 import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelKeeper;
@@ -640,19 +641,27 @@ public class View extends ViewPart {
 							.getActiveWorkbenchWindow().getActivePage();
 					ViewData viewData = (ViewData) page.findView(ViewData.ID);
 					System.out.println("key=" + key);
-					MyDialog dialog = new MyDialog(Display.getCurrent()
-							.getActiveShell());
+//					MyDialog dialog = new MyDialog(Display.getCurrent()
+//							.getActiveShell());
+					PlayArea dialog = new PlayArea(Display.getCurrent().getActiveShell(), null);
+					
 					dialog.create();
 					if (dialog.open() == Window.OK) {
 //						Dat /aSetMgr dataSetMgr = new DataSetMgr();
 						DataSetMap dataSetMap = DataSetMap.getInstance();
 						
 //						dataS /etMgr.
-						String dataSourceLid = dialog.getDataSourceLid();
-						String dataSourceName = dialog.getDataSourceName();
-						String majorNumber = dialog.getMajorVersion();
-						String minorNumber = dialog.getMinorVersion();
-						String comment = dialog.getComment();
+//						String dataSourceLid = dialog.getDataSourceLid();
+//						String dataSourceName = dialog.getDataSourceName();
+//						String majorNumber = dialog.getMajorVersion();
+//						String minorNumber = dialog.getMinorVersion();
+//						String comment = dialog.getComment();
+						String dataSourceLid = "lid";
+						String dataSourceName = "dsName";
+						String majorNumber = "major";
+						String minorNumber = "minor";
+						String comment = "comment";
+
 
 						System.out.println(dataSourceLid);
 						System.out.println(dataSourceName);

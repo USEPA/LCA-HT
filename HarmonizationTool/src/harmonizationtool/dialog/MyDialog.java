@@ -45,10 +45,10 @@ public class MyDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
+		layout.numColumns = 3;
 		// layout.horizontalAlignment = GridData.FILL;
 		parent.setLayout(layout);
-
+		
 		// The text fields will grow with the size of the dialog
 		GridData gridData = new GridData();
 		gridData.grabExcessHorizontalSpace = true;
@@ -61,6 +61,7 @@ public class MyDialog extends TitleAreaDialog {
 		dataSourceLidText.setText("(new)");
 		dataSourceLidText.setEnabled(true);
 		label0.setEnabled(true);
+		createLookupButton(parent,3,"Lookup",true).setLayoutData(gridData);
 
 		// dataSourceLidText.setEnabled(false);
 
@@ -68,6 +69,7 @@ public class MyDialog extends TitleAreaDialog {
 		label1.setText("Data Source Name");
 		dataSourceNameText = new Text(parent, SWT.BORDER);
 		dataSourceNameText.setLayoutData(gridData);
+		Label b1 = new Label(parent, SWT.NONE);
 
 		Label label2 = new Label(parent, SWT.NONE);
 		label2.setText("Major Version");
@@ -77,6 +79,7 @@ public class MyDialog extends TitleAreaDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 		majorVersionText = new Text(parent, SWT.BORDER);
 		majorVersionText.setLayoutData(gridData);
+		Label b2 = new Label(parent, SWT.NONE);
 
 		Label label3 = new Label(parent, SWT.NONE);
 		label3.setText("Minor Version");
@@ -86,6 +89,7 @@ public class MyDialog extends TitleAreaDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 		minorVersionText = new Text(parent, SWT.BORDER);
 		minorVersionText.setLayoutData(gridData);
+		Label b3 = new Label(parent, SWT.NONE);
 
 		Label label4 = new Label(parent, SWT.NONE);
 		label4.setText("Comment");
@@ -95,6 +99,7 @@ public class MyDialog extends TitleAreaDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 		commentText = new Text(parent, SWT.BORDER);
 		commentText.setLayoutData(gridData);
+		Label b4 = new Label(parent, SWT.NONE);
 		return parent;
 	}
 
@@ -111,6 +116,8 @@ public class MyDialog extends TitleAreaDialog {
 		// Create Add button
 		// Own method as we need to overview the SelectionAdapter
 		createOkButton(parent, OK, "OK", true);
+		createLookupButton(parent,3,"Lookup",true);
+
 		// Add a SelectionListener
 
 		// Create Cancel button
@@ -148,6 +155,32 @@ public class MyDialog extends TitleAreaDialog {
 		setButtonLayoutData(button);
 		return button;
 	}
+	
+	public Button createLookupButton(Composite parent, int id, String label,
+			boolean defaultButton) {
+		// increment the number of columns in the button bar
+		((GridLayout) parent.getLayout()).numColumns++;
+		Button button = new Button(parent, SWT.PUSH);
+		button.setText(label);
+		button.setFont(JFaceResources.getDialogFont());
+		button.setData(new Integer(id));
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				if (isValidInput()) {
+					okPressed();
+				}
+			}
+		});
+		if (defaultButton) {
+			Shell shell = parent.getShell();
+			if (shell != null) {
+				shell.setDefaultButton(button);
+			}
+		}
+		setButtonLayoutData(button);
+		return button;
+	}
+
 
 	private boolean isValidInput() {
 		boolean valid = true;
