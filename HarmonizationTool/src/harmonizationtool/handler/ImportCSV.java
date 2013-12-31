@@ -58,6 +58,7 @@ public class ImportCSV implements IHandler {
 		long filesizeLong = 0;
 		// int filesizeInt = 0;
 		Calendar filedateJava = null;
+		Calendar now = null;
 		String fileNameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil
@@ -87,6 +88,7 @@ public class ImportCSV implements IHandler {
 						+ filedateJava.getTimeZone());
 				System.out.println("filedataJava UTC?? = "
 						+ filedateJava.getTime());
+				now = Calendar.getInstance();
 			}
 		}
 
@@ -170,6 +172,8 @@ public class ImportCSV implements IHandler {
 		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
 		modelProvider.setMetaKeyValue("fileLastModified", ""
 				+ filedateJava.getTime().toString());
+		modelProvider.setMetaKeyValue("fileReadTime", ""
+				+ now.getTime().toString());
 
 		dialog.create();
 		dialog.open();

@@ -11,31 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import harmonizationtool.ViewData;
 import harmonizationtool.handler.ImportCSV;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Combo;
 
-public class CSVMetaDialog extends TitleAreaDialog {
+public class PlayArea extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
 
@@ -98,25 +89,23 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		addMetaCurator();
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setBounds(0, 0, 600, 600);
-
+		composite.setLayout(null);
+		
 		Label lblAssociatedDataSet = new Label(composite, SWT.NONE);
-		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
-		lblAssociatedDataSet.setText("Data Set");
+		lblAssociatedDataSet.setBounds(0, 0, 400, 14);
+		lblAssociatedDataSet.setText("Choose Associated Data Set");
+		
+		Label lblDataSet = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		lblDataSet.setText("Data Set");
+		lblDataSet.setBounds(0, 0, 64, 2);
+		
+		Combo combo = new Combo(composite, SWT.NONE);
+		combo.setItems(new String[] {"4: (new data set)", "1: ReCiPe 108e", "2: TRACI 2.1", "3: GaBi 1.1"});
+		combo.setBounds(0, 15, 400, 50);
+		combo.setText("4 (new data set)");
+//		combo.add("option 1", 0);
+//		combo.add("option 2", 1);
 
-		final Combo combo = new Combo(composite, SWT.NONE);
-		combo.setItems(new String[] { "4: (new data set)", "1: ReCiPe 108e",
-				"2: TRACI 2.1", "3: GaBi 1.1" });
-		// combo.setBounds(0, 15, 400, 50);
-
-		combo.addModifyListener(new ModifyListener() {
-		      public void modifyText(ModifyEvent e) {
-		    	  populateMeta(combo.getText());
-		    	  System.out.println("choice is "+combo.getSelectionIndex()+" with value: "+combo.getText());
-		        }
-		      });
-		combo.setText("Choose");
-
-		composite.setLayout(new GridLayout(2, false));
 
 		Set<String> keySet = modelProvider.getKeys();
 		Iterator<String> keySeq = keySet.iterator();
@@ -139,9 +128,12 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		return super.createDialogArea(parent);
 	}
 
-	public CSVMetaDialog(Shell parentShell, ModelProvider modelProvider) {
+	public PlayArea(Shell parentShell, ModelProvider modelProvider) {
 		super(parentShell);
 		this.modelProvider = modelProvider;
+		if (this.modelProvider == null){
+			this.modelProvider = new ModelProvider();
+		}
 	}
 
 	@Override
@@ -159,23 +151,4 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		}
 		super.okPressed();
 	}
-	protected void populateMeta(String data_choice) {
-		System.out.println("The person chose a new data set...");
-
-		if (data_choice.startsWith("4")){
-			System.out.println("... it is new");
-			Set<String> keySet = modelProvider.getKeys();
-			int index = -1;
-			Iterator<String> keySeq = keySet.iterator();
-			while (keySeq.hasNext()) {
-				String key = keySeq.next();
-				index++;
-//				dialogValues.get(index).setText(
-//						modelProvider.getMetaValue(key));
-				dialogValues.get(index).setText("blank");
-			}
-		}
-		
-	}
-
 }
