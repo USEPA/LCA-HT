@@ -7,8 +7,8 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelKeeper;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableKeeper;
+import harmonizationtool.model.TableProvider;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -122,8 +122,8 @@ public class ViewData extends ViewPart {
 				Object element = selection.getFirstElement();
 				System.out.println(element.getClass().getName());
 				DataRow dataRow = (DataRow) element;
-				ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-				int index = modelProvider.getIndex(dataRow);
+				TableProvider tableProvider = TableKeeper.getTableProvider(key);
+				int index = tableProvider.getIndex(dataRow);
 				System.out.println("index=" + index);
 			}
 		});
@@ -148,10 +148,10 @@ public class ViewData extends ViewPart {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		viewer.setContentProvider(new ArrayContentProvider());
-		ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-		// System.out.println("modelProvider.getData()="+modelProvider.getData());
-		// System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
-		viewer.setInput(modelProvider.getData());
+		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		// System.out.println("tableProvider.getData()="+tableProvider.getData());
+		// System.out.println("tableProvider.getData().toString()="+tableProvider.getData().toString());
+		viewer.setInput(tableProvider.getData());
 		// viewer.refresh();
 
 	}
@@ -188,13 +188,13 @@ public class ViewData extends ViewPart {
 			viewer.getTable().setMenu(headerMenu);
 			initializeColumnHeaderMenu(headerMenu);
 
-			ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-			List<DataRow> dataRowList = modelProvider.getData();
+			TableProvider tableProvider = TableKeeper.getTableProvider(key);
+			List<DataRow> dataRowList = tableProvider.getData();
 			DataRow dataRow = dataRowList.get(0);
 			int numCol = dataRow.getColumnValues().size();
 			ArrayList<String> titles = new ArrayList<String>();
 			ArrayList<Integer> bounds = new ArrayList<Integer>();
-			List<String> headerNames = modelProvider.getHeaderNames();
+			List<String> headerNames = tableProvider.getHeaderNames();
 			if (headerNames == null) {
 				for (int i = 1; i <= numCol; i++) {
 					titles.add("Ignore");
@@ -217,7 +217,7 @@ public class ViewData extends ViewPart {
 				TableViewerColumn col = createTableViewerColumn(titlesArray[i],
 						boundsArray[i], i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
-				// modelProvider.addHeaderName(titlesArray[i],col.hashCode());
+				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
 			}
 			saveColumnNames();
@@ -402,7 +402,7 @@ public class ViewData extends ViewPart {
 					}
 
 				}
-				// save the column names to the ModelProvider in case the data
+				// save the column names to the TableProvider in case the data
 				// table needs to be
 				// re-displayed
 				saveColumnNames();
@@ -413,7 +413,7 @@ public class ViewData extends ViewPart {
 
 	/**
 	 * this method retrieves the column header text values from the column
-	 * components and passes them to the ModelProvider so they can be retrieved
+	 * components and passes them to the TableProvider so they can be retrieved
 	 * when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
@@ -422,7 +422,7 @@ public class ViewData extends ViewPart {
 		for (TableColumn tableColumn : tableColumns) {
 			columnNames.add(tableColumn.getText());
 		}
-		ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-		modelProvider.setColumnNames(columnNames);
+		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		tableProvider.setColumnNames(columnNames);
 	}
 }
