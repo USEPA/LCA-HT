@@ -6,8 +6,11 @@ import harmonizationtool.ViewData;
 import harmonizationtool.dialog.CSVMetaDialog;
 import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableKeeper;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -54,12 +57,9 @@ public class ImportCSV implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		System.out.println("executing Import CSV");
-		ModelProvider modelProvider = new ModelProvider();
-		long filesizeLong = 0;
-		// int filesizeInt = 0;
-		Calendar filedateJava = null;
-		Calendar now = null;
-		String fileNameStr = null; // FIXME: SHOULD USE THIS IN THE DATA SET
+//		ModelProvider modelProvider = new ModelProvider();
+		TableProvider tableProvider = new TableProvider();
+		FileMD fileMD = new FileMD();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
@@ -73,23 +73,18 @@ public class ImportCSV implements IHandler {
 		}
 
 		String path = fileDialog.open();
+		File file = null;
 		if (path != null) {
-			File file = new File(path);
-			if (file.exists()) {
-				fileNameStr = file.getName();
-				System.out.println("parsed filename as:" + fileNameStr);
-				filesizeLong = file.length();
-//				filesizeInt = (int) filesizeLong;
-				System.out.println("Size long= " + filesizeLong);
-				filedateJava = Calendar.getInstance();
-				filedateJava.setTime(new Date(file.lastModified()));
-				System.out.println("filedateJava = " + filedateJava.toString());
-				System.out.println("filedateJava timeZone = "
-						+ filedateJava.getTimeZone());
-				System.out.println("filedataJava UTC?? = "
-						+ filedateJava.getTime());
-				now = Calendar.getInstance();
-			}
+			file = new File(path);
+			
+			if (!file.exists()) {
+				
+				String msg = "File does not exist!";
+				Util.findView(View.ID).getViewSite().getActionBars()
+						.getStatusLineManager().setMessage(msg);
+				System.out.println(msg);
+				return null;
+			}			
 		}
 
 		FileReader fileReader = null;
@@ -119,8 +114,13 @@ public class ImportCSV implements IHandler {
 			System.out.println(msg);
 			return null;
 		}
+		fileMD.setFilename(file.getName());
+		fileMD.setSize(file.length());
+		fileMD.setLastModified(new Date(file.lastModified()));
+		fileMD.setReadTime(new Date());
+		
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
-		ModelKeeper.saveModelProvider(path, modelProvider);
+		TableKeeper.saveTableProvider(path, tableProvider);
 
 		View view = (View) Util.findView(View.ID);
 		view.addFilename(path);
@@ -128,7 +128,7 @@ public class ImportCSV implements IHandler {
 		while (values != null) {
 			// printValues(parser.getLineNumber(),values);
 			DataRow dataRow = initDataRow(values);
-			modelProvider.addDataRow(dataRow);
+			tableProvider.addDataRow(dataRow);
 			// System.out.println(dataRow);
 			try {
 				values = parser.getLine();
@@ -167,13 +167,13 @@ public class ImportCSV implements IHandler {
 
 		// NOW OPEN DIALOG AND PRE-POPULATE SOME
 		CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
-				.getActiveShell(), modelProvider);
-		modelProvider.setMetaKeyValue("fileName", fileNameStr);
-		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
-		modelProvider.setMetaKeyValue("fileLastModified", ""
-				+ filedateJava.getTime().toString());
-		modelProvider.setMetaKeyValue("fileReadTime", ""
-				+ now.getTime().toString());
+				.getActiveShell(), fileMD);
+//		modelProvider.setMetaKeyValue("fileName", fileNameStr);
+//		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
+//		modelProvider.setMetaKeyValue("fileLastModified", ""
+//				+ filedateJava.getTime().toString());
+//		modelProvider.setMetaKeyValue("fileReadTime", ""
+//				+ now.getTime().toString());
 
 		dialog.create();
 		dialog.open();

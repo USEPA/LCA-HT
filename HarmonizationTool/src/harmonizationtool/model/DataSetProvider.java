@@ -10,7 +10,6 @@ import java.util.Set;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class DataSetProvider {
-	
 	private DataSetMD dataSetMD;
 	private CuratorMD curatorMD;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();

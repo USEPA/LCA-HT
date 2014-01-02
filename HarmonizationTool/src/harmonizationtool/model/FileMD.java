@@ -1,12 +1,13 @@
 package harmonizationtool.model;
 
-import java.util.Calendar;
+//import java.util.Calendar;
+import java.util.Date;
 
 public class FileMD {
 	private String filename;
 	private long size;
-	private Calendar lastModified;
-	private long readTime;
+	private Date lastModified;
+	private Date readTime;
 	public String getFilename() {
 		return filename;
 	}
@@ -19,16 +20,16 @@ public class FileMD {
 	public void setSize(long size) {
 		this.size = size;
 	}
-	public Calendar getLastModified() {
+	public Date getLastModified() {
 		return lastModified;
 	}
-	public void setLastModified(Calendar lastModified) {
+	public void setLastModified(Date lastModified) {
 		this.lastModified = lastModified;
 	}
-	public long getReadTime() {
+	public Date getReadTime() {
 		return readTime;
 	}
-	public void setReadTime(long readTime) {
+	public void setReadTime(Date readTime) {
 		this.readTime = readTime;
 	}
 

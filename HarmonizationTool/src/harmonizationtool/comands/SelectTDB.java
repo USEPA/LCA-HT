@@ -2,11 +2,16 @@ package harmonizationtool.comands;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import harmonizationtool.Activator;
 import harmonizationtool.QueryView;
 import harmonizationtool.ViewData;
+import harmonizationtool.model.CuratorMD;
+import harmonizationtool.model.DataSetKeeper;
+import harmonizationtool.model.DataSetMD;
+import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -31,12 +36,14 @@ import com.hp.hpl.jena.query.ReadWrite;
 //import com.hp.hpl.jena.query.ResultSet;
 //import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Bag;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 //import com.hp.hpl.jena.rdf.model.RDFNode;
 //import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -44,6 +51,8 @@ import com.hp.hpl.jena.shared.PrefixMapping.Factory;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 //import com.hp.hpl.jena.query.Dataset;
 //import com.hp.hpl.jena.query.Query;
@@ -127,8 +136,6 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE
 																// NEED
 
-
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -136,6 +143,46 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
 		Util.findView(QueryView.ID).getViewSite().getActionBars()
 				.getStatusLineManager().setMessage(msg);
+
+		String eco_p = "http://ontology.earthster.org/eco/core#";
+		Resource ds = null;
+		try {
+			ds = model.getResource(eco_p + "DataSource");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (ds == null){
+			return null;
+		}
+		Iterator<Resource> iterator = model.listSubjectsWithProperty(RDF.type,
+				ds);
+		while (iterator.hasNext()) {
+			System.out.println("got another...");
+			Resource subject = (Resource) iterator.next();
+			if (DataSetKeeper.getByTdbResource(subject) == -1) {
+				DataSetProvider dataSetProvider = new DataSetProvider();
+				dataSetProvider.setTdbResource(subject);
+				DataSetMD dataSetMD = new DataSetMD();
+				CuratorMD curatorMD = new CuratorMD();
+				if (model.contains(subject, RDFS.label)) {
+					NodeIterator iter2 = model.listObjectsOfProperty(subject,
+							RDFS.label);
+					RDFNode node = iter2.next();
+					dataSetMD.setName(node.asLiteral().getString());
+				}
+				if (model.contains(subject, RDFS.comment)) {
+					NodeIterator iter2 = model.listObjectsOfProperty(subject,
+							RDFS.comment);
+					RDFNode node = iter2.next();
+					dataSetMD.setComments(node.asLiteral().getString());
+				}
+				dataSetProvider.setDataSetMD(dataSetMD);
+				dataSetProvider.setCuratorMD(curatorMD);
+				DataSetKeeper.add(dataSetProvider);
+			}
+		}
+
 		return null;
 	}
 
@@ -173,7 +220,6 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			e.printStackTrace();
 		}
 
-
 		//
 		// //
 		// // System.out.println(prefixMapping.toString());
@@ -188,7 +234,6 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 		System.err.printf("Model size is: %s\n", model.size());
 		msg = "TDB loading complete. Model size is:" + model.size();
-
 
 		for (ISelectedTDBListener listener : selectedTDBListeners) {
 			listener.TDBchanged(tdbDir);

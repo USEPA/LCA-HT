@@ -6,6 +6,8 @@ import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.dialog.PlayArea;
 import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.DataSetKeeper;
+import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
@@ -301,10 +303,10 @@ public class View extends ViewPart {
 				if (selection.isEmpty())
 					return;
 				String key = (String) selection.toList().get(0);
-				ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
+				DataSetProvider dataSetProvider = DataSetKeeper.get(0); // FIXME
 				// Map<String, String> metaData = csvFile.metaData;
 				CSVMetaDialog dialog = new CSVMetaDialog(Display
-						.getCurrent().getActiveShell(), modelProvider);
+						.getCurrent().getActiveShell(), dataSetProvider);
 				dialog.create();
 				dialog.open();
 			}
