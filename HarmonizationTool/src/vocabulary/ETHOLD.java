@@ -30,6 +30,17 @@ public class ETHOLD {
 
     /** <p>This is being used to associate a "EcosphereExhange" with an "ElementaryFlow"</p> */
     public static final Property hasElementaryFlow = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasElementaryFlow" );
+    
+    /** <p></p> */
+    public static final Property atAltitude = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#atAltitude" );
 
+    /** <p></p> */
+    public static final Property fromCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#fromCompartment" );
+
+    /** <p></p> */
+    public static final Property nearPopulationDensity = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#nearPopulationDensity" );
+
+    /** <p></p> */
+    public static final Property toCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#toCompartment" );
 }
 

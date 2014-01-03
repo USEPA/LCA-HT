@@ -43,5 +43,37 @@ public class SKOS {
 
     /** <p>skos:related is disjoint with skos:broaderTransitive</p> */
     public static final Property related = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#related" );
+    
+    /** <p></p> */
+    public static final Property broadMatch = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#broadMatch" );
 
+    /** <p></p> */
+    public static final Property broaderTransitive = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#broaderTransitive" );
+
+    /** <p></p> */
+    public static final Property closeMatch = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#closeMatch" );
+
+    /** <p></p> */
+    public static final Property hasTopConcept = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#hasTopConcept" );
+
+    /** <p></p> */
+    public static final Property inScheme = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#inScheme" );
+
+    /** <p></p> */
+    public static final Property member = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#member" );
+
+    /** <p></p> */
+    public static final Property narrowMatch = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#narrowMatch" );
+
+    /** <p></p> */
+    public static final Property narrowerTransitive = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#narrowerTransitive" );
+
+    /** <p></p> */
+    public static final Property relatedMatch = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#relatedMatch" );
+
+    /** <p></p> */
+    public static final Property semanticRelation = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#semanticRelation" );
+
+    /** <p></p> */
+    public static final Property topConceptOf = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#topConceptOf" );
 }
