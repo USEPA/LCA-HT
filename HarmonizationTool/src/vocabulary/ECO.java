@@ -218,4 +218,21 @@ public class ECO {
     /** <p>validInterval relates an entity to a time interval for which it is valid.  validInterval may be used to annotate a model.</p> */
     public static final Property validInterval = m_model.createProperty( "http://ontology.earthster.org/eco/core#validInterval" );
 
+    /** <p></p> */
+    public static final Property hasDataSource = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasDataSource" );
+
+    /** <p></p> */
+    public static final Property hasFlowable = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasFlowable" );
+
+    /** <p></p> */
+    public static final Property hasFootprintModel = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasFootprintModel" );
+
+    /** <p></p> */
+    public static final Property hasImpactCategoryIndicatorResult = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasImpactCategoryIndicatorResult" );
+
+    /** <p></p> */
+    public static final Property hasRate = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasRate" );
+
+    /** <p></p> */
+    public static final Property hasUnallocatedQuantifiedEffect = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasUnallocatedQuantifiedEffect" );
 }
