@@ -1,4 +1,4 @@
-package vocabulary;
+package harmonizationtool.vocabulary;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -27,8 +27,14 @@ public class ECO {
     public static final Resource NAMESPACE = m_model.createResource( NS );
 
     /** <p>A data source is a source of data used in a model.</p> */
-    public static final Resource DataSource = m_model.createProperty( "http://ontology.earthster.org/eco/core#DataSource" );
+    public static final Resource DataSource = m_model.createResource( "http://ontology.earthster.org/eco/core#DataSource" );
     
+    /** <p></p> */
+    public static final Resource Flowable = m_model.createResource( "http://ontology.earthster.org/eco/core#Flowable" );
+      
+    /** <p></p> */
+    public static final Resource Substance = m_model.createResource( "http://ontology.earthster.org/eco/core#Substance" );
+   
     /** <p>allocatedBy relates a quantified effect to an effect allocation that allocates it.</p> */
     public static final Property allocatedBy = m_model.createProperty( "http://ontology.earthster.org/eco/core#allocatedBy" );
 
@@ -41,9 +47,12 @@ public class ECO {
     /** <p>assessmentOf relates an impact assessment to the entity it is an assessment of.</p> */
     public static final Property assessmentOf = m_model.createProperty( "http://ontology.earthster.org/eco/core#assessmentOf" );
 
+    /** <p>casNumber is used to indicate the American Chemical Society's Chemical Abstract Service identifier for an entity.</p> */
+    public static final Property casNumber = m_model.createProperty( "http://ontology.earthster.org/eco/core#casNumber" );
+
     /** <p>compliesWith may be used to relate a model to a compliance requirement that it complies with.</p> */
     public static final Property compliesWith = m_model.createProperty( "http://ontology.earthster.org/eco/core#compliesWith" );
-
+    
     /** <p>computedFrom relates an impact assessment to the LCA model from which it was computed.</p> */
     public static final Property computedFrom = m_model.createProperty( "http://ontology.earthster.org/eco/core#computedFrom" );
 
@@ -131,6 +140,12 @@ public class ECO {
     /** <p>relates an impact assessment method category description to an impact characterization model.</p> */
     public static final Property hasImpactCharacterizationModel = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasImpactCharacterizationModel" );
 
+    /** <p>hasMajorVersionNumber is used to relate an entity to its major version number.</p> */
+    public static final Property hasMajorVersionNumber = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasMajorVersionNumber" );
+
+    /** <p>hasMinorVersionNumber is used to relate an entity to its minor version number.</p> */
+    public static final Property hasMinorVersionNumber = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasMinorVersionNumber" );
+    
     /** <p>hasModel relates an entity to a model of that entity.</p> */
     public static final Property hasModel = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasModel" );
 

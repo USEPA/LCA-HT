@@ -41,7 +41,7 @@ public class DataSetKeeper {
 		while (iterator.hasNext()){
 			DataSetProvider dataSetProvider = iterator.next();
 			Resource resource = dataSetProvider.getTdbResource();
-			if (resource == tdbResource){
+			if (resource.equals(tdbResource)){
 				return dsList.indexOf(dataSetProvider);
 			}
 		}

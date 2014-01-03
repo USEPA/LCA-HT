@@ -1,6 +1,7 @@
 package harmonizationtool;
 
 import harmonizationtool.comands.SelectTDB;
+
 import harmonizationtool.dialog.CSVMetaDialog;
 import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.dialog.PlayArea;
@@ -19,6 +20,8 @@ import harmonizationtool.utils.DataSetMap;
 import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.ZGetNextDSIndex;
+import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.SKOS;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -305,8 +308,8 @@ public class View extends ViewPart {
 				String key = (String) selection.toList().get(0);
 				DataSetProvider dataSetProvider = DataSetKeeper.get(0); // FIXME
 				// Map<String, String> metaData = csvFile.metaData;
-				CSVMetaDialog dialog = new CSVMetaDialog(Display
-						.getCurrent().getActiveShell(), dataSetProvider);
+				CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
+						.getActiveShell(), dataSetProvider);
 				dialog.create();
 				dialog.open();
 			}
@@ -646,22 +649,23 @@ public class View extends ViewPart {
 					System.out.println("key=" + key);
 					MyDialog dialog = new MyDialog(Display.getCurrent()
 							.getActiveShell());
-//					PlayArea dialog = new PlayArea(Display.getCurrent().getActiveShell(), null);
-					
+					// PlayArea dialog = new
+					// PlayArea(Display.getCurrent().getActiveShell(), null);
+
 					dialog.create();
 					if (dialog.open() == Window.OK) {
-//						DataSetMap dataSetMap = DataSetMap.getInstance();
+						// DataSetMap dataSetMap = DataSetMap.getInstance();
 
 						String dataSourceLid = dialog.getDataSourceLid();
 						String dataSourceName = dialog.getDataSourceName();
 						String majorNumber = dialog.getMajorVersion();
 						String minorNumber = dialog.getMinorVersion();
 						String comment = dialog.getComment();
-//						String dataSourceLid = "lid";
-//						String dataSourceName = "dsName";
-//						String majorNumber = "major";
-//						String minorNumber = "minor";
-//						String comment = "comment";
+						// String dataSourceLid = "lid";
+						// String dataSourceName = "dsName";
+						// String majorNumber = "major";
+						// String minorNumber = "minor";
+						// String comment = "comment";
 
 						System.out.println(dataSourceLid);
 						System.out.println(dataSourceName);
@@ -677,7 +681,7 @@ public class View extends ViewPart {
 									.setMessage(msg);
 							return;
 						}
-						
+
 						int dataSourceLidInt = 1; // DEFAULT IF NOT SPECIFIED
 													// AND NO DATA SETS ARE
 													// THERE
@@ -704,12 +708,14 @@ public class View extends ViewPart {
 
 						System.out.println("Running ExportSubsToTDB internals");
 
-						String eco_p = "http://ontology.earthster.org/eco/core#";
+						// String eco_p =
+						// "http://ontology.earthster.org/eco/core#";
 						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 						String fn_p = "http://www.w3.org/2005/xpath-functions#";
 						String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
-						String skos_p = "http://www.w3.org/2004/02/skos/core#";
+						// String skos_p =
+						// "http://www.w3.org/2004/02/skos/core#";
 						String sumo_p = "http://www.ontologyportal.org/SUMO.owl.rdf#";
 						String xml_p = "http://www.w3.org/XML/1998/namespace";
 						// THE FOLLOWING ARE IN Vocabulary
@@ -720,15 +726,16 @@ public class View extends ViewPart {
 						// "http://www.w3.org/2000/01/rdf-schema#";
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
-						Resource ds = model.getResource(eco_p + "DataSource");
-						Resource flowable = model.getResource(eco_p
-								+ "Flowable");
-						Property altLabel = model.getProperty(skos_p
-								+ "altLabel");
-						Property majV = model.getProperty(eco_p
-								+ "hasMajorVersionNumber");
-						Property minV = model.getProperty(eco_p
-								+ "hasMinorVersionNumber");
+						// Resource ds = model.getResource(eco_p +
+						// "DataSource");
+						// Resource flowable = model.getResource(eco_p
+						// + "Flowable");
+						// Property altLabel = model.getProperty(skos_p
+						// + "altLabel");
+						// Property majV = model.getProperty(eco_p
+						// + "hasMajorVersionNumber");
+						// Property minV = model.getProperty(eco_p
+						// + "hasMinorVersionNumber");
 						Property lid = model.getProperty(ethold_p
 								+ "localSerialNumber");
 						Property foundOnRow = model.getProperty(ethold_p
@@ -743,10 +750,10 @@ public class View extends ViewPart {
 								+ "HTuserEmail");
 						Property dataParseTimeStamp = model
 								.getProperty(ethold_p + "dataParseTimeStamp");
-						Property casNumber = model.getProperty(eco_p
-								+ "casNumber");
-						Property hasDataSource = model.getProperty(eco_p
-								+ "hasDataSource");
+						// Property casNumber = model.getProperty(eco_p
+						// + "casNumber");
+						// Property hasDataSource = model.getProperty(eco_p
+						// + "hasDataSource");
 						Property fileName = model.getProperty(nfo_p
 								+ "fileName");
 						Property fileSize = model.getProperty(nfo_p
@@ -829,30 +836,37 @@ public class View extends ViewPart {
 						// System.out.println("eco means: " + eco);
 						// LOOP ONCE TO GET LARGEST ALREADY PRESENT
 						Resource dsResourceHandle = null;
-						if (ResourceIdMgr.contains(dataSourceLidInt)){
-							dsResourceHandle = ResourceIdMgr.getResource(dataSourceLidInt);
-						}
-						else{
+						if (ResourceIdMgr.contains(dataSourceLidInt)) {
+							dsResourceHandle = ResourceIdMgr
+									.getResource(dataSourceLidInt);
+						} else {
 							dsResourceHandle = model.createResource();
-							model.add(dsResourceHandle, RDF.type, ds);
+							model.add(dsResourceHandle, RDF.type,
+									ECO.DataSource);
 							model.add(dsResourceHandle, RDFS.label, dsNameLit); // REQUIRED
-							model.add(dsResourceHandle, lid, dsLidLit); // TO REMOVE
+							model.add(dsResourceHandle, lid, dsLidLit); // TO
+																		// REMOVE
 							if (dsMajLit != null) {
-								model.add(dsResourceHandle, majV, dsMajLit); // OPTIONAL
+								model.add(dsResourceHandle,
+										ECO.hasMajorVersionNumber, dsMajLit); // OPTIONAL
 							}
 							if (dsMinLit != null) {
 
-								model.add(dsResourceHandle, minV, dsMinLit); // OPTIONAL
+								model.add(dsResourceHandle,
+										ECO.hasMinorVersionNumber, dsMinLit); // OPTIONAL
 							}
 							if (dsCommLit != null) {
 
-								model.add(dsResourceHandle, RDFS.comment, dsCommLit); // OPTIONAL
+								model.add(dsResourceHandle, RDFS.comment,
+										dsCommLit); // OPTIONAL
 							}
 							if (filenameStr != null) {
-								model.add(dsResourceHandle, fileName, dsFileNameLit);
+								model.add(dsResourceHandle, fileName,
+										dsFileNameLit);
 							}
 							if (filesizeInt > 0) {
-								model.add(dsResourceHandle, fileSize, dsFileSizeLit);
+								model.add(dsResourceHandle, fileSize,
+										dsFileSizeLit);
 							}
 							if (filedate_java != null) {
 								model.add(dsResourceHandle, fileLastModified,
@@ -860,7 +874,8 @@ public class View extends ViewPart {
 							}
 							if (Util.getPreferenceStore().getString("userName")
 									.length() > 0) {
-								model.add(dsResourceHandle, HTuserName, dsHTuserName);
+								model.add(dsResourceHandle, HTuserName,
+										dsHTuserName);
 							}
 							if (Util.getPreferenceStore()
 									.getString("userAffiliation").length() > 0) {
@@ -877,14 +892,15 @@ public class View extends ViewPart {
 								model.add(dsResourceHandle, HTuserEmail,
 										dsHTuserEmail);
 							}
-							model.add(dsResourceHandle, dataParseTimeStamp, model
-									.createTypedLiteral(Calendar.getInstance()));
+							model.add(dsResourceHandle, dataParseTimeStamp,
+									model.createTypedLiteral(Calendar
+											.getInstance()));
 
 							ResourceIdMgr.add(dsResourceHandle);
 						}
-//						Resource 
-//						ResourceIdMgr.add(resource);
-//						Resource dsResourceHandle = null;
+						// Resource
+						// ResourceIdMgr.add(resource);
+						// Resource dsResourceHandle = null;
 						System.out
 								.println("Now to find a list of data sources...");
 
@@ -900,40 +916,40 @@ public class View extends ViewPart {
 						// dsList.
 
 						// dsList = new List<Resource>();
-//						ResIterator dataSetResources = model
-//								.listSubjectsWithProperty(RDF.type, ds);
-//						while (dataSetResources.hasNext()) {
-//							Resource dsResource = dataSetResources.next();
-//							// dataSetHandles.add(dsResource);
-//							StmtIterator lidIterator = dsResource
-//									.listProperties(lid);
-//							if (lidIterator.hasNext()) {
-//								Statement stmt = lidIterator.next();
-//								System.out.println("getLiteral().getInt = "
-//										+ stmt.getLiteral().getInt());
-//
-//								System.out.println("getInt = " + stmt.getInt());
-//								// dsList.add(dsResource);
-//								while (dsList.size() < stmt.getInt()) {
-//									dsList.add(null);
-//								}
-//								dsList.add(stmt.getLiteral().getInt(),
-//										dsResource);
-//								System.out.println("got lid: "
-//										+ dsList.indexOf(dsResource));
-//							} else {
-//								// THIS RESOURCE HAS NO LID
-//								System.out.println("This resource had no LID");
-//							}
-//							if (lidIterator.hasNext()) {
-//								System.out
-//										.println("This resource had more than one LID");
-//								// THIS RESOURCE HAS MORE THAN ONE LID
-//							}
-//							if (model.contains(dsResource, lid, dsLidLit)) {
-//								dsResourceHandle = dsResource;
-//							}
-//						}
+						// ResIterator dataSetResources = model
+						// .listSubjectsWithProperty(RDF.type, ds);
+						// while (dataSetResources.hasNext()) {
+						// Resource dsResource = dataSetResources.next();
+						// // dataSetHandles.add(dsResource);
+						// StmtIterator lidIterator = dsResource
+						// .listProperties(lid);
+						// if (lidIterator.hasNext()) {
+						// Statement stmt = lidIterator.next();
+						// System.out.println("getLiteral().getInt = "
+						// + stmt.getLiteral().getInt());
+						//
+						// System.out.println("getInt = " + stmt.getInt());
+						// // dsList.add(dsResource);
+						// while (dsList.size() < stmt.getInt()) {
+						// dsList.add(null);
+						// }
+						// dsList.add(stmt.getLiteral().getInt(),
+						// dsResource);
+						// System.out.println("got lid: "
+						// + dsList.indexOf(dsResource));
+						// } else {
+						// // THIS RESOURCE HAS NO LID
+						// System.out.println("This resource had no LID");
+						// }
+						// if (lidIterator.hasNext()) {
+						// System.out
+						// .println("This resource had more than one LID");
+						// // THIS RESOURCE HAS MORE THAN ONE LID
+						// }
+						// if (model.contains(dsResource, lid, dsLidLit)) {
+						// dsResourceHandle = dsResource;
+						// }
+						// }
 						// BUT IF WE DIDN'T FIND THE DATA SET THAT ALRAEDY HAS
 						// THIS LID, MAKE ONE
 						if (dsResourceHandle == null) {
@@ -1030,22 +1046,22 @@ public class View extends ViewPart {
 								subResourceHandle = str2res.get(combined_str);
 							} else {
 								Resource newSub = model.createResource();
-								model.add(newSub, RDF.type, flowable);
+								model.add(newSub, RDF.type, ECO.Flowable);
 								model.addLiteral(newSub, RDFS.label, drNameLit);
 								// newSub.addProperty(RDF.type, flowable);
 								// newSub.addLiteral(RDFS.label, drNameLit);
 								if (altName != null && altName.length() > 0) {
 									// newSub.addLiteral(altLabel,
 									// drAltNameLit);
-									model.addLiteral(newSub, altLabel,
+									model.addLiteral(newSub, SKOS.altLabel,
 											drAltNameLit);
 								}
 								if (casrn != null && casrn.length() > 0) {
-									model.addLiteral(newSub, casNumber,
+									model.addLiteral(newSub, ECO.casNumber,
 											drCasLit);
 									// newSub.addLiteral(casNumber, drCasLit);
 								}
-								model.add(newSub, hasDataSource,
+								model.add(newSub, ECO.hasDataSource,
 										dsResourceHandle);
 								// newSub.addProperty(hasDataSource,
 								// dsResourceHandle);
