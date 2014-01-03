@@ -13,6 +13,7 @@ import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
 import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.utils.Util;
+import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -44,6 +45,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 //import com.hp.hpl.jena.rdf.model.RDFNode;
 //import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -120,6 +122,22 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+
+		openTDB();	
+		updateStatusLine();
+		syncTDB_to_DataSetKeeper();
+
+		return null;
+	}
+
+	private void updateStatusLine() {
+		String msg;
+		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
+		Util.findView(QueryView.ID).getViewSite().getActionBars()
+				.getStatusLineManager().setMessage(msg);
+	}
+
+	private void openTDB() {
 		String msg = "Opening TDB: "
 				+ Util.getPreferenceStore().getString("defaultTDB");
 		Util.findView(QueryView.ID).getViewSite().getActionBars()
@@ -140,26 +158,25 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				e.printStackTrace();
 			}
 		}
-		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
+	}
 
-		String eco_p = "http://ontology.earthster.org/eco/core#";
-		Resource ds = null;
-		try {
-			ds = model.getResource(eco_p + "DataSource");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/**
+	 * Because the DataSetKeeper does not contain DataSets, but the TDB might, we need to get DataSet info from the TDB
+	 * Each TDB subject which is rdf:type eco:DataSource should have a DataSetProvider
+	 * NOTE: eco:DataSource should change to lcaht:DataSet
+	 */
+	public void syncTDB_to_DataSetKeeper() {
+		if(model == null){
+			openTDB();
 		}
-		if (ds == null){
-			return null;
-		}
-		Iterator<Resource> iterator = model.listSubjectsWithProperty(RDF.type,
-				ds);
+		assert model != null : "model should not be null";
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type,
+				ECO.DataSource);
+
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
 			Resource subject = (Resource) iterator.next();
+
 			if (DataSetKeeper.getByTdbResource(subject) == -1) {
 				DataSetProvider dataSetProvider = new DataSetProvider();
 				dataSetProvider.setTdbResource(subject);
@@ -170,77 +187,30 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 							RDFS.label);
 					RDFNode node = iter2.next();
 					dataSetMD.setName(node.asLiteral().getString());
+					System.out.println("Adding name: "
+							+ node.asLiteral().getString() + " for subject: "
+							+ subject.getURI());
 				}
 				if (model.contains(subject, RDFS.comment)) {
 					NodeIterator iter2 = model.listObjectsOfProperty(subject,
 							RDFS.comment);
 					RDFNode node = iter2.next();
 					dataSetMD.setComments(node.asLiteral().getString());
+					System.out.println("Adding comment: "
+							+ node.asLiteral().getString() + " for subject: "
+							+ subject.getURI());
+
 				}
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
 				DataSetKeeper.add(dataSetProvider);
+			} else {
+				System.out.println("Id for " + subject.getURI() + " = "
+						+ DataSetKeeper.getByTdbResource(subject));
 			}
 		}
-
-		return null;
 	}
 
-	// @Override
-	public Object executeOLD(ExecutionEvent event) throws ExecutionException {
-		String msg = "SelectTDB.execute()";
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
-		System.out.println(msg);
-		// cleanUp();
-		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
-		System.out.println("Executing SelectTDB");
-		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
-		File defaultTDBFile = new File(defaultTDB);
-		DirectoryDialog directoryDialog = new DirectoryDialog(PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow().getShell());
-		System.out.println("defaultTDBFile.isDirectory() = "
-				+ defaultTDBFile.isDirectory());
-		if (defaultTDBFile.isDirectory()) {
-			System.out.println("calling directoryDialog.setFilterPath("
-					+ defaultTDBFile.getPath() + ")");
-			directoryDialog.setFilterPath(defaultTDBFile.getPath());
-		}
-		tdbDir = directoryDialog.open();
-		if (tdbDir != null) {
-			cleanUp();
-		} else {
-			return null;
-		}
-		System.out.println("tdbDir=" + tdbDir);
-		try {
-			dataset = TDBFactory.createDataset(tdbDir);
-			// TDBFactory.createDataset(tdbDir); // FIXME DO WE NEED THIS?
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		//
-		// //
-		// // System.out.println(prefixMapping.toString());
-		assert dataset != null : "dataset cannot be null";
-		model = dataset.getDefaultModel();
-		// HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(ViewData.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(
-		// msg);
-		// model.setNsPrefixes(prefixMapping);
-
-		graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE NEED
-														// THIS?
-
-		System.err.printf("Model size is: %s\n", model.size());
-		msg = "TDB loading complete. Model size is:" + model.size();
-
-		for (ISelectedTDBListener listener : selectedTDBListeners) {
-			listener.TDBchanged(tdbDir);
-		}
-
-		return null;
-	}
 
 	@Override
 	public boolean isEnabled() {

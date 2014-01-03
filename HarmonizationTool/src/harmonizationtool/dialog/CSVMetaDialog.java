@@ -22,6 +22,7 @@ import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
+import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -59,6 +60,9 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	public ModelProvider modelProvider = null;
 	private DataSetProvider dataSetProvider = null;
 	private FileMD fileMD = null;
+	private	DataSetMD dataSetMD = null;
+	private	CuratorMD curatorMD = null;
+	private	Resource tdbResource = null;
 	private Combo combo = null;
 
 	public Map<String, String> metaData = new LinkedHashMap<String, String>();
@@ -69,12 +73,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 	@SuppressWarnings("null")
 	private String[] getDataSetInfo() {
-
-		String eco_p = "http://ontology.earthster.org/eco/core#";
-		String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 		Model model = SelectTDB.model;
-		Property majV = model.getProperty(eco_p + "hasMajorVersionNumber");
-		Property minV = model.getProperty(eco_p + "hasMinorVersionNumber");
 		if (dataSetProvider != null) {
 			String[] results = new String[1];
 			Integer id = DataSetKeeper.indexOf(dataSetProvider);
@@ -89,25 +88,27 @@ public class CSVMetaDialog extends TitleAreaDialog {
 				version = model
 						.listObjectsOfProperty(tdbResource, DCTerms.hasVersion)
 						.next().asLiteral().getString();
-			} else if (model.contains(tdbResource, majV)) {
-				version = model.listObjectsOfProperty(tdbResource, majV).next()
+			} else if (model.contains(tdbResource,ECO.hasMajorVersionNumber)) {
+				version = model.listObjectsOfProperty(tdbResource, ECO.hasMajorVersionNumber).next()
 						.asLiteral().getString();
-				if (model.contains(tdbResource, minV)) {
-					version += model.listObjectsOfProperty(tdbResource, minV)
+				if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
+					version += "."+model.listObjectsOfProperty(tdbResource, ECO.hasMinorVersionNumber)
 							.next().asLiteral().getString();
 				}
 			}
-			results[0] = id + ":" + name + " " + version;
+			results[0] = id + ": " + name + " " + version;
 			return results;
 		} else {
-			String[] results = new String[DataSetKeeper.size()];
-			results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
-								// NEW)
+			String[] results = new String[DataSetKeeper.size()+1];
+//			results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
+//								// NEW)
 			List<Integer> ids = DataSetKeeper.getIDs();
 			Iterator<Integer> iterator = ids.iterator();
 
 			Integer id = 0;
+			int counter = 0;
 			while (iterator.hasNext()) {
+				counter++;
 				id = iterator.next();
 				DataSetProvider dsProvider = DataSetKeeper.get(id);
 				Resource tdbResource = dsProvider.getTdbResource();
@@ -122,16 +123,14 @@ public class CSVMetaDialog extends TitleAreaDialog {
 							.listObjectsOfProperty(tdbResource,
 									DCTerms.hasVersion).next().asLiteral()
 							.getString();
-				} else if (model.contains(tdbResource, majV)) {
-					version = model.listObjectsOfProperty(tdbResource, majV)
-							.next().asLiteral().getString();
-					if (model.contains(tdbResource, minV)) {
-						version += model
-								.listObjectsOfProperty(tdbResource, minV)
-								.next().asLiteral().getString();
-					}
+				} else if (model.contains(tdbResource,ECO.hasMajorVersionNumber)) {
+					version = model.listObjectsOfProperty(tdbResource, ECO.hasMajorVersionNumber).next()
+							.asLiteral().getString();
+					if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
+						version += "."+model.listObjectsOfProperty(tdbResource, ECO.hasMinorVersionNumber)
+								.next().asLiteral().getString();					}
 				}
-				results[results.length] = id + ":" + name + " " + version;
+				results[counter] = id + ":" + name + " " + version;
 			}
 			Integer next = id + 1;
 			results[0] = next + ": (new data set)";
@@ -146,9 +145,6 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		setTitle("CSV file Meta Data");
-		DataSetMD dataSetMD = null;
-		CuratorMD curatorMD = null;
-		Resource tdbResource = null;
 		if (fileMD == null) {
 			if (dataSetProvider == null) {
 				return null; // HOW DID WE GET HERE WITH NEITHER?
@@ -255,6 +251,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	 */
 	public CSVMetaDialog(Shell parentShell, FileMD fileMD) {
 		super(parentShell);
+		assert fileMD != null : "fileMD cannot be null";
 		this.fileMD = fileMD;
 	}
 

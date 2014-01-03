@@ -1,4 +1,4 @@
-package vocabulary;
+package harmonizationtool.vocabulary;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -26,6 +26,9 @@ public class SKOS {
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
 
+    /** <p></p> */
+    public static final Property altLabel = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#altLabel" );
+    
     /** <p>Broader concepts are typically rendered as parents in a concept hierarchy (tree).</p> */
     public static final Property broader = m_model.createProperty( "http://www.w3.org/2004/02/skos/core#broader" );
 

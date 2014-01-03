@@ -1,4 +1,4 @@
-package vocabulary;
+package harmonizationtool.vocabulary;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
