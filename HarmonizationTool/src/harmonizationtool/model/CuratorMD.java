@@ -7,6 +7,9 @@ public class CuratorMD {
 	private String phone;
 
 	public String getName() {
+		if (name == null) {
+			name = "";
+		}
 		return name;
 	}
 
@@ -15,6 +18,9 @@ public class CuratorMD {
 	}
 
 	public String getAffiliation() {
+		if (affiliation == null) {
+			affiliation = "";
+		}
 		return affiliation;
 	}
 
@@ -23,6 +29,9 @@ public class CuratorMD {
 	}
 
 	public String getEmail() {
+		if (email == null) {
+			email = "";
+		}
 		return email;
 	}
 
@@ -31,6 +40,9 @@ public class CuratorMD {
 	}
 
 	public String getPhone() {
+		if (phone == null) {
+			phone = "";
+		}
 		return phone;
 	}
 
