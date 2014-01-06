@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class FileMD {
 	private String filename;
+	private String path;
 	private long size;
 	private Date lastModified;
 	private Date readTime;
@@ -13,6 +14,12 @@ public class FileMD {
 	}
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
 	}
 	public long getSize() {
 		return size;

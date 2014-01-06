@@ -22,14 +22,14 @@ public class Util {
 		// SimpleDateFormat dateFormatGmt = new
 		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 		SimpleDateFormat dateFormatGmt = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return dateFormatGmt.format(date);
 	}
 
 	public static String getLocalDateFmt(Date date) {
 		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);
 	}
@@ -37,7 +37,7 @@ public class Util {
 
 	public static Date setDateFmt(String string) throws ParseException {
 		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.parse(string);
 	}
