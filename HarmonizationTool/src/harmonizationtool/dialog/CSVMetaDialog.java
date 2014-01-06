@@ -1,6 +1,7 @@
 package harmonizationtool.dialog;
 
 //import java.awt.List;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,8 +9,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import harmonizationtool.ViewData;
 import harmonizationtool.comands.SelectTDB;
@@ -64,80 +68,33 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	private CuratorMD curatorMD = null;
 	private Resource tdbResource = null;
 	private Combo combo = null;
-
-	public Map<String, String> metaData = new LinkedHashMap<String, String>();
-
-	public void setMetaData(Map<String, String> map) {
-		metaData = map;
-	}
-
-	@SuppressWarnings("null")
-	private String[] getDataSetInfo() {
-		Model model = SelectTDB.model;
-		if (dataSetProvider != null) {
-			String[] results = new String[1];
-			Integer id = DataSetKeeper.indexOf(dataSetProvider);
-			Resource tdbResource = dataSetProvider.getTdbResource();
-			String name = "";
-			String version = "";
-			if (model.contains(tdbResource, RDFS.label)) {
-				name = model.listObjectsOfProperty(tdbResource, RDFS.label).next().asLiteral().getString();
-			}
-			if (model.contains(tdbResource, DCTerms.hasVersion)) {
-				version = model.listObjectsOfProperty(tdbResource, DCTerms.hasVersion).next().asLiteral().getString();
-			} else if (model.contains(tdbResource, ECO.hasMajorVersionNumber)) {
-				version = model.listObjectsOfProperty(tdbResource, ECO.hasMajorVersionNumber).next().asLiteral().getString();
-				if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
-					version += "." + model.listObjectsOfProperty(tdbResource, ECO.hasMinorVersionNumber).next().asLiteral().getString();
-				}
-			}
-			results[0] = id + ": " + name + " " + version;
-			return results;
-		} else {
-			String[] results = new String[DataSetKeeper.size() + 1];
-			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
-			// // NEW)
-			List<Integer> ids = DataSetKeeper.getIDs();
-			Iterator<Integer> iterator = ids.iterator();
-
-			Integer id = 0;
-			int id_plus_one = id + 1;
-			int counter = 0;
-			while (iterator.hasNext()) {
-				counter++;
-				id = iterator.next();
-				DataSetProvider dsProvider = DataSetKeeper.get(id);
-				Resource tdbResource = dsProvider.getTdbResource();
-				String name = "";
-				String version = "";
-				if (model.contains(tdbResource, RDFS.label)) {
-					name = model.listObjectsOfProperty(tdbResource, RDFS.label).next().asLiteral().getString();
-				}
-				if (model.contains(tdbResource, DCTerms.hasVersion)) {
-					version = model.listObjectsOfProperty(tdbResource, DCTerms.hasVersion).next().asLiteral().getString();
-				} else if (model.contains(tdbResource, ECO.hasMajorVersionNumber)) {
-					version = model.listObjectsOfProperty(tdbResource, ECO.hasMajorVersionNumber).next().asLiteral().getString();
-					if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
-						version += "." + model.listObjectsOfProperty(tdbResource, ECO.hasMinorVersionNumber).next().asLiteral().getString();
-					}
-				}
-				results[counter] = id_plus_one + ":" + name + " " + version;
-			}
-			Integer next = id + 1;
-			results[0] = next + ": (new data set)";
-			return results;
-		}
-	}
-
 	private List<Text> dialogValues = new ArrayList<Text>();
+	
+	// YOU CAN GET HERE WITH A NEW FILE (FOR A NEW OR EXISTING DATA SET)
+	public CSVMetaDialog(Shell parentShell, FileMD fileMD) {
+		super(parentShell);
+		assert fileMD != null : "fileMD cannot be null";
+		this.fileMD = fileMD; // SET LOCAL VERSION
+		dataSetMD = new DataSetMD();
+		curatorMD = new CuratorMD();
+		curatorFromPrefs();
+	}
 
-	// private boolean initialCreate;
-	// private Text text_02;
-
+	// YOU CAN GET HERE WITH A DataSetProvider WITH DataSetMD , CuratorMD , fileMDList , tdbResource
+	public CSVMetaDialog(Shell parentShell, DataSetProvider dataSetProvider) {
+		super(parentShell);
+		this.dataSetProvider = dataSetProvider;
+		dataSetMD = dataSetProvider.getDataSetMD();
+		curatorMD = dataSetProvider.getCuratorMD();
+		tdbResource = dataSetProvider.getTdbResource();
+	}
+	
+	// MAKE THE WHOLE DIALOG BOX
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		setTitle("CSV file Meta Data");
-		// FIRST STEP: COLLECT MD INFO BASED ON WHAT IS PASSED, AND ADD OTHER THINGS
+		// FIRST STEP: COLLECT MD INFO BASED ON WHAT IS PASSED, AND ADD OTHER
+		// THINGS
 		if (fileMD == null) {
 			if (dataSetProvider == null) {
 				return null; // HOW DID WE GET HERE WITH NEITHER?
@@ -146,16 +103,10 @@ public class CSVMetaDialog extends TitleAreaDialog {
 																// BUT THIS IS
 																// NOT RIGHT, SO
 																// FIXME
-			dataSetMD = dataSetProvider.getDataSetMD();
-			curatorMD = dataSetProvider.getCuratorMD();
-			tdbResource = dataSetProvider.getTdbResource();
+
 		} else {
-			dataSetMD = new DataSetMD();
-			curatorMD = new CuratorMD();
-			curatorMD.setName(Util.getPreferenceStore().getString("userName"));
-			curatorMD.setAffiliation(Util.getPreferenceStore().getString("userAffiliation"));
-			curatorMD.setEmail(Util.getPreferenceStore().getString("userEmail"));
-			curatorMD.setPhone(Util.getPreferenceStore().getString("userPhone"));
+
+
 		}
 
 		// // addMetaFile();
@@ -183,13 +134,12 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		combo.setBounds(col2Left, 0 * disBtwnRows, col2Width, rowHeight);
 
-		// combo.add("New", 1);
-		// combo.setItems(getDataSetInfo());
 		String[] dsInfo = getDataSetInfo();
 		// if ((dataSetProvider == null) && (dsInfo.length > 1)) {
 		if (dataSetProvider == null) {
-			// combo.setText("Choose...");
-			combo.setToolTipText("Please choose an existing data set or select: " + dsInfo[0]);
+			// combo.setText("Choose..."); // THIS DOES NOT WORK... :-(
+			combo.setToolTipText("Please choose an existing data set or select: "
+					+ dsInfo[0]);
 			combo.setItems(getDataSetInfo());
 			// combo.setBounds(0, 15, 400, 50);
 		} else {
@@ -201,7 +151,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			public void modifyText(ModifyEvent e) {
 				populateMeta(combo.getText());
 				getButton(IDialogConstants.OK_ID).setEnabled(true);
-				System.out.println("choice is " + combo.getSelectionIndex() + " with value: " + combo.getText());
+				System.out.println("choice is " + combo.getSelectionIndex()
+						+ " with value: " + combo.getText());
 			}
 		});
 
@@ -234,8 +185,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		if (fileMD != null) {
 			text_02.setText(fileMD.getFilename());
 			text_03.setText(fileMD.getSize() + "");
-			text_04.setText(harmonizationtool.utils.Util.getLocalDateFmt(fileMD.getLastModified()));
-			text_05.setText(harmonizationtool.utils.Util.getLocalDateFmt(fileMD.getReadTime()));
+			text_04.setText(Util.getLocalDateFmt(fileMD.getLastModified()));
+			text_05.setText(Util.getLocalDateFmt(fileMD.getReadTime()));
 		}
 
 		Label sep_05a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -327,21 +278,21 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			text_16.setText(curatorMD.getPhone());
 		}
 
-		dialogValues.add(text_02);
-		dialogValues.add(text_03);
-		dialogValues.add(text_04);
-		dialogValues.add(text_05);
-		dialogValues.add(text_06);
-		dialogValues.add(text_07);
-		dialogValues.add(text_08);
-		dialogValues.add(text_09);
-		dialogValues.add(text_10);
-		dialogValues.add(text_11);
-		dialogValues.add(text_12);
-		dialogValues.add(text_13);
-		dialogValues.add(text_14);
-		dialogValues.add(text_15);
-		dialogValues.add(text_16);
+		dialogValues.add(text_02); // 00 File Name
+		dialogValues.add(text_03); // 01 File Size (bytes)
+		dialogValues.add(text_04); // 02 File Last Modified
+		dialogValues.add(text_05); // 03 File Read Time
+		dialogValues.add(text_06); // 04 Data Set Name
+		dialogValues.add(text_07); // 05 Data Set Version
+		dialogValues.add(text_08); // 06 Data Set Comments
+		dialogValues.add(text_09); // 07 Data Set Contact Name
+		dialogValues.add(text_10); // 08 Data Set Contact Affiliation
+		dialogValues.add(text_11); // 09 Data Set Contact Email
+		dialogValues.add(text_12); // 10 Data Set Contact Phone
+		dialogValues.add(text_13); // 11 Curator Name
+		dialogValues.add(text_14); // 12 Curator Affiliation
+		dialogValues.add(text_15); // 13 Curator Email
+		dialogValues.add(text_16); // 14 Curator Phone
 
 		// Label lbl_17 = new Label(composite, SWT.NONE);
 		// lbl_17.setBounds(col1Left, 16*disBtwnRows, col1Width, rowHeight);
@@ -353,29 +304,13 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 		return super.createDialogArea(parent);
 	}
+	
 
-	// FOR NEW DIALOGS, ONLY NEED FILE INFO
-	/**
-	 * @wbp.parser.constructor
-	 */
-	public CSVMetaDialog(Shell parentShell, FileMD fileMD) {
-		super(parentShell);
-		assert fileMD != null : "fileMD cannot be null";
-		this.fileMD = fileMD;
+	@Override
+	public int open() {
+		getButton(IDialogConstants.OK_ID).setEnabled(false);
+		return super.open();
 	}
-
-	// FOR EDIT, NEED THE DataSetProvider
-	public CSVMetaDialog(Shell parentShell, DataSetProvider dataSetProvider) {
-		super(parentShell);
-		this.dataSetProvider = dataSetProvider;
-	}
-
-	// public CSVMetaDialog(Shell parentShell, ModelProvider modelProvider,
-	// boolean initialCreate) {
-	// super(parentShell);
-	// this.modelProvider = modelProvider;
-	// this.initialCreate = initialCreate;
-	// }
 
 	@Override
 	protected void cancelPressed() {
@@ -384,8 +319,61 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
+		// FIRST POPULATE THE THREE BLOCKS OF META DATA:
+
+		// fileMD META DATA
+		fileMD.setFilename(dialogValues.get(0).getText());
+		fileMD.setSize(Integer.parseInt(dialogValues.get(1).getText()));
+		try {
+			fileMD.setLastModified(Util.setDateFmt(dialogValues.get(2)
+					.getText()));
+		} catch (ParseException e) {
+			fileMD.setLastModified(null);
+		}
+		try {
+			fileMD.setReadTime(Util.setDateFmt(dialogValues.get(3).getText()));
+		} catch (ParseException e) {
+			fileMD.setReadTime(null);
+		}
+
+		// dataSetMD META DATA
+		dataSetMD.setName(dialogValues.get(4).getText());
+		dataSetMD.setVersion(dialogValues.get(5).getText());
+		dataSetMD.setComments(dialogValues.get(6).getText());
+		dataSetMD.setContactName(dialogValues.get(7).getText());
+		dataSetMD.setContactAffiliation(dialogValues.get(8).getText());
+		dataSetMD.setContactEmail(dialogValues.get(9).getText());
+		dataSetMD.setContactPhone(dialogValues.get(10).getText());
+
+		// curatorMD META DATA
+		curatorMD.setName(dialogValues.get(11).getText());
+		curatorMD.setAffiliation(dialogValues.get(12).getText());
+		curatorMD.setEmail(dialogValues.get(13).getText());
+		curatorMD.setPhone(dialogValues.get(14).getText());
+		
+		dataSetProvider.setDataSetMD(dataSetMD);
+		dataSetProvider.setCuratorMD(curatorMD);
+
+		// ARE ADDING THESE TO AN EXISTING DataSetProvider OR A NEW ONE
 		Iterator<Text> dialogSeq = dialogValues.iterator();
 		String comboText = combo.getText();
+		String sPattern = "^(\\d+)";
+		Pattern pattern = Pattern.compile(sPattern);
+		Matcher matcher = pattern.matcher(comboText);
+		matcher.find();
+		int dsNum = Integer.parseInt(matcher.group(0)) - 1; // SUBTRACT 1 !!
+		
+		if (DataSetKeeper.hasIndex(dsNum)) {
+			DataSetProvider dataSetOrig = DataSetKeeper.get(dsNum);
+			dataSetProvider.setTdbResource(dataSetOrig.getTdbResource());
+			
+			List<FileMD> fileMDList = dataSetProvider.getFileMDList();
+			fileMDList.add(fileMD); // QUICK HACK, THAT DOES NOT PREDICATE THE
+									// DUPLICATION OF FILE INFO
+		} else {
+			DataSetKeeper.add(dataSetProvider);
+			dataSetProvider.setCuratorMD(curatorMD);
+		}
 
 		for (String key : modelProvider.getKeys()) {
 			Text nextText = dialogSeq.next();
@@ -395,28 +383,179 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 
-	protected void populateMeta(String data_choice) {
-		System.out.println("The person chose a new data set...");
-
-		if (data_choice.startsWith("x")) {
-			System.out.println("... it is new");
-			Set<String> keySet = modelProvider.getKeys();
-			int index = -1;
-			Iterator<String> keySeq = keySet.iterator();
-			while (keySeq.hasNext()) {
-				String key = keySeq.next();
-				index++;
-				// dialogValues.get(index).setText(
-				// modelProvider.getMetaValue(key));
-				dialogValues.get(index).setText("blank");
+	// POPULATE CuratorMD FROM PREFERENCES
+	private void curatorFromPrefs(){
+		curatorMD.setName(Util.getPreferenceStore().getString("userName"));
+		curatorMD.setAffiliation(Util.getPreferenceStore().getString(
+				"userAffiliation"));
+		curatorMD
+				.setEmail(Util.getPreferenceStore().getString("userEmail"));
+		curatorMD
+				.setPhone(Util.getPreferenceStore().getString("userPhone"));
+	}
+	
+	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
+	@SuppressWarnings("null")
+	private String[] getDataSetInfo() {
+		Model model = SelectTDB.model;
+		if (dataSetProvider != null) {
+			String[] results = new String[1];
+			Integer id = DataSetKeeper.indexOf(dataSetProvider);
+			Resource tdbResource = dataSetProvider.getTdbResource();
+			String name = "";
+			String version = "";
+			if (model.contains(tdbResource, RDFS.label)) {
+				name = model.listObjectsOfProperty(tdbResource, RDFS.label)
+						.next().asLiteral().getString();
 			}
-		}
+			if (model.contains(tdbResource, DCTerms.hasVersion)) {
+				version = model
+						.listObjectsOfProperty(tdbResource, DCTerms.hasVersion)
+						.next().asLiteral().getString();
+			} else if (model.contains(tdbResource, ECO.hasMajorVersionNumber)) {
+				version = model
+						.listObjectsOfProperty(tdbResource,
+								ECO.hasMajorVersionNumber).next().asLiteral()
+						.getString();
+				if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
+					version += "."
+							+ model.listObjectsOfProperty(tdbResource,
+									ECO.hasMinorVersionNumber).next()
+									.asLiteral().getString();
+				}
+			}
+			results[0] = id + ": " + name + " " + version;
+			return results;
+		} else {
+			String[] results = new String[DataSetKeeper.size() + 1];
+			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
+			// // NEW)
+			List<Integer> ids = DataSetKeeper.getIDs();
+			Iterator<Integer> iterator = ids.iterator();
 
+			Integer id = 0;
+			int id_plus_one = id + 1;
+			int counter = 0;
+			while (iterator.hasNext()) {
+				counter++;
+				id = iterator.next();
+				id_plus_one = id + 1;
+				DataSetProvider dsProvider = DataSetKeeper.get(id);
+				Resource tdbResource = dsProvider.getTdbResource();
+				String name = "";
+				String version = "";
+				if (model.contains(tdbResource, RDFS.label)) {
+					name = model.listObjectsOfProperty(tdbResource, RDFS.label)
+							.next().asLiteral().getString();
+				}
+				if (model.contains(tdbResource, DCTerms.hasVersion)) {
+					version = model
+							.listObjectsOfProperty(tdbResource,
+									DCTerms.hasVersion).next().asLiteral()
+							.getString();
+				} else if (model.contains(tdbResource,
+						ECO.hasMajorVersionNumber)) {
+					version = model
+							.listObjectsOfProperty(tdbResource,
+									ECO.hasMajorVersionNumber).next()
+							.asLiteral().getString();
+					if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
+						version += "."
+								+ model.listObjectsOfProperty(tdbResource,
+										ECO.hasMinorVersionNumber).next()
+										.asLiteral().getString();
+					}
+				}
+				results[counter] = id_plus_one + ":" + name + " " + version;
+			}
+			Integer next = id + 1;
+			results[0] = next + ": (new data set)";
+			return results;
+		}
 	}
 
-	@Override
-	public int open() {
-		getButton(IDialogConstants.OK_ID).setEnabled(false);
-		return super.open();
+
+
+	protected void populateMeta(String data_choice) {
+		System.out.println("The person chose a new data set: " + data_choice);
+		String sPattern = "^(\\d+)";
+		Pattern pattern = Pattern.compile(sPattern);
+		Matcher matcher = pattern.matcher(data_choice);
+		matcher.find();
+		int dsNum = Integer.parseInt(matcher.group(0)) - 1; // SUBTRACT 1 !!
+		System.out.println("Got data set number: " + dsNum);
+
+		if (data_choice.endsWith("new data set)")) {
+			System.out.println("... it is new");
+			fileMD = fileMD;
+			dataSetMD = new DataSetMD();
+			curatorMD = new CuratorMD();
+			curatorFromPrefs();
+			redrawDialogRows();
+		} else {
+			try {
+				System.out.println("DataSetKeeper size: "
+						+ DataSetKeeper.size());
+				DataSetProvider dsProv = DataSetKeeper.get(dsNum);
+				if (dsProv != null) {
+					System.out.println("dsProv is not null");
+				}
+				List<FileMD> fileMDList = dsProv.getFileMDList();
+				if (fileMDList != null) {
+					System.out.println("fileMDList has size: "
+							+ fileMDList.size());
+					if (fileMDList.size() > 0) {
+						fileMD = dsProv.getFileMDList().get(0);
+					} else {
+						fileMD = null;
+					}
+				} else {
+					fileMD = null;
+				}
+				System.out.println("Got past fileMD");
+				dataSetMD = dsProv.getDataSetMD();
+				System.out.println("Got past dataSetMD");
+				curatorMD = dsProv.getCuratorMD();
+				System.out.println("Got past curatorMD");
+				redrawDialogRows();
+			} catch (Exception e) {
+				System.out.println("What happened?");
+			}
+		}
+	}
+	
+	protected void redrawDialogRows() {
+		// CLEAR ALL DIALOG BOXES (BECAUSE WE'LL REDRAW)
+		Iterator<Text> iter = dialogValues.iterator();
+		while (iter.hasNext()) {
+			Text thing = iter.next();
+			thing.setText("");
+		}
+		if (fileMD != null) {
+			dialogValues.get(0).setText(fileMD.getFilename());
+			dialogValues.get(1).setText(fileMD.getSize() + "");
+			dialogValues.get(2).setText(
+					Util.getLocalDateFmt(fileMD.getLastModified()));
+			dialogValues.get(3).setText(
+					Util.getLocalDateFmt(fileMD.getReadTime()));
+		}
+		if (dataSetMD != null) {
+			System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
+			dialogValues.get(4).setText(dataSetMD.getName());
+			dialogValues.get(5).setText(dataSetMD.getVersion());
+			dialogValues.get(6).setText(dataSetMD.getComments());
+			dialogValues.get(7).setText(dataSetMD.getContactName());
+			dialogValues.get(8).setText(dataSetMD.getContactAffiliation());
+			dialogValues.get(9).setText(dataSetMD.getContactEmail());
+			dialogValues.get(10).setText(dataSetMD.getContactPhone());
+
+		}
+		if (curatorMD != null) {
+			System.out.println("curatorMD.getName: = " + curatorMD.getName());
+			dialogValues.get(11).setText(curatorMD.getName());
+			dialogValues.get(12).setText(curatorMD.getAffiliation());
+			dialogValues.get(13).setText(curatorMD.getEmail());
+			dialogValues.get(14).setText(curatorMD.getPhone());
+		}
 	}
 }
