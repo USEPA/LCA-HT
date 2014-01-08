@@ -1,10 +1,25 @@
 package harmonizationtool.model;
 
+import harmonizationtool.utils.Util;
+
 public class CuratorMD {
 	private String name;
 	private String affiliation;
 	private String email;
 	private String phone;
+
+	public CuratorMD() {
+	}
+
+	public CuratorMD(boolean preferences) {
+		if (preferences) {
+			setName(Util.getPreferenceStore().getString("userName"));
+			setAffiliation(Util.getPreferenceStore().getString(
+					"userAffiliation"));
+			setEmail(Util.getPreferenceStore().getString("userEmail"));
+			setPhone(Util.getPreferenceStore().getString("userPhone"));
+		}
+	}
 
 	public String getName() {
 		if (name == null) {

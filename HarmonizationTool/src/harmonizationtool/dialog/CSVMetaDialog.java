@@ -29,6 +29,7 @@ import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 
+import org.apache.jena.atlas.lib.ArrayUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -63,7 +64,10 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 public class CSVMetaDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
+	private boolean newFileMD = false;
+	private boolean newDataSet = true;
 	private DataSetProvider dataSetProvider = null;
+	private DataSetProvider tempDataSetProvider = null;
 	private FileMD fileMD = null;
 	private DataSetMD dataSetMD = null;
 	private CuratorMD curatorMD = null;
@@ -78,17 +82,24 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	 */
 	public CSVMetaDialog(Shell parentShell, FileMD fileMD) {
 		super(parentShell);
+		newFileMD = true;
 		assert fileMD != null : "fileMD cannot be null";
 		this.fileMD = fileMD; // SET LOCAL VERSION
-		dataSetMD = new DataSetMD();
-		curatorMD = new CuratorMD();
-		curatorFromPrefs();
+		tempDataSetProvider = new DataSetProvider();
+		this.dataSetMD = new DataSetMD();
+		tempDataSetProvider.setDataSetMD(dataSetMD);
+		this.curatorMD = new CuratorMD(true);
+		tempDataSetProvider.setCuratorMD(curatorMD);
+		tempDataSetProvider.addFileMD(fileMD);
+		dataSetProvider = tempDataSetProvider;
+		// curatorFromPrefs();
 	}
 
 	// YOU CAN GET HERE WITH A DataSetProvider WITH DataSetMD , CuratorMD ,
 	// fileMDList , tdbResource
 	public CSVMetaDialog(Shell parentShell, DataSetProvider dataSetProvider) {
 		super(parentShell);
+		newFileMD = false;
 		this.dataSetProvider = dataSetProvider;
 		dataSetMD = dataSetProvider.getDataSetMD();
 		curatorMD = dataSetProvider.getCuratorMD();
@@ -126,7 +137,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		int col1Left = 5;
 		int col1Width = 190;
 		int col2Left = 200;
-		int col2Width = 200;
+		int col2Width = 250;
 		int rowHeight = 20;
 		int disBtwnRows = 30;
 
@@ -142,7 +153,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 		String[] dsInfo = getDataSetInfo();
 		// if ((dataSetProvider == null) && (dsInfo.length > 1)) {
-		if (dataSetProvider == null) {
+		if (newFileMD) {
 			// combo.setText("Choose..."); // THIS DOES NOT WORK... :-(
 			combo.setToolTipText("Please choose an existing data set or select: "
 					+ dsInfo[0]);
@@ -171,7 +182,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		combo2.setBounds(col2Left, 1 * disBtwnRows, col2Width, rowHeight);
 		combo2.setToolTipText("Files associated with this data set."
 				+ dsInfo[0]);
-		// combo2.setItems(getFileInfo());
+//		combo2.setItems(getFileInfo());
+//		combo2.setText(getFileInfo()[0]);
 
 		// String[] dsInfo = getDataSetInfo();
 		// Text text_02 = new Text(composite, SWT.BORDER);
@@ -182,25 +194,28 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		lbl_03.setText("File Size (bytes)");
 		Text text_03 = new Text(composite, SWT.BORDER);
 		text_03.setBounds(col2Left, 2 * disBtwnRows, col2Width, rowHeight);
+		text_03.setEnabled(false);
 
 		Label lbl_04 = new Label(composite, SWT.NONE);
 		lbl_04.setBounds(col1Left, 3 * disBtwnRows, col1Width, rowHeight);
 		lbl_04.setText("File Last Modified");
 		Text text_04 = new Text(composite, SWT.BORDER);
 		text_04.setBounds(col2Left, 3 * disBtwnRows, col2Width, rowHeight);
+		text_04.setEnabled(false);
 
 		Label lbl_05 = new Label(composite, SWT.NONE);
 		lbl_05.setBounds(col1Left, 4 * disBtwnRows, col1Width, rowHeight);
 		lbl_05.setText("File Read Time");
 		Text text_05 = new Text(composite, SWT.BORDER);
 		text_05.setBounds(col2Left, 4 * disBtwnRows, col2Width, rowHeight);
+		text_05.setEnabled(false);
 
-		if (fileMD != null) {
-			// text_02.setText(fileMD.getFilename());
-			text_03.setText(fileMD.getSize() + "");
-			text_04.setText(Util.getLocalDateFmt(fileMD.getLastModified()));
-			text_05.setText(Util.getLocalDateFmt(fileMD.getReadTime()));
-		}
+//		if (fileMD != null) {
+//			// text_02.setText(fileMD.getFilename());
+//			text_03.setText(fileMD.getSize() + "");
+//			text_04.setText(Util.getLocalDateFmt(fileMD.getLastModified()));
+//			text_05.setText(Util.getLocalDateFmt(fileMD.getReadTime()));
+//		}
 
 		Label sep_05a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_05a.setBounds(50, 5 * disBtwnRows - 5, 250, 2);
@@ -247,15 +262,15 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		Text text_12 = new Text(composite, SWT.BORDER);
 		text_12.setBounds(col2Left, 11 * disBtwnRows, col2Width, rowHeight);
 
-		if (dataSetMD != null) {
-			text_06.setText(dataSetMD.getName());
-			text_07.setText(dataSetMD.getVersion());
-			text_08.setText(dataSetMD.getComments());
-			text_09.setText(dataSetMD.getContactName());
-			text_10.setText(dataSetMD.getContactAffiliation());
-			text_11.setText(dataSetMD.getContactEmail());
-			text_12.setText(dataSetMD.getContactPhone());
-		}
+//		if (dataSetMD != null) {
+//			text_06.setText(dataSetMD.getName());
+//			text_07.setText(dataSetMD.getVersion());
+//			text_08.setText(dataSetMD.getComments());
+//			text_09.setText(dataSetMD.getContactName());
+//			text_10.setText(dataSetMD.getContactAffiliation());
+//			text_11.setText(dataSetMD.getContactEmail());
+//			text_12.setText(dataSetMD.getContactPhone());
+//		}
 
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_12a.setBounds(50, 12 * disBtwnRows - 5, 250, 2);
@@ -284,29 +299,30 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		Text text_16 = new Text(composite, SWT.BORDER);
 		text_16.setBounds(col2Left, 15 * disBtwnRows, col2Width, rowHeight);
 
-		if (curatorMD != null) {
-			text_13.setText(curatorMD.getName());
-			text_14.setText(curatorMD.getAffiliation());
-			text_15.setText(curatorMD.getEmail());
-			text_16.setText(curatorMD.getPhone());
-		}
+//		if (curatorMD != null) {
+//			text_13.setText(curatorMD.getName());
+//			text_14.setText(curatorMD.getAffiliation());
+//			text_15.setText(curatorMD.getEmail());
+//			text_16.setText(curatorMD.getPhone());
+//		}
 
 		// dialogValues.add(text_02); // 00 File Name
-		dialogValues.add(text_03); // 01 File Size (bytes)
-		dialogValues.add(text_04); // 02 File Last Modified
-		dialogValues.add(text_05); // 03 File Read Time
-		dialogValues.add(text_06); // 04 Data Set Name
-		dialogValues.add(text_07); // 05 Data Set Version
-		dialogValues.add(text_08); // 06 Data Set Comments
-		dialogValues.add(text_09); // 07 Data Set Contact Name
-		dialogValues.add(text_10); // 08 Data Set Contact Affiliation
-		dialogValues.add(text_11); // 09 Data Set Contact Email
-		dialogValues.add(text_12); // 10 Data Set Contact Phone
-		dialogValues.add(text_13); // 11 Curator Name
-		dialogValues.add(text_14); // 12 Curator Affiliation
-		dialogValues.add(text_15); // 13 Curator Email
-		dialogValues.add(text_16); // 14 Curator Phone
+		dialogValues.add(text_03); // 00 File Size (bytes)
+		dialogValues.add(text_04); // 01 File Last Modified
+		dialogValues.add(text_05); // 02 File Read Time
+		dialogValues.add(text_06); // 03 Data Set Name
+		dialogValues.add(text_07); // 04 Data Set Version
+		dialogValues.add(text_08); // 05 Data Set Comments
+		dialogValues.add(text_09); // 06 Data Set Contact Name
+		dialogValues.add(text_10); // 07 Data Set Contact Affiliation
+		dialogValues.add(text_11); // 08 Data Set Contact Email
+		dialogValues.add(text_12); // 09 Data Set Contact Phone
+		dialogValues.add(text_13); // 10 Curator Name
+		dialogValues.add(text_14); // 11 Curator Affiliation
+		dialogValues.add(text_15); // 12 Curator Email
+		dialogValues.add(text_16); // 13 Curator Phone
 
+		redrawDialogRows();
 		// Label lbl_17 = new Label(composite, SWT.NONE);
 		// lbl_17.setBounds(col1Left, 16*disBtwnRows, col1Width, rowHeight);
 		// lbl_17.setText("File Size (bytes)");
@@ -334,34 +350,34 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		// FIRST POPULATE THE THREE BLOCKS OF META DATA:
 
 		// fileMD META DATA
-		fileMD.setFilename(dialogValues.get(0).getText());
-		fileMD.setSize(Integer.parseInt(dialogValues.get(1).getText()));
+		// fileMD.setFilename(dialogValues.get(0).getText());
+		fileMD.setSize(Integer.parseInt(dialogValues.get(0).getText()));
 		try {
-			fileMD.setLastModified(Util.setDateFmt(dialogValues.get(2)
+			fileMD.setLastModified(Util.setDateFmt(dialogValues.get(1)
 					.getText()));
 		} catch (ParseException e) {
 			fileMD.setLastModified(null);
 		}
 		try {
-			fileMD.setReadTime(Util.setDateFmt(dialogValues.get(3).getText()));
+			fileMD.setReadTime(Util.setDateFmt(dialogValues.get(2).getText()));
 		} catch (ParseException e) {
 			fileMD.setReadTime(null);
 		}
 
 		// dataSetMD META DATA
-		dataSetMD.setName(dialogValues.get(4).getText());
-		dataSetMD.setVersion(dialogValues.get(5).getText());
-		dataSetMD.setComments(dialogValues.get(6).getText());
-		dataSetMD.setContactName(dialogValues.get(7).getText());
-		dataSetMD.setContactAffiliation(dialogValues.get(8).getText());
-		dataSetMD.setContactEmail(dialogValues.get(9).getText());
-		dataSetMD.setContactPhone(dialogValues.get(10).getText());
+		dataSetMD.setName(dialogValues.get(3).getText());
+		dataSetMD.setVersion(dialogValues.get(4).getText());
+		dataSetMD.setComments(dialogValues.get(5).getText());
+		dataSetMD.setContactName(dialogValues.get(6).getText());
+		dataSetMD.setContactAffiliation(dialogValues.get(7).getText());
+		dataSetMD.setContactEmail(dialogValues.get(8).getText());
+		dataSetMD.setContactPhone(dialogValues.get(9).getText());
 
 		// curatorMD META DATA
-		curatorMD.setName(dialogValues.get(11).getText());
-		curatorMD.setAffiliation(dialogValues.get(12).getText());
-		curatorMD.setEmail(dialogValues.get(13).getText());
-		curatorMD.setPhone(dialogValues.get(14).getText());
+		curatorMD.setName(dialogValues.get(10).getText());
+		curatorMD.setAffiliation(dialogValues.get(11).getText());
+		curatorMD.setEmail(dialogValues.get(12).getText());
+		curatorMD.setPhone(dialogValues.get(13).getText());
 
 		dataSetProvider.setDataSetMD(dataSetMD);
 		dataSetProvider.setCuratorMD(curatorMD);
@@ -383,8 +399,9 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			fileMDList.add(fileMD); // QUICK HACK, THAT DOES NOT PREDICATE THE
 									// DUPLICATION OF FILE INFO
 		} else {
-			DataSetKeeper.add(dataSetProvider);
+			dataSetProvider.setDataSetMD(dataSetMD);
 			dataSetProvider.setCuratorMD(curatorMD);
+			DataSetKeeper.add(dataSetProvider);
 		}
 
 		for (String key : modelProvider.getKeys()) {
@@ -396,13 +413,13 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	}
 
 	// POPULATE CuratorMD FROM PREFERENCES
-	private void curatorFromPrefs() {
-		curatorMD.setName(Util.getPreferenceStore().getString("userName"));
-		curatorMD.setAffiliation(Util.getPreferenceStore().getString(
-				"userAffiliation"));
-		curatorMD.setEmail(Util.getPreferenceStore().getString("userEmail"));
-		curatorMD.setPhone(Util.getPreferenceStore().getString("userPhone"));
-	}
+	// private void curatorFromPrefs() {
+	// curatorMD.setName(Util.getPreferenceStore().getString("userName"));
+	// curatorMD.setAffiliation(Util.getPreferenceStore().getString(
+	// "userAffiliation"));
+	// curatorMD.setEmail(Util.getPreferenceStore().getString("userEmail"));
+	// curatorMD.setPhone(Util.getPreferenceStore().getString("userPhone"));
+	// }
 
 	private String[] getFileInfo() {
 		List<String> filenameList = new ArrayList<String>();
@@ -419,7 +436,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
 	private String[] getDataSetInfo() {
 		Model model = SelectTDB.model;
-		if (dataSetProvider != null) {
+		if (!newFileMD) {
 			Integer id = DataSetKeeper.indexOf(dataSetProvider);
 			String name = dataSetProvider.getDataSetMD().getName();
 			String version = dataSetProvider.getDataSetMD().getVersion();
@@ -486,34 +503,34 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		System.out.println("Got data set number: " + dsNum);
 
 		if (dataSetChosen.endsWith("new data set)")) {
+			newDataSet = true;
+			dataSetProvider = tempDataSetProvider;
 			System.out.println("... it is new");
-			fileMD = fileMD;
-			dataSetMD = new DataSetMD();
-			curatorMD = new CuratorMD();
-			curatorFromPrefs();
-			redrawDialogRows();
+			fileMD = dataSetProvider.getFileMDList().get(0);
 		} else {
+			newDataSet = false;
 			if (!DataSetKeeper.hasIndex(dsNum)) {
 				return;
 			}
 			try {
 				dataSetProvider = DataSetKeeper.get(dsNum);
-				List<FileMD> fileMDList = dataSetProvider.getFileMDList();
 
-				System.out.println("fileMDList has size: " + fileMDList.size());
-				if (fileMDList.size() > 0) {
-					combo2.setItems(getFileInfo());
-				}
-				System.out.println("Got past fileMD");
-				dataSetMD = dataSetProvider.getDataSetMD();
-				System.out.println("Got past dataSetMD");
-				curatorMD = dataSetProvider.getCuratorMD();
-				System.out.println("Got past curatorMD");
-				redrawDialogRows();
 			} catch (Exception e) {
 				System.out.println("What happened?");
 			}
 		}
+		// List<FileMD> fileMDList = dataSetProvider.getFileMDList();
+		//
+		// System.out.println("fileMDList has size: " + fileMDList.size());
+		// if (fileMDList.size() > 0) {
+		// combo2.setItems(getFileInfo());
+		// }
+		// System.out.println("Got past fileMD");
+		dataSetMD = dataSetProvider.getDataSetMD();
+		// System.out.println("Got past dataSetMD");
+		curatorMD = dataSetProvider.getCuratorMD();
+		// System.out.println("Got past curatorMD");
+		redrawDialogRows();
 	}
 
 	protected void redrawDialogRows() {
@@ -523,32 +540,43 @@ public class CSVMetaDialog extends TitleAreaDialog {
 			Text thing = iter.next();
 			thing.setText("");
 		}
+		String[] listOfFiles = getFileInfo();
+		if(!newDataSet){
+			// doing new DataSet to add new file name to the file combo list and make it the first name in the list
+			String filename = fileMD.getFilename();
+			List<String> l = new ArrayList<String>();
+			l.add(filename);
+			l.addAll(Arrays.asList(listOfFiles));
+			listOfFiles = l.toArray(new String[l.size()] );
+		}
+
+		combo2.setItems(listOfFiles);
+		combo2.setText(listOfFiles[0]);
 		if (fileMD != null) {
-			combo2.setItems(getFileInfo());
 			// dialogValues.get(0).setText(fileMD.getFilename());
-			dialogValues.get(1).setText(fileMD.getSize() + "");
-			dialogValues.get(2).setText(
+			dialogValues.get(0).setText(fileMD.getSize() + "");
+			dialogValues.get(1).setText(
 					Util.getLocalDateFmt(fileMD.getLastModified()));
-			dialogValues.get(3).setText(
+			dialogValues.get(2).setText(
 					Util.getLocalDateFmt(fileMD.getReadTime()));
 		}
 		if (dataSetMD != null) {
 			System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
-			dialogValues.get(4).setText(dataSetMD.getName());
-			dialogValues.get(5).setText(dataSetMD.getVersion());
-			dialogValues.get(6).setText(dataSetMD.getComments());
-			dialogValues.get(7).setText(dataSetMD.getContactName());
-			dialogValues.get(8).setText(dataSetMD.getContactAffiliation());
-			dialogValues.get(9).setText(dataSetMD.getContactEmail());
-			dialogValues.get(10).setText(dataSetMD.getContactPhone());
+			dialogValues.get(3).setText(dataSetMD.getName());
+			dialogValues.get(4).setText(dataSetMD.getVersion());
+			dialogValues.get(5).setText(dataSetMD.getComments());
+			dialogValues.get(6).setText(dataSetMD.getContactName());
+			dialogValues.get(7).setText(dataSetMD.getContactAffiliation());
+			dialogValues.get(8).setText(dataSetMD.getContactEmail());
+			dialogValues.get(9).setText(dataSetMD.getContactPhone());
 
 		}
 		if (curatorMD != null) {
 			System.out.println("curatorMD.getName: = " + curatorMD.getName());
-			dialogValues.get(11).setText(curatorMD.getName());
-			dialogValues.get(12).setText(curatorMD.getAffiliation());
-			dialogValues.get(13).setText(curatorMD.getEmail());
-			dialogValues.get(14).setText(curatorMD.getPhone());
+			dialogValues.get(10).setText(curatorMD.getName());
+			dialogValues.get(11).setText(curatorMD.getAffiliation());
+			dialogValues.get(12).setText(curatorMD.getEmail());
+			dialogValues.get(13).setText(curatorMD.getPhone());
 		}
 	}
 }
