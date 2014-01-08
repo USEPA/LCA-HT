@@ -80,8 +80,8 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 				b.append("      ?s2 eco:casNumber ?cas .   \n");
 				b.append("      ?s1 rdfs:label ?name . \n");
 				b.append("      ?s2 rdfs:label ?name2 .  \n");
-				b.append("      ?s1 a eco:Flowable .  \n");
-				b.append("      ?s2 a eco:Flowable .  \n");
+				b.append("      {{?s1 a eco:Flowable .  } UNION {?s1 a eco:Substance . }} \n");
+				b.append("      {{?s2 a eco:Flowable .  } UNION {?s2 a eco:Substance . }} \n");
 				b.append(" \n");
 				b.append("      filter( \n");
 //				System.out.println("refDatasets size = "+refDatasets.length);
