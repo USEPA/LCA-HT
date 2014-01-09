@@ -17,6 +17,7 @@ public class UDelDataSet extends HarmonyBaseUpdate implements HarmonyUpdate {
 		b.append("prefix xsd:    <http://www.w3.org/2001/XMLSchema#>\n");
 		b.append("prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 		b.append("prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>\n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append("\n");
 		b.append("delete {\n");
 		b.append("#  ?ds ?p1 ?o1 .\n");

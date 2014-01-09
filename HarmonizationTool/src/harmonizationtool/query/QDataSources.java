@@ -16,8 +16,9 @@ public class QDataSources extends HarmonyBaseQuery {
 		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (str(?lid) as ?local_id) (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) (str(?com) as ?comment) \n");
+		b.append("SELECT DISTINCT (str(?lid) as ?local_id) (concat(str(?label),\" \", str(?vs)) as ?data_set) (str(?com) as ?comment) \n");
 		b.append("WHERE \n");
 		b.append("  { ?s ?p ?o . \n");
 		b.append("    ?s a eco:DataSource . \n");
@@ -25,6 +26,7 @@ public class QDataSources extends HarmonyBaseQuery {
 		b.append("    ?s rdfs:label ?label \n");
 		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
 		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
+		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
 		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");	
 		b.append("  } \n");
 		b.append("  order by ?lid \n");

@@ -16,14 +16,16 @@ public class QDataSets extends HarmonyBaseQuery {
 		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (str(?id) as ?lid) (\" \" as ?ws) (str(?label) as ?lab) (\" \" as ?ws2)  (str(?mj) as ?maj) (\".\" as ?dot)  (str(?mi) as ?min) \n");
+		b.append("SELECT DISTINCT (str(?id) as ?lid) (\" \" as ?ws) (str(?label) as ?lab) (\" \" as ?ws2) (str(?vs) as ?version) (str(?mj) as ?maj) (\".\" as ?dot)  (str(?mi) as ?min) \n");
 		b.append("WHERE \n");
 		b.append("  { ?s a eco:DataSource . \n");
 		b.append("    ?s ethold:localSerialNumber ?id . \n");
 		b.append("    ?s rdfs:label ?label \n");
 		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
 		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
+		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
 		b.append("  } \n");
 		b.append("order by ?id \n");
 		queryStr = b.toString();

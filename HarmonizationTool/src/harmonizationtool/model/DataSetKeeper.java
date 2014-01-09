@@ -1,10 +1,17 @@
 package harmonizationtool.model;
 
+import harmonizationtool.comands.SelectTDB;
+import harmonizationtool.vocabulary.ECO;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSetKeeper {
 
@@ -14,6 +21,18 @@ public class DataSetKeeper {
 	}
 
 	public static boolean add(DataSetProvider dataSetProvider) {
+		if (dataSetProvider.getTdbResource() == null) {
+			Model model = SelectTDB.model;
+			Resource tdbResource = model.createResource();
+			model.add(tdbResource, RDF.type, ECO.DataSource);
+			model.add(tdbResource, RDFS.label, model.createLiteral(dataSetProvider.getDataSetMD()
+					.getName()));
+			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSetProvider.getDataSetMD()
+					.getComments()));
+			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetProvider
+					.getDataSetMD().getVersion()));
+			dataSetProvider.setTdbResource(tdbResource);
+		}
 		return dsList.add(dataSetProvider);
 	}
 

@@ -303,8 +303,10 @@ public class View extends ViewPart {
 
 				IStructuredSelection selection = (IStructuredSelection) viewer
 						.getSelection();
-				if (selection.isEmpty())
+				if (selection.isEmpty()) {
 					return;
+				}
+				System.out.println(selection.getFirstElement().toString());
 				String key = (String) selection.toList().get(0);
 				DataSetProvider dataSetProvider = DataSetKeeper.get(0); // FIXME
 				// Map<String, String> metaData = csvFile.metaData;

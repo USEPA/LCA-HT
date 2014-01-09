@@ -16,6 +16,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT  (str(?lid) as ?local_id) ?data_set (str(count(distinct ?flble)) as ?Flowables) (str(count(distinct ?sub)) as ?Substances)\n");
 		b.append("WHERE \n");
@@ -25,6 +26,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("    OPTIONAL { ?s ethold:localSerialNumber ?lid } \n");
 		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
 		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
+		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
 		b.append("    {{ ?flble eco:hasDataSource ?s . \n");
 		b.append("    {?flble a eco:Flowable .} UNION {?flble a eco:Substance .} UNION {?flble a eco:Energy .}} \n");
 		b.append("    UNION \n");

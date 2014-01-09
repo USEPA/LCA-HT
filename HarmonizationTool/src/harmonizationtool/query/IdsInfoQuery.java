@@ -40,6 +40,7 @@ public class IdsInfoQuery extends HarmonyBaseUpdate {
 		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
 		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("INSERT DATA  \n");
 		b.append("{ \n");

@@ -48,6 +48,7 @@ public class QCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 				b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 				b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
 				b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+				b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 				b.append(" \n");
 				b.append("SELECT (str(afn:localname(?s1)) as ?sub) (str(?cas) as ?cas_not_in_db) (str(?label) as ?name) \n");
 				b.append("WHERE{ \n");
