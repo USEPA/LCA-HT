@@ -115,6 +115,7 @@ public class ImportCSV implements IHandler {
 			return null;
 		}
 		fileMD.setFilename(file.getName());
+		fileMD.setPath(path);
 		fileMD.setSize(file.length());
 		fileMD.setLastModified(new Date(file.lastModified()));
 		fileMD.setReadTime(new Date());
@@ -123,7 +124,7 @@ public class ImportCSV implements IHandler {
 		TableKeeper.saveTableProvider(path, tableProvider);
 
 		View view = (View) Util.findView(View.ID);
-		view.addFilename(path);
+		view.add(fileMD);
 
 		while (values != null) {
 			// printValues(parser.getLineNumber(),values);
@@ -176,7 +177,11 @@ public class ImportCSV implements IHandler {
 //				+ now.getTime().toString());
 
 		dialog.create();
-		dialog.open();
+		if (dialog.open() == CSVMetaDialog.CANCEL){
+			//remove fileMD from Data Files viewer
+			view.remove(fileMD);
+
+		}
 
 		return null;
 	}

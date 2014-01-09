@@ -9,6 +9,7 @@ import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
@@ -303,15 +304,19 @@ public class View extends ViewPart {
 
 				IStructuredSelection selection = (IStructuredSelection) viewer
 						.getSelection();
+
 				if (selection.isEmpty()) {
 					return;
 				}
 				System.out.println(selection.getFirstElement().toString());
-				String key = (String) selection.toList().get(0);
-				DataSetProvider dataSetProvider = DataSetKeeper.get(0); // FIXME
+				FileMD fileMD = (FileMD) selection.toList().get(0);
+				DataSetProvider dataSetProvider = DataSetKeeper.get(fileMD);
+				// String key = (String) selection.toList().get(0);
+				// DataSetProvider dataSetProvider = DataSetKeeper.get(0); //
+				// FIXME
 				// Map<String, String> metaData = csvFile.metaData;
 				CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
-						.getActiveShell(), dataSetProvider);
+						.getActiveShell(), fileMD, dataSetProvider);
 				dialog.create();
 				dialog.open();
 			}
@@ -384,15 +389,19 @@ public class View extends ViewPart {
 			public void run() {
 				System.out.println("executing actionClose");
 				ISelection iSelection = viewer.getSelection();
-				Object obj = ((IStructuredSelection) iSelection)
-						.getFirstElement();
-				String key = (String) obj;
-				ModelKeeper.remove(key);
-				removeFilename(obj);
+				if (iSelection.isEmpty()) {
+					return;
+				}
+				FileMD fileMD = (FileMD)((IStructuredSelection) iSelection).getFirstElement();
+				remove(fileMD);
+				DataSetProvider dataSetProvider = DataSetKeeper.get(fileMD);
+				dataSetProvider.remove(fileMD);
+				
+				//clear data from data view
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
 				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-				viewData.clearView(key);
+				viewData.clearView(fileMD.getPath());
 			}
 		};
 		actionClose.setText("Close");
@@ -1570,11 +1579,11 @@ public class View extends ViewPart {
 						.getSelection();
 				if (selection.isEmpty())
 					return;
-				String key = (String) selection.toList().get(0);
+				FileMD fileMD = (FileMD) selection.toList().get(0);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
 				ViewData viewData = (ViewData) page.findView(ViewData.ID);
-				viewData.update(key);
+				viewData.update(fileMD.getPath());
 				// ... AND BRING UP THE DATA CONTENTS VIEW
 
 				try {
@@ -1597,15 +1606,20 @@ public class View extends ViewPart {
 		viewer.getControl().setFocus();
 	}
 
-	public void addFilename(final String path) {
-		viewer.add(path);
+	public void add(final FileMD fileMD) {
+		viewer.add(fileMD);
 	}
 
-	public void removeFilename(Object element) {
-		if (element == null)
-			return;
-
-		viewer.remove(element);
+	public void remove(final FileMD fileMD) {
+		assert fileMD != null : "fileMD cannot be null";
+		viewer.remove(fileMD);
 	}
+
+	// public void removeFilename(Object element) {
+	// if (element == null)
+	// return;
+	//
+	// viewer.remove(element);
+	// }
 
 }

@@ -39,5 +39,9 @@ public class FileMD {
 	public void setReadTime(Date readTime) {
 		this.readTime = readTime;
 	}
+	@Override
+	public String toString() {
+		return path;
+	}
 
 }

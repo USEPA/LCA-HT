@@ -78,4 +78,13 @@ public class DataSetKeeper {
 		return -1;
 	}
 
+	public static DataSetProvider get(FileMD fileMD) {
+		for(DataSetProvider dataSetProvider : dsList){
+			if(dataSetProvider.getFileMDList().contains(fileMD)){
+				return dataSetProvider;
+			}
+		}
+		return null;
+	}
+
 }

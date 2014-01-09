@@ -38,4 +38,8 @@ public class DataSetProvider {
 	public List<FileMD> getFileMDList() {
 		return fileMDList;
 	}
+	public void remove(FileMD fileMD) {
+		fileMDList.remove(fileMD);
+		
+	}
 }
