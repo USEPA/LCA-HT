@@ -244,8 +244,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 								rdfNode.asLiteral());
 					}
 				}
-				model.addLiteral(subject, ETHOLD.localSerialNumber,
-						model.createTypedLiteral(newIndexPlusOne));
+//				model.addLiteral(subject, ETHOLD.localSerialNumber,
+//						model.createTypedLiteral(newIndexPlusOne));
 			} else {
 				String dsName = model
 						.listObjectsOfProperty(subject, RDFS.label).next()
@@ -266,8 +266,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 								rdfNode.asLiteral());
 					}
 				}
-				model.addLiteral(subject, ETHOLD.localSerialNumber,
-						model.createTypedLiteral(dataSetIndexPlusOne));
+//				model.addLiteral(subject, ETHOLD.localSerialNumber,
+//						model.createTypedLiteral(dataSetIndexPlusOne));
 			}
 		}
 	}

@@ -22,6 +22,7 @@ import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.ETHOLD;
 import harmonizationtool.vocabulary.SKOS;
 
 import java.io.BufferedWriter;
@@ -721,7 +722,7 @@ public class View extends ViewPart {
 
 						// String eco_p =
 						// "http://ontology.earthster.org/eco/core#";
-						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
+//						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 						String fn_p = "http://www.w3.org/2005/xpath-functions#";
 						String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
@@ -747,20 +748,20 @@ public class View extends ViewPart {
 						// + "hasMajorVersionNumber");
 						// Property minV = model.getProperty(eco_p
 						// + "hasMinorVersionNumber");
-						Property lid = model.getProperty(ethold_p
-								+ "localSerialNumber");
-						Property foundOnRow = model.getProperty(ethold_p
-								+ "foundOnRow");
-						Property HTuserName = model.getProperty(ethold_p
-								+ "HTuserName");
-						Property HTuserAffiliation = model.getProperty(ethold_p
-								+ "HTuserAffiliation");
-						Property HTuserPhone = model.getProperty(ethold_p
-								+ "HTuserPhone");
-						Property HTuserEmail = model.getProperty(ethold_p
-								+ "HTuserEmail");
-						Property dataParseTimeStamp = model
-								.getProperty(ethold_p + "dataParseTimeStamp");
+//						Property lid = model.getProperty(ethold_p
+//								+ "localSerialNumber");
+//						Property foundOnRow = model.getProperty(ethold_p
+//								+ "foundOnRow");
+//						Property HTuserName = model.getProperty(ethold_p
+//								+ "HTuserName");
+//						Property HTuserAffiliation = model.getProperty(ethold_p
+//								+ "HTuserAffiliation");
+//						Property HTuserPhone = model.getProperty(ethold_p
+//								+ "HTuserPhone");
+//						Property HTuserEmail = model.getProperty(ethold_p
+//								+ "HTuserEmail");
+//						Property dataParseTimeStamp = model
+//								.getProperty(ethold_p + "dataParseTimeStamp");
 						// Property casNumber = model.getProperty(eco_p
 						// + "casNumber");
 						// Property hasDataSource = model.getProperty(eco_p
@@ -855,7 +856,7 @@ public class View extends ViewPart {
 							model.add(dsResourceHandle, RDF.type,
 									ECO.DataSource);
 							model.add(dsResourceHandle, RDFS.label, dsNameLit); // REQUIRED
-							model.add(dsResourceHandle, lid, dsLidLit); // TO
+							model.add(dsResourceHandle, ETHOLD.localSerialNumber, dsLidLit); // TO
 																		// REMOVE
 							if (dsMajLit != null) {
 								model.add(dsResourceHandle,
@@ -883,29 +884,29 @@ public class View extends ViewPart {
 								model.add(dsResourceHandle, fileLastModified,
 										dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("userName")
-									.length() > 0) {
-								model.add(dsResourceHandle, HTuserName,
-										dsHTuserName);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userAffiliation").length() > 0) {
-								model.add(dsResourceHandle, HTuserAffiliation,
-										dsHTuserAffiliation);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userPhone").length() > 0) {
-								model.add(dsResourceHandle, HTuserPhone,
-										dsHTuserPhone);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userEmail").length() > 0) {
-								model.add(dsResourceHandle, HTuserEmail,
-										dsHTuserEmail);
-							}
-							model.add(dsResourceHandle, dataParseTimeStamp,
-									model.createTypedLiteral(Calendar
-											.getInstance()));
+//							if (Util.getPreferenceStore().getString("userName")
+//									.length() > 0) {
+//								model.add(dsResourceHandle, HTuserName,
+//										dsHTuserName);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userAffiliation").length() > 0) {
+//								model.add(dsResourceHandle, HTuserAffiliation,
+//										dsHTuserAffiliation);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userPhone").length() > 0) {
+//								model.add(dsResourceHandle, HTuserPhone,
+//										dsHTuserPhone);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userEmail").length() > 0) {
+//								model.add(dsResourceHandle, HTuserEmail,
+//										dsHTuserEmail);
+//							}
+//							model.add(dsResourceHandle, dataParseTimeStamp,
+//									model.createTypedLiteral(Calendar
+//											.getInstance()));
 
 							ResourceIdMgr.add(dsResourceHandle);
 						}
@@ -1079,7 +1080,7 @@ public class View extends ViewPart {
 								subResourceHandle = newSub;
 								str2res.put(combined_str, subResourceHandle);
 							}
-							subResourceHandle.addLiteral(foundOnRow, drRowLit);
+							subResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
 							csvRow++;
 						}
 						// -----------------------------------------
@@ -1193,7 +1194,7 @@ public class View extends ViewPart {
 						System.out.println("Running ExportSubsToTDB internals");
 
 						String eco_p = "http://ontology.earthster.org/eco/core#";
-						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
+//						String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
 						String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 						String fn_p = "http://www.w3.org/2005/xpath-functions#";
 						String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
@@ -1209,32 +1210,32 @@ public class View extends ViewPart {
 						// String xsd_p = "http://www.w3.org/2001/XMLSchema#";
 
 						Resource ds = model.getResource(eco_p + "DataSource");
-						Resource category = model.getResource(ethold_p
-								+ "Category");
+//						Resource category = model.getResource(ethold_p
+//								+ "Category");
 						Property majV = model.getProperty(eco_p
 								+ "hasMajorVersionNumber");
 						Property minV = model.getProperty(eco_p
 								+ "hasMinorVersionNumber");
-						Property lid = model.getProperty(ethold_p
-								+ "localSerialNumber");
-						Property foundOnRow = model.getProperty(ethold_p
-								+ "foundOnRow");
-						Property HTuserName = model.getProperty(ethold_p
-								+ "HTuserName");
-						Property HTuserAffiliation = model.getProperty(ethold_p
-								+ "HTuserAffiliation");
-						Property HTuserPhone = model.getProperty(ethold_p
-								+ "HTuserPhone");
-						Property HTuserEmail = model.getProperty(ethold_p
-								+ "HTuserEmail");
-						Property dataParseTimeStamp = model
-								.getProperty(ethold_p + "dataParseTimeStamp");
-						Property cat1Prop = model.getProperty(ethold_p
-								+ "cat1Prop");
-						Property cat2Prop = model.getProperty(ethold_p
-								+ "cat2Prop");
-						Property cat3Prop = model.getProperty(ethold_p
-								+ "cat3Prop");
+//						Property lid = model.getProperty(ethold_p
+//								+ "localSerialNumber");
+//						Property foundOnRow = model.getProperty(ethold_p
+//								+ "foundOnRow");
+//						Property HTuserName = model.getProperty(ethold_p
+//								+ "HTuserName");
+//						Property HTuserAffiliation = model.getProperty(ethold_p
+//								+ "HTuserAffiliation");
+//						Property HTuserPhone = model.getProperty(ethold_p
+//								+ "HTuserPhone");
+//						Property HTuserEmail = model.getProperty(ethold_p
+//								+ "HTuserEmail");
+//						Property dataParseTimeStamp = model
+//								.getProperty(ethold_p + "dataParseTimeStamp");
+//						Property cat1Prop = model.getProperty(ethold_p
+//								+ "cat1Prop");
+//						Property cat2Prop = model.getProperty(ethold_p
+//								+ "cat2Prop");
+//						Property cat3Prop = model.getProperty(ethold_p
+//								+ "cat3Prop");
 						Property hasDataSource = model.getProperty(eco_p
 								+ "hasDataSource");
 						Property fileName = model.getProperty(nfo_p
@@ -1306,7 +1307,7 @@ public class View extends ViewPart {
 							Resource dsResource = dataSetResources.next();
 							// dataSetHandles.add(dsResource);
 							StmtIterator lidIterator = dsResource
-									.listProperties(lid);
+									.listProperties(ETHOLD.localSerialNumber);
 							if (lidIterator.hasNext()) {
 								Statement stmt = lidIterator.next();
 								System.out.println("getLiteral().getInt = "
@@ -1330,7 +1331,7 @@ public class View extends ViewPart {
 										.println("This resource had more than one LID");
 								// THIS RESOURCE HAS MORE THAN ONE LID
 							}
-							if (model.contains(dsResource, lid, dsLidLit)) {
+							if (model.contains(dsResource, ETHOLD.localSerialNumber, dsLidLit)) {
 								dsResourceHandle = dsResource;
 							}
 						}
@@ -1341,7 +1342,7 @@ public class View extends ViewPart {
 							Resource tempHandle = model.createResource();
 							model.add(tempHandle, RDF.type, ds);
 							model.add(tempHandle, RDFS.label, dsNameLit); // REQUIRED
-							model.add(tempHandle, lid, dsLidLit); // REQUIRED
+							model.add(tempHandle, ETHOLD.localSerialNumber, dsLidLit); // REQUIRED
 							if (dsMajLit != null) {
 								model.add(tempHandle, majV, dsMajLit); // OPTIONAL
 							}
@@ -1363,28 +1364,28 @@ public class View extends ViewPart {
 								model.add(tempHandle, fileLastModified,
 										dsFileDateLit);
 							}
-							if (Util.getPreferenceStore().getString("userName")
-									.length() > 0) {
-								model.add(tempHandle, HTuserName, dsHTuserName);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userAffiliation").length() > 0) {
-								model.add(tempHandle, HTuserAffiliation,
-										dsHTuserAffiliation);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userPhone").length() > 0) {
-								model.add(tempHandle, HTuserPhone,
-										dsHTuserPhone);
-							}
-							if (Util.getPreferenceStore()
-									.getString("userEmail").length() > 0) {
-								model.add(tempHandle, HTuserEmail,
-										dsHTuserEmail);
-							}
-							model.add(tempHandle, dataParseTimeStamp, model
-									.createTypedLiteral(Calendar.getInstance()));
-							dsResourceHandle = tempHandle;
+//							if (Util.getPreferenceStore().getString("userName")
+//									.length() > 0) {
+//								model.add(tempHandle, HTuserName, dsHTuserName);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userAffiliation").length() > 0) {
+//								model.add(tempHandle, HTuserAffiliation,
+//										dsHTuserAffiliation);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userPhone").length() > 0) {
+//								model.add(tempHandle, HTuserPhone,
+//										dsHTuserPhone);
+//							}
+//							if (Util.getPreferenceStore()
+//									.getString("userEmail").length() > 0) {
+//								model.add(tempHandle, HTuserEmail,
+//										dsHTuserEmail);
+//							}
+//							model.add(tempHandle, dataParseTimeStamp, model
+//									.createTypedLiteral(Calendar.getInstance()));
+//							dsResourceHandle = tempHandle;
 						}
 
 						Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
@@ -1482,18 +1483,18 @@ public class View extends ViewPart {
 								catResourceHandle = str2res.get(combined_str);
 							} else {
 								Resource newCat = model.createResource();
-								model.add(newCat, RDF.type, category);
-								model.addLiteral(newCat, cat1Prop, drCat1Lit);
+								model.add(newCat, RDF.type, ECO.EffectAggregationCategory);
+								model.addLiteral(newCat, ETHOLD.hasCategory1, drCat1Lit);
 								// newSub.addProperty(RDF.type, flowable);
 								// newSub.addLiteral(RDFS.label, drNameLit);
 								if (cat2 != null && cat2.length() > 0) {
 									// newSub.addLiteral(altLabel,
 									// drAltNameLit);
-									model.addLiteral(newCat, cat2Prop,
+									model.addLiteral(newCat, ETHOLD.hasCategory2,
 											drCat2Lit);
 								}
 								if (cat3 != null && cat3.length() > 0) {
-									model.addLiteral(newCat, cat3Prop,
+									model.addLiteral(newCat, ETHOLD.hasCategory3,
 											drCat3Lit);
 									// newSub.addLiteral(casNumber, drCasLit);
 								}
@@ -1504,7 +1505,7 @@ public class View extends ViewPart {
 								catResourceHandle = newCat;
 								str2res.put(combined_str, catResourceHandle);
 							}
-							catResourceHandle.addLiteral(foundOnRow, drRowLit);
+							catResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
 							csvRow++;
 						}
 						// -----------------------------------------

@@ -34,8 +34,13 @@ public class ECO {
       
     /** <p></p> */
     public static final Resource Substance = m_model.createResource( "http://ontology.earthster.org/eco/core#Substance" );
+    
+    /** An effect aggregation category is a category of effects which can be aggregated.
+     * Examples of effect aggregation categories include the LCA concept of a flow as a pair of a substance and a compartment.
+     * No identity criteria are defined for effect aggregation categories.
+     */
+    public static final Resource EffectAggregationCategory = m_model.createResource("http://ontology.earthster.org/eco/core#EffectAggregationCategory");
    
-    /** <p>allocatedBy relates a quantified effect to an effect allocation that allocates it.</p> */
     public static final Property allocatedBy = m_model.createProperty( "http://ontology.earthster.org/eco/core#allocatedBy" );
 
     /** <p>allocatedFrom relates an effect allocation to a quantified effect which is allocated.</p> */

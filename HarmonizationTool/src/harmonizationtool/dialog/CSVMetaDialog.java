@@ -396,8 +396,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 				// model.
 			}
 		}
-		model.addLiteral(tdbResource, ETHOLD.localSerialNumber,
-				model.createTypedLiteral(dataSetIdPlusOne));
+//		model.addLiteral(tdbResource, ETHOLD.localSerialNumber,
+//				model.createTypedLiteral(dataSetIdPlusOne));
 
 		if (model.contains(tdbResource, RDFS.label)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(

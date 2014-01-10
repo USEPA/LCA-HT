@@ -44,6 +44,17 @@ public class ETHOLD {
     public static final Property toCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#toCompartment" );
 
     
-	public static final Property localSerialNumber = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#localSerialNumber" );;
+	public static final Property localSerialNumber = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#localSerialNumber" );
+
+	public static final Property foundOnRow = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#foundOnRow");
+	
+
+	public static final Property hasCategory1 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory1");
+	
+	public static final Property hasCategory2 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory2");
+
+	public static final Property hasCategory3 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory3");
+	
+	
 }
 
