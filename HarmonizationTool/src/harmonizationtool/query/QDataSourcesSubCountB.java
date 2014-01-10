@@ -2,7 +2,7 @@ package harmonizationtool.query;
 
 public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 	{
-		label = "Show IRI + Counts";
+		label = "Show DataSet Flowable Counts";
 	}
 	{
 		StringBuilder b = new StringBuilder();
@@ -32,7 +32,9 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("    UNION \n");
 		b.append("    {?sub eco:hasDataSource ?s . \n");
 		b.append("    ?sub a eco:Substance . }} \n ");
-		b.append("    bind (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) \n");
+//		b.append("    bind (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) \n");
+
+		b.append("    bind (concat(str(?label),\" \", str(?vs)) as ?data_set) \n");
 		b.append("  } \n");
 		b.append("group by ?lid ?data_set  \n");
 		b.append("order by ?lid \n");

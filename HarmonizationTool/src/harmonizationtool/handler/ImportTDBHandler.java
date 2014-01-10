@@ -132,62 +132,14 @@ public class ImportTDBHandler implements IHandler {
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
-					int next = 1;
+//					int next = 1;
 					String inputType = "RDF/XML";
 					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
-					// NEED TO DETERINE WHAT THE NEXT DATA SET LOCAL INDEX
-//					// NUMBER IS
-//					GenericQuery iGenericQuery = new GenericQuery(
-//							qGetNextDSIndex.getQuery(), "Internal Query");
-//					iGenericQuery.getData();
-//					QueryResults parts = iGenericQuery.getQueryResults();
-//					List<DataRow> resultRow = parts.getModelProvider()
-//							.getData();
-//					// if(resultRow.size() > 0){
-//					DataRow row = resultRow.get(0);
-//					List<String> valueList = row.getColumnValues();
-//					String indexStr = valueList.get(0);
-//					next = Integer.parseInt(indexStr);
-					// }
-
-//					System.out.println("resultRow = " + resultRow.toString());
-
-					// String[] strarray = (String[]) parts.toArray();
-					// System.out.println("strarray.toString() = "+strarray.toString()
-					// );
-
-					// System.out.println("iGenericQuery.getData().toString() = "+iGenericQuery.getData().toString());
-
-					// int next =
-					// Integer.parseInt(parts.toArray()[1].toString());
-
-					// int next = 1*Integer.parseInt(parts.subList(1,
-					// 1).toString());
-					// int next = Integer.parseInt(parts[1].toString());
-//					System.out.println("next = " + next);
-//
-//					
-//					uAssignDSIndex_with_param.setNext(next);
-//					uAssignDSIndex_with_param.getQuery();
-//					
-//					System.out.println("success setting 'next'");
-//					uAssignDSIndex_with_param.getData();
-
-
-					// UAssignDSIndex_with_param.
-
-					// JenaReader jenaReader = new JenaReader();
-					// jenaReader.setProperty("n3", SA); // TEST THIS SOME
-					// DAY
-					// MAYBE?
-					// jenaReader.read(model, inputStream, null); // DEFAULT
-					// IS
-					// RDF
-					// - XML
+					SelectTDB.syncToDataSetKeeper();
 
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -217,6 +169,8 @@ public class ImportTDBHandler implements IHandler {
 							BufferedReader zipStream = new BufferedReader(
 									new InputStreamReader(zf.getInputStream(ze)));
 							model.read(zipStream, null, inputType);
+							SelectTDB.syncToDataSetKeeper();
+
 							// jenaReader.read(model, zipStream, null);
 						}
 					}

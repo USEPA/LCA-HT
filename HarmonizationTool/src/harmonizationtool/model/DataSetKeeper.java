@@ -35,6 +35,19 @@ public class DataSetKeeper {
 		}
 		return dsList.add(dataSetProvider);
 	}
+	
+	public static boolean remove(DataSetProvider dataSetProvider) {
+		return dsList.remove(dataSetProvider);
+	}
+	
+	public static boolean remove(DataSetProvider dataSetProvider, boolean removeTDBData) {
+		if (removeTDBData){
+			Resource tdbResource = dataSetProvider.getTdbResource();
+			SelectTDB.removeAllWithSubject(tdbResource);
+			SelectTDB.removeAllWithObject(tdbResource);
+		}
+		return dsList.remove(dataSetProvider);
+	}
 
 	public static List<Integer> getIDs() {
 		List<Integer> ids = new ArrayList<Integer>();
