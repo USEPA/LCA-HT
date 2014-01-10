@@ -409,7 +409,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 					String updateStr = u.getQuery();
 					
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+					QueryView queryView = (QueryView) page.findView(QueryView.ID);
 					queryView.setTextAreaContent(updateStr);
 					
 					System.out.println("done");

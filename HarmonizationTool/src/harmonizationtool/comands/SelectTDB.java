@@ -126,7 +126,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 		openTDB();
 		updateStatusLine();
-		syncTDB_to_DataSetKeeper();
+		syncToDataSetKeeper();
 
 		return null;
 	}
@@ -167,7 +167,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	 * rdf:type eco:DataSource should have a DataSetProvider NOTE:
 	 * eco:DataSource should change to lcaht:DataSet
 	 */
-	public void syncTDB_to_DataSetKeeper() {
+	public void syncToDataSetKeeper() {
 		if (model == null) {
 			openTDB();
 		}

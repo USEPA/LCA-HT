@@ -11,7 +11,7 @@ public class GenericQuery extends HarmonyBaseQuery {
 	public GenericQuery(String query, String label) {
 		queryStr = query;
 //		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//		QueryView queryView = (QueryView) page.findView("HarmonizationTool.QueryViewID");
+//		QueryView queryView = (QueryView) page.findView(QueryView.ID);
 //		queryView.setTextAreaContent(queryStr);
 		this.label = label;
 		System.out.println("Running a generic query:");
