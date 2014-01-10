@@ -14,6 +14,7 @@ import harmonizationtool.model.DataSetMD;
 import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.ETHOLD;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -134,20 +135,16 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	private void updateStatusLine() {
 		String msg;
 		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
+		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 	}
 
 	private void openTDB() {
-		String msg = "Opening TDB: "
-				+ Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
+		String msg = "Opening TDB: " + Util.getPreferenceStore().getString("defaultTDB");
+		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
 		File defaultTDBFile = new File(defaultTDB);
 		if (defaultTDBFile.isDirectory()) {
-			System.out.println("defaultTDBFile.list().length="
-					+ defaultTDBFile.list().length);
+			System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 			try {
 				dataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 				assert dataset != null : "dataset cannot be null";
@@ -162,81 +159,70 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	}
 
 	/**
-	 * Because the DataSetKeeper does not contain DataSets, but the TDB might,
-	 * we need to get DataSet info from the TDB Each TDB subject which is
-	 * rdf:type eco:DataSource should have a DataSetProvider NOTE:
-	 * eco:DataSource should change to lcaht:DataSet
+	 * Because the DataSetKeeper does not contain DataSets, but the TDB might, we need to get
+	 * DataSet info from the TDB Each TDB subject which is rdf:type eco:DataSource should have a
+	 * DataSetProvider NOTE: eco:DataSource should change to lcaht:DataSet
 	 */
-	public void syncToDataSetKeeper() {
+	public void syncToDataSetKeeper() { // THIS IS CURRENTLY LIKE initiateDataSetKeeper
 		if (model == null) {
 			openTDB();
 		}
 		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type,
-				ECO.DataSource);
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
 			Resource subject = (Resource) iterator.next();
-
-			if (DataSetKeeper.getByTdbResource(subject) == -1) {
+			int dataSetIndex = DataSetKeeper.getByTdbResource(subject);
+			if (dataSetIndex == -1) {
 				DataSetProvider dataSetProvider = new DataSetProvider();
 				dataSetProvider.setTdbResource(subject);
 				DataSetMD dataSetMD = new DataSetMD();
 				CuratorMD curatorMD = new CuratorMD();
 				if (model.contains(subject, RDFS.label)) {
-					NodeIterator iter2 = model.listObjectsOfProperty(subject,
-							RDFS.label);
+					NodeIterator iter2 = model.listObjectsOfProperty(subject, RDFS.label);
 					RDFNode node = iter2.next();
 					dataSetMD.setName(node.asLiteral().getString());
-					System.out.println("Adding name: "
-							+ node.asLiteral().getString() + " for subject: "
-							+ subject.getURI());
+					System.out.println("Adding name: " + node.asLiteral().getString() + " for subject: " + subject.getURI());
 				}
 				if (model.contains(subject, RDFS.comment)) {
-					NodeIterator iter2 = model.listObjectsOfProperty(subject,
-							RDFS.comment);
+					NodeIterator iter2 = model.listObjectsOfProperty(subject, RDFS.comment);
 					RDFNode node = iter2.next();
 					dataSetMD.setComments(node.asLiteral().getString());
-					System.out.println("Adding comment: "
-							+ node.asLiteral().getString() + " for subject: "
-							+ subject.getURI());
+					System.out.println("Adding comment: " + node.asLiteral().getString() + " for subject: " + subject.getURI());
 
 				}
 				String version = "";
 				if (model.contains(subject, DCTerms.hasVersion)) {
-					version = model
-							.listObjectsOfProperty(subject, DCTerms.hasVersion)
-							.next().asLiteral().getString();
+					version = model.listObjectsOfProperty(subject, DCTerms.hasVersion).next().asLiteral().getString();
 				} else if (model.contains(subject, ECO.hasMajorVersionNumber)) {
-					version = model
-							.listObjectsOfProperty(subject,
-									ECO.hasMajorVersionNumber).next()
-							.asLiteral().getString();
+					version = model.listObjectsOfProperty(subject, ECO.hasMajorVersionNumber).next().asLiteral().getString();
 					if (model.contains(subject, ECO.hasMinorVersionNumber)) {
-						version += "."
-								+ model.listObjectsOfProperty(subject,
-										ECO.hasMinorVersionNumber).next()
-										.asLiteral().getString();
+						version += "." + model.listObjectsOfProperty(subject, ECO.hasMinorVersionNumber).next().asLiteral().getString();
 					}
 					model.add(subject, DCTerms.hasVersion, version); // ADDING
 																		// VERSION
 																		// INFO
 				}
 				dataSetMD.setVersion(version);
-				System.out.println("Adding version: " + version
-						+ " for subject: " + subject.getURI());
+				System.out.println("Adding version: " + version + " for subject: " + subject.getURI());
 
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
 				DataSetKeeper.add(dataSetProvider);
+				int newIndex = DataSetKeeper.indexOf(dataSetProvider);
+				model.addLiteral(subject, ETHOLD.localSerialNumber, newIndex);
 			} else {
-				String dsName = model
-						.listObjectsOfProperty(subject, RDFS.label).next()
-						.asLiteral().getString();
-				System.out.println("Id for " + dsName + " with URI: "
-						+ subject.getURI() + " = "
-						+ DataSetKeeper.getByTdbResource(subject));
+				String dsName = model.listObjectsOfProperty(subject, RDFS.label).next().asLiteral().getString();
+				System.out.println("Id for " + dsName + " with URI: " + subject.getURI() + " = " + DataSetKeeper.getByTdbResource(subject));
+				// DESTROY ALL CURRENT ethold:localSerialNumber -- I THINK THIS IS THE RIGHT THING
+				if (model.contains(subject, ETHOLD.localSerialNumber)) {
+					NodeIterator nodeIterator = model.listObjectsOfProperty(subject, ETHOLD.localSerialNumber);
+					while (nodeIterator.hasNext()) {
+						model.remove(subject, ETHOLD.localSerialNumber, nodeIterator.next());
+					}
+				}
+				model.addLiteral(subject, ETHOLD.localSerialNumber, model.createTypedLiteral(dataSetIndex));
 			}
 		}
 	}

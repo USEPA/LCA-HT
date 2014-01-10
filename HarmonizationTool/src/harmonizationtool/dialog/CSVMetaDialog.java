@@ -28,6 +28,7 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.ETHOLD;
 
 import org.apache.jena.atlas.lib.ArrayUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -53,6 +54,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -345,11 +347,50 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 		dataSetProvider.setDataSetMD(dataSetMD);
 		dataSetProvider.setCuratorMD(curatorMD);
-
+		Model model = SelectTDB.model;
 		if (newDataSet) {
-			DataSetKeeper.add(dataSetProvider);
+			DataSetKeeper.add(dataSetProvider); // A DataSetProvider IS BORN!! (NEW)
+			int dataSetId = DataSetKeeper.indexOf(dataSetProvider);
+			Resource newTDBResource = dataSetProvider.getTdbResource();
+			model.addLiteral(newTDBResource, ETHOLD.localSerialNumber, dataSetId);
+			model.addLiteral(newTDBResource, RDFS.label, model.createLiteral(dataSetMD.getName()));
+			model.addLiteral(newTDBResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+			model.addLiteral(newTDBResource, DCTerms.hasVersion, model.createLiteral(dataSetMD.getVersion()));
 		} else if (newFileMD) {
 			dataSetProvider.addFileMD(tempDataSetProvider.getFileMDList().get(0));
+			int dataSetId = DataSetKeeper.indexOf(dataSetProvider);
+			Resource tdbResource = dataSetProvider.getTdbResource();
+			if (model.contains(tdbResource, ETHOLD.localSerialNumber)) {
+				NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, ETHOLD.localSerialNumber);
+				while (nodeIterator.hasNext()) {
+					model.remove(tdbResource, ETHOLD.localSerialNumber, nodeIterator.next());
+				}
+			}
+			model.addLiteral(tdbResource, ETHOLD.localSerialNumber, model.createTypedLiteral(dataSetId));
+
+			if (model.contains(tdbResource, RDFS.label)) {
+				NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, RDFS.label);
+				while (nodeIterator.hasNext()) {
+					model.remove(tdbResource, RDFS.label, nodeIterator.next());
+				}
+			}
+			model.addLiteral(tdbResource, RDFS.label, model.createLiteral(dataSetMD.getName()));
+
+			if (model.contains(tdbResource, RDFS.comment)) {
+				NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, RDFS.comment);
+				while (nodeIterator.hasNext()) {
+					model.remove(tdbResource, RDFS.comment, nodeIterator.next());
+				}
+			}
+			model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+
+			if (model.contains(tdbResource, DCTerms.hasVersion)) {
+				NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, DCTerms.hasVersion);
+				while (nodeIterator.hasNext()) {
+					model.remove(tdbResource, DCTerms.hasVersion, nodeIterator.next());
+				}
+			}
+			model.addLiteral(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetMD.getVersion()));
 		}
 
 		super.okPressed();
@@ -431,6 +472,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		}
 
 		// dialogValues.get(0).setText(fileMD.getFilename());
+		fileMDCombo.setToolTipText(fileMD.getPath());
 		dialogValues.get(0).setText(fileMD.getSize() + "");
 		dialogValues.get(1).setText(Util.getLocalDateFmt(fileMD.getLastModified()));
 		dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
@@ -495,6 +537,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 		if (fileMD != null) {
 			// dialogValues.get(0).setText(fileMD.getFilename());
+			fileMDCombo.setToolTipText(fileMD.getPath());
 			dialogValues.get(0).setText(fileMD.getSize() + "");
 			dialogValues.get(1).setText(Util.getLocalDateFmt(fileMD.getLastModified()));
 			dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
