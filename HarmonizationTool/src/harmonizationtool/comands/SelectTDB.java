@@ -232,18 +232,18 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
 				DataSetKeeper.add(dataSetProvider);
-				int newIndexPlusOne = DataSetKeeper.indexOf(dataSetProvider) + 1;
-				if (model.contains(subject, ETHOLD.localSerialNumber)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(
-							subject, ETHOLD.localSerialNumber);
-					while (nodeIterator.hasNext()) {
-						RDFNode rdfNode = nodeIterator.next();
-						System.out.println("Is it literal? -- "
-								+ rdfNode.isLiteral());
-						model.remove(subject, ETHOLD.localSerialNumber,
-								rdfNode.asLiteral());
-					}
-				}
+//				int newIndexPlusOne = DataSetKeeper.indexOf(dataSetProvider) + 1;
+//				if (model.contains(subject, ETHOLD.localSerialNumber)) {
+//					NodeIterator nodeIterator = model.listObjectsOfProperty(
+//							subject, ETHOLD.localSerialNumber);
+//					while (nodeIterator.hasNext()) {
+//						RDFNode rdfNode = nodeIterator.next();
+//						System.out.println("Is it literal? -- "
+//								+ rdfNode.isLiteral());
+//						model.remove(subject, ETHOLD.localSerialNumber,
+//								rdfNode.asLiteral());
+//					}
+//				}
 //				model.addLiteral(subject, ETHOLD.localSerialNumber,
 //						model.createTypedLiteral(newIndexPlusOne));
 			} else {
@@ -255,17 +255,17 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 						+ DataSetKeeper.getByTdbResource(subject));
 				// DESTROY ALL CURRENT ethold:localSerialNumber -- I THINK THIS
 				// IS THE RIGHT THING
-				if (model.contains(subject, ETHOLD.localSerialNumber)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(
-							subject, ETHOLD.localSerialNumber);
-					while (nodeIterator.hasNext()) {
-						RDFNode rdfNode = nodeIterator.next();
-						System.out.println("Is it literal? -- "
-								+ rdfNode.isLiteral());
-						model.remove(subject, ETHOLD.localSerialNumber,
-								rdfNode.asLiteral());
-					}
-				}
+//				if (model.contains(subject, ETHOLD.localSerialNumber)) {
+//					NodeIterator nodeIterator = model.listObjectsOfProperty(
+//							subject, ETHOLD.localSerialNumber);
+//					while (nodeIterator.hasNext()) {
+//						RDFNode rdfNode = nodeIterator.next();
+//						System.out.println("Is it literal? -- "
+//								+ rdfNode.isLiteral());
+//						model.remove(subject, ETHOLD.localSerialNumber,
+//								rdfNode.asLiteral());
+//					}
+//				}
 //				model.addLiteral(subject, ETHOLD.localSerialNumber,
 //						model.createTypedLiteral(dataSetIndexPlusOne));
 			}

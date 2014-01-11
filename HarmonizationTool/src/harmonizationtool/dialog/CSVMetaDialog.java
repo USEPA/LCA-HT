@@ -383,19 +383,19 @@ public class CSVMetaDialog extends TitleAreaDialog {
 
 	private void dataSetProviderToTDB(DataSetProvider dsProvider) {
 		Model model = SelectTDB.model;
-		int dataSetIdPlusOne = DataSetKeeper.indexOf(dsProvider) + 1;
+//		int dataSetIdPlusOne = DataSetKeeper.indexOf(dsProvider) + 1;
 		Resource tdbResource = dsProvider.getTdbResource();
-		if (model.contains(tdbResource, ETHOLD.localSerialNumber)) {
-			NodeIterator nodeIterator = model.listObjectsOfProperty(
-					tdbResource, ETHOLD.localSerialNumber);
-			while (nodeIterator.hasNext()) {
-				RDFNode rdfNode = nodeIterator.next();
-				System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-				model.remove(tdbResource, ETHOLD.localSerialNumber,
-						rdfNode.asLiteral());
-				// model.
-			}
-		}
+//		if (model.contains(tdbResource, ETHOLD.localSerialNumber)) {
+//			NodeIterator nodeIterator = model.listObjectsOfProperty(
+//					tdbResource, ETHOLD.localSerialNumber);
+//			while (nodeIterator.hasNext()) {
+//				RDFNode rdfNode = nodeIterator.next();
+//				System.out.println("Is it literal? -- " + rdfNode.isLiteral());
+//				model.remove(tdbResource, ETHOLD.localSerialNumber,
+//						rdfNode.asLiteral());
+//				// model.
+//			}
+//		}
 //		model.addLiteral(tdbResource, ETHOLD.localSerialNumber,
 //				model.createTypedLiteral(dataSetIdPlusOne));
 

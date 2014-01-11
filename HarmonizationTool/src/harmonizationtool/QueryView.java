@@ -34,7 +34,7 @@ import harmonizationtool.query.UDelDataSet;
 import harmonizationtool.query.QCountMatches;
 //import harmonizationtool.query.QMatchNameNotCAS;
 import harmonizationtool.query.IParamQuery;
-import harmonizationtool.query.QCasNotInDB;
+import harmonizationtool.query.QxCasNotInDB;
 //import harmonizationtool.query.UDelTestData;
 import harmonizationtool.query.QDataSources;
 //import harmonizationtool.query.GenericUpdate;
@@ -374,10 +374,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 					dialog.create();
 					if (dialog.open() == Window.OK) {
 						System.out.println("OK");
-						String primaryDataset = dialog.getPrimaryDataset();
-						String[] refDatasets = dialog.getReferenceDatasets();
-						System.out.println(primaryDataset);
-						for (String s : refDatasets) {
+						String primaryDataSet = dialog.getPrimaryDataSet();
+						String[] referenceDataSets = dialog.getReferenceDataSets();
+						System.out.println(primaryDataSet);
+						for (String s : referenceDataSets) {
 							System.out.println(s);
 						}
 						// do query
@@ -385,8 +385,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 						if (q instanceof IParamQuery) {
 							System.out.println(" is instanceof IParamQuery");
 							IParamQuery paramQuery = (IParamQuery) q;
-							paramQuery.setPrimaryDatset(primaryDataset);
-							paramQuery.setRefDatasets(refDatasets);
+							paramQuery.setPrimaryDataSet(primaryDataSet);
+							paramQuery.setReferenceDataSets(referenceDataSets);
 							System.out.println(q.getQuery());
 
 							IWorkbenchPage page = PlatformUI.getWorkbench()

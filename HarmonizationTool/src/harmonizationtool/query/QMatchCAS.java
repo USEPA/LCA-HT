@@ -1,17 +1,17 @@
 package harmonizationtool.query;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
 
 public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 //	private String primaryDataset;
-	private int primaryID;
+	private String primaryID;
 //	private String[] refDatasets;
-	private int[] refIds;
-	private String regex = "^(\\d+)\\s";
+	private String[] refIds;
+//	private String regex = "^(\\d+)\\s";
 //	private String regex = "(\\d+)";
 
-	private Pattern firstInt = Pattern.compile(regex);
+//	private Pattern firstInt = Pattern.compile(regex);
 
 	// String s ="xyz: 123a-45";
 	// String patternStr="xyz:[ \\t]*([\\S ]+)";
@@ -31,25 +31,27 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 	}
 
 	@Override
-	public void setPrimaryDatset(String primaryDataset) {
-//		this.primaryDataset = primaryDataset ;
-		Matcher m = firstInt.matcher(primaryDataset);
-		m.find();
-//		System.out.println("Trying to match " + primaryDataset + " to " + m.toString());
-		this.primaryID = Integer.parseInt(m.group(0).trim());
+	public void setPrimaryDataSet(String primaryDataSet) {
+////		this.primaryDataset = primaryDataset ;
+//		Matcher m = firstInt.matcher(primaryDataset);
+//		m.find();
+////		System.out.println("Trying to match " + primaryDataset + " to " + m.toString());
+//		this.primaryID = Integer.parseInt(m.group(0).trim());
 //		System.out.println("primaryDataset = " + primaryDataset);
+		primaryID = primaryDataSet;
 	}
 
 	@Override
-	public void setRefDatasets(String[] refDatasets) {
+	public void setReferenceDataSets(String[] refDataSets) {
 //		this.refDatasets = refDatasets;
-		this.refIds = new int[refDatasets.length];
-		for (int i = 0; i < refDatasets.length; i++) {
-			Matcher mr = firstInt.matcher(refDatasets[i]);
-			mr.find();
-			System.out.println("refDs of " + i + " = " + mr.group(0));
-			this.refIds[i] = Integer.parseInt(mr.group(0).trim());
-		}
+//		this.refIds = new int[refDataSets.length];
+//		for (int i = 0; i < refDataSets.length; i++) {
+//			Matcher mr = firstInt.matcher(refDataSets[i]);
+//			mr.find();
+//			System.out.println("refDs of " + i + " = " + mr.group(0));
+//			this.refIds[i] = Integer.parseInt(mr.group(0).trim());
+//		}
+		refIds = refDataSets;
 	}
 
 	@Override
@@ -69,13 +71,16 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 				b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 				b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 				b.append(" \n");
-				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (str(?match_lid) as ?local_id) \n");
+				b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (str(?match_label) as ?matching_set) \n");
 				b.append(" \n");
 				b.append("WHERE { \n");
 				b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");
-				b.append("      ?ds_prim ethold:localSerialNumber " + primaryID + " . \n");
+				b.append("      ?ds_prim rdfs:label \"" + primaryID + "\"^^xsd:string . \n");
 				b.append("      ?s2 eco:hasDataSource ?ds_match . \n");
-				b.append("      ?ds_match ethold:localSerialNumber ?match_lid . \n");
+				b.append("      ?ds_match rdfs:label ?match_label . \n");
+//				b.append("      ?ds_match rdfs:label ?dsName . \n");
+				b.append("      ?ds_match dcterms:hasVersion ?dsVersion . \n");
+//				b.append("      bind (concat(str(?dsName), \" \", str(?dsVersion)) as ?matching_set) \n");
 				b.append("      filter (?ds_prim != ?ds_match) \n");
 				b.append("      ?s1 eco:casNumber ?cas .  \n");
 				b.append("      ?s2 eco:casNumber ?cas .   \n");
@@ -86,9 +91,9 @@ public class QMatchCAS extends HarmonyBaseQuery implements IParamQuery {
 				b.append(" \n");
 				b.append("      filter( \n");
 //				System.out.println("refDatasets size = "+refDatasets.length);
-				for (int i : refIds) {
-					b.append(" ?match_lid  = " + i
-							+ " || \n");
+				for (String refDS : refIds) {
+					b.append(" str(?match_label)  = \"" + refDS
+							+ "\" || \n");
 				}
 				b.append("false) \n"); // THE false ALLOWS THE TRAILING OR (||) TO BE VALID
 				b.append("} \n");

@@ -1,8 +1,8 @@
 package harmonizationtool.query;
 
-public class QDataSources extends HarmonyBaseQuery {
+public class QxDataSets extends HarmonyBaseQuery {
 	{
-		label = "Show Data Sources";
+		label = "Data Sources: name, version";
 	}
 	{
 		StringBuilder b = new StringBuilder();
@@ -18,18 +18,14 @@ public class QDataSources extends HarmonyBaseQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (concat(str(?label),\" \", str(?vs)) as ?data_set) (str(?com) as ?comment) \n");
+//		b.append("SELECT DISTINCT (str(?id) as ?lid) (\" \" as ?ws) (str(?label) as ?lab) (\" \" as ?ws2) (str(?vs) as ?version) (str(?mj) as ?maj) (\".\" as ?dot)  (str(?mi) as ?min) \n");
+		b.append("SELECT DISTINCT (str(?label) as ?lab)\n");
 		b.append("WHERE \n");
-		b.append("  { ?s ?p ?o . \n");
-		b.append("    ?s a eco:DataSource . \n");
-//		b.append("    OPTIONAL {?s ethold:localSerialNumber ?lid} \n");
+		b.append("  { ?s a eco:DataSource . \n");
+//		b.append("    ?s ethold:localSerialNumber ?id . \n");
 		b.append("    ?s rdfs:label ?label \n");
-		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
-		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
-		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
-		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");	
 		b.append("  } \n");
-		b.append("  order by ?label \n");
+		b.append("order by ?label \n");
 		queryStr = b.toString();
 
 	}

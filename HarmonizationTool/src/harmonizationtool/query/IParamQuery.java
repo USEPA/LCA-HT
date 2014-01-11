@@ -1,7 +1,6 @@
 package harmonizationtool.query;
 
 public interface IParamQuery {
-	void setPrimaryDatset(String primaryDataset);
-	void setRefDatasets(String[] refDatasets);
-
+	void setPrimaryDataSet(String primaryDataSet);
+	void setReferenceDataSets(String[] referenceDataSets);
 }

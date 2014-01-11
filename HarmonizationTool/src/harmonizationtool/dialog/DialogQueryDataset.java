@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QDataSets;
+import harmonizationtool.query.QxDataSets;
 import harmonizationtool.query.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 
@@ -30,8 +30,8 @@ public class DialogQueryDataset extends TitleAreaDialog {
 
 	private Combo combo;
 	private List list;
-	private String primaryDataset = null;
-	private String[] refDatasets = null;
+	private String primaryDataSet = null;
+	private String[] referenceDataSets = null;
 
 
 	public DialogQueryDataset(Shell parentShell) {
@@ -47,14 +47,14 @@ public class DialogQueryDataset extends TitleAreaDialog {
 		setMessage("Metadata", IMessageProvider.INFORMATION);
 
 	}
-	public String getPrimaryDataset(){
-		return primaryDataset;
+	public String getPrimaryDataSet(){
+		return primaryDataSet;
 	}
-	public String[] getReferenceDatasets(){
-		return refDatasets;
+	public String[] getReferenceDataSets(){
+		return referenceDataSets;
 	}
 
-	private QDataSets qDataSets = new QDataSets();
+	private QxDataSets qDataSets = new QxDataSets();
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -173,8 +173,8 @@ public class DialogQueryDataset extends TitleAreaDialog {
 	// Coyy textFields because the UI gets disposed
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
-		primaryDataset = combo.getText();
-		refDatasets = list.getSelection();
+		primaryDataSet = combo.getText();
+		referenceDataSets = list.getSelection();
 	}
 
 	@Override
