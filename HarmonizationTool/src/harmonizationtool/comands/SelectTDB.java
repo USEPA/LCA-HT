@@ -8,6 +8,7 @@ import java.util.List;
 import harmonizationtool.Activator;
 import harmonizationtool.QueryView;
 import harmonizationtool.ViewData;
+import harmonizationtool.dialog.GenericMessageDialog;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
@@ -16,16 +17,23 @@ import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.ETHOLD;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.framework.Bundle;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -57,19 +65,6 @@ import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
-//import com.hp.hpl.jena.query.Dataset;
-//import com.hp.hpl.jena.query.Query;
-//import com.hp.hpl.jena.query.QueryExecution;
-//import com.hp.hpl.jena.query.QueryExecutionFactory;
-//import com.hp.hpl.jena.query.QueryFactory;
-//import com.hp.hpl.jena.query.QuerySolution;
-//import com.hp.hpl.jena.query.ResultSet;
-//import com.hp.hpl.jena.rdf.model.Literal;
-//import com.hp.hpl.jena.rdf.model.Model;
-//import com.hp.hpl.jena.rdf.model.RDFNode;
-//import com.hp.hpl.jena.rdf.model.Resource;
-//import com.hp.hpl.jena.tdb.TDBFactory;
 
 public class SelectTDB implements IHandler, ISelectedTDB {
 	public static Model model = null;
@@ -140,24 +135,55 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	}
 
 	private static void openTDB() {
-		String msg = "Opening TDB: "
-				+ Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
-		String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
-		File defaultTDBFile = new File(defaultTDB);
-		if (defaultTDBFile.isDirectory()) {
-			System.out.println("defaultTDBFile.list().length="
-					+ defaultTDBFile.list().length);
-			try {
-				dataset = TDBFactory.createDataset(defaultTDBFile.getPath());
-				assert dataset != null : "dataset cannot be null";
-				model = dataset.getDefaultModel();
-				graphStore = GraphStoreFactory.create(dataset); // FIXME DO WE
-																// NEED
+		while (model == null) {
+			String msg = "Opening TDB: "
+					+ Util.getPreferenceStore().getString("defaultTDB");
+			Util.findView(QueryView.ID).getViewSite().getActionBars()
+					.getStatusLineManager().setMessage(msg);
+			String defaultTDB = Util.getPreferenceStore().getString(
+					"defaultTDB");
+			File defaultTDBFile = new File(defaultTDB);
+			if (defaultTDBFile.isDirectory()) {
+				System.out.println("defaultTDBFile.list().length="
+						+ defaultTDBFile.list().length);
+				try {
+					dataset = TDBFactory
+							.createDataset(defaultTDBFile.getPath());
+					assert dataset != null : "dataset cannot be null";
+					model = dataset.getDefaultModel();
+					graphStore = GraphStoreFactory.create(dataset); // FIXME DO
+																	// WE
+																	// NEED
 
-			} catch (Exception e) {
-				e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				// ask user for TDB directory
+				Shell shell = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell();
+				StringBuilder b = new StringBuilder();
+				b.append("Sorry, but the TDB set in your preferences is not an accessible directory.  Please select");
+				GenericMessageDialog genericMessageDialog = new GenericMessageDialog(
+						shell, "Alert", b.toString());
+				genericMessageDialog.open();
+
+				try {
+					IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+					ICommandService commandService = (ICommandService) serviceLocator
+							.getService(ICommandService.class);
+					Command command = commandService
+							.getCommand("org.eclipse.ui.window.preferences");
+					command.executeWithChecks(new ExecutionEvent());
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				} catch (NotDefinedException e) {
+					e.printStackTrace();
+				} catch (NotEnabledException e) {
+					e.printStackTrace();
+				} catch (NotHandledException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -180,7 +206,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
 			Resource subject = (Resource) iterator.next();
-//			int dataSetIndexPlusOne = DataSetKeeper.getByTdbResource(subject) + 1;
+			// int dataSetIndexPlusOne = DataSetKeeper.getByTdbResource(subject)
+			// + 1;
 			int dataSetIndex = DataSetKeeper.getByTdbResource(subject);
 			if (dataSetIndex < 0) {
 				DataSetProvider dataSetProvider = new DataSetProvider();
@@ -188,18 +215,22 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				DataSetMD dataSetMD = new DataSetMD();
 				CuratorMD curatorMD = new CuratorMD();
 				if (model.contains(subject, RDFS.label)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
-							RDFS.label);
-					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
+					NodeIterator nodeIterator = model.listObjectsOfProperty(
+							subject, RDFS.label);
+					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
+														// IF THERE ARE MORE
+														// THAN ONE?)
 					dataSetMD.setName(node.asLiteral().getString());
 					System.out.println("Adding name: "
 							+ node.asLiteral().getString() + " for subject: "
 							+ subject.getURI());
 				}
 				if (model.contains(subject, RDFS.comment)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
-							RDFS.comment);
-					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
+					NodeIterator nodeIterator = model.listObjectsOfProperty(
+							subject, RDFS.comment);
+					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
+														// IF THERE ARE MORE
+														// THAN ONE?)
 					dataSetMD.setComments(node.asLiteral().getString());
 					System.out.println("Adding comment: "
 							+ node.asLiteral().getString() + " for subject: "
@@ -209,16 +240,38 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				if (model.contains(subject, DCTerms.hasVersion)) {
 					version = model
 							.listObjectsOfProperty(subject, DCTerms.hasVersion)
-							.next().asLiteral().getString(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
+							.next().asLiteral().getString(); // TAKES FIRST ONE
+																// (WHAT IF
+																// THERE ARE
+																// MORE THAN
+																// ONE?)
 				} else if (model.contains(subject, ECO.hasMajorVersionNumber)) {
 					version = model
 							.listObjectsOfProperty(subject,
-									ECO.hasMajorVersionNumber).next() // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
+									ECO.hasMajorVersionNumber).next() // TAKES
+																		// FIRST
+																		// ONE
+																		// (WHAT
+																		// IF
+																		// THERE
+																		// ARE
+																		// MORE
+																		// THAN
+																		// ONE?)
 							.asLiteral().getString();
 					if (model.contains(subject, ECO.hasMinorVersionNumber)) {
 						version += "."
 								+ model.listObjectsOfProperty(subject,
-										ECO.hasMinorVersionNumber).next() // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
+										ECO.hasMinorVersionNumber).next() // TAKES
+																			// FIRST
+																			// ONE
+																			// (WHAT
+																			// IF
+																			// THERE
+																			// ARE
+																			// MORE
+																			// THAN
+																			// ONE?)
 										.asLiteral().getString();
 					}
 					model.addLiteral(subject, DCTerms.hasVersion,
@@ -233,73 +286,83 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
 				DataSetKeeper.add(dataSetProvider);
-//				int newIndexPlusOne = DataSetKeeper.indexOf(dataSetProvider) + 1;
-//				if (model.contains(subject, ETHOLD.localSerialNumber)) {
-//					NodeIterator nodeIterator = model.listObjectsOfProperty(
-//							subject, ETHOLD.localSerialNumber);
-//					while (nodeIterator.hasNext()) {
-//						RDFNode rdfNode = nodeIterator.next();
-//						System.out.println("Is it literal? -- "
-//								+ rdfNode.isLiteral());
-//						model.remove(subject, ETHOLD.localSerialNumber,
-//								rdfNode.asLiteral());
-//					}
-//				}
-//				model.addLiteral(subject, ETHOLD.localSerialNumber,
-//						model.createTypedLiteral(newIndexPlusOne));
+				// int newIndexPlusOne = DataSetKeeper.indexOf(dataSetProvider)
+				// + 1;
+				// if (model.contains(subject, ETHOLD.localSerialNumber)) {
+				// NodeIterator nodeIterator = model.listObjectsOfProperty(
+				// subject, ETHOLD.localSerialNumber);
+				// while (nodeIterator.hasNext()) {
+				// RDFNode rdfNode = nodeIterator.next();
+				// System.out.println("Is it literal? -- "
+				// + rdfNode.isLiteral());
+				// model.remove(subject, ETHOLD.localSerialNumber,
+				// rdfNode.asLiteral());
+				// }
+				// }
+				// model.addLiteral(subject, ETHOLD.localSerialNumber,
+				// model.createTypedLiteral(newIndexPlusOne));
 			} else {
 				String dsName = null;
-				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(subject, RDFS.label);
-				while (dataSetNameIterator.hasNext()){
-					if (dsName != null){
-						System.out.println("HEY!  Data Set has more than one name:"+ dsName);
+				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(
+						subject, RDFS.label);
+				while (dataSetNameIterator.hasNext()) {
+					if (dsName != null) {
+						System.out
+								.println("HEY!  Data Set has more than one name:"
+										+ dsName);
 					}
 					dsName = dataSetNameIterator.next().asLiteral().getString();
 				}
-				if (dsName == null){
-					dsName = "Temp Data Set Name #"+dataSetIndex;
+				if (dsName == null) {
+					dsName = "Temp Data Set Name #" + dataSetIndex;
 				}
-				
+
 				System.out.println("Id for " + dsName + " with URI: "
 						+ subject.getURI() + " = "
 						+ DataSetKeeper.getByTdbResource(subject));
 				// DESTROY ALL CURRENT ethold:localSerialNumber -- I THINK THIS
 				// IS THE RIGHT THING
-//				if (model.contains(subject, ETHOLD.localSerialNumber)) {
-//					NodeIterator nodeIterator = model.listObjectsOfProperty(
-//							subject, ETHOLD.localSerialNumber);
-//					while (nodeIterator.hasNext()) {
-//						RDFNode rdfNode = nodeIterator.next();
-//						System.out.println("Is it literal? -- "
-//								+ rdfNode.isLiteral());
-//						model.remove(subject, ETHOLD.localSerialNumber,
-//								rdfNode.asLiteral());
-//					}
-//				}
-//				model.addLiteral(subject, ETHOLD.localSerialNumber,
-//						model.createTypedLiteral(dataSetIndexPlusOne));
+				// if (model.contains(subject, ETHOLD.localSerialNumber)) {
+				// NodeIterator nodeIterator = model.listObjectsOfProperty(
+				// subject, ETHOLD.localSerialNumber);
+				// while (nodeIterator.hasNext()) {
+				// RDFNode rdfNode = nodeIterator.next();
+				// System.out.println("Is it literal? -- "
+				// + rdfNode.isLiteral());
+				// model.remove(subject, ETHOLD.localSerialNumber,
+				// rdfNode.asLiteral());
+				// }
+				// }
+				// model.addLiteral(subject, ETHOLD.localSerialNumber,
+				// model.createTypedLiteral(dataSetIndexPlusOne));
 			}
 		}
 	}
-	
-	public static int removeAllWithSubject(Resource subject){
+
+	public static int removeAllWithSubject(Resource subject) {
 		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS SUBJECT
-		// THIS WOULD BE USED IN SOMETHING LIKE DataSetKeeper.remove(DataSetProvider, true);
+		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
+		// SUBJECT
+		// THIS WOULD BE USED IN SOMETHING LIKE
+		// DataSetKeeper.remove(DataSetProvider, true);
 		return count;
 	}
-	
-	public static int removeAllWithPredicate(Property predicate){
+
+	public static int removeAllWithPredicate(Property predicate) {
 		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS PREDICATE
-		// THIS WOULD BE USED IN SOMETHING LIKE DataSetKeeper.remove(DataSetProvider, true);
+		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
+		// PREDICATE
+		// THIS WOULD BE USED IN SOMETHING LIKE
+		// DataSetKeeper.remove(DataSetProvider, true);
 		return count;
 	}
-	
-	public static int removeAllWithObject(RDFNode object){
+
+	public static int removeAllWithObject(RDFNode object) {
 		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS OBJECT
-		// THIS WOULD BE USED IN SOMETHING LIKE DataSetKeeper.remove(DataSetProvider, true);
+		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
+		// OBJECT
+		// THIS WOULD BE USED IN SOMETHING LIKE
+		// DataSetKeeper.remove(DataSetProvider, true);
 		return count;
 	}
 
