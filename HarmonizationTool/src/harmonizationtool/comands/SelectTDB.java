@@ -180,25 +180,26 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
 			Resource subject = (Resource) iterator.next();
-			int dataSetIndexPlusOne = DataSetKeeper.getByTdbResource(subject) + 1;
-			if (dataSetIndexPlusOne == 0) {
+//			int dataSetIndexPlusOne = DataSetKeeper.getByTdbResource(subject) + 1;
+			int dataSetIndex = DataSetKeeper.getByTdbResource(subject);
+			if (dataSetIndex < 0) {
 				DataSetProvider dataSetProvider = new DataSetProvider();
 				dataSetProvider.setTdbResource(subject);
 				DataSetMD dataSetMD = new DataSetMD();
 				CuratorMD curatorMD = new CuratorMD();
 				if (model.contains(subject, RDFS.label)) {
-					NodeIterator iter2 = model.listObjectsOfProperty(subject,
+					NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
 							RDFS.label);
-					RDFNode node = iter2.next();
+					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
 					dataSetMD.setName(node.asLiteral().getString());
 					System.out.println("Adding name: "
 							+ node.asLiteral().getString() + " for subject: "
 							+ subject.getURI());
 				}
 				if (model.contains(subject, RDFS.comment)) {
-					NodeIterator iter2 = model.listObjectsOfProperty(subject,
+					NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
 							RDFS.comment);
-					RDFNode node = iter2.next();
+					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
 					dataSetMD.setComments(node.asLiteral().getString());
 					System.out.println("Adding comment: "
 							+ node.asLiteral().getString() + " for subject: "
@@ -208,16 +209,16 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				if (model.contains(subject, DCTerms.hasVersion)) {
 					version = model
 							.listObjectsOfProperty(subject, DCTerms.hasVersion)
-							.next().asLiteral().getString();
+							.next().asLiteral().getString(); // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
 				} else if (model.contains(subject, ECO.hasMajorVersionNumber)) {
 					version = model
 							.listObjectsOfProperty(subject,
-									ECO.hasMajorVersionNumber).next()
+									ECO.hasMajorVersionNumber).next() // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
 							.asLiteral().getString();
 					if (model.contains(subject, ECO.hasMinorVersionNumber)) {
 						version += "."
 								+ model.listObjectsOfProperty(subject,
-										ECO.hasMinorVersionNumber).next()
+										ECO.hasMinorVersionNumber).next() // TAKES FIRST ONE (WHAT IF THERE ARE MORE THAN ONE?)
 										.asLiteral().getString();
 					}
 					model.addLiteral(subject, DCTerms.hasVersion,
@@ -247,9 +248,18 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 //				model.addLiteral(subject, ETHOLD.localSerialNumber,
 //						model.createTypedLiteral(newIndexPlusOne));
 			} else {
-				String dsName = model
-						.listObjectsOfProperty(subject, RDFS.label).next()
-						.asLiteral().getString();
+				String dsName = null;
+				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(subject, RDFS.label);
+				while (dataSetNameIterator.hasNext()){
+					if (dsName != null){
+						System.out.println("HEY!  Data Set has more than one name:"+ dsName);
+					}
+					dsName = dataSetNameIterator.next().asLiteral().getString();
+				}
+				if (dsName == null){
+					dsName = "Temp Data Set Name #"+dataSetIndex;
+				}
+				
 				System.out.println("Id for " + dsName + " with URI: "
 						+ subject.getURI() + " = "
 						+ DataSetKeeper.getByTdbResource(subject));
