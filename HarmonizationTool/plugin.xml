@@ -113,6 +113,14 @@
             </command>
          </menu>
          <menu
+               label="Data Set">
+            <command
+                  commandId="HarmonizationTool.EditMetadataId"
+                  label="Edit Metadata"
+                  style="push">
+            </command>
+         </menu>
+         <menu
                label="Window">
             <menu
                   label="Show View">
@@ -253,6 +261,11 @@
             defaultHandler="harmonizationtool.handler.ImportCSV"
             id="HarmonizationTool.ImportCSV"
             name="Import CSV">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.EditMetadataHandler"
+            id="HarmonizationTool.EditMetadataId"
+            name="Edit Metadata">
       </command>
    </extension>
    <extension

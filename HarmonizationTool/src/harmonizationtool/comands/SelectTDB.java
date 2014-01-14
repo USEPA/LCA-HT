@@ -8,7 +8,7 @@ import java.util.List;
 import harmonizationtool.Activator;
 import harmonizationtool.QueryView;
 import harmonizationtool.ViewData;
-import harmonizationtool.dialog.GenericMessageDialog;
+import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
@@ -130,106 +130,91 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	private void updateStatusLine() {
 		String msg;
 		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		Util.findView(QueryView.ID).getViewSite().getActionBars()
+				.getStatusLineManager().setMessage(msg);
 	}
 
 	private static void openTDB() {
 		while (model == null) {
-			if ((Util.getPreferenceStore().getString("defaultTDB") == null) || (Util.getPreferenceStore().getString("defaultTDB") == "")) {
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			if ((Util.getPreferenceStore().getString("defaultTDB") == null)
+					|| (Util.getPreferenceStore().getString("defaultTDB") == "")) {
+				Shell shell = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
 				b.append("The Harmonization Tool (HT) requires the user to specify a directory for the Triplestore DataBase (TDB). ");
 				b.append("Please pick an existing TDB directory, or an empty one where the HT can create a new TDB.");
-				GenericMessageDialog genericMessageDialog = new GenericMessageDialog(shell, "Welcome!", b.toString());
-				genericMessageDialog.open();
+				new GenericMessageBox(
+						shell,"Welcome!", b.toString());
 
-				try {
-					IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-					ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-					Command command = commandService.getCommand("org.eclipse.ui.window.preferences");
-					command.executeWithChecks(new ExecutionEvent());
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				} catch (NotDefinedException e) {
-					e.printStackTrace();
-				} catch (NotEnabledException e) {
-					e.printStackTrace();
-				} catch (NotHandledException e) {
-					e.printStackTrace();
-				}
+				redirectToPreferences();
 			}
-			String msg = "Opening TDB: " + Util.getPreferenceStore().getString("defaultTDB");
-			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
+			String msg = "Opening TDB: "
+					+ Util.getPreferenceStore().getString("defaultTDB");
+			Util.findView(QueryView.ID).getViewSite().getActionBars()
+					.getStatusLineManager().setMessage(msg);
+			String defaultTDB = Util.getPreferenceStore().getString(
+					"defaultTDB");
 			File defaultTDBFile = new File(defaultTDB);
 			if (!defaultTDBFile.isDirectory()) {
 				// ask user for TDB directory
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				Shell shell = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
 				b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
-				b.append("Please select an existing TDB directory, or an accessible directory for a new TDB");
-				GenericMessageDialog genericMessageDialog = new GenericMessageDialog(shell, "Alert", b.toString());
-				genericMessageDialog.open();
+				b.append("Please select an existing TDB directory, or an accessible directory for a new TDB.");
+				new GenericMessageBox(
+						shell, "Alert", b.toString());
 
-				try {
-					IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-					ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-					Command command = commandService.getCommand("org.eclipse.ui.window.preferences");
-					command.executeWithChecks(new ExecutionEvent());
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				} catch (NotDefinedException e) {
-					e.printStackTrace();
-				} catch (NotEnabledException e) {
-					e.printStackTrace();
-				} catch (NotHandledException e) {
-					e.printStackTrace();
-				}
+				redirectToPreferences();
 			} else {
-				System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
+				System.out.println("defaultTDBFile.list().length="
+						+ defaultTDBFile.list().length);
 				try {
-					dataset = TDBFactory.createDataset(defaultTDBFile.getPath());
+					dataset = TDBFactory
+							.createDataset(defaultTDBFile.getPath());
 					assert dataset != null : "dataset cannot be null";
 					model = dataset.getDefaultModel();
-					graphStore = GraphStoreFactory.create(dataset); // FIXME DO
-																	// WE
-																	// NEED
+					graphStore = GraphStoreFactory.create(dataset);
 
-				} catch (Exception e) {
-					e.printStackTrace();
+				} catch (Exception e1) {
+					Shell shell = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getShell();
+					StringBuilder b = new StringBuilder();
+					b.append("It appears that the HT can not create a TDB in the default directory. ");
+					b.append("You may need to create a new TDB.");
+					new GenericMessageBox(
+							shell, "Error", b.toString());
 
-				}
-			}
-			if (model == null) {
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				StringBuilder b = new StringBuilder();
-				b.append("It appears that the Ht can not create a TDB in the default directory. ");
-				b.append("You may need to create a new TDB.");
-				GenericMessageDialog genericMessageDialog = new GenericMessageDialog(shell, "Error", b.toString());
-				genericMessageDialog.open();
-
-				try {
-					IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-					ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-					Command command = commandService.getCommand("org.eclipse.ui.window.preferences");
-					command.executeWithChecks(new ExecutionEvent());
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				} catch (NotDefinedException e) {
-					e.printStackTrace();
-				} catch (NotEnabledException e) {
-					e.printStackTrace();
-				} catch (NotHandledException e) {
-					e.printStackTrace();
+					redirectToPreferences();
 				}
 			}
 		}
 	}
 
+	private static void redirectToPreferences() {
+		try {
+			IServiceLocator serviceLocator = PlatformUI
+					.getWorkbench();
+			ICommandService commandService = (ICommandService) serviceLocator
+					.getService(ICommandService.class);
+			Command command = commandService
+					.getCommand("org.eclipse.ui.window.preferences");
+			command.executeWithChecks(new ExecutionEvent());
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (NotDefinedException e) {
+			e.printStackTrace();
+		} catch (NotEnabledException e) {
+			e.printStackTrace();
+		} catch (NotHandledException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
-	 * Because the DataSetKeeper does not contain DataSets, but the TDB might, we need to get
-	 * DataSet info from the TDB Each TDB subject which is rdf:type eco:DataSource should have a
-	 * DataSetProvider NOTE: eco:DataSource should change to lcaht:DataSet
+	 * Because the DataSetKeeper does not contain DataSets, but the TDB might,
+	 * we need to get DataSet info from the TDB Each TDB subject which is
+	 * rdf:type eco:DataSource should have a DataSetProvider NOTE:
+	 * eco:DataSource should change to lcaht:DataSet
 	 */
 	public static void syncToDataSetKeeper() { // THIS IS CURRENTLY LIKE
 												// initiateDataSetKeeper
@@ -237,7 +222,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			openTDB();
 		}
 		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type,
+				ECO.DataSource);
 
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
@@ -251,64 +237,78 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				DataSetMD dataSetMD = new DataSetMD();
 				CuratorMD curatorMD = new CuratorMD();
 				if (model.contains(subject, RDFS.label)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(subject, RDFS.label);
+					NodeIterator nodeIterator = model.listObjectsOfProperty(
+							subject, RDFS.label);
 					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
 														// IF THERE ARE MORE
 														// THAN ONE?)
 					dataSetMD.setName(node.asLiteral().getString());
-					System.out.println("Adding name: " + node.asLiteral().getString() + " for subject: " + subject.getURI());
+					System.out.println("Adding name: "
+							+ node.asLiteral().getString() + " for subject: "
+							+ subject.getURI());
 				}
 				if (model.contains(subject, RDFS.comment)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(subject, RDFS.comment);
+					NodeIterator nodeIterator = model.listObjectsOfProperty(
+							subject, RDFS.comment);
 					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
 														// IF THERE ARE MORE
 														// THAN ONE?)
 					dataSetMD.setComments(node.asLiteral().getString());
-					System.out.println("Adding comment: " + node.asLiteral().getString() + " for subject: " + subject.getURI());
+					System.out.println("Adding comment: "
+							+ node.asLiteral().getString() + " for subject: "
+							+ subject.getURI());
 				}
 				String version = "";
 				if (model.contains(subject, DCTerms.hasVersion)) {
-					version = model.listObjectsOfProperty(subject, DCTerms.hasVersion).next().asLiteral().getString(); // TAKES
-																														// FIRST
-																														// ONE
-																														// (WHAT
-																														// IF
-																														// THERE
-																														// ARE
-																														// MORE
-																														// THAN
-																														// ONE?)
+					version = model
+							.listObjectsOfProperty(subject, DCTerms.hasVersion)
+							.next().asLiteral().getString(); // TAKES
+																// FIRST
+																// ONE
+																// (WHAT
+																// IF
+																// THERE
+																// ARE
+																// MORE
+																// THAN
+																// ONE?)
 				} else if (model.contains(subject, ECO.hasMajorVersionNumber)) {
-					version = model.listObjectsOfProperty(subject, ECO.hasMajorVersionNumber).next() // TAKES
-																										// FIRST
-																										// ONE
-																										// (WHAT
-																										// IF
-																										// THERE
-																										// ARE
-																										// MORE
-																										// THAN
-																										// ONE?)
+					version = model
+							.listObjectsOfProperty(subject,
+									ECO.hasMajorVersionNumber).next() // TAKES
+																		// FIRST
+																		// ONE
+																		// (WHAT
+																		// IF
+																		// THERE
+																		// ARE
+																		// MORE
+																		// THAN
+																		// ONE?)
 							.asLiteral().getString();
 					if (model.contains(subject, ECO.hasMinorVersionNumber)) {
-						version += "." + model.listObjectsOfProperty(subject, ECO.hasMinorVersionNumber).next() // TAKES
-																												// FIRST
-																												// ONE
-																												// (WHAT
-																												// IF
-																												// THERE
-																												// ARE
-																												// MORE
-																												// THAN
-																												// ONE?)
-								.asLiteral().getString();
+						version += "."
+								+ model.listObjectsOfProperty(subject,
+										ECO.hasMinorVersionNumber).next() // TAKES
+																			// FIRST
+																			// ONE
+																			// (WHAT
+																			// IF
+																			// THERE
+																			// ARE
+																			// MORE
+																			// THAN
+																			// ONE?)
+										.asLiteral().getString();
 					}
-					model.addLiteral(subject, DCTerms.hasVersion, model.createTypedLiteral(version)); // ADDING
+					model.addLiteral(subject, DCTerms.hasVersion,
+							model.createTypedLiteral(version)); // ADDING
 					// VERSION
 					// INFO
 				}
 				dataSetMD.setVersion(version);
-				System.out.println("Adding version: " + version + " for subject: " + subject.getURI());
+				System.out.println("Adding version: " + version
+						+ " for subject: " + subject.getURI());
 
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
@@ -330,10 +330,13 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				// model.createTypedLiteral(newIndexPlusOne));
 			} else {
 				String dsName = null;
-				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(subject, RDFS.label);
+				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(
+						subject, RDFS.label);
 				while (dataSetNameIterator.hasNext()) {
 					if (dsName != null) {
-						System.out.println("HEY!  Data Set has more than one name:" + dsName);
+						System.out
+								.println("HEY!  Data Set has more than one name:"
+										+ dsName);
 					}
 					dsName = dataSetNameIterator.next().asLiteral().getString();
 				}
@@ -341,7 +344,9 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 					dsName = "Temp Data Set Name #" + dataSetIndex;
 				}
 
-				System.out.println("Id for " + dsName + " with URI: " + subject.getURI() + " = " + DataSetKeeper.getByTdbResource(subject));
+				System.out.println("Id for " + dsName + " with URI: "
+						+ subject.getURI() + " = "
+						+ DataSetKeeper.getByTdbResource(subject));
 				// DESTROY ALL CURRENT ethold:localSerialNumber -- I THINK THIS
 				// IS THE RIGHT THING
 				// if (model.contains(subject, ETHOLD.localSerialNumber)) {

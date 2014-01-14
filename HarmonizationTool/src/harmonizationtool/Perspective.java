@@ -12,7 +12,7 @@ public class Perspective implements IPerspectiveFactory {
 		layout.setFixed(false);
 		layout.setEditorAreaVisible(false);
 		{
-			IFolderLayout folderLayout = layout.createFolder("folder1", IPageLayout.LEFT, 0.7f, editorArea);
+			IFolderLayout folderLayout = layout.createFolder("folder1", IPageLayout.LEFT, 0.65f, editorArea);
 
 			folderLayout.addView("HarmonizationTool.view");
 			folderLayout.addView("HarmonizationTool.QueryViewID");
