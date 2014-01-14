@@ -18,15 +18,15 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT  ?data_set (str(count(distinct ?flble)) as ?Flowables) (str(count(distinct ?sub)) as ?Substances)\n");
+		b.append("SELECT  (str(?label) as ?name) (str(?vs) as ?v) (str(count(distinct ?flble)) as ?Flowables) (str(count(distinct ?sub)) as ?Substances)\n");
 //		b.append("SELECT  (str(?label) as ?name) ?data_set (str(count(distinct ?flble)) as ?Flowables) (str(count(distinct ?sub)) as ?Substances)\n");
 		b.append("WHERE \n");
 //		b.append("  { ?s ?p ?o . \n");
 		b.append("  { ?s a eco:DataSource . \n");
 		b.append("    ?s rdfs:label ?label \n");
 //		b.append("    OPTIONAL { ?s ethold:localSerialNumber ?lid } \n");
-		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
-		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
+//		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
+//		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
 		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
 		b.append("    {{ ?flble eco:hasDataSource ?s . \n");
 		b.append("    {?flble a eco:Flowable .} UNION {?flble a eco:Substance .} UNION {?flble a eco:Energy .}} \n");
@@ -35,10 +35,10 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 		b.append("    ?sub a eco:Substance . }} \n ");
 //		b.append("    bind (concat(str(?label),\" \", str(?mj),\".\",str(?mi)) as ?data_set) \n");
 
-		b.append("    bind (concat(str(?label),\" \", str(?vs)) as ?data_set) \n");
+//		b.append("    bind (concat(str(?label),\" \", str(?vs)) as ?data_set) \n");
 		b.append("  } \n");
-		b.append("group by ?data_set  \n");
-		b.append("order by ?data_set \n");
+		b.append("group by ?label ?vs \n");
+		b.append("order by ?label ?vs \n");
 		
 		queryStr = b.toString();
 

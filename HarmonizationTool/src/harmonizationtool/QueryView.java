@@ -26,23 +26,19 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.HarmonyUpdate;
-import harmonizationtool.query.QDataSourcesSubCountB;
+import harmonizationtool.query.QDataSetContents;
+
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QMatchCASandName;
 import harmonizationtool.query.UDelDataSet;
 
 import harmonizationtool.query.QCountMatches;
-//import harmonizationtool.query.QMatchNameNotCAS;
 import harmonizationtool.query.IParamQuery;
 import harmonizationtool.query.QxCasNotInDB;
-//import harmonizationtool.query.UDelTestData;
 import harmonizationtool.query.QDataSources;
-//import harmonizationtool.query.GenericUpdate;
-//import harmonizationtool.query.GenericQuery;
-//import harmonizationtool.query.QDataSourcesSubCount;
-//import harmonizationtool.query.ZunusedGCasNameSourceQuery;
+
 import harmonizationtool.query.HarmonyQuery;
-//import harmonizationtool.query.UAdTestData;
+import harmonizationtool.utils.Util;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -81,6 +77,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.part.ViewPart;
@@ -104,19 +101,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	public static final String ID = "HarmonizationTool.QueryViewID";
 
 	private TableViewer viewer;
-	private Action actionImport;
-	private Action actionSave;
+//	private Action actionImport;
+//	private Action actionSave;
 	private Action actionClose;
 	// private Action actionExtQuery;
 	// private Action actionExtUpdate;
 
 	private QDataSources qDataSources = new QDataSources();
-	private QDataSourcesSubCountB qDataSourcesSubCountB = new QDataSourcesSubCountB();
-	// private QDataSourcesSubCount qDataSourcesSubCount = new
-	// QDataSourcesSubCount();
-	// private UAdTestData uAdTestData = new UAdTestData();
-	// private UDelTestData uDelTestData = new UDelTestData();
-	// private QMatchNameNotCAS qMatchNameNotCAS = new QMatchNameNotCAS();
+//	private QDataSourcesSubCountB qDataSourcesSubCountB = new QDataSourcesSubCountB();
+	private QDataSetContents qDataSetContents = new QDataSetContents();
+
 	private QCountMatches qCountMatches = new QCountMatches();
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
@@ -252,7 +246,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		makeActions();
 		hookContextMenu();
 		addQuery(qDataSources);
-		addQuery(qDataSourcesSubCountB);
+//		addQuery(qDataSourcesSubCountB);
+		addQuery(qDataSetContents);
 
 		addQuery(qMatchCAS);
 		addQuery(qMatchCASandName);
@@ -430,8 +425,14 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 					System.out.println("done");
 				}
+				
+				try {
+					Util.showView(ResultsView.ID);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-
 		});
 
 	}

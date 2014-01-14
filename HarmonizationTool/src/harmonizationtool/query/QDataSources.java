@@ -2,7 +2,7 @@ package harmonizationtool.query;
 
 public class QDataSources extends HarmonyBaseQuery {
 	{
-		label = "Show Data Sources";
+		label = "Show DataSets";
 	}
 	{
 		StringBuilder b = new StringBuilder();
@@ -18,14 +18,14 @@ public class QDataSources extends HarmonyBaseQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (concat(str(?label),\" \", str(?vs)) as ?data_set) (str(?com) as ?comment) \n");
+		b.append("SELECT DISTINCT (str(?label) as ?name) (str(?vs) as ?v) (str(?com) as ?comment) \n");
 		b.append("WHERE \n");
 		b.append("  { ?s ?p ?o . \n");
 		b.append("    ?s a eco:DataSource . \n");
 //		b.append("    OPTIONAL {?s ethold:localSerialNumber ?lid} \n");
 		b.append("    ?s rdfs:label ?label \n");
-		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
-		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
+//		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
+//		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
 		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
 		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");	
 		b.append("  } \n");

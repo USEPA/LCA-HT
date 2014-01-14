@@ -4,11 +4,8 @@ import harmonizationtool.QueryView;
 import harmonizationtool.View;
 import harmonizationtool.ViewData;
 import harmonizationtool.dialog.CSVMetaDialog;
-import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
-//import harmonizationtool.model.ModelKeeper;
-//import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
@@ -166,15 +163,10 @@ public class ImportCSV implements IHandler {
 		Util.findView(View.ID).getViewSite().getActionBars()
 				.getStatusLineManager().setMessage(msg);
 
-		// NOW OPEN DIALOG AND PRE-POPULATE SOME
+		// NOW OPEN DIALOG WITH SOME PRE-POPULATE fileMD INFO
 		CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
 				.getActiveShell(), fileMD);
-//		modelProvider.setMetaKeyValue("fileName", fileNameStr);
-//		modelProvider.setMetaKeyValue("fileSize", "" + filesizeLong);
-//		modelProvider.setMetaKeyValue("fileLastModified", ""
-//				+ filedateJava.getTime().toString());
-//		modelProvider.setMetaKeyValue("fileReadTime", ""
-//				+ now.getTime().toString());
+
 
 		dialog.create();
 		if (dialog.open() == CSVMetaDialog.CANCEL){
