@@ -122,7 +122,13 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 		openTDB();
 		updateStatusLine();
-		syncToDataSetKeeper();
+		try {
+			syncToDataSetKeeper();
+		} catch (Exception e) {
+			Exception e2 =  new ExecutionException("***********THE TDB MAY BE BAD*******************");
+			e2.printStackTrace();
+			System.exit(1);
+		}
 
 		return null;
 	}
@@ -222,8 +228,15 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			openTDB();
 		}
 		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type,
-				ECO.DataSource);
+		ResIterator iterator = null;
+		try {
+			iterator = model.listSubjectsWithProperty(RDF.type,
+					ECO.DataSource);
+		} catch (Exception e) {
+			Exception e2 =  new ExecutionException("***********THE TDB MAY BE BAD*******************");
+			e2.printStackTrace();
+			System.exit(1);
+		}
 
 		while (iterator.hasNext()) {
 			System.out.println("got another...");
