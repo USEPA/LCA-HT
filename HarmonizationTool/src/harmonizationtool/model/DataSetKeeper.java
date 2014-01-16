@@ -74,6 +74,17 @@ public class DataSetKeeper {
 	public static Integer indexOf(DataSetProvider dataSetProvider) {
 		return dsList.indexOf(dataSetProvider);
 	}
+	
+	public static int indexOfDataSetName(String name) {
+		Iterator<DataSetProvider> iterator = dsList.iterator();
+		while(iterator.hasNext()){
+			DataSetProvider dataSetProvider = (DataSetProvider) iterator.next();
+			if (dataSetProvider.getDataSetMD().getName().equals(name)){
+				return DataSetKeeper.indexOf(dataSetProvider);
+			}
+		}
+		return -1;
+	}
 
 	public static int size() {
 		return dsList.size();
