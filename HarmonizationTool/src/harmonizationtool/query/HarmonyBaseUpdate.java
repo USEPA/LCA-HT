@@ -3,7 +3,7 @@ package harmonizationtool.query;
 import harmonizationtool.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 
 import java.util.ArrayList;
@@ -75,10 +75,10 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 //		data.add("Before Update");
 //		data.add(""+model.size());
 		
-		ModelProvider modelProvider = new ModelProvider();
-		queryResults.setModelProvider(modelProvider);
+		TableProvider tableProvider = new TableProvider();
+		queryResults.setTableProvider(tableProvider);
 		DataRow dataRow = new DataRow();
-		modelProvider.addDataRow(dataRow);
+		tableProvider.addDataRow(dataRow);
 		dataRow.add("Before Update");
 		dataRow.add(""+ model.size());
 
@@ -108,14 +108,14 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 //		data.add("After Update");
 //		data.add("" + model.size());
 		DataRow dataRow2 = new DataRow();
-		modelProvider.addDataRow(dataRow2);
+		tableProvider.addDataRow(dataRow2);
 		dataRow2.add("After Update");
 		dataRow2.add("" + model.size());
 		
 		change = model.size() - change;
 		System.err.printf("Net Increase: %s\n", change);
 		DataRow dataRow3 = new DataRow();
-		modelProvider.addDataRow(dataRow3);
+		tableProvider.addDataRow(dataRow3);
 		
 		String increase = "New Triples:";
 		

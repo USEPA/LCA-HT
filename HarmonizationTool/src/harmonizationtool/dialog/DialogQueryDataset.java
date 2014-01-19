@@ -90,7 +90,7 @@ public class DialogQueryDataset extends TitleAreaDialog {
 				qDataSets.getQuery(), "Internal Query");
 		iGenericQuery.getData();
 		QueryResults parts = iGenericQuery.getQueryResults();
-		java.util.List<DataRow> resultRow = parts.getModelProvider().getData();
+		java.util.List<DataRow> resultRow = parts.getTableProvider().getData();
 		for (int i=0;i < resultRow.size();i++){
 			DataRow row = resultRow.get(i);
 			java.util.List<String> valueList = row.getColumnValues();

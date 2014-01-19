@@ -5,7 +5,7 @@ import harmonizationtool.QueryView.QueryViewContentProvider;
 import harmonizationtool.QueryView.QueryViewLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.Util;
@@ -72,7 +72,7 @@ public class SaveResultsHandler implements IHandler {
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		QueryResults queryResults = resultsView.getQueryResults();
 		DataRow headerRow = queryResults.getColumnHeaders();
-		List<DataRow> dataRows = queryResults.getModelProvider().getData();
+		List<DataRow> dataRows = queryResults.getTableProvider().getData();
 		System.out.println(dataRows.get(0).toString());
 
 		// ISelection iSelection = viewer.getSelection();

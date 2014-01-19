@@ -1,22 +1,22 @@
 package harmonizationtool.query;
 
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 
 public class QueryResults {
 	private DataRow columnHeaders = null;
-	private ModelProvider modelProvider = null;
+	private TableProvider tableProvider = null;
 	public DataRow getColumnHeaders() {
 		return columnHeaders;
 	}
 	public void setColumnHeaders(DataRow columnHeaders) {
 		this.columnHeaders = columnHeaders;
 	}
-	public ModelProvider getModelProvider() {
-		return modelProvider;
+	public TableProvider getTableProvider() {
+		return tableProvider;
 	}
-	public void setModelProvider(ModelProvider modelProvider) {
-		this.modelProvider = modelProvider;
+	public void setTableProvider(TableProvider tableProvider) {
+		this.tableProvider = tableProvider;
 	}
 
 }

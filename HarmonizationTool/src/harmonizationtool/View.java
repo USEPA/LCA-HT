@@ -10,10 +10,10 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.FileMD;
-import harmonizationtool.model.ModelKeeper;
-import harmonizationtool.model.ModelProvider;
-import harmonizationtool.model.TableProvider;
+//import harmonizationtool.model.ModelKeeper;
+//import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableKeeper;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.IdsInfoQuery;
@@ -374,7 +374,7 @@ public class View extends ViewPart {
 
 					System.err.printf("Before Update: %s\n", model.size());
 
-					ModelProvider resultsViewModel = new ModelProvider();
+					TableProvider resultsViewModel = new TableProvider();
 					// queryResults.setModelProvider(modelProvider);
 					DataRow resDataRow = new DataRow();
 					resultsViewModel.addDataRow(resDataRow);
@@ -595,7 +595,7 @@ public class View extends ViewPart {
 
 					System.err.printf("Before Update: %s\n", model.size());
 
-					ModelProvider resultsViewModel = new ModelProvider();
+					TableProvider resultsViewModel = new TableProvider();
 					// queryResults.setModelProvider(modelProvider);
 					DataRow resDataRow = new DataRow();
 					resultsViewModel.addDataRow(resDataRow);

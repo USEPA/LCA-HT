@@ -3,7 +3,7 @@ package harmonizationtool.query;
 import harmonizationtool.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 
 import java.util.ArrayList;
@@ -90,12 +90,12 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 				columnHeaders.add(header);
 			}
 			newData.add(row);
-			ModelProvider modelProvider = new ModelProvider();
-			queryResults.setModelProvider(modelProvider);
+			TableProvider tableProvider = new TableProvider();
+			queryResults.setTableProvider(tableProvider);
 			for (; results.hasNext();) {
 				QuerySolution soln = results.nextSolution();
 				DataRow dataRow = new DataRow();
-				modelProvider.addDataRow(dataRow);
+				tableProvider.addDataRow(dataRow);
 				row = "";
 				for (String header : strList) {
 					try {

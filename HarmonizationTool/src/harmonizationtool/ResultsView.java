@@ -7,8 +7,7 @@ import harmonizationtool.ViewData.MyColumnLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelKeeper;
-import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.query.QueryResults;
 
@@ -125,10 +124,10 @@ public class ResultsView extends ViewPart {
 			table.setHeaderVisible(true);
 			table.setLinesVisible(true);
 			viewer.setContentProvider(new ArrayContentProvider());
-			ModelProvider modelProvider = queryResults.getModelProvider();
-			System.out.println("modelProvider.getData().size()="+modelProvider.getData().size());
-			System.out.println("modelProvider.getData().toString()="+modelProvider.getData().toString());
-			viewer.setInput(modelProvider.getData());
+			TableProvider tableProvider = queryResults.getTableProvider();
+			System.out.println("tableProvider.getData().size()="+tableProvider.getData().size());
+			System.out.println("tableProvider.getData().toString()="+tableProvider.getData().toString());
+			viewer.setInput(tableProvider.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

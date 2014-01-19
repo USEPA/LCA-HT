@@ -1,6 +1,7 @@
 package harmonizationtool.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class DataRow {
@@ -14,6 +15,15 @@ public class DataRow {
 		return "DataRow [columnValues=" + columnValues + "]";
 	}
 
+	public Iterator<String> getIterator(){
+		return columnValues.iterator();
+	}
+	
+	public int getSize(){
+		return columnValues.size();
+	}
+	
+	
 	public void setColumnValues(List<String> columnValues) {
 		this.columnValues = columnValues;
 	}
@@ -24,5 +34,9 @@ public class DataRow {
 	
 	public void add(String s){
 		columnValues.add(s);
+	}
+
+	public String get(int i) {
+		return columnValues.get(i);
 	}
 }
