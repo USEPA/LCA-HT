@@ -35,6 +35,10 @@ public class DataRow {
 	public void add(String s){
 		columnValues.add(s);
 	}
+	
+	public void set(int index, String string){
+		columnValues.set(index, string);		
+	}
 
 	public String get(int i) {
 		return columnValues.get(i);

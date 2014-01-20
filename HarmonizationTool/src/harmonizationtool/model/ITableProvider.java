@@ -28,20 +28,25 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 
 public class ITableProvider {
 	private List<String> headerNames = null;
-	private List<String> headerXformNames = null;
-	private List<String> subRowNames = null;
 	private List<DataRow> data = new ArrayList<DataRow>();
+
+	private List<String> headerXformNames = null;
 	private List<DataRow> dataXform = new ArrayList<DataRow>();
+	private List<String> subRowNames = null;
+	private String subRowPrefix = "sr";
+	private String subRowNameHeader = "srName";
+
+	private int subRowCount = 0;
+
 	private Table table_2;
 	private Table table;
 	private Table table_1;
-	private String subRowCode = "sr";
 
-	// THIS CLASS HELPS CONVERT THE RESULTS OF A SPARQL QUERY TO AN INTERLEAVED
-	// TABLE
-	// IN WHICH COLUMS WITH SIMILAR RESULTS APPEARS A GROUPS OF ROWS
-	// THE INPUT IS AS FOLLOWS:
-	// - sr1_srName => THE NAME OF SUBROW 1
+	// THIS CLASS HELPS CONVERT THE RESULTS OF A SPARQL QUERY TO
+	// AN INTERLEAVED TABLE
+	// IN WHICH COLUMS WITH SIMILAR RESULTS APPEAR AS A GROUPS OF ROWS
+	// AN INPUT ROW CONTAINS THINGS LIKE:
+	// - sr1_srName => THE NAME OF SUBROW 1 <-- srName DEFINED ABOVE AS subRowNameHeader
 	// - sr[n]_srName => THE NAME OF SUBROW n
 	// - sr1_substance => A COLUMN thing FOR SUBROW 1
 	// - sr[n]_substance => A COLUMN thing FOR SUBROW n
@@ -74,22 +79,18 @@ public class ITableProvider {
 		tableItem.setText("New TableItem");
 
 		TableItem tableItem_1 = new TableItem(table_2, SWT.NONE);
-		tableItem_1.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_MAGENTA));
+		tableItem_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_MAGENTA));
 		tableItem_1.setText("New TableItem");
 
-		CheckboxTableViewer checkboxTableViewer = CheckboxTableViewer
-				.newCheckList(composite, SWT.BORDER | SWT.FULL_SELECTION);
+		CheckboxTableViewer checkboxTableViewer = CheckboxTableViewer.newCheckList(composite, SWT.BORDER | SWT.FULL_SELECTION);
 		table_1 = checkboxTableViewer.getTable();
 
-		TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				checkboxTableViewer, SWT.NONE);
+		TableViewerColumn tableViewerColumn = new TableViewerColumn(checkboxTableViewer, SWT.NONE);
 		TableColumn tblclmnJface = tableViewerColumn.getColumn();
 		tblclmnJface.setWidth(100);
 		tblclmnJface.setText("jface 1");
 
-		TableViewer tableViewer = new TableViewer(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
 
 		//
@@ -134,39 +135,41 @@ public class ITableProvider {
 		data.add(dataRow);
 	}
 
-	public void addDataXformRow(DataRow dataRow) {
-		
-		if (subRowNames.size() < 2) {
+	public void makeDataXformRows(DataRow dataRow) {
+
+		if (subRowCount < 2) {
 			return; // THIS ONLY ADDS ROWS IF THERE ARE 2 OR MORE subRowNames
 		}
 		if (headerNames.size() != dataRow.getSize()) {
 			return; // GOT TO HAVE ALIGNMENT HERE
 		}
-		for (int i = 0; i < subRowNames.size(); i++) {
+		for (int i = 0; i < subRowCount; i++) {
 			DataRow dataXformRow = new DataRow();
-			dataXformRow.add(subRowNames.get(i));
+			dataXformRow.add("placeholder"); // WILL ADD NAME WHEN WE FIND IT
 			for (int j = 0; j < dataRow.getSize(); j++) {
 				String cell = dataRow.get(j);
-				String header = headerNames.get(i);
-				int headerIndex = header.indexOf("_");
-				if (headerIndex == -1) {
+				String header = headerNames.get(j);
+				int headerSplitPoint = header.indexOf("_");
+				if (headerSplitPoint == -1) {
 					dataXformRow.add(cell);
 				} else {
-					String subRowName = header.substring(0, headerIndex);
-					if (subRowName.startsWith(subRowCode)) {
-						String rowSpecString = subRowName.substring(
-								subRowCode.length(), subRowName.length());
-						if (rowSpecString.matches("^\\d+$")) {
-							int rowSpecified = Integer.parseInt(rowSpecString);
-							if (rowSpecified == i + 1) {
-								dataXformRow.add(cell);
+					String headerPrefix = header.substring(0, headerSplitPoint);
+					if (headerPrefix.startsWith(subRowPrefix)) {
+						String headerPrefixNumString = headerPrefix.substring(subRowPrefix.length());
+						if (headerPrefixNumString.matches("^\\d+$")) {
+							int headerPrefixNum = Integer.parseInt(headerPrefixNumString);
+							String headerField = header.substring(headerPrefix.length());
+							if (headerPrefixNum == i + 1) {
+								if (headerField.equals(subRowNameHeader)) {
+									dataXformRow.set(0, cell);
+								} else {
+									dataXformRow.add(cell);
+								}
 							}
 						}
 					}
-
 				}
 			}
-//			dataXform.add(dataXformRow);
 		}
 	}
 
@@ -191,37 +194,33 @@ public class ITableProvider {
 		return headerXformNames;
 	}
 
-	public List<String> getSubRowNames() {
-		return subRowNames;
-	}
+	// public List<String> getSubRowNames() {
+	// return subRowPrefixes;
+	// }
 
-	public void setXformNames(List<String> columnNames) {
+	public void setXformNames(List<String> headerNames) {
 		if (headerXformNames == null) {
 			headerXformNames = new ArrayList<String>();
 		} else {
 			headerXformNames.clear();
 		}
-		if (subRowNames == null) {
-			subRowNames = new ArrayList<String>();
-		} else {
-			subRowNames.clear();
-		}
-		for (String name : columnNames) {
-			int splitPoint = name.indexOf("_");
-			if (splitPoint == -1) {
-				headerXformNames.add(name);
+		for (String header : headerNames) {
+			int headerSplitPoint = header.indexOf("_");
+			if (headerSplitPoint == -1) {
+				headerXformNames.add(header); // ADD THE WHOLE THING (IT IS NOT A subRowHeader
 			} else {
-				String subRowName = name.substring(0, splitPoint);
-				if (subRowName.startsWith(subRowCode)) {
-					if (!subRowNames.contains(subRowName)) {
-						subRowNames.add(subRowName);
-					}
-					if (subRowName == subRowCode + "1") {
-						headerXformNames.add(name.substring(splitPoint + 1,
-								name.length()));
+				String headerPrefix = header.substring(0, headerSplitPoint);
+				if (headerPrefix.startsWith(subRowPrefix)) {
+					String headerPrefixNumString = headerPrefix.substring(subRowPrefix.length());
+					if (headerPrefixNumString.matches("^\\d+$")) {
+						// int headerPrefixNum = Integer.parseInt(headerPrefixNumString);
+						String headerField = header.substring(headerPrefix.length());
+						if (!headerField.equals(subRowNameHeader)) {
+							headerXformNames.add(headerField); // ADD ONLY END OF THE HEADER
+						}
 					}
 				} else {
-					headerXformNames.add(name);
+					headerXformNames.add(header); // ADD THE WHOLE THING (IT IS NOT A subRowHeader
 				}
 			}
 		}
