@@ -135,7 +135,7 @@ public class ITableProvider {
 		data.add(dataRow);
 	}
 
-	public void makeDataXformRows(DataRow dataRow) {
+	public void addDataXformRows(DataRow dataRow) {
 
 		if (subRowCount < 2) {
 			return; // THIS ONLY ADDS ROWS IF THERE ARE 2 OR MORE subRowNames
@@ -170,6 +170,8 @@ public class ITableProvider {
 					}
 				}
 			}
+			dataXform.add(dataXformRow);
+			System.out.println("Now dataXform has this many rows: "+dataXform.size());
 		}
 	}
 
