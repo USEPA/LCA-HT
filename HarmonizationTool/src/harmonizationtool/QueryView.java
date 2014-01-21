@@ -25,7 +25,9 @@ import harmonizationtool.model.ModelKeeper;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
+import harmonizationtool.query.HSubsSameCas;
 import harmonizationtool.query.HarmonyUpdate;
+import harmonizationtool.query.IParamHarmonize;
 import harmonizationtool.query.QDataSetContents;
 
 import harmonizationtool.query.QMatchCAS;
@@ -115,6 +117,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private QMatchCAS qMatchCAS = new QMatchCAS();
 	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
 	
+	private HSubsSameCas hSubsSameCas = new HSubsSameCas();
+	
 	private UDelDataSet uDelDataSet = new UDelDataSet();
 
 	// private QCasNotInDB qCasNotInDB = new QCasNotInDB();
@@ -127,11 +131,14 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private Text windowQueryUpdate;
 
 	public QueryView() {
-		paramQueries.add("Show CAS Matches");
-		paramQueries.add("Show CAS + Name Matches");
-		paramQueries.add("Count CAS matches");
+		paramQueries.add("Show CAS Matches");         // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+		paramQueries.add("Show CAS + Name Matches");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+		paramQueries.add("Count CAS matches");        // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+		
+		paramQueries.add("Harmonize Subs Same CAS");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+
 		// paramQueries.add("Show CAS not in DB");
-		paramUpdates.add("Delete data set...");
+		paramUpdates.add("Delete data set...");       // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
 	}
 
 	@Override
@@ -252,6 +259,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		addQuery(qMatchCAS);
 		addQuery(qMatchCASandName);
 		addQuery(qCountMatches);
+		addQuery(hSubsSameCas);
+
 		addUpdate(uDelDataSet);
 //		addUpdate(uDelDataSet);
 		// addQuery(qCasNotInDB);
@@ -364,6 +373,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 				if (paramQueries.contains(key)) {
 
+					System.out.println("It doesn't look like we ever get here with the IParamHarmonize...");
 					DialogQueryDataset dialog = new DialogQueryDataset(Display
 							.getCurrent().getActiveShell());
 					dialog.create();
@@ -388,13 +398,32 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 									.getActiveWorkbenchWindow().getActivePage();
 							ResultsView resultsView = (ResultsView) page
 									.findView(ResultsView.ID);
-							// resultsView.update(q);
 
+//							q.getData();
+							System.out.println("It worked, now take this out and go back to work!");
 							resultsView.update(q.getData());
 							resultsView.update(q.getQueryResults());
 
 							System.out.println("done");
+						} else if (q instanceof IParamHarmonize) {
+							System.out.println(" is instanceof IParamHarmonize");
+							IParamHarmonize iParamHarmonize = (IParamHarmonize) q;
+							iParamHarmonize.setQueryDataSet(primaryDataSet);
+							iParamHarmonize.setReferenceDataSet(referenceDataSets[0]);
+							System.out.println(q.getQuery());
+
+							IWorkbenchPage page = PlatformUI.getWorkbench()
+									.getActiveWorkbenchWindow().getActivePage();
+							ResultsView resultsView = (ResultsView) page
+									.findView(ResultsView.ID);
+							// resultsView.update(q);
+
+							resultsView.iUpdate(q.getDataXform());
+							resultsView.iUpdate(q.getQueryResults());
+
+							System.out.println("done");
 						}
+
 					}
 				} else if (paramUpdates.contains(key)) {
 

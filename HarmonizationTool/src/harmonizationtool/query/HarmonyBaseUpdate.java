@@ -143,4 +143,10 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		return queryResults;
 	}
 
+	@Override
+	public List<String> getDataXform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

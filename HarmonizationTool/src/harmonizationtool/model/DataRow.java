@@ -43,4 +43,19 @@ public class DataRow {
 	public String get(int i) {
 		return columnValues.get(i);
 	}
+
+	public String join(String delimiter) {
+		if (columnValues.size()<0){
+			return "";
+		}
+		String joinedRow = columnValues.get(0);
+		for (int i = 1;i<columnValues.size();i++){
+			joinedRow+=delimiter+columnValues.get(i);
+		}
+		return joinedRow;
+	}
+
+	public void clear() {
+		columnValues.clear();
+	}
 }

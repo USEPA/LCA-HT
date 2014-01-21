@@ -7,6 +7,7 @@ import harmonizationtool.ViewData.MyColumnLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.ITableProvider;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.query.QueryResults;
@@ -110,6 +111,10 @@ public class ResultsView extends ViewPart {
 	public void update(List<String> data){
 //		viewer.setInput(data.toArray());
 	}
+	
+	public void iUpdate(List<String> data){
+//		viewer.setInput(data.toArray());
+	}
 
 	public void update(QueryResults queryResults) {
 		try {
@@ -133,6 +138,30 @@ public class ResultsView extends ViewPart {
 		}
 		
 	}
+	
+	public void iUpdate(QueryResults iQueryResults) {
+		try {
+			this.queryResults = iQueryResults;
+			System.err.println("iQueryResults="+iQueryResults);
+			System.err.println("iQueryResults.getColumnHeaders()="+iQueryResults.getColumnHeaders());
+			System.out.println("iQueryResults.getColumnHeaders().toString()="+iQueryResults.getColumnHeaders().toString());
+			viewer.setContentProvider(new ArrayContentProvider());
+			final Table table = viewer.getTable();
+			removeColumns(table);
+			createIColumns(viewer, iQueryResults);
+			table.setHeaderVisible(true);
+			table.setLinesVisible(true);
+			viewer.setContentProvider(new ArrayContentProvider());
+			ITableProvider iTableProvider = iQueryResults.getITableProvider();
+			System.out.println("iTableProvider.getDataXform().size()="+iTableProvider.getDataXform().size());
+			System.out.println("iTableProvider.getDataXform().toString()="+iTableProvider.getDataXform().toString());
+			viewer.setInput(iTableProvider.getDataXform());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	/**
 	 * removes columns from the given table
 	 * 
@@ -173,6 +202,36 @@ public class ResultsView extends ViewPart {
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();
 			for (String header : columnHeaders.getColumnValues()) {
+				titles.add(header);
+				bounds.add(100);
+			}
+			String[] titlesArray = new String[titles.size()];
+			titles.toArray(titlesArray);
+			int[] boundsArray = new int[bounds.size()];
+			int indx = 0;
+			for (Integer integer : bounds) {
+				boundsArray[indx++] = integer;
+			}
+			for (int i = 0; i < titles.size(); i++) {
+				TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
+				col.setLabelProvider(new MyColumnLabelProvider(i));
+				columns.add(col);
+			}
+//		}
+	}
+	
+	private void createIColumns(final TableViewer viewer,QueryResults iQueryResults) {
+		ITableProvider iTableProvider = iQueryResults.getITableProvider();
+		System.out.println("iQueryResults.getColumnHeaders().getSize() : "+iQueryResults.getColumnHeaders().getSize());
+		System.out.println("iQueryResults.getITableProvider() : "+iQueryResults.getITableProvider());
+		System.out.println("iQueryResults.getITableProvider().getHeaderNames() : "+iQueryResults.getITableProvider().getHeaderNames());
+		System.out.println("iQueryResults.getITableProvider().getHeaderNames().size() : "+iQueryResults.getITableProvider().getHeaderNames().size());
+		iTableProvider.setColumnNames(iTableProvider.getHeaderNames());
+		iTableProvider.setXformNames(iTableProvider.getHeaderNames());
+		DataRow columnXformHeaders = iTableProvider.getColumnXformHeaders();
+		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<Integer> bounds = new ArrayList<Integer>();
+			for (String header : columnXformHeaders.getColumnValues()) {
 				titles.add(header);
 				bounds.add(100);
 			}
