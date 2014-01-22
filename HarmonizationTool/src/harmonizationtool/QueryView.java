@@ -26,6 +26,8 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.HSubsSameCas;
+import harmonizationtool.query.HarmonyLabeledQuery;
+import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.IParamHarmonize;
 import harmonizationtool.query.QDataSetContents;
@@ -101,6 +103,8 @@ import org.eclipse.swt.widgets.Table;
 
 public class QueryView extends ViewPart implements ISelectedTDBListener {
 	public static final String ID = "HarmonizationTool.QueryViewID";
+	
+	private List<HarmonyLabeledQuery> labeledQueries = new ArrayList<HarmonyLabeledQuery>();
 
 	private TableViewer viewer;
 //	private Action actionImport;
@@ -171,7 +175,6 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 				resultsView.update(iGenericQuery.getData());
 				resultsView.update(iGenericQuery.getQueryResults());
-
 			}
 
 			@Override
@@ -256,10 +259,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 //		addQuery(qDataSourcesSubCountB);
 		addQuery(qDataSetContents);
 
-		addQuery(qMatchCAS);
-		addQuery(qMatchCASandName);
-		addQuery(qCountMatches);
-		addQuery(hSubsSameCas);
+//		addQuery(qMatchCAS);
+//		addQuery(qMatchCASandName);
+//		addQuery(qCountMatches);
+//		addQuery(hSubsSameCas);
 
 		addUpdate(uDelDataSet);
 //		addUpdate(uDelDataSet);
@@ -373,7 +376,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 				if (paramQueries.contains(key)) {
 
-					System.out.println("It doesn't look like we ever get here with the IParamHarmonize...");
+//					System.out.println("It doesn't look like we ever get here with the IParamHarmonize...");
 					DialogQueryDataset dialog = new DialogQueryDataset(Display
 							.getCurrent().getActiveShell());
 					dialog.create();
@@ -470,9 +473,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		viewer.add(url);
 	}
 
-	public void addQuery(HarmonyQuery query) {
+	public void addQuery(HarmonyLabeledQuery query) {
 		viewer.add(query.getLabel());
-		queryMap.put(query.getLabel(), query);
+//		queryMap.put(query.getLabel(), query);
 	}
 	public void addUpdate(HarmonyUpdate update) {
 		viewer.add(update.getLabel());
@@ -509,5 +512,13 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		resultsView.update(q.getQueryResults());
 		System.out.println("done");
 
+	}
+	private void createLabeledQueries(){
+		labeledQueries.add(new QDataSources());
+		labeledQueries.add(new QDataSetContents());
+		labeledQueries.add(new QCountMatches());
+//		labeledQueries.add(new QMatchCAS());
+//		labeledQueries.add(new QMatchCASandName());
+//		labeledQueries.add(new HSubsSameCas());
 	}
 }

@@ -1,8 +1,12 @@
-package harmonizationtool.query;
+package harmonizationtool.query.unused;
 
-public class QDataSources extends HarmonyLabeledQuery {
-	private static String query = null;
-	{// initialize block
+import harmonizationtool.query.HarmonyBaseQuery;
+
+public class QxDataSets extends HarmonyBaseQuery {
+	{
+		label = "Data Sources: name, version";
+	}
+	{
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -16,20 +20,15 @@ public class QDataSources extends HarmonyLabeledQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (str(?label) as ?name) (str(?vs) as ?v) (str(?com) as ?comment) \n");
+//		b.append("SELECT DISTINCT (str(?id) as ?lid) (\" \" as ?ws) (str(?label) as ?lab) (\" \" as ?ws2) (str(?vs) as ?version) (str(?mj) as ?maj) (\".\" as ?dot)  (str(?mi) as ?min) \n");
+		b.append("SELECT DISTINCT (str(?label) as ?lab)\n");
 		b.append("WHERE \n");
-		b.append("  { ?s ?p ?o . \n");
-		b.append("    ?s a eco:DataSource . \n");
+		b.append("  { ?s a eco:DataSource . \n");
+//		b.append("    ?s ethold:localSerialNumber ?id . \n");
 		b.append("    ?s rdfs:label ?label \n");
-		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
-		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");	
 		b.append("  } \n");
-		b.append("  order by ?label \n");
-		query = b.toString();
-	}
+		b.append("order by ?label \n");
+		queryStr = b.toString();
 
-	public QDataSources(){
-		super(query,"Show DataSets");
 	}
-
 }

@@ -19,10 +19,13 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class HarmonyBaseQuery implements HarmonyQuery {
+public abstract class HarmonyBaseQuery implements HarmonyQuery {
 
 	protected String label = null;
 	protected String queryStr = null;
@@ -84,9 +87,15 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 		
 		try {
 			long startTime = System.currentTimeMillis();
-			ResultSet results = qexec.execSelect();
+//			ResultSet results = qexec.execSelect();
+			ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
+			System.out.println("OK, here comes your CSV contents... I hope it doesn't swamp your system...");
+//			ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(results);
+			ResultSetFormatter.outputAsCSV(resultSetRewindable);
+			resultSetRewindable.reset();
+			
 			List<String> newData = new ArrayList<String>();
-			List<String> strList = results.getResultVars();
+			List<String> strList = resultSetRewindable.getResultVars();
 			// create DataRow to hold column headers
 			DataRow columnHeaders = new DataRow();
 			// add the columnHeaders to the queryResults structure
@@ -101,8 +110,8 @@ public class HarmonyBaseQuery implements HarmonyQuery {
 			newData.add(row);
 			TableProvider tableProvider = new TableProvider();
 			queryResults.setTableProvider(tableProvider);
-			for (; results.hasNext();) {
-				QuerySolution soln = results.nextSolution();
+			for (; resultSetRewindable.hasNext();) {
+				QuerySolution soln = resultSetRewindable.nextSolution();
 				DataRow dataRow = new DataRow();
 				tableProvider.addDataRow(dataRow);
 				row = "";

@@ -1,10 +1,8 @@
 package harmonizationtool.query;
 
-public class QDataSetContents extends HarmonyBaseQuery {
-	{
-		label = "Show DataSet Contents";
-	}
-	{
+public class QDataSetContents  extends HarmonyLabeledQuery {
+	private static String query = null;
+	{// init block
 		StringBuilder b = new StringBuilder();
 		b.append ("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append ("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -30,7 +28,11 @@ public class QDataSetContents extends HarmonyBaseQuery {
 		b.append ("group by ?label ?class \n");
 		b.append ("order by ?label \n");
 		
-		queryStr = b.toString();
+		query = b.toString();
 
 	}
+	public QDataSetContents() {
+		super(query, "Show DataSet Contents");
+	}
+	
 }

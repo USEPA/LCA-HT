@@ -45,7 +45,7 @@ public class DataRow {
 	}
 
 	public String join(String delimiter) {
-		if (columnValues.size()<0){
+		if (columnValues.isEmpty()){
 			return "";
 		}
 		String joinedRow = columnValues.get(0);
