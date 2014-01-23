@@ -109,20 +109,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private List<HarmonyLabeledQuery> labeledQueries = new ArrayList<HarmonyLabeledQuery>();
 
 	private TableViewer viewer;
-
-//	private QDataSources qDataSources = new QDataSources();
-//	private QDataSetContents qDataSetContents = new QDataSetContents();
-//
-//	private QCountMatches qCountMatches = new QCountMatches();
-//	private QMatchCAS qMatchCAS = new QMatchCAS();
-//	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
-//	private HSubsSameCas hSubsSameCas = new HSubsSameCas();
 	
 	private UDelDataSet uDelDataSet = new UDelDataSet();
 
-	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
-//	private List<String> paramQueries = new ArrayList<String>();
 	private List<String> paramUpdates = new ArrayList<String>();
 
 	private Text windowQueryUpdate;
@@ -150,13 +140,6 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 	
 	public QueryView() {
-//		paramQueries.add("Show CAS Matches");         // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-//		paramQueries.add("Show CAS + Name Matches");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-//		paramQueries.add("Count CAS matches");        // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-//		
-//		paramQueries.add("Harmonize Subs Same CAS");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-
-		// paramQueries.add("Show CAS not in DB");
 		paramUpdates.add("Delete data set...");       // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
 	    createLabeledQueries();
 	}
@@ -271,25 +254,13 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 		makeActions();
 		hookContextMenu();
-//		addQuery(qDataSources);
-//		addQuery(qDataSourcesSubCountB);
-//		addQuery(qDataSetContents);
-
-//		addQuery(qMatchCAS);
-//		addQuery(qMatchCASandName);
-//		addQuery(qCountMatches);
-//		addQuery(hSubsSameCas);
 
 		for(HarmonyLabeledQuery harmonyLabeledQuery: labeledQueries){
 			addQuery(harmonyLabeledQuery);
 		}
 
 		addUpdate(uDelDataSet);
-//		addUpdate(uDelDataSet);
-		// addQuery(qCasNotInDB);
 		
-		
-
 		SelectTDB.getInstance().addSelectedTDBListener(this);
 	}
 
@@ -391,24 +362,24 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) viewer
 						.getSelection();
-				if (selection.isEmpty())
+				if (selection.isEmpty()){
 					return;
+				}
+
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
 				HarmonyLabeledQuery q = queryFromKey(key);
 				if (q != null){
 					if(q.requiresParameters()){
-						System.out.println("This is not ready yet.  Stay tuned...");
-						System.exit(1);
+						ResultSet resultSet = q.getResultSet();
+						TableProvider tableProvider = TableProvider.create((ResultSetRewindable)resultSet);
+						resultsView.update(tableProvider);
 					}else{
-						
-						System.out.println(q.getQuery());
-
-						IWorkbenchPage page = PlatformUI.getWorkbench()
-								.getActiveWorkbenchWindow().getActivePage();
-						ResultsView resultsView = (ResultsView) page
-								.findView(ResultsView.ID);
 						ResultSet resultSet = q.getResultSet();
 						TableProvider tableProvider = TableProvider.create((ResultSetRewindable)resultSet);
 						resultsView.update(tableProvider);
@@ -482,22 +453,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 //					
 //					System.out.println("done");
 //
-//				} else {
-//
-//					HarmonyQuery q = queryMap.get(key);
-//					System.out.println(q.getQuery());
-//
-//					IWorkbenchPage page = PlatformUI.getWorkbench()
-//							.getActiveWorkbenchWindow().getActivePage();
-//					ResultsView resultsView = (ResultsView) page
-//							.findView(ResultsView.ID);
-//					// resultsView.update(q);
-//
-//					resultsView.update(q.getData());
-//					resultsView.update(q.getQueryResults());
-//
-//					System.out.println("done");
-//				}
+//				} 
 				
 				try {
 					Util.showView(ResultsView.ID);
@@ -537,21 +493,21 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 	@Override
 	public void TDBchanged(String tdb) {
-		System.out.println("new TDB = " + tdb);
+//		System.out.println("new TDB = " + tdb);
 		// String key = (String) selection.toList().get(0);
-		String key = "Show Data Sources";
-		System.out.println("key=" + key);
-		HarmonyQuery q = queryMap.get(key);
-		System.out.println(q.getQuery());
+//		String key = "Show Data Sources";
+//		System.out.println("key=" + key);
+//		HarmonyQuery q = queryMap.get(key);
+//		System.out.println(q.getQuery());
 
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+//		IWorkbenchPage page = PlatformUI.getWorkbench()
+//				.getActiveWorkbenchWindow().getActivePage();
+//		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		// resultsView.update(q);
 
-		resultsView.update(q.getData());
-		resultsView.update(q.getQueryResults());
-		System.out.println("done");
+//		resultsView.update(q.getData());
+//		resultsView.update(q.getQueryResults());
+//		System.out.println("done");
 
 	}
 }

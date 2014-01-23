@@ -3,7 +3,7 @@ package harmonizationtool.query;
 public class QMatchCASandName extends HarmonyLabeledQuery {
 	private static String query = null;
 
-	{ // init block
+	static { // init block
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
