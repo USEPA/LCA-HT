@@ -15,12 +15,9 @@ public interface HarmonyQuery2 {
 	 *         filled in
 	 */
 	String getQuery();
-
-	String getParameterizedQuery();
+	
+	void setQuery(String query);
 
 	ResultSet getResultSet() throws InvalidArgument;
 
-	void setParameters(String... parameters) throws InvalidArgument;
-
-	boolean requiresParameters();
 }
