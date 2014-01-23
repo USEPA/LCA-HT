@@ -107,39 +107,42 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	private List<HarmonyLabeledQuery> labeledQueries = new ArrayList<HarmonyLabeledQuery>();
 
 	private TableViewer viewer;
-//	private Action actionImport;
-//	private Action actionSave;
-	private Action actionClose;
-	// private Action actionExtQuery;
-	// private Action actionExtUpdate;
 
-	private QDataSources qDataSources = new QDataSources();
-//	private QDataSourcesSubCountB qDataSourcesSubCountB = new QDataSourcesSubCountB();
-	private QDataSetContents qDataSetContents = new QDataSetContents();
-
-	private QCountMatches qCountMatches = new QCountMatches();
-	private QMatchCAS qMatchCAS = new QMatchCAS();
-	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
-	
-	private HSubsSameCas hSubsSameCas = new HSubsSameCas();
+//	private QDataSources qDataSources = new QDataSources();
+//	private QDataSetContents qDataSetContents = new QDataSetContents();
+//
+//	private QCountMatches qCountMatches = new QCountMatches();
+//	private QMatchCAS qMatchCAS = new QMatchCAS();
+//	private QMatchCASandName qMatchCASandName = new QMatchCASandName();
+//	private HSubsSameCas hSubsSameCas = new HSubsSameCas();
 	
 	private UDelDataSet uDelDataSet = new UDelDataSet();
 
-	// private QCasNotInDB qCasNotInDB = new QCasNotInDB();
-
 	private Map<String, HarmonyQuery> queryMap = new HashMap<String, HarmonyQuery>();
 	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
-	private List<String> paramQueries = new ArrayList<String>();
+//	private List<String> paramQueries = new ArrayList<String>();
 	private List<String> paramUpdates = new ArrayList<String>();
 
 	private Text windowQueryUpdate;
 
+	private void createLabeledQueries(){
+		labeledQueries.add(new QDataSources());
+		labeledQueries.add(new QDataSetContents());
+		labeledQueries.add(new QCountMatches());
+		labeledQueries.add(new QMatchCAS());
+		labeledQueries.add(new QMatchCASandName());
+		labeledQueries.add(new HSubsSameCas());
+		for(HarmonyLabeledQuery harmonyLabeledQuery: labeledQueries){
+			addQuery(harmonyLabeledQuery);
+		}
+	}
+	
 	public QueryView() {
-		paramQueries.add("Show CAS Matches");         // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-		paramQueries.add("Show CAS + Name Matches");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-		paramQueries.add("Count CAS matches");        // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
-		
-		paramQueries.add("Harmonize Subs Same CAS");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+//		paramQueries.add("Show CAS Matches");         // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+//		paramQueries.add("Show CAS + Name Matches");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+//		paramQueries.add("Count CAS matches");        // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
+//		
+//		paramQueries.add("Harmonize Subs Same CAS");  // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
 
 		// paramQueries.add("Show CAS not in DB");
 		paramUpdates.add("Delete data set...");       // FIXME, SHOULD GET THE KEY FROM THE QUERY FILE
@@ -255,9 +258,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 		makeActions();
 		hookContextMenu();
-		addQuery(qDataSources);
+//		addQuery(qDataSources);
 //		addQuery(qDataSourcesSubCountB);
-		addQuery(qDataSetContents);
+//		addQuery(qDataSetContents);
 
 //		addQuery(qMatchCAS);
 //		addQuery(qMatchCASandName);
@@ -374,7 +377,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
-				if (paramQueries.contains(key)) {
+				if (labeledQueries.contains(key)) { // THIS IS WRONG !! FIXME
 
 //					System.out.println("It doesn't look like we ever get here with the IParamHarmonize...");
 					DialogQueryDataset dialog = new DialogQueryDataset(Display
@@ -389,7 +392,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							System.out.println(s);
 						}
 						// do query
-						HarmonyQuery q = queryMap.get(key);
+						HarmonyLabeledQuery q = labeledQueries.get(0); // THIS IS WRONG !! FIXME
 						if (q instanceof IParamQuery) {
 							System.out.println(" is instanceof IParamQuery");
 							IParamQuery paramQuery = (IParamQuery) q;
@@ -404,8 +407,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 //							q.getData();
 							System.out.println("It worked, now take this out and go back to work!");
-							resultsView.update(q.getData());
-							resultsView.update(q.getQueryResults());
+//							resultsView.update(q.getData());
+//							resultsView.update(q.getQueryResults());
 
 							System.out.println("done");
 						} else if (q instanceof IParamHarmonize) {
@@ -421,8 +424,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 									.findView(ResultsView.ID);
 							// resultsView.update(q);
 
-							resultsView.iUpdate(q.getDataXform());
-							resultsView.iUpdate(q.getQueryResults());
+//							resultsView.iUpdate(q.getDataXform());
+//							resultsView.iUpdate(q.getQueryResults());
 
 							System.out.println("done");
 						}
@@ -512,13 +515,5 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		resultsView.update(q.getQueryResults());
 		System.out.println("done");
 
-	}
-	private void createLabeledQueries(){
-		labeledQueries.add(new QDataSources());
-		labeledQueries.add(new QDataSetContents());
-		labeledQueries.add(new QCountMatches());
-//		labeledQueries.add(new QMatchCAS());
-//		labeledQueries.add(new QMatchCASandName());
-//		labeledQueries.add(new HSubsSameCas());
 	}
 }
