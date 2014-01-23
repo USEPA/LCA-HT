@@ -56,10 +56,11 @@ public class ResultsView extends ViewPart {
 	private QueryResults queryResults = null;
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the
+	 * view. It can wrap existing objects in adapters or simply return objects
+	 * as-is. These objects may be sensitive to the current input of the view,
+	 * or ignore it and always show the same content (like Task List, for
+	 * example).
 	 */
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -76,7 +77,8 @@ public class ResultsView extends ViewPart {
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -88,18 +90,20 @@ public class ResultsView extends ViewPart {
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-//		viewer.addDoubleClickListener(new IDoubleClickListener(){
-//			@Override
-//			public void doubleClick(DoubleClickEvent event) {
-//				ISelection selection = event.getSelection();
-//				System.out.println("selection=" + selection);
-//			}});
+		// viewer.addDoubleClickListener(new IDoubleClickListener(){
+		// @Override
+		// public void doubleClick(DoubleClickEvent event) {
+		// ISelection selection = event.getSelection();
+		// System.out.println("selection=" + selection);
+		// }});
 	}
 
 	/**
@@ -108,20 +112,38 @@ public class ResultsView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	public void update(List<String> data){
-//		viewer.setInput(data.toArray());
+
+	public void update(List<String> data) {
+		// viewer.setInput(data.toArray());
 	}
-	
-	public void iUpdate(List<String> data){
-//		viewer.setInput(data.toArray());
+
+//	public void iUpdate(List<String> data) {
+//		// viewer.setInput(data.toArray());
+//	}
+
+	public void update(TableProvider tableProvider) {
+		try {
+			viewer.setContentProvider(new ArrayContentProvider());
+			final Table table = viewer.getTable();
+			removeColumns(table);
+			createColumns(viewer, tableProvider);
+			table.setHeaderVisible(true);
+			table.setLinesVisible(true);
+			viewer.setInput(tableProvider.getData());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void update(QueryResults queryResults) {
 		try {
 			this.queryResults = queryResults;
-			System.err.println("queryResults="+queryResults);
-			System.err.println("queryResults.getColumnHeaders()="+queryResults.getColumnHeaders());
-			System.out.println("queryResults.getColumnHeaders().toString()="+queryResults.getColumnHeaders().toString());
+			System.err.println("queryResults=" + queryResults);
+			System.err.println("queryResults.getColumnHeaders()="
+					+ queryResults.getColumnHeaders());
+			System.out.println("queryResults.getColumnHeaders().toString()="
+					+ queryResults.getColumnHeaders().toString());
 			viewer.setContentProvider(new ArrayContentProvider());
 			final Table table = viewer.getTable();
 			removeColumns(table);
@@ -130,38 +152,44 @@ public class ResultsView extends ViewPart {
 			table.setLinesVisible(true);
 			viewer.setContentProvider(new ArrayContentProvider());
 			TableProvider tableProvider = queryResults.getTableProvider();
-			System.out.println("tableProvider.getData().size()="+tableProvider.getData().size());
-			System.out.println("tableProvider.getData().toString()="+tableProvider.getData().toString());
+			System.out.println("tableProvider.getData().size()="
+					+ tableProvider.getData().size());
+			System.out.println("tableProvider.getData().toString()="
+					+ tableProvider.getData().toString());
 			viewer.setInput(tableProvider.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public void iUpdate(QueryResults iQueryResults) {
-		try {
-			this.queryResults = iQueryResults;
-			System.err.println("iQueryResults="+iQueryResults);
-			System.err.println("iQueryResults.getColumnHeaders()="+iQueryResults.getColumnHeaders());
-			System.out.println("iQueryResults.getColumnHeaders().toString()="+iQueryResults.getColumnHeaders().toString());
-			viewer.setContentProvider(new ArrayContentProvider());
-			final Table table = viewer.getTable();
-			removeColumns(table);
-			createIColumns(viewer, iQueryResults);
-			table.setHeaderVisible(true);
-			table.setLinesVisible(true);
-			viewer.setContentProvider(new ArrayContentProvider());
-			ITableProvider iTableProvider = iQueryResults.getITableProvider();
-			System.out.println("iTableProvider.getDataXform().size()="+iTableProvider.getDataXform().size());
-			System.out.println("iTableProvider.getDataXform().toString()="+iTableProvider.getDataXform().toString());
-			viewer.setInput(iTableProvider.getDataXform());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
+
+//	public void iUpdate(QueryResults iQueryResults) {
+//		try {
+//			this.queryResults = iQueryResults;
+//			System.err.println("iQueryResults=" + iQueryResults);
+//			System.err.println("iQueryResults.getColumnHeaders()="
+//					+ iQueryResults.getColumnHeaders());
+//			System.out.println("iQueryResults.getColumnHeaders().toString()="
+//					+ iQueryResults.getColumnHeaders().toString());
+//			viewer.setContentProvider(new ArrayContentProvider());
+//			final Table table = viewer.getTable();
+//			removeColumns(table);
+//			createIColumns(viewer, iQueryResults);
+//			table.setHeaderVisible(true);
+//			table.setLinesVisible(true);
+//			viewer.setContentProvider(new ArrayContentProvider());
+//			ITableProvider iTableProvider = iQueryResults.getITableProvider();
+//			System.out.println("iTableProvider.getDataXform().size()="
+//					+ iTableProvider.getDataXform().size());
+//			System.out.println("iTableProvider.getDataXform().toString()="
+//					+ iTableProvider.getDataXform().toString());
+//			viewer.setInput(iTableProvider.getDataXform());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
+
 	/**
 	 * removes columns from the given table
 	 * 
@@ -179,76 +207,116 @@ public class ResultsView extends ViewPart {
 			e.printStackTrace();
 		}
 	}
-	private void createColumns(final TableViewer viewer,QueryResults queryResults) {
-		DataRow columnHeaders = queryResults.getColumnHeaders();
-//		System.out.println("key=" + key);
-//		if (key != null) {
-			// Define the menu and assign to the table
-//			headerMenu = new Menu(viewer.getTable());
-//			viewer.getTable().setMenu(headerMenu);
-//			initializeColumnHeaderMenu(headerMenu);
 
-//			ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
-//			List<DataRow> dataRowList = modelProvider.getData();
-//			DataRow dataRow = dataRowList.get(0);
-//			int numCol = dataRow.getColumnValues().size();
-//			ArrayList<String> titles = new ArrayList<String>();
-//			ArrayList<Integer> bounds = new ArrayList<Integer>();
-//			for (int i = 1; i <= numCol; i++) {
-//				// titles.add("COL" + i);
-//				titles.add("Ignore");
-//				bounds.add(100);
-//			}
+	private void createColumns(final TableViewer viewer,
+			TableProvider tableProvider) {
+
+		DataRow columnHeaders = new DataRow();
+		columnHeaders.setColumnValues(tableProvider.getHeaderNames());
+
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();
-			for (String header : columnHeaders.getColumnValues()) {
-				titles.add(header);
-				bounds.add(100);
-			}
-			String[] titlesArray = new String[titles.size()];
-			titles.toArray(titlesArray);
-			int[] boundsArray = new int[bounds.size()];
-			int indx = 0;
-			for (Integer integer : bounds) {
-				boundsArray[indx++] = integer;
-			}
-			for (int i = 0; i < titles.size(); i++) {
-				TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
-				col.setLabelProvider(new MyColumnLabelProvider(i));
-				columns.add(col);
-			}
-//		}
+		for (String header : columnHeaders.getColumnValues()) {
+			titles.add(header);
+			bounds.add(100);
+		}
+		String[] titlesArray = new String[titles.size()];
+		titles.toArray(titlesArray);
+		int[] boundsArray = new int[bounds.size()];
+		int indx = 0;
+		for (Integer integer : bounds) {
+			boundsArray[indx++] = integer;
+		}
+		for (int i = 0; i < titles.size(); i++) {
+			TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+					boundsArray[i], i);
+			col.setLabelProvider(new MyColumnLabelProvider(i));
+			columns.add(col);
+		}
 	}
-	
-	private void createIColumns(final TableViewer viewer,QueryResults iQueryResults) {
-		ITableProvider iTableProvider = iQueryResults.getITableProvider();
-		System.out.println("iQueryResults.getColumnHeaders().getSize() : "+iQueryResults.getColumnHeaders().getSize());
-		System.out.println("iQueryResults.getITableProvider() : "+iQueryResults.getITableProvider());
-		System.out.println("iQueryResults.getITableProvider().getHeaderNames() : "+iQueryResults.getITableProvider().getHeaderNames());
-		System.out.println("iQueryResults.getITableProvider().getHeaderNames().size() : "+iQueryResults.getITableProvider().getHeaderNames().size());
-		iTableProvider.setColumnNames(iTableProvider.getHeaderNames());
-		iTableProvider.setXformNames(iTableProvider.getHeaderNames());
-		DataRow columnXformHeaders = iTableProvider.getColumnXformHeaders();
+
+	private void createColumns(final TableViewer viewer,
+			QueryResults queryResults) {
+		DataRow columnHeaders = queryResults.getColumnHeaders();
+		// System.out.println("key=" + key);
+		// if (key != null) {
+		// Define the menu and assign to the table
+		// headerMenu = new Menu(viewer.getTable());
+		// viewer.getTable().setMenu(headerMenu);
+		// initializeColumnHeaderMenu(headerMenu);
+
+		// ModelProvider modelProvider = ModelKeeper.getModelProvider(key);
+		// List<DataRow> dataRowList = modelProvider.getData();
+		// DataRow dataRow = dataRowList.get(0);
+		// int numCol = dataRow.getColumnValues().size();
+		// ArrayList<String> titles = new ArrayList<String>();
+		// ArrayList<Integer> bounds = new ArrayList<Integer>();
+		// for (int i = 1; i <= numCol; i++) {
+		// // titles.add("COL" + i);
+		// titles.add("Ignore");
+		// bounds.add(100);
+		// }
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();
-			for (String header : columnXformHeaders.getColumnValues()) {
-				titles.add(header);
-				bounds.add(100);
-			}
-			String[] titlesArray = new String[titles.size()];
-			titles.toArray(titlesArray);
-			int[] boundsArray = new int[bounds.size()];
-			int indx = 0;
-			for (Integer integer : bounds) {
-				boundsArray[indx++] = integer;
-			}
-			for (int i = 0; i < titles.size(); i++) {
-				TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
-				col.setLabelProvider(new MyColumnLabelProvider(i));
-				columns.add(col);
-			}
-//		}
+		for (String header : columnHeaders.getColumnValues()) {
+			titles.add(header);
+			bounds.add(100);
+		}
+		String[] titlesArray = new String[titles.size()];
+		titles.toArray(titlesArray);
+		int[] boundsArray = new int[bounds.size()];
+		int indx = 0;
+		for (Integer integer : bounds) {
+			boundsArray[indx++] = integer;
+		}
+		for (int i = 0; i < titles.size(); i++) {
+			TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+					boundsArray[i], i);
+			col.setLabelProvider(new MyColumnLabelProvider(i));
+			columns.add(col);
+		}
+		// }
 	}
+
+//	private void createIColumns(final TableViewer viewer,
+//			QueryResults iQueryResults) {
+//		ITableProvider iTableProvider = iQueryResults.getITableProvider();
+//		System.out.println("iQueryResults.getColumnHeaders().getSize() : "
+//				+ iQueryResults.getColumnHeaders().getSize());
+//		System.out.println("iQueryResults.getITableProvider() : "
+//				+ iQueryResults.getITableProvider());
+//		System.out
+//				.println("iQueryResults.getITableProvider().getHeaderNames() : "
+//						+ iQueryResults.getITableProvider().getHeaderNames());
+//		System.out
+//				.println("iQueryResults.getITableProvider().getHeaderNames().size() : "
+//						+ iQueryResults.getITableProvider().getHeaderNames()
+//								.size());
+//		iTableProvider.setColumnNames(iTableProvider.getHeaderNames());
+//		iTableProvider.setXformNames(iTableProvider.getHeaderNames());
+//		DataRow columnXformHeaders = iTableProvider.getColumnXformHeaders();
+//		ArrayList<String> titles = new ArrayList<String>();
+//		ArrayList<Integer> bounds = new ArrayList<Integer>();
+//		for (String header : columnXformHeaders.getColumnValues()) {
+//			titles.add(header);
+//			bounds.add(100);
+//		}
+//		String[] titlesArray = new String[titles.size()];
+//		titles.toArray(titlesArray);
+//		int[] boundsArray = new int[bounds.size()];
+//		int indx = 0;
+//		for (Integer integer : bounds) {
+//			boundsArray[indx++] = integer;
+//		}
+//		for (int i = 0; i < titles.size(); i++) {
+//			TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+//					boundsArray[i], i);
+//			col.setLabelProvider(new MyColumnLabelProvider(i));
+//			columns.add(col);
+//		}
+//		// }
+//	}
+
 	/**
 	 * convenience method for creating a TableViewerColumn
 	 * 
@@ -257,15 +325,18 @@ public class ResultsView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
+	private TableViewerColumn createTableViewerColumn(String title, int bound,
+			final int colNumber) {
+		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
+				SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
 		column.setText(title);
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-		viewerColumn.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
-//		column.addListener(eventType, new Listener(){});
+		viewerColumn
+				.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
+		// column.addListener(eventType, new Listener(){});
 		column.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -286,11 +357,13 @@ public class ResultsView extends ViewPart {
 
 		});
 		// Now add a MenuItem for the colum to the table menu
-//		createMenuItem(headerMenu, column);
+		// createMenuItem(headerMenu, column);
 		return viewerColumn;
 	}
+
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -300,7 +373,6 @@ public class ResultsView extends ViewPart {
 		public MyColumnLabelProvider(int colNum) {
 			this.myColNum = colNum;
 		}
-
 
 		@Override
 		public String getText(Object element) {
@@ -328,6 +400,5 @@ public class ResultsView extends ViewPart {
 	public QueryResults getQueryResults() {
 		return queryResults;
 	}
-
 
 }

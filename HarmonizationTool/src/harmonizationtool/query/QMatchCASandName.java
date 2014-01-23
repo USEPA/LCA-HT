@@ -48,6 +48,6 @@ public class QMatchCASandName extends HarmonyLabeledQuery {
 	}
 
 	public QMatchCASandName() {
-		super(query, "%%%", "Count CAS matches");
+		super(query, "%%%", "Show CAS and Name Matches");
 	}
 }

@@ -53,7 +53,7 @@ public class HSubsSameCas extends HarmonyLabeledQuery {
 	}
 
 	public HSubsSameCas() {
-		super(query, "%%%", "Count CAS matches");
+		super(query, "%%%", "Harmonize CAS Matches");
 	}
 }
 //ORIGINAL QUERY:

@@ -45,7 +45,7 @@ public class QMatchCAS extends HarmonyLabeledQuery {
 	}
 
 	public QMatchCAS() {
-		super(query, "%%%", "Count CAS matches");
+		super(query, "%%%", "Show CAS Matches");
 	}
 }
 	// ORIGINAL QUERY:

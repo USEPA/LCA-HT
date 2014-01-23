@@ -5,6 +5,9 @@ public class HarmonyLabeledQuery extends HarmonyQuery2Impl{
 
 	public HarmonyLabeledQuery(String query, String label) {
 		super(query);
+		if(label == null ){
+			throw new IllegalArgumentException("label cannot be null");
+		}
 		this.label = label;
 	}
 	public HarmonyLabeledQuery(String query, String parameterToken, String label){

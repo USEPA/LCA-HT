@@ -10,7 +10,6 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.sun.tools.corba.se.idl.InvalidArgument;
 
 public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	private String query;
@@ -20,11 +19,15 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	private boolean requiresParameters = false;
 
 	public HarmonyQuery2Impl(String query, String parameterToken) {
+		System.out.println("HarmonyQuery2Impl(String query, String parameterToken)");
+		System.out.println(query);
 		this.query = query;
 		this.parameterToken  = parameterToken;
 		requiresParameters = true;
 	}
 	public HarmonyQuery2Impl(String query) {
+		System.out.println("HarmonyQuery2Impl(String query)");
+		System.out.println(query);
 		this.query = query;
 		this.parameterizedQuery = query;
 		requiresParameters = false;
@@ -36,11 +39,11 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	}
 
 	@Override
-	public ResultSet getResultSet() throws InvalidArgument {
+	public ResultSet getResultSet() {
 		processParameters();
 		Model model = SelectTDB.model;
 		if(model== null){
-			throw new InvalidArgument("SelectTDB.model is null");
+			throw new IllegalArgumentException("SelectTDB.model is null");
 		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(parameterizedQuery, model);
@@ -49,10 +52,10 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		return resultSetRewindable;
 	}
 	
-	public ResultSet getResultSet(Model model) throws InvalidArgument {
+	public ResultSet getResultSet(Model model) throws IllegalArgumentException {
 		processParameters();
 		if(model== null){
-			throw new InvalidArgument("(RDF) model is null");
+			throw new IllegalArgumentException("(RDF) model is null");
 		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(parameterizedQuery, model);
@@ -63,30 +66,32 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 
 
 	@Override
-	public void setParameters(String... parameters) throws InvalidArgument {
+	public void setParameters(String... parameters) throws IllegalArgumentException {
 		this.parameters.clear();
 		for(String parameter : parameters){
 			this.parameters.add(parameter);
 		}
 		String[] splitQuery = query.split(parameterToken);
 		if(splitQuery.length != this.parameters.size()+1){
-			throw new InvalidArgument("Parameter mismatch");
+			throw new IllegalArgumentException("Parameter mismatch");
 		}
 	}
-	private void processParameters() throws InvalidArgument{
-		String[] splitQuery = query.split(parameterToken);
-		if(splitQuery.length != parameters.size()+1){
-			throw new InvalidArgument("Parameter mismatch");
-		}
-		StringBuilder b = new StringBuilder();
-		int parameterIndex = 0;
-		for(String s : splitQuery){
-			b.append(s);
-			if (parameterIndex < parameters.size()) {
-				b.append(" " + parameters.get(parameterIndex++));
+	private void processParameters() throws IllegalArgumentException{
+		if (requiresParameters) {
+			String[] splitQuery = query.split(parameterToken);
+			if (splitQuery.length != parameters.size() + 1) {
+				throw new IllegalArgumentException("Parameter mismatch");
 			}
+			StringBuilder b = new StringBuilder();
+			int parameterIndex = 0;
+			for (String s : splitQuery) {
+				b.append(s);
+				if (parameterIndex < parameters.size()) {
+					b.append(" " + parameters.get(parameterIndex++));
+				}
+			}
+			parameterizedQuery = b.toString();
 		}
-		parameterizedQuery = b.toString();
 	}
 	@Override
 	public String getParameterizedQuery() {

@@ -2,7 +2,8 @@ package harmonizationtool.query;
 
 public class QDataSources extends HarmonyLabeledQuery {
 	private static String query = null;
-	{// initialize block
+	static {// initialize block
+		System.out.println("init block running");
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");

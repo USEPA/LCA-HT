@@ -423,6 +423,6 @@ public class ViewData extends ViewPart {
 			columnNames.add(tableColumn.getText());
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		tableProvider.setColumnNames(columnNames);
+		tableProvider.setHeaderNames(columnNames);
 	}
 }
