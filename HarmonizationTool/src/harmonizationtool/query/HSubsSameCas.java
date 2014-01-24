@@ -10,9 +10,11 @@ import com.hp.hpl.jena.query.ResultSet;
 public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		public static final String LABEL = "Harmonize CAS Matches";
 
+		private String subRowPrefix = TableTransformer.subRowPrefix;
+		private String subRowNameHeader = TableTransformer.subRowNameHeader;
+
 		private String param1;
 		private String[] referenceDataSets;
-		private String param2;
 
 		public HSubsSameCas() {
 			super();
@@ -48,9 +50,10 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		}
 
 		private void buildQuery() {
-			param2 = "?match_label = \"" + referenceDataSets[0] + "\"";
-			for (int i = 1; i < referenceDataSets.length; i++) {
-				param2 += " || ?match_label = \"" + referenceDataSets[i] + "\"";
+			for (int i = 0; i < referenceDataSets.length; i++) {
+				if (referenceDataSets[i] == param1){
+					// REMOVE IT
+				}
 			}
 
 		StringBuilder b = new StringBuilder();
@@ -67,36 +70,45 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT  \n");
-		b.append("   (\"%%%\" as ?%%%1_%%%) \n");
-//		b.append("   (\"" + queryID + "\" as ?" + subRowPrefix + "1_"
-//				+ subRowNameHeader + ") \n");
-		b.append("   (\"%%%\" as ?%%%2_%%%) \n");
-//		b.append("   (\"" + refID + "\" as ?" + subRowPrefix + "2_"
-//				+ subRowNameHeader + ") \n");
-		b.append("   (str(?name1) as ?%%%1_substance_name) \n");
-//		b.append("   (str(?name1) as ?" + subRowPrefix + "1_substance_name) \n");
-		b.append("   (str(?name2) as ?%%%2_substance_name) \n");
-//		b.append("   (str(?name2) as ?" + subRowPrefix + "2_substance_name) \n");
-		// NOTE: COULD HAVE MORE THAN 2!
+		b.append("   (str(?ds1_name) as ?"+subRowPrefix+"1_"+subRowNameHeader+") \n");
+		b.append("   (str(?name1) as ?"+subRowPrefix+"1_substance_name) \n");
+
+		for (int i = 0;i<referenceDataSets.length;i++){
+			int iPlusTwo = i + 2;
+			b.append("   (str(?ds"+iPlusTwo+"_name) as ?"+subRowPrefix+iPlusTwo+"_"+subRowNameHeader+") \n");
+			b.append("   (str(?name"+iPlusTwo+") as ?"+subRowPrefix+iPlusTwo+"_substance_name) \n");
+		}
 		b.append("   (str(?cas) as ?same_cas) \n");
 		b.append(" \n");
 		b.append("WHERE { \n");
-		b.append("      ?sub1 eco:hasDataSource ?ds_query . \n");
-		b.append("      ?ds_query rdfs:label ?ds_qname . \n");
-		b.append("      filter regex(str(?ds_qname),\"%%%\") \n");
-//		b.append("      filter regex(str(?ds_qname),\"" + queryID + "\") \n");
-
-		b.append("      ?sub2 eco:hasDataSource ?ds_ref . \n");
-		b.append("      ?ds_ref rdfs:label ?ds_rname . \n");
-		b.append("      filter regex(str(?ds_rname),\"%%%\") \n");
-//		b.append("      filter regex(str(?ds_rname),\"" + refID + "\") \n");
-
+		b.append("      ?sub1 eco:hasDataSource ?ds1 . \n");
+		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
+		b.append("      filter regex(str(?ds1_name),\""+param1+"\") \n");
 		b.append("      ?sub1 eco:casNumber ?cas .  \n");
-		b.append("      ?sub2 eco:casNumber ?cas .   \n");
-		b.append("      ?sub1 rdfs:label ?name1 . \n");
-		b.append("      ?sub2 rdfs:label ?name2 .  \n");
+		b.append("      ?sub1 rdfs:label ?name1 .  \n");
+
+		for (int i = 0;i<referenceDataSets.length;i++){
+			int iPlusTwo = i + 2;
+			String refDataSet = referenceDataSets[i];
+			b.append("OPTIONAL {");
+			b.append("      ?sub"+iPlusTwo+" eco:hasDataSource ?ds"+iPlusTwo+" . \n");
+			b.append("      ?ds"+iPlusTwo+" rdfs:label ?ds"+iPlusTwo+"_name . \n");
+			b.append("      filter regex(str(?ds"+iPlusTwo+"_name),\""+refDataSet+"\") \n");
+			b.append("      ?sub"+iPlusTwo+" eco:casNumber ?cas . \n");
+			b.append("      ?sub"+iPlusTwo+" rdfs:label ?name"+iPlusTwo+" .  \n");
+
+			b.append("} \n");
+		}
+		
+		b.append("      filter ( \n");
+		b.append("     bound(?sub2) \n");
+		for (int i = 1;i<referenceDataSets.length;i++){
+			int iPlusTwo = i + 2;
+			b.append("  || bound(?sub"+iPlusTwo+") \n");
+		}
+		b.append("       ) \n");
 		b.append("} \n");
-		b.append("order by ?sub1 ?ds_match \n");
+		b.append("order by ?cas \n");
 		setQuery(b.toString());
 	}
 
