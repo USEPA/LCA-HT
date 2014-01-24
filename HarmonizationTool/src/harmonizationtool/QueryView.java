@@ -382,8 +382,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 						ResultSet resultSet = ((HarmonyQuery2Impl) q)
 								.getResultSet();
 						// ResultSet resultSet = q.getResultSet();
+//						TableProvider tableProvider = TableProvider
+//								.create((ResultSetRewindable) resultSet);
 						TableProvider tableProvider = TableProvider
-								.create((ResultSetRewindable) resultSet);
+								.createTransform((ResultSetRewindable) resultSet);
 						resultsView.update(tableProvider);
 					}
 

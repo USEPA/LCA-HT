@@ -212,7 +212,7 @@ public class ResultsView extends ViewPart {
 			TableProvider tableProvider) {
 
 		DataRow columnHeaders = new DataRow();
-		columnHeaders.setColumnValues(tableProvider.getHeaderNames());
+		columnHeaders = tableProvider.getHeaderNames();
 
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();

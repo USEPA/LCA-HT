@@ -194,7 +194,7 @@ public class ViewData extends ViewPart {
 			int numCol = dataRow.getColumnValues().size();
 			ArrayList<String> titles = new ArrayList<String>();
 			ArrayList<Integer> bounds = new ArrayList<Integer>();
-			List<String> headerNames = tableProvider.getHeaderNames();
+			List<String> headerNames = tableProvider.getHeaderNamesAsStrings();
 			if (headerNames == null) {
 				for (int i = 1; i <= numCol; i++) {
 					titles.add("Ignore");

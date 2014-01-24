@@ -384,7 +384,7 @@ public class View extends ViewPart {
 					// ModelProvider modelProvider = ModelKeeper
 					// .getModelProvider(key);
 					TableProvider tableProvider = TableKeeper.getTableProvider(key);
-					List<String> headers = tableProvider.getHeaderNames();
+					List<String> headers = tableProvider.getHeaderNamesAsStrings();
 					System.out.println(headers.toString());
 					List<DataRow> dataRowList = tableProvider.getData();
 					System.out.println("dataRowList.size = " + dataRowList.size());
@@ -605,7 +605,7 @@ public class View extends ViewPart {
 					// ModelProvider modelProvider = ModelKeeper
 					// .getModelProvider(key);
 					TableProvider tableProvider = TableKeeper.getTableProvider(key);
-					List<String> headers = tableProvider.getHeaderNames();
+					List<String> headers = tableProvider.getHeaderNamesAsStrings();
 					System.out.println(headers.toString());
 					List<DataRow> dataRowList = tableProvider.getData();
 					System.out.println("dataRowList.size = " + dataRowList.size());
