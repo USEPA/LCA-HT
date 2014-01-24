@@ -1,7 +1,6 @@
 package harmonizationtool.query;
 
 import com.hp.hpl.jena.query.ResultSet;
-import com.sun.tools.corba.se.idl.InvalidArgument;
 
 /**
  * @author Tommy Cathey & Tom Transue
@@ -18,6 +17,6 @@ public interface HarmonyQuery2 {
 	
 	void setQuery(String query);
 
-	ResultSet getResultSet() throws InvalidArgument;
+	ResultSet getResultSet() throws IllegalArgumentException;
 
 }

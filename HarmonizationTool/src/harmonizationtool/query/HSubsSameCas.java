@@ -1,10 +1,58 @@
 package harmonizationtool.query;
 
-//import harmonizationtool.model.ITableProvider;
-public class HSubsSameCas extends HarmonyLabeledQuery {
-	private static String query = null;
+import harmonizationtool.dialog.DialogQueryDataset;
 
-	{ // init block
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+
+import com.hp.hpl.jena.query.ResultSet;
+
+public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
+		public static final String LABEL = "Harmonize CAS Matches";
+
+		private String param1;
+		private String[] referenceDataSets;
+		private String param2;
+
+		public HSubsSameCas() {
+			super();
+		}
+
+		public ResultSet getResultSet() {
+			// CALL THE DIALOG TO GET THE PARAMETERS
+			getDialog();
+			// BUILD THE QUERY USING THE PARAMETERS
+			buildQuery();
+			// READY TO CALL getResultSet() ON THESUPER CLASS
+			return super.getResultSet();
+		}
+
+		public ResultSet getResultSet(String param1, String[] referenceDataSets) {
+			// BRING IN THE PARAMETERS
+			this.param1 = param1;
+			this.referenceDataSets = referenceDataSets;
+			// BUILD THE QUERY USING THE PARAMETERS
+			buildQuery();
+			// READY TO CALL getResultSet() ON THESUPER CLASS
+			return super.getResultSet();
+		}
+
+		private void getDialog() {
+			DialogQueryDataset dialog = new DialogQueryDataset(Display.getCurrent().getActiveShell());
+			dialog.create();
+			if (dialog.open() == Window.OK) {
+				System.out.println("OK");
+				param1 = dialog.getPrimaryDataSet();
+				referenceDataSets = dialog.getReferenceDataSets();
+			}
+		}
+
+		private void buildQuery() {
+			param2 = "?match_label = \"" + referenceDataSets[0] + "\"";
+			for (int i = 1; i < referenceDataSets.length; i++) {
+				param2 += " || ?match_label = \"" + referenceDataSets[i] + "\"";
+			}
+
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -49,49 +97,11 @@ public class HSubsSameCas extends HarmonyLabeledQuery {
 		b.append("      ?sub2 rdfs:label ?name2 .  \n");
 		b.append("} \n");
 		b.append("order by ?sub1 ?ds_match \n");
-		query = b.toString();
+		setQuery(b.toString());
 	}
 
-	public HSubsSameCas() {
-		super(query, "%%%", "Harmonize CAS Matches");
+	@Override
+	public String getLabel() {
+		return LABEL;
 	}
 }
-//ORIGINAL QUERY:
-//StringBuilder b = new StringBuilder();
-//b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
-//b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-//b.append(" \n");
-//b.append("SELECT  \n");
-//b.append("   (\"" + queryID + "\" as ?" + subRowPrefix + "1_"
-//		+ subRowNameHeader + ") \n");
-//b.append("   (\"" + refID + "\" as ?" + subRowPrefix + "2_"
-//		+ subRowNameHeader + ") \n");
-//b.append("   (str(?name1) as ?" + subRowPrefix + "1_substance_name) \n");
-//b.append("   (str(?name2) as ?" + subRowPrefix + "2_substance_name) \n");
-//b.append("   (str(?cas) as ?same_cas) \n");
-//b.append(" \n");
-//b.append("WHERE { \n");
-//b.append("      ?sub1 eco:hasDataSource ?ds_query . \n");
-//b.append("      ?ds_query rdfs:label ?ds_qname . \n");
-//b.append("      filter regex(str(?ds_qname),\"" + queryID + "\") \n");
-//
-//b.append("      ?sub2 eco:hasDataSource ?ds_ref . \n");
-//b.append("      ?ds_ref rdfs:label ?ds_rname . \n");
-//b.append("      filter regex(str(?ds_rname),\"" + refID + "\") \n");
-//
-//b.append("      ?sub1 eco:casNumber ?cas .  \n");
-//b.append("      ?sub2 eco:casNumber ?cas .   \n");
-//b.append("      ?sub1 rdfs:label ?name1 . \n");
-//b.append("      ?sub2 rdfs:label ?name2 .  \n");
-//b.append("} \n");
-//b.append("order by ?sub1 ?ds_match \n");
-//query = b.toString();

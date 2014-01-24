@@ -1,8 +1,28 @@
 package harmonizationtool.query;
 
-public class QDataSetContents  extends HarmonyLabeledQuery {
-	private static String query = null;
-	static {// init block
+import com.hp.hpl.jena.query.ResultSet;
+
+public class QDataSetContents extends HarmonyQuery2Impl implements LabeledQuery {
+	public static final String LABEL = "Show DataSet Contents";
+
+	// private String param1;
+	// private String[] referenceDataSets;
+	// private String param2;
+
+	public QDataSetContents() {
+		super();
+	}
+
+	public ResultSet getResultSet() {
+		// CALL THE DIALOG TO GET THE PARAMETERS
+		// getDialog();
+		// BUILD THE QUERY USING THE PARAMETERS
+		buildQuery();
+		// READY TO CALL getResultSet() ON THESUPER CLASS
+		return super.getResultSet();
+	}
+
+	private void buildQuery() {
 		StringBuilder b = new StringBuilder();
 		b.append ("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append ("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -27,12 +47,11 @@ public class QDataSetContents  extends HarmonyLabeledQuery {
 		b.append ("#group by ?label ?class_name \n");
 		b.append ("group by ?label ?class \n");
 		b.append ("order by ?label \n");
-		
-		query = b.toString();
+		setQuery(b.toString());
+	}
 
+	@Override
+	public String getLabel() {
+		return LABEL;
 	}
-	public QDataSetContents() {
-		super(query, "Show DataSet Contents");
-	}
-	
 }

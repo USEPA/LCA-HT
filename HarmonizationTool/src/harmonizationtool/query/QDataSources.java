@@ -1,9 +1,28 @@
 package harmonizationtool.query;
 
-public class QDataSources extends HarmonyLabeledQuery {
-	private static String query = null;
-	static {// initialize block
-		System.out.println("init block running");
+import com.hp.hpl.jena.query.ResultSet;
+
+public class QDataSources extends HarmonyQuery2Impl implements LabeledQuery {
+	public static final String LABEL = "Show Data Sets";
+
+	// private String param1;
+	// private String[] referenceDataSets;
+	// private String param2;
+
+	public QDataSources() {
+		super();
+	}
+
+	public ResultSet getResultSet() {
+		// CALL THE DIALOG TO GET THE PARAMETERS
+		// getDialog();
+		// BUILD THE QUERY USING THE PARAMETERS
+		buildQuery();
+		// READY TO CALL getResultSet() ON THESUPER CLASS
+		return super.getResultSet();
+	}
+
+	private void buildQuery() {
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
@@ -23,14 +42,15 @@ public class QDataSources extends HarmonyLabeledQuery {
 		b.append("    ?s a eco:DataSource . \n");
 		b.append("    ?s rdfs:label ?label \n");
 		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");
-		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");	
+		b.append("    OPTIONAL {?s rdfs:comment ?com} \n");
 		b.append("  } \n");
 		b.append("  order by ?label \n");
-		query = b.toString();
+		setQuery(b.toString());
 	}
 
-	public QDataSources(){
-		super(query,"Show DataSets");
+	@Override
+	public String getLabel() {
+		return LABEL;
 	}
 
 }

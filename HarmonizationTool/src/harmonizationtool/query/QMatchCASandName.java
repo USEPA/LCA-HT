@@ -1,10 +1,57 @@
 package harmonizationtool.query;
 
-public class QMatchCASandName extends HarmonyLabeledQuery {
-	private static String query = null;
+import harmonizationtool.dialog.DialogQueryDataset;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+import com.hp.hpl.jena.query.ResultSet;
 
-	static { // init block
-		StringBuilder b = new StringBuilder();
+public class QMatchCASandName extends HarmonyQuery2Impl implements LabeledQuery {
+		public static final String LABEL = "Show CAS and Name Matches";
+
+		private String param1;
+		private String[] referenceDataSets;
+		private String param2;
+
+		public QMatchCASandName() {
+			super();
+		}
+
+		public ResultSet getResultSet() {
+			// CALL THE DIALOG TO GET THE PARAMETERS
+			getDialog();
+			// BUILD THE QUERY USING THE PARAMETERS
+			buildQuery();
+			// READY TO CALL getResultSet() ON THESUPER CLASS
+			return super.getResultSet();
+		}
+
+		public ResultSet getResultSet(String param1, String[] referenceDataSets) {
+			// BRING IN THE PARAMETERS
+			this.param1 = param1;
+			this.referenceDataSets = referenceDataSets;
+			// BUILD THE QUERY USING THE PARAMETERS
+			buildQuery();
+			// READY TO CALL getResultSet() ON THESUPER CLASS
+			return super.getResultSet();
+		}
+
+		private void getDialog() {
+			DialogQueryDataset dialog = new DialogQueryDataset(Display.getCurrent().getActiveShell());
+			dialog.create();
+			if (dialog.open() == Window.OK) {
+				System.out.println("OK");
+				param1 = dialog.getPrimaryDataSet();
+				referenceDataSets = dialog.getReferenceDataSets();
+			}
+		}
+
+		private void buildQuery() {
+			param2 = "?match_label = \"" + referenceDataSets[0] + "\"";
+			for (int i = 1; i < referenceDataSets.length; i++) {
+				param2 += " || ?match_label = \"" + referenceDataSets[i] + "\"";
+			}
+
+			StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
@@ -22,7 +69,8 @@ public class QMatchCASandName extends HarmonyLabeledQuery {
 		b.append("WHERE { \n");
 		b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");
 		b.append("      ?ds_prim rdfs:label ?ds_label . \n");
-		b.append("      filter regex(str(?ds_label), \"%%%\")  \n");
+		b.append("      filter regex(str(?ds_label), \"" + param1 + "\")  \n");
+		// param1 EXAMPLE: TRACI 2.1 [IT IS A DATA SET NAME]
 		b.append("      ?s2 eco:hasDataSource ?ds_match . \n");
 		b.append("      ?ds_match rdfs:label ?match_label . \n");
 		b.append("      filter (?ds_prim != ?ds_match) \n");
@@ -32,22 +80,21 @@ public class QMatchCASandName extends HarmonyLabeledQuery {
 		b.append("      ?s2 rdfs:label ?name .  \n");
 		b.append("      {{?s1 a eco:Flowable .  } UNION {?s1 a eco:Substance . }} \n");
 		b.append("      {{?s2 a eco:Flowable .  } UNION {?s2 a eco:Substance . }} \n");
-		b.append("      filter(%%%) \n"); // THIS WILL CONTAIN THTE LIST OF
-											// MATCHING DATA SETS
-
-		// FOR EXAMPLE, %%% MIGHT BE
+		b.append("      filter(" + param2 + ") \n"); 
+		// param2 EXAMPLES
 		// str(?match_label) = "ReCiPe" || str(?match_label) = "MOVES" ||
 		// str(?match_label) = "TRACI 2.1"
-		// OR IT COULD HAVE A TRAILING || false LIKE THIS:
+		// OR IT COULD HAVE A TRAILING '|| false' LIKE THIS:
 		// str(?match_label) = "ReCiPe" || str(?match_label) = "MOVES" ||
 		// str(?match_label) = "TRACI 2.1" || false
 
 		b.append("  } \n");
 		b.append("order by ?s1 ?ds_match \n");
-		query = b.toString();
+		setQuery(b.toString());
 	}
 
-	public QMatchCASandName() {
-		super(query, "%%%", "Show CAS and Name Matches");
+	@Override
+	public String getLabel() {
+		return LABEL;
 	}
 }
