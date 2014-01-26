@@ -130,14 +130,19 @@ public class TableProvider {
 				}
 			}
 		}
+		
+		System.out.println("tableProvider.headerNames.toString() = "+tableProvider.headerNames.toString());
+		System.out.println("headerMap.keySet().toString() = "+headerMap.keySet().toString());
 
-		System.out.println(headerMap.toString());
-
+		boolean debugFlag = true;
 		for (; resultSetRewindable.hasNext();) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
-			// List<List<String>> twoDArray = new ArrayList<List<String>>();
+			// BUILD A 2-D ARRAY (ROWS AND COLS) CONTAINING THE MULTIPLE SUB-ROWS BASED ON ONE QUERY RESULT ROW
 			Map<Integer, DataRow> twoDArray = new HashMap<Integer, DataRow>();
 			for (String origHeader : origHeaderNames) {
+				if (debugFlag){
+					System.out.println("origHeader ="+origHeader);
+				}
 				TransformCell transformCell = headerMap.get(origHeader);
 				int colNum = tableProvider.getHeaderNamesAsStrings().indexOf(transformCell.newHeader);
 				int rowNum = transformCell.rowNum;
@@ -146,8 +151,11 @@ public class TableProvider {
 					twoDArray.put(rowNum, new DataRow());
 					dataRow = twoDArray.get(rowNum);
 				}
-				while (dataRow.getSize() < colNum+1){ // FIXME - WHAT'S WRONG WITH MY LOGIC?
+				while (dataRow.getSize() < colNum + 1) {
 					dataRow.add("");
+					if (debugFlag){
+						System.out.println("rowNum:"+rowNum+" colNum:"+colNum+" dataRow.getSize() is now:"+dataRow.getSize());
+					}
 				}
 				try {
 					RDFNode rdfNode = soln.get(origHeader);
@@ -162,19 +170,20 @@ public class TableProvider {
 			}
 			// NOW TAKE NON EMPTY ITEMS FROM dataRow ZERO AND FILL THE COLUMN BELOW
 			DataRow dataRowFillSource = twoDArray.get(0);
-			for (int i=0;i<dataRowFillSource.getSize();i++){
-				for (int j=1; j< twoDArray.size(); j++){
-					DataRow dataRowJ = twoDArray.get(j);
-					while (dataRowJ.getSize() < i+1){
-						dataRowJ.add("");
-					}
-					String valTwoFillCol = twoDArray.get(0).get(i);
-					if (!dataRowFillSource.get(i).equals("")){
-						dataRowJ.set(i, valTwoFillCol);
+			for (int col = 0; col < dataRowFillSource.getSize(); col++) {
+				if (!dataRowFillSource.get(col).equals("")) {
+					for (int row = 1; row < twoDArray.size(); row++) {
+						DataRow dataRowJ = twoDArray.get(row);
+						while (dataRowJ.getSize() < col + 1) {
+							dataRowJ.add("");
+						}
+						String valTwoFillCol = dataRowFillSource.get(col);
+						dataRowJ.set(col, valTwoFillCol);
 						tableProvider.addDataRow(dataRowJ);
 					}
 				}
 			}
+			debugFlag = false;
 		}
 		return tableProvider;
 

@@ -68,7 +68,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT  \n");
+		b.append("SELECT  DISTINCT\n");
 		b.append("   (str(?ds1_name) as ?" + TableProvider.SUBROW_PREFIX + "1_"
 				+ TableProvider.SUBROW_NAMEHEADER + ") \n");
 		b.append("   (str(?name1) as ?" + TableProvider.SUBROW_PREFIX + "1_substance_name) \n");
@@ -114,7 +114,8 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		}
 		b.append("       ) \n");
 		b.append("} \n");
-		b.append("order by ?cas \n");
+//		b.append("group by ?ds1_name \n");
+		b.append("order by ?same_cas \n");
 		setQuery(b.toString());
 	}
 

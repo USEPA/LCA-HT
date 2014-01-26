@@ -36,7 +36,10 @@ public class QDataSources extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT DISTINCT (str(?label) as ?name) (str(?vs) as ?v) (str(?com) as ?comment) \n");
+		b.append("SELECT DISTINCT  \n");
+		b.append("  (str(?label) as ?name) \n");
+		b.append("  (str(?vs) as ?v) \n");
+		b.append("  (str(?com) as ?comment) \n");
 		b.append("WHERE \n");
 		b.append("  { ?s ?p ?o . \n");
 		b.append("    ?s a eco:DataSource . \n");

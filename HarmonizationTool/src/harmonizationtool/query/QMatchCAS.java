@@ -66,7 +66,12 @@ public class QMatchCAS extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-		b.append("SELECT (afn:localname(?s1) as ?q_sub) (str(?name1) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (str(?match_label) as ?matching_set) \n");
+		b.append("SELECT DISTINCT \n");
+		b.append("  (afn:localname(?s1) as ?q_sub) \n");
+		b.append("  (str(?name1) as ?q_name) \n");
+		b.append("  (str(?cas) as ?same_cas) \n");
+		b.append("  (str(?name2) as ?db_name) \n");
+		b.append("  (str(?match_label) as ?matching_set) \n");
 		b.append(" \n");
 		b.append("WHERE { \n");
 		b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");

@@ -36,7 +36,9 @@ public class QDataSetContents extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append ("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append ("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append (" ");
-		b.append ("SELECT  (str(?label) as ?data_set_name) (str(count(distinct ?member)) as ?count) (str(afn:localname(?class)) as ?Type) \n");
+		b.append ("SELECT (str(?label) as ?data_set_name) \n");
+		b.append ("  (str(count(distinct ?member)) as ?count) \n");
+		b.append ("  (str(afn:localname(?class)) as ?Type) \n");
 		b.append ("WHERE \n");
 		b.append ("  { ?s a eco:DataSource . \n");
 		b.append ("    ?s rdfs:label ?label  . \n");
