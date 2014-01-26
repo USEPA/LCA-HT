@@ -367,8 +367,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 						// .create((ResultSetRewindable) resultSet);
 						setTextAreaContent(((HarmonyQuery2Impl) q).getQuery());
 						if (key.startsWith("Harm")) {
-							TableProvider tableProvider = TableProvider.createTransform((ResultSetRewindable) resultSet);
+							TableProvider tableProvider = TableProvider.createTransform(0,(ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);
+							resultsView.formatForTransform(0);
 						} else {
 							TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);

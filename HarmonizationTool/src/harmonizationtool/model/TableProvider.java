@@ -93,101 +93,107 @@ public class TableProvider {
 		}
 	}
 
-	public static TableProvider createTransform(ResultSetRewindable resultSetRewindable) {
-		TableProvider tableProvider = new TableProvider();
-		resultSetRewindable.reset();
-		List<String> origHeaderNames = resultSetRewindable.getResultVars();
-		String dataSetName = "DataSet";
-		tableProvider.headerNames.add(dataSetName); // THE FIRST COLUMN IS DataSet
-		Map<String, TransformCell> headerMap = new HashMap<String, TransformCell>();
-		for (String origHeader : origHeaderNames) {
-			int headerSplitPoint = origHeader.indexOf("_");
-			if (headerSplitPoint == -1) {
-				tableProvider.headerNames.add(origHeader); // NOT A subRowHeader. ADD IT
-				TransformCell transformCell = tableProvider.new TransformCell(0, origHeader);
-				headerMap.put(origHeader, transformCell);
-			} else {
-				String origHeaderPrefix = origHeader.substring(0, headerSplitPoint);
-				String origHeaderField = origHeader.substring(headerSplitPoint + 1);
-				if (origHeaderPrefix.matches("^" + SUBROW_PREFIX + "\\d+$")) {
-					int subRowNum = Integer.parseInt(origHeaderPrefix.substring(SUBROW_PREFIX.length()));
-					if (origHeaderField.equals(SUBROW_NAMEHEADER)) { // DataSet FIELD
-						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSetName);
-						headerMap.put(origHeader, transformCell);
-						// headerMap.put(origHeader, dataSetName);
-						// continue; // DON'T ADD IT AGAIN (SEE ABOVE)
-					} else {
-						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, origHeaderField);
-						headerMap.put(origHeader, transformCell);
-						if (subRowNum == 1) {
-							tableProvider.headerNames.add(origHeaderField);
-						}
-					}
-				} else {
+	public static TableProvider createTransform(int formatNum, ResultSetRewindable resultSetRewindable) {
+		if (formatNum == 0) {
+			TableProvider tableProvider = new TableProvider();
+			resultSetRewindable.reset();
+			List<String> origHeaderNames = resultSetRewindable.getResultVars();
+			String dataSetName = "DataSet";
+			tableProvider.headerNames.add(dataSetName); // THE FIRST COLUMN IS DataSet
+			Map<String, TransformCell> headerMap = new HashMap<String, TransformCell>();
+			for (String origHeader : origHeaderNames) {
+				int headerSplitPoint = origHeader.indexOf("_");
+				if (headerSplitPoint == -1) {
 					tableProvider.headerNames.add(origHeader); // NOT A subRowHeader. ADD IT
 					TransformCell transformCell = tableProvider.new TransformCell(0, origHeader);
 					headerMap.put(origHeader, transformCell);
-				}
-			}
-		}
-		
-		System.out.println("tableProvider.headerNames.toString() = "+tableProvider.headerNames.toString());
-		System.out.println("headerMap.keySet().toString() = "+headerMap.keySet().toString());
-
-		boolean debugFlag = true;
-		for (; resultSetRewindable.hasNext();) {
-			QuerySolution soln = resultSetRewindable.nextSolution();
-			// BUILD A 2-D ARRAY (ROWS AND COLS) CONTAINING THE MULTIPLE SUB-ROWS BASED ON ONE QUERY RESULT ROW
-			Map<Integer, DataRow> twoDArray = new HashMap<Integer, DataRow>();
-			for (String origHeader : origHeaderNames) {
-				if (debugFlag){
-					System.out.println("origHeader ="+origHeader);
-				}
-				TransformCell transformCell = headerMap.get(origHeader);
-				int colNum = tableProvider.getHeaderNamesAsStrings().indexOf(transformCell.newHeader);
-				int rowNum = transformCell.rowNum;
-				DataRow dataRow = twoDArray.get(rowNum);
-				if (dataRow == null) {
-					twoDArray.put(rowNum, new DataRow());
-					dataRow = twoDArray.get(rowNum);
-				}
-				while (dataRow.getSize() < colNum + 1) {
-					dataRow.add("");
-					if (debugFlag){
-						System.out.println("rowNum:"+rowNum+" colNum:"+colNum+" dataRow.getSize() is now:"+dataRow.getSize());
-					}
-				}
-				try {
-					RDFNode rdfNode = soln.get(origHeader);
-					if (rdfNode == null) {
-						dataRow.set(colNum, "");
-					} else {
-						dataRow.set(colNum, rdfNode.toString());
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			// NOW TAKE NON EMPTY ITEMS FROM dataRow ZERO AND FILL THE COLUMN BELOW
-			DataRow dataRowFillSource = twoDArray.get(0);
-			for (int col = 0; col < dataRowFillSource.getSize(); col++) {
-				if (!dataRowFillSource.get(col).equals("")) {
-					for (int row = 1; row < twoDArray.size(); row++) {
-						DataRow dataRowJ = twoDArray.get(row);
-						while (dataRowJ.getSize() < col + 1) {
-							dataRowJ.add("");
+				} else {
+					String origHeaderPrefix = origHeader.substring(0, headerSplitPoint);
+					String origHeaderField = origHeader.substring(headerSplitPoint + 1);
+					if (origHeaderPrefix.matches("^" + SUBROW_PREFIX + "\\d+$")) {
+						int subRowNum = Integer.parseInt(origHeaderPrefix.substring(SUBROW_PREFIX.length()));
+						if (origHeaderField.equals(SUBROW_NAMEHEADER)) { // DataSet FIELD
+							TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSetName);
+							headerMap.put(origHeader, transformCell);
+							// headerMap.put(origHeader, dataSetName);
+							// continue; // DON'T ADD IT AGAIN (SEE ABOVE)
+						} else {
+							TransformCell transformCell = tableProvider.new TransformCell(subRowNum, origHeaderField);
+							headerMap.put(origHeader, transformCell);
+							if (subRowNum == 1) {
+								tableProvider.headerNames.add(origHeaderField);
+							}
 						}
-						String valTwoFillCol = dataRowFillSource.get(col);
-						dataRowJ.set(col, valTwoFillCol);
-						tableProvider.addDataRow(dataRowJ);
+					} else {
+						tableProvider.headerNames.add(origHeader); // NOT A subRowHeader. ADD IT
+						TransformCell transformCell = tableProvider.new TransformCell(0, origHeader);
+						headerMap.put(origHeader, transformCell);
 					}
 				}
 			}
-			debugFlag = false;
-		}
-		return tableProvider;
 
-		// throw new IllegalArgumentException("implement me");
+			System.out.println("tableProvider.headerNames.toString() = " + tableProvider.headerNames.toString());
+			System.out.println("headerMap.keySet().toString() = " + headerMap.keySet().toString());
+
+			boolean debugFlag = true;
+			for (; resultSetRewindable.hasNext();) {
+				QuerySolution soln = resultSetRewindable.nextSolution();
+				// BUILD A 2-D ARRAY (ROWS AND COLS) CONTAINING THE MULTIPLE SUB-ROWS BASED ON ONE
+				// QUERY RESULT ROW
+				Map<Integer, DataRow> twoDArray = new HashMap<Integer, DataRow>();
+				for (String origHeader : origHeaderNames) {
+					if (debugFlag) {
+						System.out.println("origHeader =" + origHeader);
+					}
+					TransformCell transformCell = headerMap.get(origHeader);
+					int colNum = tableProvider.getHeaderNamesAsStrings().indexOf(transformCell.newHeader);
+					int rowNum = transformCell.rowNum;
+					DataRow dataRow = twoDArray.get(rowNum);
+					if (dataRow == null) {
+						twoDArray.put(rowNum, new DataRow());
+						dataRow = twoDArray.get(rowNum);
+					}
+					while (dataRow.getSize() < colNum + 1) {
+						dataRow.add("");
+						if (debugFlag) {
+							System.out.println("rowNum:" + rowNum + " colNum:" + colNum + " dataRow.getSize() is now:" + dataRow.getSize());
+						}
+					}
+					try {
+						RDFNode rdfNode = soln.get(origHeader);
+						if (rdfNode == null) {
+							dataRow.set(colNum, "");
+						} else {
+							dataRow.set(colNum, rdfNode.toString());
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				// NOW TAKE NON EMPTY ITEMS FROM dataRow ZERO AND FILL THE COLUMN BELOW
+				DataRow dataRowFillSource = twoDArray.get(0);
+				for (int col = 0; col < dataRowFillSource.getSize(); col++) {
+					if (!dataRowFillSource.get(col).equals("")) {
+						for (int row = 1; row < twoDArray.size(); row++) {
+							DataRow dataRowJ = twoDArray.get(row);
+							while (dataRowJ.getSize() < col + 1) {
+								dataRowJ.add("");
+							}
+							String valTwoFillCol = dataRowFillSource.get(col);
+							dataRowJ.set(col, valTwoFillCol);
+							tableProvider.addDataRow(dataRowJ);
+						}
+					}
+				}
+				debugFlag = false;
+			}
+			return tableProvider;
+
+			// throw new IllegalArgumentException("implement me");
+
+		} else {
+			throw new IllegalArgumentException("No transform for format: "+formatNum);
+		}
 	}
 
 }
