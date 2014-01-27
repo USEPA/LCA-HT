@@ -22,8 +22,13 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,7 +38,10 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerEditor;
+import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -134,6 +142,23 @@ public class ResultsTreeEditor extends ViewPart {
 		viewer.getTree().setLinesVisible(true);
 		viewer.getTree().setHeaderVisible(true);
 		
+		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(viewer,new FocusCellOwnerDrawHighlighter(viewer));
+		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(viewer) {
+			protected boolean isEditorActivationEvent(
+					ColumnViewerEditorActivationEvent event) {
+				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && ( event.keyCode == SWT.CR || event.character == ' ' ))
+						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+			}
+		};
+
+		TreeViewerEditor.create(viewer, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+				| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+
+		final TextCellEditor textCellEditor = new TextCellEditor(viewer.getTree());
+		final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(viewer.getTree());
 
 		// viewer.addDoubleClickListener(new IDoubleClickListener(){
 		// @Override
@@ -151,44 +176,6 @@ public class ResultsTreeEditor extends ViewPart {
 		// viewer.setInput(data.toArray());
 	}
 
-//	public void update(TableProvider tableProvider) {
-//	try {
-//		viewer.setContentProvider(new ArrayContentProvider());
-//		final Table table = viewer.getTable();
-//		removeColumns(table);
-//		createColumns(viewer, tableProvider);
-//		table.setHeaderVisible(true);
-//		table.setLinesVisible(true);
-//		viewer.setInput(tableProvider.getData());
-//	} catch (Exception e) {
-//		e.printStackTrace();
-//	}
-//}
-//	public void update(QueryResults queryResults) {
-//		try {
-//			this.queryResults = queryResults;
-//			System.err.println("queryResults=" + queryResults);
-//			System.err.println("queryResults.getColumnHeaders()="
-//					+ queryResults.getColumnHeaders());
-//			System.out.println("queryResults.getColumnHeaders().toString()="
-//					+ queryResults.getColumnHeaders().toString());
-//			viewer.setContentProvider(new ArrayContentProvider());
-//			final Table table = viewer.getTable();
-//			removeColumns(table);
-//			createColumns(viewer, queryResults);
-//			table.setHeaderVisible(true);
-//			table.setLinesVisible(true);
-//			viewer.setContentProvider(new ArrayContentProvider());
-//			TableProvider tableProvider = queryResults.getTableProvider();
-//			System.out.println("tableProvider.getData().size()="
-//					+ tableProvider.getData().size());
-//			System.out.println("tableProvider.getData().toString()="
-//					+ tableProvider.getData().toString());
-//			viewer.setInput(tableProvider.getData());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	/**
 	 * removes columns from the given table
@@ -234,85 +221,8 @@ public class ResultsTreeEditor extends ViewPart {
 			return rv;
 		}
 	}
-//	class ViewContentProvider implements IStructuredContentProvider {
-//		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-//		}
-//
-//		public void dispose() {
-//		}
-//
-//		public Object[] getElements(Object parent) {
-//			if (parent instanceof Object[]) {
-//				return (Object[]) parent;
-//			}
-//			return new Object[0];
-//		}
-//	}
-//
-//	class ViewLabelProvider extends LabelProvider implements
-//			ITableLabelProvider {
-//		public String getColumnText(Object obj, int index) {
-//			return getText(obj);
-//		}
-//
-//		public Image getColumnImage(Object obj, int index) {
-//			return getImage(obj);
-//		}
-//
-//	}
 
-	
-	
-	
 
-//	final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(v,new FocusCellOwnerDrawHighlighter(v));
-//	ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(v) {
-//		protected boolean isEditorActivationEvent(
-//				ColumnViewerEditorActivationEvent event) {
-//			return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-//					|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-//					|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && ( event.keyCode == SWT.CR || event.character == ' ' ))
-//					|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-//		}
-//	};
-//
-//	TreeViewerEditor.create(v, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
-//			| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-//			| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-//
-//	final TextCellEditor textCellEditor = new TextCellEditor(v.getTree());
-//	final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(v.getTree());
-//
-//	TreeViewerColumn column = new TreeViewerColumn(v, SWT.NONE);
-//	column.getColumn().setWidth(200);
-//	column.getColumn().setMoveable(true);
-//	column.getColumn().setText("Column 1");
-//	column.setLabelProvider(new ColumnLabelProvider() {
-//
-//		public String getText(Object element) {
-//			return "Column 1 => " + element.toString();
-//		}
-//
-//	});
-//	column.setEditingSupport(new EditingSupport(v) {
-//		protected boolean canEdit(Object element) {
-//			return false;
-//		}
-//
-//		protected CellEditor getCellEditor(Object element) {
-//			return textCellEditor;
-//		}
-//
-//		protected Object getValue(Object element) {
-//			return ((MyModel) element).counter + "";
-//		}
-//
-//		protected void setValue(Object element, Object value) {
-//			((MyModel) element).counter = Integer
-//					.parseInt(value.toString());
-//			v.update(element, null);
-//		}
-//	});
 
 	column = new TreeViewerColumn(v, SWT.NONE);
 	column.getColumn().setWidth(200);
@@ -672,7 +582,7 @@ public class MyModel {
 	}
 }
 
-
+}
 
 //========================================================================
 //========================================================================
@@ -697,156 +607,156 @@ public class MyModel {
  *
  */
 
-	public Snippet048TreeViewerTabWithCheckboxFor3_3(final Shell shell) {
-		final TreeViewer v = new TreeViewer(shell, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		v.getTree().setLinesVisible(true);
-		v.getTree().setHeaderVisible(true);
+//	public Snippet048TreeViewerTabWithCheckboxFor3_3(final Shell shell) {
+//		final TreeViewer v = new TreeViewer(shell, SWT.BORDER
+//				| SWT.FULL_SELECTION);
+//		v.getTree().setLinesVisible(true);
+//		v.getTree().setHeaderVisible(true);
 
-		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(v,new FocusCellOwnerDrawHighlighter(v));
-		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(v) {
-			protected boolean isEditorActivationEvent(
-					ColumnViewerEditorActivationEvent event) {
-				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && ( event.keyCode == SWT.CR || event.character == ' ' ))
-						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-			}
-		};
+//		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(v,new FocusCellOwnerDrawHighlighter(v));
+//		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(v) {
+//			protected boolean isEditorActivationEvent(
+//					ColumnViewerEditorActivationEvent event) {
+//				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+//						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+//						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && ( event.keyCode == SWT.CR || event.character == ' ' ))
+//						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+//			}
+//		};
+//
+//		TreeViewerEditor.create(v, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+//				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+//				| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+//
+//		final TextCellEditor textCellEditor = new TextCellEditor(v.getTree());
+//		final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(v.getTree());
 
-		TreeViewerEditor.create(v, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
-				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-				| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
-		final TextCellEditor textCellEditor = new TextCellEditor(v.getTree());
-		final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(v.getTree());
-
-		TreeViewerColumn column = new TreeViewerColumn(v, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("Column 1");
-		column.setLabelProvider(new ColumnLabelProvider() {
-
-			public String getText(Object element) {
-				return "Column 1 => " + element.toString();
-			}
-
-		});
-		column.setEditingSupport(new EditingSupport(v) {
-			protected boolean canEdit(Object element) {
-				return false;
-			}
-
-			protected CellEditor getCellEditor(Object element) {
-				return textCellEditor;
-			}
-
-			protected Object getValue(Object element) {
-				return ((MyModel) element).counter + "";
-			}
-
-			protected void setValue(Object element, Object value) {
-				((MyModel) element).counter = Integer
-						.parseInt(value.toString());
-				v.update(element, null);
-			}
-		});
-
-		column = new TreeViewerColumn(v, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("Column 2");
-		column.setLabelProvider(new ColumnLabelProvider() {
-
-			public String getText(Object element) {
-				return "Column 2 => " + element.toString();
-			}
-
-		});
-		column.setEditingSupport(new EditingSupport(v) {
-			protected boolean canEdit(Object element) {
-				return true;
-			}
-
-			protected CellEditor getCellEditor(Object element) {
-				return textCellEditor;
-			}
-
-			protected Object getValue(Object element) {
-				return ((MyModel) element).counter + "";
-			}
-
-			protected void setValue(Object element, Object value) {
-				((MyModel) element).counter = Integer
-				.parseInt(value.toString());
-				v.update(element, null);
-			}
-		});
-
-		column = new TreeViewerColumn(v, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("Column 3");
-		column.setLabelProvider(new ColumnLabelProvider() {
-
-			public String getText(Object element) {
-				return ((MyModel)element).bool + "";
-			}
-
-		});
-		column.setEditingSupport(new EditingSupport(v) {
-			protected boolean canEdit(Object element) {
-				return true;
-			}
-
-			protected CellEditor getCellEditor(Object element) {
-				return checkboxCellEditor;
-			}
-
-			protected Object getValue(Object element) {
-				return new Boolean(((MyModel) element).bool);
-			}
-
-			protected void setValue(Object element, Object value) {
-				((MyModel) element).bool = ((Boolean)value).booleanValue();
-				v.update(element, null);
-			}
-		});
-
-		v.setContentProvider(new MyContentProvider());
-		v.setInput(createModel());
-		v.getControl().addTraverseListener(new TraverseListener() {
-
-			public void keyTraversed(TraverseEvent e) {
-				if( (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) && mgr.getFocusCell().getColumnIndex() == 2 ) {
-					ColumnViewerEditor editor = v.getColumnViewerEditor();
-					ViewerCell cell = mgr.getFocusCell();
-
-					try {
-						Method m = ColumnViewerEditor.class.getDeclaredMethod("processTraverseEvent", new Class[] {int.class,ViewerRow.class,TraverseEvent.class});
-						m.setAccessible(true);
-						m.invoke(editor, new Object[] { new Integer(cell.getColumnIndex()), cell.getViewerRow(), e });
-					} catch (SecurityException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (NoSuchMethodException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IllegalArgumentException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IllegalAccessException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InvocationTargetException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-
-		});
-	}
+//		TreeViewerColumn column = new TreeViewerColumn(v, SWT.NONE);
+//		column.getColumn().setWidth(200);
+//		column.getColumn().setMoveable(true);
+//		column.getColumn().setText("Column 1");
+//		column.setLabelProvider(new ColumnLabelProvider() {
+//
+//			public String getText(Object element) {
+//				return "Column 1 => " + element.toString();
+//			}
+//
+//		});
+//		column.setEditingSupport(new EditingSupport(v) {
+//			protected boolean canEdit(Object element) {
+//				return false;
+//			}
+//
+//			protected CellEditor getCellEditor(Object element) {
+//				return textCellEditor;
+//			}
+//
+//			protected Object getValue(Object element) {
+//				return ((MyModel) element).counter + "";
+//			}
+//
+//			protected void setValue(Object element, Object value) {
+//				((MyModel) element).counter = Integer
+//						.parseInt(value.toString());
+//				v.update(element, null);
+//			}
+//		});
+//
+//		column = new TreeViewerColumn(v, SWT.NONE);
+//		column.getColumn().setWidth(200);
+//		column.getColumn().setMoveable(true);
+//		column.getColumn().setText("Column 2");
+//		column.setLabelProvider(new ColumnLabelProvider() {
+//
+//			public String getText(Object element) {
+//				return "Column 2 => " + element.toString();
+//			}
+//
+//		});
+//		column.setEditingSupport(new EditingSupport(v) {
+//			protected boolean canEdit(Object element) {
+//				return true;
+//			}
+//
+//			protected CellEditor getCellEditor(Object element) {
+//				return textCellEditor;
+//			}
+//
+//			protected Object getValue(Object element) {
+//				return ((MyModel) element).counter + "";
+//			}
+//
+//			protected void setValue(Object element, Object value) {
+//				((MyModel) element).counter = Integer
+//				.parseInt(value.toString());
+//				v.update(element, null);
+//			}
+//		});
+//
+//		column = new TreeViewerColumn(v, SWT.NONE);
+//		column.getColumn().setWidth(200);
+//		column.getColumn().setMoveable(true);
+//		column.getColumn().setText("Column 3");
+//		column.setLabelProvider(new ColumnLabelProvider() {
+//
+//			public String getText(Object element) {
+//				return ((MyModel)element).bool + "";
+//			}
+//
+//		});
+//		column.setEditingSupport(new EditingSupport(v) {
+//			protected boolean canEdit(Object element) {
+//				return true;
+//			}
+//
+//			protected CellEditor getCellEditor(Object element) {
+//				return checkboxCellEditor;
+//			}
+//
+//			protected Object getValue(Object element) {
+//				return new Boolean(((MyModel) element).bool);
+//			}
+//
+//			protected void setValue(Object element, Object value) {
+//				((MyModel) element).bool = ((Boolean)value).booleanValue();
+//				v.update(element, null);
+//			}
+//		});
+//
+//		v.setContentProvider(new MyContentProvider());
+//		v.setInput(createModel());
+//		v.getControl().addTraverseListener(new TraverseListener() {
+//
+//			public void keyTraversed(TraverseEvent e) {
+//				if( (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) && mgr.getFocusCell().getColumnIndex() == 2 ) {
+//					ColumnViewerEditor editor = v.getColumnViewerEditor();
+//					ViewerCell cell = mgr.getFocusCell();
+//
+//					try {
+//						Method m = ColumnViewerEditor.class.getDeclaredMethod("processTraverseEvent", new Class[] {int.class,ViewerRow.class,TraverseEvent.class});
+//						m.setAccessible(true);
+//						m.invoke(editor, new Object[] { new Integer(cell.getColumnIndex()), cell.getViewerRow(), e });
+//					} catch (SecurityException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					} catch (NoSuchMethodException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					} catch (IllegalArgumentException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					} catch (IllegalAccessException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					} catch (InvocationTargetException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//				}
+//			}
+//
+//		});
+//	}
 
 	private MyModel createModel() {
 
@@ -936,8 +846,6 @@ public class MyModel {
 
 			return rv;
 		}
-	}
 
-}
 
 
