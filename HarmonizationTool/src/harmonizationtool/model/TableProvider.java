@@ -181,7 +181,9 @@ public class TableProvider {
 							}
 							String valTwoFillCol = dataRowFillSource.get(col);
 							dataRowJ.set(col, valTwoFillCol);
-							tableProvider.addDataRow(dataRowJ);
+							if (!dataRowJ.get(0).equals("")) { // DON'T ADD A ROW IF THERE IS NO HIT!!
+								tableProvider.addDataRow(dataRowJ);
+							}
 						}
 					}
 				}
@@ -192,7 +194,7 @@ public class TableProvider {
 			// throw new IllegalArgumentException("implement me");
 
 		} else {
-			throw new IllegalArgumentException("No transform for format: "+formatNum);
+			throw new IllegalArgumentException("No transform for format: " + formatNum);
 		}
 	}
 

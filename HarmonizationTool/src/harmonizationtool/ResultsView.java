@@ -13,6 +13,8 @@ import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -39,6 +41,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -307,10 +310,42 @@ public class ResultsView extends ViewPart {
 				Table table = viewer.getTable();
 				TableColumn[] tableColumn = table.getColumns();
 				TableItem[] tableItems = table.getItems();
-				for (TableItem tableItem : tableItems) {
-					for (int i = 0; i < table.getColumnCount(); i++) {
-						// DO GREAT STUFF HERE!!!
-//						System.out.println("tableItem.getText(i) = " + tableItem.getText(i));
+				String keyDataSet = tableItems[0].getText(0);
+				int keyDataRow = 0;
+				for (int i = 0; i < tableItems.length; i++) {
+					TableItem tableItem = tableItems[i];
+					if (keyDataSet.equals(tableItem.getText(0))) {
+						keyDataRow = i;
+						tableItem.setBackground(0, SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+					} else {
+//						if (tableItem.getText(0).equals("")) {
+//							table.remove(i);
+////							i = i - 1;
+//							continue;
+//						}
+						for (int j = 1; j < table.getColumnCount(); j++) {
+							if (tableItem.getText(j).toUpperCase().equals(tableItems[keyDataRow].getText(j).toUpperCase())) {
+								tableItem.setBackground(j, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+								tableItems[keyDataRow].setBackground(j, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+							}
+							// tableItem.ad
+							// tableItem.addListener(SWT.MouseDown, new Listener() {
+							//
+							// @Override
+							// public void handleEvent(Event event) {
+							// System.out.println("event.item = " + event.item.toString());
+							// TableItem tableItem = (TableItem) event.item;
+							// // int j =
+							// tableItem.setBackground(0,
+							// SWTResourceManager.getColor(SWT.COLOR_BLUE));
+							// // tableItems[keyDataRow].setBackground(j,
+							// // SWTResourceManager.getColor(SWT.COLOR_GREEN));
+							// }
+							//
+							// });
+							// DO GREAT STUFF HERE!!!
+							// System.out.println("tableItem.getText(i) = " + tableItem.getText(i));
+						}
 					}
 				}
 			} catch (Exception e) {
