@@ -392,10 +392,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							// SHOULD BE KNOWN BY THE LabledQuery
 							// BUT CHOSEN BY THE CALLER
 							TableProvider tableProvider = TableProvider
-									.createTransform(0,
-											(ResultSetRewindable) resultSet);
+									.createTransform0((ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);
-							resultsView.formatForTransform(0);
+//							resultsView.formatForTransform0();
 						} else {
 							TableProvider tableProvider = TableProvider
 									.create((ResultSetRewindable) resultSet);

@@ -46,9 +46,9 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.QueryEditor"
-            id="HarmonizationTool.QueryEditorID"
-            name="Query Editor"
+            class="harmonizationtool.ResultsTreeEditor"
+            id="HarmonizationTool.ResultsTreeEditorID"
+            name="Results Tree Editor"
             restorable="true">
       </view>
    </extension>
@@ -125,6 +125,16 @@
             <menu
                   label="Show View">
                <command
+                     commandId="HarmonizationTool.ShowDataFilesView"
+                     label="Show Data File(s) View"
+                     style="push">
+               </command>
+               <command
+                     commandId="HarmonizationTool.ShowQueryView"
+                     label="Show Query View"
+                     style="push">
+               </command>
+               <command
                      commandId="HarmonizationTool.ShowDataView"
                      label="Show Data View"
                      style="push">
@@ -135,13 +145,8 @@
                      style="push">
                </command>
                <command
-                     commandId="HarmonizationTool.ShowQueryView"
-                     label="Show Query View"
-                     style="push">
-               </command>
-               <command
-                     commandId="HarmonizationTool.ShowDataFilesView"
-                     label="Show Data File(s) View"
+                     commandId="HarmonizationTool.ResultsTreeEditorID"
+                     label="Show Results Tree Editor"
                      style="push">
                </command>
             </menu>
@@ -233,6 +238,16 @@
             name="Save Results">
       </command>
       <command
+            defaultHandler="harmonizationtool.handler.ShowDataFilesView"
+            id="HarmonizationTool.ShowDataFilesView"
+            name="Show Data File(s) View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowQueryViewHandler"
+            id="HarmonizationTool.ShowQueryView"
+            name="Show Query View">
+      </command>
+      <command
             defaultHandler="harmonizationtool.handler.ShowDataViewHandler"
             id="HarmonizationTool.ShowDataView"
             name="Show Data View">
@@ -243,14 +258,9 @@
             name="Show Results View">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.ShowQueryViewHandler"
-            id="HarmonizationTool.ShowQueryView"
-            name="Show Query View">
-      </command>
-      <command
-            defaultHandler="harmonizationtool.handler.ShowDataFilesView"
-            id="HarmonizationTool.ShowDataFilesView"
-            name="Show Data File(s) View">
+            defaultHandler="harmonizationtool.handler.ShowResultsTreeEditorHandler"
+            id="HarmonizationTool.ResultsTreeEditorID"
+            name="Show Results Tree Editor">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.CloseTDB"

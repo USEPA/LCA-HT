@@ -59,10 +59,11 @@ public class ResultsView extends ViewPart {
 	private QueryResults queryResults = null;
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the
+	 * view. It can wrap existing objects in adapters or simply return objects
+	 * as-is. These objects may be sensitive to the current input of the view,
+	 * or ignore it and always show the same content (like Task List, for
+	 * example).
 	 */
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -79,7 +80,8 @@ public class ResultsView extends ViewPart {
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -91,10 +93,12 @@ public class ResultsView extends ViewPart {
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		// viewer.addDoubleClickListener(new IDoubleClickListener(){
@@ -138,8 +142,10 @@ public class ResultsView extends ViewPart {
 		try {
 			this.queryResults = queryResults;
 			System.err.println("queryResults=" + queryResults);
-			System.err.println("queryResults.getColumnHeaders()=" + queryResults.getColumnHeaders());
-			System.out.println("queryResults.getColumnHeaders().toString()=" + queryResults.getColumnHeaders().toString());
+			System.err.println("queryResults.getColumnHeaders()="
+					+ queryResults.getColumnHeaders());
+			System.out.println("queryResults.getColumnHeaders().toString()="
+					+ queryResults.getColumnHeaders().toString());
 			viewer.setContentProvider(new ArrayContentProvider());
 			final Table table = viewer.getTable();
 			removeColumns(table);
@@ -148,8 +154,10 @@ public class ResultsView extends ViewPart {
 			table.setLinesVisible(true);
 			viewer.setContentProvider(new ArrayContentProvider());
 			TableProvider tableProvider = queryResults.getTableProvider();
-			System.out.println("tableProvider.getData().size()=" + tableProvider.getData().size());
-			System.out.println("tableProvider.getData().toString()=" + tableProvider.getData().toString());
+			System.out.println("tableProvider.getData().size()="
+					+ tableProvider.getData().size());
+			System.out.println("tableProvider.getData().toString()="
+					+ tableProvider.getData().toString());
 			viewer.setInput(tableProvider.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -174,7 +182,8 @@ public class ResultsView extends ViewPart {
 		}
 	}
 
-	private void createColumns(final TableViewer viewer, TableProvider tableProvider) {
+	private void createColumns(final TableViewer viewer,
+			TableProvider tableProvider) {
 
 		DataRow columnHeaders = new DataRow();
 		columnHeaders = tableProvider.getHeaderNames();
@@ -193,13 +202,15 @@ public class ResultsView extends ViewPart {
 			boundsArray[indx++] = integer;
 		}
 		for (int i = 0; i < titles.size(); i++) {
-			TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
+			TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+					boundsArray[i], i);
 			col.setLabelProvider(new MyColumnLabelProvider(i));
 			columns.add(col);
 		}
 	}
 
-	private void createColumns(final TableViewer viewer, QueryResults queryResults) {
+	private void createColumns(final TableViewer viewer,
+			QueryResults queryResults) {
 		DataRow columnHeaders = queryResults.getColumnHeaders();
 
 		ArrayList<String> titles = new ArrayList<String>();
@@ -216,7 +227,8 @@ public class ResultsView extends ViewPart {
 			boundsArray[indx++] = integer;
 		}
 		for (int i = 0; i < titles.size(); i++) {
-			TableViewerColumn col = createTableViewerColumn(titlesArray[i], boundsArray[i], i);
+			TableViewerColumn col = createTableViewerColumn(titlesArray[i],
+					boundsArray[i], i);
 			col.setLabelProvider(new MyColumnLabelProvider(i));
 			columns.add(col);
 		}
@@ -230,14 +242,17 @@ public class ResultsView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
+	private TableViewerColumn createTableViewerColumn(String title, int bound,
+			final int colNumber) {
+		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
+				SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
 		column.setText(title);
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-		viewerColumn.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
+		viewerColumn
+				.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
 		// column.addListener(eventType, new Listener(){});
 		column.addSelectionListener(new SelectionListener() {
 
@@ -264,7 +279,8 @@ public class ResultsView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -302,57 +318,62 @@ public class ResultsView extends ViewPart {
 		return queryResults;
 	}
 
-	public void formatForTransform(int formatNum) {
-		if (formatNum == 0) {
-			try {
-				viewer.setContentProvider(new ArrayContentProvider());
-				Table table = viewer.getTable();
-				TableColumn[] tableColumn = table.getColumns();
-				TableItem[] tableItems = table.getItems();
-				String keyDataSet = tableItems[0].getText(0);
-				int keyDataRow = 0;
-				for (int i = 0; i < tableItems.length; i++) {
-					TableItem tableItem = tableItems[i];
-					if (keyDataSet.equals(tableItem.getText(0))) {
-						keyDataRow = i;
-						tableItem.setBackground(0, SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-					} else {
-//						if (tableItem.getText(0).equals("")) {
-//							table.remove(i);
-////							i = i - 1;
-//							continue;
-//						}
-						for (int j = 1; j < table.getColumnCount(); j++) {
-							if (tableItem.getText(j).toUpperCase().equals(tableItems[keyDataRow].getText(j).toUpperCase())) {
-								tableItem.setBackground(j, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-								tableItems[keyDataRow].setBackground(j, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-							}
-							// tableItem.ad
-							// tableItem.addListener(SWT.MouseDown, new Listener() {
-							//
-							// @Override
-							// public void handleEvent(Event event) {
-							// System.out.println("event.item = " + event.item.toString());
-							// TableItem tableItem = (TableItem) event.item;
-							// // int j =
-							// tableItem.setBackground(0,
-							// SWTResourceManager.getColor(SWT.COLOR_BLUE));
-							// // tableItems[keyDataRow].setBackground(j,
-							// // SWTResourceManager.getColor(SWT.COLOR_GREEN));
-							// }
-							//
-							// });
-							// DO GREAT STUFF HERE!!!
-							// System.out.println("tableItem.getText(i) = " + tableItem.getText(i));
+	public void formatForTransform0() {
+		try {
+			viewer.setContentProvider(new ArrayContentProvider());
+			Table table = viewer.getTable();
+//			TableColumn[] tableColumn = table.getColumns();
+			TableItem[] tableItems = table.getItems();
+			String keyDataSet = tableItems[0].getText(0);
+			int keyDataRow = 0;
+			for (int i = 0; i < tableItems.length; i++) {
+				TableItem tableItem = tableItems[i];
+				if (keyDataSet.equals(tableItem.getText(0))) {
+					keyDataRow = i;
+					tableItem.setBackground(0, SWTResourceManager
+							.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+				} else {
+					// if (tableItem.getText(0).equals("")) {
+					// table.remove(i);
+					// // i = i - 1;
+					// continue;
+					// }
+					for (int j = 1; j < table.getColumnCount(); j++) {
+						if (tableItem
+								.getText(j)
+								.toUpperCase()
+								.equals(tableItems[keyDataRow].getText(j)
+										.toUpperCase())) {
+							tableItem.setBackground(j, SWTResourceManager
+									.getColor(SWT.COLOR_GREEN));
+							tableItems[keyDataRow].setBackground(j,
+									SWTResourceManager
+											.getColor(SWT.COLOR_GREEN));
 						}
+						// tableItem.ad
+						// tableItem.addListener(SWT.MouseDown, new Listener() {
+						//
+						// @Override
+						// public void handleEvent(Event event) {
+						// System.out.println("event.item = " +
+						// event.item.toString());
+						// TableItem tableItem = (TableItem) event.item;
+						// // int j =
+						// tableItem.setBackground(0,
+						// SWTResourceManager.getColor(SWT.COLOR_BLUE));
+						// // tableItems[keyDataRow].setBackground(j,
+						// // SWTResourceManager.getColor(SWT.COLOR_GREEN));
+						// }
+						//
+						// });
+						// DO GREAT STUFF HERE!!!
+						// System.out.println("tableItem.getText(i) = " +
+						// tableItem.getText(i));
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		} else {
-			throw new IllegalArgumentException("No transform for format: " + formatNum);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-
 }

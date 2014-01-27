@@ -22,6 +22,8 @@ public class Perspective implements IPerspectiveFactory {
 			IFolderLayout folderLayout = layout.createFolder("folder3", IPageLayout.LEFT, 0.8f, editorArea);
 			folderLayout.addView("HarmonizationTool.viewData");
 			folderLayout.addView("HarmonizationTool.ResultsViewID");
+			folderLayout.addView("HarmonizationTool.ResultsTreeEditorID");
+
 		}
 	}
 
