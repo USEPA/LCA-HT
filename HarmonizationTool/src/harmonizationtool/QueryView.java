@@ -162,11 +162,14 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			public void widgetSelected(SelectionEvent e) {
 				// txtTextArea.setText("new text");
 				String queryStr = windowQueryUpdate.getText();
-				GenericQuery iGenericQuery = new GenericQuery(queryStr, "Ext. File Query");
+				GenericQuery iGenericQuery = new GenericQuery(queryStr,
+						"Ext. File Query");
 
 				// addFilename(path);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -181,7 +184,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 		Button updateButton = new Button(parent, SWT.BORDER);
-		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+		updateButton.setForeground(SWTResourceManager
+				.getColor(SWT.COLOR_DARK_RED));
 		updateButton.setBounds(20, 190, 100, 30);
 		updateButton.setAlignment(SWT.LEFT);
 		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
@@ -193,11 +197,14 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			public void widgetSelected(SelectionEvent e) {
 				// txtTextArea.setText("new text");
 				String updateStr = windowQueryUpdate.getText();
-				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
+				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr,
+						"Update from window");
 
 				// addFilename(path);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -213,8 +220,10 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		windowQueryUpdate
+				.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 		// txtTextArea.setBounds(297, 0, 148, 469);
 		windowQueryUpdate.setBounds(150, 0, 600, 500);
 
@@ -222,7 +231,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
 		windowQueryUpdate.setText("(query / update editor)");
 		// parent.setLayout(null);
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		Table table = viewer.getTable();
 		// table.setBounds(445, 0, 149, 469);
 		table.setBounds(0, 0, 150, 500);
@@ -231,15 +241,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		// queryWindow.append("Query Window");
 		viewer.setLabelProvider(new QueryViewLabelProvider());
 		viewer.setInput(getViewSite());
-		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
-			@Override
-			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-			}
+		windowQueryUpdate
+				.addKeyListener(new org.eclipse.swt.events.KeyListener() {
+					@Override
+					public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+					}
 
-			@Override
-			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
-			}
-		});
+					@Override
+					public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+					}
+				});
 
 		// Cursor cursor = new Cursor(device, 19);
 		// Color red = new Color (device, 255, 0, 0);
@@ -262,10 +273,11 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the
+	 * view. It can wrap existing objects in adapters or simply return objects
+	 * as-is. These objects may be sensitive to the current input of the view,
+	 * or ignore it and always show the same content (like Task List, for
+	 * example).
 	 */
 	public class QueryViewContentProvider implements IStructuredContentProvider {
 		Viewer v;
@@ -288,7 +300,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		}
 	}
 
-	public class QueryViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	public class QueryViewLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -298,7 +311,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		}
 
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages()
+					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
@@ -328,7 +342,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	private static void printValues(int lineNumber, String[] as) {
-		System.out.println("Line " + lineNumber + " has " + as.length + " values:");
+		System.out.println("Line " + lineNumber + " has " + as.length
+				+ " values:");
 		for (String s : as) {
 			System.out.println("\t|" + s + "|");
 		}
@@ -348,30 +363,42 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) viewer
+						.getSelection();
 				if (selection.isEmpty()) {
 					return;
 				}
 
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page
+						.findView(ResultsView.ID);
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
 				LabeledQuery q = queryFromKey(key);
 				if (q != null) {
 					if (q instanceof HarmonyQuery2Impl) {
-						ResultSet resultSet = ((HarmonyQuery2Impl) q).getResultSet();
+						ResultSet resultSet = ((HarmonyQuery2Impl) q)
+								.getResultSet();
 						// ResultSet resultSet = q.getResultSet();
 						// TableProvider tableProvider = TableProvider
 						// .create((ResultSetRewindable) resultSet);
 						setTextAreaContent(((HarmonyQuery2Impl) q).getQuery());
-						if (key.startsWith("Harm")) {
-							TableProvider tableProvider = TableProvider.createTransform(0,(ResultSetRewindable) resultSet);
+						if (key.startsWith("Harm")) { // HACK!!
+							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
+							// WHICH createTransform
+							// AND WHICH formatForTransfor()
+							// SHOULD BE KNOWN BY THE LabledQuery
+							// BUT CHOSEN BY THE CALLER
+							TableProvider tableProvider = TableProvider
+									.createTransform(0,
+											(ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);
 							resultsView.formatForTransform(0);
 						} else {
-							TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+							TableProvider tableProvider = TableProvider
+									.create((ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);
 						}
 

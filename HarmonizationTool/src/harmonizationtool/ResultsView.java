@@ -7,7 +7,6 @@ import harmonizationtool.ViewData.MyColumnLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ITableProvider;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.query.QueryResults;
