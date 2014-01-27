@@ -22,7 +22,7 @@ import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.DataSetMap;
 import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
-import harmonizationtool.query.ZGetNextDSIndex;
+import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.ETHOLD;
 import harmonizationtool.vocabulary.SKOS;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QxDataSets;
-import harmonizationtool.query.ZGetNextDSIndex;
+import harmonizationtool.query.unused.QxDataSets;
+import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;

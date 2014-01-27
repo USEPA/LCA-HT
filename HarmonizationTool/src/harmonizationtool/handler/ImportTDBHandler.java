@@ -9,10 +9,10 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.ZGetNextDSIndex;
+import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
-import harmonizationtool.query.ZAssignDSIndex_with_param;
-import harmonizationtool.query.XNumberDataSets;
+import harmonizationtool.query.unused.ZAssignDSIndex_with_param;
+import harmonizationtool.query.unused.XNumberDataSets;
 import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;

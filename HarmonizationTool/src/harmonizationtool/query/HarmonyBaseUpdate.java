@@ -142,11 +142,11 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	public QueryResults getQueryResults() {
 		return queryResults;
 	}
-
-	@Override
-	public List<String> getDataXform() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//
+//	@Override
+//	public List<String> getDataXform() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

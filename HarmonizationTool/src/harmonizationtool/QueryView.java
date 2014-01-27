@@ -39,7 +39,7 @@ import harmonizationtool.query.UDelDataSet;
 
 import harmonizationtool.query.QCountMatches;
 import harmonizationtool.query.IParamQuery;
-import harmonizationtool.query.QxCasNotInDB;
+import harmonizationtool.query.unused.QxCasNotInDB;
 import harmonizationtool.query.QDataSources;
 
 import harmonizationtool.query.HarmonyQuery;
