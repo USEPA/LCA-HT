@@ -160,12 +160,6 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// txtTextArea.setText("new text");
-				String queryStr = windowQueryUpdate.getText();
-				GenericQuery iGenericQuery = new GenericQuery(queryStr,
-						"Ext. File Query");
-
-				// addFilename(path);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
 				ResultsView resultsView = (ResultsView) page
@@ -173,8 +167,14 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
-				resultsView.update(iGenericQuery.getData());
-				resultsView.update(iGenericQuery.getQueryResults());
+				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl)
+						.getResultSet();
+
+				TableProvider tableProvider = TableProvider
+						.create((ResultSetRewindable) resultSet);
+				resultsView.update(tableProvider);
 			}
 
 			@Override
@@ -376,15 +376,15 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
-				LabeledQuery q = queryFromKey(key);
-				if (q != null) {
-					if (q instanceof HarmonyQuery2Impl) {
-						ResultSet resultSet = ((HarmonyQuery2Impl) q)
+				LabeledQuery labeledQuery = queryFromKey(key);
+				if (labeledQuery != null) {
+					if (labeledQuery instanceof HarmonyQuery2Impl) {
+						ResultSet resultSet = ((HarmonyQuery2Impl) labeledQuery)
 								.getResultSet();
 						// ResultSet resultSet = q.getResultSet();
 						// TableProvider tableProvider = TableProvider
 						// .create((ResultSetRewindable) resultSet);
-						setTextAreaContent(((HarmonyQuery2Impl) q).getQuery());
+						setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
 						if (key.startsWith("Harm")) { // HACK!!
 							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
 							// WHICH createTransform

@@ -8,7 +8,9 @@ import java.io.IOException;
 import harmonizationtool.QueryView;
 import harmonizationtool.ResultsView;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;
+import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -20,6 +22,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 
 public class ExtQueryHandler implements IHandler {
 
@@ -83,21 +88,23 @@ public class ExtQueryHandler implements IHandler {
 			
 			//--------------------------- NOW RUN THE THING ------
 			
-            GenericQuery iGenericQuery = new GenericQuery(queryStr,"Ext. File Query");
+			
 
-//			addFilename(path);
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			
+            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 			String title = resultsView.getTitle();
 			System.out.println("title= " + title);
 
-			resultsView.update(iGenericQuery.getData());
-			resultsView.update(iGenericQuery.getQueryResults());
-			// ViewData.setKey(path);
-			// TableViewer tableViewer = viewData.getViewer();
-			// tableViewer.setInput(new Object[] {""});
-//			resultsView.update(path);
-		}
+			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(queryStr);
+			ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl)
+					.getResultSet();
+
+			TableProvider tableProvider = TableProvider
+					.create((ResultSetRewindable) resultSet);
+			resultsView.update(tableProvider);
+					}
 //		actionExtQuery.setText("Exec. Query...");
 //		actionExtQuery.setToolTipText("SPARQL Query in .ttl file");
 //		actionExtQuery.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
