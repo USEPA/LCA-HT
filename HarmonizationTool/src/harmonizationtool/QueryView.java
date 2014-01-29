@@ -373,6 +373,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 						.getActiveWorkbenchWindow().getActivePage();
 				ResultsView resultsView = (ResultsView) page
 						.findView(ResultsView.ID);
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page
+						.findView(ResultsTreeEditor.ID);
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
@@ -394,6 +396,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							TableProvider tableProvider = TableProvider
 									.createTransform0((ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);
+							resultsTreeEditor.update(tableProvider);
+							
 //							resultsView.formatForTransform0();
 						} else {
 							TableProvider tableProvider = TableProvider
