@@ -61,11 +61,10 @@ public class ResultsTreeEditor extends ViewPart {
 	// private QueryResults queryResults = null;
 
 	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
+	 * The content provider class is responsible for providing objects to the view. It can wrap
+	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
+	 * to the current input of the view, or ignore it and always show the same content (like Task
+	 * List, for example).
 	 */
 
 	class TreeContentProvider implements ITreeContentProvider {
@@ -86,21 +85,20 @@ public class ResultsTreeEditor extends ViewPart {
 			return getElements(parentElement);
 		}
 
-		public Object getParent(Object element) {
-			if (element == null) {
+		public Object getParent(Object treeNode) {
+			if (treeNode == null) {
 				return null;
 			}
-			return ((TreeNode) element).parent;
+			return ((TreeNode) treeNode).parent;
 		}
 
-		public boolean hasChildren(Object element) {
-			return ((TreeNode) element).child.size() > 0;
+		public boolean hasChildren(Object treeNode) {
+			return ((TreeNode) treeNode).child.size() > 0;
 		}
 
 	}
 
-	class TreeLabelProvider extends LabelProvider implements
-			ITreePathLabelProvider {
+	class TreeLabelProvider extends LabelProvider implements ITreePathLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -118,8 +116,7 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
@@ -142,15 +139,15 @@ public class ResultsTreeEditor extends ViewPart {
 	public void update(TableProvider tableProvider) {
 		try {
 			treeViewer.setContentProvider(new TreeContentProvider());
-			 final Tree tree = treeViewer.getTree();
-			 tree.removeAll();
+			final Tree tree = treeViewer.getTree();
+			tree.removeAll();
 			createColumns(tableProvider);
 			TreeNode trunk = createTrunk(tableProvider); // TODO: WORK HERE
-			 tree.setHeaderVisible(true);
-			 tree.setLinesVisible(true);
-			System.out.println("trunk.child.size() = " +trunk.child.size());
+			tree.setHeaderVisible(true);
+			tree.setLinesVisible(true);
+			System.out.println("trunk.child.size() = " + trunk.child.size());
 			treeViewer.setInput(trunk); // THIS DOES NOTHING
-															// !!
+										// !!
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -183,23 +180,24 @@ public class ResultsTreeEditor extends ViewPart {
 			this.parent = parent;
 		}
 	}
-	public class TreeRowNode extends TreeNode{
-//		public RDFNode rdfNode;
+
+	public class TreeRowNode extends TreeNode {
+		// public RDFNode rdfNode;
 		public List<String> columnValues = null; // SHORTCUT FOR NOW
 
 		public TreeRowNode(TreeNode parent, List<String> columnValues) {
 			super(parent);
-//			this.rdfNode = rdfNode;
+			// this.rdfNode = rdfNode;
 			this.columnValues = columnValues;
 		}
-//		public String getLabel(){
-//			Model tdbModel = rdfNode.getModel();
-//			Iterator<RDFNode> iter = tdbModel.listObjectsOfProperty((Resource) rdfNode,
-//                    RDFS.label);
-//			RDFNode labelNode = iter.next();
-//			String label = labelNode.toString();
-//			return label;
-//		}
+		// public String getLabel(){
+		// Model tdbModel = rdfNode.getModel();
+		// Iterator<RDFNode> iter = tdbModel.listObjectsOfProperty((Resource) rdfNode,
+		// RDFS.label);
+		// RDFNode labelNode = iter.next();
+		// String label = labelNode.toString();
+		// return label;
+		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -212,11 +210,11 @@ public class ResultsTreeEditor extends ViewPart {
 		List<DataRow> data = tableProvider.getData();
 		DataRow firstRow = data.get(0);
 		String keyDataSet = firstRow.get(0);
-		TreeRowNode trunk = new TreeRowNode(null,null);
+		TreeRowNode trunk = new TreeRowNode(null, null);
 		TreeRowNode treeRow = new TreeRowNode(trunk, firstRow.getColumnValues());
 		trunk.child.add(treeRow);
 		TreeRowNode treeSubRow;
-		
+
 		for (int i = 1; i < data.size(); i++) {
 			DataRow dataRow = data.get(i);
 			if (keyDataSet.equals(dataRow.get(0))) {
@@ -238,13 +236,13 @@ public class ResultsTreeEditor extends ViewPart {
 		}
 
 		@Override
-		public String getText(Object element) {
+		public String getText(Object treeNode) {
 			DataRow dataRow = null;
 			try {
-				dataRow = (DataRow) element;
+				dataRow = (DataRow) treeNode;
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("element= " + element);
+				System.out.println("treeNode= " + treeNode);
 			}
 			String s = "";
 			try {
@@ -256,10 +254,11 @@ public class ResultsTreeEditor extends ViewPart {
 				System.out.println("dataRow=" + dataRow);
 				e.printStackTrace();
 			}
-			System.out.println("calling MyColumnLabelProvider.getText(Object element)");
+			System.out.println("calling MyColumnLabelProvider.getText(Object treeNode)");
 			return "Test";
 		}
 	}
+
 	//
 
 	// ==========================================
@@ -301,27 +300,27 @@ public class ResultsTreeEditor extends ViewPart {
 	// // column.getColumn().setMoveable(true);
 	// // column.getColumn().setText("Column 1");
 	// // column.setLabelProvider(new ColumnLabelProvider() {
-	// // public String getText(Object element) {
-	// // return "Column 1 => " + element.toString();
+	// // public String getText(Object treeNode) {
+	// // return "Column 1 => " + treeNode.toString();
 	// // }
 	// // });
 	// // column.setEditingSupport(new EditingSupport(treeViewer) {
-	// // protected boolean canEdit(Object element) {
+	// // protected boolean canEdit(Object treeNode) {
 	// // return false;
 	// // }
 	//
-	// protected CellEditor getCellEditor(Object element) {
+	// protected CellEditor getCellEditor(Object treeNode) {
 	// return textCellEditor;
 	// }
 	//
-	// // protected Object getValue(Object element) {
-	// // return ((TreeNode) element).counter + "";
+	// // protected Object getValue(Object treeNode) {
+	// // return ((TreeNode) treeNode).counter + "";
 	// // }
 	//
-	// protected void setValue(Object element, Object value) {
-	// ((TreeNode) element).counter = Integer
+	// protected void setValue(Object treeNode, Object value) {
+	// ((TreeNode) treeNode).counter = Integer
 	// .parseInt(value.toString());
-	// treeViewer.update(element, null);
+	// treeViewer.update(treeNode, null);
 	// }
 	// // });
 	// ==========================================
@@ -330,42 +329,42 @@ public class ResultsTreeEditor extends ViewPart {
 	// {
 	//
 	// @Override
-	// protected void setValue(Object element, Object value) {
+	// protected void setValue(Object treeNode, Object value) {
 	// // TODO Auto-generated method stub
 	//
 	// }
 	//
 	// @Override
-	// protected Object getValue(Object element) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
-	// @Override
-	// protected CellEditor getCellEditor(Object element) {
+	// protected Object getValue(Object treeNode) {
 	// // TODO Auto-generated method stub
 	// return null;
 	// }
 	//
 	// @Override
-	// protected boolean canEdit(Object element) {
+	// protected CellEditor getCellEditor(Object treeNode) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	//
+	// @Override
+	// protected boolean canEdit(Object treeNode) {
 	// // TODO Auto-generated method stub
 	// return false;
 	// }
 	// };
 	// column.setEditingSupport(editingSupport);
 	// column.setEditingSupport(new EditingSupport(viewer) {
-	protected boolean canEdit(Object element) {
+	protected boolean canEdit(Object treeNode) {
 		return true;
 	}
 
-	// protected CellEditor getCellEditor(Object element) {
+	// protected CellEditor getCellEditor(Object treeNode) {
 	// return textCellEditor;
 	// }
 
-	protected Object getValue(Object element) {
-		return ((TreeNode) element) + "";
-//		return ((TreeNode) element).counter + "";
+	protected Object getValue(Object treeNode) {
+		return ((TreeNode) treeNode) + "";
+		// return ((TreeNode) treeNode).counter + "";
 
 	}
 
