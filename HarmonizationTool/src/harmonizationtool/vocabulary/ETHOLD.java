@@ -24,9 +24,15 @@ public class ETHOLD {
 
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
+    
+    /** <p>A class for CAS Numbers</p> */
+    public static final Resource CASRN = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ethold#CASRN" );
 
     /** <p>'has compartment' is a static concept as opposed to either 'to' or 'from' which represent transfer in an elementary flow</p> */
     public static final Property hasCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasCompartment" );
+        
+    /** <p>Predicate pointing to CAS Class</p> */
+    public static final Property hasCAS = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasCAS" );
 
     /** <p>This is being used to associate a "EcosphereExhange" with an "ElementaryFlow"</p> */
     public static final Property hasElementaryFlow = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasElementaryFlow" );

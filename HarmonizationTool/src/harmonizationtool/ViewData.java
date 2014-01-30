@@ -9,6 +9,7 @@ import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -37,6 +38,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * @author tec
  * 
@@ -56,17 +59,22 @@ public class ViewData extends ViewPart {
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
 	public static final String CAT3_HDR = "Sub-subcategory"; 
-															
+										
+//	public static final Resource ImpactCategory = ECO.ImpactCategory;
 	public static final String IMPACT_CAT_HDR = "Impact_Category"; // e.g.
 																	// global
 																	// warming
+
 	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit"; // e.g.
 																				// kg
 																				// CO2
 																				// eq
+
+//	public static final Resource ImpactCharacterizationFactor = ECO.ImpactCharacterizationFactor;
 	public static final String CHAR_FACTOR_HDR = "Characterization_factor"; // THIS
 																			// THE
 																			// NUMBER
+
 	public static final String FLOW_UNIT_HDR = "Flow_Unit"; // e.g. kg (assumed
 															// to be one of
 															// these)
@@ -192,6 +200,7 @@ public class ViewData extends ViewPart {
 			List<DataRow> dataRowList = tableProvider.getData();
 			DataRow dataRow = dataRowList.get(0);
 			int numCol = dataRow.getColumnValues().size();
+			System.out.println("numCol = "+numCol);
 			ArrayList<String> titles = new ArrayList<String>();
 			ArrayList<Integer> bounds = new ArrayList<Integer>();
 			List<String> headerNames = tableProvider.getHeaderNamesAsStrings();

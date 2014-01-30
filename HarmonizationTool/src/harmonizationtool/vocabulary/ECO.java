@@ -40,7 +40,14 @@ public class ECO {
      * No identity criteria are defined for effect aggregation categories.
      */
     public static final Resource EffectAggregationCategory = m_model.createResource("http://ontology.earthster.org/eco/core#EffectAggregationCategory");
+    
+    public static final Resource ImpactCharacterizationFactor = m_model.createResource("http://ontology.earthster.org/eco/core#ImpactCharacterizationFactor");
+    /** <p>An impact characterization factor is a measurable quantity that is used to represent an impact category indicator.  Examples of impact characterization factors include the amount of emission of CO2 to air which is a characterization factor for infrared radiative forcing, an impact category indicator for global warming / climate change.  No identity criteria are defined for impact characterization factors.</p> */
    
+    public static final Resource ImpactCategory = m_model.createResource("http://ontology.earthster.org/eco/core#ImpactCategory");
+    /** <p>An impact category is an environmental issue of concern to which a score can be given for a product or process.  Examples of impact categories include climate change and human health.</p> */   
+    
+    // PROPERTIES
     public static final Property allocatedBy = m_model.createProperty( "http://ontology.earthster.org/eco/core#allocatedBy" );
 
     /** <p>allocatedFrom relates an effect allocation to a quantified effect which is allocated.</p> */
