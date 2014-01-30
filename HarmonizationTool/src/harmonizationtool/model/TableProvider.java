@@ -37,14 +37,18 @@ public class TableProvider {
 
 	public List<String> getHeaderNamesAsStrings() {
 		List<String> headerNamesAsStrings = new ArrayList<String>();
+		System.out.println("headerNames.getSize()="+headerNames.getSize());
 		Iterator<String> iter = headerNames.getIterator();
 		while (iter.hasNext()) {
 			headerNamesAsStrings.add(iter.next());
 		}
+		System.out.println("returning headerNames.getSize()="+headerNames.getSize());
 		return headerNamesAsStrings;
 	}
 
 	public void setHeaderNames(List<String> columnNames) {
+		assert columnNames != null : "columnNames cannot be null";
+		assert columnNames.size() != 0 : "columnNames cannot be empty";
 		if (headerNames == null) {
 			headerNames = new DataRow();
 		} else {

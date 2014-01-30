@@ -179,7 +179,7 @@ public class ImportTDBHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
-			xNumberDataSets.execute();
+//			xNumberDataSets.execute();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 

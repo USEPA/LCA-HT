@@ -204,12 +204,13 @@ public class ViewData extends ViewPart {
 			ArrayList<String> titles = new ArrayList<String>();
 			ArrayList<Integer> bounds = new ArrayList<Integer>();
 			List<String> headerNames = tableProvider.getHeaderNamesAsStrings();
-			if (headerNames == null) {
+			if (headerNames == null || headerNames.isEmpty()) {
 				for (int i = 1; i <= numCol; i++) {
 					titles.add("Ignore");
 					bounds.add(100);
 				}
 			} else {
+				System.out.println("headerNames.size() = "+headerNames.size());
 				for (int i = 1; i <= numCol; i++) {
 					titles.add(headerNames.get(i - 1));
 					bounds.add(100);
