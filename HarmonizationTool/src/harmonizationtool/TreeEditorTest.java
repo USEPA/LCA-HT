@@ -17,6 +17,7 @@ import harmonizationtool.vocabulary.ECO;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CellEditor;
@@ -37,6 +38,7 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -47,6 +49,7 @@ import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -65,6 +68,33 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * 
  */
 public class TreeEditorTest {
+	public static enum MatchStatus {
+		EQUIVALENT(1, 0, 255, 0), NONEQUIVALENT(2, 255, 0, 0), UNKNOWN(0, 0, 0,
+				255);
+		private int value;
+		private int r;
+		private int g;
+		private int b;
+
+		private MatchStatus(int value, int r, int g, int b) {
+			this.value = value;
+			this.r = r;
+			this.g = g;
+			this.b = b;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public Color getColor() {
+			Device device = Display.getCurrent();
+			return new Color(device, r, g, b);
+		}
+	};
+
+	TreeViewerColumn column2 = null;
+
 	public TreeEditorTest(final Shell shell) {
 		final TreeViewer treeViewer = new TreeViewer(shell, SWT.BORDER
 				| SWT.FULL_SELECTION);
@@ -95,54 +125,44 @@ public class TreeEditorTest {
 		final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(
 				treeViewer.getTree());
 
-		TreeViewerColumn column = new TreeViewerColumn(treeViewer, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("DataSet");
-		column.setLabelProvider(new ColumnLabelProvider() {
-
-			// public String getText(Object treeNode) {
-			// return "Col 1: " + treeNode.toString();
-			// }
+		TreeViewerColumn column1 = new TreeViewerColumn(treeViewer, SWT.NONE);
+		column1.getColumn().setWidth(200);
+		column1.getColumn().setMoveable(true);
+		column1.getColumn().setText("DataSet");
+		column1.setLabelProvider(new ColumnLabelProvider() {
 
 			public String getText(Object treeNode) {
 				return ((TreeNode) treeNode).colLabels.get(0);
 			}
 
-		});
-
-		column.setEditingSupport(new EditingSupport(treeViewer) {
-			protected boolean canEdit(Object treeNode) {
-				return false;
-			}
-
-			protected CellEditor getCellEditor(Object treeNode) {
-				return textCellEditor;
-			}
-
-			protected Object getValue(Object treeNode) {
-				return ((TreeNode) treeNode).sourceRowNum + "";
-			}
-
-			protected void setValue(Object treeNode, Object value) {
-				((TreeNode) treeNode).sourceRowNum = Integer.parseInt(value
-						.toString());
-				treeViewer.update(treeNode, null);
-			}
-		});
-
-		column = new TreeViewerColumn(treeViewer, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("Substance Name");
-		column.setLabelProvider(new ColumnLabelProvider() {
-
-			public String getText(Object treeNode) {
-				return ((TreeNode) treeNode).colLabels.get(1);
+			@Override
+			public void update(ViewerCell cell) {
+				super.update(cell);
+				System.out
+						.println("update -------------------------------------------1");
+				ViewerRow viewerRow = cell.getViewerRow();
+				if (viewerRow.getElement() instanceof TreeNode) {
+					TreeNode treeNode = (TreeNode) viewerRow.getElement();
+					System.out
+							.println("treeNode.treeRow = " + treeNode.treeRow);
+					System.out.println("treeNode.treeSubRow = "
+							+ treeNode.treeSubRow);
+					System.out.println("viewerRow.toString()="
+							+ viewerRow.toString());
+					System.out.println("cell.getVisualIndex()="
+							+ cell.getVisualIndex());
+					System.out.println("cell.getBounds()="
+							+ cell.getBounds().toString());
+					System.out.println("viewerRow.getBounds()="
+							+ viewerRow.getBounds().toString());
+					System.out.println("viewerRow.getItem()="
+							+ viewerRow.getItem());
+				}
 			}
 
 		});
-		column.setEditingSupport(new EditingSupport(treeViewer) {
+
+		column1.setEditingSupport(new EditingSupport(treeViewer) {
 			protected boolean canEdit(Object treeNode) {
 				return true;
 			}
@@ -162,11 +182,64 @@ public class TreeEditorTest {
 			}
 		});
 
-		column = new TreeViewerColumn(treeViewer, SWT.NONE);
-		column.getColumn().setWidth(200);
-		column.getColumn().setMoveable(true);
-		column.getColumn().setText("CAS");
-		column.setLabelProvider(new ColumnLabelProvider() {
+		column2 = new TreeViewerColumn(treeViewer, SWT.NONE);
+		column2.getColumn().setWidth(200);
+		column2.getColumn().setMoveable(true);
+		column2.getColumn().setText("Substance Name");
+		column2.setLabelProvider(new ColumnLabelProvider() {
+
+			public String getText(Object treeNode) {
+				return ((TreeNode) treeNode).colLabels.get(1);
+			}
+
+			@Override
+			public void update(ViewerCell viewerCell) {
+				System.out
+						.println("update -------------------------------------------2");
+				super.update(viewerCell);
+				int index = viewerCell.getVisualIndex();
+				MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
+						.get(index);
+				System.out.println("status= " + status);
+				if (status == MatchStatus.EQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
+				}
+				if (status == MatchStatus.NONEQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.NONEQUIVALENT
+							.getColor());
+				}
+				if (status == MatchStatus.UNKNOWN) {
+					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+				}
+			}
+
+		});
+		column2.setEditingSupport(new EditingSupport(treeViewer) {
+
+			protected boolean canEdit(Object treeNode) {
+				return true;
+			}
+
+			protected CellEditor getCellEditor(Object treeNode) {
+				return checkboxCellEditor;
+			}
+
+			protected Object getValue(Object treeNode) {
+				return new Boolean(((TreeNode) treeNode).bool);
+			}
+
+			protected void setValue(Object treeNode, Object value) {
+				((TreeNode) treeNode).bool = ((Boolean) value).booleanValue();
+				treeViewer.update(treeNode, null);
+			}
+		});
+
+		TreeViewerColumn column3 = new TreeViewerColumn(treeViewer, SWT.NONE);
+		column3.getColumn().setWidth(200);
+		column3.getColumn().setMoveable(true);
+		column3.getColumn().setText("CAS");
+
+		column3.setLabelProvider(new ColumnLabelProvider() {
 			private Color currentColor = null;
 
 			@Override
@@ -174,76 +247,36 @@ public class TreeEditorTest {
 				return ((TreeNode) treeNode).colLabels.get(2);
 			}
 
-			@Override
-			public void update(ViewerCell cell) {
-				super.update(cell);
-				
-				System.out.println("cell update --------------------");
-				ViewerRow viewerRow= cell.getViewerRow();
-				;
-				System.out.println("((TreeNode)viewerRow.getElement()).treeRow = "+((TreeNode)viewerRow.getElement()).treeRow);
-				System.out.println("((TreeNode)viewerRow.getElement()).treeSubRow = "+((TreeNode)viewerRow.getElement()).treeSubRow);
-				System.out.println("viewerRow.toString()="+viewerRow.toString());
-				System.out.println("cell.getVisualIndex()="+cell.getVisualIndex());
-				System.out.println("cell.getBounds()="+cell.getBounds().toString());
-				System.out.println("viewerRow.getBounds()="+viewerRow.getBounds().toString());
-				System.out.println("viewerRow.getItem()="+viewerRow.getItem());
 
-				Device device = Display.getCurrent();
-				Color red = new Color(device, 255, 0, 0);
-				Color green = new Color(device, 0, 255, 0);
-				Color blue = new Color(device, 0, 0, 255);
-				if(currentColor == null){
-					currentColor = blue;
+			@Override
+			protected void initialize(ColumnViewer viewer, ViewerColumn column) {
+
+				super.initialize(viewer, column);
+			}
+
+			@Override
+			public void update(ViewerCell viewerCell) {
+				System.out
+						.println("update -------------------------------------------3");
+				super.update(viewerCell);
+				int index = viewerCell.getVisualIndex();
+				MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
+						.get(index);
+				System.out.println("status= " + status);
+				if (status == MatchStatus.EQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
 				}
-				System.out.println("currentColor="+currentColor);
-				
-				if (currentColor.equals(red)) {
-					System.out.println("setting color to green");
-					cell.setBackground(green);
-					currentColor = green;
-				} else if (currentColor.equals(green)) {
-					System.out.println("setting color to blue");
-					cell.setBackground(blue);
-					currentColor = blue;
-
-				} else if (currentColor.equals(blue)) {
-					System.out.println("setting color to red");
-					cell.setBackground(red);
-					currentColor = red;
-				} else{
-					System.out.println("setting color to blue");
-					cell.setBackground(blue);
-					currentColor = blue;
+				if (status == MatchStatus.NONEQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.NONEQUIVALENT
+							.getColor());
 				}
-				treeViewer.getTree().deselectAll();
+				if (status == MatchStatus.UNKNOWN) {
+					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+				}
 			}
-
 
 		});
-		column.getColumn().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("COLUMN widgetSelected e.toString()="
-						+ e.toString());
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out.println("COLUMN widgetDefaultSelected e.toString()="
-						+ e.toString());
-			}
-		});
-		column.getColumn().addListener(SWT.MouseDown, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("event=" + event);
-
-			}
-		});
-		column.setEditingSupport(new EditingSupport(treeViewer) {
+		column3.setEditingSupport(new EditingSupport(treeViewer) {
 
 			protected boolean canEdit(Object treeNode) {
 				return true;
@@ -271,7 +304,7 @@ public class TreeEditorTest {
 						+ e.getSource().toString());
 				System.out.println("widgetSelected e.item=" + e.item);
 				System.out.println("widgetSelected e.toString=" + e.toString());
-				
+
 			}
 
 			@Override
@@ -287,11 +320,29 @@ public class TreeEditorTest {
 
 			@Override
 			public void mouseUp(MouseEvent e) {
-				System.out.println("mouse up");
-				System.out.println("e.getSource().toString()="
-						+ e.getSource().toString());
-				System.out.println("e.data=" + e.data);
+				Point point = new Point(e.x, e.y);
+				ViewerCell viewerCell = column2.getViewer().getCell(point);
+				try {
+					int index = viewerCell.getVisualIndex();
+					MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
+							.get(index);
 
+					if (status == MatchStatus.EQUIVALENT) {
+						((TreeNode) viewerCell.getElement()).matchStatus.set(
+								index, MatchStatus.NONEQUIVALENT);
+					}
+					if (status == MatchStatus.NONEQUIVALENT) {
+						((TreeNode) viewerCell.getElement()).matchStatus.set(
+								index, MatchStatus.UNKNOWN);
+					}
+					if (status == MatchStatus.UNKNOWN) {
+						((TreeNode) viewerCell.getElement()).matchStatus.set(
+								index, MatchStatus.EQUIVALENT);
+					}
+					treeViewer.refresh();
+				} catch (Exception e1) {
+				}
+				treeViewer.getTree().deselectAll();
 			}
 
 			@Override
@@ -308,6 +359,7 @@ public class TreeEditorTest {
 		});
 		treeViewer.setContentProvider(new MyContentProvider());
 		treeViewer.setInput(createModel());
+
 		treeViewer.getControl().addTraverseListener(new TraverseListener() {
 
 			public void keyTraversed(TraverseEvent e) {
@@ -374,17 +426,20 @@ public class TreeEditorTest {
 			rowNames.add("Benzene " + i);
 			rowNames.add("102-32-" + i);
 			row = new TreeNode(root, rowNames);
-			row.treeRow=i;
-			row.treeSubRow=0;
+			row.treeRow = i;
+			row.treeSubRow = 0;
 			row.sourceRowNum = i;
 			root.child.add(row);
+			row.matchStatus.add(MatchStatus.UNKNOWN);
+			row.matchStatus.add(MatchStatus.UNKNOWN);
+			row.matchStatus.add(MatchStatus.UNKNOWN);
 
 			subRow = new TreeNode(row);
 			subRow.colLabels.add("TRACI");
 			subRow.colLabels.add("Benzene x" + i);
 			subRow.colLabels.add("102-32-" + i);
-			subRow.treeRow=i;
-			subRow.treeSubRow=1;
+			subRow.treeRow = i;
+			subRow.treeSubRow = 1;
 
 			subRow.sourceRowNum = i * 10 + 1;
 			row.child.add(subRow);
@@ -393,10 +448,20 @@ public class TreeEditorTest {
 			subRow.colLabels.add("ReCiPe");
 			subRow.colLabels.add("Benzene " + i);
 			subRow.colLabels.add("102-32-" + i);
-			subRow.treeRow=i;
-			subRow.treeSubRow=2;
+			subRow.treeRow = i;
+			subRow.treeSubRow = 2;
 			subRow.sourceRowNum = i * 10 + 2;
 			row.child.add(subRow);
+
+			for (TreeNode child : row.child) {
+				for (int j = 0; j < row.colLabels.size(); j++) {
+					if (row.colLabels.get(j).equals(child.colLabels.get(j))) {
+						child.matchStatus.add(MatchStatus.EQUIVALENT);
+					} else {
+						child.matchStatus.add(MatchStatus.NONEQUIVALENT);
+					}
+				}
+			}
 		}
 		return root;
 	}
@@ -444,6 +509,30 @@ public class TreeEditorTest {
 		}
 
 	}
+	
+	/**
+	 * @author tsb
+	 * 
+	 * new TreeNode being developed to replace current TreeNode which is poorly designed
+	 *
+	 */
+	public class TreeNode2{
+		private TreeNode2 parent;
+		private ArrayList<TreeNode2> children = new ArrayList<TreeNode2>();
+		private  List<String> colLabels = new ArrayList<String>();
+		private  List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
+		
+		public TreeNode2 getParent(){
+			return parent;
+		}
+		public Iterator<TreeNode2> getChildrenIterator(){
+			return children.iterator();
+		}
+	}
+	public class TreeNodeRow extends TreeNode2 {
+	}
+	public class TreeNodeSubRow extends TreeNode2 {		
+	}
 
 	public class TreeNode {
 		public TreeNode parent;
@@ -455,9 +544,9 @@ public class TreeEditorTest {
 		// ArrayList<Property>();
 		// public ArrayList<Object> colContent = new ArrayList<Object>();
 		public List<String> colLabels = new ArrayList<String>();
+		public List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
 		public int treeRow;
 		public int treeSubRow;
-
 
 		public int sourceRowNum;
 
