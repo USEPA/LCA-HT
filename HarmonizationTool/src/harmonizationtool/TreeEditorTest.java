@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -138,49 +139,14 @@ public class TreeEditorTest {
 			@Override
 			public void update(ViewerCell cell) {
 				super.update(cell);
-				System.out
-						.println("update -------------------------------------------1");
 				ViewerRow viewerRow = cell.getViewerRow();
 				if (viewerRow.getElement() instanceof TreeNode) {
 					TreeNode treeNode = (TreeNode) viewerRow.getElement();
-					System.out
-							.println("treeNode.treeRow = " + treeNode.treeRow);
-					System.out.println("treeNode.treeSubRow = "
-							+ treeNode.treeSubRow);
-					System.out.println("viewerRow.toString()="
-							+ viewerRow.toString());
-					System.out.println("cell.getVisualIndex()="
-							+ cell.getVisualIndex());
-					System.out.println("cell.getBounds()="
-							+ cell.getBounds().toString());
-					System.out.println("viewerRow.getBounds()="
-							+ viewerRow.getBounds().toString());
-					System.out.println("viewerRow.getItem()="
-							+ viewerRow.getItem());
 				}
 			}
 
 		});
 
-		column1.setEditingSupport(new EditingSupport(treeViewer) {
-			protected boolean canEdit(Object treeNode) {
-				return true;
-			}
-
-			protected CellEditor getCellEditor(Object treeNode) {
-				return textCellEditor;
-			}
-
-			protected Object getValue(Object treeNode) {
-				return ((TreeNode) treeNode).sourceRowNum + "";
-			}
-
-			protected void setValue(Object treeNode, Object value) {
-				((TreeNode) treeNode).sourceRowNum = Integer.parseInt(value
-						.toString());
-				treeViewer.update(treeNode, null);
-			}
-		});
 
 		column2 = new TreeViewerColumn(treeViewer, SWT.NONE);
 		column2.getColumn().setWidth(200);
@@ -194,13 +160,10 @@ public class TreeEditorTest {
 
 			@Override
 			public void update(ViewerCell viewerCell) {
-				System.out
-						.println("update -------------------------------------------2");
 				super.update(viewerCell);
 				int index = viewerCell.getVisualIndex();
-				MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
-						.get(index);
-				System.out.println("status= " + status);
+				((TreeNode) viewerCell.getElement()).checkStatusOfChildren();
+				MatchStatus status = ((TreeNode) viewerCell.getElement()).getMatchStatus(index);
 				if (status == MatchStatus.EQUIVALENT) {
 					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
 				}
@@ -213,25 +176,6 @@ public class TreeEditorTest {
 				}
 			}
 
-		});
-		column2.setEditingSupport(new EditingSupport(treeViewer) {
-
-			protected boolean canEdit(Object treeNode) {
-				return true;
-			}
-
-			protected CellEditor getCellEditor(Object treeNode) {
-				return checkboxCellEditor;
-			}
-
-			protected Object getValue(Object treeNode) {
-				return new Boolean(((TreeNode) treeNode).bool);
-			}
-
-			protected void setValue(Object treeNode, Object value) {
-				((TreeNode) treeNode).bool = ((Boolean) value).booleanValue();
-				treeViewer.update(treeNode, null);
-			}
 		});
 
 		TreeViewerColumn column3 = new TreeViewerColumn(treeViewer, SWT.NONE);
@@ -247,7 +191,6 @@ public class TreeEditorTest {
 				return ((TreeNode) treeNode).colLabels.get(2);
 			}
 
-
 			@Override
 			protected void initialize(ColumnViewer viewer, ViewerColumn column) {
 
@@ -256,13 +199,10 @@ public class TreeEditorTest {
 
 			@Override
 			public void update(ViewerCell viewerCell) {
-				System.out
-						.println("update -------------------------------------------3");
 				super.update(viewerCell);
 				int index = viewerCell.getVisualIndex();
-				MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
-						.get(index);
-				System.out.println("status= " + status);
+				((TreeNode) viewerCell.getElement()).checkStatusOfChildren();
+				MatchStatus status = ((TreeNode) viewerCell.getElement()).getMatchStatus(index);
 				if (status == MatchStatus.EQUIVALENT) {
 					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
 				}
@@ -276,35 +216,11 @@ public class TreeEditorTest {
 			}
 
 		});
-		column3.setEditingSupport(new EditingSupport(treeViewer) {
-
-			protected boolean canEdit(Object treeNode) {
-				return true;
-			}
-
-			protected CellEditor getCellEditor(Object treeNode) {
-				return checkboxCellEditor;
-			}
-
-			protected Object getValue(Object treeNode) {
-				return new Boolean(((TreeNode) treeNode).bool);
-			}
-
-			protected void setValue(Object treeNode, Object value) {
-				((TreeNode) treeNode).bool = ((Boolean) value).booleanValue();
-				treeViewer.update(treeNode, null);
-			}
-		});
 
 		treeViewer.getTree().addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("widgetSelected e.getSource().toString()="
-						+ e.getSource().toString());
-				System.out.println("widgetSelected e.item=" + e.item);
-				System.out.println("widgetSelected e.toString=" + e.toString());
-
 			}
 
 			@Override
@@ -324,22 +240,24 @@ public class TreeEditorTest {
 				ViewerCell viewerCell = column2.getViewer().getCell(point);
 				try {
 					int index = viewerCell.getVisualIndex();
-					MatchStatus status = ((TreeNode) viewerCell.getElement()).matchStatus
-							.get(index);
+					Object treeNode = viewerCell.getElement();
+					if (treeNode instanceof TreeNodeSubRow) {
+						TreeNodeSubRow subRow = (TreeNodeSubRow) treeNode;
+						MatchStatus status = subRow.matchStatus.get(index);
 
-					if (status == MatchStatus.EQUIVALENT) {
-						((TreeNode) viewerCell.getElement()).matchStatus.set(
-								index, MatchStatus.NONEQUIVALENT);
+						if (status == MatchStatus.EQUIVALENT) {
+							subRow.matchStatus.set(index,
+									MatchStatus.NONEQUIVALENT);
+						}
+						if (status == MatchStatus.NONEQUIVALENT) {
+							subRow.matchStatus.set(index, MatchStatus.UNKNOWN);
+						}
+						if (status == MatchStatus.UNKNOWN) {
+							subRow.matchStatus.set(index,
+									MatchStatus.EQUIVALENT);
+						}
+						treeViewer.refresh();
 					}
-					if (status == MatchStatus.NONEQUIVALENT) {
-						((TreeNode) viewerCell.getElement()).matchStatus.set(
-								index, MatchStatus.UNKNOWN);
-					}
-					if (status == MatchStatus.UNKNOWN) {
-						((TreeNode) viewerCell.getElement()).matchStatus.set(
-								index, MatchStatus.EQUIVALENT);
-					}
-					treeViewer.refresh();
 				} catch (Exception e1) {
 				}
 				treeViewer.getTree().deselectAll();
@@ -358,7 +276,8 @@ public class TreeEditorTest {
 			}
 		});
 		treeViewer.setContentProvider(new MyContentProvider());
-		treeViewer.setInput(createModel());
+		// treeViewer.setInput(createModel());
+		treeViewer.setInput(createModel2());
 
 		treeViewer.getControl().addTraverseListener(new TraverseListener() {
 
@@ -402,69 +321,54 @@ public class TreeEditorTest {
 		});
 	}
 
-	private TreeNode createModel() {
-		// List<String> rootRowNames = new ArrayList();
-		// rootRowNames.add("Data Set");
-		// rootRowNames.add("Substance Name");
-		// rootRowNames.add("CAS");
-
-		TreeNode root = new TreeNode(null);
-		// root.colAssocResource.add((Resource) ECO.DataSource);
-		// root.colAssocProperty.add((Resource) ECO.hasDataSource);
-		// root.colAssocResource.add((Resource) ECO.Substance);
-		// root.colAssocProperty.add((Resource) ECO.hasSubstance);
-		// root.colAssocResource.add((Resource) ECO.);
-		// root.colAssocProperty.add((Resource) ECO.casNumber);
-
-		root.sourceRowNum = 0;
-
-		TreeNode row;
-		TreeNode subRow;
+	/**
+	 * DUMMY DATA
+	 * @return
+	 */
+	private TreeNode createModel2() {
+		TreeNodeRoot root = new TreeNodeRoot();
 		for (int i = 1; i < 10; i++) {
-			List<String> rowNames = new ArrayList<String>();
-			rowNames.add("Master List");
-			rowNames.add("Benzene " + i);
-			rowNames.add("102-32-" + i);
-			row = new TreeNode(root, rowNames);
-			row.treeRow = i;
-			row.treeSubRow = 0;
-			row.sourceRowNum = i;
-			root.child.add(row);
-			row.matchStatus.add(MatchStatus.UNKNOWN);
-			row.matchStatus.add(MatchStatus.UNKNOWN);
-			row.matchStatus.add(MatchStatus.UNKNOWN);
+			TreeNodeRow treeNodeRow = new TreeNodeRow(root);
+			treeNodeRow.colLabels.add("Master List");
+			treeNodeRow.colLabels.add("Benzene " + i);
+			treeNodeRow.colLabels.add("102-32-" + i);
+			treeNodeRow.matchStatus.add(MatchStatus.UNKNOWN);
+			treeNodeRow.matchStatus.add(MatchStatus.UNKNOWN);
+			treeNodeRow.matchStatus.add(MatchStatus.UNKNOWN);
+			{// TRACI subrow
+				TreeNodeSubRow treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
+				treeNodeSubRow.colLabels.add("TRACI");
+				treeNodeSubRow.colLabels.add("Benzene x" + i);
+				treeNodeSubRow.colLabels.add("102-32-" + i);
+				treeNodeSubRow.matchStatus.add(MatchStatus.UNKNOWN);
+				treeNodeSubRow.matchStatus.add(MatchStatus.NONEQUIVALENT);
+				treeNodeSubRow.matchStatus.add(MatchStatus.EQUIVALENT);
 
-			subRow = new TreeNode(row);
-			subRow.colLabels.add("TRACI");
-			subRow.colLabels.add("Benzene x" + i);
-			subRow.colLabels.add("102-32-" + i);
-			subRow.treeRow = i;
-			subRow.treeSubRow = 1;
-
-			subRow.sourceRowNum = i * 10 + 1;
-			row.child.add(subRow);
-
-			subRow = new TreeNode(row);
-			subRow.colLabels.add("ReCiPe");
-			subRow.colLabels.add("Benzene " + i);
-			subRow.colLabels.add("102-32-" + i);
-			subRow.treeRow = i;
-			subRow.treeSubRow = 2;
-			subRow.sourceRowNum = i * 10 + 2;
-			row.child.add(subRow);
-
-			for (TreeNode child : row.child) {
-				for (int j = 0; j < row.colLabels.size(); j++) {
-					if (row.colLabels.get(j).equals(child.colLabels.get(j))) {
-						child.matchStatus.add(MatchStatus.EQUIVALENT);
-					} else {
-						child.matchStatus.add(MatchStatus.NONEQUIVALENT);
-					}
+			}
+			{// ReCiPe subrow
+				TreeNodeSubRow treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
+				treeNodeSubRow.colLabels.add("ReCiPe");
+				treeNodeSubRow.matchStatus.add(MatchStatus.UNKNOWN);
+				if(i==3){
+				    treeNodeSubRow.colLabels.add("Benzene x" + i);
+				    treeNodeSubRow.matchStatus.add(MatchStatus.NONEQUIVALENT);
+				}else{
+					treeNodeSubRow.colLabels.add("Benzene " + i);
+					treeNodeSubRow.matchStatus.add(MatchStatus.EQUIVALENT);
 				}
+				treeNodeSubRow.colLabels.add("102-32-" + i);
+				treeNodeSubRow.matchStatus.add(MatchStatus.EQUIVALENT);
+			}
+		}
+		for (TreeNode row : root.children) {
+			System.out.println(row);
+			for (TreeNode subRow : row.children) {
+				System.out.println(subRow);
 			}
 		}
 		return root;
 	}
+
 
 	public static void main(String[] args) {
 		Display display = new Display();
@@ -484,7 +388,8 @@ public class TreeEditorTest {
 	private class MyContentProvider implements ITreeContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-			return ((TreeNode) inputElement).child.toArray();
+			// return ((TreeNode) inputElement).child.toArray();
+			return ((TreeNode) inputElement).children.toArray();
 		}
 
 		public void dispose() {
@@ -505,74 +410,90 @@ public class TreeEditorTest {
 		}
 
 		public boolean hasChildren(Object treeNode) {
-			return ((TreeNode) treeNode).child.size() > 0;
+			return ((TreeNode) treeNode).children.size() > 0;
 		}
 
 	}
-	
+
 	/**
 	 * @author tsb
 	 * 
-	 * new TreeNode being developed to replace current TreeNode which is poorly designed
-	 *
+	 *         new TreeNode being developed to replace current TreeNode which is
+	 *         poorly designed
+	 * 
 	 */
-	public class TreeNode2{
-		private TreeNode2 parent;
-		private ArrayList<TreeNode2> children = new ArrayList<TreeNode2>();
-		private  List<String> colLabels = new ArrayList<String>();
-		private  List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
-		
-		public TreeNode2 getParent(){
+	private  class TreeNode {
+		public TreeNode parent;
+		public ArrayList<TreeNode> children = new ArrayList<TreeNode>();
+		public List<String> colLabels = new ArrayList<String>();
+		protected List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
+		public TreeNode getParent() {
 			return parent;
 		}
-		public Iterator<TreeNode2> getChildrenIterator(){
-			return children.iterator();
+		public void addMatchStatus(MatchStatus status){
+			matchStatus.add(status);
+		}
+		public MatchStatus getMatchStatus(int index){
+			return matchStatus.get(index);
+		}
+		public void updateMatchStatus(int index , MatchStatus status){
+			matchStatus.set(index,status);
+		}
+		public void checkStatusOfChildren(){
 		}
 	}
-	public class TreeNodeRow extends TreeNode2 {
+
+	private class TreeNodeRoot extends TreeNode {
+		public TreeNodeRoot() {
+			parent = null;
+		}
 	}
-	public class TreeNodeSubRow extends TreeNode2 {		
-	}
 
-	public class TreeNode {
-		public TreeNode parent;
-
-		public ArrayList<TreeNode> child = new ArrayList<TreeNode>();
-		// public ArrayList<Resource> colAssocResource = new
-		// ArrayList<Resource>();
-		// public ArrayList<Property> colAssocProperty = new
-		// ArrayList<Property>();
-		// public ArrayList<Object> colContent = new ArrayList<Object>();
-		public List<String> colLabels = new ArrayList<String>();
-		public List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
-		public int treeRow;
-		public int treeSubRow;
-
-		public int sourceRowNum;
-
-		public boolean bool;
-
-		public TreeNode(TreeNode parent) {
-			this.parent = parent;
+	private class TreeNodeRow extends TreeNode {
+		public TreeNodeRow(TreeNodeRoot treeNodeRoot) {
+			this.parent = treeNodeRoot;
+			this.parent.children.add(this);
+		}
+		public void checkStatusOfChildren(){
+			int index = 1;
+			matchStatus.set(index, MatchStatus.UNKNOWN);
+			for(TreeNode child : children){
+				MatchStatus childStatus = child.getMatchStatus(index);
+				if(childStatus == MatchStatus.EQUIVALENT){
+					matchStatus.set(index, MatchStatus.EQUIVALENT);
+					break;
+				}
+			}
+			index = 2;
+			matchStatus.set(index, MatchStatus.UNKNOWN);
+			for(TreeNode child : children){
+				MatchStatus childStatus = child.getMatchStatus(index);
+				if(childStatus == MatchStatus.EQUIVALENT){
+					matchStatus.set(index, MatchStatus.EQUIVALENT);
+					break;
+				}
+			}
 		}
 
-		public TreeNode(TreeNode parent, List<String> colLabels) {
-			this.parent = parent;
-			this.colLabels = colLabels;
+		@Override
+		public String toString() {
+			return "TreeNodeRow [parent=" + parent + ", colLabels=" + colLabels
+					+ ", matchStatus=" + matchStatus + "]";
 		}
+	}
 
-		// public String toString() {
-		// return colLabels.get(0);
-		// }
-
-		// DON'T NEED SETTERS AND GETTERS, ALL THIS IS PUBLIC
-		// public int getSourceRowNum() {
-		// return sourceRowNum;
-		// }
-		//
-		// public void setSourceRowNum(int sourceRowNum) {
-		// this.sourceRowNum = sourceRowNum;
-		// }
+	private  class TreeNodeSubRow extends TreeNode {
+		public TreeNodeSubRow(TreeNodeRow treeNodeRow) {
+			this.parent = treeNodeRow;
+			this.parent.children.add(this);
+		}
+		public void checkStatusOfChildren(){
+		}
+		@Override
+		public String toString() {
+			return "TreeNodeSubRow [parent=" + parent + ", colLabels="
+					+ colLabels + ", matchStatus=" + matchStatus + "]";
+		}
 	}
 
 }
