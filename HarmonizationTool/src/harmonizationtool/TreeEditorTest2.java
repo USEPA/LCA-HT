@@ -49,6 +49,7 @@ import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -68,10 +69,10 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * @author Tom Schindl <tom.schindl@bestsolution.at>
  * 
  */
-public class TreeEditorTest {
+public class TreeEditorTest2 {
 	private TreeNode selTreeNode = null;
 
-	public TreeEditorTest(final Shell shell) {
+	public TreeEditorTest2(final Shell shell) {
 		final TreeViewer treeViewer = new TreeViewer(shell, SWT.BORDER | SWT.FULL_SELECTION);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.getTree().setHeaderVisible(true);
@@ -301,6 +302,7 @@ public class TreeEditorTest {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				System.out.println("MouseDown on selTreeNode.treeRow: " + selTreeNode.treeRow);
+				System.out.println("x = " + e.x + " . And y = " + e.y);
 			}
 
 			@Override
@@ -415,6 +417,11 @@ public class TreeEditorTest {
 	}
 
 	private void colorMatchedRows(TreeViewer treeViewer) {
+		// ViewerRow newVR = new ViewerRow();
+		// newVR.setText(0, "new col 1");
+		// newVR.setText(1, "new col 2");
+		// newVR.setText(1, "new col 3");
+
 		Device device = Display.getCurrent();
 		Color red = new Color(device, 255, 0, 0);
 		Color green = new Color(device, 0, 255, 0);
@@ -425,28 +432,37 @@ public class TreeEditorTest {
 		for (int i = 0; i < trunk.child.size(); i++) {
 			TreeNode row = trunk.child.get(i);
 			TreeItem treeItem = treeViewer.getTree().getItem(i);
+			treeItem.setExpanded(true);
 
 			for (int j = 0; j < row.child.size(); j++) {
 				TreeNode subRow = row.child.get(j);
 				for (int k = 0; k < subRow.colLabels.size(); k++) {
 					String queryColLabel = row.colLabels.get(k);
 					String refColLabel = subRow.colLabels.get(k);
-					System.out.println("queryColLabel = "+queryColLabel);
-					System.out.println("refColLabel = "+refColLabel);
+					System.out.println("queryColLabel = " + queryColLabel);
+					System.out.println("refColLabel = " + refColLabel);
 					if (refColLabel.equals(queryColLabel)) {
-//						int itemCount = treeItem.getItemCount();
-//						System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k + ", itemCount = " + itemCount);
-//						treeItem.setBackground(blue);
-//						TreeItem thing = treeItem.getItem(0);
-//						thing.setBackground(pink);
-//						System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k + ", here's the treeItem.getItem(0): " + treeItem.getItem(0));
-//						System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k + ", here's the treeItem.getItem(0).getData(): " + thing.getData());
+						// int itemCount = treeItem.getItemCount();
+						// System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k +
+						// ", itemCount = " + itemCount);
+						treeItem.setBackground(blue);
+						TreeItem thing = treeItem.getItem(0);
+						thing.setBackground(pink);
+						// System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k +
+						// ", here's the treeItem.getItem(0): " + treeItem.getItem(0));
+						// System.out.println("at row: " + i + ", subRow: " + j + ", col: " + k +
+						// ", here's the treeItem.getItem(0).getData(): " + thing.getData());
 
-						 TreeColumn treeColumnX = treeViewer.getTree().getColumn(k);
-//						 Display thing = treeColumnX.getDisplay();
-//						  Object thing = treeColumnX.getData();
+						TreeColumn treeColumnX = treeViewer.getTree().getColumn(k);
+						
+//						Point point = new Point(10, 10);
+//						TreeItem thing2 = treeViewer.getTree().getItem(point);
+//						System.out.println("thing2 = " + thing2);
 
-						 System.out.println("treeColumnX.getText() = "+treeColumnX.getText());
+						// Display thing = treeColumnX.getDisplay();
+						// Object thing = treeColumnX.getData();
+
+						System.out.println("treeColumnX.getText() = " + treeColumnX.getText());
 						// TreeItem[] thing = treeColumnX.getParent().getItems();
 						// Object thing = treeItem.getData();
 						// System.out.println("thing: " + thing);
@@ -466,7 +482,7 @@ public class TreeEditorTest {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		new TreeEditorTest(shell);
+		new TreeEditorTest2(shell);
 		shell.open();
 
 		while (!shell.isDisposed()) {
