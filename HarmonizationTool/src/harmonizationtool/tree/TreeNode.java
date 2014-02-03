@@ -1,39 +1,19 @@
 package harmonizationtool.tree;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
 
 /**
  * @author tec
  * 
  */
-public class TreeNode {
-	protected TreeNode parent;
-	protected List<TreeNode> children = new ArrayList<TreeNode>();
+public class TreeNode extends Node {
+	protected List<String> colLabels = new ArrayList<String>();
+	protected List<MatchStatus> matchStatus = new ArrayList<MatchStatus>();
 
 	public TreeNode(TreeNode parent) {
-		this.parent = parent;
-		// System.out.println("Created Node "+this+ " with parent:"+ parent);
-		if (this.parent != null) {
-			parent.children.add(this);
-		}
-	}
-
-	public void addChild(TreeNode child) {
-		children.add(child);
-	}
-
-	public Iterator<TreeNode> getChildIterator() {
-		return children.iterator();
-	}
-
-	public int getIndexOfChild(TreeNode child) {
-		return children.indexOf(child);
-	}
-
-	public void removeChild(TreeNode child) {
-		children.remove(child);
+		super(parent);
 	}
 
 	public static String printToString(TreeNode node, StringBuilder b) {
@@ -46,13 +26,33 @@ public class TreeNode {
 		// print yourself
 		b.append(indent + node.toString() + "\n");
 		// ask your children to print themselves
-		for (TreeNode child : node.children) {
-			printToString(child, b, indent + "  ");
+		for (Node child : node.children) {
+			printToString((TreeNode)child, b, indent + "  ");
 		}
 		return b.toString();
 	}
 
-	public TreeNode getParent() {
-		return parent;
+	public void addMatchStatus(MatchStatus status) {
+		matchStatus.add(status);
+	}
+
+	public MatchStatus getMatchStatus(int index) {
+		return matchStatus.get(index);
+	}
+
+	public void updateMatchStatus(int index, MatchStatus status) {
+		matchStatus.set(index,status);
+	}
+
+	public void addColumnLabel(String label) {
+		colLabels.add(label);
+	}
+
+	public String getColumnLabel(int index) {
+		return colLabels.get(index);
+	}
+
+	public void setColumnLabel(int index, String label) {
+		colLabels.set(index,label);
 	}
 }

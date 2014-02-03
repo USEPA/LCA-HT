@@ -13,8 +13,8 @@ package harmonizationtool;
 
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.tree.MatchStatus;
+import harmonizationtool.tree.Node;
 import harmonizationtool.tree.TreeNode;
-import harmonizationtool.tree.TreeNodeBlankRow;
 import harmonizationtool.tree.TreeNodeRow;
 import harmonizationtool.tree.TreeNodeSubRow;
 import harmonizationtool.vocabulary.ECO;
@@ -49,18 +49,24 @@ import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -82,6 +88,56 @@ public class TreeEditorTestTEC {
 				| SWT.FULL_SELECTION);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.getTree().setHeaderVisible(true);
+//		treeViewer.getTree().add
+		Tree tree = treeViewer.getTree();
+//		tree.addListener(SWT.PaintItem, paintListener);
+		treeViewer.getTree().addListener(SWT.PaintItem, new Listener(){
+
+			@Override
+			public void handleEvent(Event event) {
+				GC gc = event.gc;
+				System.out.println("Paint Event: event.type="+ event.type);
+				System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
+				int totalWidth = treeViewer.getTree().getBounds().width;
+				TreeItem[] treeItems = treeViewer.getTree().getItems();
+				System.out.println("treeItems.length="+ treeItems.length);
+				for(TreeItem treeItem : treeItems){
+//					System.out.println("treeItem="+ treeItem);
+//					System.out.println("treeItem="+ treeItem + " treeItem.getBounds()="+treeItem.getBounds());
+					Rectangle rectangle = treeItem.getBounds();
+					int lineWidth = gc.getLineWidth();
+					gc.setLineWidth(4);
+					gc.drawLine(rectangle.x, rectangle.y, totalWidth,rectangle.y);
+					gc.setLineWidth(lineWidth);
+					gc.drawLine(rectangle.x, rectangle.y + rectangle.height, totalWidth,rectangle.y + rectangle.height);
+					
+//					int numSubRows = treeItem.getItems().length;
+//					System.out.println("numSubRows="+numSubRows);
+//					for(TreeItem item : treeItem.getItems()){
+//						Rectangle rect = item.getBounds();
+//						System.out.println("rect="+rect);
+//						gc.drawLine(rect.x, rect.y, totalWidth,rect.y);
+//					}
+					
+//					System.out.println("treeItem.getItems()="+treeItem.getItems());
+//					int numSubRows = treeItem.getItems().length;
+//					System.out.println("numSubRows="+numSubRows);
+//					System.out.println("treeItem.getItems()[numSubRows-1]="+treeItem.getItems()[numSubRows-1]);
+//					System.out.println("treeItem.getItems()[numSubRows-1].toString()="+treeItem.getItems()[numSubRows-1].toString());
+//					System.out.println("treeItem.getItems()[numSubRows-1]..getClass().getName()="+treeItem.getItems()[numSubRows-1].getClass().getName());
+//					System.out.println("treeItem.getData().getClass().getName()="+treeItem.getData().getClass().getName());
+//					Object x = treeItem.getData();					boolean flag = x instanceof TreeNodeSubRow;
+//					System.out.println("flag="+ flag);
+//					for(TreeItem item : treeItem.getItems()){
+//						System.out.println("item="+item);
+//					}
+				}
+//				System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
+//				System.out.println("event.getBounds()="+event.getBounds());
+			}
+
+			
+		});
 
 		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(
 				treeViewer, new FocusCellOwnerDrawHighlighter(treeViewer));
@@ -122,7 +178,7 @@ public class TreeEditorTestTEC {
 				super.update(viewerCell);
 				ViewerRow viewerRow = viewerCell.getViewerRow();
 				if (viewerRow.getElement() instanceof TreeNode) {
-					TreeNode treeNode = (TreeNode) viewerRow.getElement();
+					Node treeNode = (Node) viewerRow.getElement();
 				}
 				int index = viewerCell.getVisualIndex();
 				MatchStatus status = ((TreeNodeRow) viewerCell.getElement())
@@ -215,6 +271,7 @@ public class TreeEditorTestTEC {
 				if (status == MatchStatus.BLANK) {
 					viewerCell.setBackground(MatchStatus.BLANK.getColor());
 				}
+				
 			}
 
 		});
@@ -317,7 +374,7 @@ public class TreeEditorTestTEC {
 	 * 
 	 * @return
 	 */
-	private TreeNode createModel() {
+	private Node createModel() {
 		TreeNode root = new TreeNode(null);
 		for (int i = 1; i < 10; i++) {
 			TreeNodeRow treeNodeRow = new TreeNodeRow(root);
@@ -351,13 +408,13 @@ public class TreeEditorTestTEC {
 				treeNodeSubRow.addColumnLabel("102-32-" + i);
 				treeNodeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
 			}
-			TreeNodeBlankRow treeNodeBlankRow = new TreeNodeBlankRow(root);
-			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
-			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
-			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
-			treeNodeBlankRow.addColumnLabel("");
-			treeNodeBlankRow.addColumnLabel("");
-			treeNodeBlankRow.addColumnLabel("");
+//			TreeNodeBlankRow treeNodeBlankRow = new TreeNodeBlankRow(root);
+//			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
+//			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
+//			treeNodeBlankRow.addMatchStatus(MatchStatus.BLANK);
+//			treeNodeBlankRow.addColumnLabel("");
+//			treeNodeBlankRow.addColumnLabel("");
+//			treeNodeBlankRow.addColumnLabel("");
 		}
 		return root;
 	}
@@ -382,8 +439,8 @@ public class TreeEditorTestTEC {
 	private class MyContentProvider implements ITreeContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-			Iterator<TreeNode>  iter = ((TreeNode) inputElement).getChildIterator();
-			List<TreeNode> l = new ArrayList<TreeNode>();
+			Iterator<Node>  iter = ((TreeNode) inputElement).getChildIterator();
+			List<Node> l = new ArrayList<Node>();
 			while(iter.hasNext()){
 				l.add(iter.next());
 			}
@@ -404,11 +461,11 @@ public class TreeEditorTestTEC {
 			if (treeNode == null) {
 				return null;
 			}
-			return ((TreeNode) treeNode).getParent();
+			return ((Node) treeNode).getParent();
 		}
 
 		public boolean hasChildren(Object treeNode) {
-			return ((TreeNode) treeNode).getChildIterator().hasNext();
+			return ((Node) treeNode).getChildIterator().hasNext();
 		}
 
 	}
