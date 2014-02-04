@@ -109,7 +109,7 @@ public class TreeEditorTestTEC {
 					if(treeItem.getExpanded()){
 						int lineWidth = 1;
 						//draw header line
-						drawLine(gc, rectangle.x, rectangle.y + rectangle.height+lineWidth, totalWidth,rectangle.y + rectangle.height, lineWidth);
+						drawLine(gc, rectangle.x, rectangle.y + rectangle.height+lineWidth, totalWidth,rectangle.y + rectangle.height+lineWidth, lineWidth);
 					}
 					{
 						//draw separator
@@ -191,9 +191,9 @@ public class TreeEditorTestTEC {
 //				if (status == MatchStatus.UNKNOWN) {
 //					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
 //				}
-				if (status == MatchStatus.BLANK) {
-					viewerCell.setBackground(MatchStatus.BLANK.getColor());
-				}
+//				if (status == MatchStatus.BLANK) {
+//					viewerCell.setBackground(MatchStatus.BLANK.getColor());
+//				}
 			}
 
 		});
@@ -224,9 +224,9 @@ public class TreeEditorTestTEC {
 				if (status == MatchStatus.UNKNOWN) {
 					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
 				}
-				if (status == MatchStatus.BLANK) {
-					viewerCell.setBackground(MatchStatus.BLANK.getColor());
-				}
+//				if (status == MatchStatus.BLANK) {
+//					viewerCell.setBackground(MatchStatus.BLANK.getColor());
+//				}
 			}
 
 		});
@@ -266,9 +266,9 @@ public class TreeEditorTestTEC {
 				if (status == MatchStatus.UNKNOWN) {
 					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
 				}
-				if (status == MatchStatus.BLANK) {
-					viewerCell.setBackground(MatchStatus.BLANK.getColor());
-				}
+//				if (status == MatchStatus.BLANK) {
+//					viewerCell.setBackground(MatchStatus.BLANK.getColor());
+//				}
 				
 			}
 

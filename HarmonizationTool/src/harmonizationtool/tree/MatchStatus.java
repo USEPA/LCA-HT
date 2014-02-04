@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Display;
 
 public enum MatchStatus {
-	EQUIVALENT(1, 0, 255, 0), NONEQUIVALENT(2, 255, 0, 0), UNKNOWN(0, 0, 0, 255), BLANK(3,0,0,0);
+	EQUIVALENT(1, 215, 255, 215), NONEQUIVALENT(2, 255, 215, 200), UNKNOWN(0, 255, 255, 255);
 	private int value;
 	private int r;
 	private int g;
