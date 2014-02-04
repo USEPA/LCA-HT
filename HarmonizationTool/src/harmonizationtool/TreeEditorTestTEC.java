@@ -91,6 +91,8 @@ public class TreeEditorTestTEC {
 //		treeViewer.getTree().add
 		Tree tree = treeViewer.getTree();
 //		tree.addListener(SWT.PaintItem, paintListener);
+		treeViewer.getTree().setLinesVisible(true);
+
 		treeViewer.getTree().addListener(SWT.PaintItem, new Listener(){
 
 			@Override
@@ -102,38 +104,34 @@ public class TreeEditorTestTEC {
 				TreeItem[] treeItems = treeViewer.getTree().getItems();
 				System.out.println("treeItems.length="+ treeItems.length);
 				for(TreeItem treeItem : treeItems){
-//					System.out.println("treeItem="+ treeItem);
-//					System.out.println("treeItem="+ treeItem + " treeItem.getBounds()="+treeItem.getBounds());
 					Rectangle rectangle = treeItem.getBounds();
-					int lineWidth = gc.getLineWidth();
-					gc.setLineWidth(4);
-					gc.drawLine(rectangle.x, rectangle.y, totalWidth,rectangle.y);
-					gc.setLineWidth(lineWidth);
-					gc.drawLine(rectangle.x, rectangle.y + rectangle.height, totalWidth,rectangle.y + rectangle.height);
 					
-//					int numSubRows = treeItem.getItems().length;
-//					System.out.println("numSubRows="+numSubRows);
-//					for(TreeItem item : treeItem.getItems()){
-//						Rectangle rect = item.getBounds();
-//						System.out.println("rect="+rect);
-//						gc.drawLine(rect.x, rect.y, totalWidth,rect.y);
-//					}
+					if(treeItem.getExpanded()){
+						int lineWidth = 1;
+						//draw header line
+						drawLine(gc, rectangle.x, rectangle.y + rectangle.height+lineWidth, totalWidth,rectangle.y + rectangle.height, lineWidth);
+					}
+					{
+						//draw separator
+						int lineWidth = 2;
+						drawLine(gc, rectangle.x, rectangle.y +lineWidth, totalWidth,rectangle.y + lineWidth, lineWidth);
+					}
 					
-//					System.out.println("treeItem.getItems()="+treeItem.getItems());
-//					int numSubRows = treeItem.getItems().length;
-//					System.out.println("numSubRows="+numSubRows);
-//					System.out.println("treeItem.getItems()[numSubRows-1]="+treeItem.getItems()[numSubRows-1]);
-//					System.out.println("treeItem.getItems()[numSubRows-1].toString()="+treeItem.getItems()[numSubRows-1].toString());
-//					System.out.println("treeItem.getItems()[numSubRows-1]..getClass().getName()="+treeItem.getItems()[numSubRows-1].getClass().getName());
-//					System.out.println("treeItem.getData().getClass().getName()="+treeItem.getData().getClass().getName());
-//					Object x = treeItem.getData();					boolean flag = x instanceof TreeNodeSubRow;
-//					System.out.println("flag="+ flag);
-//					for(TreeItem item : treeItem.getItems()){
-//						System.out.println("item="+item);
-//					}
+					System.out.println("treeItem.getExpanded()="+treeItem.getExpanded());
+					int numSubRows = treeItem.getItems().length;
+					System.out.println("numSubRows="+numSubRows);
+					for(TreeItem subItem : treeItem.getItems()){
+						System.out.println("subItem.getExpanded()="+subItem.getExpanded());
+						
+					}
 				}
-//				System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
-//				System.out.println("event.getBounds()="+event.getBounds());
+			}
+			
+			private void drawLine(GC gc,int x1, int y1, int x2,int y2,int lineWidth){
+				int lineWidthSave = gc.getLineWidth();
+				gc.setLineWidth(lineWidth);
+				gc.drawLine(x1, y1, x2, y2);
+				gc.setLineWidth(lineWidthSave);
 			}
 
 			
@@ -384,6 +382,7 @@ public class TreeEditorTestTEC {
 			treeNodeRow.addMatchStatus(MatchStatus.UNKNOWN);
 			treeNodeRow.addMatchStatus(MatchStatus.UNKNOWN);
 			treeNodeRow.addMatchStatus(MatchStatus.UNKNOWN);
+			if(i!=8)
 			{// TRACI subrow
 				TreeNodeSubRow treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
 				treeNodeSubRow.addColumnLabel("TRACI");
@@ -394,6 +393,7 @@ public class TreeEditorTestTEC {
 				treeNodeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
 
 			}
+//			if(i!=8)
 			{// ReCiPe subrow
 				TreeNodeSubRow treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
 				treeNodeSubRow.addColumnLabel("ReCiPe");
