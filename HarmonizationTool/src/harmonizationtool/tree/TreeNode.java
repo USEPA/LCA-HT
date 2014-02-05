@@ -55,4 +55,8 @@ public class TreeNode extends Node {
 	public void setColumnLabel(int index, String label) {
 		colLabels.set(index,label);
 	}
+
+	public int size() {
+		return children.size();
+	}
 }

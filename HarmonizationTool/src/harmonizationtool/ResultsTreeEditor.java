@@ -36,7 +36,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -76,12 +78,14 @@ public class ResultsTreeEditor extends ViewPart {
 
 	TreeViewerColumn firstColumn = null;
 	private TreeNode trunk = null;
+	protected TreeItem selectedItem;
 
 	public void createPartControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.getTree().setHeaderVisible(true);
-//		parent.getShell().get
+		// treeViewer.getTree().setSize(200, 20);
+		// parent.getShell().get
 		// treeViewer.setContentProvider(new MyContentProvider());
 
 		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(
@@ -112,6 +116,7 @@ public class ResultsTreeEditor extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				selectedItem = (TreeItem) e.item;
 			}
 
 			@Override
@@ -135,10 +140,10 @@ public class ResultsTreeEditor extends ViewPart {
 					if (treeNode instanceof TreeNodeSubRow) {
 						TreeNodeSubRow subRow = (TreeNodeSubRow) treeNode;
 						MatchStatus status = subRow.getMatchStatus(index);
-//						System.out.println("subRow.rowSubURI.isAnon(): "
-//								+ subRow.rowSubURI.isAnon());
-//						System.out.println("subRow.rowSubURI == null: "
-//								+ subRow.rowSubURI == null);
+						// System.out.println("subRow.rowSubURI.isAnon(): "
+						// + subRow.rowSubURI.isAnon());
+						// System.out.println("subRow.rowSubURI == null: "
+						// + subRow.rowSubURI == null);
 
 						if (status == MatchStatus.EQUIVALENT) {
 							subRow.updateMatchStatus(index,
@@ -151,8 +156,43 @@ public class ResultsTreeEditor extends ViewPart {
 							subRow.updateMatchStatus(index,
 									MatchStatus.EQUIVALENT);
 						}
-						treeViewer.refresh();
+						int matchCount = 0;
+						Iterator iterator = trunk.getChildIterator();
+						TreeNodeRow statRow = null;
+						while (iterator.hasNext()) {
+							TreeNodeRow treeRow = (TreeNodeRow) iterator.next();
+							if (statRow == null) {
+								statRow = treeRow;
+							}
+							if (treeRow.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+								matchCount++;
+							}
+						}
+						String was = treeViewer.getTree().getColumn(1).getText();
+						String now = "substance: "+ matchCount;
+						treeViewer.getTree().getColumn(1).setText(now);
+
+						
+//						statRow.setColumnLabel(1, "Matched Names: "
+//								+ matchCount);
+
+					} else if (treeNode instanceof TreeNodeRow) {
+						if (selectedItem.getExpanded()) {
+							selectedItem.setExpanded(false);
+						} else {
+							selectedItem.setExpanded(true);
+						}
+//						 viewerCell.setFont(JFaceResources.getDialogFont()); // LOOKS SAME AS FONT THAT IS THERE
+//						 viewerCell.setFont(JFaceResources.getDefaultFont());// LOOKS SAME AS FONT THAT IS THERE
+//						 viewerCell.setFont(JFaceResources.getTextFont());// LOOKS LIKE MONOSPACE
+						 viewerCell.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));// LOOKS LIKE ?
+
+
+
 					}
+					treeViewer.refresh();
+
+					//
 				} catch (Exception e1) {
 				}
 				treeViewer.getTree().deselectAll();
@@ -216,89 +256,116 @@ public class ResultsTreeEditor extends ViewPart {
 		});
 
 		// treeViewer.setLabelProvider(new TreeLabelProvider());
-		treeViewer.getTree().addListener(SWT.PaintItem, new Listener(){
+		treeViewer.getTree().addListener(SWT.PaintItem, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
-//				System.out.println("Paint Event: event.type="+ event.type);
-//				System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
-				int totalWidth = treeViewer.getTree().getBounds().width;		
-//				ScrollBar scrollBar = treeViewer.getTree().getVerticalBar();
-//				System.out.println("scrollBar.getThumb() "+scrollBar.getThumb());
-//				System.out.println("scrollBar.getMinimum() "+scrollBar.getMinimum());
-//				System.out.println("scrollBar.getMaximum() "+scrollBar.getMaximum());
-				
-//				System.out.println("treeViewer.getTree().getBounds().height "+treeViewer.getTree().getBounds().height);
-//				System.out.println("scrollBar.getThumbBounds().y "+scrollBar.getThumbBounds().y);
-				
-//				System.out.println("scrollBar.getSelection() "+scrollBar.getSelection());
+				// event.height = 20;
+				// System.out.println("Paint Event: event.type="+ event.type);
+				// System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
+				int totalWidth = treeViewer.getTree().getBounds().width;
+				// ScrollBar scrollBar = treeViewer.getTree().getVerticalBar();
+				// System.out.println("scrollBar.getThumb() "+scrollBar.getThumb());
+				// System.out.println("scrollBar.getMinimum() "+scrollBar.getMinimum());
+				// System.out.println("scrollBar.getMaximum() "+scrollBar.getMaximum());
+
+				// System.out.println("treeViewer.getTree().getBounds().height "+treeViewer.getTree().getBounds().height);
+				// System.out.println("scrollBar.getThumbBounds().y "+scrollBar.getThumbBounds().y);
+
+				// System.out.println("scrollBar.getSelection() "+scrollBar.getSelection());
 
 				// show = if (rectangle.y > (sel/(max-min) - margin) AND
-				//            rectangle.y < (sel+thumb)/(max-min) + margin
-				// 
-//				int margin = 20;
-//				int topOfScroll = scrollBar.getThumbBounds().y;
-//				int viewerHeight = treeViewer.getTree().getBounds().height;		
+				// rectangle.y < (sel+thumb)/(max-min) + margin
+				//
+				// int margin = 20;
+				// int topOfScroll = scrollBar.getThumbBounds().y;
+				// int viewerHeight = treeViewer.getTree().getBounds().height;
 
-//				height = 1000;
-//				System.out.println("height = "+ topOfScroll);
-//				float minCompare = topOfScroll*(scrollBar.getSelection()/(scrollBar.getMaximum() - scrollBar.getMinimum())) - margin;
-//				float maxCompare = topOfScroll*((scrollBar.getSelection()+scrollBar.getThumb())/(scrollBar.getMaximum() - scrollBar.getMinimum())) + margin;
-				
-//				System.out.println("minCompare = "+minCompare);
-//				System.out.println("maxCompare = "+maxCompare);
+				// height = 1000;
+				// System.out.println("height = "+ topOfScroll);
+				// float minCompare =
+				// topOfScroll*(scrollBar.getSelection()/(scrollBar.getMaximum()
+				// - scrollBar.getMinimum())) - margin;
+				// float maxCompare =
+				// topOfScroll*((scrollBar.getSelection()+scrollBar.getThumb())/(scrollBar.getMaximum()
+				// - scrollBar.getMinimum())) + margin;
 
-//				System.out.println("treeViewer.getTree().getBounds().height = "+treeViewer.getTree().getBounds().height);
+				// System.out.println("minCompare = "+minCompare);
+				// System.out.println("maxCompare = "+maxCompare);
+
+				// System.out.println("treeViewer.getTree().getBounds().height = "+treeViewer.getTree().getBounds().height);
 				TreeItem[] treeItems = treeViewer.getTree().getItems();
-//				System.out.println("treeItems.length="+ treeItems.length);
-				for(TreeItem treeItem : treeItems){
+				// System.out.println("treeItems.length="+ treeItems.length);
+				for (TreeItem treeItem : treeItems) {
 					Rectangle rectangle = treeItem.getBounds();
 
-					if(treeItem.getExpanded()){
-//					if((topOfScroll-30) < rectangle.y && rectangle.y < (topOfScroll+viewerHeight+30)){
+					if (treeItem.getExpanded()) {
+
+						// if((topOfScroll-30) < rectangle.y && rectangle.y <
+						// (topOfScroll+viewerHeight+30)){
 
 						int lineWidth = 1;
-						//draw header line
-						drawLine(gc, rectangle.x, rectangle.y + rectangle.height+lineWidth, totalWidth,rectangle.y + rectangle.height+lineWidth, lineWidth);
-//						System.out.println("y for this box: "+rectangle.y);
-						//draw separator
-						lineWidth = 2;
-						drawLine(gc, rectangle.x, rectangle.y +lineWidth, totalWidth,rectangle.y + lineWidth, lineWidth);
+						// draw header line
+
+						// drawLine(gc, rectangle.x, rectangle.y
+						// + rectangle.height + lineWidth, totalWidth,
+						// rectangle.y + rectangle.height + lineWidth,
+						// lineWidth);
+						// System.out.println("y for this box: "+rectangle.y);
+						// draw separator
+
 						try {
 							// draw bottom separator
 							int numSubRows = treeItem.getItems().length;
-							TreeItem subItem = treeItem.getItems()[numSubRows-1];
+							TreeItem subItem = treeItem.getItems()[numSubRows - 1];
 							Rectangle subRectangle = subItem.getBounds();
-							drawLine(gc, subRectangle.x, subRectangle.y +subRectangle.height - lineWidth, totalWidth,subRectangle.y +subRectangle.height - lineWidth, lineWidth);
+							// drawLine(gc, subRectangle.x, subRectangle.y
+							// + subRectangle.height - lineWidth,
+							// totalWidth, subRectangle.y
+							// + subRectangle.height - lineWidth,
+							// lineWidth);
+							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
+									rectangle.x + totalWidth, subRectangle.y
+											+ subRectangle.height - lineWidth,
+									lineWidth);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+						// lineWidth = 2;
+						// drawLine(gc, rectangle.x, rectangle.y + lineWidth,
+						// totalWidth, rectangle.y + lineWidth, lineWidth);
 					}
-					
-//					System.out.println("treeItem.getExpanded()="+treeItem.getExpanded());
-//					int numSubRows = treeItem.getItems().length;
-//					System.out.println("numSubRows="+numSubRows);
-//					for(TreeItem subItem : treeItem.getItems()){
-//						System.out.println("subItem.getExpanded()="+subItem.getExpanded());
-//						
-//					}
+
+					// System.out.println("treeItem.getExpanded()="+treeItem.getExpanded());
+					// int numSubRows = treeItem.getItems().length;
+					// System.out.println("numSubRows="+numSubRows);
+					// for(TreeItem subItem : treeItem.getItems()){
+					// System.out.println("subItem.getExpanded()="+subItem.getExpanded());
+					//
+					// }
 				}
 			}
-			
-			private void drawLine(GC gc,int x1, int y1, int x2,int y2,int lineWidth){
+
+			private void drawLine(GC gc, int x1, int y1, int x2, int y2,
+					int lineWidth) {
 				int lineWidthSave = gc.getLineWidth();
 				gc.setLineWidth(lineWidth);
 				gc.drawLine(x1, y1, x2, y2);
 				gc.setLineWidth(lineWidthSave);
 			}
 
-			
+			private void drawRect(GC gc, int x1, int y1, int x2, int y2,
+					int lineWidth) {
+				int lineWidthSave = gc.getLineWidth();
+				gc.setLineWidth(lineWidth);
+				gc.drawRectangle(x1, y1, x2 - x1, y2 - y1);
+				gc.setLineWidth(lineWidthSave);
+			}
+
 		});
 
-		
 	}
-	
 
 	private void removeColumns() {
 		treeViewer.getTree().setRedraw(false);
@@ -311,6 +378,7 @@ public class ResultsTreeEditor extends ViewPart {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -326,18 +394,12 @@ public class ResultsTreeEditor extends ViewPart {
 	public void update(TableProvider tableProvider) {
 		try {
 			treeViewer.setContentProvider(new MyContentProvider());
-			// final Tree tree = treeViewer.getTree();
-			// tree.removeAll();
 			removeColumns();
 			createColumns(tableProvider);
-//			if (trunk != null) {
-////				treeViewer.remove(trunk);
-//				treeViewer.getTree().dispose();
-//			}
-			trunk  = createTrunk(tableProvider); // TODO: WORK HERE
+			trunk = createTrunk(tableProvider);
 			treeViewer.setInput(trunk);
-			treeViewer.getTree().setHeaderVisible(true);
-			treeViewer.getTree().setLinesVisible(true);
+			// treeViewer.getTree().setHeaderVisible(true);
+			// treeViewer.getTree().setLinesVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -366,7 +428,7 @@ public class ResultsTreeEditor extends ViewPart {
 	private TreeViewerColumn createColumn(final int colNum, String header) {
 
 		TreeViewerColumn newColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
-		newColumn.getColumn().setWidth(100);
+		newColumn.getColumn().setWidth(200);
 		newColumn.getColumn().setMoveable(true);
 		newColumn.getColumn().setText(header);
 		newColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -415,9 +477,9 @@ public class ResultsTreeEditor extends ViewPart {
 	private class MyContentProvider implements ITreeContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-			Iterator<Node>  iter = ((TreeNode) inputElement).getChildIterator();
+			Iterator<Node> iter = ((TreeNode) inputElement).getChildIterator();
 			List<Node> l = new ArrayList<Node>();
-			while(iter.hasNext()){
+			while (iter.hasNext()) {
 				l.add(iter.next());
 			}
 			return l.toArray();
@@ -446,7 +508,6 @@ public class ResultsTreeEditor extends ViewPart {
 
 	}
 
-	
 	// private TreeNodeRoot createTrunk(ResultSetRewindable resultSetRewindable)
 	// {
 	// if (resultSetRewindable == null) {
@@ -535,15 +596,17 @@ public class ResultsTreeEditor extends ViewPart {
 		if (tableProvider == null) {
 			return null;
 		}
-//		treeViewer.getTree().clearAll(true);
+		// treeViewer.getTree().clearAll(true);
 
 		List<DataRow> data = tableProvider.getData();
 		DataRow firstRow = data.get(0);
 		String keyDataSet = firstRow.get(0);
-//		 if (trunk == null) {
-			trunk = new TreeNode(null);
-//		}
+		// if (trunk == null) {
+		trunk = new TreeNode(null);
+		// }
+//		new TreeNodeRow(trunk);
 		TreeNodeRow treeRow = new TreeNodeRow(trunk);
+
 		for (int col = 0; col < firstRow.getSize(); col++) {
 			treeRow.addColumnLabel(firstRow.get(col));
 			treeRow.addMatchStatus(MatchStatus.UNKNOWN);
@@ -565,13 +628,26 @@ public class ResultsTreeEditor extends ViewPart {
 					if (treeSubRow.getColumnLabel(col).toUpperCase()
 							.equals(treeRow.getColumnLabel(col).toUpperCase())) {
 						treeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
-						treeRow.addMatchStatus(MatchStatus.EQUIVALENT);
+						// treeRow.updateMatchStatus(col,
+						// MatchStatus.EQUIVALENT); // WHY DOES THIS GET DONE
+						// AUTOMAGICALLY?
 					} else {
 						treeSubRow.addMatchStatus(MatchStatus.UNKNOWN);
 					}
 				}
 			}
 		}
+		int matchCount = 0;
+		Iterator iterator = trunk.getChildIterator();
+		while (iterator.hasNext()) {
+			treeRow = (TreeNodeRow) iterator.next();
+			if (treeRow.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+				matchCount++;
+			}
+		}
+		String now = "substance: "+ matchCount;
+		treeViewer.getTree().getColumn(1).setText(now);
+		treeViewer.getTree().getColumn(2).setText("same CAS: " + trunk.size());
 		return trunk;
 
 	}
@@ -584,6 +660,5 @@ public class ResultsTreeEditor extends ViewPart {
 		return ((TreeNode) treeNode) + "";
 		// return ((TreeNode) treeNode).counter + "";
 	}
-	
 
 }

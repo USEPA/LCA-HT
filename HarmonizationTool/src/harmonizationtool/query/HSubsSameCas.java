@@ -116,6 +116,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("} \n");
 //		b.append("group by ?ds1_name \n");
 		b.append("order by ?same_cas \n");
+		b.append("limit 500 \n");
 		setQuery(b.toString());
 	}
 

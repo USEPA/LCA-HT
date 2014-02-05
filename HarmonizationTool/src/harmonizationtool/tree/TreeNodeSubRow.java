@@ -11,6 +11,9 @@ public class TreeNodeSubRow extends TreeNodeRow {
 	}
 	@Override
 	public MatchStatus getMatchStatus(int index){
+		if(matchStatus.size() <= index){
+			return null;
+		}
 		return matchStatus.get(index);
 	}
 
