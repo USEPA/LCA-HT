@@ -84,6 +84,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append(" \n");
 		b.append("WHERE { \n");
 		b.append("      ?sub1 eco:hasDataSource ?ds1 . \n");
+		b.append("      OPTIONAL {?sub1 ethold:foundOnRow ?qRow . } \n");
 		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
 		b.append("      filter regex(str(?ds1_name),\"" + param1 + "\") \n");
 		b.append("      ?sub1 eco:casNumber ?cas .  \n");
@@ -115,7 +116,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("       ) \n");
 		b.append("} \n");
 //		b.append("group by ?ds1_name \n");
-		b.append("order by ?same_cas \n");
+		b.append("order by ?qRow ?same_cas \n");
 		b.append("limit 500 \n");
 		setQuery(b.toString());
 	}

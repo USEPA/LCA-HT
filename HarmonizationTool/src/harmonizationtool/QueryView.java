@@ -379,6 +379,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				System.out.println("key=" + key);
 
 				LabeledQuery labeledQuery = queryFromKey(key);
+				String showResultsInWindow = ResultsView.ID;
 				if (labeledQuery != null) {
 					if (labeledQuery instanceof HarmonyQuery2Impl) {
 						ResultSet resultSet = ((HarmonyQuery2Impl) labeledQuery)
@@ -393,9 +394,11 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							// AND WHICH formatForTransfor()
 							// SHOULD BE KNOWN BY THE LabledQuery
 							// BUT CHOSEN BY THE CALLER
+							showResultsInWindow = ResultsTreeEditor.ID;
+
 							TableProvider tableProvider = TableProvider
 									.createTransform0((ResultSetRewindable) resultSet);
-							resultsView.update(tableProvider);
+//							resultsView.update(tableProvider);
 							resultsTreeEditor.update(tableProvider);
 							
 //							resultsView.formatForTransform0();
@@ -481,7 +484,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				// }
 
 				try {
-					Util.showView(ResultsView.ID);
+					Util.showView(showResultsInWindow);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

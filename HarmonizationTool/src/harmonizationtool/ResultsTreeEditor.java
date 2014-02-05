@@ -326,8 +326,8 @@ public class ResultsTreeEditor extends ViewPart {
 							// + subRectangle.height - lineWidth,
 							// lineWidth);
 							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
-									rectangle.x + totalWidth, subRectangle.y
-											+ subRectangle.height - lineWidth,
+									rectangle.x + totalWidth - (lineWidth*2), subRectangle.y
+											+ subRectangle.height - (lineWidth*2),
 									lineWidth);
 						} catch (Exception e) {
 							e.printStackTrace();
