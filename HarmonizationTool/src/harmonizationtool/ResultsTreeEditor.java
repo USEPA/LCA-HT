@@ -24,6 +24,7 @@ import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -79,6 +80,7 @@ public class ResultsTreeEditor extends ViewPart {
 	TreeViewerColumn firstColumn = null;
 	private TreeNode trunk = null;
 	protected TreeItem selectedItem;
+	public static Listener measureListener = null;
 
 	public void createPartControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
@@ -128,6 +130,17 @@ public class ResultsTreeEditor extends ViewPart {
 
 			}
 		});
+		// resize tree row height just one time
+		measureListener = new Listener() {
+			public void handleEvent(Event event) {
+				// height cannot be per row so simply set
+				event.height = 18;
+				treeViewer.getTree().removeListener(SWT.MeasureItem,
+						measureListener);
+			}
+		};
+		treeViewer.getTree().addListener(SWT.MeasureItem, measureListener);
+
 		treeViewer.getTree().addMouseListener(new MouseListener() {
 
 			@Override
@@ -168,13 +181,13 @@ public class ResultsTreeEditor extends ViewPart {
 								matchCount++;
 							}
 						}
-						String was = treeViewer.getTree().getColumn(1).getText();
-						String now = "substance: "+ matchCount;
+						String was = treeViewer.getTree().getColumn(1)
+								.getText();
+						String now = "substance: " + matchCount;
 						treeViewer.getTree().getColumn(1).setText(now);
 
-						
-//						statRow.setColumnLabel(1, "Matched Names: "
-//								+ matchCount);
+						// statRow.setColumnLabel(1, "Matched Names: "
+						// + matchCount);
 
 					} else if (treeNode instanceof TreeNodeRow) {
 						if (selectedItem.getExpanded()) {
@@ -182,13 +195,14 @@ public class ResultsTreeEditor extends ViewPart {
 						} else {
 							selectedItem.setExpanded(true);
 						}
-//						 viewerCell.setFont(JFaceResources.getDialogFont()); // LOOKS SAME AS FONT THAT IS THERE
-//						 viewerCell.setFont(JFaceResources.getDefaultFont());// LOOKS SAME AS FONT THAT IS THERE
-//						 viewerCell.setFont(JFaceResources.getTextFont());// LOOKS LIKE MONOSPACE
-						 viewerCell.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));// LOOKS LIKE ?
-
-
-
+						// viewerCell.setFont(JFaceResources.getDialogFont());
+						// // LOOKS SAME AS FONT THAT IS THERE
+						// viewerCell.setFont(JFaceResources.getDefaultFont());//
+						// LOOKS SAME AS FONT THAT IS THERE
+						// viewerCell.setFont(JFaceResources.getTextFont());//
+						// LOOKS LIKE MONOSPACE
+						// viewerCell.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));//
+						// BOLD VERSION OF DEFAULT_FONT
 					}
 					treeViewer.refresh();
 
@@ -261,98 +275,28 @@ public class ResultsTreeEditor extends ViewPart {
 			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
-				// event.height = 20;
-				// System.out.println("Paint Event: event.type="+ event.type);
-				// System.out.println("treeViewer.getTree().getBounds()="+treeViewer.getTree().getBounds());
 				int totalWidth = treeViewer.getTree().getBounds().width;
-				// ScrollBar scrollBar = treeViewer.getTree().getVerticalBar();
-				// System.out.println("scrollBar.getThumb() "+scrollBar.getThumb());
-				// System.out.println("scrollBar.getMinimum() "+scrollBar.getMinimum());
-				// System.out.println("scrollBar.getMaximum() "+scrollBar.getMaximum());
-
-				// System.out.println("treeViewer.getTree().getBounds().height "+treeViewer.getTree().getBounds().height);
-				// System.out.println("scrollBar.getThumbBounds().y "+scrollBar.getThumbBounds().y);
-
-				// System.out.println("scrollBar.getSelection() "+scrollBar.getSelection());
-
-				// show = if (rectangle.y > (sel/(max-min) - margin) AND
-				// rectangle.y < (sel+thumb)/(max-min) + margin
-				//
-				// int margin = 20;
-				// int topOfScroll = scrollBar.getThumbBounds().y;
-				// int viewerHeight = treeViewer.getTree().getBounds().height;
-
-				// height = 1000;
-				// System.out.println("height = "+ topOfScroll);
-				// float minCompare =
-				// topOfScroll*(scrollBar.getSelection()/(scrollBar.getMaximum()
-				// - scrollBar.getMinimum())) - margin;
-				// float maxCompare =
-				// topOfScroll*((scrollBar.getSelection()+scrollBar.getThumb())/(scrollBar.getMaximum()
-				// - scrollBar.getMinimum())) + margin;
-
-				// System.out.println("minCompare = "+minCompare);
-				// System.out.println("maxCompare = "+maxCompare);
-
-				// System.out.println("treeViewer.getTree().getBounds().height = "+treeViewer.getTree().getBounds().height);
 				TreeItem[] treeItems = treeViewer.getTree().getItems();
-				// System.out.println("treeItems.length="+ treeItems.length);
 				for (TreeItem treeItem : treeItems) {
 					Rectangle rectangle = treeItem.getBounds();
 
 					if (treeItem.getExpanded()) {
 
-						// if((topOfScroll-30) < rectangle.y && rectangle.y <
-						// (topOfScroll+viewerHeight+30)){
-
 						int lineWidth = 1;
-						// draw header line
-
-						// drawLine(gc, rectangle.x, rectangle.y
-						// + rectangle.height + lineWidth, totalWidth,
-						// rectangle.y + rectangle.height + lineWidth,
-						// lineWidth);
-						// System.out.println("y for this box: "+rectangle.y);
-						// draw separator
-
 						try {
-							// draw bottom separator
 							int numSubRows = treeItem.getItems().length;
 							TreeItem subItem = treeItem.getItems()[numSubRows - 1];
 							Rectangle subRectangle = subItem.getBounds();
-							// drawLine(gc, subRectangle.x, subRectangle.y
-							// + subRectangle.height - lineWidth,
-							// totalWidth, subRectangle.y
-							// + subRectangle.height - lineWidth,
-							// lineWidth);
 							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
-									rectangle.x + totalWidth - (lineWidth*2), subRectangle.y
-											+ subRectangle.height - (lineWidth*2),
-									lineWidth);
+									rectangle.x + totalWidth - (lineWidth * 2)
+											- 10, subRectangle.y
+											+ subRectangle.height
+											- (lineWidth * 2), lineWidth);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						// lineWidth = 2;
-						// drawLine(gc, rectangle.x, rectangle.y + lineWidth,
-						// totalWidth, rectangle.y + lineWidth, lineWidth);
 					}
-
-					// System.out.println("treeItem.getExpanded()="+treeItem.getExpanded());
-					// int numSubRows = treeItem.getItems().length;
-					// System.out.println("numSubRows="+numSubRows);
-					// for(TreeItem subItem : treeItem.getItems()){
-					// System.out.println("subItem.getExpanded()="+subItem.getExpanded());
-					//
-					// }
 				}
-			}
-
-			private void drawLine(GC gc, int x1, int y1, int x2, int y2,
-					int lineWidth) {
-				int lineWidthSave = gc.getLineWidth();
-				gc.setLineWidth(lineWidth);
-				gc.drawLine(x1, y1, x2, y2);
-				gc.setLineWidth(lineWidthSave);
 			}
 
 			private void drawRect(GC gc, int x1, int y1, int x2, int y2,
@@ -440,34 +384,37 @@ public class ResultsTreeEditor extends ViewPart {
 			}
 
 			@Override
-			protected void initialize(ColumnViewer viewer, ViewerColumn column) {
-
-				super.initialize(viewer, column);
-			}
-
-			@Override
 			public void update(ViewerCell viewerCell) {
 				super.update(viewerCell);
-				int index = viewerCell.getVisualIndex();
-				MatchStatus status = ((TreeNode) viewerCell.getElement())
-						.getMatchStatus(index);
-				// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
-				// viewerCell.getElement()).rowSubURI.isAnon());
-				// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
-				// viewerCell.getElement()).rowSubURI == null);
+				if (false) {
+					int index = viewerCell.getVisualIndex();
+					MatchStatus status = ((TreeNode) viewerCell.getElement())
+							.getMatchStatus(index);
+					// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
+					// viewerCell.getElement()).rowSubURI.isAnon());
+					// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
+					// viewerCell.getElement()).rowSubURI == null);
 
-				if (status == MatchStatus.EQUIVALENT) {
-					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
-				}
-				if (status == MatchStatus.NONEQUIVALENT) {
-					viewerCell.setBackground(MatchStatus.NONEQUIVALENT
-							.getColor());
-				}
-				if (status == MatchStatus.UNKNOWN) {
-					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+					if (status == MatchStatus.EQUIVALENT) {
+						viewerCell.setBackground(MatchStatus.EQUIVALENT
+								.getColor());
+					}
+					if (status == MatchStatus.NONEQUIVALENT) {
+						viewerCell.setBackground(MatchStatus.NONEQUIVALENT
+								.getColor());
+					}
+					if (status == MatchStatus.UNKNOWN) {
+						viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+					}
+					if (viewerCell.getElement() instanceof TreeNodeSubRow) {
+						viewerCell.setFont(JFaceResources.getDefaultFont());
+					} else if (viewerCell.getElement() instanceof TreeNodeRow) {
+						viewerCell.setFont(JFaceResources.getFontRegistry()
+								.getBold(JFaceResources.DEFAULT_FONT));
+
+					}
 				}
 			}
-
 		});
 
 		return newColumn;
@@ -604,7 +551,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// if (trunk == null) {
 		trunk = new TreeNode(null);
 		// }
-//		new TreeNodeRow(trunk);
+		// new TreeNodeRow(trunk);
 		TreeNodeRow treeRow = new TreeNodeRow(trunk);
 
 		for (int col = 0; col < firstRow.getSize(); col++) {
@@ -645,7 +592,7 @@ public class ResultsTreeEditor extends ViewPart {
 				matchCount++;
 			}
 		}
-		String now = "substance: "+ matchCount;
+		String now = "substance: " + matchCount;
 		treeViewer.getTree().getColumn(1).setText(now);
 		treeViewer.getTree().getColumn(2).setText("same CAS: " + trunk.size());
 		return trunk;

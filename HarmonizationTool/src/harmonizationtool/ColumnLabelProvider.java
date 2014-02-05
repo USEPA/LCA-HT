@@ -1,5 +1,6 @@
 package harmonizationtool;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IFontProvider;
@@ -33,7 +34,10 @@ public class ColumnLabelProvider extends CellLabelProvider implements IFontProvi
 	 * @see org.eclipse.jface.viewers.IFontProvider#getFont(java.lang.Object)
 	 */
 	public Font getFont(Object element) {
-		return null;
+//		return null;
+//		return ((ViewerCell)element).setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+		System.out.println("element.getClass().getName()="+element.getClass().getName());
+		return JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 	}
 
 	/*
