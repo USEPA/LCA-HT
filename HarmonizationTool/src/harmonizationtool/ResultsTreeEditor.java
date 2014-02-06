@@ -47,7 +47,9 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
@@ -81,15 +83,30 @@ public class ResultsTreeEditor extends ViewPart {
 	private TreeNode trunk = null;
 	protected TreeItem selectedItem;
 	public static Listener measureListener = null;
+	private boolean expansionEventOccurred = false;
+	private List<TreeItem> expandedTrees = new ArrayList<TreeItem>();
 
 	public void createPartControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.getTree().setHeaderVisible(true);
+		
 		// treeViewer.getTree().setSize(200, 20);
 		// parent.getShell().get
 		// treeViewer.setContentProvider(new MyContentProvider());
+		treeViewer.addTreeListener(new ITreeViewerListener(){
 
+			@Override
+			public void treeCollapsed(TreeExpansionEvent event) {
+				expansionEventOccurred = true;
+			}
+
+			@Override
+			public void treeExpanded(TreeExpansionEvent event) {
+				expansionEventOccurred = true;
+			}
+			
+		});
 		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(
 				treeViewer, new FocusCellOwnerDrawHighlighter(treeViewer));
 		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
@@ -192,8 +209,16 @@ public class ResultsTreeEditor extends ViewPart {
 					} else if (treeNode instanceof TreeNodeRow) {
 						if (selectedItem.getExpanded()) {
 							selectedItem.setExpanded(false);
+							expandedTrees.remove(treeViewer.getTree().getItem(point));
+							System.out.println("treeViewer.getTree().getItem(point)="+treeViewer.getTree().getItem(point));
+
 						} else {
 							selectedItem.setExpanded(true);
+							System.out.println("treeViewer.getTree().getItem(point)="+treeViewer.getTree().getItem(point));
+							if(!expandedTrees.contains(treeViewer.getTree().getItem(point))){
+								expandedTrees.add(treeViewer.getTree().getItem(point));
+							}
+
 						}
 						// viewerCell.setFont(JFaceResources.getDialogFont());
 						// // LOOKS SAME AS FONT THAT IS THERE
@@ -276,8 +301,10 @@ public class ResultsTreeEditor extends ViewPart {
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
 				int totalWidth = treeViewer.getTree().getBounds().width;
-				TreeItem[] treeItems = treeViewer.getTree().getItems();
-				for (TreeItem treeItem : treeItems) {
+				if(expansionEventOccurred){
+					updateExpandedTrees();
+				}
+				for(TreeItem treeItem : expandedTrees){
 					Rectangle rectangle = treeItem.getBounds();
 
 					if (treeItem.getExpanded()) {
@@ -296,7 +323,29 @@ public class ResultsTreeEditor extends ViewPart {
 							e.printStackTrace();
 						}
 					}
+					
 				}
+//				TreeItem[] treeItems = treeViewer.getTree().getItems();
+//				for (TreeItem treeItem : treeItems) {
+//					Rectangle rectangle = treeItem.getBounds();
+//
+//					if (treeItem.getExpanded()) {
+//
+//						int lineWidth = 1;
+//						try {
+//							int numSubRows = treeItem.getItems().length;
+//							TreeItem subItem = treeItem.getItems()[numSubRows - 1];
+//							Rectangle subRectangle = subItem.getBounds();
+//							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
+//									rectangle.x + totalWidth - (lineWidth * 2)
+//											- 10, subRectangle.y
+//											+ subRectangle.height
+//											- (lineWidth * 2), lineWidth);
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//					}
+//				}
 			}
 
 			private void drawRect(GC gc, int x1, int y1, int x2, int y2,
@@ -309,6 +358,17 @@ public class ResultsTreeEditor extends ViewPart {
 
 		});
 
+	}
+
+	protected void updateExpandedTrees() {
+		TreeItem[] treeItems = treeViewer.getTree().getItems();
+		expandedTrees.clear();
+		for(TreeItem treeItem : treeItems){
+			if(treeItem.getExpanded()){
+				expandedTrees.add(treeItem);
+			}
+		}
+		expansionEventOccurred = false;		
 	}
 
 	private void removeColumns() {
@@ -386,7 +446,6 @@ public class ResultsTreeEditor extends ViewPart {
 			@Override
 			public void update(ViewerCell viewerCell) {
 				super.update(viewerCell);
-				if (false) {
 					int index = viewerCell.getVisualIndex();
 					MatchStatus status = ((TreeNode) viewerCell.getElement())
 							.getMatchStatus(index);
@@ -413,7 +472,6 @@ public class ResultsTreeEditor extends ViewPart {
 								.getBold(JFaceResources.DEFAULT_FONT));
 
 					}
-				}
 			}
 		});
 
