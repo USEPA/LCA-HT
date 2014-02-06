@@ -140,11 +140,6 @@ public class ResultsTreeEditor extends ViewPart {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out
-						.println("widgetDefaultSelected e.getSource().toString()="
-								+ e.getSource().toString());
-				System.out.println("widgetDefaultSelected e.item=" + e.item);
-
 			}
 		});
 		// resize tree row height just one time
@@ -210,11 +205,9 @@ public class ResultsTreeEditor extends ViewPart {
 						if (selectedItem.getExpanded()) {
 							selectedItem.setExpanded(false);
 							expandedTrees.remove(treeViewer.getTree().getItem(point));
-							System.out.println("treeViewer.getTree().getItem(point)="+treeViewer.getTree().getItem(point));
 
 						} else {
 							selectedItem.setExpanded(true);
-							System.out.println("treeViewer.getTree().getItem(point)="+treeViewer.getTree().getItem(point));
 							if(!expandedTrees.contains(treeViewer.getTree().getItem(point))){
 								expandedTrees.add(treeViewer.getTree().getItem(point));
 							}
