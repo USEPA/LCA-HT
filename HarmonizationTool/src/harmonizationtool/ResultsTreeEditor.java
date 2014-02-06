@@ -87,14 +87,15 @@ public class ResultsTreeEditor extends ViewPart {
 	private List<TreeItem> expandedTrees = new ArrayList<TreeItem>();
 
 	public void createPartControl(Composite parent) {
+
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.getTree().setHeaderVisible(true);
-		
+
 		// treeViewer.getTree().setSize(200, 20);
 		// parent.getShell().get
 		// treeViewer.setContentProvider(new MyContentProvider());
-		treeViewer.addTreeListener(new ITreeViewerListener(){
+		treeViewer.addTreeListener(new ITreeViewerListener() {
 
 			@Override
 			public void treeCollapsed(TreeExpansionEvent event) {
@@ -105,7 +106,7 @@ public class ResultsTreeEditor extends ViewPart {
 			public void treeExpanded(TreeExpansionEvent event) {
 				expansionEventOccurred = true;
 			}
-			
+
 		});
 		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(
 				treeViewer, new FocusCellOwnerDrawHighlighter(treeViewer));
@@ -204,12 +205,15 @@ public class ResultsTreeEditor extends ViewPart {
 					} else if (treeNode instanceof TreeNodeRow) {
 						if (selectedItem.getExpanded()) {
 							selectedItem.setExpanded(false);
-							expandedTrees.remove(treeViewer.getTree().getItem(point));
+							expandedTrees.remove(treeViewer.getTree().getItem(
+									point));
 
 						} else {
 							selectedItem.setExpanded(true);
-							if(!expandedTrees.contains(treeViewer.getTree().getItem(point))){
-								expandedTrees.add(treeViewer.getTree().getItem(point));
+							if (!expandedTrees.contains(treeViewer.getTree()
+									.getItem(point))) {
+								expandedTrees.add(treeViewer.getTree().getItem(
+										point));
 							}
 
 						}
@@ -293,75 +297,105 @@ public class ResultsTreeEditor extends ViewPart {
 			@Override
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
-				int totalWidth = treeViewer.getTree().getBounds().width;
-				if(expansionEventOccurred){
+				// Tree tree = treeViewer.getTree();
+				// tree.get
+				// int totalWidth = tree.getBounds().width;
+				// TreeColumn lastCol = tree.getColumn(tree.getColumnCount() -
+				// 1);
+				// treeViewer.get
+				// int visibleWidth = totalWidth - lastColWidth;
+				if (expansionEventOccurred) {
 					updateExpandedTrees();
 				}
-				for(TreeItem treeItem : expandedTrees){
-					Rectangle rectangle = treeItem.getBounds();
-
-					if (treeItem.getExpanded()) {
-
-						int lineWidth = 1;
-						try {
-							int numSubRows = treeItem.getItems().length;
-							TreeItem subItem = treeItem.getItems()[numSubRows - 1];
-							Rectangle subRectangle = subItem.getBounds();
-							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
-									rectangle.x + totalWidth - (lineWidth * 2)
-											- 10, subRectangle.y
-											+ subRectangle.height
-											- (lineWidth * 2), lineWidth);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+				for (TreeItem treeItem : expandedTrees) {
+					Rectangle r1 = treeItem.getBounds();
+					TreeItem[] subTreeItems = treeItem.getItems();
+					TreeItem itemLast = null;
+					for (TreeItem item : subTreeItems) {
+						itemLast = item;
 					}
-					
+					Tree tree = treeViewer.getTree();
+					int lastIndex = tree.getColumnCount() - 1;
+					Rectangle r2 = treeItem.getBounds(lastIndex);
+					Rectangle r3 = itemLast.getBounds(lastIndex);
+					int adjX = r1.x;
+					int adjY = r1.y;
+					int adjWidth = (r2.x + r2.width - 1) - r1.x;
+					int adjHeight = (r3.y + r3.height)- r1.y;
+					Rectangle adjRect = new Rectangle(adjX, adjY, adjWidth,
+							adjHeight);
+					int lineWidth = 1;
+					drawRect(gc, adjRect, lineWidth);
+
+					// rectangle.width
+					//
+					// if (treeItem.getExpanded()) {
+					//
+					// int lineWidth = 1;
+					// try {
+					// int numSubRows = treeItem.getItems().length;
+					// TreeItem subItem = treeItem.getItems()[numSubRows - 1];
+					// Rectangle subRectangle = subItem.getBounds();
+					// drawRect(gc, rectangle.x, rectangle.y + lineWidth,
+					// rectangle.x + visibleWidth
+					// - (lineWidth * 2), subRectangle.y
+					// + subRectangle.height
+					// - (lineWidth * 2), lineWidth);
+					// } catch (Exception e) {
+					// e.printStackTrace();
+					// }
+					// }
+
 				}
-//				TreeItem[] treeItems = treeViewer.getTree().getItems();
-//				for (TreeItem treeItem : treeItems) {
-//					Rectangle rectangle = treeItem.getBounds();
-//
-//					if (treeItem.getExpanded()) {
-//
-//						int lineWidth = 1;
-//						try {
-//							int numSubRows = treeItem.getItems().length;
-//							TreeItem subItem = treeItem.getItems()[numSubRows - 1];
-//							Rectangle subRectangle = subItem.getBounds();
-//							drawRect(gc, rectangle.x, rectangle.y + lineWidth,
-//									rectangle.x + totalWidth - (lineWidth * 2)
-//											- 10, subRectangle.y
-//											+ subRectangle.height
-//											- (lineWidth * 2), lineWidth);
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
-//					}
-//				}
+				// TreeItem[] treeItems = treeViewer.getTree().getItems();
+				// for (TreeItem treeItem : treeItems) {
+				// Rectangle rectangle = treeItem.getBounds();
+				//
+				// if (treeItem.getExpanded()) {
+				//
+				// int lineWidth = 1;
+				// try {
+				// int numSubRows = treeItem.getItems().length;
+				// TreeItem subItem = treeItem.getItems()[numSubRows - 1];
+				// Rectangle subRectangle = subItem.getBounds();
+				// drawRect(gc, rectangle.x, rectangle.y + lineWidth,
+				// rectangle.x + totalWidth - (lineWidth * 2)
+				// - 10, subRectangle.y
+				// + subRectangle.height
+				// - (lineWidth * 2), lineWidth);
+				// } catch (Exception e) {
+				// e.printStackTrace();
+				// }
+				// }
+				// }
 			}
 
-			private void drawRect(GC gc, int x1, int y1, int x2, int y2,
-					int lineWidth) {
-				int lineWidthSave = gc.getLineWidth();
-				gc.setLineWidth(lineWidth);
-				gc.drawRectangle(x1, y1, x2 - x1, y2 - y1);
-				gc.setLineWidth(lineWidthSave);
+			// private void drawRect(GC gc, int x1, int y1, int x2, int y2,
+			// int lineWidth) {
+			// int lineWidthSave = gc.getLineWidth();
+			// gc.setLineWidth(lineWidth);
+			// gc.drawRectangle(x1, y1, x2 - x1, y2 - y1);
+			// gc.setLineWidth(lineWidthSave);
+			// }
+			private void drawRect(GC gc, Rectangle rectangle, int lineWidth) {
+				 int lineWidthSave = gc.getLineWidth();
+				 gc.setLineWidth(lineWidth);
+				gc.drawRectangle(rectangle);
+				 gc.setLineWidth(lineWidthSave);
 			}
 
 		});
-
 	}
 
 	protected void updateExpandedTrees() {
 		TreeItem[] treeItems = treeViewer.getTree().getItems();
 		expandedTrees.clear();
-		for(TreeItem treeItem : treeItems){
-			if(treeItem.getExpanded()){
+		for (TreeItem treeItem : treeItems) {
+			if (treeItem.getExpanded()) {
 				expandedTrees.add(treeItem);
 			}
 		}
-		expansionEventOccurred = false;		
+		expansionEventOccurred = false;
 	}
 
 	private void removeColumns() {
@@ -390,6 +424,7 @@ public class ResultsTreeEditor extends ViewPart {
 
 	public void update(TableProvider tableProvider) {
 		try {
+			expandedTrees.clear();
 			treeViewer.setContentProvider(new MyContentProvider());
 			removeColumns();
 			createColumns(tableProvider);
@@ -439,32 +474,31 @@ public class ResultsTreeEditor extends ViewPart {
 			@Override
 			public void update(ViewerCell viewerCell) {
 				super.update(viewerCell);
-					int index = viewerCell.getVisualIndex();
-					MatchStatus status = ((TreeNode) viewerCell.getElement())
-							.getMatchStatus(index);
-					// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
-					// viewerCell.getElement()).rowSubURI.isAnon());
-					// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
-					// viewerCell.getElement()).rowSubURI == null);
+				int index = viewerCell.getVisualIndex();
+				MatchStatus status = ((TreeNode) viewerCell.getElement())
+						.getMatchStatus(index);
+				// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
+				// viewerCell.getElement()).rowSubURI.isAnon());
+				// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
+				// viewerCell.getElement()).rowSubURI == null);
 
-					if (status == MatchStatus.EQUIVALENT) {
-						viewerCell.setBackground(MatchStatus.EQUIVALENT
-								.getColor());
-					}
-					if (status == MatchStatus.NONEQUIVALENT) {
-						viewerCell.setBackground(MatchStatus.NONEQUIVALENT
-								.getColor());
-					}
-					if (status == MatchStatus.UNKNOWN) {
-						viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
-					}
-					if (viewerCell.getElement() instanceof TreeNodeSubRow) {
-						viewerCell.setFont(JFaceResources.getDefaultFont());
-					} else if (viewerCell.getElement() instanceof TreeNodeRow) {
-						viewerCell.setFont(JFaceResources.getFontRegistry()
-								.getBold(JFaceResources.DEFAULT_FONT));
+				if (status == MatchStatus.EQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
+				}
+				if (status == MatchStatus.NONEQUIVALENT) {
+					viewerCell.setBackground(MatchStatus.NONEQUIVALENT
+							.getColor());
+				}
+				if (status == MatchStatus.UNKNOWN) {
+					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+				}
+				if (viewerCell.getElement() instanceof TreeNodeSubRow) {
+					viewerCell.setFont(JFaceResources.getDefaultFont());
+				} else if (viewerCell.getElement() instanceof TreeNodeRow) {
+					viewerCell.setFont(JFaceResources.getFontRegistry()
+							.getBold(JFaceResources.DEFAULT_FONT));
 
-					}
+				}
 			}
 		});
 

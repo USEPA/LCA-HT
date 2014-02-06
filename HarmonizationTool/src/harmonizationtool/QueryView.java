@@ -399,7 +399,12 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							TableProvider tableProvider = TableProvider
 									.createTransform0((ResultSetRewindable) resultSet);
 //							resultsView.update(tableProvider);
-							resultsTreeEditor.update(tableProvider);
+							try {
+								resultsTreeEditor.update(tableProvider);
+							} catch (Exception e) {
+								System.out.println("resultsTreeEditor="+resultsTreeEditor);
+								e.printStackTrace();
+							}
 							
 //							resultsView.formatForTransform0();
 						} else {
