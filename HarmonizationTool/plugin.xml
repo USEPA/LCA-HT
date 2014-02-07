@@ -51,6 +51,12 @@
             name="Results Tree Editor"
             restorable="true">
       </view>
+      <view
+            class="harmonizationtool.console.LightweightConsoleView"
+            id="harmonizationtool.console.LightweightConsoleView"
+            name="LightWeightConsole"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -147,6 +153,11 @@
                <command
                      commandId="HarmonizationTool.ResultsTreeEditorID"
                      label="Show Results Tree Editor"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
+                     label="Show Console"
                      style="push">
                </command>
             </menu>
@@ -276,6 +287,11 @@
             defaultHandler="harmonizationtool.handler.EditMetadataHandler"
             id="HarmonizationTool.EditMetadataId"
             name="Edit Metadata">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowLightWeightConsoleHandler"
+            id="harmonizationtool.handler.ShowLightWeightConsoleHandler"
+            name="Show Console">
       </command>
    </extension>
    <extension
