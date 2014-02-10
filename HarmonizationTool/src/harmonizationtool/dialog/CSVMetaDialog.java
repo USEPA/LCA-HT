@@ -477,7 +477,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	@Override
 	public int open() {
 		if (newFileMD) {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);
+//			getButton(IDialogConstants.OK_ID).setEnabled(false);
 		}
 		return super.open();
 	}
