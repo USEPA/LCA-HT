@@ -9,6 +9,8 @@ import harmonizationtool.tree.Node;
 import harmonizationtool.tree.TreeNode;
 import harmonizationtool.tree.TreeNodeRow;
 import harmonizationtool.tree.TreeNodeSubRow;
+import harmonizationtool.tree.viewer.ControlView;
+import harmonizationtool.utils.Util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +24,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
@@ -38,6 +42,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -221,6 +226,8 @@ public class ResultsTreeEditor extends ViewPart {
 
 			}
 		});
+		
+		
 		treeViewer.setContentProvider(new MyContentProvider());
 		// treeViewer.setInput(createModel());
 		// treeViewer.setInput(createModel2());
@@ -341,6 +348,12 @@ public class ResultsTreeEditor extends ViewPart {
 			treeViewer.setInput(trunk);
 			// treeViewer.getTree().setHeaderVisible(true);
 			// treeViewer.getTree().setLinesVisible(true);
+			
+			//set TotalRows on the ControlView
+			ControlView controlView = (ControlView)Util.findView(ControlView.ID);
+			if(controlView != null){
+				controlView.setTotalRows("" + trunk.size());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -597,4 +610,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// return ((TreeNode) treeNode).counter + "";
 	}
 
+	public int getTotalNumberRows() throws Exception{
+		return trunk.size();
+	}
 }

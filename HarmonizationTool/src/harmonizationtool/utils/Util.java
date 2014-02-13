@@ -76,8 +76,13 @@ public class Util {
 	}
 
 	public static IViewPart findView(String viewID) {
-		IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.getActivePage().findView(viewID);
+		IViewPart view;
+		try {
+			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().findView(viewID);
+		} catch (Exception e) {
+			view = null;
+		}
 		return view;
 	}
 

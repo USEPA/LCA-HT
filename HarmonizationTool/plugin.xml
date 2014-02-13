@@ -57,6 +57,12 @@
             name="LightWeightConsole"
             restorable="true">
       </view>
+      <view
+            class="harmonizationtool.tree.viewer.ControlView"
+            id="harmonizationtool.tree.viewer.ControlView"
+            name="ResultsTreeControl"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -163,6 +169,11 @@
                <command
                      commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
                      label="Show Console"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.tree.viewer.ControlViewHandler"
+                     label="Show Results Tree Control"
                      style="push">
                </command>
             </menu>
@@ -302,6 +313,11 @@
             defaultHandler="harmonizationtool.handler.DeleteDataSetHandler"
             id="HarmonizationTool.DeleteDataSetId"
             name="Delete DataSet">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.tree.viewer.ControlViewHandler"
+            id="harmonizationtool.tree.viewer.ControlViewHandler"
+            name="Show Control View">
       </command>
    </extension>
    <extension
