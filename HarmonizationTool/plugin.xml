@@ -125,6 +125,11 @@
                   label="Edit Metadata"
                   style="push">
             </command>
+            <command
+                  commandId="HarmonizationTool.DeleteDataSetId"
+                  label="Delete Dat Set"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="Window">
@@ -292,6 +297,11 @@
             defaultHandler="harmonizationtool.handler.ShowLightWeightConsoleHandler"
             id="harmonizationtool.handler.ShowLightWeightConsoleHandler"
             name="Show Console">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.DeleteDataSetHandler"
+            id="HarmonizationTool.DeleteDataSetId"
+            name="Delete DataSet">
       </command>
    </extension>
    <extension
