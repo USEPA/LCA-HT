@@ -85,6 +85,8 @@ public class ResultsTreeEditor extends ViewPart {
 
 	TreeViewerColumn firstColumn = null;
 	private TreeNode trunk = null;
+	private TreeNode trunkDisplayed = null;
+
 	protected TreeItem selectedItem;
 	public static Listener measureListener = null;
 	private boolean expansionEventOccurred = false;
@@ -356,14 +358,15 @@ public class ResultsTreeEditor extends ViewPart {
 			removeColumns();
 			createColumns(tableProvider);
 			trunk = createTrunk(tableProvider);
-			treeViewer.setInput(trunk);
+			trunkDisplayed = trunk;
+			treeViewer.setInput(trunkDisplayed);
 			// treeViewer.getTree().setHeaderVisible(true);
 			// treeViewer.getTree().setLinesVisible(true);
 
 			// set TotalRows on the ControlView
 			ControlView controlView = (ControlView) Util.findView(ControlView.ID);
 			if (controlView != null) {
-				controlView.setTotalRows("" + trunk.size());
+				controlView.setTotalRows("" + trunkDisplayed.size());
 			}
 			updateControlViewMatches();
 		} catch (Exception e) {
@@ -623,12 +626,12 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	public int getTotalNumberRows() throws Exception {
-		return trunk.size();
+		return trunkDisplayed.size();
 	}
 
 	private int countMatchedRows() {
 		int matchCount = 0;
-		Iterator iterator = trunk.getChildIterator();
+		Iterator iterator = trunkDisplayed.getChildIterator();
 		TreeNodeRow statRow = null;
 		while (iterator.hasNext()) {
 			TreeNodeRow treeRow = (TreeNodeRow) iterator.next();
@@ -674,7 +677,7 @@ public class ResultsTreeEditor extends ViewPart {
 		if (expand) {
 			for (int i = 0; i < itemCount; i++) {
 				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-				TreeNode treeNode = (TreeNode) trunk.get(i);
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (!treeItem.getExpanded() && (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT)) {
 					treeItem.setExpanded(expand);
 					if (!expandedTrees.contains(treeItem)) {
@@ -685,7 +688,7 @@ public class ResultsTreeEditor extends ViewPart {
 		} else {
 			for (int i = itemCount - 1; i >= 0; i--) {
 				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-				TreeNode treeNode = (TreeNode) trunk.get(i);
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (treeItem.getExpanded() && (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT)) {
 					treeItem.setExpanded(expand);
 					if (expandedTrees.contains(treeItem)) {
@@ -698,61 +701,58 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	public void hideMatched(boolean hide) {
-		System.out.println("Not implemented yet");
-		int itemCount = treeViewer.getTree().getItemCount();
-//		if (hide) {
-//			for (int i = 0; i < itemCount; i++) {
-//				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-//				TreeNode treeNode = (TreeNode) trunk.get(i);
-//				if (!treeItem.getExpanded() && (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT)) {
-//					treeItem.setExpanded(hide);
-//					if (!expandedTrees.contains(treeItem)) {
-//						expandedTrees.add(treeItem);
-//					}
-//				}
-//			}
-//		} else {
-//			for (int i = itemCount - 1; i >= 0; i--) {
-//				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-//				TreeNode treeNode = (TreeNode) trunk.get(i);
-//				if (treeItem.getExpanded() && (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT)) {
-//					treeItem.setExpanded(hide);
-//					if (expandedTrees.contains(treeItem)) {
-//						expandedTrees.remove(treeItem);
-//					}
-//				}
-//			}
-//		}
+		TreeNode tempTrunk = new TreeNode(null);
+		if (hide) {
+			for (int i = 0; i < trunkDisplayed.size(); i++) {
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
+				if (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT) {
+					tempTrunk.addChild(treeNode);
+				} else if (expandedTrees.contains(treeNode)) {
+					expandedTrees.remove(treeNode);
+				}
+			}
+		} else {
+			for (int i = 0; i < trunk.size(); i++) {
+				TreeNode treeNode = (TreeNode) trunk.get(i);
+				if (trunkDisplayed.contains(treeNode)) {
+					tempTrunk.addChild(treeNode);
+				} else {
+					if (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+						tempTrunk.addChild(treeNode);
+					}
+				}
+			}
+		}
+		trunkDisplayed = tempTrunk;
+		treeViewer.setInput(trunkDisplayed);
 		treeViewer.refresh();
 	}
 
-	
 	public void hideUnmatched(boolean hide) {
-		System.out.println("Not implemented yet");
-		int itemCount = treeViewer.getTree().getItemCount();
-//		if (hide) {
-//			for (int i = 0; i < itemCount; i++) {
-//				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-//				TreeNode treeNode = (TreeNode) trunk.get(i);
-//				if (!treeItem.getExpanded() && (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT)) {
-//					treeItem.setExpanded(hide);
-//					if (!expandedTrees.contains(treeItem)) {
-//						expandedTrees.add(treeItem);
-//					}
-//				}
-//			}
-//		} else {
-//			for (int i = itemCount - 1; i >= 0; i--) {
-//				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-//				TreeNode treeNode = (TreeNode) trunk.get(i);
-//				if (treeItem.getExpanded() && (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT)) {
-//					treeItem.setExpanded(hide);
-//					if (expandedTrees.contains(treeItem)) {
-//						expandedTrees.remove(treeItem);
-//					}
-//				}
-//			}
-//		}
+		TreeNode tempTrunk = new TreeNode(null);
+		if (hide) {
+			for (int i = 0; i < trunkDisplayed.size(); i++) {
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
+				if (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+					tempTrunk.addChild(treeNode);
+				} else if (expandedTrees.contains(treeNode)) {
+					expandedTrees.remove(treeNode); //	FIXME check here and above
+				}
+			}
+		} else {
+			for (int i = 0; i < trunk.size(); i++) {
+				TreeNode treeNode = (TreeNode) trunk.get(i);
+				if (trunkDisplayed.contains(treeNode)) {
+					tempTrunk.addChild(treeNode);
+				} else {
+					if (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT) {
+						tempTrunk.addChild(treeNode);
+					}
+				}
+			}
+		}
+		trunkDisplayed = tempTrunk;
+		treeViewer.setInput(trunkDisplayed);
 		treeViewer.refresh();
 	}
 
@@ -761,7 +761,7 @@ public class ResultsTreeEditor extends ViewPart {
 		if (expand) {
 			for (int i = 0; i < itemCount; i++) {
 				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-				TreeNode treeNode = (TreeNode) trunk.get(i);
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (!treeItem.getExpanded() && (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT)) {
 					treeItem.setExpanded(expand);
 					if (!expandedTrees.contains(treeItem)) {
@@ -772,7 +772,7 @@ public class ResultsTreeEditor extends ViewPart {
 		} else {
 			for (int i = itemCount - 1; i >= 0; i--) {
 				TreeItem treeItem = (TreeItem) treeViewer.getTree().getItem(i);
-				TreeNode treeNode = (TreeNode) trunk.get(i);
+				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (treeItem.getExpanded() && (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT)) {
 					treeItem.setExpanded(expand);
 					if (expandedTrees.contains(treeItem)) {
@@ -788,7 +788,7 @@ public class ResultsTreeEditor extends ViewPart {
 		ControlView controlView = (ControlView) Util.findView(ControlView.ID);
 		if (controlView != null) {
 			controlView.setMatchedRows("" + matchCount);
-			int unmatched = trunk.size() - matchCount;
+			int unmatched = trunkDisplayed.size() - matchCount;
 			controlView.setUnmatchedRows("" + unmatched);
 		}
 	}
@@ -798,7 +798,7 @@ public class ResultsTreeEditor extends ViewPart {
 		int matchCount = countMatchedRows();
 		if (controlView != null) {
 			controlView.setMatchedRows("" + matchCount);
-			int unmatched = trunk.size() - matchCount;
+			int unmatched = trunkDisplayed.size() - matchCount;
 			controlView.setUnmatchedRows("" + unmatched);
 		}
 	}

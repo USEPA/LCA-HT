@@ -80,10 +80,10 @@ public class ControlView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
 				boolean hide = true;
-				if (btnMatchedShow.getText().equals("Show")) {
-					btnMatchedShow.setText("Hide");
-				} else {
+				if (btnMatchedShow.getText().equals("Hide")) {
 					btnMatchedShow.setText("Show");
+				} else {
+					btnMatchedShow.setText("Hide");
 					hide = false;
 				}
 
@@ -145,15 +145,15 @@ public class ControlView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
 				boolean hide = true;
-				if (btnUnmatchedShow.getText().equals("Show")) {
-					btnUnmatchedShow.setText("Hide");
-				} else {
+				if (btnUnmatchedShow.getText().equals("Hide")) {
 					btnUnmatchedShow.setText("Show");
+				} else {
+					btnUnmatchedShow.setText("Hide");
 					hide = false;
 				}
 
 				if (resultsTreeEditor != null) {
-					resultsTreeEditor.hideMatched(hide);
+					resultsTreeEditor.hideUnmatched(hide);
 				}
 				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
 				// "Expand All";

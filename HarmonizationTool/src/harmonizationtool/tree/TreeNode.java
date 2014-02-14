@@ -61,7 +61,14 @@ public class TreeNode extends Node {
 	}
 
 	public Object get(int i) {
-		// TODO Auto-generated method stub
 		return children.get(i);
 	}
+
+	public boolean contains(TreeNode treeNode) {
+		return children.contains(treeNode);
+	}
+
+//	public void remove(TreeNode treeNode) {
+//		children.remove(treeNode);
+//	}
 }
