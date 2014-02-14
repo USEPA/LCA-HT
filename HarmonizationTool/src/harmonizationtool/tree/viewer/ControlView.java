@@ -23,6 +23,7 @@ public class ControlView extends ViewPart {
 	private Button btnUnmatchedExpand;
 	private Button btnMatchedShow;
 	private Button btnUnmatchedShow;
+	private Button btnAllExpand;
 
 	public ControlView() {
 	}
@@ -40,19 +41,35 @@ public class ControlView extends ViewPart {
 		lblMatched.setText("Matched");
 
 		textMatched = new Text(composite, SWT.BORDER);
+		// new Label(composite, SWT.NONE);
 
 		btnMatchedExpand = new Button(composite, SWT.NONE);
 		btnMatchedExpand.setText("Expand All");
 		btnMatchedExpand.addSelectionListener(new SelectionListener() {
 
-			@Override
+			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" : "Expand All";
-				btnMatchedExpand.setText(s);
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+				boolean expand = true;
+				if (btnMatchedExpand.getText().equals("Expand All")) {
+					btnMatchedExpand.setText("Collapse All");
+				} else {
+					btnMatchedExpand.setText("Expand All");
+					expand = false;
+				}
+
+				if (resultsTreeEditor != null) {
+					resultsTreeEditor.expandMatched(expand);
+				}
+				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
+				// "Expand All";
+				// btnMatchedExpand.setText(s);
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
 			}
 		});
 
@@ -60,11 +77,29 @@ public class ControlView extends ViewPart {
 		btnMatchedShow.setText("Hide");
 		btnMatchedShow.addSelectionListener(new SelectionListener() {
 
-			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String s = btnMatchedShow.getText().equals("Hide") ? "Show" : "Hide";
-				btnMatchedShow.setText(s);
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+				boolean hide = true;
+				if (btnMatchedShow.getText().equals("Show")) {
+					btnMatchedShow.setText("Hide");
+				} else {
+					btnMatchedShow.setText("Show");
+					hide = false;
+				}
+
+				if (resultsTreeEditor != null) {
+					resultsTreeEditor.hideMatched(hide);
+				}
+				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
+				// "Expand All";
+				// btnMatchedExpand.setText(s);
 			}
+
+			// @Override
+			// public void widgetSelected(SelectionEvent e) {
+			// String s = btnMatchedShow.getText().equals("Hide") ? "Show" : "Hide";
+			// btnMatchedShow.setText(s);
+			// }
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -80,10 +115,22 @@ public class ControlView extends ViewPart {
 		btnUnmatchedExpand.setText("Expand All");
 		btnUnmatchedExpand.addSelectionListener(new SelectionListener() {
 
-			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String s = btnUnmatchedExpand.getText().equals("Expand All") ? "Collapse All" : "Expand All";
-				btnUnmatchedExpand.setText(s);
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+				boolean expand = true;
+				if (btnUnmatchedExpand.getText().equals("Expand All")) {
+					btnUnmatchedExpand.setText("Collapse All");
+				} else {
+					btnUnmatchedExpand.setText("Expand All");
+					expand = false;
+				}
+
+				if (resultsTreeEditor != null) {
+					resultsTreeEditor.expandUnmatched(expand);
+				}
+				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
+				// "Expand All";
+				// btnMatchedExpand.setText(s);
 			}
 
 			@Override
@@ -95,11 +142,30 @@ public class ControlView extends ViewPart {
 		btnUnmatchedShow.setText("Hide");
 		btnUnmatchedShow.addSelectionListener(new SelectionListener() {
 
-			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String s = btnUnmatchedShow.getText().equals("Hide") ? "Show" : "Hide";
-				btnUnmatchedShow.setText(s);
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+				boolean hide = true;
+				if (btnMatchedShow.getText().equals("Show")) {
+					btnMatchedShow.setText("Hide");
+				} else {
+					btnMatchedShow.setText("Show");
+					hide = false;
+				}
+
+				if (resultsTreeEditor != null) {
+					resultsTreeEditor.hideMatched(hide);
+				}
+				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
+				// "Expand All";
+				// btnMatchedExpand.setText(s);
 			}
+
+			//
+			// @Override
+			// public void widgetSelected(SelectionEvent e) {
+			// String s = btnUnmatchedShow.getText().equals("Hide") ? "Show" : "Hide";
+			// btnUnmatchedShow.setText(s);
+			// }
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -112,16 +178,47 @@ public class ControlView extends ViewPart {
 		textTotal = new Text(composite, SWT.BORDER);
 		// Object layoutDataTextTotal GridData;
 		// textTotal.setLayoutData(layoutDataTextTotal GridData);
-		GridData textTotalGridData = new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 1, 1);
+		GridData textTotalGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		textTotalGridData.widthHint = 60;
 		textTotal.setLayoutData(textTotalGridData);
-		new Label(composite, SWT.NONE);
+
+		btnAllExpand = new Button(composite, SWT.NONE);
+		btnAllExpand.setText("Expand All");
+		btnAllExpand.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+				boolean expand = true;
+				if (btnAllExpand.getText().equals("Expand All")) {
+					btnAllExpand.setText("Collapse All");
+					btnMatchedExpand.setText("Collapse All");
+					btnUnmatchedExpand.setText("Collapse All");
+				} else {
+					btnAllExpand.setText("Expand All");
+					btnMatchedExpand.setText("Expand All");
+					btnUnmatchedExpand.setText("Expand All");
+
+					expand = false;
+				}
+
+				if (resultsTreeEditor != null) {
+					resultsTreeEditor.expandAll(expand);
+				}
+				// String s = btnMatchedExpand.getText().equals("Expand All") ? "Collapse All" :
+				// "Expand All";
+				// btnMatchedExpand.setText(s);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 		new Label(composite, SWT.NONE);
 
 		Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("Cancel");
-		btnCancel.setText("Commit");
+		// btnCancel.setText("Commit");
 		btnCancel.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -154,8 +251,7 @@ public class ControlView extends ViewPart {
 	}
 
 	private void init() {
-		ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util
-				.findView(ResultsTreeEditor.ID);
+		ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
 		if (resultsTreeEditor != null) {
 			try {
 				int totalRows = resultsTreeEditor.getTotalNumberRows();
@@ -173,4 +269,11 @@ public class ControlView extends ViewPart {
 		textTotal.setText(totalRows);
 	}
 
+	public void setMatchedRows(String matchedRows) {
+		textMatched.setText(matchedRows);
+	}
+
+	public void setUnmatchedRows(String unMatchedRows) {
+		textUnmatched.setText(unMatchedRows);
+	}
 }

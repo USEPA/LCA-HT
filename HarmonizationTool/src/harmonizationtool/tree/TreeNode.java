@@ -59,4 +59,9 @@ public class TreeNode extends Node {
 	public int size() {
 		return children.size();
 	}
+
+	public Object get(int i) {
+		// TODO Auto-generated method stub
+		return children.get(i);
+	}
 }
