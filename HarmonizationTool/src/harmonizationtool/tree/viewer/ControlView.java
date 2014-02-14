@@ -145,10 +145,10 @@ public class ControlView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
 				boolean hide = true;
-				if (btnMatchedShow.getText().equals("Show")) {
-					btnMatchedShow.setText("Hide");
+				if (btnUnmatchedShow.getText().equals("Show")) {
+					btnUnmatchedShow.setText("Hide");
 				} else {
-					btnMatchedShow.setText("Show");
+					btnUnmatchedShow.setText("Show");
 					hide = false;
 				}
 
