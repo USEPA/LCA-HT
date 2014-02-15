@@ -179,7 +179,7 @@ public class ControlView extends ViewPart {
 		// Object layoutDataTextTotal GridData;
 		// textTotal.setLayoutData(layoutDataTextTotal GridData);
 		GridData textTotalGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		textTotalGridData.widthHint = 60;
+//		textTotalGridData.widthHint = 60;
 		textTotal.setLayoutData(textTotalGridData);
 
 		btnAllExpand = new Button(composite, SWT.NONE);

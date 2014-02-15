@@ -702,13 +702,16 @@ public class ResultsTreeEditor extends ViewPart {
 
 	public void hideMatched(boolean hide) {
 		TreeNode tempTrunk = new TreeNode(null);
+		List<Integer> expandedTreeIndexes = new ArrayList<Integer>();
 		if (hide) {
 			for (int i = 0; i < trunkDisplayed.size(); i++) {
+				TreeItem treeItem = treeViewer.getTree().getItem(i);
 				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT) {
 					tempTrunk.addChild(treeNode);
-				} else if (expandedTrees.contains(treeNode)) {
-					expandedTrees.remove(treeNode);
+					if (treeItem.getExpanded()) {
+						expandedTreeIndexes.add(tempTrunk.size() - 1);
+					}
 				}
 			}
 		} else {
@@ -716,6 +719,11 @@ public class ResultsTreeEditor extends ViewPart {
 				TreeNode treeNode = (TreeNode) trunk.get(i);
 				if (trunkDisplayed.contains(treeNode)) {
 					tempTrunk.addChild(treeNode);
+					int dispId = trunkDisplayed.getIndexOfChild(treeNode);
+					TreeItem treeItem = treeViewer.getTree().getItem(dispId);
+					if (treeItem.getExpanded()) {
+						expandedTreeIndexes.add(tempTrunk.size() - 1);
+					}
 				} else {
 					if (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
 						tempTrunk.addChild(treeNode);
@@ -725,18 +733,22 @@ public class ResultsTreeEditor extends ViewPart {
 		}
 		trunkDisplayed = tempTrunk;
 		treeViewer.setInput(trunkDisplayed);
+		rebuildExpandedTrees(expandedTreeIndexes);
 		treeViewer.refresh();
 	}
 
 	public void hideUnmatched(boolean hide) {
 		TreeNode tempTrunk = new TreeNode(null);
+		List<Integer> expandedTreeIndexes = new ArrayList<Integer>();
 		if (hide) {
 			for (int i = 0; i < trunkDisplayed.size(); i++) {
+				TreeItem treeItem = treeViewer.getTree().getItem(i);
 				TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
 				if (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
 					tempTrunk.addChild(treeNode);
-				} else if (expandedTrees.contains(treeNode)) {
-					expandedTrees.remove(treeNode); //	FIXME check here and above
+					if (treeItem.getExpanded()) {
+						expandedTreeIndexes.add(tempTrunk.size() - 1);
+					}
 				}
 			}
 		} else {
@@ -744,6 +756,11 @@ public class ResultsTreeEditor extends ViewPart {
 				TreeNode treeNode = (TreeNode) trunk.get(i);
 				if (trunkDisplayed.contains(treeNode)) {
 					tempTrunk.addChild(treeNode);
+					int dispId = trunkDisplayed.getIndexOfChild(treeNode);
+					TreeItem treeItem = treeViewer.getTree().getItem(dispId);
+					if (treeItem.getExpanded()) {
+						expandedTreeIndexes.add(tempTrunk.size() - 1);
+					}
 				} else {
 					if (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT) {
 						tempTrunk.addChild(treeNode);
@@ -753,9 +770,47 @@ public class ResultsTreeEditor extends ViewPart {
 		}
 		trunkDisplayed = tempTrunk;
 		treeViewer.setInput(trunkDisplayed);
+		rebuildExpandedTrees(expandedTreeIndexes);
 		treeViewer.refresh();
 	}
 
+	private void rebuildExpandedTrees(List<Integer> expandedTreeIndexes) {
+		expandedTrees.clear();
+		for (int i : expandedTreeIndexes) {
+			TreeItem treeItem = treeViewer.getTree().getItem(i);
+			expandedTrees.add(treeItem);
+			treeItem.setExpanded(true);
+		}
+	}
+
+	// public void hideUnmatched(boolean hide) {
+	// TreeNode tempTrunk = new TreeNode(null);
+	// if (hide) {
+	// for (int i = 0; i < trunkDisplayed.size(); i++) {
+	// TreeNode treeNode = (TreeNode) trunkDisplayed.get(i);
+	// if (treeNode.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+	// tempTrunk.addChild(treeNode);
+	// } else if (expandedTrees.contains(treeNode)) {
+	// expandedTrees.remove(treeNode); // FIXME check here and above
+	// }
+	// }
+	// } else {
+	// for (int i = 0; i < trunk.size(); i++) {
+	// TreeNode treeNode = (TreeNode) trunk.get(i);
+	// if (trunkDisplayed.contains(treeNode)) {
+	// tempTrunk.addChild(treeNode);
+	// } else {
+	// if (treeNode.getMatchStatus(1) != MatchStatus.EQUIVALENT) {
+	// tempTrunk.addChild(treeNode);
+	// }
+	// }
+	// }
+	// }
+	// trunkDisplayed = tempTrunk;
+	// treeViewer.setInput(trunkDisplayed);
+	// treeViewer.refresh();
+	// }
+	//
 	public void expandMatched(boolean expand) {
 		int itemCount = treeViewer.getTree().getItemCount();
 		if (expand) {
