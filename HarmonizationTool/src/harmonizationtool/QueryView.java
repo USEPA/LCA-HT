@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.io.BufferedReader;
 
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import harmonizationtool.View.ViewContentProvider;
 import harmonizationtool.View.ViewLabelProvider;
 import harmonizationtool.comands.ISelectedTDBListener;
@@ -26,8 +29,6 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.HSubsSameCas;
-import harmonizationtool.query.HMatchCategories;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.IParamHarmonize;

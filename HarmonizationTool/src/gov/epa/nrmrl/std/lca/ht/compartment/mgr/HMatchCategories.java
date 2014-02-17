@@ -1,7 +1,9 @@
-package harmonizationtool.query;
+package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import harmonizationtool.dialog.DialogQueryDataset;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.query.HarmonyQuery2Impl;
+import harmonizationtool.query.LabeledQuery;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -78,7 +80,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append ("        ?c rdfs:label ?cat . \n");
 		b.append ("      } \n");
 		b.append ("    } \n");
-		b.append ("  filter regex(?ds, \"ILCD\") \n");
+		b.append ("  filter regex(?ds, \"^"+ param1 +"$\") \n");
 		b.append ("  } UNION  \n");
 		b.append ("  { \n");
 		b.append ("    { \n");
@@ -95,7 +97,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append ("    } \n");
 		b.append ("  filter ( \n");
 		String refDataSet = referenceDataSets[0];
-		b.append ("    regex(?ds, \""+refDataSet+"\") \n");
+		b.append ("    regex(?ds, \"^"+refDataSet+"$\") \n");
 		for (int i = 1; i < referenceDataSets.length; i++) {
 			refDataSet = referenceDataSets[i];
 			b.append ("    || regex(?ds, \""+refDataSet+"\") \n");

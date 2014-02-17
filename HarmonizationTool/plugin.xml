@@ -46,7 +46,7 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.ResultsTreeEditor"
+            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor"
             id="HarmonizationTool.ResultsTreeEditorID"
             name="Results Tree Editor"
             restorable="true">
@@ -58,7 +58,7 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.tree.viewer.ControlView"
+            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlView"
             id="harmonizationtool.tree.viewer.ControlView"
             name="ResultsTreeControl"
             restorable="true">
@@ -315,7 +315,7 @@
             name="Delete DataSet">
       </command>
       <command
-            defaultHandler="harmonizationtool.tree.viewer.ControlViewHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"
             id="harmonizationtool.tree.viewer.ControlViewHandler"
             name="Show Control View">
       </command>

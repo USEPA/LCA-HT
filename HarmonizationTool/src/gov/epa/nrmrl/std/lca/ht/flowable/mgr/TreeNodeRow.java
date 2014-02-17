@@ -1,4 +1,6 @@
-package harmonizationtool.tree;
+package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
+
+import harmonizationtool.tree.Node;
 
 /**
  * @author tec

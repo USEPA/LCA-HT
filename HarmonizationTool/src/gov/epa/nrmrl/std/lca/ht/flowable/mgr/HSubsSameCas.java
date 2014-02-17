@@ -1,7 +1,9 @@
-package harmonizationtool.query;
+package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import harmonizationtool.dialog.DialogQueryDataset;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.query.HarmonyQuery2Impl;
+import harmonizationtool.query.LabeledQuery;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;

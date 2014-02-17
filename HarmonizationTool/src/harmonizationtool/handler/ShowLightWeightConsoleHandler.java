@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import harmonizationtool.console.LightweightConsoleView;
 import harmonizationtool.utils.Util;
 

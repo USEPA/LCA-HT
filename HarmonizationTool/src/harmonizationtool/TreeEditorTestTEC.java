@@ -11,12 +11,12 @@ package harmonizationtool;
  *     Tom Schindl - initial API and implementation
  *******************************************************************************/
 
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNode;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNodeRow;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNodeSubRow;
 import harmonizationtool.comands.SelectTDB;
-import harmonizationtool.tree.MatchStatus;
 import harmonizationtool.tree.Node;
-import harmonizationtool.tree.TreeNode;
-import harmonizationtool.tree.TreeNodeRow;
-import harmonizationtool.tree.TreeNodeSubRow;
 import harmonizationtool.vocabulary.ECO;
 
 import java.lang.reflect.InvocationTargetException;

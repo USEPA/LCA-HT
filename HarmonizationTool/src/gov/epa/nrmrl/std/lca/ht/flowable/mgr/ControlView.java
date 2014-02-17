@@ -1,6 +1,5 @@
-package harmonizationtool.tree.viewer;
+package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import harmonizationtool.ResultsTreeEditor;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.swt.widgets.Composite;
