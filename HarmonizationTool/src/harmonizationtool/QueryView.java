@@ -27,6 +27,7 @@ import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.HSubsSameCas;
+import harmonizationtool.query.HMatchCategories;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.IParamHarmonize;
@@ -124,6 +125,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		labeledQueries.add(new QMatchCAS());
 		labeledQueries.add(new QMatchCASandName());
 		labeledQueries.add(new HSubsSameCas());
+		labeledQueries.add(new HMatchCategories());
 	}
 
 	private LabeledQuery queryFromKey(String key) {

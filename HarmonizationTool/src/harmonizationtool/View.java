@@ -571,6 +571,7 @@ public class View extends ViewPart {
 					// xsd
 					// ethold
 					// eco
+					// fasc
 
 					// Stuff we may want to add:
 					// Property HTuserName = model.getProperty(ethold_p
@@ -628,18 +629,11 @@ public class View extends ViewPart {
 						String cat2 = null; // OPTIONAL
 						String cat3 = null; // OPTIONAL
 
-						Literal drCat1Lit = null; // FIXME, RETHINK THE THREE LITERALS IN LIGHT OF
-													// ONLY HAVING ONE CAT
-						Literal drCat2Lit = null;
-						Literal drCat3Lit = null;
-
 						try {
 							int index = headers.indexOf(ViewData.CAT1_HDR);
 							if (index > -1) {
 								String unescCat1 = csvDataRow.getColumnValues().get(index);
 								cat1 = Util.escape(unescCat1);
-								// System.out.println("cat=" + cat);
-								drCat1Lit = model.createTypedLiteral(cat1);
 							}
 
 							else {
@@ -661,9 +655,6 @@ public class View extends ViewPart {
 								if (index > -1) {
 									String unescCat2 = csvDataRow.getColumnValues().get(index);
 									cat2 = Util.escape(unescCat2);
-									drCat2Lit = model.createTypedLiteral(cat2);
-									// System.out.println("subcat=" +
-									// subcat);
 								}
 							}
 						} catch (Exception e) {
@@ -676,9 +667,6 @@ public class View extends ViewPart {
 								if (index > -1) {
 									String unescCat3 = csvDataRow.getColumnValues().get(index);
 									cat3 = Util.escape(unescCat3);
-									drCat3Lit = model.createTypedLiteral(cat3);
-									// System.out.println("subcat=" +
-									// subcat);
 								}
 							}
 						} catch (Exception e) {
@@ -686,15 +674,12 @@ public class View extends ViewPart {
 							e.printStackTrace();
 						}
 
-						// System.out.println("name, cas, altName: " + name
-						// + ", " + casrn + ", " + altName);
-
 						Resource catResourceHandle = null;
 
-						String combined_str = cat1;
-						if (drCat3Lit != null) {
+						String combined_str = "";
+						if (cat3 != null) {
 							combined_str = cat1 + "; " + cat2 + "; " + cat3;
-						} else if (drCat2Lit != null) {
+						} else if (cat2 != null) {
 							combined_str = cat1 + "; " + cat2;
 						} else {
 							combined_str = cat1;
@@ -708,9 +693,7 @@ public class View extends ViewPart {
 						} else {
 							Resource newCat = model.createResource();
 							model.add(newCat, RDF.type, FASC.Compartment);
-							model.addLiteral(newCat, FASC.hasCompartment, drCatLit);
-							// newSub.addProperty(RDF.type, flowable);
-							// newSub.addLiteral(RDFS.label, drNameLit);
+							model.addLiteral(newCat, RDFS.label, drCatLit);
 							model.add(newCat, ECO.hasDataSource, tdbResource);
 
 							catResourceHandle = newCat;
