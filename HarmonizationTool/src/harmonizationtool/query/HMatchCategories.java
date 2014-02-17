@@ -71,28 +71,28 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append("SELECT  DISTINCT\n");
 		b.append("   (str(?ds1_name) as ?" + TableProvider.SUBROW_PREFIX + "1_"
 				+ TableProvider.SUBROW_NAMEHEADER + ") \n");
-		b.append("   (str(?cat1) as ?" + TableProvider.SUBROW_PREFIX + "1_category) \n");
-		b.append("   (str(?subCat1) as ?" + TableProvider.SUBROW_PREFIX + "1_subCategory) \n");
-		b.append("   (str(?subSubCat1) as ?" + TableProvider.SUBROW_PREFIX + "1_subSubCategory) \n");
+		b.append("   (str(?cat) as ?" + TableProvider.SUBROW_PREFIX + "1_compartment) \n");
+//		b.append("   (str(?subCat1) as ?" + TableProvider.SUBROW_PREFIX + "1_subCategory) \n");
+//		b.append("   (str(?subSubCat1) as ?" + TableProvider.SUBROW_PREFIX + "1_subSubCategory) \n");
 
 		for (int i = 0; i < referenceDataSets.length; i++) {
 			int iPlusTwo = i + 2;
 			b.append("   (str(?ds" + iPlusTwo + "_name) as ?" + TableProvider.SUBROW_PREFIX
 					+ iPlusTwo + "_" + TableProvider.SUBROW_NAMEHEADER + ") \n");
 			b.append("   (str(?cat" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX
-					+ iPlusTwo + "_category) \n");
-			b.append("   (str(?subCat" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX + iPlusTwo + "_subCategory) \n");
-			b.append("   (str(?subSubCat" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX + iPlusTwo + "_subSubCategory) \n");
+					+ iPlusTwo + "_compartment) \n");
+//			b.append("   (str(?subCat" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX + iPlusTwo + "_subCategory) \n");
+//			b.append("   (str(?subSubCat" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX + iPlusTwo + "_subSubCategory) \n");
 		}
 		b.append(" \n");
 		b.append("WHERE { \n");
-		b.append("      ?category1 eco:hasDataSource ?ds1 . \n");
-		b.append("      OPTIONAL {?category1 ethold:foundOnRow ?qRow . } \n");
+		b.append("      ?compartment1 eco:hasDataSource ?ds1 . \n");
+		b.append("      OPTIONAL {?compartment1 ethold:foundOnRow ?qRow . } \n");
 		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
 		b.append("      filter regex(str(?ds1_name),\"" + param1 + "\") \n");
-		b.append("      ?category1 ethold:hasCategory1 ?cat1 .  \n");
-		b.append("      OPTIONAL { ?category1 ethold:hasCategory2 ?subCat1 . } \n");
-		b.append("      OPTIONAL { ?category1 ethold:hasCategory3 ?subSubCat1 . } \n");
+		b.append("      ?compartment1 fasc:hasCompartment ?comp1 .  \n");
+//		b.append("      OPTIONAL { ?category1 ethold:hasCategory2 ?subCat1 . } \n");
+//		b.append("      OPTIONAL { ?category1 ethold:hasCategory3 ?subSubCat1 . } \n");
 		b.append("      ?category1 rdfs:label ?cat1 .  \n");
 
 		for (int i = 0; i < referenceDataSets.length; i++) {
