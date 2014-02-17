@@ -218,7 +218,6 @@ public class ControlView extends ViewPart {
 
 		Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("Cancel");
-		// btnCancel.setText("Commit");
 		btnCancel.addSelectionListener(new SelectionListener() {
 
 			@Override

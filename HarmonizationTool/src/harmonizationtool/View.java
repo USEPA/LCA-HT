@@ -25,6 +25,7 @@ import harmonizationtool.utils.Util;
 import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.ETHOLD;
+import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.SKOS;
 
 import java.io.BufferedWriter;
@@ -616,141 +617,143 @@ public class View extends ViewPart {
 
 					System.out.println("Ready to iterate...");
 					int csvRow = 0;
-						for (DataRow csvDataRow : dataRowList) {
-							if (csvRow % 10000 == 0) {
-								System.out.println("Finished reading data file row: " + csvRow);
-							}
-
-							Literal drRowLit = model.createTypedLiteral(csvRow);
-
-							String cat1 = null; // REQUIRED
-							String cat2 = null; // OPTIONAL
-							String cat3 = null; // OPTIONAL
-
-							Literal drCat1Lit = null;
-							Literal drCat2Lit = null;
-							Literal drCat3Lit = null;
-
-							try {
-								int index = headers.indexOf(ViewData.CAT1_HDR);
-								if (index > -1) {
-									String unescCat1 = csvDataRow.getColumnValues().get(index);
-									cat1 = Util.escape(unescCat1);
-									// System.out.println("cat=" + cat);
-									drCat1Lit = model.createTypedLiteral(cat1);
-								}
-
-								else {
-									String msg = "Categories must have a \"Cat1\" field!";
-									Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-									return; // FIXME -- IS THERE A "RIGHT"
-											// WAY
-											// TO LEAVE
-
-								}
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							try {
-								{
-									int index = headers.indexOf(ViewData.CAT2_HDR);
-									if (index > -1) {
-										String unescCat2 = csvDataRow.getColumnValues().get(index);
-										cat2 = Util.escape(unescCat2);
-										drCat2Lit = model.createTypedLiteral(cat2);
-										// System.out.println("subcat=" +
-										// subcat);
-									}
-								}
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							try {
-								{
-									int index = headers.indexOf(ViewData.CAT3_HDR);
-									if (index > -1) {
-										String unescCat3 = csvDataRow.getColumnValues().get(index);
-										cat3 = Util.escape(unescCat3);
-										drCat3Lit = model.createTypedLiteral(cat3);
-										// System.out.println("subcat=" +
-										// subcat);
-									}
-								}
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							// System.out.println("name, cas, altName: " + name
-							// + ", " + casrn + ", " + altName);
-
-							Resource catResourceHandle = null;
-
-							String combined_str = cat1 + cat2 + cat3;
-							combined_str.hashCode();
-							if (str2res.containsKey(combined_str)) {
-								catResourceHandle = str2res.get(combined_str);
-							} else {
-								Resource newCat = model.createResource();
-								model.add(newCat, RDF.type, ECO.EffectAggregationCategory);
-								model.addLiteral(newCat, ETHOLD.hasCategory1, drCat1Lit);
-								// newSub.addProperty(RDF.type, flowable);
-								// newSub.addLiteral(RDFS.label, drNameLit);
-								if (cat2 != null && cat2.length() > 0) {
-									// newSub.addLiteral(altLabel,
-									// drAltNameLit);
-									model.addLiteral(newCat, ETHOLD.hasCategory2, drCat2Lit);
-								}
-								if (cat3 != null && cat3.length() > 0) {
-									model.addLiteral(newCat, ETHOLD.hasCategory3, drCat3Lit);
-									// newSub.addLiteral(casNumber, drCasLit);
-								}
-								model.add(newCat, ECO.hasDataSource, tdbResource);
-
-								catResourceHandle = newCat;
-								str2res.put(combined_str, catResourceHandle);
-							}
-							catResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
-							csvRow++;
+					for (DataRow csvDataRow : dataRowList) {
+						if (csvRow % 10000 == 0) {
+							System.out.println("Finished reading data file row: " + csvRow);
 						}
-						// -----------------------------------------
-						DataRow resDataRow2 = new DataRow();
-						resultsViewModel.addDataRow(resDataRow2);
-						resDataRow2.add("After Update");
-						resDataRow2.add("" + model.size());
 
-						change = model.size() - change;
-						System.err.printf("Net Increase: %s\n", change);
-						DataRow resDataRow3 = new DataRow();
-						resultsViewModel.addDataRow(resDataRow3);
+						Literal drRowLit = model.createTypedLiteral(csvRow);
 
-						String increase = "New Triples:";
+						String cat1 = null; // REQUIRED
+						String cat2 = null; // OPTIONAL
+						String cat3 = null; // OPTIONAL
 
-						if (change < 0) {
-							increase = "Triples removed:";
-							change = 0 - change;
-						}
-						// data.add(increase);
-						// data.add("" + change);
-						resDataRow3.add(increase);
-						resDataRow3.add("" + change);
+						Literal drCat1Lit = null; // FIXME, RETHINK THE THREE LITERALS IN LIGHT OF
+													// ONLY HAVING ONE CAT
+						Literal drCat2Lit = null;
+						Literal drCat3Lit = null;
 
-						long startTime = System.currentTimeMillis();
-						float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-						System.out.println("Time elapsed: " + elapsedTimeSec);
-						System.err.printf("After Update: %s\n", model.size());
-						System.out.println("done");
 						try {
-							Util.showView(ResultsView.ID);
-						} catch (PartInitException e) {
+							int index = headers.indexOf(ViewData.CAT1_HDR);
+							if (index > -1) {
+								String unescCat1 = csvDataRow.getColumnValues().get(index);
+								cat1 = Util.escape(unescCat1);
+								// System.out.println("cat=" + cat);
+								drCat1Lit = model.createTypedLiteral(cat1);
+							}
+
+							else {
+								String msg = "Categories must have a \"Cat1\" field!";
+								Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+								return; // FIXME -- IS THERE A "RIGHT"
+										// WAY
+										// TO LEAVE
+
+							}
+						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
+						try {
+							{
+								int index = headers.indexOf(ViewData.CAT2_HDR);
+								if (index > -1) {
+									String unescCat2 = csvDataRow.getColumnValues().get(index);
+									cat2 = Util.escape(unescCat2);
+									drCat2Lit = model.createTypedLiteral(cat2);
+									// System.out.println("subcat=" +
+									// subcat);
+								}
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						try {
+							{
+								int index = headers.indexOf(ViewData.CAT3_HDR);
+								if (index > -1) {
+									String unescCat3 = csvDataRow.getColumnValues().get(index);
+									cat3 = Util.escape(unescCat3);
+									drCat3Lit = model.createTypedLiteral(cat3);
+									// System.out.println("subcat=" +
+									// subcat);
+								}
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						// System.out.println("name, cas, altName: " + name
+						// + ", " + casrn + ", " + altName);
+
+						Resource catResourceHandle = null;
+
+						String combined_str = cat1;
+						if (drCat3Lit != null) {
+							combined_str = cat1 + "; " + cat2 + "; " + cat3;
+						} else if (drCat2Lit != null) {
+							combined_str = cat1 + "; " + cat2;
+						} else {
+							combined_str = cat1;
+						}
+
+						Literal drCatLit = model.createTypedLiteral(combined_str);
+
+						combined_str.hashCode();
+						if (str2res.containsKey(combined_str)) {
+							catResourceHandle = str2res.get(combined_str);
+						} else {
+							Resource newCat = model.createResource();
+							model.add(newCat, RDF.type, FASC.Compartment);
+							model.addLiteral(newCat, FASC.hasCompartment, drCatLit);
+							// newSub.addProperty(RDF.type, flowable);
+							// newSub.addLiteral(RDFS.label, drNameLit);
+							model.add(newCat, ECO.hasDataSource, tdbResource);
+
+							catResourceHandle = newCat;
+							str2res.put(combined_str, catResourceHandle);
+						}
+						catResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
+						csvRow++;
 					}
+					// -----------------------------------------
+					DataRow resDataRow2 = new DataRow();
+					resultsViewModel.addDataRow(resDataRow2);
+					resDataRow2.add("After Update");
+					resDataRow2.add("" + model.size());
+
+					change = model.size() - change;
+					System.err.printf("Net Increase: %s\n", change);
+					DataRow resDataRow3 = new DataRow();
+					resultsViewModel.addDataRow(resDataRow3);
+
+					String increase = "New Triples:";
+
+					if (change < 0) {
+						increase = "Triples removed:";
+						change = 0 - change;
+					}
+					// data.add(increase);
+					// data.add("" + change);
+					resDataRow3.add(increase);
+					resDataRow3.add("" + change);
+
+					long startTime = System.currentTimeMillis();
+					float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
+					System.out.println("Time elapsed: " + elapsedTimeSec);
+					System.err.printf("After Update: %s\n", model.size());
+					System.out.println("done");
+					try {
+						Util.showView(ResultsView.ID);
+					} catch (PartInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
 
 			}
 
