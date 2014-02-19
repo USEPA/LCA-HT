@@ -1,5 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
+/* Modified from:
+ * 
+ */
+
 /*******************************************************************************
  * Copyright (c) 2006 - 2013 Tom Schindl and others.
  * All rights reserved. This program and the accompanying materials
@@ -14,11 +18,15 @@ package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 //package org.eclipse.jface.snippets.viewers;
 
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.TreeNode;
+import harmonizationtool.ColumnLabelProvider;
+import harmonizationtool.tree.Node;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.layout.FillLayout;
@@ -27,106 +35,143 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * A simple TreeViewer to demonstrate usage
- *
+ * 
  */
 
 public class TreeSnippet {
 	private class MyContentProvider implements ITreeContentProvider {
 
-		@Override
 		public Object[] getElements(Object inputElement) {
-			return ((MyModel)inputElement).child.toArray();
+			Iterator<Node> iter = ((TreeNode) inputElement).getChildIterator();
+			List<Node> l = new ArrayList<Node>();
+			while (iter.hasNext()) {
+				l.add(iter.next());
+			}
+			return l.toArray();
 		}
 
-		@Override
 		public void dispose() {
-
 		}
 
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
 		}
 
-		@Override
 		public Object[] getChildren(Object parentElement) {
 			return getElements(parentElement);
 		}
 
-		@Override
-		public Object getParent(Object element) {
-			if( element == null) {
+		public Object getParent(Object treeNode) {
+			if (treeNode == null) {
 				return null;
 			}
-
-			return ((MyModel)element).parent;
+			return ((TreeNode) treeNode).getParent();
 		}
 
-		@Override
-		public boolean hasChildren(Object element) {
-			return ((MyModel)element).child.size() > 0;
-		}
-
-	}
-
-	public class MyModel {
-		public MyModel parent;
-		public List<MyModel> child = new ArrayList<MyModel>();
-		public int counter;
-
-		public MyModel(int counter, MyModel parent) {
-			this.parent = parent;
-			this.counter = counter;
-		}
-
-		@Override
-		public String toString() {
-			String rv = "Item ";
-			if( parent != null ) {
-				rv = parent.toString() + ".";
-			}
-
-			rv += counter;
-
-			return rv;
+		public boolean hasChildren(Object treeNode) {
+			return ((Node) treeNode).getChildIterator().hasNext();
 		}
 	}
 
 	public TreeSnippet(Shell shell) {
 		final TreeViewer v = new TreeViewer(shell);
-		v.setLabelProvider(new LabelProvider());
-		v.setContentProvider(new MyContentProvider());
-		v.setInput(createModel());
-	}
+		v.getTree().setLinesVisible(true);
+		v.setLabelProvider(new ColumnLabelProvider() {
+			// private Color currentColor = null;
 
-	private MyModel createModel() {
-
-		MyModel root = new MyModel(0,null);
-		root.counter = 0;
-
-		MyModel tmp;
-		for( int i = 1; i < 10; i++ ) {
-			tmp = new MyModel(i, root);
-			root.child.add(tmp);
-			for( int j = 1; j < i; j++ ) {
-				tmp.child.add(new MyModel(j,tmp));
+			// @Override
+			public String getText(Object treeNode) {
+				return ((TreeNode) treeNode).nodeName;
 			}
-		}
-
-		return root;
+		});
+		v.setContentProvider(new MyContentProvider());
+		v.setInput(createHarmonizeCompartments());
 	}
 
 	public static void main(String[] args) {
-		Display display = new Display ();
+		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		new TreeSnippet(shell);
-		shell.open ();
+		shell.open();
 
-		while (!shell.isDisposed ()) {
-			if (!display.readAndDispatch ()) display.sleep ();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
 		}
 
-		display.dispose ();
+		display.dispose();
+	}
+
+	private TreeNode createHarmonizeCompartments() {
+		TreeNode masterCompartmentTree = new TreeNode(null);
+
+		TreeNode release = new TreeNode(masterCompartmentTree);
+		release.nodeName = "Release";
+
+		TreeNode air = new TreeNode(release);
+		air.nodeName = "air";
+		TreeNode lowPop = new TreeNode(air);
+		lowPop.nodeName = "low population density";
+		TreeNode airUnspec = new TreeNode(air);
+		airUnspec.nodeName = "unspecified";
+		TreeNode airHighPop = new TreeNode(air);
+		airHighPop.nodeName = "high population density";
+		TreeNode airLowPopLongTerm = new TreeNode(air);
+		airLowPopLongTerm.nodeName = "low population density, long-term";
+		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
+		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
+
+		TreeNode water = new TreeNode(release);
+		water.nodeName = "water";
+		TreeNode waterFossil = new TreeNode(water);
+		waterFossil.nodeName = "fossil-";
+		TreeNode waterFresh = new TreeNode(water);
+		waterFresh.nodeName = "fresh-";
+		TreeNode waterFreshLongTerm = new TreeNode(water);
+		waterFreshLongTerm.nodeName = "fresh-, long-term";
+		TreeNode waterGround = new TreeNode(water);
+		waterGround.nodeName = "ground-";
+		TreeNode waterGroundLongTerm = new TreeNode(water);
+		waterGroundLongTerm.nodeName = "ground-, long-term";
+		TreeNode waterLake = new TreeNode(water);
+		waterLake.nodeName = "lake";
+		TreeNode waterOcean = new TreeNode(water);
+		waterOcean.nodeName = "ocean";
+		TreeNode waterRiver = new TreeNode(water);
+		waterRiver.nodeName = "river";
+		TreeNode waterRiverLongTerm = new TreeNode(water);
+		waterRiverLongTerm.nodeName = "river, long-term";
+		TreeNode waterSurface = new TreeNode(water);
+		waterSurface.nodeName = "surface water";
+		TreeNode waterUnspec = new TreeNode(water);
+		waterUnspec.nodeName = "unspecified";
+
+		TreeNode soil = new TreeNode(release);
+		soil.nodeName = "soil";
+		TreeNode soilAgricultural = new TreeNode(soil);
+		soilAgricultural.nodeName = "agricultural";
+		TreeNode soilForestry = new TreeNode(soil);
+		soilForestry.nodeName = "forestry";
+		TreeNode soilIndustrial = new TreeNode(soil);
+		soilIndustrial.nodeName = "industrial";
+		TreeNode soilUnspec = new TreeNode(soil);
+		soilUnspec.nodeName = "unspecified";
+
+		TreeNode resource = new TreeNode(masterCompartmentTree);
+		resource.nodeName = "Resource";
+
+		TreeNode resourceBiotic = new TreeNode(resource);
+		resourceBiotic.nodeName = "biotic";
+		TreeNode resourceInAir = new TreeNode(resource);
+		resourceInAir.nodeName = "in air";
+		TreeNode resourceInGround = new TreeNode(resource);
+		resourceInGround.nodeName = "in ground";
+		TreeNode resourceInLand = new TreeNode(resource);
+		resourceInLand.nodeName = "in land";
+		TreeNode resourceInWater = new TreeNode(resource);
+		resourceInWater.nodeName = "in water";
+		TreeNode resourceUnspec = new TreeNode(resource);
+		resourceUnspec.nodeName = "unspecified";
+		return masterCompartmentTree;
 	}
 }

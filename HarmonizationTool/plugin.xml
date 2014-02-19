@@ -63,6 +63,12 @@
             name="ResultsTreeControl"
             restorable="true">
       </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments"
+            id="HarmonizationTool.view1"
+            name="Harmonize Compartments"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -174,6 +180,11 @@
                <command
                      commandId="harmonizationtool.tree.viewer.ControlViewHandler"
                      label="Show Results Tree Control"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartmentsID"
+                     label="Show Harmonize Compartments"
                      style="push">
                </command>
             </menu>
@@ -288,6 +299,11 @@
             defaultHandler="harmonizationtool.handler.ShowResultsTreeEditorHandler"
             id="HarmonizationTool.ResultsTreeEditorID"
             name="Show Results Tree Editor">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowHarmonizeCompartmentsHandler"
+            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartmentsID"
+            name="Show Harmonize Compartments">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.CloseTDB"

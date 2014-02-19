@@ -37,13 +37,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.part.ViewPart;
 
 
 //import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNode;
 import harmonizationtool.ColumnLabelProvider;
 import harmonizationtool.tree.Node;
 
-public class masterCompartmentTree {
+public class HarmonizeCompartments extends ViewPart {
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartmentsID";
+
 	public TreeNode masterCompartmentTree = new TreeNode(null);
 	private TreeViewer treeViewer;
 
@@ -55,7 +58,7 @@ public class masterCompartmentTree {
 
 		// treeViewer.getTree().setSize(200, 20);
 		// parent.getShell().get
-		 treeViewer.setContentProvider(new MyContentProvider());
+		treeViewer.setContentProvider(new MyContentProvider());
 		treeViewer.addTreeListener(new ITreeViewerListener() {
 
 			@Override
@@ -305,118 +308,124 @@ public class masterCompartmentTree {
 
 	}
 
-	public masterCompartmentTree(){
-		TreeNode release = new TreeNode(masterCompartmentTree);
-		release.nodeName = "Release";
-
-		TreeNode air = new TreeNode(release);
-		air.nodeName = "air";
-		TreeNode lowPop = new TreeNode(air);
-		lowPop.nodeName = "low population density";
-		TreeNode airUnspec = new TreeNode(air);
-		airUnspec.nodeName = "unspecified";
-		TreeNode airHighPop = new TreeNode(air);
-		airHighPop.nodeName = "high population density";
-		TreeNode airLowPopLongTerm = new TreeNode(air);
-		airLowPopLongTerm.nodeName = "low population density, long-term";
-		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
-		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
-		
-		TreeNode water = new TreeNode(release);
-		water.nodeName = "water";
-		TreeNode waterFossil = new TreeNode(water);
-		waterFossil.nodeName = "fossil-";
-		TreeNode waterFresh = new TreeNode(water);
-		waterFresh.nodeName = "fresh-";
-		TreeNode waterFreshLongTerm = new TreeNode(water);
-		waterFreshLongTerm.nodeName = "fresh-, long-term";
-		TreeNode waterGround = new TreeNode(water);
-		waterGround.nodeName = "ground-";
-		TreeNode waterGroundLongTerm = new TreeNode(water);
-		waterGroundLongTerm.nodeName = "ground-, long-term";
-		TreeNode waterLake = new TreeNode(water);
-		waterLake.nodeName = "lake";
-		TreeNode waterOcean = new TreeNode(water);
-		waterOcean.nodeName = "ocean";
-		TreeNode waterRiver = new TreeNode(water);
-		waterRiver.nodeName = "river";		
-		TreeNode waterRiverLongTerm = new TreeNode(water);
-		waterRiverLongTerm.nodeName = "river, long-term";
-		TreeNode waterSurface = new TreeNode(water);
-		waterSurface.nodeName = "surface water";
-		TreeNode waterUnspec = new TreeNode(water);
-		waterUnspec.nodeName = "unspecified";
-
-		TreeNode soil = new TreeNode(release);
-		soil.nodeName = "soil";
-		TreeNode soilAgricultural = new TreeNode(soil);
-		soilAgricultural.nodeName = "agricultural";
-		TreeNode soilForestry = new TreeNode(soil);
-		soilForestry.nodeName = "forestry";
-		TreeNode soilIndustrial = new TreeNode(soil);
-		soilIndustrial.nodeName = "industrial";
-		TreeNode soilUnspec = new TreeNode(soil);
-		soilUnspec.nodeName = "unspecified";
-		
-		TreeNode resource = new TreeNode(masterCompartmentTree);
-		resource.nodeName = "Resource";
-		
-		TreeNode resourceBiotic = new TreeNode(resource);
-		resourceBiotic.nodeName = "biotic";
-		TreeNode resourceInAir = new TreeNode(resource);
-		resourceInAir.nodeName = "in air";	
-		TreeNode resourceInGround = new TreeNode(resource);
-		resourceInGround.nodeName = "in ground";	
-		TreeNode resourceInLand = new TreeNode(resource);
-		resourceInLand.nodeName = "in land";	
-		TreeNode resourceInWater = new TreeNode(resource);
-		resourceInWater.nodeName = "in water";	
-		TreeNode resourceUnspec = new TreeNode(resource);
-		resourceUnspec.nodeName = "unspecified";
-	}
-
-	private TreeViewerColumn createColumn() {
-
-		TreeViewerColumn newColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
-		newColumn.getColumn().setWidth(300);
-		newColumn.getColumn().setMoveable(true);
-		newColumn.getColumn().setText("Compartments");
-		newColumn.setLabelProvider(new ColumnLabelProvider() {
-			// private Color currentColor = null;
-
-//			@Override
-			public String getText(Object treeNode) {
-				return ((TreeNode) treeNode).nodeName;
-			}
-
-//			@Override
-//			public void update(ViewerCell viewerCell) {
-//				super.update(viewerCell);
-//				int index = viewerCell.getVisualIndex();
-//				MatchStatus status = ((TreeNode) viewerCell.getElement()).getMatchStatus(index);
-//				// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
-//				// viewerCell.getElement()).rowSubURI.isAnon());
-//				// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
-//				// viewerCell.getElement()).rowSubURI == null);
+//	public HarmonizeCompartments(){
+//		TreeNode release = new TreeNode(masterCompartmentTree);
+//		release.nodeName = "Release";
 //
-//				if (status == MatchStatus.EQUIVALENT) {
-//					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
-//				}
-//				if (status == MatchStatus.NONEQUIVALENT) {
-//					viewerCell.setBackground(MatchStatus.NONEQUIVALENT.getColor());
-//				}
-//				if (status == MatchStatus.UNKNOWN) {
-//					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
-//				}
-//				if (viewerCell.getElement() instanceof TreeNodeSubRow) {
-//					viewerCell.setFont(JFaceResources.getDefaultFont());
-//				} else if (viewerCell.getElement() instanceof TreeNodeRow) {
-//					viewerCell.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+//		TreeNode air = new TreeNode(release);
+//		air.nodeName = "air";
+//		TreeNode lowPop = new TreeNode(air);
+//		lowPop.nodeName = "low population density";
+//		TreeNode airUnspec = new TreeNode(air);
+//		airUnspec.nodeName = "unspecified";
+//		TreeNode airHighPop = new TreeNode(air);
+//		airHighPop.nodeName = "high population density";
+//		TreeNode airLowPopLongTerm = new TreeNode(air);
+//		airLowPopLongTerm.nodeName = "low population density, long-term";
+//		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
+//		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
+//		
+//		TreeNode water = new TreeNode(release);
+//		water.nodeName = "water";
+//		TreeNode waterFossil = new TreeNode(water);
+//		waterFossil.nodeName = "fossil-";
+//		TreeNode waterFresh = new TreeNode(water);
+//		waterFresh.nodeName = "fresh-";
+//		TreeNode waterFreshLongTerm = new TreeNode(water);
+//		waterFreshLongTerm.nodeName = "fresh-, long-term";
+//		TreeNode waterGround = new TreeNode(water);
+//		waterGround.nodeName = "ground-";
+//		TreeNode waterGroundLongTerm = new TreeNode(water);
+//		waterGroundLongTerm.nodeName = "ground-, long-term";
+//		TreeNode waterLake = new TreeNode(water);
+//		waterLake.nodeName = "lake";
+//		TreeNode waterOcean = new TreeNode(water);
+//		waterOcean.nodeName = "ocean";
+//		TreeNode waterRiver = new TreeNode(water);
+//		waterRiver.nodeName = "river";		
+//		TreeNode waterRiverLongTerm = new TreeNode(water);
+//		waterRiverLongTerm.nodeName = "river, long-term";
+//		TreeNode waterSurface = new TreeNode(water);
+//		waterSurface.nodeName = "surface water";
+//		TreeNode waterUnspec = new TreeNode(water);
+//		waterUnspec.nodeName = "unspecified";
 //
-//				}
+//		TreeNode soil = new TreeNode(release);
+//		soil.nodeName = "soil";
+//		TreeNode soilAgricultural = new TreeNode(soil);
+//		soilAgricultural.nodeName = "agricultural";
+//		TreeNode soilForestry = new TreeNode(soil);
+//		soilForestry.nodeName = "forestry";
+//		TreeNode soilIndustrial = new TreeNode(soil);
+//		soilIndustrial.nodeName = "industrial";
+//		TreeNode soilUnspec = new TreeNode(soil);
+//		soilUnspec.nodeName = "unspecified";
+//		
+//		TreeNode resource = new TreeNode(masterCompartmentTree);
+//		resource.nodeName = "Resource";
+//		
+//		TreeNode resourceBiotic = new TreeNode(resource);
+//		resourceBiotic.nodeName = "biotic";
+//		TreeNode resourceInAir = new TreeNode(resource);
+//		resourceInAir.nodeName = "in air";	
+//		TreeNode resourceInGround = new TreeNode(resource);
+//		resourceInGround.nodeName = "in ground";	
+//		TreeNode resourceInLand = new TreeNode(resource);
+//		resourceInLand.nodeName = "in land";	
+//		TreeNode resourceInWater = new TreeNode(resource);
+//		resourceInWater.nodeName = "in water";	
+//		TreeNode resourceUnspec = new TreeNode(resource);
+//		resourceUnspec.nodeName = "unspecified";
+//	}
+//
+//	private TreeViewerColumn createColumn() {
+//
+//		TreeViewerColumn newColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
+//		newColumn.getColumn().setWidth(300);
+//		newColumn.getColumn().setMoveable(true);
+//		newColumn.getColumn().setText("Compartments");
+//		newColumn.setLabelProvider(new ColumnLabelProvider() {
+//			// private Color currentColor = null;
+//
+////			@Override
+//			public String getText(Object treeNode) {
+//				return ((TreeNode) treeNode).nodeName;
 //			}
-		});
+//
+////			@Override
+////			public void update(ViewerCell viewerCell) {
+////				super.update(viewerCell);
+////				int index = viewerCell.getVisualIndex();
+////				MatchStatus status = ((TreeNode) viewerCell.getElement()).getMatchStatus(index);
+////				// System.out.println("subRow.rowSubURI.isAnon(): "+((TreeNode)
+////				// viewerCell.getElement()).rowSubURI.isAnon());
+////				// System.out.println("subRow.rowSubURI == null: "+((TreeNode)
+////				// viewerCell.getElement()).rowSubURI == null);
+////
+////				if (status == MatchStatus.EQUIVALENT) {
+////					viewerCell.setBackground(MatchStatus.EQUIVALENT.getColor());
+////				}
+////				if (status == MatchStatus.NONEQUIVALENT) {
+////					viewerCell.setBackground(MatchStatus.NONEQUIVALENT.getColor());
+////				}
+////				if (status == MatchStatus.UNKNOWN) {
+////					viewerCell.setBackground(MatchStatus.UNKNOWN.getColor());
+////				}
+////				if (viewerCell.getElement() instanceof TreeNodeSubRow) {
+////					viewerCell.setFont(JFaceResources.getDefaultFont());
+////				} else if (viewerCell.getElement() instanceof TreeNodeRow) {
+////					viewerCell.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+////
+////				}
+////			}
+//		});
+//
+//		return newColumn;
+//	}
 
-		return newColumn;
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+		
 	}
 }
