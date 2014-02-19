@@ -65,7 +65,7 @@
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments"
-            id="HarmonizationTool.view1"
+            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments"
             name="Harmonize Compartments"
             restorable="true">
       </view>
@@ -183,7 +183,7 @@
                      style="push">
                </command>
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartmentsID"
+                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments.ShowHarmonizeCompartmentsHandler"
                      label="Show Harmonize Compartments"
                      style="push">
                </command>
@@ -302,7 +302,7 @@
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowHarmonizeCompartmentsHandler"
-            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartmentsID"
+            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments.ShowHarmonizeCompartmentsHandler"
             name="Show Harmonize Compartments">
       </command>
       <command

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.io.BufferedReader;
 
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import harmonizationtool.View.ViewContentProvider;
@@ -374,10 +375,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page
-						.findView(ResultsView.ID);
-				ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page
-						.findView(ResultsTreeEditor.ID);
+
+
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
 
@@ -391,7 +390,9 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 						// TableProvider tableProvider = TableProvider
 						// .create((ResultSetRewindable) resultSet);
 						setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-						if (key.startsWith("Harm")) { // HACK!!
+						if (key.startsWith("Harmonize CAS")) { // HACK!!
+							ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page
+									.findView(ResultsTreeEditor.ID);
 							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
 							// WHICH createTransform
 							// AND WHICH formatForTransfor()
@@ -410,7 +411,30 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 							}
 							
 //							resultsView.formatForTransform0();
-						} else {
+						} else 		if (key.startsWith("Harmonize Compart")) { // HACK!!
+							HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) page
+									.findView(HarmonizeCompartments.ID);
+							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
+							// WHICH createTransform
+							// AND WHICH formatForTransfor()
+							// SHOULD BE KNOWN BY THE LabledQuery
+							// BUT CHOSEN BY THE CALLER
+							showResultsInWindow = HarmonizeCompartments.ID;
+
+							TableProvider tableProvider = TableProvider
+									.create((ResultSetRewindable) resultSet);
+//							resultsView.update(tableProvider);
+							try {
+								harmonizeCompartments.update(tableProvider);
+							} catch (Exception e) {
+								System.out.println("resultsTreeEditor="+harmonizeCompartments);
+								e.printStackTrace();
+							}
+							
+//							resultsView.formatForTransform0();
+						} else  {
+							ResultsView resultsView = (ResultsView) page
+									.findView(ResultsView.ID);
 							TableProvider tableProvider = TableProvider
 									.create((ResultSetRewindable) resultSet);
 							resultsView.update(tableProvider);

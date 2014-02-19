@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
+import harmonizationtool.dialog.DialogOneDataset;
 import harmonizationtool.dialog.DialogQueryDataset;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery2Impl;
@@ -40,71 +41,89 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	}
 
 	private void getDialog() {
-		DialogQueryDataset dialog = new DialogQueryDataset(Display.getCurrent()
+		DialogOneDataset dialog = new DialogOneDataset(Display.getCurrent()
 				.getActiveShell());
 		dialog.create();
 		if (dialog.open() == Window.OK) {
 			System.out.println("OK");
 			param1 = dialog.getPrimaryDataSet();
-			referenceDataSets = dialog.getReferenceDataSets();
+//			referenceDataSets = dialog.getReferenceDataSets();
 		}
 	}
 
 	private void buildQuery() {
-		for (int i = 0; i < referenceDataSets.length; i++) {
-			if (referenceDataSets[i] == param1) {
-				// REMOVE IT
-			}
-		}
+//		for (int i = 0; i < referenceDataSets.length; i++) {
+//			if (referenceDataSets[i] == param1) {
+//				// REMOVE IT
+//			}
+//		}
 
 		StringBuilder b = new StringBuilder();
 		
-		b.append ("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+		b.append ("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append ("PREFIX  fasc:    <http://ontology.earthster.org/eco/fasc#>  \n");
 		b.append ("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n");
 		b.append ("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>  \n");
-		b.append ("\n");
-		b.append ("select ?ds ?comp \n");
-		b.append ("where \n");
-		b.append ("{ \n");
+		b.append ("  \n");
+		b.append ("SELECT DISTINCT  (str(?label) as ?comp)  \n");
+		b.append ("WHERE  \n");
 		b.append ("  { \n");
-		b.append ("    { \n");
-		b.append ("      SELECT DISTINCT   \n");
-		b.append ("        (str(?label) as ?ds)  \n");
-		b.append ("        (str(?cat) as ?comp)  \n");
-		b.append ("      WHERE  \n");
-		b.append ("      { ?c a fasc:Compartment . \n");
-		b.append ("        ?s a eco:DataSource .  \n");
-		b.append ("        ?s rdfs:label ?label  . \n");
-		b.append ("        ?c eco:hasDataSource ?s . \n");
-		b.append ("        ?c rdfs:label ?cat . \n");
-		b.append ("      } \n");
-		b.append ("    } \n");
-		b.append ("  filter regex(?ds, \"^"+ param1 +"$\") \n");
-		b.append ("  } UNION  \n");
-		b.append ("  { \n");
-		b.append ("    { \n");
-		b.append ("      SELECT DISTINCT   \n");
-		b.append ("        (str(?label) as ?ds)  \n");
-		b.append ("        (str(?cat) as ?comp)  \n");
-		b.append ("      WHERE  \n");
-		b.append ("      { ?c a fasc:Compartment . \n");
-		b.append ("        ?s a eco:DataSource .  \n");
-		b.append ("        ?s rdfs:label ?label  . \n");
-		b.append ("        ?c eco:hasDataSource ?s . \n");
-		b.append ("        ?c rdfs:label ?cat . \n");
-		b.append ("      } \n");
-		b.append ("    } \n");
-		b.append ("  filter ( \n");
-		String refDataSet = referenceDataSets[0];
-		b.append ("    regex(?ds, \"^"+refDataSet+"$\") \n");
-		for (int i = 1; i < referenceDataSets.length; i++) {
-			refDataSet = referenceDataSets[i];
-			b.append ("    || regex(?ds, \""+refDataSet+"\") \n");
-		}
-		b.append ("  ) \n ");
-		b.append ("  } \n");
-		b.append ("} \n");
+		b.append ("    ?s a eco:DataSource .  \n");
+		b.append ("    ?s rdfs:label ?ds_label . \n");
+		b.append ("    filter regex(str(?ds_label),\"^"+param1+"$\") \n");
+		b.append ("    ?c eco:hasDataSource ?s . \n");
+		b.append ("    ?c a fasc:Compartment . \n");
+		b.append ("    ?c rdfs:label ?label . \n");
+		b.append ("  }  \n");
+		b.append ("  order by ?label  \n");
+
+		
+//		b.append ("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+//		b.append ("PREFIX  fasc:    <http://ontology.earthster.org/eco/fasc#>  \n");
+//		b.append ("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n");
+//		b.append ("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>  \n");
+//		b.append ("\n");
+//		b.append ("select ?ds ?comp \n");
+//		b.append ("where \n");
+//		b.append ("{ \n");
+//		b.append ("  { \n");
+//		b.append ("    { \n");
+//		b.append ("      SELECT DISTINCT   \n");
+//		b.append ("        (str(?label) as ?ds)  \n");
+//		b.append ("        (str(?cat) as ?comp)  \n");
+//		b.append ("      WHERE  \n");
+//		b.append ("      { ?c a fasc:Compartment . \n");
+//		b.append ("        ?s a eco:DataSource .  \n");
+//		b.append ("        ?s rdfs:label ?label  . \n");
+//		b.append ("        ?c eco:hasDataSource ?s . \n");
+//		b.append ("        ?c rdfs:label ?cat . \n");
+//		b.append ("      } \n");
+//		b.append ("    } \n");
+//		b.append ("  filter regex(?ds, \"^"+ param1 +"$\") \n");
+//		b.append ("  } UNION  \n");
+//		b.append ("  { \n");
+//		b.append ("    { \n");
+//		b.append ("      SELECT DISTINCT   \n");
+//		b.append ("        (str(?label) as ?ds)  \n");
+//		b.append ("        (str(?cat) as ?comp)  \n");
+//		b.append ("      WHERE  \n");
+//		b.append ("      { ?c a fasc:Compartment . \n");
+//		b.append ("        ?s a eco:DataSource .  \n");
+//		b.append ("        ?s rdfs:label ?label  . \n");
+//		b.append ("        ?c eco:hasDataSource ?s . \n");
+//		b.append ("        ?c rdfs:label ?cat . \n");
+//		b.append ("      } \n");
+//		b.append ("    } \n");
+//		b.append ("  filter ( \n");
+//		String refDataSet = referenceDataSets[0];
+//		b.append ("    regex(?ds, \"^"+refDataSet+"$\") \n");
+//		for (int i = 1; i < referenceDataSets.length; i++) {
+//			refDataSet = referenceDataSets[i];
+//			b.append ("    || regex(?ds, \""+refDataSet+"\") \n");
+//		}
+//		b.append ("  ) \n ");
+//		b.append ("  } \n");
+//		b.append ("} \n");
 
 		
 //		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
