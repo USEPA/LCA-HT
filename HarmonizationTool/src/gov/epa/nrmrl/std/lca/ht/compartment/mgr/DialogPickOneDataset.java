@@ -1,11 +1,8 @@
-package harmonizationtool.dialog;
-
-import java.util.ArrayList;
+package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.unused.QxDataSets;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
+import harmonizationtool.query.QListDataSets;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -21,19 +18,17 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 
-public class DialogOneDataset extends TitleAreaDialog {
+public class DialogPickOneDataset extends TitleAreaDialog {
 
 	private Combo combo;
 	private String primaryDataSet = null;
 //	private String[] referenceDataSets = null;
 
 
-	public DialogOneDataset(Shell parentShell) {
+	public DialogPickOneDataset(Shell parentShell) {
 		super(parentShell);
 	}
 
@@ -53,7 +48,7 @@ public class DialogOneDataset extends TitleAreaDialog {
 //		return referenceDataSets;
 //	}
 
-	private QxDataSets qDataSets = new QxDataSets();
+	private QDataSetsWCompartments qDataSets = new QDataSetsWCompartments();
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {

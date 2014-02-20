@@ -1,8 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import harmonizationtool.dialog.DialogOneDataset;
-import harmonizationtool.dialog.DialogQueryDataset;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.LabeledQuery;
 
@@ -15,7 +12,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	public static final String LABEL = "Harmonize Compartments (Cats)";
 
 	private String param1;
-	private String[] referenceDataSets;
+//	private String[] referenceDataSets;
 
 	public HMatchCategories() {
 		super();
@@ -33,7 +30,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	public ResultSet getResultSet(String param1, String[] referenceDataSets) {
 		// BRING IN THE PARAMETERS
 		this.param1 = param1;
-		this.referenceDataSets = referenceDataSets;
+//		this.referenceDataSets = referenceDataSets;
 		// BUILD THE QUERY USING THE PARAMETERS
 		buildQuery();
 		// READY TO CALL getResultSet() ON THESUPER CLASS
@@ -41,7 +38,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	}
 
 	private void getDialog() {
-		DialogOneDataset dialog = new DialogOneDataset(Display.getCurrent()
+		DialogPickOneDataset dialog = new DialogPickOneDataset(Display.getCurrent()
 				.getActiveShell());
 		dialog.create();
 		if (dialog.open() == Window.OK) {
