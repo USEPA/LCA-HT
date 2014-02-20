@@ -108,5 +108,5 @@ public class LCAHT {
 
     /** <p>from Category_Subcategory.xlsx</p> */
     public static final Resource waterUnspecified = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ht#water-unspecified" );
-
-}
+    
+ }

@@ -1,10 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import harmonizationtool.tree.Node;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 
 
@@ -13,8 +9,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * 
  */
 public class TreeNode extends Node {
-	protected String nodeName = new String();
+	protected String nodeName = null;
 	protected Resource uri = null;
+	static int count = 0;
 
 	public TreeNode(TreeNode parent) {
 		super(parent);
@@ -32,4 +29,12 @@ public class TreeNode extends Node {
 		return children.contains(treeNode);
 	}
 
+	public String getLabel(){
+		if(parent == null){
+			return nodeName;
+		}else{
+			String parentsLabel = ((TreeNode)parent).getLabel();
+			return (parentsLabel != null) ? (parentsLabel +": "+nodeName) : nodeName;
+		}
+	}
 }
