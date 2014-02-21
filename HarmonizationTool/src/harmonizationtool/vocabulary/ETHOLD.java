@@ -4,6 +4,14 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.DB;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.VCARD;
+import com.hp.hpl.jena.vocabulary.DC_11;
+
+
+
 
 /**
  * Vocabulary definitions from being developed by the Environmental Modeling and Visualization Lab (EMVL)
@@ -27,7 +35,16 @@ public class ETHOLD {
     
     /** <p>A class for CAS Numbers</p> */
     public static final Resource CASRN = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ethold#CASRN" );
-
+    
+    public static final Resource equivalent = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#equivalent");
+    public static final Resource Equivalence = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Equivalence");
+    public static final Resource Annotation = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Annotation");
+    public static final Resource Comparison = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Comparison");
+    public static final Property hasComparison = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasComparison" );
+    public static final Property comparedSource = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedSource" );
+    public static final Property comparedMaster = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedMaster" );
+    public static final Property comparedEquivalence = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedEquivalence" );
+    
     /** <p>'has compartment' is a static concept as opposed to either 'to' or 'from' which represent transfer in an elementary flow</p> */
     public static final Property hasCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasCompartment" );
         

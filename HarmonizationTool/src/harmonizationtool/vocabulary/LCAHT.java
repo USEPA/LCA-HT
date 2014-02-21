@@ -29,6 +29,9 @@ public class LCAHT {
     public static final Resource airHigh_population_density = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ht#air-high_population_density" );
 
     /** <p>from Category_Subcategory.xlsx</p> */
+    public static final Resource Annotation = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ht#Annotation" );
+
+    /** <p>from Category_Subcategory.xlsx</p> */
     public static final Resource airLow_population_density = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ht#air-low_population_density" );
 
     /** <p>from Category_Subcategory.xlsx</p> */
