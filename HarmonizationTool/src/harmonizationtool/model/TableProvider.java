@@ -12,10 +12,12 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class TableProvider {
 	private DataRow headerNames = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
+	public List<Resource> uris = new ArrayList<Resource>();
 	public static final String SUBROW_PREFIX = "sr";
 	public static final String SUBROW_NAMEHEADER = "srName";
 	public static final String SUBROW_SUB_URI = "srSubURI";

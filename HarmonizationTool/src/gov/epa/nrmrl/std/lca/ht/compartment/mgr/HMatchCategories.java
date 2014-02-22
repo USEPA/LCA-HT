@@ -62,7 +62,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append ("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n");
 		b.append ("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>  \n");
 		b.append ("  \n");
-		b.append ("SELECT DISTINCT  (str(?label) as ?comp)  \n");
+		b.append ("SELECT DISTINCT  (str(?label) as ?comp) ?c \n");
 		b.append ("WHERE  \n");
 		b.append ("  { \n");
 		b.append ("    ?s a eco:DataSource .  \n");

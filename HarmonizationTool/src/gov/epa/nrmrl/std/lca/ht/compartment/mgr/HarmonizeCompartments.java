@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.tree.Node;
+import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ETHOLD;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
@@ -39,6 +42,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.jface.viewers.TableViewer;
 
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -97,8 +101,7 @@ public class HarmonizeCompartments extends ViewPart {
 		Composite compositeQuery = new Composite(parent, SWT.NONE);
 		compositeQuery.setLayout(new FillLayout(SWT.HORIZONTAL));
 		compositeQuery.setSize(300, 30);
-		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
@@ -107,8 +110,7 @@ public class HarmonizeCompartments extends ViewPart {
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
 		// gd_compositeMatches.minimumWidth = 300;
-		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		matchedLbl = new Label(compositeMatches, SWT.NONE);
 		matchedLbl.setText("Matched");
@@ -121,59 +123,83 @@ public class HarmonizeCompartments extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				QueryModel[] queryModel = (QueryModel[]) queryTblViewer
-						.getInput();
+				QueryModel[] queryModel = (QueryModel[]) queryTblViewer.getInput();
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
-				Resource annotation = ETHOLD.Annotation;
-				Property isA = RDF.type;
-				Resource Class = OWL.Class;
-				Property creator = DCTerms.creator;
-				Property dateSubmitted = DCTerms.dateSubmitted;
-				Property hasComparison = ETHOLD.hasComparison;
-
-				Resource comparison = ETHOLD.Comparison;
-				Property comparedSource = ETHOLD.comparedSource;
-				Property comparedMaster = ETHOLD.comparedMaster;
-				Property comparedEquivalence = ETHOLD.comparedEquivalence;
-				Resource equivalent = ETHOLD.equivalent;
+				// Resource annotation = ETHOLD.Annotation;
+				// Property isA = RDF.type;
+				// Resource Class = OWL.Class;
+				// Property creator = DCTerms.creator;
+				// Property dateSubmitted = DCTerms.dateSubmitted;
+				// Property hasComparison = ETHOLD.hasComparison;
+				//
+				// Resource comparison = ETHOLD.Comparison;
+				// Property comparedSource = ETHOLD.comparedSource;
+				// Property comparedMaster = ETHOLD.comparedMaster;
+				// Property comparedEquivalence = ETHOLD.comparedEquivalence;
+				// Resource equivalent = ETHOLD.equivalent;
 
 				Model model = SelectTDB.model;
+				// NEED TO DO THE FOLLOWING
+				// 1) Create a new Annotation (assigning it to the class Annotation)
+				// 2) Assign to it a date and creator
+				Resource annotationResource = null;
+				if (queryModel.length > 0) {
+					// NEED TO DO THE FOLLOWING
+					// 1) Create a new Annotation (assigning it to the class Annotation)
+					annotationResource = model.createResource();
+					model.add(annotationResource, RDF.type, ETHOLD.Annotation);
+					// 2) Assign to it a date and creator
+					Date calendar = new Date();
+					Literal dateLiteral = model.createTypedLiteral(calendar);
+					model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
+					if (Util.getPreferenceStore().getString("userName") != null) {
+						Literal userName = model.createLiteral(Util.getPreferenceStore().getString("userName"));
+						model.add(annotationResource, DCTerms.creator, userName);
+					}
+				}
+				// 3) Loop through each match
+
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
 					String qString = qModel.label;
-					MatchModel[] matchModel = (MatchModel[]) matchedTblViewer
-							.getInput();
+					MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
 					MatchModel matchRow = matchModel[i];
 					if (matchRow != null) {
-						/*
-						 * NEED TO DO THE FOLLOWING 1) Create a new Annotation
-						 * (assigning it to the class Annotation) 2) Assign to
-						 * it a date and creator 3) Loop through each match A)
-						 * Find the Source URI B) Find the Master URI C) Create
-						 * a new Comparison (assigning it to the class
-						 * Comparison) E) Connect the Annotation to the
-						 * Comparison D) Create 3 triples for that Comparison:
-						 * Source, Master, Equivalence
-						 */
-
-						Literal compartmentName = model.createLiteral(qString);
-						ResIterator resIterator = model
-								.listResourcesWithProperty(RDFS.label,
-										compartmentName);
-						while (resIterator.hasNext()) {
-							Resource candidateCompartment = resIterator.next();
-							if (!model.contains(candidateCompartment, RDF.type,
-									FASC.Compartment)) {
-								continue;
-							}
-							if (model.contains(candidateCompartment, ECO.hasDataSource)) {
-								NodeIterator nodeIterator = model.listObjectsOfProperty(candidateCompartment, ECO.hasDataSource);
-
-							}
+						// A) Find the Source URI
+						// B) Find the Master URI
+						Resource queryCompartmentResource = qModel.getUri();
+						Resource masterCompartmentResource = matchRow.resource;
+						if (masterCompartmentResource == null){
+							continue;
 						}
-						Resource object = matchRow.resource;
+						System.out.println("index i =  "+ i);
+						// C) Create a new Comparison (assigning it to the class Comparison)
+						// D) Connect the Annotation to the Comparison
+						// E) Create 3 triples for that Comparison: Source, Master, Equivalence
+
+						Resource comparisonResource = model.createResource();
+						model.add(comparisonResource, RDF.type, ETHOLD.Comparison);
+						model.add(annotationResource, ETHOLD.hasComparison, comparisonResource);
+						model.add(comparisonResource, ETHOLD.comparedSource, queryCompartmentResource);
+						model.add(comparisonResource, ETHOLD.comparedMaster, masterCompartmentResource);
+						model.add(comparisonResource, ETHOLD.comparedEquivalence, ETHOLD.equivalent);
+
+						// Literal compartmentName = model.createLiteral(qString);
+						// ResIterator resIterator = model.listResourcesWithProperty(RDFS.label,
+						// compartmentName);
+						// while (resIterator.hasNext()) {
+						// Resource candidateCompartment = resIterator.next();
+						// if (!model.contains(candidateCompartment, RDF.type, FASC.Compartment)) {
+						// continue;
+						// }
+						// if (model.contains(candidateCompartment, ECO.hasDataSource)) {
+						// NodeIterator nodeIterator =
+						// model.listObjectsOfProperty(candidateCompartment, ECO.hasDataSource);
+						//
+						// }
+						// }
 						// Statement statement = model.createStatement(arg0,
 						// arg1, arg2);
 					}
@@ -190,8 +216,7 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		Composite compositeMaster = new Composite(parent, SWT.NONE);
 		compositeMaster.setLayout(new GridLayout(1, false));
-		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1);
+		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_compositeMaster.minimumWidth = 300;
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
@@ -204,16 +229,13 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		new Label(parent, SWT.NONE);
 		// ============ NEW COL =========
-		queryTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		queryTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		queryTbl = queryTblViewer.getTable();
-		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
-				1);
+		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_queryTbl.widthHint = 300;
 		queryTbl.setLayoutData(gd_queryTbl);
 		queryTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer,
-				SWT.NONE);
+		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer, SWT.NONE);
 		TableColumn qColumn = queryColumn.getColumn();
 		qColumn.setMoveable(true);
 		qColumn.setAlignment(SWT.RIGHT);
@@ -225,16 +247,13 @@ public class HarmonizeCompartments extends ViewPart {
 			// }
 		});
 		// ============ NEW COL =========
-		matchedTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		matchedTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		matchedTbl = matchedTblViewer.getTable();
-		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_matchedTbl.widthHint = 300;
 		matchedTbl.setLayoutData(gd_matchedTbl);
 		matchedTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer,
-				SWT.NONE);
+		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer, SWT.NONE);
 		TableColumn mColumn = matchColumn.getColumn();
 		mColumn.setMoveable(true);
 		mColumn.setAlignment(SWT.RIGHT);
@@ -249,8 +268,7 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
-		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_masterTree.widthHint = 300;
 		masterTree.setLayoutData(gd_masterTree);
 		masterTree.setLinesVisible(true);
@@ -263,8 +281,7 @@ public class HarmonizeCompartments extends ViewPart {
 				return ((TreeNode) treeNode).nodeName;
 			}
 		});
-		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(
-				masterTreeViewer, SWT.NONE);
+		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -275,36 +292,33 @@ public class HarmonizeCompartments extends ViewPart {
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
 		masterTreeViewer.setInput(createHarmonizeCompartments());
-		masterTreeViewer.getTree().addSelectionListener(
-				new SelectionListener() {
+		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						TreeNode treeNode = (TreeNode) (e.item.getData());
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TreeNode treeNode = (TreeNode) (e.item.getData());
 
-						if (!treeNode.hasChildern()) {
-							String masterLabel = treeNode.getLabel();
-							if (queryTblViewer.getTable().getItemCount() > 0) {
-								int row = queryTblViewer.getTable()
-										.getSelectionIndex();
-								if (row > -1) {
-									// String queryLabel =
-									// queryTblViewer.getTable().getSelection()[0].getText(0);
-									MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer
-											.getInput());
-									matchedModel[row].setLabel(masterLabel);
-									matchedTblViewer.refresh();
-								}
-							}
+				if (!treeNode.hasChildern()) {
+					String masterLabel = treeNode.getLabel();
+					if (queryTblViewer.getTable().getItemCount() > 0) {
+						int row = queryTblViewer.getTable().getSelectionIndex();
+						if (row > -1) {
+							// String queryLabel =
+							// queryTblViewer.getTable().getSelection()[0].getText(0);
+							MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer.getInput());
+							matchedModel[row].setLabel(masterLabel);
+							matchedTblViewer.refresh();
 						}
 					}
+				}
+			}
 
-					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {
-						// TODO Auto-generated method stub
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
 
-					}
-				});
+			}
+		});
 		masterTreeViewer.refresh();
 
 		for (TreeItem item : masterTree.getItems()) {
@@ -496,18 +510,14 @@ public class HarmonizeCompartments extends ViewPart {
 		queryTblViewer.setInput(queryModel);
 		queryTblViewer.getTable().setLinesVisible(true);
 		MatchModel[] matchModel = createMatchModel(queryModel);
-		System.out.println("Created matchModel matchModel.length= "
-				+ matchModel.length);
+		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
 		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
 		matchedTblViewer.setContentProvider(new MatchContentProvider());
 		matchedTblViewer.setInput(matchModel);
 		matchedTblViewer.getTable().setLinesVisible(true);
-		System.out.println("masterTreeViewer.getTree().getColumnCount()= "
-				+ masterTreeViewer.getTree().getColumnCount());
-		System.out.println("masterTreeViewer.getTree().getItems().length= "
-				+ masterTreeViewer.getTree().getItems().length);
-		System.out.println("masterTreeViewer.getTree().getItemCount()= "
-				+ masterTreeViewer.getTree().getItemCount());
+		System.out.println("masterTreeViewer.getTree().getColumnCount()= " + masterTreeViewer.getTree().getColumnCount());
+		System.out.println("masterTreeViewer.getTree().getItems().length= " + masterTreeViewer.getTree().getItems().length);
+		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
 	}
 
 	private class MatchLabelProvider extends LabelProvider {
@@ -559,16 +569,45 @@ public class HarmonizeCompartments extends ViewPart {
 		int index = 0;
 		for (DataRow dataRow : tableProvider.getData()) {
 			String value = dataRow.get(0);
-			elements[index++] = new QueryModel(value);
+			QueryModel queryModel = new QueryModel(value);
+			AnonId uri = new AnonId(dataRow.get(1));
+			Resource queryCompartmentResource = null;
+			// Resource fred = (Resource)uri;
+			// thing = SelectTDB.model.getResource(fred );
+			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(RDF.type, FASC.Compartment));
+			while (iterator.hasNext()) {
+				Resource resource = iterator.next();
+				if (resource.isAnon()) {
+					AnonId anonId = (AnonId) resource.getId();
+					if (dataRow.get(1).equals(anonId.toString())) {
+						queryCompartmentResource = resource;
+						System.out.println("index = " + index);
+						System.out.println("anonId.toString() =" + anonId.toString());
+						System.out.println("anonId.getLabelString() =" + anonId.getLabelString());
+						System.out.println("dataRow.get(1) = " + dataRow.get(1));
+					}
+				}
+			}
+			queryModel.setUri(queryCompartmentResource);
+			elements[index++] = queryModel;
 		}
 		return elements;
 	}
 
 	public class QueryModel {
 		private String label = "";
+		private Resource uri = null;
 
 		public QueryModel(String label) {
 			this.label = label;
+		}
+
+		public void setUri(Resource uri) {
+			this.uri = uri;
+		}
+
+		public Resource getUri() {
+			return uri;
 		}
 
 		@Override
