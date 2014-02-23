@@ -160,21 +160,28 @@ public class HarmonizeCompartments extends ViewPart {
 					}
 				}
 				// 3) Loop through each match
-
+				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
+				System.out.println("matchModel.length= "+matchModel.length);
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
-					String qString = qModel.label;
-					MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
+//					String qString = qModel.label;
 					MatchModel matchRow = matchModel[i];
 					if (matchRow != null) {
+						System.out.println("matchRow["+i+"].label = "+matchRow.label);
+						System.out.println("matchRow.getResource() = "+matchRow.getResource());
+//						System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
+//						System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
 						// A) Find the Source URI
 						// B) Find the Master URI
 						Resource queryCompartmentResource = qModel.getUri();
 						Resource masterCompartmentResource = matchRow.resource;
-						if (masterCompartmentResource == null){
+//						confirmResource(queryCompartmentResource);
+//						confirmResource(masterCompartmentResource);
+						
+						if (masterCompartmentResource == null) {
 							continue;
 						}
-						System.out.println("index i =  "+ i);
+						System.out.println("index i =  " + i);
 						// C) Create a new Comparison (assigning it to the class Comparison)
 						// D) Connect the Annotation to the Comparison
 						// E) Create 3 triples for that Comparison: Source, Master, Equivalence
@@ -202,6 +209,8 @@ public class HarmonizeCompartments extends ViewPart {
 						// }
 						// Statement statement = model.createStatement(arg0,
 						// arg1, arg2);
+					} else {
+						System.out.println("matchModel["+i+"] is null!");
 					}
 				}
 
@@ -300,6 +309,7 @@ public class HarmonizeCompartments extends ViewPart {
 
 				if (!treeNode.hasChildern()) {
 					String masterLabel = treeNode.getLabel();
+					Resource masterResource = treeNode.getUri();
 					if (queryTblViewer.getTable().getItemCount() > 0) {
 						int row = queryTblViewer.getTable().getSelectionIndex();
 						if (row > -1) {
@@ -307,6 +317,7 @@ public class HarmonizeCompartments extends ViewPart {
 							// queryTblViewer.getTable().getSelection()[0].getText(0);
 							MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer.getInput());
 							matchedModel[row].setLabel(masterLabel);
+							matchedModel[row].setResource(masterResource);
 							matchedTblViewer.refresh();
 						}
 					}
@@ -335,132 +346,185 @@ public class HarmonizeCompartments extends ViewPart {
 		}
 	}
 
+	// private void confirmModelContanisCompartments(TreeNode treeNode){
+	// Model model = SelectTDB.model;
+	// if (treeNode.uri != null){
+	// if (!model.containsResource(treeNode.uri)){
+	// model.createResource(treeNode.uri);
+	// }
+	// }
+	// Iterator<Node> iterator = treeNode.getChildIterator();
+	// while(iterator.hasNext()){
+	// Node child = iterator.next();
+	// confirmModelContanisCompartments((TreeNode)child);
+	// }
+	// }
+
+//	private void confirmResource(Resource uri) {
+//		Model model = SelectTDB.model;
+//		if (!model.containsResource(uri)) {
+//			model.createResource(uri);
+//		}
+//	}
+
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterCompartmentTree = new TreeNode(null);
 
 		TreeNode release = new TreeNode(masterCompartmentTree);
 		release.nodeName = "Release";
-		release.uri = LCAHT.release;
+//		confirmUri(LCAHT.release);
 
 		TreeNode air = new TreeNode(release);
 		air.nodeName = "air";
 		air.uri = LCAHT.airUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode airLowPop = new TreeNode(air);
 		airLowPop.nodeName = "low population density";
 		airLowPop.uri = LCAHT.airLow_population_density;
+//		confirmUri(LCAHT.release);
 
 		TreeNode airUnspec = new TreeNode(air);
 		airUnspec.nodeName = "unspecified";
 		airUnspec.uri = LCAHT.airUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode airHighPop = new TreeNode(air);
 		airHighPop.nodeName = "high population density";
 		airHighPop.uri = LCAHT.airHigh_population_density;
+//		confirmUri(LCAHT.release);
 
 		TreeNode airLowPopLongTerm = new TreeNode(air);
 		airLowPopLongTerm.nodeName = "low population density, long-term";
 		airLowPopLongTerm.uri = LCAHT.airLow_population_densityLong_term;
+//		confirmUri(LCAHT.release);
 
 		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
 		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
 		airLowerStratPlusUpperTrop.uri = LCAHT.airLower_stratosphere_upper_troposphere;
+//		confirmUri(LCAHT.release);
 
 		TreeNode water = new TreeNode(release);
 		water.nodeName = "water";
 		water.uri = LCAHT.waterUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterFossil = new TreeNode(water);
 		waterFossil.nodeName = "fossil-";
 		waterFossil.uri = LCAHT.waterFossil;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterFresh = new TreeNode(water);
 		waterFresh.nodeName = "fresh-";
 		waterFresh.uri = LCAHT.waterFresh;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterFreshLongTerm = new TreeNode(water);
 		waterFreshLongTerm.nodeName = "fresh-, long-term";
 		waterFreshLongTerm.uri = LCAHT.waterFreshLong_term;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterGround = new TreeNode(water);
 		waterGround.nodeName = "ground-";
 		waterGround.uri = LCAHT.waterGround;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterGroundLongTerm = new TreeNode(water);
 		waterGroundLongTerm.nodeName = "ground-, long-term";
 		waterGroundLongTerm.uri = LCAHT.waterGroundLong_term;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterLake = new TreeNode(water);
 		waterLake.nodeName = "lake";
 		waterLake.uri = LCAHT.waterLake;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterOcean = new TreeNode(water);
 		waterOcean.nodeName = "ocean";
 		waterOcean.uri = LCAHT.waterOcean;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterRiver = new TreeNode(water);
 		waterRiver.nodeName = "river";
 		waterRiver.uri = LCAHT.waterRiver;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterRiverLongTerm = new TreeNode(water);
 		waterRiverLongTerm.nodeName = "river, long-term";
 		waterRiverLongTerm.uri = LCAHT.waterRiverLong_term;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterSurface = new TreeNode(water);
 		waterSurface.nodeName = "surface water";
 		waterSurface.uri = LCAHT.waterSurface;
+//		confirmUri(LCAHT.release);
 
 		TreeNode waterUnspec = new TreeNode(water);
 		waterUnspec.nodeName = "unspecified";
 		waterUnspec.uri = LCAHT.waterUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode soil = new TreeNode(release);
 		soil.nodeName = "soil";
 		soil.uri = LCAHT.soilUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode soilAgricultural = new TreeNode(soil);
 		soilAgricultural.nodeName = "agricultural";
 		soilAgricultural.uri = LCAHT.soilAgricultural;
+//		confirmUri(LCAHT.release);
 
 		TreeNode soilForestry = new TreeNode(soil);
 		soilForestry.nodeName = "forestry";
 		soilForestry.uri = LCAHT.soilForestry;
+//		confirmUri(LCAHT.release);
 
 		TreeNode soilIndustrial = new TreeNode(soil);
 		soilIndustrial.nodeName = "industrial";
 		soilIndustrial.uri = LCAHT.soilIndustrial;
+//		confirmUri(LCAHT.release);
 
 		TreeNode soilUnspec = new TreeNode(soil);
 		soilUnspec.nodeName = "unspecified";
 		soilUnspec.uri = LCAHT.soilUnspecified;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resource = new TreeNode(masterCompartmentTree);
 		resource.nodeName = "Resource";
 		resource.uri = LCAHT.resource;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);
 		resourceBiotic.nodeName = "biotic";
 		resourceBiotic.uri = LCAHT.resourceBiotic;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceInAir = new TreeNode(resource);
 		resourceInAir.nodeName = "in air";
 		resourceInAir.uri = LCAHT.resourceIn_air;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceInGround = new TreeNode(resource);
 		resourceInGround.nodeName = "in ground";
 		resourceInGround.uri = LCAHT.resourceIn_ground;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceInLand = new TreeNode(resource);
 		resourceInLand.nodeName = "in land";
 		resourceInLand.uri = LCAHT.resourceIn_land;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceInWater = new TreeNode(resource);
 		resourceInWater.nodeName = "in water";
 		resourceInWater.uri = LCAHT.resourceIn_water;
+//		confirmUri(LCAHT.release);
 
 		TreeNode resourceUnspec = new TreeNode(resource);
 		resourceUnspec.nodeName = "unspecified";
 		resourceUnspec.uri = LCAHT.resourceUnspecified;
+//		confirmUri(LCAHT.resourceUnspecified);
+
+		// confirmModelContanisCompartments(masterCompartmentTree);
 		return masterCompartmentTree;
 	}
 

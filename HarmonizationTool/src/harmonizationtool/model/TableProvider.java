@@ -17,7 +17,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class TableProvider {
 	private DataRow headerNames = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
-	public List<Resource> uris = new ArrayList<Resource>();
+//	public List<Resource> uris = new ArrayList<Resource>();
 	public static final String SUBROW_PREFIX = "sr";
 	public static final String SUBROW_NAMEHEADER = "srName";
 	public static final String SUBROW_SUB_URI = "srSubURI";
