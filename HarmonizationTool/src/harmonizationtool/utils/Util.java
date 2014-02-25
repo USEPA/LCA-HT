@@ -7,12 +7,19 @@ import java.util.TimeZone;
 
 import harmonizationtool.Activator;
 import harmonizationtool.ViewData;
+import harmonizationtool.comands.SelectTDB;
+import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Util {
 	private Util() {
@@ -93,6 +100,27 @@ public class Util {
 
 	public static IPreferenceStore getPreferenceStore() {
 		return Activator.getDefault().getPreferenceStore();
+	}
+	
+
+	public static Resource resolveUriFromString(String uriString) {
+		Resource uri = SelectTDB.model.createResource();
+		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
+			uri = SelectTDB.model.getResource(uriString);
+		} else {
+			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(
+					RDF.type, ECO.Substance));
+			while (iterator.hasNext()) {
+				Resource resource = iterator.next();
+				if (resource.isAnon()) {
+					AnonId anonId = (AnonId) resource.getId();
+					if (uriString.equals(anonId.toString())) {
+						uri = resource;
+					}
+				}
+			}
+		}
+		return uri;
 	}
 	// public static IStatusLineManager getStatusLine(){
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().

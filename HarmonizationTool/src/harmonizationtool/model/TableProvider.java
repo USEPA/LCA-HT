@@ -1,5 +1,7 @@
 package harmonizationtool.model;
 
+import harmonizationtool.utils.Util;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -15,9 +19,12 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class TableProvider {
+	private static int subRowNum;
 	private DataRow headerNames = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
-//	public List<Resource> uris = new ArrayList<Resource>();
+	private List<Resource> uriList = new ArrayList<Resource>();
+
+	// public List<Resource> uris = new ArrayList<Resource>();
 	public static final String SUBROW_PREFIX = "sr";
 	public static final String SUBROW_NAMEHEADER = "srName";
 	public static final String SUBROW_SUB_URI = "srSubURI";
@@ -27,12 +34,24 @@ public class TableProvider {
 		data.add(dataRow);
 	}
 
+	public void addUri(Resource uri) {
+		uriList.add(uri);
+	}
+
 	public List<DataRow> getData() {
 		return data;
 	}
 
+	public List<Resource> getUriList() {
+		return uriList;
+	}
+
 	public int getIndex(DataRow dataRow) {
 		return data.indexOf(dataRow);
+	}
+
+	public int getUriIndex(Resource uri) {
+		return uriList.indexOf(uri);
 	}
 
 	public DataRow getHeaderNames() {
@@ -41,12 +60,13 @@ public class TableProvider {
 
 	public List<String> getHeaderNamesAsStrings() {
 		List<String> headerNamesAsStrings = new ArrayList<String>();
-//		System.out.println("headerNames.getSize()=" + headerNames.getSize());
+		// System.out.println("headerNames.getSize()=" + headerNames.getSize());
 		Iterator<String> iter = headerNames.getIterator();
 		while (iter.hasNext()) {
 			headerNamesAsStrings.add(iter.next());
 		}
-//		System.out.println("returning headerNames.getSize()=" + headerNames.getSize());
+		// System.out.println("returning headerNames.getSize()=" +
+		// headerNames.getSize());
 		return headerNamesAsStrings;
 	}
 
@@ -121,18 +141,24 @@ public class TableProvider {
 				String origHeaderPrefix = origHeader.substring(0, headerSplitPoint);
 				String origHeaderField = origHeader.substring(headerSplitPoint + 1);
 				if (origHeaderPrefix.matches("^" + SUBROW_PREFIX + "\\d+$")) {
-					int subRowNum = Integer.parseInt(origHeaderPrefix.substring(SUBROW_PREFIX.length()));
+					subRowNum = Integer.parseInt(origHeaderPrefix.substring(SUBROW_PREFIX.length()));
+
 					if (origHeaderField.equals(SUBROW_NAMEHEADER)) { // DataSet
 																		// FIELD
 						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSetName);
 						headerMap.put(origHeader, transformCell);
 					} else if (origHeaderField.equals(SUBROW_SUB_URI)) {
-						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, origHeaderField);
-						headerMap.put(origHeader, transformCell);
-						if (subRowNum == 1) {
-//							tableProvider.headerNames.add(origHeaderField); \\ THIS LINE AND THE ONE BELOW ARE EQUIVALENT
-							tableProvider.headerNames.add(SUBROW_SUB_URI);  //
-						}
+						// tableProvider.addUri(Util.resolveUriFromString(uriString));
+						// //
+						// NOTHING HERE
+
+						// TransformCell transformCell = tableProvider.new
+						// TransformCell(subRowNum, origHeaderField);
+						// headerMap.put(origHeader, transformCell);
+						// if (subRowNum == 1) {
+						// tableProvider.headerNames.add(origHeaderField); \\
+						// THIS LINE AND THE ONE BELOW ARE EQUIVALENT
+						// }
 					} else if (origHeaderField.equals(SUBROW_SOURCE_TAB_ROW)) {
 						// NOTHING HERE
 					} else {
@@ -158,6 +184,8 @@ public class TableProvider {
 		boolean debugFlag = true;
 		for (; resultSetRewindable.hasNext();) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
+
+			// tableProvider.addUri(soln.getResource( SUBROW_SUB_URI ));
 			// BUILD A 2-D ARRAY (ROWS AND COLS) CONTAINING THE MULTIPLE
 			// SUB-ROWS BASED ON ONE
 			// QUERY RESULT ROW
@@ -166,7 +194,22 @@ public class TableProvider {
 				if (debugFlag) {
 					System.out.println("origHeader =" + origHeader);
 				}
-				if (headerMap.containsKey(origHeader)) { // SPECIAL HEADERS WON'T MAP, THEY'RE URIs
+
+				String regexUri = SUBROW_PREFIX + "(\\d)_" + SUBROW_SUB_URI;
+				if (origHeader.matches(regexUri)) {
+					// Pattern uriMatch = Pattern.compile(regexUri);
+					//
+					// Matcher matcher = uriMatch.matcher(origHeader);
+					// matcher.find();
+					// int rowForUriNum =
+					// Integer.parseInt(matcher.group(0).trim());
+
+					tableProvider.addUri(soln.getResource(origHeader));
+				}
+			
+				if (headerMap.containsKey(origHeader)) { // SPECIAL HEADERS
+															// WON'T MAP,
+															// THEY'RE URIs
 					TransformCell transformCell = headerMap.get(origHeader);
 					int colNum = tableProvider.getHeaderNamesAsStrings().indexOf(transformCell.newHeader);
 					int rowNum = transformCell.rowNum;
@@ -180,7 +223,7 @@ public class TableProvider {
 						if (debugFlag) {
 							System.out.println("rowNum:" + rowNum + " colNum:" + colNum + " dataRow.getSize() is now:" + dataRow.getSize());
 						}
-						}
+					}
 					try {
 						RDFNode rdfNode = soln.get(origHeader);
 						if (rdfNode == null) {
