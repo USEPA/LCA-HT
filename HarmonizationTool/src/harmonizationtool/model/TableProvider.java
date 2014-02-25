@@ -127,7 +127,12 @@ public class TableProvider {
 						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSetName);
 						headerMap.put(origHeader, transformCell);
 					} else if (origHeaderField.equals(SUBROW_SUB_URI)) {
-						// NOTHING HERE
+						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, origHeaderField);
+						headerMap.put(origHeader, transformCell);
+						if (subRowNum == 1) {
+//							tableProvider.headerNames.add(origHeaderField); \\ THIS LINE AND THE ONE BELOW ARE EQUIVALENT
+							tableProvider.headerNames.add(SUBROW_SUB_URI);  //
+						}
 					} else if (origHeaderField.equals(SUBROW_SOURCE_TAB_ROW)) {
 						// NOTHING HERE
 					} else {

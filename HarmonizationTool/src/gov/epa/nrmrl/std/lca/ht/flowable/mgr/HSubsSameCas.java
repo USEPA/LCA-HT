@@ -73,14 +73,22 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("SELECT  DISTINCT\n");
 		b.append("   (str(?ds1_name) as ?" + TableProvider.SUBROW_PREFIX + "1_"
 				+ TableProvider.SUBROW_NAMEHEADER + ") \n");
-		b.append("   (str(?name1) as ?" + TableProvider.SUBROW_PREFIX + "1_substance_name) \n");
+		b.append("   (str(?name1) as ?" + TableProvider.SUBROW_PREFIX
+				+ "1_substance_name) \n");
+		b.append("   (?sub1 as ?" + TableProvider.SUBROW_PREFIX + "1_"
+				+ TableProvider.SUBROW_SUB_URI + ") \n");
 
 		for (int i = 0; i < referenceDataSets.length; i++) {
 			int iPlusTwo = i + 2;
-			b.append("   (str(?ds" + iPlusTwo + "_name) as ?" + TableProvider.SUBROW_PREFIX
-					+ iPlusTwo + "_" + TableProvider.SUBROW_NAMEHEADER + ") \n");
-			b.append("   (str(?name" + iPlusTwo + ") as ?" + TableProvider.SUBROW_PREFIX
-					+ iPlusTwo + "_substance_name) \n");
+			b.append("   (str(?ds" + iPlusTwo + "_name) as ?"
+					+ TableProvider.SUBROW_PREFIX + iPlusTwo + "_"
+					+ TableProvider.SUBROW_NAMEHEADER + ") \n");
+			b.append("   (?sub" + iPlusTwo + " as ?"
+					+ TableProvider.SUBROW_PREFIX + iPlusTwo + "_"
+					+ TableProvider.SUBROW_SUB_URI + ") \n");
+			b.append("   (str(?name" + iPlusTwo + ") as ?"
+					+ TableProvider.SUBROW_PREFIX + iPlusTwo
+					+ "_substance_name) \n");
 		}
 		b.append("   (str(?cas) as ?same_cas) \n");
 		b.append(" \n");
@@ -117,9 +125,9 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		}
 		b.append("       ) \n");
 		b.append("} \n");
-//		b.append("group by ?ds1_name \n");
+		// b.append("group by ?ds1_name \n");
 		b.append("order by ?qRow ?same_cas \n");
-//		b.append("limit 500 \n");
+		// b.append("limit 500 \n");
 		setQuery(b.toString());
 	}
 

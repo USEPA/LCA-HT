@@ -37,6 +37,8 @@ public class ETHOLD {
     public static final Resource CASRN = m_model.createResource( "http://epa.gov/nrmrl/std/lca/ethold#CASRN" );
     
     public static final Resource equivalent = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#equivalent");
+    public static final Resource nonEquivalent = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#nonEquivalent");
+
     public static final Resource Equivalence = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Equivalence");
     public static final Resource Annotation = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Annotation");
     public static final Resource Comparison = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Comparison");
@@ -77,6 +79,8 @@ public class ETHOLD {
 	public static final Property hasCategory2 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory2");
 
 	public static final Property hasCategory3 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory3");
+
+	public static final Resource nonequivalent = null;
 	
 	
 }

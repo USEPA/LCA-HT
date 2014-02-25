@@ -101,7 +101,8 @@ public class HarmonizeCompartments extends ViewPart {
 		Composite compositeQuery = new Composite(parent, SWT.NONE);
 		compositeQuery.setLayout(new FillLayout(SWT.HORIZONTAL));
 		compositeQuery.setSize(300, 30);
-		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
+				false, 1, 1));
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
@@ -110,7 +111,8 @@ public class HarmonizeCompartments extends ViewPart {
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
 		// gd_compositeMatches.minimumWidth = 300;
-		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
+				false, 1, 1));
 
 		matchedLbl = new Label(compositeMatches, SWT.NONE);
 		matchedLbl.setText("Matched");
@@ -123,7 +125,8 @@ public class HarmonizeCompartments extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				QueryModel[] queryModel = (QueryModel[]) queryTblViewer.getInput();
+				QueryModel[] queryModel = (QueryModel[]) queryTblViewer
+						.getInput();
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
@@ -142,75 +145,94 @@ public class HarmonizeCompartments extends ViewPart {
 
 				Model model = SelectTDB.model;
 				// NEED TO DO THE FOLLOWING
-				// 1) Create a new Annotation (assigning it to the class Annotation)
+				// 1) Create a new Annotation (assigning it to the class
+				// Annotation)
 				// 2) Assign to it a date and creator
 				Resource annotationResource = null;
 				if (queryModel.length > 0) {
 					// NEED TO DO THE FOLLOWING
-					// 1) Create a new Annotation (assigning it to the class Annotation)
+					// 1) Create a new Annotation (assigning it to the class
+					// Annotation)
 					annotationResource = model.createResource();
 					model.add(annotationResource, RDF.type, ETHOLD.Annotation);
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
-					model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
+					model.add(annotationResource, DCTerms.dateSubmitted,
+							dateLiteral);
 					if (Util.getPreferenceStore().getString("userName") != null) {
-						Literal userName = model.createLiteral(Util.getPreferenceStore().getString("userName"));
+						Literal userName = model.createLiteral(Util
+								.getPreferenceStore().getString("userName"));
 						model.add(annotationResource, DCTerms.creator, userName);
 					}
 				}
 				// 3) Loop through each match
-				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
-				System.out.println("matchModel.length= "+matchModel.length);
+				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer
+						.getInput();
+				System.out.println("matchModel.length= " + matchModel.length);
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
-//					String qString = qModel.label;
+					// String qString = qModel.label;
 					MatchModel matchRow = matchModel[i];
 					if (matchRow != null) {
-						System.out.println("matchRow["+i+"].label = "+matchRow.label);
-						System.out.println("matchRow.getResource() = "+matchRow.getResource());
-//						System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
-//						System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
+						System.out.println("matchRow[" + i + "].label = "
+								+ matchRow.label);
+						System.out.println("matchRow.getResource() = "
+								+ matchRow.getResource());
+						// System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
+						// System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
 						// A) Find the Source URI
 						// B) Find the Master URI
 						Resource queryCompartmentResource = qModel.getUri();
 						Resource masterCompartmentResource = matchRow.resource;
-//						confirmResource(queryCompartmentResource);
-//						confirmResource(masterCompartmentResource);
-						
+						// confirmResource(queryCompartmentResource);
+						// confirmResource(masterCompartmentResource);
+
 						if (masterCompartmentResource == null) {
 							continue;
 						}
 						System.out.println("index i =  " + i);
-						// C) Create a new Comparison (assigning it to the class Comparison)
+						// C) Create a new Comparison (assigning it to the class
+						// Comparison)
 						// D) Connect the Annotation to the Comparison
-						// E) Create 3 triples for that Comparison: Source, Master, Equivalence
+						// E) Create 3 triples for that Comparison: Source,
+						// Master, Equivalence
 
 						Resource comparisonResource = model.createResource();
-						model.add(comparisonResource, RDF.type, ETHOLD.Comparison);
-						model.add(annotationResource, ETHOLD.hasComparison, comparisonResource);
-						model.add(comparisonResource, ETHOLD.comparedSource, queryCompartmentResource);
-						model.add(comparisonResource, ETHOLD.comparedMaster, masterCompartmentResource);
-						model.add(comparisonResource, ETHOLD.comparedEquivalence, ETHOLD.equivalent);
+						model.add(comparisonResource, RDF.type,
+								ETHOLD.Comparison);
+						model.add(annotationResource, ETHOLD.hasComparison,
+								comparisonResource);
+						model.add(comparisonResource, ETHOLD.comparedSource,
+								queryCompartmentResource);
+						model.add(comparisonResource, ETHOLD.comparedMaster,
+								masterCompartmentResource);
+						model.add(comparisonResource,
+								ETHOLD.comparedEquivalence, ETHOLD.equivalent);
 
-						// Literal compartmentName = model.createLiteral(qString);
-						// ResIterator resIterator = model.listResourcesWithProperty(RDFS.label,
+						// Literal compartmentName =
+						// model.createLiteral(qString);
+						// ResIterator resIterator =
+						// model.listResourcesWithProperty(RDFS.label,
 						// compartmentName);
 						// while (resIterator.hasNext()) {
 						// Resource candidateCompartment = resIterator.next();
-						// if (!model.contains(candidateCompartment, RDF.type, FASC.Compartment)) {
+						// if (!model.contains(candidateCompartment, RDF.type,
+						// FASC.Compartment)) {
 						// continue;
 						// }
-						// if (model.contains(candidateCompartment, ECO.hasDataSource)) {
+						// if (model.contains(candidateCompartment,
+						// ECO.hasDataSource)) {
 						// NodeIterator nodeIterator =
-						// model.listObjectsOfProperty(candidateCompartment, ECO.hasDataSource);
+						// model.listObjectsOfProperty(candidateCompartment,
+						// ECO.hasDataSource);
 						//
 						// }
 						// }
 						// Statement statement = model.createStatement(arg0,
 						// arg1, arg2);
 					} else {
-						System.out.println("matchModel["+i+"] is null!");
+						System.out.println("matchModel[" + i + "] is null!");
 					}
 				}
 
@@ -225,7 +247,8 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		Composite compositeMaster = new Composite(parent, SWT.NONE);
 		compositeMaster.setLayout(new GridLayout(1, false));
-		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false,
+				false, 1, 1);
 		gd_compositeMaster.minimumWidth = 300;
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
@@ -238,13 +261,16 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		new Label(parent, SWT.NONE);
 		// ============ NEW COL =========
-		queryTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		queryTblViewer = new TableViewer(parent, SWT.BORDER
+				| SWT.FULL_SELECTION);
 		queryTbl = queryTblViewer.getTable();
-		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
+				1);
 		gd_queryTbl.widthHint = 300;
 		queryTbl.setLayoutData(gd_queryTbl);
 		queryTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer, SWT.NONE);
+		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer,
+				SWT.NONE);
 		TableColumn qColumn = queryColumn.getColumn();
 		qColumn.setMoveable(true);
 		qColumn.setAlignment(SWT.RIGHT);
@@ -256,13 +282,16 @@ public class HarmonizeCompartments extends ViewPart {
 			// }
 		});
 		// ============ NEW COL =========
-		matchedTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		matchedTblViewer = new TableViewer(parent, SWT.BORDER
+				| SWT.FULL_SELECTION);
 		matchedTbl = matchedTblViewer.getTable();
-		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true,
+				1, 1);
 		gd_matchedTbl.widthHint = 300;
 		matchedTbl.setLayoutData(gd_matchedTbl);
 		matchedTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer, SWT.NONE);
+		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer,
+				SWT.NONE);
 		TableColumn mColumn = matchColumn.getColumn();
 		mColumn.setMoveable(true);
 		mColumn.setAlignment(SWT.RIGHT);
@@ -277,7 +306,8 @@ public class HarmonizeCompartments extends ViewPart {
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
-		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true,
+				1, 1);
 		gd_masterTree.widthHint = 300;
 		masterTree.setLayoutData(gd_masterTree);
 		masterTree.setLinesVisible(true);
@@ -290,7 +320,8 @@ public class HarmonizeCompartments extends ViewPart {
 				return ((TreeNode) treeNode).nodeName;
 			}
 		});
-		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
+		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(
+				masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -301,35 +332,39 @@ public class HarmonizeCompartments extends ViewPart {
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
 		masterTreeViewer.setInput(createHarmonizeCompartments());
-		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
+		masterTreeViewer.getTree().addSelectionListener(
+				new SelectionListener() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TreeNode treeNode = (TreeNode) (e.item.getData());
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						TreeNode treeNode = (TreeNode) (e.item.getData());
 
-				if (!treeNode.hasChildern()) {
-					String masterLabel = treeNode.getLabel();
-					Resource masterResource = treeNode.getUri();
-					if (queryTblViewer.getTable().getItemCount() > 0) {
-						int row = queryTblViewer.getTable().getSelectionIndex();
-						if (row > -1) {
-							// String queryLabel =
-							// queryTblViewer.getTable().getSelection()[0].getText(0);
-							MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer.getInput());
-							matchedModel[row].setLabel(masterLabel);
-							matchedModel[row].setResource(masterResource);
-							matchedTblViewer.refresh();
+						if (!treeNode.hasChildern()) {
+							String masterLabel = treeNode.getLabel();
+							Resource masterResource = treeNode.getUri();
+							if (queryTblViewer.getTable().getItemCount() > 0) {
+								int row = queryTblViewer.getTable()
+										.getSelectionIndex();
+								if (row > -1) {
+									// String queryLabel =
+									// queryTblViewer.getTable().getSelection()[0].getText(0);
+									MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer
+											.getInput());
+									matchedModel[row].setLabel(masterLabel);
+									matchedModel[row]
+											.setResource(masterResource);
+									matchedTblViewer.refresh();
+								}
+							}
 						}
 					}
-				}
-			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// TODO Auto-generated method stub
 
-			}
-		});
+					}
+				});
 		masterTreeViewer.refresh();
 
 		for (TreeItem item : masterTree.getItems()) {
@@ -360,169 +395,169 @@ public class HarmonizeCompartments extends ViewPart {
 	// }
 	// }
 
-//	private void confirmResource(Resource uri) {
-//		Model model = SelectTDB.model;
-//		if (!model.containsResource(uri)) {
-//			model.createResource(uri);
-//		}
-//	}
+	// private void confirmResource(Resource uri) {
+	// Model model = SelectTDB.model;
+	// if (!model.containsResource(uri)) {
+	// model.createResource(uri);
+	// }
+	// }
 
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterCompartmentTree = new TreeNode(null);
 
 		TreeNode release = new TreeNode(masterCompartmentTree);
 		release.nodeName = "Release";
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode air = new TreeNode(release);
 		air.nodeName = "air";
 		air.uri = LCAHT.airUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode airLowPop = new TreeNode(air);
 		airLowPop.nodeName = "low population density";
 		airLowPop.uri = LCAHT.airLow_population_density;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode airUnspec = new TreeNode(air);
 		airUnspec.nodeName = "unspecified";
 		airUnspec.uri = LCAHT.airUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode airHighPop = new TreeNode(air);
 		airHighPop.nodeName = "high population density";
 		airHighPop.uri = LCAHT.airHigh_population_density;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode airLowPopLongTerm = new TreeNode(air);
 		airLowPopLongTerm.nodeName = "low population density, long-term";
 		airLowPopLongTerm.uri = LCAHT.airLow_population_densityLong_term;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
 		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
 		airLowerStratPlusUpperTrop.uri = LCAHT.airLower_stratosphere_upper_troposphere;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode water = new TreeNode(release);
 		water.nodeName = "water";
 		water.uri = LCAHT.waterUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterFossil = new TreeNode(water);
 		waterFossil.nodeName = "fossil-";
 		waterFossil.uri = LCAHT.waterFossil;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterFresh = new TreeNode(water);
 		waterFresh.nodeName = "fresh-";
 		waterFresh.uri = LCAHT.waterFresh;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterFreshLongTerm = new TreeNode(water);
 		waterFreshLongTerm.nodeName = "fresh-, long-term";
 		waterFreshLongTerm.uri = LCAHT.waterFreshLong_term;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterGround = new TreeNode(water);
 		waterGround.nodeName = "ground-";
 		waterGround.uri = LCAHT.waterGround;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterGroundLongTerm = new TreeNode(water);
 		waterGroundLongTerm.nodeName = "ground-, long-term";
 		waterGroundLongTerm.uri = LCAHT.waterGroundLong_term;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterLake = new TreeNode(water);
 		waterLake.nodeName = "lake";
 		waterLake.uri = LCAHT.waterLake;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterOcean = new TreeNode(water);
 		waterOcean.nodeName = "ocean";
 		waterOcean.uri = LCAHT.waterOcean;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterRiver = new TreeNode(water);
 		waterRiver.nodeName = "river";
 		waterRiver.uri = LCAHT.waterRiver;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterRiverLongTerm = new TreeNode(water);
 		waterRiverLongTerm.nodeName = "river, long-term";
 		waterRiverLongTerm.uri = LCAHT.waterRiverLong_term;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterSurface = new TreeNode(water);
 		waterSurface.nodeName = "surface water";
 		waterSurface.uri = LCAHT.waterSurface;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode waterUnspec = new TreeNode(water);
 		waterUnspec.nodeName = "unspecified";
 		waterUnspec.uri = LCAHT.waterUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode soil = new TreeNode(release);
 		soil.nodeName = "soil";
 		soil.uri = LCAHT.soilUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode soilAgricultural = new TreeNode(soil);
 		soilAgricultural.nodeName = "agricultural";
 		soilAgricultural.uri = LCAHT.soilAgricultural;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode soilForestry = new TreeNode(soil);
 		soilForestry.nodeName = "forestry";
 		soilForestry.uri = LCAHT.soilForestry;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode soilIndustrial = new TreeNode(soil);
 		soilIndustrial.nodeName = "industrial";
 		soilIndustrial.uri = LCAHT.soilIndustrial;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode soilUnspec = new TreeNode(soil);
 		soilUnspec.nodeName = "unspecified";
 		soilUnspec.uri = LCAHT.soilUnspecified;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resource = new TreeNode(masterCompartmentTree);
 		resource.nodeName = "Resource";
 		resource.uri = LCAHT.resource;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);
 		resourceBiotic.nodeName = "biotic";
 		resourceBiotic.uri = LCAHT.resourceBiotic;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceInAir = new TreeNode(resource);
 		resourceInAir.nodeName = "in air";
 		resourceInAir.uri = LCAHT.resourceIn_air;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceInGround = new TreeNode(resource);
 		resourceInGround.nodeName = "in ground";
 		resourceInGround.uri = LCAHT.resourceIn_ground;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceInLand = new TreeNode(resource);
 		resourceInLand.nodeName = "in land";
 		resourceInLand.uri = LCAHT.resourceIn_land;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceInWater = new TreeNode(resource);
 		resourceInWater.nodeName = "in water";
 		resourceInWater.uri = LCAHT.resourceIn_water;
-//		confirmUri(LCAHT.release);
+		// confirmUri(LCAHT.release);
 
 		TreeNode resourceUnspec = new TreeNode(resource);
 		resourceUnspec.nodeName = "unspecified";
 		resourceUnspec.uri = LCAHT.resourceUnspecified;
-//		confirmUri(LCAHT.resourceUnspecified);
+		// confirmUri(LCAHT.resourceUnspecified);
 
 		// confirmModelContanisCompartments(masterCompartmentTree);
 		return masterCompartmentTree;
@@ -574,14 +609,18 @@ public class HarmonizeCompartments extends ViewPart {
 		queryTblViewer.setInput(queryModel);
 		queryTblViewer.getTable().setLinesVisible(true);
 		MatchModel[] matchModel = createMatchModel(queryModel);
-		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
+		System.out.println("Created matchModel matchModel.length= "
+				+ matchModel.length);
 		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
 		matchedTblViewer.setContentProvider(new MatchContentProvider());
 		matchedTblViewer.setInput(matchModel);
 		matchedTblViewer.getTable().setLinesVisible(true);
-		System.out.println("masterTreeViewer.getTree().getColumnCount()= " + masterTreeViewer.getTree().getColumnCount());
-		System.out.println("masterTreeViewer.getTree().getItems().length= " + masterTreeViewer.getTree().getItems().length);
-		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
+		System.out.println("masterTreeViewer.getTree().getColumnCount()= "
+				+ masterTreeViewer.getTree().getColumnCount());
+		System.out.println("masterTreeViewer.getTree().getItems().length= "
+				+ masterTreeViewer.getTree().getItems().length);
+		System.out.println("masterTreeViewer.getTree().getItemCount()= "
+				+ masterTreeViewer.getTree().getItemCount());
 	}
 
 	private class MatchLabelProvider extends LabelProvider {
@@ -634,11 +673,12 @@ public class HarmonizeCompartments extends ViewPart {
 		for (DataRow dataRow : tableProvider.getData()) {
 			String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);
-			AnonId uri = new AnonId(dataRow.get(1));
+			// AnonId uri = new AnonId(dataRow.get(1)); // MIGHT THIS WORK?
 			Resource queryCompartmentResource = null;
 			// Resource fred = (Resource)uri;
 			// thing = SelectTDB.model.getResource(fred );
-			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(RDF.type, FASC.Compartment));
+			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(
+					RDF.type, FASC.Compartment));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
@@ -646,9 +686,12 @@ public class HarmonizeCompartments extends ViewPart {
 					if (dataRow.get(1).equals(anonId.toString())) {
 						queryCompartmentResource = resource;
 						System.out.println("index = " + index);
-						System.out.println("anonId.toString() =" + anonId.toString());
-						System.out.println("anonId.getLabelString() =" + anonId.getLabelString());
-						System.out.println("dataRow.get(1) = " + dataRow.get(1));
+						System.out.println("anonId.toString() ="
+								+ anonId.toString());
+						System.out.println("anonId.getLabelString() ="
+								+ anonId.getLabelString());
+						System.out
+								.println("dataRow.get(1) = " + dataRow.get(1));
 					}
 				}
 			}
