@@ -914,14 +914,21 @@ public class ResultsTreeEditor extends ViewPart {
 			while (childIterator.hasNext()) {
 				TreeNodeSubRow treeNodeSubRow = (TreeNodeSubRow) childIterator.next();
 				Resource comparison = null;
-				if (treeNodeSubRow.matchStatus.equals(MatchStatus.EQUIVALENT)) {
+				System.out.println("got here");
+				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
 					comparison = addComparison(treeNodeRow.uri, treeNodeSubRow.uri, ETHOLD.equivalent);
+					System.out.println("  eq");
 
-				} else if (treeNodeSubRow.matchStatus.equals(MatchStatus.NONEQUIVALENT)) {
+
+				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
 					comparison = addComparison(treeNodeRow.uri, treeNodeSubRow.uri, ETHOLD.nonequivalent);
+					System.out.println("  non-eq");
+
 				}
 				if (comparison != null) {
 					model.add(annotationResource, ETHOLD.hasComparison, comparison);
+					System.out.println("  Annotation adding a Comparison");
+
 				}
 			}
 		}
