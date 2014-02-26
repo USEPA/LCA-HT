@@ -566,61 +566,52 @@ public class ResultsTreeEditor extends ViewPart {
 		trunk = new TreeNode(null);
 		// }
 		// new TreeNodeRow(trunk);
-		TreeNodeRow treeRow = new TreeNodeRow(trunk);
+		TreeNodeRow treeNodeRow = new TreeNodeRow(trunk);
+		treeNodeRow.setUri(uriList.get(0));
 		int uriCol = -1;
 		for (int col = 0; col < firstRow.getSize(); col++) {
-			// if (header.get(col).equals(TableProvider.SUBROW_SUB_URI)) {
-			// uriCol = col;
-			// } else {
-			treeRow.addColumnLabel(firstRow.get(col));
-			treeRow.addMatchStatus(MatchStatus.UNKNOWN);
-			// }
+
+			treeNodeRow.addColumnLabel(firstRow.get(col));
+			treeNodeRow.addMatchStatus(MatchStatus.UNKNOWN);
+
 		}
-		TreeNodeSubRow treeSubRow;
+		TreeNodeSubRow treeNodeSubRow;
 
 		for (int i = 1; i < data.size(); i++) {
 			DataRow dataRow = data.get(i);
 			Resource uri = uriList.get(i);
 			if (keyDataSet.equals(dataRow.get(0))) {
-				treeRow = new TreeNodeRow(trunk);
-				treeRow.uri = uri;
+				treeNodeRow = new TreeNodeRow(trunk);
+				treeNodeRow.setUri(uri);
 				for (int col = 0; col < dataRow.getSize(); col++) {
-					// if (col == uriCol) {
-					// // uriCol = col;
-					// treeRow.uri = resolveUriFromString(dataRow.get(col));
-					// } else {
-					treeRow.addColumnLabel(dataRow.get(col));
-					treeRow.addMatchStatus(MatchStatus.UNKNOWN);
-					// }
+
+					treeNodeRow.addColumnLabel(dataRow.get(col));
+					treeNodeRow.addMatchStatus(MatchStatus.UNKNOWN);
+
 				}
 			} else {
-				treeSubRow = new TreeNodeSubRow(treeRow);
+				treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
 				for (int col = 0; col < dataRow.getSize(); col++) {
-					treeSubRow.addColumnLabel(dataRow.get(col));
-					treeSubRow.uri = uri;
+					treeNodeSubRow.addColumnLabel(dataRow.get(col));
+					treeNodeSubRow.setUri(uri);
 
-					// if (col == uriCol) {
-					// // uriCol = col;
-					// treeSubRow.uri = resolveUriFromString(dataRow.get(col));
-					// } else {
-					if (treeSubRow.getColumnLabel(col).toUpperCase().equals(treeRow.getColumnLabel(col).toUpperCase())) {
-						treeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
+					if (treeNodeSubRow.getColumnLabel(col).toUpperCase().equals(treeNodeRow.getColumnLabel(col).toUpperCase())) {
+						treeNodeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
 						// treeRow.updateMatchStatus(col,
 						// MatchStatus.EQUIVALENT); // WHY DOES THIS GET
 						// DONE
 						// AUTOMAGICALLY?
 					} else {
-						treeSubRow.addMatchStatus(MatchStatus.UNKNOWN);
+						treeNodeSubRow.addMatchStatus(MatchStatus.UNKNOWN);
 					}
-					// }
 				}
 			}
 		}
 		int matchCount = 0;
 		Iterator iterator = trunk.getChildIterator();
 		while (iterator.hasNext()) {
-			treeRow = (TreeNodeRow) iterator.next();
-			if (treeRow.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
+			treeNodeRow = (TreeNodeRow) iterator.next();
+			if (treeNodeRow.getMatchStatus(1) == MatchStatus.EQUIVALENT) {
 				matchCount++;
 			}
 		}
@@ -911,18 +902,21 @@ public class ResultsTreeEditor extends ViewPart {
 		while (iterator.hasNext()) {
 			TreeNodeRow treeNodeRow = (TreeNodeRow) iterator.next();
 			Iterator<Node> childIterator = treeNodeRow.getChildIterator();
+			int counter = 1;
 			while (childIterator.hasNext()) {
+				counter++;
 				TreeNodeSubRow treeNodeSubRow = (TreeNodeSubRow) childIterator.next();
 				Resource comparison = null;
 				System.out.println("got here");
 				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.uri, treeNodeSubRow.uri, ETHOLD.equivalent);
-					System.out.println("  eq");
-
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ETHOLD.equivalent);
+					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
+					// System.out.println("  eq");
 
 				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.uri, treeNodeSubRow.uri, ETHOLD.nonequivalent);
-					System.out.println("  non-eq");
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ETHOLD.nonEquivalent);
+					// System.out.println("  non-eq");
+					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 
 				}
 				if (comparison != null) {
@@ -937,6 +931,7 @@ public class ResultsTreeEditor extends ViewPart {
 	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
 		Model model = SelectTDB.model;
 		if (querySource == null || master == null) {
+			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
 		}
 		Resource comparisonResource = model.createResource();

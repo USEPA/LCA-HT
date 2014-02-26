@@ -12,7 +12,7 @@ import harmonizationtool.tree.Node;
  * 
  */
 public class TreeNodeRow extends TreeNode {
-	protected Resource uri = null;
+	private Resource uri = null;
 
 	public TreeNodeRow(TreeNode parent) {
 		super(parent);
@@ -43,5 +43,13 @@ public class TreeNodeRow extends TreeNode {
 				+ "[colLabels=" + colLabels + ", matchStatus=" + matchStatus
 				+ ", parent=" + "@" + Integer.toHexString(parent.hashCode())
 				+ ", children.size()=" + children.size() + "]";
+	}
+
+	public Resource getUri() {
+		return uri;
+	}
+
+	public void setUri(Resource uri) {
+		this.uri = uri;
 	}
 }

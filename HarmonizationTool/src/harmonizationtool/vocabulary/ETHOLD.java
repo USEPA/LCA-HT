@@ -80,7 +80,6 @@ public class ETHOLD {
 
 	public static final Property hasCategory3 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory3");
 
-	public static final Resource nonequivalent = null;
 	
 	
 }

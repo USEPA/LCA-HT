@@ -35,7 +35,13 @@ public class TableProvider {
 	}
 
 	public void addUri(Resource uri) {
+		// if (uri == null){
+		// System.out.println("Trying to add null URI with uriList.size() = "+uriList.size());
+		// }
+
 		uriList.add(uri);
+		System.out.println("Added URI: " + uri + ".  Now the uriList.size() is " + +uriList.size());
+
 	}
 
 	public List<DataRow> getData() {
@@ -87,7 +93,7 @@ public class TableProvider {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
 		tableProvider.setHeaderNames(resultSetRewindable.getResultVars());
-		for (; resultSetRewindable.hasNext();) {
+		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
 			tableProvider.addDataRow(dataRow);
@@ -102,6 +108,10 @@ public class TableProvider {
 
 					} else {
 						dataRow.add(rdfNode.toString());
+						System.out.println("Resource string is " + rdfNode.toString());
+						System.out.println("Type of RDFNode = "+RDFNode.class.getName());
+//						System.out.println("  soln.getResource(header) =" + soln.getResource(header));
+						System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -182,7 +192,8 @@ public class TableProvider {
 		System.out.println("headerMap.keySet().toString() = " + headerMap.keySet().toString());
 
 		boolean debugFlag = true;
-		for (; resultSetRewindable.hasNext();) {
+		resultSetRewindable.reset();
+		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 
 			// tableProvider.addUri(soln.getResource( SUBROW_SUB_URI ));
@@ -204,9 +215,10 @@ public class TableProvider {
 					// int rowForUriNum =
 					// Integer.parseInt(matcher.group(0).trim());
 
+					System.out.println("soln.getResource(\"origHeader\") = " + soln.getResource(origHeader));
 					tableProvider.addUri(soln.getResource(origHeader));
 				}
-			
+
 				if (headerMap.containsKey(origHeader)) { // SPECIAL HEADERS
 															// WON'T MAP,
 															// THEY'RE URIs
