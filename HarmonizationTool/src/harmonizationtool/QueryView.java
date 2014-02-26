@@ -18,6 +18,8 @@ import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
+import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
 import harmonizationtool.View.ViewContentProvider;
 import harmonizationtool.View.ViewLabelProvider;
 import harmonizationtool.comands.ISelectedTDBListener;
@@ -54,6 +56,7 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.HandlerEvent;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -164,20 +167,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page
-						.findView(ResultsView.ID);
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
 				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
-				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl)
-						.getResultSet();
+				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
-				TableProvider tableProvider = TableProvider
-						.create((ResultSetRewindable) resultSet);
+				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 				resultsView.update(tableProvider);
 			}
 
@@ -188,8 +187,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 		Button updateButton = new Button(parent, SWT.BORDER);
-		updateButton.setForeground(SWTResourceManager
-				.getColor(SWT.COLOR_DARK_RED));
+		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		updateButton.setBounds(20, 190, 100, 30);
 		updateButton.setAlignment(SWT.LEFT);
 		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
@@ -201,14 +199,11 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			public void widgetSelected(SelectionEvent e) {
 				// txtTextArea.setText("new text");
 				String updateStr = windowQueryUpdate.getText();
-				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr,
-						"Update from window");
+				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
 
 				// addFilename(path);
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page
-						.findView(ResultsView.ID);
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -224,10 +219,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		windowQueryUpdate
-				.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 		// txtTextArea.setBounds(297, 0, 148, 469);
 		windowQueryUpdate.setBounds(150, 0, 600, 500);
 
@@ -235,8 +228,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
 		windowQueryUpdate.setText("(query / update editor)");
 		// parent.setLayout(null);
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		Table table = viewer.getTable();
 		// table.setBounds(445, 0, 149, 469);
 		table.setBounds(0, 0, 150, 500);
@@ -245,16 +237,15 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		// queryWindow.append("Query Window");
 		viewer.setLabelProvider(new QueryViewLabelProvider());
 		viewer.setInput(getViewSite());
-		windowQueryUpdate
-				.addKeyListener(new org.eclipse.swt.events.KeyListener() {
-					@Override
-					public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-					}
+		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
+			@Override
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+			}
 
-					@Override
-					public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
-					}
-				});
+			@Override
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+			}
+		});
 
 		// Cursor cursor = new Cursor(device, 19);
 		// Color red = new Color (device, 255, 0, 0);
@@ -304,8 +295,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		}
 	}
 
-	public class QueryViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	public class QueryViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
 		}
@@ -315,8 +305,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		}
 
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
@@ -346,8 +335,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	}
 
 	private static void printValues(int lineNumber, String[] as) {
-		System.out.println("Line " + lineNumber + " has " + as.length
-				+ " values:");
+		System.out.println("Line " + lineNumber + " has " + as.length + " values:");
 		for (String s : as) {
 			System.out.println("\t|" + s + "|");
 		}
@@ -367,15 +355,12 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) viewer
-						.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 				if (selection.isEmpty()) {
 					return;
 				}
 
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
@@ -384,60 +369,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				String showResultsInWindow = ResultsView.ID;
 				if (labeledQuery != null) {
 					if (labeledQuery instanceof HarmonyQuery2Impl) {
-						ResultSet resultSet = ((HarmonyQuery2Impl) labeledQuery)
-								.getResultSet();
-						// ResultSet resultSet = q.getResultSet();
-						// TableProvider tableProvider = TableProvider
-						// .create((ResultSetRewindable) resultSet);
-						setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-						if (key.startsWith("Harmonize CAS")) { // HACK!!
-							ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page
-									.findView(ResultsTreeEditor.ID);
-							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
-							// WHICH createTransform
-							// AND WHICH formatForTransfor()
-							// SHOULD BE KNOWN BY THE LabledQuery
-							// BUT CHOSEN BY THE CALLER
-							showResultsInWindow = ResultsTreeEditor.ID;
 
-							TableProvider tableProvider = TableProvider
-									.createTransform0((ResultSetRewindable) resultSet);
-//							resultsView.update(tableProvider);
-							try {
-								resultsTreeEditor.update(tableProvider);
-							} catch (Exception e) {
-								System.out.println("resultsTreeEditor="+resultsTreeEditor);
-								e.printStackTrace();
-							}
-							
-//							resultsView.formatForTransform0();
-						} else 		if (key.startsWith("Harmonize Compart")) { // HACK!!
-							HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) page
-									.findView(HarmonizeCompartments.ID);
-							// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD USE
-							// WHICH createTransform
-							// AND WHICH formatForTransfor()
-							// SHOULD BE KNOWN BY THE LabledQuery
-							// BUT CHOSEN BY THE CALLER
-							showResultsInWindow = HarmonizeCompartments.ID;
-
-							TableProvider tableProvider = TableProvider
-									.create((ResultSetRewindable) resultSet);
-//							resultsView.update(tableProvider);
-							try {
-								harmonizeCompartments.update(tableProvider);
-							} catch (Exception e) {
-								System.out.println("resultsTreeEditor="+harmonizeCompartments);
-								e.printStackTrace();
-							}
-							
-//							resultsView.formatForTransform0();
-						} else  {
-							ResultsView resultsView = (ResultsView) page
-									.findView(ResultsView.ID);
-							TableProvider tableProvider = TableProvider
-									.create((ResultSetRewindable) resultSet);
-							resultsView.update(tableProvider);
+						{ // Code to initiate query execution Job
+							// once the job is done queryCallback(ResultSet
+							// resultSet, String key) will be called to display
+							// results
+							QueryViewJob harmonyQuery2ImplJob = new QueryViewJob("Query", (HarmonyQuery2Impl) labeledQuery);
+							harmonyQuery2ImplJob.setPriority(Job.SHORT);
+							harmonyQuery2ImplJob.setSystem(false);
+							harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util.findView(QueryView.ID), key));
+							harmonyQuery2ImplJob.schedule();
 						}
 
 					}
@@ -523,6 +464,73 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				}
 			}
 		});
+
+	}
+
+	/**
+	 * this is method is called by QueryViewJobChangeListener once the QueryView
+	 * Job is complete
+	 * 
+	 * @param resultSet
+	 *            results of query
+	 * @param key
+	 *            type of query requested
+	 */
+	public void queryCallback(ResultSet resultSet, String key) {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		LabeledQuery labeledQuery = queryFromKey(key);
+		String showResultsInWindow = ResultsView.ID;
+
+		resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
+		// ResultSet resultSet = q.getResultSet();
+		// TableProvider tableProvider = TableProvider
+		// .create((ResultSetRewindable) resultSet);
+		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
+		if (key.startsWith("Harmonize CAS")) { // HACK!!
+			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page.findView(ResultsTreeEditor.ID);
+			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+			// USE
+			// WHICH createTransform
+			// AND WHICH formatForTransfor()
+			// SHOULD BE KNOWN BY THE LabledQuery
+			// BUT CHOSEN BY THE CALLER
+			showResultsInWindow = ResultsTreeEditor.ID;
+
+			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+			// resultsView.update(tableProvider);
+			try {
+				resultsTreeEditor.update(tableProvider);
+			} catch (Exception e) {
+				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
+				e.printStackTrace();
+			}
+
+			// resultsView.formatForTransform0();
+		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
+			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) page.findView(HarmonizeCompartments.ID);
+			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+			// USE
+			// WHICH createTransform
+			// AND WHICH formatForTransfor()
+			// SHOULD BE KNOWN BY THE LabledQuery
+			// BUT CHOSEN BY THE CALLER
+			showResultsInWindow = HarmonizeCompartments.ID;
+
+			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+			// resultsView.update(tableProvider);
+			try {
+				harmonizeCompartments.update(tableProvider);
+			} catch (Exception e) {
+				System.out.println("resultsTreeEditor=" + harmonizeCompartments);
+				e.printStackTrace();
+			}
+
+			// resultsView.formatForTransform0();
+		} else {
+			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+			resultsView.update(tableProvider);
+		}
 
 	}
 

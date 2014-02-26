@@ -25,7 +25,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if(model== null){
 			throw new IllegalArgumentException("SelectTDB.model is null");
 		}
-
+//TURN THIS INTO A JOB
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 
