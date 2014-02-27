@@ -21,11 +21,6 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	public ResultSet getResultSet() {
-		// CALL THE DIALOG TO GET THE PARAMETERS
-		getDialog();
-		// BUILD THE QUERY USING THE PARAMETERS
-		buildQuery();
-		// READY TO CALL getResultSet() ON THESUPER CLASS
 		return super.getResultSet();
 	}
 
@@ -134,5 +129,14 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 	@Override
 	public String getLabel() {
 		return LABEL;
+	}
+
+	@Override
+	public void getParamaterFromUser() {
+		// CALL THE DIALOG TO GET THE PARAMETERS
+		getDialog();
+		// BUILD THE QUERY USING THE PARAMETERS
+		buildQuery();
+		
 	}
 }

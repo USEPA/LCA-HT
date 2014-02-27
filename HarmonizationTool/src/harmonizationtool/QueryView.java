@@ -370,16 +370,16 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				if (labeledQuery != null) {
 					if (labeledQuery instanceof HarmonyQuery2Impl) {
 
-						{ // Code to initiate query execution Job
-							// once the job is done queryCallback(ResultSet
-							// resultSet, String key) will be called to display
-							// results
-							QueryViewJob harmonyQuery2ImplJob = new QueryViewJob("Query", (HarmonyQuery2Impl) labeledQuery);
-							harmonyQuery2ImplJob.setPriority(Job.SHORT);
-							harmonyQuery2ImplJob.setSystem(false);
-							harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util.findView(QueryView.ID), key));
-							harmonyQuery2ImplJob.schedule();
-						}
+						// Code to initiate query execution Job
+						// once the job is done queryCallback(ResultSet
+						// resultSet, String key) will be called to display
+						// results
+						QueryViewJob harmonyQuery2ImplJob = new QueryViewJob("Query", (HarmonyQuery2Impl) labeledQuery);
+						((HarmonyQuery2Impl) labeledQuery).getParamaterFromUser();
+						harmonyQuery2ImplJob.setPriority(Job.SHORT);
+						harmonyQuery2ImplJob.setSystem(false);
+						harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util.findView(QueryView.ID), key));
+						harmonyQuery2ImplJob.schedule();
 
 					}
 
