@@ -58,24 +58,33 @@ public class ViewData extends ViewPart {
 	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
-	public static final String CAT3_HDR = "Sub-subcategory"; 
-										
-//	public static final Resource ImpactCategory = ECO.ImpactCategory;
+	public static final String CAT3_HDR = "Sub-subcategory";
+
+	// public static final Resource ImpactCategory = ECO.ImpactCategory;
 	public static final String IMPACT_CAT_HDR = "Impact_Category"; // e.g.
-																	// global
-																	// warming
+	// climate change
+	
+	public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator"; 
+	// e.g. infrared radiative forcing
 
-	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact_cat_ref_unit"; // e.g.
-																				// kg
-																				// CO2
-																				// eq
+	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
+	// e.g. kg CO2 eq
 
-//	public static final Resource ImpactCharacterizationFactor = ECO.ImpactCharacterizationFactor;
-	public static final String CHAR_FACTOR_HDR = "Characterization_factor"; // THIS
+	// public static final Resource ImpactCharacterizationFactor =
+	// ECO.ImpactCharacterizationFactor;
+	public static final String CHAR_FACTOR_HDR = "Characterization factor"; // THIS
 																			// THE
 																			// NUMBER
 
-	public static final String FLOW_UNIT_HDR = "Flow_Unit"; // e.g. kg (assumed
+	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method"; // e.g.
+																							// ReCiPe
+																							// or
+																							// TRACI
+
+	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
+	// IPCC Global Warming Potential (GWP)
+
+	public static final String FLOW_UNIT_HDR = "Flow Unit"; // e.g. kg (assumed
 															// to be one of
 															// these)
 
@@ -200,7 +209,7 @@ public class ViewData extends ViewPart {
 			List<DataRow> dataRowList = tableProvider.getData();
 			DataRow dataRow = dataRowList.get(0);
 			int numCol = dataRow.getColumnValues().size();
-			System.out.println("numCol = "+numCol);
+			System.out.println("numCol = " + numCol);
 			ArrayList<String> titles = new ArrayList<String>();
 			ArrayList<Integer> bounds = new ArrayList<Integer>();
 			List<String> headerNames = tableProvider.getHeaderNamesAsStrings();
@@ -210,7 +219,8 @@ public class ViewData extends ViewPart {
 					bounds.add(100);
 				}
 			} else {
-				System.out.println("headerNames.size() = "+headerNames.size());
+				System.out
+						.println("headerNames.size() = " + headerNames.size());
 				for (int i = 1; i <= numCol; i++) {
 					titles.add(headerNames.get(i - 1));
 					bounds.add(100);
@@ -342,7 +352,7 @@ public class ViewData extends ViewPart {
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT3_HDR);
-		
+
 		menuItem = new MenuItem(parent, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_HDR);

@@ -105,6 +105,7 @@ public class View extends ViewPart {
 	// private Action actionExportToTDB;
 	private Action actionParseFlowablesToTDB;
 	private Action actionParseCategoriesToTDB;
+	private Action actionParseImpactAssessmentModelInfoToTDB;
 
 	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
@@ -181,6 +182,7 @@ public class View extends ViewPart {
 		// manager.add(actionExportToTDB); // NEEDS REPAIR TODO
 		manager.add(actionParseFlowablesToTDB);
 		manager.add(actionParseCategoriesToTDB);
+		manager.add(actionParseImpactAssessmentModelInfoToTDB);
 		manager.add(actionSave);
 		manager.add(editMeta);
 		manager.add(actionClose);
@@ -490,6 +492,8 @@ public class View extends ViewPart {
 							str2res.put(combined_str, subResourceHandle);
 						}
 						subResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
+						subResourceHandle.addLiteral(ETHOLD.sourceTableRowNumber, drRowLit);
+
 						csvRow++;
 					}
 					// -----------------------------------------
@@ -700,6 +704,7 @@ public class View extends ViewPart {
 							str2res.put(combined_str, catResourceHandle);
 						}
 						catResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
+						catResourceHandle.addLiteral(ETHOLD.sourceTableRowNumber, drRowLit);						
 						csvRow++;
 					}
 					// -----------------------------------------
@@ -786,8 +791,319 @@ public class View extends ViewPart {
 
 		});
 
-	}
+	
 
+	actionParseImpactAssessmentModelInfoToTDB = new Action() {
+		public void run() {
+			System.out.println("executing actionParseSubsToTDB");
+			ISelection iSelection = viewer.getSelection();
+			System.out.println("iSelection=" + iSelection);
+			if (!iSelection.isEmpty()) {
+
+				FileMD fileMD = (FileMD) ((IStructuredSelection) iSelection).getFirstElement();
+				String key = fileMD.getPath();
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+				System.out.println("key=" + key);
+
+				Model model = SelectTDB.model;
+				if (model == null) {
+					String msg = "ERROR no TDB open";
+					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+					return;
+				}
+
+				System.out.println("Running ExportSubsToTDB internals");
+
+				String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
+				String fn_p = "http://www.w3.org/2005/xpath-functions#";
+				String nfo_p = "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#";
+				String sumo_p = "http://www.ontologyportal.org/SUMO.owl.rdf#";
+				String xml_p = "http://www.w3.org/XML/1998/namespace";
+
+				// THE FOLLOWING ARE IN Vocabulary
+				// skos
+				// owl
+				// rdf
+				// rdfs
+				// xsd
+				// ethold
+				// eco
+				// fasc
+
+				// Stuff we may want to add:
+				// Property HTuserName = model.getProperty(ethold_p
+				// + "HTuserName");
+				// Property HTuserAffiliation = model.getProperty(ethold_p
+				// + "HTuserAffiliation");
+				// Property HTuserPhone = model.getProperty(ethold_p
+				// + "HTuserPhone");
+				// Property HTuserEmail = model.getProperty(ethold_p
+				// + "HTuserEmail");
+				// Property dataParseTimeStamp = model
+				// .getProperty(ethold_p + "dataParseTimeStamp");
+
+				// Dataset dataset = SelectTDB.dataset;
+				// GraphStore graphStore = SelectTDB.graphStore;
+				DataRow columnHeaders = new DataRow();
+				// queryResults.setColumnHeaders(columnHeaders);
+
+				long change = model.size();
+
+				columnHeaders.add("Model");
+				columnHeaders.add("Size");
+
+				System.err.printf("Before Update: %s\n", model.size());
+
+				TableProvider resultsViewModel = new TableProvider();
+				// queryResults.setModelProvider(modelProvider);
+				DataRow resDataRow = new DataRow();
+				resultsViewModel.addDataRow(resDataRow);
+				resDataRow.add("Before Update");
+				resDataRow.add("" + model.size());
+
+				// ModelProvider modelProvider = ModelKeeper
+				// .getModelProvider(key);
+				TableProvider tableProvider = TableKeeper.getTableProvider(key);
+				List<String> headers = tableProvider.getHeaderNamesAsStrings();
+				System.out.println(headers.toString());
+				List<DataRow> dataRowList = tableProvider.getData();
+				System.out.println("dataRowList.size = " + dataRowList.size());
+
+				Resource tdbResource = DataSetKeeper.get(fileMD).getTdbResource();
+
+				Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
+
+				System.out.println("Ready to iterate...");
+				int csvRow = 0;
+				for (DataRow csvDataRow : dataRowList) {
+					if (csvRow % 10000 == 0) {
+						System.out.println("Finished reading data file row: " + csvRow);
+					}
+
+					Literal drRowLit = model.createTypedLiteral(csvRow);
+
+					String impactAssessmentMethod = null;  // REQUIRED
+					String impactCharModel = null;         // REQUIRED
+					String impactCategory = null;          // REQUIRED
+					String impactCategoryIndicator = null; // REQUIRED (?!?)
+					String referenceUnit = null;           // REQUIRED
+
+				
+
+					try {
+						int index = headers.indexOf(ViewData.IMPACT_ASSESSMENT_METHOD_HDR);
+						if (index > -1) {
+							String unescImpactAssessmentMethod = csvDataRow.getColumnValues().get(index);
+							impactAssessmentMethod = Util.escape(unescImpactAssessmentMethod);
+						}
+
+						else {
+							String msg = "An impact assessment method must be assigned";
+							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							return; // FIXME -- IS THERE A "RIGHT"
+									// WAY
+									// TO LEAVE
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					try {
+						int index = headers.indexOf(ViewData.IMPACT_CHARACTERIZATION_MODEL_HDR);
+						if (index > -1) {
+							String unescImpactCharModel = csvDataRow.getColumnValues().get(index);
+							impactCharModel = Util.escape(unescImpactCharModel);
+						}
+
+						else {
+							String msg = "An impact characterization model must be assigned";
+							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							return; // FIXME -- IS THERE A "RIGHT"
+									// WAY
+									// TO LEAVE
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						int index = headers.indexOf(ViewData.IMPACT_CAT_HDR);
+						if (index > -1) {
+							String unescImpactCategory = csvDataRow.getColumnValues().get(index);
+							impactCategory = Util.escape(unescImpactCategory);
+						}
+
+						else {
+							String msg = "An impact category must be assigned";
+							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							return; // FIXME -- IS THERE A "RIGHT"
+									// WAY
+									// TO LEAVE
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						int index = headers.indexOf(ViewData.IMPACT_CAT_INDICATOR_HDR);
+						if (index > -1) {
+							String unescImpactCategoryIndicator = csvDataRow.getColumnValues().get(index);
+							impactCategoryIndicator = Util.escape(unescImpactCategoryIndicator);
+						}
+
+						else {
+							String msg = "An impact category indicator must be assigned";
+							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							return; // FIXME -- IS THERE A "RIGHT"
+									// WAY
+									// TO LEAVE
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					try {
+						int index = headers.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
+						if (index > -1) {
+							String unescReferenceUnit = csvDataRow.getColumnValues().get(index);
+							referenceUnit = Util.escape(unescReferenceUnit);
+						}
+
+						else {
+							String msg = "An reference unit must be assigned";
+							Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+							return; // FIXME -- IS THERE A "RIGHT"
+									// WAY
+									// TO LEAVE
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+
+					Resource catResourceHandle = null;
+
+//					String combined_str = "";
+//					if (cat3 != null) {
+//						combined_str = cat1 + "; " + cat2 + "; " + cat3;
+//					} else if (cat2 != null) {
+//						combined_str = cat1 + "; " + cat2;
+//					} else {
+//						combined_str = cat1;
+//					}
+//
+//					Literal drCatLit = model.createTypedLiteral(combined_str);
+//
+//					combined_str.hashCode();
+//					if (str2res.containsKey(combined_str)) {
+//						catResourceHandle = str2res.get(combined_str);
+//					} else {
+//						Resource newCat = model.createResource();
+//						model.add(newCat, RDF.type, FASC.Compartment);
+//						model.addLiteral(newCat, RDFS.label, drCatLit);
+//						model.add(newCat, ECO.hasDataSource, tdbResource);
+//
+//						catResourceHandle = newCat;
+//						str2res.put(combined_str, catResourceHandle);
+//					}
+//					catResourceHandle.addLiteral(ETHOLD.foundOnRow, drRowLit);
+//					catResourceHandle.addLiteral(ETHOLD.sourceTableRowNumber, drRowLit);						
+//					csvRow++;
+//				}
+//				// -----------------------------------------
+//				DataRow resDataRow2 = new DataRow();
+//				resultsViewModel.addDataRow(resDataRow2);
+//				resDataRow2.add("After Update");
+//				resDataRow2.add("" + model.size());
+//
+//				change = model.size() - change;
+//				System.err.printf("Net Increase: %s\n", change);
+//				DataRow resDataRow3 = new DataRow();
+//				resultsViewModel.addDataRow(resDataRow3);
+//
+//				String increase = "New Triples:";
+//
+//				if (change < 0) {
+//					increase = "Triples removed:";
+//					change = 0 - change;
+//				}
+//				// data.add(increase);
+//				// data.add("" + change);
+//				resDataRow3.add(increase);
+//				resDataRow3.add("" + change);
+//
+//				long startTime = System.currentTimeMillis();
+//				float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
+//				System.out.println("Time elapsed: " + elapsedTimeSec);
+//				System.err.printf("After Update: %s\n", model.size());
+//				System.out.println("done");
+//				try {
+//					Util.showView(ResultsView.ID);
+//				} catch (PartInitException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+				}
+
+			}
+
+		}
+
+	};
+	actionParseImpactAssessmentModelInfoToTDB.setText("Parse Other Model Info");
+	actionParseImpactAssessmentModelInfoToTDB.setToolTipText("Set Impact Characterization Model, Impact Category, Impact Category Indicator, and Flow Uni).");
+	actionParseImpactAssessmentModelInfoToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+
+	// viewer.addDoubleClickListener(new IDoubleClickListener() {
+	// // viewer.add
+	//
+	// @Override
+	// public void doubleClick(DoubleClickEvent event) {
+	// IStructuredSelection selection = (IStructuredSelection) viewer
+	// .getSelection();
+	// if (selection.isEmpty())
+	// return;
+	// String key = (String) selection.toList().get(0);
+	// IWorkbenchPage page = PlatformUI.getWorkbench()
+	// .getActiveWorkbenchWindow().getActivePage();
+	// ViewData viewData = (ViewData) page.findView(ViewData.ID);
+	// viewData.update(key);
+	// }
+	//
+	// });
+	viewer.addDoubleClickListener(new IDoubleClickListener() {
+
+		@Override
+		public void doubleClick(DoubleClickEvent event) {
+			IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+			if (selection.isEmpty())
+				return;
+			FileMD fileMD = (FileMD) selection.toList().get(0);
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			ViewData viewData = (ViewData) page.findView(ViewData.ID);
+			viewData.update(fileMD.getPath());
+			// ... AND BRING UP THE DATA CONTENTS VIEW
+
+			try {
+				Util.showView(ViewData.ID);
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	});
+
+}
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */

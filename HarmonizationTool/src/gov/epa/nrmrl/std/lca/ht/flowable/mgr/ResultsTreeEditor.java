@@ -60,6 +60,8 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ResultsTreeEditor extends ViewPart {
+	public ResultsTreeEditor() {
+	}
 	public static final String ID = "HarmonizationTool.ResultsTreeEditorID";
 	private TreeViewer treeViewer;
 

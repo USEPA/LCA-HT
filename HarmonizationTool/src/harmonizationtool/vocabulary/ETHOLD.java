@@ -23,6 +23,8 @@ public class ETHOLD {
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
 
+
+
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "http://epa.gov/nrmrl/std/lca/ethold#";
 
@@ -73,6 +75,7 @@ public class ETHOLD {
 
 	public static final Property foundOnRow = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#foundOnRow");
 	
+	public static final Property sourceTableRowNumber = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#sourceTableRowNumber");
 
 	public static final Property hasCategory1 = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasCategory1");
 	
