@@ -44,6 +44,9 @@ public class ETHOLD {
     public static final Resource Equivalence = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Equivalence");
     public static final Resource Annotation = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Annotation");
     public static final Resource Comparison = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Comparison");
+
+
+    
     public static final Property hasComparison = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasComparison" );
     public static final Property comparedSource = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedSource" );
     public static final Property comparedMaster = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedMaster" );
@@ -58,14 +61,22 @@ public class ETHOLD {
     /** <p>This is being used to associate a "EcosphereExhange" with an "ElementaryFlow"</p> */
     public static final Property hasElementaryFlow = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasElementaryFlow" );
     
+    public static final Resource ImpactCharacterization = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#ImpactCharacterization");
+    public static final Resource FlowContext = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#FlowContext");
+    
+    public static final Property hasFlowContext = m_model.createProperty("http://epa.gov/nrmrl/std/lca/ethold#hasFlowContext");
+
     /** <p></p> */
-    public static final Property atAltitude = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#atAltitude" );
+//    public static final Property atAltitude = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#atAltitude" );
+
+    /** <p></p> */
+    public static final Property hasFlowUnit = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasFlowUnit" );
 
     /** <p></p> */
     public static final Property fromCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#fromCompartment" );
 
     /** <p></p> */
-    public static final Property nearPopulationDensity = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#nearPopulationDensity" );
+//    public static final Property nearPopulationDensity = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#nearPopulationDensity" );
 
     /** <p></p> */
     public static final Property toCompartment = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#toCompartment" );
