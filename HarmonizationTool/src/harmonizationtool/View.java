@@ -316,6 +316,20 @@ public class View extends ViewPart {
 		actionClose.setToolTipText("Close CSV");
 		actionClose.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
+		//	NOTES:
+		//  LCIA must have the following:
+		//  Usually 1 Impact Assessment Method
+		//  Usually 1 Impact Characterization Model
+		//  Usually 1 to 10 or so Impact Categories
+		//          each with an Impact Category Indicator
+		//      and each with a Reference Unit (which should have Flow Context)
+		//      and each Impact Category will have multiple
+		//          multiple Impact Characterizations each with:
+		//          one Characterization factor (a magnitude and unit)
+		//          one Flowable
+		//          one Flow Context which may have:
+		//          one or more Compartments or Categories
+		
 		actionParseFlowablesToTDB = new Action() {
 			public void run() {
 				System.out.println("executing actionParseSubsToTDB");
@@ -541,7 +555,7 @@ public class View extends ViewPart {
 
 		actionParseCategoriesToTDB = new Action() {
 			public void run() {
-				System.out.println("executing actionParseSubsToTDB");
+				System.out.println("executing actionParseCategoriesToTDB");
 				ISelection iSelection = viewer.getSelection();
 				System.out.println("iSelection=" + iSelection);
 				if (!iSelection.isEmpty()) {
@@ -559,7 +573,7 @@ public class View extends ViewPart {
 						return;
 					}
 
-					System.out.println("Running ExportSubsToTDB internals");
+					System.out.println("Running ParseCategoriesToTDB internals");
 
 					String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 					String fn_p = "http://www.w3.org/2005/xpath-functions#";
@@ -795,7 +809,7 @@ public class View extends ViewPart {
 
 	actionParseImpactAssessmentModelInfoToTDB = new Action() {
 		public void run() {
-			System.out.println("executing actionParseSubsToTDB");
+			System.out.println("executing actionParseImpactAssessmentModelInfoToTDB");
 			ISelection iSelection = viewer.getSelection();
 			System.out.println("iSelection=" + iSelection);
 			if (!iSelection.isEmpty()) {
@@ -813,7 +827,7 @@ public class View extends ViewPart {
 					return;
 				}
 
-				System.out.println("Running ExportSubsToTDB internals");
+				System.out.println("Running ParseImpactAssessmentModelInfoToTDB internals");
 
 				String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 				String fn_p = "http://www.w3.org/2005/xpath-functions#";
@@ -890,7 +904,7 @@ public class View extends ViewPart {
 					String referenceUnit = null;           // REQUIRED
 
 				
-
+					System.out.println("Ready to find header info 0");
 					try {
 						int index = headers.indexOf(ViewData.IMPACT_ASSESSMENT_METHOD_HDR);
 						if (index > -1) {
@@ -907,9 +921,11 @@ public class View extends ViewPart {
 
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						System.out.println("Failed...");
 						e.printStackTrace();
 					}
+
+					System.out.println("Ready to find header info 1");
 
 					try {
 						int index = headers.indexOf(ViewData.IMPACT_CHARACTERIZATION_MODEL_HDR);
@@ -927,9 +943,12 @@ public class View extends ViewPart {
 
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						System.out.println("Failed...");
 						e.printStackTrace();
 					}
+
+					System.out.println("Ready to find header info 2");
+
 					try {
 						int index = headers.indexOf(ViewData.IMPACT_CAT_HDR);
 						if (index > -1) {
@@ -946,9 +965,12 @@ public class View extends ViewPart {
 
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						System.out.println("Failed...");
 						e.printStackTrace();
 					}
+					
+					System.out.println("Ready to find header info 3");
+					
 					try {
 						int index = headers.indexOf(ViewData.IMPACT_CAT_INDICATOR_HDR);
 						if (index > -1) {
@@ -965,10 +987,12 @@ public class View extends ViewPart {
 
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						System.out.println("Failed...");
 						e.printStackTrace();
 					}
 					
+					System.out.println("Ready to find header info 4");
+
 					try {
 						int index = headers.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
 						if (index > -1) {
@@ -985,10 +1009,11 @@ public class View extends ViewPart {
 
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						System.out.println("Failed...");
 						e.printStackTrace();
 					}
 
+					System.out.println("Now ready to use header info");
 
 					Resource catResourceHandle = null;
 

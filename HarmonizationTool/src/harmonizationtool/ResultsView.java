@@ -125,6 +125,12 @@ public class ResultsView extends ViewPart {
 	// }
 
 	public void update(TableProvider tableProvider) {
+		if (queryResults == null){
+			queryResults = new QueryResults();
+		}
+		queryResults.setColumnHeaders(tableProvider.getHeaderNames());
+		queryResults.setTableProvider(tableProvider);
+
 		try {
 			viewer.setContentProvider(new ArrayContentProvider());
 			final Table table = viewer.getTable();
