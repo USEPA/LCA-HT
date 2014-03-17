@@ -53,42 +53,38 @@ public class ViewData extends ViewPart {
 	// the menu that is displayed when column header is right clicked
 	private Menu headerMenu;
 	private TableColumn columnSelected = null;
-	public static final String CASRN_HDR = "CASRN";
-	public static final String NAME_HDR = "Flowable Name";
-	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
-	public static final String CAT1_HDR = "Category"; // e.g. air
-	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
-	public static final String CAT3_HDR = "Sub-subcategory";
 
+	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
+	// e.g. ReCiPe or TRACI
+	
+	public static final String IMPACT_CAT_HDR = "Impact_Category";
+	// e.g. climate change
 	// public static final Resource ImpactCategory = ECO.ImpactCategory;
-	public static final String IMPACT_CAT_HDR = "Impact_Category"; // e.g.
-	// climate change
 	
 	public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator"; 
 	// e.g. infrared radiative forcing
 
+	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
+	// IPCC Global Warming Potential (GWP)
+	
 	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
 	// e.g. kg CO2 eq
 
-	// public static final Resource ImpactCharacterizationFactor =
+	public static final String CAT1_HDR = "Category"; // e.g. air
+	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
+	public static final String CAT3_HDR = "Sub-subcategory";
+	
+	public static final String NAME_HDR = "Flowable Name";
+	public static final String CASRN_HDR = "CASRN";
+	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
+
 	// ECO.ImpactCharacterizationFactor;
-	public static final String CHAR_FACTOR_HDR = "Characterization factor"; // THIS
-																			// THE
-																			// NUMBER
+		public static final String CHAR_FACTOR_HDR = "Characterization factor";
+	// THIS IS THE (float) NUMBER
 
-	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method"; // e.g.
-																							// ReCiPe
-																							// or
-																							// TRACI
+	public static final String FLOW_UNIT_HDR = "Flow Unit";
+	// e.g. kg
 
-	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
-	// IPCC Global Warming Potential (GWP)
-
-	public static final String FLOW_UNIT_HDR = "Flow Unit"; // e.g. kg (assumed
-															// to be one of
-															// these)
-
-	// public static final String ALT_NAME_HDR = "Alt_Name";
 	public static final String IGNORE_HDR = "Ignore";
 
 	public TableViewer getViewer() {
