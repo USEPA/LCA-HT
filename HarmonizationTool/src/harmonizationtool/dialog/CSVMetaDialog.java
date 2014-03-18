@@ -207,45 +207,44 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		}
 		combo.setEnabled(dataSetEnabled);
 
-		combo.addMouseListener(new MouseListener() {
-
-			private String savedComboText = "";
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-				savedComboText = combo.getText();
-
-			}
-
-			@Override
-			public void mouseUp(MouseEvent e) {
-				if (savedComboText.equals(combo.getText())){
-					return; 
-				}
+//		combo.addMouseListener(new MouseListener() {
+//
+//			private String savedComboText = "";
+//
+//			@Override
+//			public void mouseDoubleClick(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void mouseDown(MouseEvent e) {
+////				savedComboText = combo.getText();
+//
+//			}
+//
+//			@Override
+//			public void mouseUp(MouseEvent e) {
+////				if (savedComboText.equals(combo.getText())){
+////					return; 
+////				}
+////				int selectionIndex = combo.getSelectionIndex();
+////				System.out.println("selectionIndex = " + selectionIndex);
+////				populateMeta(combo.getText());
+////				getButton(IDialogConstants.OK_ID).setEnabled(true);
+////				System.out.println("choice is " + combo.getSelectionIndex()
+////						+ " with value: " + combo.getText());
+//			}
+//		});
+		combo.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
 				int selectionIndex = combo.getSelectionIndex();
-				System.out.println("selectionIndex = " + selectionIndex);
+				System.out.println("Modify Event: selectionIndex = " + selectionIndex);
 				populateMeta(combo.getText());
-				getButton(IDialogConstants.OK_ID).setEnabled(true);
-				System.out.println("choice is " + combo.getSelectionIndex()
-						+ " with value: " + combo.getText());
+//				getButton(IDialogConstants.OK_ID).setEnabled(true);
+				System.out.println("choice is " + combo.getSelectionIndex() + " with value: " + combo.getText());
 			}
 		});
-		// combo.addModifyListener(new ModifyListener() {
-		// public void modifyText(ModifyEvent e) {
-		// int selectionIndex = combo.getSelectionIndex();
-		// System.out.println("selectionIndex = " + selectionIndex);
-		// populateMeta(combo.getText());
-		// getButton(IDialogConstants.OK_ID).setEnabled(true);
-		// System.out.println("choice is " + combo.getSelectionIndex() +
-		// " with value: " + combo.getText());
-		// }
-		// });
 
 		rowIndex++;
 		Label lbl_07 = new Label(composite, SWT.RIGHT);
@@ -730,14 +729,17 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		if (fileList.size() <= 0) {
 			return;
 		}
-		if (fileList.size() <= index) {
+		if (index == 0){
+			fileMD = tempDataSetProvider.getFileMDList().get(0);
+		}
+		else if (fileList.size() <= index) {
 			fileMD = fileList.get(index - 1);
 		} else {
 			fileMD = fileList.get(index);
 		}
 
 		// dialogValues.get(0).setText(fileMD.getFilename());
-		fileMDCombo.setToolTipText(fileMD.getPath());
+//		fileMDCombo.setToolTipText(fileMD.getPath()); // THIS CAN'T BE UPDATED WITHOUT FIRING THE MODIFY LISTENER!  HOW TO DO THIS?
 		dialogValues.get(0).setText(fileMD.getSize() + "");
 		dialogValues.get(1).setText(
 				Util.getLocalDateFmt(fileMD.getLastModified()));
@@ -781,6 +783,32 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		curatorMD = dataSetProvider.getCuratorMD();
 		redrawDialogRows();
 	}
+	protected void redrawDialogDataSetMD(){
+		System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
+		// dialogValues.get(3).setText(dataSetMD.getName()); //FIXME
+//		combo.setText(dataSetMD.getName());
+		dialogValues.get(3).setText(dataSetMD.getVersion());
+		dialogValues.get(4).setText(dataSetMD.getComments());
+		dialogValues.get(5).setText(dataSetMD.getContactName());
+		dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
+		dialogValues.get(7).setText(dataSetMD.getContactEmail());
+		dialogValues.get(8).setText(dataSetMD.getContactPhone());	
+	}
+	protected void redrawDialogFileMD(){
+		fileMDCombo.setToolTipText(fileMD.getPath());
+		dialogValues.get(0).setText(fileMD.getSize() + "");
+		dialogValues.get(1).setText(
+				Util.getLocalDateFmt(fileMD.getLastModified()));
+		dialogValues.get(2).setText(
+				Util.getLocalDateFmt(fileMD.getReadTime()));
+	}
+	protected void redrawDialogCuratorMD(){
+		System.out.println("curatorMD.getName: = " + curatorMD.getName());
+		dialogValues.get(9).setText(curatorMD.getName());
+		dialogValues.get(10).setText(curatorMD.getAffiliation());
+		dialogValues.get(11).setText(curatorMD.getEmail());
+		dialogValues.get(12).setText(curatorMD.getPhone());
+	}
 
 	protected void redrawDialogRows() {
 		System.out.println(" in redrawDialogRows()");
@@ -803,32 +831,35 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		fileMDComboMgr.setText(fileMD);
 
 		if (fileMD != null) {
-			// dialogValues.get(0).setText(fileMD.getFilename());
-			fileMDCombo.setToolTipText(fileMD.getPath());
-			dialogValues.get(0).setText(fileMD.getSize() + "");
-			dialogValues.get(1).setText(
-					Util.getLocalDateFmt(fileMD.getLastModified()));
-			dialogValues.get(2).setText(
-					Util.getLocalDateFmt(fileMD.getReadTime()));
+			redrawDialogFileMD();
+//			// dialogValues.get(0).setText(fileMD.getFilename());
+//			fileMDCombo.setToolTipText(fileMD.getPath());
+//			dialogValues.get(0).setText(fileMD.getSize() + "");
+//			dialogValues.get(1).setText(
+//					Util.getLocalDateFmt(fileMD.getLastModified()));
+//			dialogValues.get(2).setText(
+//					Util.getLocalDateFmt(fileMD.getReadTime()));
 		}
 		if (dataSetMD != null) {
-			System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
-			// dialogValues.get(3).setText(dataSetMD.getName()); //FIXME
-			combo.setText(dataSetMD.getName());
-			dialogValues.get(3).setText(dataSetMD.getVersion());
-			dialogValues.get(4).setText(dataSetMD.getComments());
-			dialogValues.get(5).setText(dataSetMD.getContactName());
-			dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
-			dialogValues.get(7).setText(dataSetMD.getContactEmail());
-			dialogValues.get(8).setText(dataSetMD.getContactPhone());
+			redrawDialogDataSetMD();
+//			System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
+//			// dialogValues.get(3).setText(dataSetMD.getName()); //FIXME
+////			combo.setText(dataSetMD.getName());
+//			dialogValues.get(3).setText(dataSetMD.getVersion());
+//			dialogValues.get(4).setText(dataSetMD.getComments());
+//			dialogValues.get(5).setText(dataSetMD.getContactName());
+//			dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
+//			dialogValues.get(7).setText(dataSetMD.getContactEmail());
+//			dialogValues.get(8).setText(dataSetMD.getContactPhone());
 
 		}
 		if (curatorMD != null) {
-			System.out.println("curatorMD.getName: = " + curatorMD.getName());
-			dialogValues.get(9).setText(curatorMD.getName());
-			dialogValues.get(10).setText(curatorMD.getAffiliation());
-			dialogValues.get(11).setText(curatorMD.getEmail());
-			dialogValues.get(12).setText(curatorMD.getPhone());
+			redrawDialogCuratorMD();
+//			System.out.println("curatorMD.getName: = " + curatorMD.getName());
+//			dialogValues.get(9).setText(curatorMD.getName());
+//			dialogValues.get(10).setText(curatorMD.getAffiliation());
+//			dialogValues.get(11).setText(curatorMD.getEmail());
+//			dialogValues.get(12).setText(curatorMD.getPhone());
 		}
 	}
 
