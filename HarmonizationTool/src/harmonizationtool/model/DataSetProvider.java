@@ -1,5 +1,7 @@
 package harmonizationtool.model;
 
+import harmonizationtool.comands.SelectTDB;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,6 +16,7 @@ public class DataSetProvider {
 	private CuratorMD curatorMD;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	private Resource tdbResource;
+	
 	public DataSetMD getDataSetMD() {
 		return dataSetMD;
 	}
@@ -27,6 +30,11 @@ public class DataSetProvider {
 		this.curatorMD = curatorMD;
 	}
 	public Resource getTdbResource() {
+
+//		if (tdbResource == null){
+//			tdbResource = SelectTDB.model.createResource();
+//		}
+//		assert tdbResource != null : "tdbResource cannot be null";
 		return tdbResource;
 	}
 	public void setTdbResource(Resource tdbResource) {
