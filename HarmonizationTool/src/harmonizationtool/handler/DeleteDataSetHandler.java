@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.dialog.ChooseDataSetDialog;
+import harmonizationtool.dialog.DataSetDeleteDialog;
 import harmonizationtool.model.DataSetKeeper;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -26,7 +26,10 @@ public class DeleteDataSetHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (DataSetKeeper.size() == 0){return null;}
-		new ChooseDataSetDialog(HandlerUtil.getActiveShell(event)).open();
+		DataSetDeleteDialog dialog = new DataSetDeleteDialog(HandlerUtil.getActiveShell(event));
+		dialog.create();
+		dialog.open();
+		System.out.println();
 		return null;
 	}
 

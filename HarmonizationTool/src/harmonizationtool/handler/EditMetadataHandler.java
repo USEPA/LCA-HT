@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.dialog.CSVMetaDialog;
+import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataSetKeeper;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -26,7 +26,7 @@ public class EditMetadataHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (DataSetKeeper.size() == 0){return null;}
-		new CSVMetaDialog(HandlerUtil.getActiveShell(event)).open();
+		new MetaDataDialog(HandlerUtil.getActiveShell(event)).open();
 		return null;
 	}
 

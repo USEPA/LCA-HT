@@ -2,7 +2,7 @@ package harmonizationtool;
 
 import harmonizationtool.comands.SelectTDB;
 
-import harmonizationtool.dialog.CSVMetaDialog;
+import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.dialog.PlayArea;
 import harmonizationtool.handler.ShowDataViewHandler;
@@ -233,7 +233,7 @@ public class View extends ViewPart {
 				// DataSetProvider dataSetProvider = DataSetKeeper.get(0); //
 				// FIXME
 				// Map<String, String> metaData = csvFile.metaData;
-				CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent().getActiveShell(), fileMD, dataSetProvider);
+				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD, dataSetProvider);
 				dialog.create();
 				dialog.open();
 			}

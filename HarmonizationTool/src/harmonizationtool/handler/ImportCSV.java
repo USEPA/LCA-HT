@@ -3,7 +3,7 @@ package harmonizationtool.handler;
 import harmonizationtool.QueryView;
 import harmonizationtool.View;
 import harmonizationtool.ViewData;
-import harmonizationtool.dialog.CSVMetaDialog;
+import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
@@ -164,12 +164,12 @@ public class ImportCSV implements IHandler {
 				.getStatusLineManager().setMessage(msg);
 
 		// NOW OPEN DIALOG WITH SOME PRE-POPULATE fileMD INFO
-		CSVMetaDialog dialog = new CSVMetaDialog(Display.getCurrent()
+		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent()
 				.getActiveShell(), fileMD);
 
 
 		dialog.create();
-		if (dialog.open() == CSVMetaDialog.CANCEL){
+		if (dialog.open() == MetaDataDialog.CANCEL){
 			//remove fileMD from Data Files viewer
 			view.remove(fileMD);
 
