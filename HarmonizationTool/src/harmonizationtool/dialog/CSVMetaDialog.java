@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -28,6 +29,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -303,7 +306,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		lbl_03.setText("Size (bytes)");
 		Text text_03 = new Text(composite, SWT.BORDER);
 		text_03.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_03.setEnabled(false);
+		text_03.setEditable(false);
+		text_03.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
 		rowIndex++;
 		Label lbl_04 = new Label(composite, SWT.RIGHT);
@@ -311,7 +315,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		lbl_04.setText("Last Modified");
 		Text text_04 = new Text(composite, SWT.BORDER);
 		text_04.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_04.setEnabled(false);
+		text_04.setEditable(false);
+		text_04.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
 		rowIndex++;
 		Label lbl_05 = new Label(composite, SWT.RIGHT);
@@ -319,7 +324,8 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		lbl_05.setText("Read Time");
 		Text text_05 = new Text(composite, SWT.BORDER);
 		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_05.setEnabled(false);
+		text_05.setEditable(false);
+		text_05.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
 		rowIndex = 13;
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -589,7 +595,6 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		// combo.setText(dataSetMD.getName());
 		dialogValues.get(3).setText(dataSetMD.getVersion());
 		dialogValues.get(4).setText(dataSetMD.getComments());
-		dialogValues.get(5).setText(dataSetMD.getContactName());
 		dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
 		dialogValues.get(7).setText(dataSetMD.getContactEmail());
 		dialogValues.get(8).setText(dataSetMD.getContactPhone());
