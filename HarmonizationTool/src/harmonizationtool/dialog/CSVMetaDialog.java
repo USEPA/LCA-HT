@@ -40,22 +40,22 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class CSVMetaDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
-//	private boolean newFileMD = false;
+	// private boolean newFileMD = false;
 	private boolean newDataSet = false;
-//	private boolean dataSetEnabled = true;
+	// private boolean dataSetEnabled = true;
 	private DataSetProvider curDataSetProvider = null;
 	private DataSetProvider callingDataSetProvider = null;
-	private FileMD curFileMD = null;
+	// private FileMD curFileMD = null;
 	private FileMD callingFileMD = null;
-//	private DataSetMD dataSetMD = null;
-//	private CuratorMD curatorMD = null;
-//	private Resource tdbResource = null;
-	private Combo combo = null;
-	private Combo fileMDCombo = null;
+	// private DataSetMD dataSetMD = null;
+	// private CuratorMD curatorMD = null;
+	// private Resource tdbResource = null;
+	private Combo comboDataSetSelector = null;
+	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
-	private FileMDComboMgr fileMDComboMgr;
-//	private FileMDComboModifyListener FileMDComboModifyListener;
-	private FileMDComboModifyListener fileMDComboModifyListener;
+	// private ComboFileSelectorMgr comboFileSelectorMgr;
+	// private FileMDComboModifyListener FileMDComboModifyListener;
+	private ComboFileSelectorListener comboFileSelectorListener;
 	protected String comboTextSaved = "";
 	protected boolean comboKeyHeldDown = false;
 	private int comboSelectionIndex = -1;
@@ -65,84 +65,51 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	// CASE 2) WITH A SELECTED FILE AND ITS DATA SET
 	// CASE 3) WITH A NEW FILE TO ADD TO AN EXISTING DATA SET
 	// CASE 4) WITH A NEW FILE TO ADD TO A NEW DATA SET (CREATED HERE)
-	// ? CASE 5) WITH A NEW DATA SET TO ADD 
-	
-	// YOU CAN GET HERE WITH A NEW FILE (FOR A NEW OR EXISTING DATA SET)
+
 	/**
 	 * @wbp.parser.constructor
-
 	 */
 	public CSVMetaDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1 - EDIT DATA SET INFO FOR ANY EXISTING DATA SET
-//		newFileMD = false;
-//		newDataSet = false;
 		if (DataSetKeeper.size() == 0) {
 			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
+		if (DataSetKeeper.size() == 0) {
+			return;
+		}
 		this.curDataSetProvider = DataSetKeeper.get(0);
-		this.curFileMD = curDataSetProvider.getFileMDList().get(0);
-//		dataSetMD = curDataSetProvider.getDataSetMD();
-//		curatorMD = curDataSetProvider.getCuratorMD();
-//		tdbResource = curDataSetProvider.getTdbResource();
+		// if (curDataSetProvider.getFileMDList().size() > 0) {
+		// this.curFileMD = curDataSetProvider.getFileMDList().get(0);
+		// }
 	}
-	
+
 	public CSVMetaDialog(Shell parentShell, FileMD fileMD, DataSetProvider dataSetProvider) {
 		// CASE 2 - EDIT DATA SET INFO FOR ONE DATA SET ONLY
 		super(parentShell);
-//		newFileMD = false;
-//		newDataSet = false;
-//		dataSetEnabled = true;
 		this.callingDataSetProvider = dataSetProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSetProvider = callingDataSetProvider;
-		this.curFileMD = callingFileMD;
-//		dataSetMD = dataSetProvider.getDataSetMD();
-//		curatorMD = dataSetProvider.getCuratorMD();
-//		tdbResource = dataSetProvider.getTdbResource();
-//		this.curFileMD = fileMD;
+		// this.curFileMD = callingFileMD;
 	}
 
 	public CSVMetaDialog(Shell parentShell, FileMD fileMD) {
 		super(parentShell);
 		// CASE 3 - NEW FILE TO ADD TO EXISTING DATA SET
 		// CASE 4 - NEW FILE TO ADD TO NEW DATA SET (CREATED HERE)
-//		newFileMD = true;
-//		newDataSet = true;
-//		dataSetEnabled = true;
-//		assert fileMD != null : "fileMD cannot be null";
+		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		this.curFileMD = callingFileMD;
-//		callingDataSetProvider = new DataSetProvider();
-//		this.dataSetMD = new DataSetMD();
-//		callingDataSetProvider.setDataSetMD(dataSetMD);
-//		this.curatorMD = new CuratorMD(true);
-//		callingDataSetProvider.setCuratorMD(curatorMD);
-//		callingDataSetProvider.addFileMD(fileMD); // THIS MEANS WE DON'T HAVE TO
-												// ADD IT AGAIN
-//		curDataSetProvider = callingDataSetProvider;
-		// curatorFromPrefs();
+		curDataSetProvider = new DataSetProvider();
+		curDataSetProvider.addFileMD(callingFileMD);
+		curDataSetProvider.setDataSetMD(new DataSetMD());
+		curDataSetProvider.getDataSetMD().setName("(new data set)");
+		curDataSetProvider.addFileMD(callingFileMD);
+		curDataSetProvider.setCuratorMD(new CuratorMD());
 	}
-
-	// YOU CAN GET HERE WITH A DataSetProvider
-	// WITH DataSetMD , CuratorMD , fileMDList , tdbResource
-//	public CSVMetaDialog(Shell parentShell, DataSetProvider dataSetProvider) {
-//		super(parentShell);
-	    // CASE 5 - NEW DATA SET TO ADD WITHOUT NEW FILE INFO (SO WHERE IS IT FROM?)
-//		newFileMD = false;
-//		newDataSet = false;
-//		dataSetEnabled = false;
-//		this.dataSetProvider = dataSetProvider;
-//		dataSetMD = dataSetProvider.getDataSetMD();
-//		curatorMD = dataSetProvider.getCuratorMD();
-//		tdbResource = dataSetProvider.getTdbResource();
-//		fileMD = dataSetProvider.getFileMDList().get(0);
-//	}
 
 	// YOU CAN GET HERE WITH A FileMD AND A DataSetProvider
 	// WITH DataSetMD , CuratorMD , fileMDList , tdbResource
-
 
 	// MAKE THE WHOLE DIALOG BOX
 	@Override
@@ -176,58 +143,34 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		lbl_01.setText("Name");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
-		if (callingFileMD != null) {
-			combo = new Combo(composite, SWT.DROP_DOWN);
-			combo.setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
+		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+			comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
+			comboDataSetSelector.setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
 		} else {
-			combo = new Combo(composite, SWT.READ_ONLY);
+			comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
 		}
-		combo.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		combo.setItems(getDataSetInfo());
-		combo.setText(getDataSetInfo()[0]);
-
-		// COLLECT DATA SET LIST
-		String[] dsInfo = getDataSetInfo();
-
-
-		// comboSelectionIndex = 0;
-
-//		combo.setEnabled(dataSetEnabled);
-
-		// System.out.println("combo.getSelectionIndex()" +
-		// combo.getSelectionIndex());
+		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		comboDataSetSelector.setItems(getDataSetInfo());
 
 		// combo.addMouseListener(new MouseListener() {
 		//
-		// private String savedComboText = "";
-		//
 		// @Override
 		// public void mouseDoubleClick(MouseEvent e) {
-		// // TODO Auto-generated method stub
 		//
 		// }
 		//
 		// @Override
 		// public void mouseDown(MouseEvent e) {
-		// // savedComboText = combo.getText();
 		//
 		// }
 		//
 		// @Override
 		// public void mouseUp(MouseEvent e) {
-		// // if (savedComboText.equals(combo.getText())){
-		// // return;
-		// // }
-		// // int selectionIndex = combo.getSelectionIndex();
-		// // System.out.println("selectionIndex = " + selectionIndex);
-		// // populateMeta(combo.getText());
-		// // getButton(IDialogConstants.OK_ID).setEnabled(true);
-		// // System.out.println("choice is " + combo.getSelectionIndex()
-		// // + " with value: " + combo.getText());
+		//
 		// }
 		// });
 
-		combo.addKeyListener(new KeyListener() {
+		comboDataSetSelector.addKeyListener(new KeyListener() {
 
 			private int comboSelectionIndexSaved;
 
@@ -236,51 +179,44 @@ public class CSVMetaDialog extends TitleAreaDialog {
 				System.out.println("keyReleased=" + e.toString());
 				comboKeyHeldDown = false;
 				System.out.println("comboSelectionIndex = " + comboSelectionIndex);
-
-				// if (comboSelectionIndexSaved == 0) {
 				if (comboSelectionIndex == 0) {
 					// allow typing
-//					System.out.println("trying to edit row zero");
-//					combo.setText(comboTextSaved + e.character);
-//					String[] comboItems = combo.getItems();
-//					comboItems[comboSelectionIndex]=dataSetMD.getName();
-					combo.setItem(comboSelectionIndex, curDataSetProvider.getDataSetMD().getName());
+					comboDataSetSelector.setItem(comboSelectionIndex, curDataSetProvider.getDataSetMD().getName());
 				} else {
 					// no typing
-					combo.setText(comboTextSaved);
+					comboDataSetSelector.setText(comboTextSaved);
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				System.out.println("keyPressed=" + e.toString());
-				// comboSelectionIndexSaved = comboSelectionIndex;
+				System.out.println("comboSelectionIndex = " + comboSelectionIndex);
 				if (!comboKeyHeldDown && (comboSelectionIndex != 0)) {
-					comboTextSaved = combo.getText();
+					comboTextSaved = comboDataSetSelector.getText();
 					comboKeyHeldDown = true;
 				}
-
 			}
 		});
-		combo.addSelectionListener(new SelectionListener() {
+		comboDataSetSelector.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("combo.addSelectionListener.widgetSelectedr=" + e.toString());
-				comboSelectionIndex = combo.getSelectionIndex();
+				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
 
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				System.out.println("combo.addSelectionListener.widgetDefaultSelected=" + e.toString());
-				comboSelectionIndex = combo.getSelectionIndex();
+				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
 
 			}
 
 		});
 
-		combo.addModifyListener(new ModifyListener() {
+		comboDataSetSelector.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
 				// comboSelectionIndex = combo.getSelectionIndex();
@@ -288,16 +224,12 @@ public class CSVMetaDialog extends TitleAreaDialog {
 					// do nothing
 				} else {
 					System.out.println("Modify event: " + e.toString());
-					System.out.println("Modify Event: combo.getSelectionIndex() = " + combo.getSelectionIndex() + " with combo.getText() = " + combo.getText());
-					populateMeta();
+					System.out.println("Modify Event: combo.getSelectionIndex() = " + comboDataSetSelector.getSelectionIndex() + " with combo.getText() = "
+							+ comboDataSetSelector.getText());
+					populateDataSetMD();
 				}
-
-				// getButton(IDialogConstants.OK_ID).setEnabled(true);
 			}
 		});
-		
-		combo.select(0);
-		comboSelectionIndex = combo.getSelectionIndex();
 
 		rowIndex++;
 		Label lbl_07 = new Label(composite, SWT.RIGHT);
@@ -355,32 +287,15 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		Label lbl_02 = new Label(composite, SWT.RIGHT);
 		lbl_02.setText("Name");
 		lbl_02.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		fileMDCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		fileMDComboMgr = new FileMDComboMgr();
-		fileMDCombo.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		comboFileSelector = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		// comboFileSelectorMgr = new ComboFileSelectorMgr();
+		createComboFileSelectorList();
+		comboFileSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		// NEXT STEP: COLLECT FILE LIST INFO BASED ON WHAT IS PASSED, AND ADD
 		// OTHER
-		fileMDCombo.setToolTipText("Files associated with this data set." + dsInfo[0]);
-		fileMDComboModifyListener = new FileMDComboModifyListener();
-		// fileMDCombo.addModifyListener(new ModifyListener() {
-		// public void modifyText(ModifyEvent e) {
-		// // redrawDialogRows();
-		// System.out.println("fileMDCombo index "
-		// + fileMDCombo.getSelectionIndex());
-		// populateFileMeta();
-		// System.out.println("choice is "
-		// + fileMDCombo.getSelectionIndex() + " with value: "
-		// + fileMDCombo.getText());
-		// }
-		// });
-		fileMDCombo.addModifyListener(fileMDComboModifyListener);
-
-		// combo2.setItems(getFileInfo());
-		// combo2.setText(getFileInfo()[0]);
-
-		// String[] dsInfo = getDataSetInfo();
-		// Text text_02 = new Text(composite, SWT.BORDER);
-		// text_02.setBounds(col2Left, 1 * disBtwnRows, col2Width, rowHeight);
+		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSetSelector.getText());
+		comboFileSelectorListener = new ComboFileSelectorListener();
+		comboFileSelector.addModifyListener(comboFileSelectorListener);
 
 		rowIndex++;
 		Label lbl_03 = new Label(composite, SWT.RIGHT);
@@ -405,19 +320,6 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		Text text_05 = new Text(composite, SWT.BORDER);
 		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_05.setEnabled(false);
-
-		// rowIndex++;
-		// Label sep_05a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		// sep_05a.setBounds(50, rowIndex * disBtwnRows - 5, 250, 2);
-
-		// rowIndex++;
-		// Label lbl_06 = new Label(composite, SWT.RIGHT);
-		// lbl_06.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-		// rowHeight);
-		// lbl_06.setText("Name");
-		// Text text_06 = new Text(composite, SWT.BORDER);
-		// text_06.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-		// rowHeight);
 
 		rowIndex = 13;
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -487,6 +389,9 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		dialogValues.add(text_15); // 11 Curator Email
 		dialogValues.add(text_16); // 12 Curator Phone
 
+		comboDataSetSelector.select(0);
+		comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+
 		redrawDialogRows();
 
 		Control control = super.createDialogArea(parent);
@@ -494,13 +399,13 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		return control;
 	}
 
-	@Override
-	public int open() {
-		if (callingFileMD != null) {
-			// getButton(IDialogConstants.OK_ID).setEnabled(false);
-		}
-		return super.open();
-	}
+	// @Override
+	// public int open() {
+	// if (callingFileMD != null) {
+	// // getButton(IDialogConstants.OK_ID).setEnabled(false);
+	// }
+	// return super.open();
+	// }
 
 	@Override
 	protected void cancelPressed() {
@@ -513,7 +418,7 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
 		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
 		// dataSetMD.setName(dialogValues.get(3).getText()); //FIXME
-		dataSetMD.setName(combo.getText()); // FIXME
+		dataSetMD.setName(comboDataSetSelector.getText()); // FIXME
 		dataSetMD.setVersion(dialogValues.get(3).getText());
 		dataSetMD.setComments(dialogValues.get(4).getText());
 		dataSetMD.setContactName(dialogValues.get(5).getText());
@@ -527,73 +432,41 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		curatorMD.setEmail(dialogValues.get(11).getText());
 		curatorMD.setPhone(dialogValues.get(12).getText());
 
-//		curDataSetProvider.setDataSetMD(dataSetMD);
-//		curDataSetProvider.setCuratorMD(curatorMD);
-		// Model model = SelectTDB.model;
-//		System.out.println("newDataSet = " + newDataSet);
-//		System.out.println("comboSelectionIndex = " + comboSelectionIndex);
-
 		if (newDataSet) {
-			boolean test = DataSetKeeper.add(curDataSetProvider); // A DataSetProvider IS BORN!!
-			System.out.println("test = " + test);
-
-			dataSetProviderToTDB(curDataSetProvider);
-			// int dataSetIdPlusOne = DataSetKeeper.indexOf(dataSetProvider) +
-			// 1;
-			// Resource newTDBResource = dataSetProvider.getTdbResource();
-			// model.addLiteral(newTDBResource, ETHOLD.localSerialNumber,
-			// model.createTypedLiteral(dataSetIdPlusOne));
-			// model.addLiteral(newTDBResource, RDFS.label,
-			// model.createLiteral(dataSetMD.getName()));
-			// model.addLiteral(newTDBResource, RDFS.comment,
-			// model.createLiteral(dataSetMD.getComments()));
-			// model.addLiteral(newTDBResource, DCTerms.hasVersion,
-			// model.createLiteral(dataSetMD.getVersion()));
-		} else if (callingFileMD != null) {
-			curDataSetProvider.addFileMD(callingDataSetProvider.getFileMDList().get(0));
-			dataSetProviderToTDB(curDataSetProvider);
-		} else {
-			dataSetProviderToTDB(curDataSetProvider);
+			boolean success = DataSetKeeper.add(curDataSetProvider); // A DataSetProvider IS BORN!!
+			System.out.println("Created new DataSetProvider succees: = " + success);
+		} else if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+			curDataSetProvider.addFileMD(callingFileMD);
 		}
-
+		dataSetProviderToTDB(curDataSetProvider);
 		super.okPressed();
 	}
 
 	private void dataSetProviderToTDB(DataSetProvider dsProvider) {
-		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
+		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or SelectTDB
+		DataSetMD dataSetMD = dsProvider.getDataSetMD();
 
 		Model model = SelectTDB.model;
-		// int dataSetIdPlusOne = DataSetKeeper.indexOf(dsProvider) + 1;
 		Resource tdbResource = dsProvider.getTdbResource();
-		System.out.println("tdbResource = " + tdbResource);
-		// if (model.contains(tdbResource, ETHOLD.localSerialNumber)) {
-		// NodeIterator nodeIterator = model.listObjectsOfProperty(
-		// tdbResource, ETHOLD.localSerialNumber);
-		// while (nodeIterator.hasNext()) {
-		// RDFNode rdfNode = nodeIterator.next();
-		// System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-		// model.remove(tdbResource, ETHOLD.localSerialNumber,
-		// rdfNode.asLiteral());
-		// // model.
-		// }
-		// }
-		// model.addLiteral(tdbResource, ETHOLD.localSerialNumber,
-		// model.createTypedLiteral(dataSetIdPlusOne));
-
-		if (model.contains(tdbResource, RDFS.label)) {
-			NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, RDFS.label);
-			while (nodeIterator.hasNext()) {
-				RDFNode rdfNode = nodeIterator.next();
-				System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-				model.remove(tdbResource, RDFS.label, rdfNode.asLiteral());
-			}
-		}
 		assert tdbResource != null : "tdbResource cannot be null";
 		assert RDFS.label != null : "RDFS.label cannot be null";
 		assert dataSetMD.getName() != null : "dataSetMD.getName() cannot be null";
+		System.out.println("tdbResource = " + tdbResource);
+
+		if (model.contains(tdbResource, RDFS.label)) {
+			// REPLACE OTHER label(s)
+			NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, RDFS.label);
+			while (nodeIterator.hasNext()) {
+				RDFNode rdfNode = nodeIterator.next();
+				assert rdfNode.isLiteral() : "DataSet RDFS.label value must be literal!";
+				model.remove(tdbResource, RDFS.label, rdfNode.asLiteral());
+			}
+		}
+
 		model.addLiteral(tdbResource, RDFS.label, model.createLiteral(dataSetMD.getName()));
 
 		if (model.contains(tdbResource, RDFS.comment)) {
+			// REPLACE OTHER comment(s)
 			NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, RDFS.comment);
 			while (nodeIterator.hasNext()) {
 				RDFNode rdfNode = nodeIterator.next();
@@ -601,7 +474,10 @@ public class CSVMetaDialog extends TitleAreaDialog {
 				model.remove(tdbResource, RDFS.comment, rdfNode.asLiteral());
 			}
 		}
-		model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+		if (!dataSetMD.getComments().matches("^\\s*$")) {
+			// ONLY IF NOT ALL WHITE SPACES
+			model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+		}
 
 		if (model.contains(tdbResource, DCTerms.hasVersion)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, DCTerms.hasVersion);
@@ -611,128 +487,37 @@ public class CSVMetaDialog extends TitleAreaDialog {
 				model.remove(tdbResource, DCTerms.hasVersion, rdfNode.asLiteral());
 			}
 		}
-		model.addLiteral(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetMD.getVersion()));
-
+		if (!dataSetMD.getVersion().matches("^\\s*$")) {
+			model.addLiteral(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetMD.getVersion()));
+		}
 	}
-
-	// private String[] getFileInfo() {
-	// List<String> filenameList = new ArrayList<String>();
-	// List<FileMD> fileList = dataSetProvider.getFileMDList();
-	// for (FileMD fileMD : fileList) {
-	// int id = fileList.indexOf(fileMD);
-	// int idPlusOne = id + 1;
-	// String name = fileMD.getFilename();
-	// filenameList.add(idPlusOne + ":" + name);
-	// }
-	// return filenameList.toArray(new String[filenameList.size()]);
-	// }
 
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
 	private String[] getDataSetInfo() {
-		Model model = SelectTDB.model;
-		if (curDataSetProvider != null) {
-			Integer id = DataSetKeeper.indexOf(curDataSetProvider);
-			String name = curDataSetProvider.getDataSetMD().getName();
-			// String version = dataSetProvider.getDataSetMD().getVersion();
-			// int id_plus_one = id + 1;
+		List<String> toSort = new ArrayList<String>();
+		if (callingDataSetProvider != null) {
 			String[] results = new String[1];
-			// results[0] = id_plus_one + ": " + name + " " + version;
-			results[0] = name;
+			results[0] = callingDataSetProvider.getDataSetMD().getName();
 			return results;
-		} else if (callingFileMD != null) {
-			String[] results = new String[DataSetKeeper.size() + 1];
-			List<String> toSort = new ArrayList<String>();
-			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
-			// // NEW)
+		} else {
 			List<Integer> ids = DataSetKeeper.getIDs();
 			Iterator<Integer> iterator = ids.iterator();
 
-			Integer id = 0;
-			// int id_plus_one = id + 1;
-			int counter = 0;
 			while (iterator.hasNext()) {
-				counter++;
-				id = iterator.next();
-				// id_plus_one = id + 1;
-				DataSetProvider dsProvider = DataSetKeeper.get(id);
-				Resource tdbResource = dsProvider.getTdbResource();
-				if (model.contains(tdbResource, RDFS.label)) {
-					String name = model.listObjectsOfProperty(tdbResource, RDFS.label).next().asLiteral().getString();
-					toSort.add(name);
-				}
-
-				// if (model.contains(tdbResource, DCTerms.hasVersion)) {
-				// version = model.listObjectsOfProperty(tdbResource,
-				// DCTerms.hasVersion).next().asLiteral().getString();
-				// } else if (model.contains(tdbResource,
-				// ECO.hasMajorVersionNumber)) {
-				// version = model.listObjectsOfProperty(tdbResource,
-				// ECO.hasMajorVersionNumber).next().asLiteral().getString();
-				// if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
-				// version += "." + model.listObjectsOfProperty(tdbResource,
-				// ECO.hasMinorVersionNumber).next().asLiteral().getString();
-				// }
-				// }
-				// results[counter] = id_plus_one + ":" + name + " " + version;
-				// results[counter] = name;
+				int id = iterator.next();
+				toSort.add(DataSetKeeper.get(id).getDataSetMD().getName());
 			}
 			Collections.sort(toSort);
-			// Integer next = id_plus_one + 1;
+		}
+		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+			String[] results = new String[DataSetKeeper.size() + 1];
 			results[0] = "(new data set)";
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i + 1] = toSort.get(i);
 			}
 			return results;
 		} else {
-			// if (DataSetKeeper.size() == 0){return null;}
 			String[] results = new String[DataSetKeeper.size()];
-			List<String> toSort = new ArrayList<String>();
-
-			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
-			// // NEW)
-			List<Integer> ids = DataSetKeeper.getIDs();
-			Iterator<Integer> iterator = ids.iterator();
-
-			Integer id = 0;
-			// int id_plus_one = id + 1;
-			// int counter = -1;
-			while (iterator.hasNext()) {
-				// counter++;
-				id = iterator.next();
-				// id_plus_one = id + 1;
-				DataSetProvider dsProvider = DataSetKeeper.get(id);
-				Resource tdbResource = dsProvider.getTdbResource();
-				// String name = "";
-				// String version = "";
-				if (model.contains(tdbResource, RDFS.label)) {
-					String name = model.listObjectsOfProperty(tdbResource, RDFS.label).next().asLiteral().getString();
-					toSort.add(name);
-				}
-				// if (model.contains(tdbResource, RDFS.label)) {
-				// name = model.listObjectsOfProperty(tdbResource,
-				// RDFS.label).next().asLiteral().getString();
-				// }
-				// if (model.contains(tdbResource, DCTerms.hasVersion)) {
-				// version = model.listObjectsOfProperty(tdbResource,
-				// DCTerms.hasVersion).next().asLiteral().getString();
-				// } else if (model.contains(tdbResource,
-				// ECO.hasMajorVersionNumber)) {
-				// version = model.listObjectsOfProperty(tdbResource,
-				// ECO.hasMajorVersionNumber).next().asLiteral().getString();
-				// if (model.contains(tdbResource, ECO.hasMinorVersionNumber)) {
-				// version += "." + model.listObjectsOfProperty(tdbResource,
-				// ECO.hasMinorVersionNumber).next().asLiteral().getString();
-				// }
-				// }
-				// // results[counter] = id_plus_one + ":" + name + " " +
-				// version;
-				// results[counter] = name;
-
-			}
-			Collections.sort(toSort);
-
-			// Integer next = id_plus_one + 1;
-			// results[0] = next + ": (new data set)";
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i] = toSort.get(i);
 			}
@@ -740,68 +525,62 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		}
 	}
 
-	private void populateFileMeta() {
-		int index = fileMDCombo.getSelectionIndex();
-		System.out.println("index = " + index);
-		List<FileMD> fileList = curDataSetProvider.getFileMDList();
-		if (index < 0) {
-			return;
-		}
-		if (fileList.size() <= 0) {
-			return;
-		}
-		if (index == 0) {
-			curFileMD = callingDataSetProvider.getFileMDList().get(0);
-		} else if (fileList.size() <= index) {
-			curFileMD = fileList.get(index - 1);
-		} else {
-			curFileMD = fileList.get(index);
+	protected void populateDataSetMD() {
+		String selectedDataSetName = comboDataSetSelector.getText();
+		int selectedDataSetID = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
+		if (selectedDataSetID > -1) {
+			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
 		}
 
-		// dialogValues.get(0).setText(fileMD.getFilename());
-		// fileMDCombo.setToolTipText(fileMD.getPath()); // THIS CAN'T BE
-		// UPDATED WITHOUT FIRING THE MODIFY LISTENER! HOW TO DO THIS?
-		// fileMDCombo.removeModifyListener(fileMDComboModifyListener);
-		// fileMDCombo.setToolTipText(fileMD.getPath());
-		// fileMDCombo.addModifyListener(fileMDComboModifyListener);
-		dialogValues.get(0).setText(curFileMD.getSize() + "");
-		dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getLastModified()));
-		dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadTime()));
-	}
-
-	protected void populateMeta() {
-		String dataSetChosen = combo.getText();
-		// if (dataSetChosen.endsWith("new data set)")) {
-		if ((callingFileMD != null) && (comboSelectionIndex == 0)) {
-			newDataSet = true;
-			curDataSetProvider = callingDataSetProvider;
-			curFileMD = callingDataSetProvider.getFileMDList().get(0);
-			System.out.println("... it is new");
-		} else {
-			newDataSet = false;
-			int dsNum = DataSetKeeper.indexOfDataSetName(dataSetChosen);
-			if (dsNum > -1) {
-				curDataSetProvider = DataSetKeeper.get(dsNum);
-			} else {
-				curDataSetProvider.getDataSetMD().setName(dataSetChosen);
-				// dataSetProvider = null;
-				// System.out.println("What happened?");
-			}
-		}
-
-		List<FileMD> fileMDList = curDataSetProvider.getFileMDList();
-		System.out.println("fileMDList has size: " + fileMDList.size());
-		if (callingDataSetProvider != null) {
-			curFileMD = callingDataSetProvider.getFileMDList().get(0);
-		} else if (fileMDList.size() > 0) {
-			curFileMD = fileMDList.get(0);
-		} else {
-			curFileMD = null;
-		}
-//		dataSetMD = curDataSetProvider.getDataSetMD();
-//		curatorMD = curDataSetProvider.getCuratorMD();
 		redrawDialogRows();
+
+		// if ((callingFileMD != null) && (comboSelectionIndex == 0)) {
+		// newDataSet = true;
+		// curDataSetProvider = callingDataSetProvider;
+		// curFileMD = callingDataSetProvider.getFileMDList().get(0);
+		// System.out.println("... it is new");
+		// } else {
+		// newDataSet = false;
+		// int dsNum = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
+		// if (dsNum > -1) {
+		// curDataSetProvider = DataSetKeeper.get(dsNum);
+		// } else {
+		// curDataSetProvider.getDataSetMD().setName(selectedDataSetName);
+		// // dataSetProvider = null;
+		// // System.out.println("What happened?");
+		// }
+		// }
+		//
+		// List<FileMD> fileMDList = curDataSetProvider.getFileMDList();
+		// System.out.println("fileMDList has size: " + fileMDList.size());
+		// if (callingDataSetProvider != null) {
+		// curFileMD = callingDataSetProvider.getFileMDList().get(0);
+		// } else if (fileMDList.size() > 0) {
+		// curFileMD = fileMDList.get(0);
+		// } else {
+		// curFileMD = null;
+		// }
+		// // dataSetMD = curDataSetProvider.getDataSetMD();
+		// // curatorMD = curDataSetProvider.getCuratorMD();
+		// redrawDialogRows();
 	}
+
+	// private void populateFileMD() {
+	// int index = comboFileSelector.getSelectionIndex();
+	// if (index < 0) {
+	// return;
+	// }
+	// List<FileMD> fileList = curDataSetProvider.getFileMDList();
+	// if (fileList.size() <= 0) {
+	// return;
+	// }
+	// if ((index == 0) && ((callingFileMD != null) && (callingDataSetProvider == null))) {
+	// curFileMD = callingFileMD;
+	// } else {
+	// curFileMD = fileList.get(index);
+	// }
+	// redrawDialogFileMD();
+	// }
 
 	protected void redrawDialogDataSetMD() {
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
@@ -817,10 +596,29 @@ public class CSVMetaDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogFileMD() {
-		fileMDCombo.setToolTipText(curFileMD.getPath());
-		dialogValues.get(0).setText(curFileMD.getSize() + "");
-		dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getLastModified()));
-		dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadTime()));
+		FileMD curFileMD = callingFileMD; // MAY BE NULL
+		int index = comboFileSelector.getSelectionIndex();
+		if (index >= 0) {
+			if (curDataSetProvider != null) {
+				if (callingFileMD != null) {
+					if (index > 0) {
+						curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
+					}
+				} else {
+					curFileMD = curDataSetProvider.getFileMDList().get(index);
+				}
+			}
+		}
+		if (curFileMD == null) {
+			dialogValues.get(0).setText("");
+			dialogValues.get(1).setText("");
+			dialogValues.get(2).setText("");
+		} else {
+			comboFileSelector.setToolTipText(curFileMD.getPath());
+			dialogValues.get(0).setText(curFileMD.getSize() + "");
+			dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getLastModified()));
+			dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadTime()));
+		}
 	}
 
 	protected void redrawDialogCuratorMD() {
@@ -832,69 +630,101 @@ public class CSVMetaDialog extends TitleAreaDialog {
 		dialogValues.get(12).setText(curatorMD.getPhone());
 	}
 
-	protected void redrawDialogRows() {
-		System.out.println(" in redrawDialogRows()");
-		// CLEAR ALL DIALOG BOXES (BECAUSE WE'LL REDRAW)
+	protected void clearDialogRows() {
 		Iterator<Text> dialogValueIterator = dialogValues.iterator();
 		while (dialogValueIterator.hasNext()) {
 			Text dialogValue = dialogValueIterator.next();
 			dialogValue.setText("");
 		}
+	}
+
+	protected void redrawDialogRows() {
+		// System.out.println(" in redrawDialogRows()");
+		// CLEAR ALL DIALOG BOXES (BECAUSE WE'LL REDRAW)
 
 		// String[] listOfFiles = getFileInfo();
 		// int index = 0;
-		List<FileMD> tempFileMDList = new ArrayList<FileMD>();
-		if (!newDataSet && (callingFileMD != null)) {
-			// NOT A NEW DATA SET, BUT A NEW FILE NAME (TO ADD, PRESUMABLY)
-			tempFileMDList.add(callingDataSetProvider.getFileMDList().get(0));
-		}
-		tempFileMDList.addAll(curDataSetProvider.getFileMDList());
-		fileMDComboMgr.setItems(tempFileMDList);
-		fileMDComboMgr.setText(curFileMD);
+		// List<FileMD> tempFileMDList = new ArrayList<FileMD>();
+		// if (!newDataSet && ((callingFileMD != null) && (callingDataSetProvider == null))) {
+		// // NOT A NEW DATA SET, BUT A NEW FILE NAME (TO ADD, PRESUMABLY)
+		// tempFileMDList.add(callingDataSetProvider.getFileMDList().get(0));
+		// }
+		// tempFileMDList.addAll(curDataSetProvider.getFileMDList());
+		// comboFileSelectorMgr.setItems(tempFileMDList);
+		// comboFileSelectorMgr.setText(curFileMD);
+		clearDialogRows();
 
 		redrawDialogDataSetMD();
+
+		createComboFileSelectorList();
 		redrawDialogFileMD();
+
 		redrawDialogCuratorMD();
 	}
 
-	private class FileMDComboMgr {
-		List<FileMD> fileMDlist = null;
-
-		public FileMDComboMgr() {
-
-		}
-
-		public void setItems(List<FileMD> fileMDlist) {
-			this.fileMDlist = fileMDlist;
-			String[] temp = new String[fileMDlist.size()];
-			int index = 0;
-			for (FileMD fileMD : fileMDlist) {
-				temp[index++] = fileMD.getFilename();
+	protected void createComboFileSelectorList() {
+		comboFileSelector.removeAll();
+		if (curDataSetProvider == null) {
+			if (callingFileMD != null) {
+				comboFileSelector.add(callingFileMD.getFilename());
 			}
-			fileMDCombo.setItems(temp);
+			return;
 		}
-
-		public FileMD getFileMD(int index) {
-			return fileMDlist.get(index);
+		List<FileMD> fileMDList = curDataSetProvider.getFileMDList();
+		int selectionIndex = 0;
+		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+			comboFileSelector.add(callingFileMD.getFilename());
 		}
-
-		public void setText(FileMD fileMD) {
-			if (fileMD == null) {
-				return;
+		for (int i = 0; i < fileMDList.size(); i++) {
+			FileMD fileMD = fileMDList.get(i);
+			comboFileSelector.add(fileMD.getFilename());
+			if (callingFileMD == fileMD) {
+				selectionIndex = i;
 			}
-			fileMDCombo.setText(fileMD.getFilename());
 		}
+		comboFileSelector.select(selectionIndex);
+		// populateFileMD();
 	}
 
-	public class FileMDComboModifyListener implements ModifyListener {
+	// private class ComboFileSelectorMgr {
+	// List<FileMD> fileMDlist = null;
+	//
+	// public ComboFileSelectorMgr() {
+	//
+	// }
+	//
+	// public void setItems(List<FileMD> fileMDlist) {
+	// this.fileMDlist = fileMDlist;
+	// String[] temp = new String[fileMDlist.size()];
+	// int index = 0;
+	// for (FileMD fileMD : fileMDlist) {
+	// temp[index++] = fileMD.getFilename();
+	// }
+	// comboFileSelector.setItems(temp);
+	// }
+	//
+	// public FileMD getFileMD(int index) {
+	// return fileMDlist.get(index);
+	// }
+	//
+	// public void setText(FileMD fileMD) {
+	// if (fileMD == null) {
+	// return;
+	// }
+	// comboFileSelector.setText(fileMD.getFilename());
+	// }
+	// }
+
+	public class ComboFileSelectorListener implements ModifyListener {
 
 		@Override
 		public void modifyText(ModifyEvent e) {
 			System.out.println("ModifyEvent=" + e.toString());
 			// redrawDialogRows();
-			System.out.println("fileMDCombo index " + fileMDCombo.getSelectionIndex());
-			populateFileMeta();
-			System.out.println("choice is " + fileMDCombo.getSelectionIndex() + " with value: " + fileMDCombo.getText());
+			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
+			// populateFileMD();
+			redrawDialogFileMD();
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
 		}
 
 	}
