@@ -49,6 +49,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private Combo comboDataSetSelector = null;
 	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
+	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
+	private Color defaultBG = null;
+	Label lbl_01 = null;
+
 	private ComboFileSelectorListener comboFileSelectorListener;
 	protected String comboTextSaved = "";
 	protected boolean comboKeyHeldDown = false;
@@ -125,7 +129,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		lbl_5b.setText("Data Set Information:");
 
 		rowIndex++;
-		Label lbl_01 = new Label(composite, SWT.RIGHT);
+		lbl_01 = new Label(composite, SWT.RIGHT);
 		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lbl_01.setText("Name");
@@ -139,25 +143,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		comboDataSetSelector.setItems(getDataSetInfo());
-
-		// combo.addMouseListener(new MouseListener() {
-		//
-		// @Override
-		// public void mouseDoubleClick(MouseEvent e) {
-		//
-		// }
-		//
-		// @Override
-		// public void mouseDown(MouseEvent e) {
-		//
-		// }
-		//
-		// @Override
-		// public void mouseUp(MouseEvent e) {
-		//
-		// }
-		// });
-
 		comboDataSetSelector.addKeyListener(new KeyListener() {
 
 			private int comboSelectionIndexSaved;
@@ -168,10 +153,26 @@ public class MetaDataDialog extends TitleAreaDialog {
 				comboKeyHeldDown = false;
 				System.out.println("comboSelectionIndex = " + comboSelectionIndex);
 				if (comboSelectionIndex == 0) {
+
 					// allow typing
-					comboDataSetSelector.setItem(comboSelectionIndex, curDataSetProvider.getDataSetMD().getName());
+					// System.out.println("before: " +
+					// comboDataSetSelector.indexOf(curDataSetProvider.getDataSetMD().getName()));
+					// if
+					// (DataSetKeeper.indexOfDataSetName(curDataSetProvider.getDataSetMD().getName())
+					// > 0) {
+					// comboDataSetSelector.setBackground(red);
+					// // return;
+					// } else {
+					// comboDataSetSelector.setBackground(defaultBG);
+					// }
+					// comboDataSetSelector.setText(curDataSetProvider.getDataSetMD().getName());
+					comboDataSetSelector.setItem(comboSelectionIndex, comboTextSaved);
+					// System.out.println("after : " +
+					// comboDataSetSelector.indexOf(curDataSetProvider.getDataSetMD().getName()));
+
 				} else {
 					// no typing
+					// lbl_01.setText("Name");
 					comboDataSetSelector.setText(comboTextSaved);
 				}
 			}
@@ -180,6 +181,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			public void keyPressed(KeyEvent e) {
 				System.out.println("keyPressed=" + e.toString());
 				System.out.println("comboSelectionIndex = " + comboSelectionIndex);
+				// comboDataSetSelector.setBackground(defaultBG);
 				if (!comboKeyHeldDown && (comboSelectionIndex != 0)) {
 					comboTextSaved = comboDataSetSelector.getText();
 					comboKeyHeldDown = true;
@@ -292,7 +294,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		Text text_03 = new Text(composite, SWT.BORDER);
 		text_03.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_03.setEditable(false);
-		text_03.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		text_03.setBackground(defaultBG);
 
 		rowIndex++;
 		Label lbl_04 = new Label(composite, SWT.RIGHT);
@@ -301,7 +303,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		Text text_04 = new Text(composite, SWT.BORDER);
 		text_04.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_04.setEditable(false);
-		text_04.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		text_04.setBackground(defaultBG);
 
 		rowIndex++;
 		Label lbl_05 = new Label(composite, SWT.RIGHT);
@@ -310,7 +312,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		Text text_05 = new Text(composite, SWT.BORDER);
 		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_05.setEditable(false);
-		text_05.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		text_05.setBackground(defaultBG);
 
 		rowIndex = 13;
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -381,7 +383,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues.add(text_16); // 12 Curator Phone
 
 		comboDataSetSelector.select(0);
-		comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+//		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+//			lbl_01.setText("Type new name (or select existing)");
+//		}
+//		comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+//		defaultBG = comboDataSetSelector.getBackground();
 
 		redrawDialogRows();
 
@@ -389,14 +395,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		control.setToolTipText("");
 		return control;
 	}
-
-	// @Override
-	// public int open() {
-	// if (callingFileMD != null) {
-	// // getButton(IDialogConstants.OK_ID).setEnabled(false);
-	// }
-	// return super.open();
-	// }
 
 	@Override
 	protected void cancelPressed() {
@@ -406,6 +404,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
+
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
 		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
 		// dataSetMD.setName(dialogValues.get(3).getText()); //FIXME
@@ -424,6 +423,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		curatorMD.setPhone(dialogValues.get(12).getText());
 
 		if ((callingFileMD != null) && (callingDataSetProvider == null) && (comboSelectionIndex == 0)) {
+			if (DataSetKeeper.indexOfDataSetName(comboDataSetSelector.getText()) > -1) {
+				new GenericMessageBox(getParentShell(), "Duplicate data set name.", "Provide a new distinct name or Select an existing data set.");
+				return;
+			}
 			boolean success = DataSetKeeper.add(curDataSetProvider); // A DataSetProvider IS BORN!!
 			System.out.println("Created new DataSetProvider succees: = " + success);
 		} else if ((callingFileMD != null) && (callingDataSetProvider == null)) {
@@ -500,7 +503,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			}
 			Collections.sort(toSort);
 		}
-		
+
 		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
 			String[] results = new String[DataSetKeeper.size() + 1];
 			results[0] = "(new data set)";
@@ -521,6 +524,29 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void populateDataSetMD() {
 		String selectedDataSetName = comboDataSetSelector.getText();
 		int selectedDataSetID = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
+		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+			if (comboSelectionIndex == 0) {
+				lbl_01.setText("Type new name (or select existing)");
+			} else {
+				lbl_01.setText("Select existing (or type name in 1st item)");
+			}
+		} else {
+
+		}
+
+		// System.out.println("callingFileMD: "+callingFileMD);
+		// System.out.println("callingDataSetProvider: "+callingDataSetProvider);
+		// System.out.println("selectedDataSetID: "+selectedDataSetID);
+		// System.out.println("DataSetKeeper.indexOfDataSetName(selectedDataSetName): "+DataSetKeeper.indexOfDataSetName(selectedDataSetName));
+		// if ((callingFileMD != null)
+		// && (callingDataSetProvider == null)
+		// && (selectedDataSetID == 0)
+		// && (DataSetKeeper.indexOfDataSetName(selectedDataSetName) > -1)){
+		// comboDataSetSelector.setBackground(red);
+		// return;
+		// }
+		// comboDataSetSelector.setBackground(defaultBG);
+
 		if (selectedDataSetID > -1) {
 			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
 		}
@@ -542,15 +568,15 @@ public class MetaDataDialog extends TitleAreaDialog {
 		FileMD curFileMD = callingFileMD; // MAY BE NULL
 		int index = comboFileSelector.getSelectionIndex();
 		if (index >= 0) {
-//			if (curDataSetProvider != null) {
-				if (callingFileMD != null) {
-					if (index > 0) {
-						curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
-					}
-				} else {
-					curFileMD = curDataSetProvider.getFileMDList().get(index);
+			// if (curDataSetProvider != null) {
+			if (callingFileMD != null) {
+				if (index > 0) {
+					curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
 				}
-//			}
+			} else {
+				curFileMD = curDataSetProvider.getFileMDList().get(index);
+			}
+			// }
 		}
 		if (curFileMD == null) {
 			dialogValues.get(0).setText("");
