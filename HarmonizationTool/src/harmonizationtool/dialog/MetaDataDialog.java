@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+//import org.eclipse.swt.events.KeyEvent;
+//import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -54,8 +54,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 	Label lbl_01 = null;
 
 	private ComboFileSelectorListener comboFileSelectorListener;
-	protected String comboTextSaved = "";
-	protected boolean comboKeyHeldDown = false;
+	protected String combDataSetSelectorSavedText = "";
+//	protected boolean comboKeyHeldDown = false;
 	private int comboSelectionIndex = -1;
 
 	// THERE ARE THREE WAYS TO CALL THIS:
@@ -103,7 +103,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		curDataSetProvider = new DataSetProvider();
 		curDataSetProvider.addFileMD(callingFileMD);
 		curDataSetProvider.setDataSetMD(new DataSetMD());
-		curDataSetProvider.getDataSetMD().setName("(new data set)");
+//		curDataSetProvider.getDataSetMD().setName("(new data set)");
 		curDataSetProvider.addFileMD(callingFileMD);
 		curDataSetProvider.setCuratorMD(new CuratorMD());
 	}
@@ -140,104 +140,93 @@ public class MetaDataDialog extends TitleAreaDialog {
 		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
 				rowHeight);
 		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
-		lbl_01.setText("Name");
+		lbl_01.setText("Select");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
-		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
-			comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
-			comboDataSetSelector
-					.setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
-		} else {
-			comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
-		}
+//		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+//			comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
+//			comboDataSetSelector
+//					.setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
+//		} else {
+		comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
+//		}
 		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows,
 				col2Width, rowHeight);
 		comboDataSetSelector.setItems(getDataSetInfo());
-		comboDataSetSelector.addKeyListener(new KeyListener() {
-
-			private int comboSelectionIndexSaved;
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				System.out.println("keyReleased=" + e.toString());
-				comboKeyHeldDown = false;
-				System.out.println("comboSelectionIndex = "
-						+ comboSelectionIndex);
-				if (comboSelectionIndex == 0) {
-
-					// allow typing
-					// System.out.println("before: " +
-					// comboDataSetSelector.indexOf(curDataSetProvider.getDataSetMD().getName()));
-					// if
-					// (DataSetKeeper.indexOfDataSetName(curDataSetProvider.getDataSetMD().getName())
-					// > 0) {
-					// comboDataSetSelector.setBackground(red);
-					// // return;
-					// } else {
-					// comboDataSetSelector.setBackground(defaultBG);
-					// }
-					// comboDataSetSelector.setText(curDataSetProvider.getDataSetMD().getName());
-					comboDataSetSelector.setItem(comboSelectionIndex,
-							comboTextSaved);
-					// System.out.println("after : " +
-					// comboDataSetSelector.indexOf(curDataSetProvider.getDataSetMD().getName()));
-
-				} else {
-					// no typing
-					// lbl_01.setText("Name");
-					comboDataSetSelector.setText(comboTextSaved);
-				}
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				System.out.println("keyPressed=" + e.toString());
-				System.out.println("comboSelectionIndex = "
-						+ comboSelectionIndex);
-				// comboDataSetSelector.setBackground(defaultBG);
-				if (!comboKeyHeldDown && (comboSelectionIndex != 0)) {
-					comboTextSaved = comboDataSetSelector.getText();
-					comboKeyHeldDown = true;
-				}
-			}
-		});
-		comboDataSetSelector.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out
-						.println("combo.addSelectionListener.widgetSelectedr="
-								+ e.toString());
-				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out
-						.println("combo.addSelectionListener.widgetDefaultSelected="
-								+ e.toString());
-				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-
-			}
-
-		});
+//		comboDataSetSelector.addKeyListener(new KeyListener() {
+//
+//			private int comboSelectionIndexSaved;
+//
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//				System.out.println("combDataSetSelectorSavedText :"
+//						+ combDataSetSelectorSavedText);
+//				System.out.println("comboDataSetSelector.getText() :"
+//						+ comboDataSetSelector.getText());
+//				System.out.println("comboDataSetSelector.getItem(0) :"
+//						+ comboDataSetSelector.getItem(0));
+//
+//				System.out.println("keyReleased=" + e.toString());
+//				comboKeyHeldDown = false;
+//				System.out.println("comboSelectionIndex = "
+//						+ comboSelectionIndex);
+//				if (comboSelectionIndex != 0) {
+//					comboDataSetSelector.setText(combDataSetSelectorSavedText);
+//				} else {
+//					comboDataSetSelector.setText(comboDataSetSelector.getText());
+//				}
+//			}
+//
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				System.out.println("keyPressed=" + e.toString());
+//				System.out.println("comboSelectionIndex = "
+//						+ comboSelectionIndex);
+//				// comboDataSetSelector.setBackground(defaultBG);
+//				if ((!comboKeyHeldDown) && (comboSelectionIndex != 0)) {
+//					combDataSetSelectorSavedText = comboDataSetSelector
+//							.getText();
+//				}
+//				comboKeyHeldDown = true;
+//			}
+//		});
+//		comboDataSetSelector.addSelectionListener(new SelectionListener() {
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				System.out
+//						.println("combo.addSelectionListener.widgetSelectedr="
+//								+ e.toString());
+//				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+////				if (comboSelectionIndex == 0){
+////					comboDataSetSelector.setItem(0, combDataSetSelectorSavedText);
+////				}
+//			}
+//
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				System.out
+//						.println("combo.addSelectionListener.widgetDefaultSelected="
+//								+ e.toString());
+//				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+////				if (comboSelectionIndex == 0){
+////					comboDataSetSelector.setItem(0, combDataSetSelectorSavedText);
+////				}
+//			}
+//
+//		});
 
 		comboDataSetSelector.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				// comboSelectionIndex = combo.getSelectionIndex();
-				if (comboKeyHeldDown) {
-					// do nothing
-				} else {
-					System.out.println("Modify event: " + e.toString());
-					System.out
-							.println("Modify Event: combo.getSelectionIndex() = "
-									+ comboDataSetSelector.getSelectionIndex()
-									+ " with combo.getText() = "
-									+ comboDataSetSelector.getText());
-					populateDataSetMD();
+				populateDataSetMD();
+				if ((comboDataSetSelector.getSelectionIndex() == (comboDataSetSelector.getItemCount()-1)) &&
+						(callingFileMD != null ) &&
+						(callingDataSetProvider == null)){
+					// HERE: get new string from GenericStringBox 
 				}
+				
+
 			}
 		});
 
@@ -257,8 +246,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		lbl_08.setText("Comments");
 		Text text_08 = new Text(composite, SWT.BORDER);
 		text_08.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+				rowHeight*2);
 
+		rowIndex++;
 		rowIndex++;
 		Label lbl_09 = new Label(composite, SWT.RIGHT);
 		lbl_09.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
@@ -296,7 +286,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				rowHeight);
 
 		// NEXT STEP: ADD FileMD DATA
-		rowIndex = 8;
+		rowIndex++;
 		Label sep_01a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_01a.setBounds(50, rowIndex * disBtwnRows - 5, 250, 2);
 
@@ -357,7 +347,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		text_05.setEditable(false);
 		text_05.setBackground(defaultBG);
 
-		rowIndex = 13;
+		rowIndex++;
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
 
@@ -379,7 +369,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 				dialogValues.get(9).setText(
 						Util.getPreferenceStore().getString("curatorName"));
 				dialogValues.get(10).setText(
-						Util.getPreferenceStore().getString("curatorAffiliation"));
+						Util.getPreferenceStore().getString(
+								"curatorAffiliation"));
 				dialogValues.get(11).setText(
 						Util.getPreferenceStore().getString("curatorEmail"));
 				dialogValues.get(12).setText(
@@ -463,7 +454,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
 		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
 
-		dataSetMD.setName(comboDataSetSelector.getText());	
+		dataSetMD.setName(comboDataSetSelector.getText());
 		dataSetMD.setVersion(dialogValues.get(3).getText());
 		dataSetMD.setComments(dialogValues.get(4).getText());
 		dataSetMD.setContactName(dialogValues.get(5).getText());
@@ -577,10 +568,13 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
 			String[] results = new String[DataSetKeeper.size() + 1];
-			results[0] = "(new data set)";
+//			results[0] = "(new data set)";
 			for (int i = 0; i < toSort.size(); i++) {
-				results[i + 1] = toSort.get(i);
+				results[i] = toSort.get(i);
 			}
+			results[DataSetKeeper.size()]="(new data set)";
+			curDataSetProvider = DataSetKeeper.get(DataSetKeeper
+					.indexOfDataSetName(results[0]));
 			return results;
 		} else {
 			String[] results = new String[DataSetKeeper.size()];
