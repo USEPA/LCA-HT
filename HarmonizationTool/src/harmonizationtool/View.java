@@ -368,14 +368,14 @@ public class View extends ViewPart {
 					// eco
 
 					// Stuff we may want to add:
-					// Property HTuserName = model.getProperty(ethold_p
-					// + "HTuserName");
-					// Property HTuserAffiliation = model.getProperty(ethold_p
-					// + "HTuserAffiliation");
-					// Property HTuserPhone = model.getProperty(ethold_p
-					// + "HTuserPhone");
-					// Property HTuserEmail = model.getProperty(ethold_p
-					// + "HTuserEmail");
+					// Property HTCuratorName = model.getProperty(ethold_p
+					// + "HTCuratorName");
+					// Property HTCuratorAffiliation = model.getProperty(ethold_p
+					// + "HTCuratorAffiliation");
+					// Property HTCuratorPhone = model.getProperty(ethold_p
+					// + "HTCuratorPhone");
+					// Property HTCuratorEmail = model.getProperty(ethold_p
+					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
 					// .getProperty(ethold_p + "dataParseTimeStamp");
 
@@ -592,14 +592,14 @@ public class View extends ViewPart {
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTuserName = model.getProperty(ethold_p
-					// + "HTuserName");
-					// Property HTuserAffiliation = model.getProperty(ethold_p
-					// + "HTuserAffiliation");
-					// Property HTuserPhone = model.getProperty(ethold_p
-					// + "HTuserPhone");
-					// Property HTuserEmail = model.getProperty(ethold_p
-					// + "HTuserEmail");
+					// Property HTCuratorName = model.getProperty(ethold_p
+					// + "HTCuratorName");
+					// Property HTCuratorAffiliation = model.getProperty(ethold_p
+					// + "HTCuratorAffiliation");
+					// Property HTCuratorPhone = model.getProperty(ethold_p
+					// + "HTCuratorPhone");
+					// Property HTCuratorEmail = model.getProperty(ethold_p
+					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
 					// .getProperty(ethold_p + "dataParseTimeStamp");
 
@@ -846,14 +846,14 @@ public class View extends ViewPart {
 				// fasc
 
 				// Stuff we may want to add:
-				// Property HTuserName = model.getProperty(ethold_p
-				// + "HTuserName");
-				// Property HTuserAffiliation = model.getProperty(ethold_p
-				// + "HTuserAffiliation");
-				// Property HTuserPhone = model.getProperty(ethold_p
-				// + "HTuserPhone");
-				// Property HTuserEmail = model.getProperty(ethold_p
-				// + "HTuserEmail");
+				// Property HTCuratorName = model.getProperty(ethold_p
+				// + "HTCuratorName");
+				// Property HTCuratorAffiliation = model.getProperty(ethold_p
+				// + "HTCuratorAffiliation");
+				// Property HTCuratorPhone = model.getProperty(ethold_p
+				// + "HTCuratorPhone");
+				// Property HTCuratorEmail = model.getProperty(ethold_p
+				// + "HTCuratorEmail");
 				// Property dataParseTimeStamp = model
 				// .getProperty(ethold_p + "dataParseTimeStamp");
 

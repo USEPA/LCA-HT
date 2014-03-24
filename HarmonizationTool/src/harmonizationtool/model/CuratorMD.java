@@ -13,11 +13,11 @@ public class CuratorMD {
 
 	public CuratorMD(boolean preferences) {
 		if (preferences) {
-			setName(Util.getPreferenceStore().getString("userName"));
+			setName(Util.getPreferenceStore().getString("curatorName"));
 			setAffiliation(Util.getPreferenceStore().getString(
-					"userAffiliation"));
-			setEmail(Util.getPreferenceStore().getString("userEmail"));
-			setPhone(Util.getPreferenceStore().getString("userPhone"));
+					"curatorAffiliation"));
+			setEmail(Util.getPreferenceStore().getString("curatorEmail"));
+			setPhone(Util.getPreferenceStore().getString("curatorPhone"));
 		}
 	}
 

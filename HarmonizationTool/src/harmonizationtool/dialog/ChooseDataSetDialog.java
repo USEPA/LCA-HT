@@ -369,13 +369,13 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 //			@Override
 //			public void handleEvent(Event event) {
 //				dialogValues.get(9).setText(
-//						Util.getPreferenceStore().getString("userName"));
+//						Util.getPreferenceStore().getString("curatorName"));
 //				dialogValues.get(10).setText(
-//						Util.getPreferenceStore().getString("userAffiliation"));
+//						Util.getPreferenceStore().getString("curatorAffiliation"));
 //				dialogValues.get(11).setText(
-//						Util.getPreferenceStore().getString("userEmail"));
+//						Util.getPreferenceStore().getString("curatorEmail"));
 //				dialogValues.get(12).setText(
-//						Util.getPreferenceStore().getString("userPhone"));
+//						Util.getPreferenceStore().getString("curatorPhone"));
 //			}
 //		});
 

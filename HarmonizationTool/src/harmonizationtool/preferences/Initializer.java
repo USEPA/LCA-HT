@@ -14,10 +14,10 @@ public class Initializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-        store.setDefault("userName", "");
-        store.setDefault("userAffiliation", "");
-        store.setDefault("userPhone", "");
-        store.setDefault("userEmail", "");
+        store.setDefault("curatorName", "");
+        store.setDefault("curatorAffiliation", "");
+        store.setDefault("curatorPhone", "");
+        store.setDefault("curatorEmail", "");
         store.setDefault("workingDirectory", "");
         store.setDefault("outputDirectory", "");
         store.setDefault("defaultTDB", "");

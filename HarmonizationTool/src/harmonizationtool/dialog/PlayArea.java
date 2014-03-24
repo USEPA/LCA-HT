@@ -64,19 +64,19 @@ public class PlayArea extends TitleAreaDialog {
 
 	private void addMetaCurator() {
 		if (!modelProvider.hasMetaKey("curatorName")) {
-			String cn = Util.getPreferenceStore().getString("userName");
+			String cn = Util.getPreferenceStore().getString("curatorName");
 			modelProvider.setMetaKeyValue("curatorName", cn);
 		}
 		if (!modelProvider.hasMetaKey("curatorAffiliation")) {
-			String cn = Util.getPreferenceStore().getString("userAffiliation");
+			String cn = Util.getPreferenceStore().getString("curatorAffiliation");
 			modelProvider.setMetaKeyValue("curatorAffiliation", cn);
 		}
 		if (!modelProvider.hasMetaKey("curatorEmail")) {
-			String cn = Util.getPreferenceStore().getString("userEmail");
+			String cn = Util.getPreferenceStore().getString("curatorEmail");
 			modelProvider.setMetaKeyValue("curatorEmail", cn);
 		}
 		if (!modelProvider.hasMetaKey("curatorPhone")) {
-			String cn = Util.getPreferenceStore().getString("userPhone");
+			String cn = Util.getPreferenceStore().getString("curatorPhone");
 			modelProvider.setMetaKeyValue("curatorPhone", cn);
 		}
 	}

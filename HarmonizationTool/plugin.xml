@@ -339,7 +339,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="harmonizationtool.preferences.UserPreferences"
+            class="harmonizationtool.preferences.CuratorPreferences"
             id="harmonizationtool.preferences.UserPreferences"
             name="User Preferences">
       </page>

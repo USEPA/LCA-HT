@@ -398,22 +398,22 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		lbl_12b.setText("Curator Information:");
 
 		rowIndex++;
-		Button copyUserInfo = new Button(composite, SWT.BORDER);
-		copyUserInfo
-				.setToolTipText("Values for the Curator will be copied from user info set in the preferences.");
-		copyUserInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
-		copyUserInfo.setText("Copy Info from Preferences");
-		copyUserInfo.addListener(SWT.Selection, new Listener() {
+		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
+		copyCuratorInfo
+				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
+		copyCuratorInfo.setText("Copy Info from Preferences");
+		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				dialogValues.get(9).setText(
-						Util.getPreferenceStore().getString("userName"));
+						Util.getPreferenceStore().getString("curatorName"));
 				dialogValues.get(10).setText(
-						Util.getPreferenceStore().getString("userAffiliation"));
+						Util.getPreferenceStore().getString("curatorAffiliation"));
 				dialogValues.get(11).setText(
-						Util.getPreferenceStore().getString("userEmail"));
+						Util.getPreferenceStore().getString("curatorEmail"));
 				dialogValues.get(12).setText(
-						Util.getPreferenceStore().getString("userPhone"));
+						Util.getPreferenceStore().getString("curatorPhone"));
 			}
 		});
 

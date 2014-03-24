@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class UserPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class CuratorPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public UserPreferences() {
+	public CuratorPreferences() {
 	}
 
 	@Override
@@ -28,10 +28,10 @@ public class UserPreferences extends FieldEditorPreferencePage implements IWorkb
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new StringFieldEditor("userName", "Name:", getFieldEditorParent()));
-		addField(new StringFieldEditor("userAffiliation", "Affiliation:", getFieldEditorParent()));
-		addField(new StringFieldEditor("userEmail", "Email:", getFieldEditorParent()));
-		addField(new StringFieldEditor("userPhone", "Phone:", getFieldEditorParent()));
+		addField(new StringFieldEditor("curatorName", "Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor("curatorAffiliation", "Affiliation:", getFieldEditorParent()));
+		addField(new StringFieldEditor("curatorEmail", "Email:", getFieldEditorParent()));
+		addField(new StringFieldEditor("curatorPhone", "Phone:", getFieldEditorParent()));
 	}
 
 }
