@@ -223,10 +223,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 				if ((comboDataSetSelector.getSelectionIndex() == (comboDataSetSelector.getItemCount()-1)) &&
 						(callingFileMD != null ) &&
 						(callingDataSetProvider == null)){
-					  GenericStringBox genericStringBox = new GenericStringBox("New Data Set","Please type a new data set name");
-//					System.out.println("genericStringBox.getString() = "+genericStringBox.getString());
-							
-					// HERE: get new string from GenericStringBox 
+					  GenericStringBox genericStringBox = new GenericStringBox(getShell());
+					  genericStringBox.create("New Data Set","Please type a new data set name");
+					  genericStringBox.open();
+					  System.out.println("genericStringBox.getString() = "+genericStringBox.getResultString());
+					  comboDataSetSelector.setItem(comboDataSetSelector.getItemCount()-1, genericStringBox.getResultString());
 				}
 			}
 		});
