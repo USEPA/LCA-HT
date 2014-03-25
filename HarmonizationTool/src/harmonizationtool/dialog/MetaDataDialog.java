@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -45,17 +46,20 @@ public class MetaDataDialog extends TitleAreaDialog {
 	public ModelProvider modelProvider = null;
 	private DataSetProvider curDataSetProvider = null;
 	private DataSetProvider callingDataSetProvider = null;
+	private DataSetProvider newDataSetProvider = null;
 	private FileMD callingFileMD = null;
 	private Combo comboDataSetSelector = null;
 	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
 	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = null;
-	Label lbl_01 = null;
+	private final String newDataSetTempName = "(new data set)";
+	// private String newFileName = null;
+	// Label lbl_01 = null;
 
 	private ComboFileSelectorListener comboFileSelectorListener;
 	protected String combDataSetSelectorSavedText = "";
-//	protected boolean comboKeyHeldDown = false;
+	// protected boolean comboKeyHeldDown = false;
 	private int comboSelectionIndex = -1;
 
 	// THERE ARE THREE WAYS TO CALL THIS:
@@ -100,12 +104,13 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// CASE 4 - NEW FILE TO ADD TO NEW DATA SET (CREATED HERE)
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		curDataSetProvider = new DataSetProvider();
-		curDataSetProvider.addFileMD(callingFileMD);
-		curDataSetProvider.setDataSetMD(new DataSetMD());
-//		curDataSetProvider.getDataSetMD().setName("(new data set)");
-		curDataSetProvider.addFileMD(callingFileMD);
-		curDataSetProvider.setCuratorMD(new CuratorMD());
+		this.newDataSetProvider = new DataSetProvider();
+		this.newDataSetProvider.addFileMD(callingFileMD);
+		this.newDataSetProvider.setDataSetMD(new DataSetMD());
+		this.newDataSetProvider.getDataSetMD().setName(newDataSetTempName);
+		this.newDataSetProvider.addFileMD(callingFileMD);
+		this.newDataSetProvider.setCuratorMD(new CuratorMD());
+		this.curDataSetProvider = this.newDataSetProvider;
 	}
 
 	// MAKE THE WHOLE DIALOG BOX
@@ -136,99 +141,133 @@ public class MetaDataDialog extends TitleAreaDialog {
 		lbl_5b.setText("Data Set Information:");
 
 		rowIndex++;
-		lbl_01 = new Label(composite, SWT.RIGHT);
+		Label lbl_01 = new Label(composite, SWT.RIGHT);
 		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
 				rowHeight);
 		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lbl_01.setText("Select");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
-//		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
-//			comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
-//			comboDataSetSelector
-//					.setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
-//		} else {
+		// if (newDataSetProvider != null) {
+		// comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
+		// comboDataSetSelector
+		// .setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
+		// } else {
 		comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
-//		}
+		// }
 		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows,
 				col2Width, rowHeight);
 		comboDataSetSelector.setItems(getDataSetInfo());
-//		comboDataSetSelector.addKeyListener(new KeyListener() {
-//
-//			private int comboSelectionIndexSaved;
-//
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				System.out.println("combDataSetSelectorSavedText :"
-//						+ combDataSetSelectorSavedText);
-//				System.out.println("comboDataSetSelector.getText() :"
-//						+ comboDataSetSelector.getText());
-//				System.out.println("comboDataSetSelector.getItem(0) :"
-//						+ comboDataSetSelector.getItem(0));
-//
-//				System.out.println("keyReleased=" + e.toString());
-//				comboKeyHeldDown = false;
-//				System.out.println("comboSelectionIndex = "
-//						+ comboSelectionIndex);
-//				if (comboSelectionIndex != 0) {
-//					comboDataSetSelector.setText(combDataSetSelectorSavedText);
-//				} else {
-//					comboDataSetSelector.setText(comboDataSetSelector.getText());
-//				}
-//			}
-//
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//				System.out.println("keyPressed=" + e.toString());
-//				System.out.println("comboSelectionIndex = "
-//						+ comboSelectionIndex);
-//				// comboDataSetSelector.setBackground(defaultBG);
-//				if ((!comboKeyHeldDown) && (comboSelectionIndex != 0)) {
-//					combDataSetSelectorSavedText = comboDataSetSelector
-//							.getText();
-//				}
-//				comboKeyHeldDown = true;
-//			}
-//		});
-//		comboDataSetSelector.addSelectionListener(new SelectionListener() {
-//
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				System.out
-//						.println("combo.addSelectionListener.widgetSelectedr="
-//								+ e.toString());
-//				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-////				if (comboSelectionIndex == 0){
-////					comboDataSetSelector.setItem(0, combDataSetSelectorSavedText);
-////				}
-//			}
-//
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				System.out
-//						.println("combo.addSelectionListener.widgetDefaultSelected="
-//								+ e.toString());
-//				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-////				if (comboSelectionIndex == 0){
-////					comboDataSetSelector.setItem(0, combDataSetSelectorSavedText);
-////				}
-//			}
-//
-//		});
+		comboDataSetSelector.select(0);
+
+		// comboDataSetSelector.addKeyListener(new KeyListener() {
+		//
+		// private int comboSelectionIndexSaved;
+		//
+		// @Override
+		// public void keyReleased(KeyEvent e) {
+		// System.out.println("combDataSetSelectorSavedText :"
+		// + combDataSetSelectorSavedText);
+		// System.out.println("comboDataSetSelector.getText() :"
+		// + comboDataSetSelector.getText());
+		// System.out.println("comboDataSetSelector.getItem(0) :"
+		// + comboDataSetSelector.getItem(0));
+		//
+		// System.out.println("keyReleased=" + e.toString());
+		// comboKeyHeldDown = false;
+		// System.out.println("comboSelectionIndex = "
+		// + comboSelectionIndex);
+		// if (comboSelectionIndex != 0) {
+		// comboDataSetSelector.setText(combDataSetSelectorSavedText);
+		// } else {
+		// comboDataSetSelector.setText(comboDataSetSelector.getText());
+		// }
+		// }
+		//
+		// @Override
+		// public void keyPressed(KeyEvent e) {
+		// System.out.println("keyPressed=" + e.toString());
+		// System.out.println("comboSelectionIndex = "
+		// + comboSelectionIndex);
+		// // comboDataSetSelector.setBackground(defaultBG);
+		// if ((!comboKeyHeldDown) && (comboSelectionIndex != 0)) {
+		// combDataSetSelectorSavedText = comboDataSetSelector
+		// .getText();
+		// }
+		// comboKeyHeldDown = true;
+		// }
+		// });
+		comboDataSetSelector.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out
+						.println("combo.addSelectionListener.widgetSelectedr="
+								+ e.toString());
+				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+				// if (comboSelectionIndex == 0){
+				// comboDataSetSelector.setItem(0,
+				// combDataSetSelectorSavedText);
+				// }
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				System.out
+						.println("combo.addSelectionListener.widgetDefaultSelected="
+								+ e.toString());
+				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+				// if (comboSelectionIndex == 0){
+				// comboDataSetSelector.setItem(0,
+				// combDataSetSelectorSavedText);
+				// }
+			}
+
+		});
 
 		comboDataSetSelector.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
+				// if (!comboDataSetSelector.getText().equals(newFileName)) {
+
 				populateDataSetMD();
-				if ((comboDataSetSelector.getSelectionIndex() == (comboDataSetSelector.getItemCount()-1)) &&
-						(callingFileMD != null ) &&
-						(callingDataSetProvider == null)){
-					  GenericStringBox genericStringBox = new GenericStringBox(getShell());
-					  genericStringBox.create("New Data Set","Please type a new data set name");
-					  genericStringBox.open();
-					  System.out.println("genericStringBox.getString() = "+genericStringBox.getResultString());
-					  comboDataSetSelector.setItem(comboDataSetSelector.getItemCount()-1, genericStringBox.getResultString());
-				}
+				// if ((comboSelectionIndex == (comboDataSetSelector
+				// .getItemCount() - 1))
+				// && (newDataSetProvider != null)) {
+				// GenericStringBox genericStringBox = new GenericStringBox(
+				// getShell());
+				// genericStringBox.create("New Data Set",
+				// "Please type a new data set name");
+				// genericStringBox.open();
+				// System.out.println("genericStringBox.getString() = "
+				// + genericStringBox.getResultString());
+				// newFileName = genericStringBox.getResultString();
+				// comboDataSetSelector.setItem(
+				// comboDataSetSelector.getItemCount() - 1,
+				// newFileName);
+				// }
+				// }
+			}
+		});
+
+		Button dataSetRename = new Button(composite, SWT.BORDER);
+		dataSetRename.setToolTipText("Click to rename this data set.");
+		dataSetRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80,
+				25);
+		dataSetRename.setText("Rename");
+		dataSetRename.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				renameDataSet();
+				// dialogValues.get(9).setText(
+				// Util.getPreferenceStore().getString("curatorName"));
+				// dialogValues.get(10).setText(
+				// Util.getPreferenceStore().getString(
+				// "curatorAffiliation"));
+				// dialogValues.get(11).setText(
+				// Util.getPreferenceStore().getString("curatorEmail"));
+				// dialogValues.get(12).setText(
+				// Util.getPreferenceStore().getString("curatorPhone"));
 			}
 		});
 
@@ -248,7 +287,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		lbl_08.setText("Comments");
 		Text text_08 = new Text(composite, SWT.BORDER);
 		text_08.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight*2);
+				rowHeight * 2);
 
 		rowIndex++;
 		rowIndex++;
@@ -430,8 +469,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues.add(text_15); // 11 Curator Email
 		dialogValues.add(text_16); // 12 Curator Phone
 
-		comboDataSetSelector.select(0);
-		// if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+		// if (newDataSetProvider != null) {
 		// lbl_01.setText("Type new name (or select existing)");
 		// }
 		// comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
@@ -452,11 +490,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
-
+		String dataSetName = comboDataSetSelector.getText();
+		if (dataSetName.equals(newDataSetTempName)) {
+			new GenericMessageBox(getParentShell(), "Invalid Name",
+					"Please click to choose a name for the new Data Set.");
+			return;
+		}
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
 		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
 
-		dataSetMD.setName(comboDataSetSelector.getText());
+		dataSetMD.setName(dataSetName);
 		dataSetMD.setVersion(dialogValues.get(3).getText());
 		dataSetMD.setComments(dialogValues.get(4).getText());
 		dataSetMD.setContactName(dialogValues.get(5).getText());
@@ -470,26 +513,58 @@ public class MetaDataDialog extends TitleAreaDialog {
 		curatorMD.setEmail(dialogValues.get(11).getText());
 		curatorMD.setPhone(dialogValues.get(12).getText());
 
-		if ((callingFileMD != null) && (callingDataSetProvider == null)
-				&& (comboSelectionIndex == 0)) {
-			if (DataSetKeeper
-					.indexOfDataSetName(comboDataSetSelector.getText()) > -1) {
-				new GenericMessageBox(getParentShell(),
-						"Duplicate data set name.",
-						"Provide a new distinct name or Select an existing data set.");
-				return;
-			}
+		if ((newDataSetProvider != null)
+				&& (comboSelectionIndex == DataSetKeeper.size())) {
+			// if (DataSetKeeper
+			// .indexOfDataSetName(comboDataSetSelector.getText()) > -1) {
+			// new GenericMessageBox(getParentShell(),
+			// "Duplicate data set name.",
+			// "Provide a new distinct name or Select an existing data set.");
+			// return;
+			// }
 			boolean success = DataSetKeeper.add(curDataSetProvider); // A
 																		// DataSetProvider
 																		// IS
 																		// BORN!!
 			System.out.println("Created new DataSetProvider succees: = "
 					+ success);
-		} else if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+		} else if (newDataSetProvider != null) {
 			curDataSetProvider.addFileMD(callingFileMD);
 		}
 		dataSetProviderToTDB(curDataSetProvider);
 		super.okPressed();
+	}
+
+	private void renameDataSet() {
+		GenericStringBox genericStringBox = new GenericStringBox(getShell());
+		genericStringBox.create("Name Data Set",
+				"Please type a new data set name");
+		genericStringBox.open();
+		System.out.println("genericStringBox.getString() = "
+				+ genericStringBox.getResultString());
+		String newFileName = genericStringBox.getResultString();
+
+		if (newFileName.equals(comboDataSetSelector.getText())) {
+			// SAME NAME, DO NOTHING
+			return;
+		}
+
+		if (DataSetKeeper.indexOfDataSetName(newFileName) > -1) {
+			new GenericMessageBox(getParentShell(), "Duplicate Name",
+					"Data Set names must be unique.  Please choose a new name.");
+			return;
+		}
+		curDataSetProvider.getDataSetMD().setName(newFileName);
+		if (curDataSetProvider.getTdbResource() != null) {
+			Literal oldNameLit = SelectTDB.model
+					.createLiteral(comboDataSetSelector.getText());
+			Literal newNameLit = SelectTDB.model.createLiteral(newFileName);
+			SelectTDB.model.remove(curDataSetProvider.getTdbResource(),
+					RDFS.label, oldNameLit);
+			SelectTDB.model.add(curDataSetProvider.getTdbResource(),
+					RDFS.label, newNameLit);
+		}
+		comboDataSetSelector.setItem(comboSelectionIndex, newFileName);
 	}
 
 	private void dataSetProviderToTDB(DataSetProvider dsProvider) {
@@ -568,13 +643,13 @@ public class MetaDataDialog extends TitleAreaDialog {
 			Collections.sort(toSort);
 		}
 
-		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+		if (newDataSetProvider != null) {
 			String[] results = new String[DataSetKeeper.size() + 1];
-//			results[0] = "(new data set)";
+			// results[0] = newDataSetTempName;
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i] = toSort.get(i);
 			}
-			results[DataSetKeeper.size()]="(new data set)";
+			results[DataSetKeeper.size()] = newDataSetTempName;
 			curDataSetProvider = DataSetKeeper.get(DataSetKeeper
 					.indexOfDataSetName(results[0]));
 			return results;
@@ -593,15 +668,15 @@ public class MetaDataDialog extends TitleAreaDialog {
 		String selectedDataSetName = comboDataSetSelector.getText();
 		int selectedDataSetID = DataSetKeeper
 				.indexOfDataSetName(selectedDataSetName);
-		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
-			if (comboSelectionIndex == 0) {
-				lbl_01.setText("Type new name (or select existing)");
-			} else {
-				lbl_01.setText("Select existing (or type name in 1st item)");
-			}
-		} else {
-
-		}
+		// if (newDataSetProvider != null) {
+		// if (comboSelectionIndex == DataSetKeeper.size()) {
+		// lbl_01.setText("Type new name (or select existing)");
+		// } else {
+		// lbl_01.setText("Select existing (or type name in 1st item)");
+		// }
+		// } else {
+		//
+		// }
 
 		// System.out.println("callingFileMD: "+callingFileMD);
 		// System.out.println("callingDataSetProvider: "+callingDataSetProvider);
@@ -616,8 +691,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// }
 		// comboDataSetSelector.setBackground(defaultBG);
 
-		if (selectedDataSetID > -1) {
+		if ((0 <= selectedDataSetID)
+				&& (selectedDataSetID < DataSetKeeper.size())) {
 			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
+		} else {
+			curDataSetProvider = newDataSetProvider;
 		}
 
 		redrawDialogRows();
