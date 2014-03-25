@@ -92,6 +92,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// CASE 2 - EDIT DATA SET INFO FOR ONE DATA SET ONLY (WITH A FILE
 		// SELECTED)
 		super(parentShell);
+		assert fileMD != null : "fileMD cannot be null";
 		this.callingDataSetProvider = dataSetProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSetProvider = callingDataSetProvider;
@@ -108,7 +109,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSetProvider.addFileMD(callingFileMD);
 		this.newDataSetProvider.setDataSetMD(new DataSetMD());
 		this.newDataSetProvider.getDataSetMD().setName(newDataSetTempName);
-		this.newDataSetProvider.addFileMD(callingFileMD);
 		this.newDataSetProvider.setCuratorMD(new CuratorMD());
 		this.curDataSetProvider = this.newDataSetProvider;
 	}
@@ -205,6 +205,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 						.println("combo.addSelectionListener.widgetSelectedr="
 								+ e.toString());
 				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+				populateDataSetMD();
+
 				// if (comboSelectionIndex == 0){
 				// comboDataSetSelector.setItem(0,
 				// combDataSetSelectorSavedText);
@@ -217,6 +219,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 						.println("combo.addSelectionListener.widgetDefaultSelected="
 								+ e.toString());
 				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+				populateDataSetMD();
+
 				// if (comboSelectionIndex == 0){
 				// comboDataSetSelector.setItem(0,
 				// combDataSetSelectorSavedText);
@@ -225,30 +229,30 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		});
 
-		comboDataSetSelector.addModifyListener(new ModifyListener() {
-
-			public void modifyText(ModifyEvent e) {
-				// if (!comboDataSetSelector.getText().equals(newFileName)) {
-
-				populateDataSetMD();
-				// if ((comboSelectionIndex == (comboDataSetSelector
-				// .getItemCount() - 1))
-				// && (newDataSetProvider != null)) {
-				// GenericStringBox genericStringBox = new GenericStringBox(
-				// getShell());
-				// genericStringBox.create("New Data Set",
-				// "Please type a new data set name");
-				// genericStringBox.open();
-				// System.out.println("genericStringBox.getString() = "
-				// + genericStringBox.getResultString());
-				// newFileName = genericStringBox.getResultString();
-				// comboDataSetSelector.setItem(
-				// comboDataSetSelector.getItemCount() - 1,
-				// newFileName);
-				// }
-				// }
-			}
-		});
+//		comboDataSetSelector.addModifyListener(new ModifyListener() {
+//
+//			public void modifyText(ModifyEvent e) {
+//				// if (!comboDataSetSelector.getText().equals(newFileName)) {
+//
+//				populateDataSetMD();
+//				// if ((comboSelectionIndex == (comboDataSetSelector
+//				// .getItemCount() - 1))
+//				// && (newDataSetProvider != null)) {
+//				// GenericStringBox genericStringBox = new GenericStringBox(
+//				// getShell());
+//				// genericStringBox.create("New Data Set",
+//				// "Please type a new data set name");
+//				// genericStringBox.open();
+//				// System.out.println("genericStringBox.getString() = "
+//				// + genericStringBox.getResultString());
+//				// newFileName = genericStringBox.getResultString();
+//				// comboDataSetSelector.setItem(
+//				// comboDataSetSelector.getItemCount() - 1,
+//				// newFileName);
+//				// }
+//				// }
+//			}
+//		});
 
 		Button dataSetRename = new Button(composite, SWT.BORDER);
 		dataSetRename.setToolTipText("Click to rename this data set.");

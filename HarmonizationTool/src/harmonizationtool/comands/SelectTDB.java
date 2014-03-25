@@ -125,7 +125,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		try {
 			syncToDataSetKeeper();
 		} catch (Exception e) {
-			Exception e2 =  new ExecutionException("***********THE TDB MAY BE BAD*******************");
+			Exception e2 = new ExecutionException(
+					"***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
 		}
@@ -149,8 +150,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				StringBuilder b = new StringBuilder();
 				b.append("The Harmonization Tool (HT) requires the user to specify a directory for the Triplestore DataBase (TDB). ");
 				b.append("Please pick an existing TDB directory, or an empty one where the HT can create a new TDB.");
-				new GenericMessageBox(
-						shell,"Welcome!", b.toString());
+				new GenericMessageBox(shell, "Welcome!", b.toString());
 
 				redirectToPreferences();
 			}
@@ -168,8 +168,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				StringBuilder b = new StringBuilder();
 				b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
 				b.append("Please select an existing TDB directory, or an accessible directory for a new TDB.");
-				new GenericMessageBox(
-						shell, "Alert", b.toString());
+				new GenericMessageBox(shell, "Alert", b.toString());
 
 				redirectToPreferences();
 			} else {
@@ -188,8 +187,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 					StringBuilder b = new StringBuilder();
 					b.append("It appears that the HT can not create a TDB in the default directory. ");
 					b.append("You may need to create a new TDB.");
-					new GenericMessageBox(
-							shell, "Error", b.toString());
+					new GenericMessageBox(shell, "Error", b.toString());
 
 					redirectToPreferences();
 				}
@@ -199,8 +197,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 	private static void redirectToPreferences() {
 		try {
-			IServiceLocator serviceLocator = PlatformUI
-					.getWorkbench();
+			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 			ICommandService commandService = (ICommandService) serviceLocator
 					.getService(ICommandService.class);
 			Command command = commandService
@@ -216,6 +213,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * Because the DataSetKeeper does not contain DataSets, but the TDB might,
 	 * we need to get DataSet info from the TDB Each TDB subject which is
@@ -230,10 +228,10 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		assert model != null : "model should not be null";
 		ResIterator iterator = null;
 		try {
-			iterator = model.listSubjectsWithProperty(RDF.type,
-					ECO.DataSource);
+			iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		} catch (Exception e) {
-			Exception e2 =  new ExecutionException("***********THE TDB MAY BE BAD*******************");
+			Exception e2 = new ExecutionException(
+					"***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
 		}
@@ -379,14 +377,48 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		}
 	}
 
-	public static int removeAllWithSubject(Resource subject) {
-		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
-		// SUBJECT
-		// THIS WOULD BE USED IN SOMETHING LIKE
-		// DataSetKeeper.remove(DataSetProvider, true);
-		return count;
-	}
+//	public boolean dataSetProvider2TDB(DataSetProvider dataSetProvider){
+//		Resource tdbResource = dataSetProvider.getTdbResource();
+//		model.removeAll(tdbResource,RDFS.label);
+//		model.add(tdbResource){
+//		return false;
+//		
+//	}
+
+//	public static int removeAllWithSubjectPredicate(Resource subject, Property predicate){
+//		int count = 0;
+//	
+//		if (model.contains(subject, predicate)) {
+//			NodeIterator nodeIterator = model.listObjectsOfProperty(
+//					subject, predicate);
+//			while (nodeIterator.hasNext()) {
+//				count++;
+//				RDFNode rdfNode = nodeIterator.next();
+//				System.out.println("Is it literal? -- " + rdfNode.isLiteral());
+//				model.remove(subject, predicate,
+//						rdfNode.asLiteral());
+//			}
+//		}
+//		return count;
+//	}
+
+	
+//	public static int removeAllWithSubject(Resource subject) {
+//		int count = 0;
+//		if (model.containsResource(subject)){
+//			StmtIterator stmtIterator1 = ((Resource) model).listProperties();
+//			while (stmtIterator1.hasNext()){
+//				Statement thing = stmtIterator1.next();
+//			}
+//			 StmtIterator stmtIterato2r = model.listStatements(subject,  property,  rdfNode)
+//			while (stmtIterator2.hasNext()){
+//				Statement statement = stmtIterator2.next();
+//				model.remove(statement);
+//				count++;
+//			};//
+		;//
+//		return count;//
+//	}
 
 	public static int removeAllWithPredicate(Property predicate) {
 		int count = 0;
@@ -403,6 +435,40 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		// OBJECT
 		// THIS WOULD BE USED IN SOMETHING LIKE
 		// DataSetKeeper.remove(DataSetProvider, true);
+		return count;
+	}
+
+	public static int removeAllWithSubjectPredicate(Resource subject,
+			Property predicate) {
+		int count = 0;
+
+		if (model.contains(subject, predicate)) {
+			NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
+					predicate);
+			while (nodeIterator.hasNext()) {
+				count++;
+				RDFNode object = nodeIterator.next();
+				if (object.isLiteral()) {
+					model.remove(subject, predicate, object.asLiteral());
+				} else {
+					model.remove(subject, predicate, object);
+				}
+			}
+		}
+		return count;
+	}
+
+	public static int removeAllWithPredicateObject(Property predicate,
+			RDFNode object) {
+		int count = 0;
+
+		ResIterator resIterator = model.listSubjectsWithProperty(predicate,
+				object);
+		while (resIterator.hasNext()) {
+			count++;
+			Resource subject = resIterator.next();
+			model.remove(subject, predicate, object);
+		}
 		return count;
 	}
 
