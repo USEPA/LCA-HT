@@ -29,7 +29,6 @@ public class DeleteDataSetHandler implements IHandler {
 		DataSetDeleteDialog dialog = new DataSetDeleteDialog(HandlerUtil.getActiveShell(event));
 		dialog.create();
 		dialog.open();
-		System.out.println();
 		return null;
 	}
 

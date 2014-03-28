@@ -31,11 +31,17 @@ public class GenericStringBox extends TitleAreaDialog {
 //	private Combo combo;
 	private Text text;
 	private String resultString = null;
+	private String currentName = null;
 //	private String[] referenceDataSets = null;
 
 
 	public GenericStringBox(Shell parentShell) {
 		super(parentShell);
+	}
+	
+	public GenericStringBox(Shell parentShell, String currentName) {
+		super(parentShell);
+		this.currentName  = currentName;
 	}
 
 	public void create(String title, String message) {
@@ -49,11 +55,6 @@ public class GenericStringBox extends TitleAreaDialog {
 	public String getResultString(){
 		return resultString;
 	}
-//	public String[] getReferenceDataSets(){
-//		return referenceDataSets;
-//	}
-
-	private QDataSetsWCompartments qDataSets = new QDataSetsWCompartments();
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -62,6 +63,9 @@ public class GenericStringBox extends TitleAreaDialog {
 
 		text = new Text(composite, SWT.BORDER);
 		text.setBounds(0,0,200,20);
+		if (currentName != null){
+			text.setText(currentName);
+		}
 		text.addModifyListener(new ModifyListener() {
 			
 			@Override

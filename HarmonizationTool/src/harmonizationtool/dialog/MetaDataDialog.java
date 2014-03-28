@@ -51,7 +51,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private Combo comboDataSetSelector = null;
 	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
-	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
+//	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = null;
 	private final String newDataSetTempName = "(new data set)";
 	// private String newFileName = null;
@@ -229,31 +229,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		});
 
-//		comboDataSetSelector.addModifyListener(new ModifyListener() {
-//
-//			public void modifyText(ModifyEvent e) {
-//				// if (!comboDataSetSelector.getText().equals(newFileName)) {
-//
-//				populateDataSetMD();
-//				// if ((comboSelectionIndex == (comboDataSetSelector
-//				// .getItemCount() - 1))
-//				// && (newDataSetProvider != null)) {
-//				// GenericStringBox genericStringBox = new GenericStringBox(
-//				// getShell());
-//				// genericStringBox.create("New Data Set",
-//				// "Please type a new data set name");
-//				// genericStringBox.open();
-//				// System.out.println("genericStringBox.getString() = "
-//				// + genericStringBox.getResultString());
-//				// newFileName = genericStringBox.getResultString();
-//				// comboDataSetSelector.setItem(
-//				// comboDataSetSelector.getItemCount() - 1,
-//				// newFileName);
-//				// }
-//				// }
-//			}
-//		});
-
 		Button dataSetRename = new Button(composite, SWT.BORDER);
 		dataSetRename.setToolTipText("Click to rename this data set.");
 		dataSetRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80,
@@ -263,15 +238,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 			@Override
 			public void handleEvent(Event event) {
 				renameDataSet();
-				// dialogValues.get(9).setText(
-				// Util.getPreferenceStore().getString("curatorName"));
-				// dialogValues.get(10).setText(
-				// Util.getPreferenceStore().getString(
-				// "curatorAffiliation"));
-				// dialogValues.get(11).setText(
-				// Util.getPreferenceStore().getString("curatorEmail"));
-				// dialogValues.get(12).setText(
-				// Util.getPreferenceStore().getString("curatorPhone"));
 			}
 		});
 

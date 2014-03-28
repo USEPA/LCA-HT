@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import harmonizationtool.Activator;
 import harmonizationtool.QueryView;
@@ -229,153 +230,60 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			openTDB();
 		}
 		assert model != null : "model should not be null";
-		ResIterator iterator = null;
-		try {
-			iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
-		} catch (Exception e) {
-			Exception e2 = new ExecutionException(
-					"***********THE TDB MAY BE BAD*******************");
-			e2.printStackTrace();
-			System.exit(1);
-		}
-
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type,
+				ECO.DataSource);
 		while (iterator.hasNext()) {
-			System.out.println("got another...");
-			Resource subject = (Resource) iterator.next();
-			// int dataSetIndexPlusOne = DataSetKeeper.getByTdbResource(subject)
-			// + 1;
+			Resource subject = iterator.next();
+
 			int dataSetIndex = DataSetKeeper.getByTdbResource(subject);
 			if (dataSetIndex < 0) {
 				DataSetProvider dataSetProvider = new DataSetProvider();
 				dataSetProvider.setTdbResource(subject);
 				DataSetMD dataSetMD = new DataSetMD();
 				CuratorMD curatorMD = new CuratorMD();
-				if (model.contains(subject, RDFS.label)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(
-							subject, RDFS.label);
-					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
-														// IF THERE ARE MORE
-														// THAN ONE?)
-					dataSetMD.setName(node.asLiteral().getString());
-					System.out.println("Adding name: "
-							+ node.asLiteral().getString() + " for subject: "
-							+ subject.getURI());
+
+				// RDFS.label <=> Name
+				if (subject.listProperties(RDFS.label).toList().size() != 1) {
+					System.out.println("!Data set has "
+							+ subject.listProperties(RDFS.label).toList()
+									.size() + " labels!");
 				}
-				if (model.contains(subject, RDFS.comment)) {
-					NodeIterator nodeIterator = model.listObjectsOfProperty(
-							subject, RDFS.comment);
-					RDFNode node = nodeIterator.next(); // TAKES FIRST ONE (WHAT
-														// IF THERE ARE MORE
-														// THAN ONE?)
-					dataSetMD.setComments(node.asLiteral().getString());
-					System.out.println("Adding comment: "
-							+ node.asLiteral().getString() + " for subject: "
-							+ subject.getURI());
+				String name = subject.getProperty(RDFS.label).getObject()
+						.toString();
+
+				while (DataSetKeeper.indexOfDataSetName(name) > -1) {
+					name += "+";
 				}
-				String version = "";
-				if (model.contains(subject, DCTerms.hasVersion)) {
-					version = model
-							.listObjectsOfProperty(subject, DCTerms.hasVersion)
-							.next().asLiteral().getString(); // TAKES
-																// FIRST
-																// ONE
-																// (WHAT
-																// IF
-																// THERE
-																// ARE
-																// MORE
-																// THAN
-																// ONE?)
-				} else if (model.contains(subject, ECO.hasMajorVersionNumber)) {
-					version = model
-							.listObjectsOfProperty(subject,
-									ECO.hasMajorVersionNumber).next() // TAKES
-																		// FIRST
-																		// ONE
-																		// (WHAT
-																		// IF
-																		// THERE
-																		// ARE
-																		// MORE
-																		// THAN
-																		// ONE?)
-							.asLiteral().getString();
-					if (model.contains(subject, ECO.hasMinorVersionNumber)) {
-						version += "."
-								+ model.listObjectsOfProperty(subject,
-										ECO.hasMinorVersionNumber).next() // TAKES
-																			// FIRST
-																			// ONE
-																			// (WHAT
-																			// IF
-																			// THERE
-																			// ARE
-																			// MORE
-																			// THAN
-																			// ONE?)
-										.asLiteral().getString();
-					}
-					model.addLiteral(subject, DCTerms.hasVersion,
-							model.createTypedLiteral(version)); // ADDING
-					// VERSION
-					// INFO
+				subject.getProperty(RDFS.label).changeObject(name);
+				dataSetMD.setName(name);
+
+				// RDFS.comment <=> Comments
+				if (subject.hasProperty(RDFS.comment)) {
+					dataSetMD.setComments(subject
+							.getProperty(RDFS.comment).getObject()
+							.toString());
 				}
-				dataSetMD.setVersion(version);
-				System.out.println("Adding version: " + version
-						+ " for subject: " + subject.getURI());
+
+				// DCTerms.hasVersion <=> Version
+				if (subject.hasProperty(DCTerms.hasVersion)) {
+					dataSetMD.setVersion(subject
+							.getProperty(DCTerms.hasVersion).getObject()
+							.toString());
+				}
+
+				// pref.localname <=> ContactName
+				// pref.localname <=> ContactAffiliation
+				// pref.localname <=> ContactEmail
+				// pref.localname <=> ContactPhone
+
+				// pref.localname <=> CuratorName
+				// pref.localname <=> CuratorAffiliation
+				// pref.localname <=> CuratorEmail
+				// pref.localname <=> CuratorPhone
 
 				dataSetProvider.setDataSetMD(dataSetMD);
 				dataSetProvider.setCuratorMD(curatorMD);
 				DataSetKeeper.add(dataSetProvider);
-				// int newIndexPlusOne = DataSetKeeper.indexOf(dataSetProvider)
-				// + 1;
-				// if (model.contains(subject, ETHOLD.localSerialNumber)) {
-				// NodeIterator nodeIterator = model.listObjectsOfProperty(
-				// subject, ETHOLD.localSerialNumber);
-				// while (nodeIterator.hasNext()) {
-				// RDFNode rdfNode = nodeIterator.next();
-				// System.out.println("Is it literal? -- "
-				// + rdfNode.isLiteral());
-				// model.remove(subject, ETHOLD.localSerialNumber,
-				// rdfNode.asLiteral());
-				// }
-				// }
-				// model.addLiteral(subject, ETHOLD.localSerialNumber,
-				// model.createTypedLiteral(newIndexPlusOne));
-			} else {
-				String dsName = null;
-				NodeIterator dataSetNameIterator = model.listObjectsOfProperty(
-						subject, RDFS.label);
-				while (dataSetNameIterator.hasNext()) {
-					if (dsName != null) {
-						System.out
-								.println("HEY!  Data Set has more than one name:"
-										+ dsName);
-					}
-					dsName = dataSetNameIterator.next().asLiteral().getString();
-				}
-				if (dsName == null) {
-					dsName = "Temp Data Set Name #" + dataSetIndex;
-				}
-
-				System.out.println("Id for " + dsName + " with URI: "
-						+ subject.getURI() + " = "
-						+ DataSetKeeper.getByTdbResource(subject));
-				// DESTROY ALL CURRENT ethold:localSerialNumber -- I THINK THIS
-				// IS THE RIGHT THING
-				// if (model.contains(subject, ETHOLD.localSerialNumber)) {
-				// NodeIterator nodeIterator = model.listObjectsOfProperty(
-				// subject, ETHOLD.localSerialNumber);
-				// while (nodeIterator.hasNext()) {
-				// RDFNode rdfNode = nodeIterator.next();
-				// System.out.println("Is it literal? -- "
-				// + rdfNode.isLiteral());
-				// model.remove(subject, ETHOLD.localSerialNumber,
-				// rdfNode.asLiteral());
-				// }
-				// }
-				// model.addLiteral(subject, ETHOLD.localSerialNumber,
-				// model.createTypedLiteral(dataSetIndexPlusOne));
 			}
 		}
 	}
@@ -383,11 +291,14 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	public static int removeAllWithSubject(Resource subject) {
 		int count = 0;
 		StmtIterator stmtIterator = subject.listProperties();
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
-			model.remove(statement);
+		Set<Statement> statementSet = stmtIterator.toSet();
+		System.out.println("statementSet.size(): " + statementSet.size());
+		for (Statement statement : statementSet) {
+			// System.out.println("Statement: " + statement);
+			statement.remove();
 			count++;
 		}
+		count++;
 		return count;
 	}
 
@@ -434,7 +345,8 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.nextSolution();
 			Resource predAsResource = querySolution.getResource(p);
-			Property predicate = (Property) predAsResource;
+			String predAsString = predAsResource.getURI();
+			Property predicate = model.createProperty(predAsString);
 			results.add(predicate);
 		}
 		return results;
