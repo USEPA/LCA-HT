@@ -13,6 +13,7 @@ import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
 import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.ETHOLD;
@@ -37,7 +38,9 @@ import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.framework.Bundle;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 //import com.hp.hpl.jena.query.Query;
 //import com.hp.hpl.jena.query.QueryExecution;
 //import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -377,83 +380,34 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		}
 	}
 
-//	public boolean dataSetProvider2TDB(DataSetProvider dataSetProvider){
-//		Resource tdbResource = dataSetProvider.getTdbResource();
-//		model.removeAll(tdbResource,RDFS.label);
-//		model.add(tdbResource){
-//		return false;
-//		
-//	}
-
-//	public static int removeAllWithSubjectPredicate(Resource subject, Property predicate){
-//		int count = 0;
-//	
-//		if (model.contains(subject, predicate)) {
-//			NodeIterator nodeIterator = model.listObjectsOfProperty(
-//					subject, predicate);
-//			while (nodeIterator.hasNext()) {
-//				count++;
-//				RDFNode rdfNode = nodeIterator.next();
-//				System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-//				model.remove(subject, predicate,
-//						rdfNode.asLiteral());
-//			}
-//		}
-//		return count;
-//	}
-
-	
-//	public static int removeAllWithSubject(Resource subject) {
-//		int count = 0;
-//		if (model.containsResource(subject)){
-//			StmtIterator stmtIterator1 = ((Resource) model).listProperties();
-//			while (stmtIterator1.hasNext()){
-//				Statement thing = stmtIterator1.next();
-//			}
-//			 StmtIterator stmtIterato2r = model.listStatements(subject,  property,  rdfNode)
-//			while (stmtIterator2.hasNext()){
-//				Statement statement = stmtIterator2.next();
-//				model.remove(statement);
-//				count++;
-//			};//
-		;//
-//		return count;//
-//	}
-
-	public static int removeAllWithPredicate(Property predicate) {
+	public static int removeAllWithSubject(Resource subject) {
 		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
-		// PREDICATE
-		// THIS WOULD BE USED IN SOMETHING LIKE
-		// DataSetKeeper.remove(DataSetProvider, true);
+		StmtIterator stmtIterator = subject.listProperties();
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			model.remove(statement);
+			count++;
+		}
 		return count;
 	}
 
 	public static int removeAllWithObject(RDFNode object) {
 		int count = 0;
-		// TO DO: CREATE A ROUTINE THAT WILL REMOVE ALL THE STATEMENTS WITH THIS
-		// OBJECT
-		// THIS WOULD BE USED IN SOMETHING LIKE
-		// DataSetKeeper.remove(DataSetProvider, true);
+		List<Property> properties = getAllProperties();
+		for (Property predicate : properties) {
+			count += removeAllWithPredicateObject(predicate, object);
+		}
 		return count;
 	}
 
 	public static int removeAllWithSubjectPredicate(Resource subject,
 			Property predicate) {
 		int count = 0;
-
-		if (model.contains(subject, predicate)) {
-			NodeIterator nodeIterator = model.listObjectsOfProperty(subject,
-					predicate);
-			while (nodeIterator.hasNext()) {
-				count++;
-				RDFNode object = nodeIterator.next();
-				if (object.isLiteral()) {
-					model.remove(subject, predicate, object.asLiteral());
-				} else {
-					model.remove(subject, predicate, object);
-				}
-			}
+		StmtIterator stmtIterator = subject.listProperties(predicate);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			model.remove(statement);
+			count++;
 		}
 		return count;
 	}
@@ -461,15 +415,29 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	public static int removeAllWithPredicateObject(Property predicate,
 			RDFNode object) {
 		int count = 0;
-
 		ResIterator resIterator = model.listSubjectsWithProperty(predicate,
 				object);
 		while (resIterator.hasNext()) {
-			count++;
 			Resource subject = resIterator.next();
 			model.remove(subject, predicate, object);
+			count++;
 		}
 		return count;
+	}
+
+	public static List<Property> getAllProperties() {
+		List<Property> results = new ArrayList<Property>();
+		QGetAllProperties qGetAllProperties = new QGetAllProperties();
+		ResultSet resultSet = qGetAllProperties.getResultSet();
+		List<String> resultVars = resultSet.getResultVars();
+		String p = resultVars.get(0);
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.nextSolution();
+			Resource predAsResource = querySolution.getResource(p);
+			Property predicate = (Property) predAsResource;
+			results.add(predicate);
+		}
+		return results;
 	}
 
 	@Override
