@@ -271,11 +271,55 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 							.toString());
 				}
 
-				// pref.localname <=> ContactName
-				// pref.localname <=> ContactAffiliation
-				// pref.localname <=> ContactEmail
-				// pref.localname <=> ContactPhone
+				// ETHOLD.dataSetContactName <=> ContactName
+				if (subject.hasProperty(ETHOLD.dataSetContactName)) {
+					dataSetMD.setContactName(subject
+							.getProperty(ETHOLD.dataSetContactName).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetContactAffiliation <=> ContactAffiliation
+				if (subject.hasProperty(ETHOLD.dataSetContactAffiliation)) {
+					dataSetMD.setContactAffiliation(subject
+							.getProperty(ETHOLD.dataSetContactAffiliation).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetContactEmail <=> ContactEmail
+				if (subject.hasProperty(ETHOLD.dataSetContactEmail)) {
+					dataSetMD.setContactEmail(subject
+							.getProperty(ETHOLD.dataSetContactEmail).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetContactPhone <=> ContactPhone
+				if (subject.hasProperty(ETHOLD.dataSetContactPhone)) {
+					dataSetMD.setContactPhone(subject
+							.getProperty(ETHOLD.dataSetContactPhone).getObject()
+							.toString());
+				}
 
+				// ETHOLD.dataSetCuratorName <=> CuratorName
+				if (subject.hasProperty(ETHOLD.dataSetCuratorName)) {
+					curatorMD.setName(subject
+							.getProperty(ETHOLD.dataSetCuratorName).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetCuratorAffiliation <=> CuratorAffiliation
+				if (subject.hasProperty(ETHOLD.dataSetCuratorAffiliation)) {
+					curatorMD.setAffiliation(subject
+							.getProperty(ETHOLD.dataSetCuratorAffiliation).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetCuratorEmail <=> CuratorEmail
+				if (subject.hasProperty(ETHOLD.dataSetCuratorEmail)) {
+					curatorMD.setEmail(subject
+							.getProperty(ETHOLD.dataSetCuratorEmail).getObject()
+							.toString());
+				}
+				// ETHOLD.dataSetCuratorPhone <=> CuratorPhone
+				if (subject.hasProperty(ETHOLD.dataSetCuratorPhone)) {
+					curatorMD.setPhone(subject
+							.getProperty(ETHOLD.dataSetCuratorPhone).getObject()
+							.toString());
+				}
 				// pref.localname <=> CuratorName
 				// pref.localname <=> CuratorAffiliation
 				// pref.localname <=> CuratorEmail
@@ -287,12 +331,66 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 			}
 		}
 	}
+	
+	public static void syncDataSetProviderToTDB(DataSetProvider dsProvider) {
+		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or
+		// SelectTDB
+		DataSetMD dataSetMD = dsProvider.getDataSetMD();
+		CuratorMD curatorMD = dsProvider.getCuratorMD();
+
+		Model model = SelectTDB.model;
+		Resource tdbResource = dsProvider.getTdbResource();
+		assert tdbResource != null : "tdbResource cannot be null";
+		assert RDFS.label != null : "RDFS.label cannot be null";
+		assert dataSetMD.getName() != null : "dataSetMD.getName() cannot be null";
+		System.out.println("tdbResource = " + tdbResource);
+
+		tdbResource.removeAll(RDFS.label);
+		model.addLiteral(tdbResource, RDFS.label, model.createLiteral(dataSetMD.getName()));
+
+//		tdbResource.removeAll(RDFS.comment);
+		model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+
+		tdbResource.removeAll(DCTerms.hasVersion);
+		model.addLiteral(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetMD.getVersion()));
+
+		tdbResource.removeAll(ETHOLD.dataSetContactName);
+		model.addLiteral(tdbResource, ETHOLD.dataSetContactName, model.createLiteral(dataSetMD.getContactName()));
+
+		tdbResource.removeAll(ETHOLD.dataSetContactAffiliation);
+		model.addLiteral(tdbResource, ETHOLD.dataSetContactAffiliation, model.createLiteral(dataSetMD.getContactAffiliation()));
+
+		tdbResource.removeAll(ETHOLD.dataSetContactEmail);
+		model.addLiteral(tdbResource, ETHOLD.dataSetContactEmail, model.createLiteral(dataSetMD.getContactEmail()));
+
+		tdbResource.removeAll(ETHOLD.dataSetContactPhone);
+		model.addLiteral(tdbResource, ETHOLD.dataSetContactPhone, model.createLiteral(dataSetMD.getContactPhone()));
+
+		tdbResource.removeAll(ETHOLD.dataSetCuratorName);
+		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorName, model.createLiteral(curatorMD.getName()));
+
+		tdbResource.removeAll(ETHOLD.dataSetCuratorAffiliation);
+		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorAffiliation, model.createLiteral(curatorMD.getAffiliation()));
+
+		tdbResource.removeAll(ETHOLD.dataSetCuratorEmail);
+		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorEmail, model.createLiteral(curatorMD.getEmail()));
+
+		tdbResource.removeAll(ETHOLD.dataSetCuratorPhone);
+		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorPhone, model.createLiteral(curatorMD.getPhone()));
+
+
+		if (!dataSetMD.getComments().matches("^\\s*$")) {
+			// ONLY IF NOT ALL WHITE SPACES
+			model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSetMD.getComments()));
+		}
+	}
+
 
 	public static int removeAllWithSubject(Resource subject) {
 		int count = 0;
 		StmtIterator stmtIterator = subject.listProperties();
 		Set<Statement> statementSet = stmtIterator.toSet();
-		System.out.println("statementSet.size(): " + statementSet.size());
+//		System.out.println("statementSet.size(): " + statementSet.size());
 		for (Statement statement : statementSet) {
 			// System.out.println("Statement: " + statement);
 			statement.remove();
@@ -314,10 +412,9 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	public static int removeAllWithSubjectPredicate(Resource subject,
 			Property predicate) {
 		int count = 0;
-		StmtIterator stmtIterator = subject.listProperties(predicate);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
-			model.remove(statement);
+		List<Statement> statements = subject.listProperties(predicate).toList();
+		for (Statement statement: statements) {
+			statement.remove();
 			count++;
 		}
 		return count;

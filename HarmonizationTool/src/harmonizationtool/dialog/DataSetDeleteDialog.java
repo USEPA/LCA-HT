@@ -71,10 +71,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		super(parentShell);
 		// CASE 1 - CHOOSE A DATA SET TO DELETE
 		if (DataSetKeeper.size() == 0) {
-			new GenericMessageBox(
-					parentShell,
-					"No Data Sets",
-					"The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
 		if (DataSetKeeper.size() == 0) {
@@ -83,8 +80,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		this.curDataSetProvider = DataSetKeeper.get(0);
 	}
 
-	public DataSetDeleteDialog(Shell parentShell,
-			DataSetProvider dataSetProvider) {
+	public DataSetDeleteDialog(Shell parentShell, DataSetProvider dataSetProvider) {
 		// CASE 2 - DELETE A SPECIFIC DATA SET
 		super(parentShell);
 		this.callingDataSetProvider = dataSetProvider;
@@ -113,79 +109,63 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 
 		rowIndex = 0;
 		Label lbl_5b = new Label(composite, SWT.LEFT);
-		lbl_5b.setFont(SWTResourceManager
-				.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_5b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width
-				+ col2Width, rowHeight);
+		lbl_5b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+		lbl_5b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
 		lbl_5b.setText("Data Set Information:");
 
 		rowIndex++;
 		Label lbl_01 = new Label(composite, SWT.RIGHT);
-		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lbl_01.setText("Name");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
 		comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
 
-		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows,
-				col2Width, rowHeight);
+		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		comboDataSetSelector.setItems(getDataSetInfo());
 
 		rowIndex++;
 		Label lbl_07 = new Label(composite, SWT.RIGHT);
-		lbl_07.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_07.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_07.setText("Version");
 		Text text_07 = new Text(composite, SWT.BORDER);
-		text_07.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_07.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_08 = new Label(composite, SWT.RIGHT);
-		lbl_08.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_08.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_08.setText("Comments");
 		Text text_08 = new Text(composite, SWT.BORDER);
-		text_08.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_08.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_09 = new Label(composite, SWT.RIGHT);
-		lbl_09.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_09.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_09.setText("Contact Name");
 		Text text_09 = new Text(composite, SWT.BORDER);
-		text_09.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_09.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_10 = new Label(composite, SWT.RIGHT);
-		lbl_10.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_10.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_10.setText("Contact Affiliation");
 		Text text_10 = new Text(composite, SWT.BORDER);
-		text_10.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_10.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_11 = new Label(composite, SWT.RIGHT);
-		lbl_11.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_11.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_11.setText("Contact Email");
 		Text text_11 = new Text(composite, SWT.BORDER);
-		text_11.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_11.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_12 = new Label(composite, SWT.RIGHT);
-		lbl_12.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_12.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_12.setText("Contact Phone");
 		Text text_12 = new Text(composite, SWT.BORDER);
-		text_12.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_12.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// NEXT STEP: ADD FileMD DATA
 		rowIndex = 8;
@@ -193,59 +173,48 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		sep_01a.setBounds(50, rowIndex * disBtwnRows - 5, 250, 2);
 
 		Label lbl_1b = new Label(composite, SWT.LEFT);
-		lbl_1b.setFont(SWTResourceManager
-				.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_1b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width
-				+ col2Width, rowHeight);
+		lbl_1b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+		lbl_1b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
 		lbl_1b.setText("File Information:");
 
 		rowIndex++;
 		Label lbl_02 = new Label(composite, SWT.RIGHT);
 		lbl_02.setText("Name");
-		lbl_02.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_02.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		comboFileSelector = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		// comboFileSelectorMgr = new ComboFileSelectorMgr();
 		createComboFileSelectorList();
-		comboFileSelector.setBounds(col2Left, rowIndex * disBtwnRows,
-				col2Width, rowHeight);
+		comboFileSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		// NEXT STEP: COLLECT FILE LIST INFO BASED ON WHAT IS PASSED, AND ADD
 		// OTHER
-		comboFileSelector.setToolTipText("Files associated with this data set."
-				+ comboDataSetSelector.getText());
+		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSetSelector.getText());
 		comboFileSelectorListener = new ComboFileSelectorListener();
 		comboFileSelector.addModifyListener(comboFileSelectorListener);
 
 		rowIndex++;
 		Label lbl_03 = new Label(composite, SWT.RIGHT);
-		lbl_03.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_03.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_03.setText("Size (bytes)");
 		Text text_03 = new Text(composite, SWT.BORDER);
-		text_03.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_03.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_03.setEditable(false);
 		text_03.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
 		rowIndex++;
 		Label lbl_04 = new Label(composite, SWT.RIGHT);
-		lbl_04.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_04.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_04.setText("Last Modified");
 		Text text_04 = new Text(composite, SWT.BORDER);
-		text_04.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_04.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_04.setEditable(false);
 		text_04.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
 		rowIndex++;
 		Label lbl_05 = new Label(composite, SWT.RIGHT);
-		lbl_05.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_05.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_05.setText("Read Time");
 		Text text_05 = new Text(composite, SWT.BORDER);
-		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		text_05.setEditable(false);
 		text_05.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
@@ -254,44 +223,37 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
 
 		Label lbl_12b = new Label(composite, SWT.LEFT);
-		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16,
-				SWT.BOLD));
+		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
 		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
 		lbl_12b.setText("Curator Information:");
 
 		rowIndex++;
 		Label lbl_13 = new Label(composite, SWT.RIGHT);
-		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_13.setText("Name");
 		Text text_13 = new Text(composite, SWT.BORDER);
-		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_14 = new Label(composite, SWT.RIGHT);
 		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
 		lbl_14.setText("Affiliation");
 		Text text_14 = new Text(composite, SWT.BORDER);
-		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_15 = new Label(composite, SWT.RIGHT);
 		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
 		lbl_15.setText("Email");
 		Text text_15 = new Text(composite, SWT.BORDER);
-		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
 		Label lbl_16 = new Label(composite, SWT.RIGHT);
-		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
+		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		lbl_16.setText("Phone");
 		Text text_16 = new Text(composite, SWT.BORDER);
-		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// dialogValues.add(text_02); // 00 File Name
 		dialogValues.add(text_03); // 00 File Size (bytes)
@@ -319,7 +281,6 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		return control;
 	}
 
-
 	@Override
 	protected void cancelPressed() {
 
@@ -328,23 +289,33 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
-		int index = DataSetKeeper.indexOfDataSetName(comboDataSetSelector
-				.getText());
+		int index = DataSetKeeper.indexOfDataSetName(comboDataSetSelector.getText());
 		// CONFIRM DELETION OF DATASET
 		DataSetProvider dataSetProvider = DataSetKeeper.get(index);
 		Resource tdbResource = dataSetProvider.getTdbResource();
 		DataSetKeeper.remove(dataSetProvider);
 		Model model = SelectTDB.model;
-		StmtIterator stmtIterator = tdbResource.listProperties();
-		List<Property> toKill = new ArrayList<Property>();
+		// StmtIterator stmtIterator = tdbResource.listProperties();
+		// List<Property> toKill = new ArrayList<Property>();
 		// REMOVE THE DATA SOURCE INFO
 		SelectTDB.removeAllWithSubject(tdbResource);
 		// REMOVE ANYTHING WHICH HAS THIS AS A DATASOURCE (ALL WITH SUBJECT)
-		ResIterator iterator = model.listSubjectsWithProperty(
-				ECO.hasDataSource, tdbResource);
+		ResIterator iterator = model.listSubjectsWithProperty(ECO.hasDataSource, tdbResource);
 		while (iterator.hasNext()) {
 			Resource resource = iterator.next();
+			List<Statement> quantities = resource.listProperties(ECO.hasQuantity).toList();
+			for (Statement quantity : quantities) {
+				Resource bn = quantity.getResource();
+//				int fred = SelectTDB.removeAllWithSubject(bn);
+				SelectTDB.removeAllWithSubject(bn);
+//				System.out.println("part count: " + fred);
+//				if (bn.isAnon()) {
+//					System.out.println("yes, anonymous");
+//				}
+				quantity.remove();
+			}
 			SelectTDB.removeAllWithSubject(resource);
+
 		}
 		// IS THIS NEEDED IN CASE ANYTHING IS LEFT OVER?!?
 		// SelectTDB.removeAllWithObject(tdbResource);
@@ -369,16 +340,14 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		for (int i = 0; i < toSort.size(); i++) {
 			results[i] = toSort.get(i);
 		}
-		curDataSetProvider = DataSetKeeper.get(DataSetKeeper
-				.indexOfDataSetName(results[0]));
+		curDataSetProvider = DataSetKeeper.get(DataSetKeeper.indexOfDataSetName(results[0]));
 		return results;
 
 	}
 
 	protected void populateDataSetMD() {
 		String selectedDataSetName = comboDataSetSelector.getText();
-		int selectedDataSetID = DataSetKeeper
-				.indexOfDataSetName(selectedDataSetName);
+		int selectedDataSetID = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
 		if (selectedDataSetID > -1) {
 			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
 		}
@@ -403,8 +372,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 			// if (curDataSetProvider != null) {
 			if (callingFileMD != null) {
 				if (index > 0) {
-					curFileMD = curDataSetProvider.getFileMDList().get(
-							index - 1);
+					curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
 				}
 			} else {
 				curFileMD = curDataSetProvider.getFileMDList().get(index);
@@ -418,10 +386,8 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		} else {
 			comboFileSelector.setToolTipText(curFileMD.getPath());
 			dialogValues.get(0).setText(curFileMD.getSize() + "");
-			dialogValues.get(1).setText(
-					Util.getLocalDateFmt(curFileMD.getLastModified()));
-			dialogValues.get(2).setText(
-					Util.getLocalDateFmt(curFileMD.getReadTime()));
+			dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getLastModified()));
+			dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadTime()));
 		}
 	}
 
@@ -481,12 +447,9 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		@Override
 		public void modifyText(ModifyEvent e) {
 			System.out.println("ModifyEvent=" + e.toString());
-			System.out.println("fileMDCombo index "
-					+ comboFileSelector.getSelectionIndex());
+			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is "
-					+ comboFileSelector.getSelectionIndex() + " with value: "
-					+ comboFileSelector.getText());
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
 		}
 
 	}

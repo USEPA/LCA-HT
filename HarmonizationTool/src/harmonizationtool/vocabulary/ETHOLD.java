@@ -45,8 +45,16 @@ public class ETHOLD {
     public static final Resource Annotation = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Annotation");
     public static final Resource Comparison = m_model.createResource("http://epa.gov/nrmrl/std/lca/ethold#Comparison");
 
+    public static final Property dataSetContactName = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetContactName" );
+    public static final Property dataSetContactAffiliation = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetContactAffiliation" );
+    public static final Property dataSetContactEmail = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetContactEmail" );
+    public static final Property dataSetContactPhone = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetContactPhone" );
 
-    
+    public static final Property dataSetCuratorName = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetCuratorName" );
+    public static final Property dataSetCuratorAffiliation = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetCuratorAffiliation" );
+    public static final Property dataSetCuratorEmail = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetCuratorEmail" );
+    public static final Property dataSetCuratorPhone = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#dataSetCuratorPhone" );
+
     public static final Property hasComparison = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#hasComparison" );
     public static final Property comparedSource = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedSource" );
     public static final Property comparedMaster = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ethold#comparedMaster" );
