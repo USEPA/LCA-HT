@@ -45,6 +45,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * 
  */
 public class ViewData extends ViewPart {
+	public ViewData() {
+	}
 
 	public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
@@ -125,7 +127,7 @@ public class ViewData extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+				| SWT.V_SCROLL | SWT.READ_ONLY);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(final SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event
@@ -304,12 +306,24 @@ public class ViewData extends ViewPart {
 					// set columnSelected; this is used when editing the column
 					// headers
 					columnSelected = col;
+					int index = col.getAlignment();
+					System.out.println("index =+index");
+							
 				}
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out.println(e.toString());
+				if (e.getSource() instanceof TableColumn) {
+					TableColumn col = (TableColumn) e.getSource();
+					// set columnSelected; this is used when editing the column
+					// headers
+					columnSelected = col;
+					int index = col.getAlignment();
+					System.out.println("index =+index");
+							
+				}
+//				System.out.println(e.toString());
 			}
 
 		});
