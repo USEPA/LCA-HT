@@ -1,32 +1,26 @@
 package harmonizationtool;
 
+//import java.awt.event.MouseEvent;
+//import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
-import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.vocabulary.ECO;
-
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+//import org.eclipse.swt.events.MouseEvent;
+//import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -34,11 +28,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.jface.viewers.ComboViewer;
 
 /**
  * @author tec
@@ -50,38 +42,40 @@ public class ViewData extends ViewPart {
 
 	public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
-	private TableViewer viewer;
+	private TableViewer tableViewer;
+	private Table table;
 	private static List<Object> columns = new ArrayList<Object>();
 	// the menu that is displayed when column header is right clicked
 	private Menu headerMenu;
 	private TableColumn columnSelected = null;
+	private Combo combo;
 
 	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
 	// e.g. ReCiPe or TRACI
-	
+
 	public static final String IMPACT_CAT_HDR = "Impact_Category";
 	// e.g. climate change
 	// public static final Resource ImpactCategory = ECO.ImpactCategory;
-	
-	public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator"; 
+
+	public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator";
 	// e.g. infrared radiative forcing
 
 	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
 	// IPCC Global Warming Potential (GWP)
-	
+
 	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
 	// e.g. kg CO2 eq
 
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
 	public static final String CAT3_HDR = "Sub-subcategory";
-	
+
 	public static final String NAME_HDR = "Flowable Name";
 	public static final String CASRN_HDR = "CASRN";
 	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
 
 	// ECO.ImpactCharacterizationFactor;
-		public static final String CHAR_FACTOR_HDR = "Characterization factor";
+	public static final String CHAR_FACTOR_HDR = "Characterization factor";
 	// THIS IS THE (float) NUMBER
 
 	public static final String FLOW_UNIT_HDR = "Flow Unit";
@@ -89,36 +83,12 @@ public class ViewData extends ViewPart {
 
 	public static final String IGNORE_HDR = "Ignore";
 
-	public TableViewer getViewer() {
-		return viewer;
-	}
 
-	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
 
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object parent) {
-			if (parent instanceof Object[]) {
-				return (Object[]) parent;
-			}
-			return new Object[0];
-		}
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
+//	@Override
+//	public void dispose() {
+//		super.dispose();
+//	}
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -126,16 +96,47 @@ public class ViewData extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+		parent.setLayout(null);
+		
+		ComboViewer comboViewer = new ComboViewer(parent, SWT.READ_ONLY);
+		combo = comboViewer.getCombo();
+		combo.setVisible(false);
+
+		combo.setBounds(0, 0, 297, 469);
+		combo.add(IMPACT_ASSESSMENT_METHOD_HDR);
+		combo.add(IMPACT_CAT_HDR);
+		combo.add(IMPACT_CAT_INDICATOR_HDR);
+		combo.add(IMPACT_CHARACTERIZATION_MODEL_HDR);
+		combo.add(IMPACT_CAT_REF_UNIT_HDR);
+		combo.add("");
+		combo.add(FLOW_UNIT_HDR);
+		combo.add(CHAR_FACTOR_HDR);
+		combo.add("");
+		combo.add(CAT1_HDR);
+		combo.add(CAT2_HDR);
+		combo.add(CAT3_HDR);
+		combo.add("");
+		combo.add(NAME_HDR);
+		combo.add(CASRN_HDR);
+		combo.add(ALT_NAME_HDR);
+		combo.add("");
+		combo.add(IGNORE_HDR);
+		combo.setBounds(0 , 0, 200, 40);
+
+		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.READ_ONLY);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		table = tableViewer.getTable();
+		table.setBounds(0, 0, 650, 650);
+
+		
+		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(final SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event
 						.getSelection();
 				System.out.println("============row selected=======");
-				System.out.println(selection.getClass().getName());
+//				System.out.println(selection.getClass().getName());
 				Object element = selection.getFirstElement();
-				System.out.println(element.getClass().getName());
+//				System.out.println(element.getClass().getName());
 				DataRow dataRow = (DataRow) element;
 				TableProvider tableProvider = TableKeeper.getTableProvider(key);
 				int index = tableProvider.getIndex(dataRow);
@@ -149,32 +150,31 @@ public class ViewData extends ViewPart {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		tableViewer.getControl().setFocus();
 	}
 
 	public void update(String key) {
 		this.key = key;
-		// viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-		// | SWT.V_SCROLL);
-		viewer.setContentProvider(new ArrayContentProvider());
-		final Table table = viewer.getTable();
+
+		tableViewer.setContentProvider(new ArrayContentProvider());
+//		final Table table = tableViewer.getTable();
 		removeColumns(table);
-		createColumns(viewer);
+		createColumns(tableViewer);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		viewer.setContentProvider(new ArrayContentProvider());
+		tableViewer.setContentProvider(new ArrayContentProvider());
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		// System.out.println("tableProvider.getData()="+tableProvider.getData());
 		// System.out.println("tableProvider.getData().toString()="+tableProvider.getData().toString());
-		viewer.setInput(tableProvider.getData());
+		tableViewer.setInput(tableProvider.getData());
 		// viewer.refresh();
 
 	}
 
 	public void clearView(String key) {
 		if ((key != null) && (key.equals(this.key))) {
-			final Table table = viewer.getTable();
-			viewer.setInput(null);
+//			final Table table = tableViewer.getTable();
+			tableViewer.setInput(null);
 			removeColumns(table);
 			table.setHeaderVisible(false);
 			table.setLinesVisible(false);
@@ -204,36 +204,21 @@ public class ViewData extends ViewPart {
 			initializeColumnHeaderMenu(headerMenu);
 
 			TableProvider tableProvider = TableKeeper.getTableProvider(key);
-			List<DataRow> dataRowList = tableProvider.getData();
-			DataRow dataRow = dataRowList.get(0);
-			int numCol = dataRow.getColumnValues().size();
+			DataRow header = tableProvider.getHeaderNames();
+			List<DataRow> tableData = tableProvider.getData();
+			DataRow dataRow = tableData.get(0);
+			while(header.getSize() < dataRow.getSize()){
+				header.add("ignore");
+			}
+			int numCol = header.getSize();
 			System.out.println("numCol = " + numCol);
-			ArrayList<String> titles = new ArrayList<String>();
-			ArrayList<Integer> bounds = new ArrayList<Integer>();
-			List<String> headerNames = tableProvider.getHeaderNamesAsStrings();
-			if (headerNames == null || headerNames.isEmpty()) {
-				for (int i = 1; i <= numCol; i++) {
-					titles.add("Ignore");
-					bounds.add(100);
+
+			for (int i = 0; i < numCol; i++) {
+				if (header.get(i) == null) {
+					header.set(i, "ignore");
 				}
-			} else {
-				System.out
-						.println("headerNames.size() = " + headerNames.size());
-				for (int i = 1; i <= numCol; i++) {
-					titles.add(headerNames.get(i - 1));
-					bounds.add(100);
-				}
-			}
-			String[] titlesArray = new String[titles.size()];
-			titles.toArray(titlesArray);
-			int[] boundsArray = new int[bounds.size()];
-			int indx = 0;
-			for (Integer integer : bounds) {
-				boundsArray[indx++] = integer;
-			}
-			for (int i = 0; i < titles.size(); i++) {
-				TableViewerColumn col = createTableViewerColumn(titlesArray[i],
-						boundsArray[i], i);
+				TableViewerColumn col = createTableViewerColumn(header.get(i),
+						100, i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
@@ -252,11 +237,15 @@ public class ViewData extends ViewPart {
 		private int myColNum;
 
 		public MyColumnLabelProvider(int colNum) {
+			System.out.println("column was "+colNum);
 			this.myColNum = colNum;
+			System.out.println("column now "+colNum);
+
 		}
 
 		@Override
 		public String getText(Object element) {
+			System.out.println("getText from column: "+myColNum);
 			DataRow dataRow = null;
 			try {
 				dataRow = (DataRow) element;
@@ -288,15 +277,18 @@ public class ViewData extends ViewPart {
 	 */
 	private TableViewerColumn createTableViewerColumn(String title, int bound,
 			final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
-				SWT.NONE);
+		final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer,
+				SWT.NONE, colNumber);
 		final TableColumn column = viewerColumn.getColumn();
+//		viewerColumn.
 		column.setText(title);
 		column.setWidth(bound);
 		column.setResizable(true);
-		column.setMoveable(true);
-		viewerColumn
-				.setEditingSupport(new CSVEdittingSupport(viewer, colNumber));
+		column.setMoveable(false);
+		column.setToolTipText("Column "+colNumber);
+//
+		
+		
 		column.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -306,9 +298,12 @@ public class ViewData extends ViewPart {
 					// set columnSelected; this is used when editing the column
 					// headers
 					columnSelected = col;
-					int index = col.getAlignment();
-					System.out.println("index =+index");
-							
+					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
+					System.out.println("colSelectionIndex ="+colSelectionIndex);
+					combo.setBounds(colSelectionIndex * 100, 0, 200, 20);
+					combo.setVisible(true);
+					combo.setFocus();
+					setColumnHeaderMenu();
 				}
 			}
 
@@ -319,16 +314,29 @@ public class ViewData extends ViewPart {
 					// set columnSelected; this is used when editing the column
 					// headers
 					columnSelected = col;
-					int index = col.getAlignment();
-					System.out.println("index =+index");
-							
+					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
+					System.out.println("colSelectionIndex ="+colSelectionIndex);
+					combo.setBounds(colSelectionIndex * 100, 0, 200, 20);
+					combo.setVisible(true);
+					combo.setFocus();
+					
 				}
-//				System.out.println(e.toString());
 			}
 
 		});
+
 		return viewerColumn;
 	}
+	
+	private void setColumnHeaderMenu() {
+//		ColumnSelectionListener colListener = new ColumnSelectionListener();
+//		MenuItem menuItem = new MenuItem(Shell parentShell, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.setText(CASRN_HDR);
+
+
+	}
+
 
 	/**
 	 * this method initializes the headerMenu with menuItems and a
@@ -338,49 +346,49 @@ public class ViewData extends ViewPart {
 	 *            headerMenu which allows user to rename the columns
 	 */
 	private void initializeColumnHeaderMenu(Menu parent) {
-		ColumnSelectionListener colListener = new ColumnSelectionListener();
+//		ColumnSelectionListener colListener = new ColumnSelectionListener();
 		MenuItem menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CASRN_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(NAME_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(ALT_NAME_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT1_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT2_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT3_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CHAR_FACTOR_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(FLOW_UNIT_HDR);
 
 		menuItem = new MenuItem(parent, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, colListener);
+//		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(IGNORE_HDR);
 		// menuItem = new MenuItem(parent, SWT.NORMAL);
 		// menuItem.addListener(SWT.Selection, colListener);
@@ -448,7 +456,8 @@ public class ViewData extends ViewPart {
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
-		TableColumn[] tableColumns = viewer.getTable().getColumns();
+//		TableColumn[] tableColumns = tableViewer.getTable().getColumns();
+		TableColumn[] tableColumns = table.getColumns();
 		for (TableColumn tableColumn : tableColumns) {
 			columnNames.add(tableColumn.getText());
 		}

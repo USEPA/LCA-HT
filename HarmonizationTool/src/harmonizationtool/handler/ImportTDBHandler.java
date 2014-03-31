@@ -139,7 +139,7 @@ public class ImportTDBHandler implements IHandler {
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
-					SelectTDB.syncToDataSetKeeper();
+					SelectTDB.syncTDBToDataSetKeeper();
 
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -169,7 +169,7 @@ public class ImportTDBHandler implements IHandler {
 							BufferedReader zipStream = new BufferedReader(
 									new InputStreamReader(zf.getInputStream(ze)));
 							model.read(zipStream, null, inputType);
-							SelectTDB.syncToDataSetKeeper();
+							SelectTDB.syncTDBToDataSetKeeper();
 
 							// jenaReader.read(model, zipStream, null);
 						}

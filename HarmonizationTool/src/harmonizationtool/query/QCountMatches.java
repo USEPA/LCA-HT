@@ -1,6 +1,7 @@
 package harmonizationtool.query;
 
 import harmonizationtool.dialog.DialogQueryDataset;
+import harmonizationtool.model.DataSetKeeper;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -19,6 +20,10 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 	
 	public ResultSet getResultSet() {
+		if (DataSetKeeper.size() < 1){
+			// THERE IS NO DATA TO GET
+			return super.getResultSet();
+		}
 		// CALL THE DIALOG TO GET THE PARAMETERS
 		getDialog();
 		// BUILD THE QUERY USING THE PARAMETERS
@@ -28,6 +33,10 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	public ResultSet getResultSet(String param1, String[] referenceDataSets) {
+		if (DataSetKeeper.size() < 1){
+			// THERE IS NO DATA TO GET
+			return super.getResultSet();
+		}
 		// BRING IN THE PARAMETERS
 		this.param1 = param1;
 		this.referenceDataSets = referenceDataSets;
@@ -48,6 +57,11 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	private void buildQuery() {
+		if (DataSetKeeper.size() < 1){
+			// THERE IS NO DATA TO GET
+			setQuery(null);
+			return;
+		}
 		param2 = "?match_label = \"" + referenceDataSets[0] + "\"";
 		for (int i = 1; i < referenceDataSets.length; i++) {
 			param2 += " || ?match_label = \"" + referenceDataSets[i] + "\"";

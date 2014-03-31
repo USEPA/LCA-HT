@@ -50,6 +50,7 @@ import com.hp.hpl.jena.query.ResultSet;
 //import com.hp.hpl.jena.query.ResultSet;
 //import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Bag;
+import com.hp.hpl.jena.rdf.model.Container;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -127,7 +128,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		openTDB();
 		updateStatusLine();
 		try {
-			syncToDataSetKeeper();
+			syncTDBToDataSetKeeper();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException(
 					"***********THE TDB MAY BE BAD*******************");
@@ -224,7 +225,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	 * rdf:type eco:DataSource should have a DataSetProvider NOTE:
 	 * eco:DataSource should change to lcaht:DataSet
 	 */
-	public static void syncToDataSetKeeper() { // THIS IS CURRENTLY LIKE
+	public static void syncTDBToDataSetKeeper() { // THIS IS CURRENTLY LIKE
 												// initiateDataSetKeeper
 		if (model == null) {
 			openTDB();
@@ -243,13 +244,17 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				CuratorMD curatorMD = new CuratorMD();
 
 				// RDFS.label <=> Name
-				if (subject.listProperties(RDFS.label).toList().size() != 1) {
+				if (subject.listProperties(RDFS.label).toList().size() > 1) {
 					System.out.println("!Data set has "
 							+ subject.listProperties(RDFS.label).toList()
 									.size() + " labels!");
+					StmtIterator stmtIterator = subject.listProperties(RDFS.label);
+					while  (stmtIterator.hasNext()){
+						Statement statement = stmtIterator.next();
+						statement.remove();
+					}
 				}
-				String name = subject.getProperty(RDFS.label).getObject()
-						.toString();
+				String name = subject.getProperty(RDFS.label).getObject().toString();
 
 				while (DataSetKeeper.indexOfDataSetName(name) > -1) {
 					name += "+";
