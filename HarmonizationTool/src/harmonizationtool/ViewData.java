@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.swt.widgets.Combo;
+//import org.eclipse.swt.widgets.Combo;
 import org.eclipse.jface.viewers.ComboViewer;
 
 /**
@@ -48,7 +48,6 @@ public class ViewData extends ViewPart {
 	// the menu that is displayed when column header is right clicked
 	private Menu headerMenu;
 	private TableColumn columnSelected = null;
-	private Combo combo;
 
 	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
 	// e.g. ReCiPe or TRACI
@@ -81,8 +80,12 @@ public class ViewData extends ViewPart {
 	public static final String FLOW_UNIT_HDR = "Flow Unit";
 	// e.g. kg
 
+	public static final String FLOW_PROPERTY_HDR = "Flow Property";
+	// e.g. mass
+
 	public static final String IGNORE_HDR = "Ignore";
 
+	private String formerlySelectedMenuItem;
 
 
 //	@Override
@@ -96,37 +99,12 @@ public class ViewData extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(null);
-		
-		ComboViewer comboViewer = new ComboViewer(parent, SWT.READ_ONLY);
-		combo = comboViewer.getCombo();
-		combo.setVisible(false);
-
-		combo.setBounds(0, 0, 297, 469);
-		combo.add(IMPACT_ASSESSMENT_METHOD_HDR);
-		combo.add(IMPACT_CAT_HDR);
-		combo.add(IMPACT_CAT_INDICATOR_HDR);
-		combo.add(IMPACT_CHARACTERIZATION_MODEL_HDR);
-		combo.add(IMPACT_CAT_REF_UNIT_HDR);
-		combo.add("");
-		combo.add(FLOW_UNIT_HDR);
-		combo.add(CHAR_FACTOR_HDR);
-		combo.add("");
-		combo.add(CAT1_HDR);
-		combo.add(CAT2_HDR);
-		combo.add(CAT3_HDR);
-		combo.add("");
-		combo.add(NAME_HDR);
-		combo.add(CASRN_HDR);
-		combo.add(ALT_NAME_HDR);
-		combo.add("");
-		combo.add(IGNORE_HDR);
-		combo.setBounds(0 , 0, 200, 40);
+//		parent.setLayout(null);
 
 		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.READ_ONLY);
 		table = tableViewer.getTable();
-		table.setBounds(0, 0, 650, 650);
+//		table.setBounds(0, 0, 650, 650);
 
 		
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -201,6 +179,7 @@ public class ViewData extends ViewPart {
 		if (key != null) {
 			// Define the menu and assign to the table
 			headerMenu = new Menu(table);
+			
 //			table.setMenu(headerMenu);
 			initializeColumnHeaderMenu();
 
@@ -278,35 +257,28 @@ public class ViewData extends ViewPart {
 	 */
 	private TableViewerColumn createTableViewerColumn(String title, int bound,
 			final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer,
+		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer,
 				SWT.NONE, colNumber);
-		final TableColumn column = viewerColumn.getColumn();
+		final TableColumn tableColumn = tableViewerColumn.getColumn();
 //		viewerColumn.
-		column.setText(title);
-		column.setWidth(bound);
-		column.setResizable(true);
-		column.setMoveable(false);
-		column.setToolTipText("Column "+colNumber);		
+		tableColumn.setText(title);
+		tableColumn.setWidth(bound);
+		tableColumn.setResizable(true);
+		tableColumn.setMoveable(false);
+		tableColumn.setToolTipText("Column "+colNumber);		
 		
-		column.addSelectionListener(new SelectionListener() {
+		tableColumn.addSelectionListener(new SelectionListener() {
+
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (e.getSource() instanceof TableColumn) {
 					TableColumn col = (TableColumn) e.getSource();
-					// set columnSelected; this is used when editing the column
-					// headers
 					columnSelected = col;
 					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
-					headerMenu.setLocation(colSelectionIndex*100, 0);
-//					System.out.println("headerMenu.getParentItem().getSelection() ="+headerMenu.getParentItem().getSelection());
-//					System.out.println("headerMenu.getParentItem() ="+headerMenu.getParentItem());					headerMenu.setLocation(colSelectionIndex, 0);
+					System.out.println("colSelectionIndex ="+colSelectionIndex);
+					formerlySelectedMenuItem = columnSelected.getText();
 					headerMenu.setVisible(true);
-
-//					combo.setBounds(colSelectionIndex * 100, 0, 200, 20);
-//					combo.setVisible(true);
-//					combo.setFocus();
-//					setColumnHeaderMenu();
 				}
 			}
 
@@ -314,36 +286,19 @@ public class ViewData extends ViewPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				if (e.getSource() instanceof TableColumn) {
 					TableColumn col = (TableColumn) e.getSource();
-					// set columnSelected; this is used when editing the column
-					// headers
 					columnSelected = col;
 					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
 					System.out.println("colSelectionIndex ="+colSelectionIndex);
-					headerMenu.setLocation(colSelectionIndex*100, 0);
-//					System.out.println("headerMenu.getParentItem().getSelection() ="+headerMenu.getParentItem().getSelection());
-//					System.out.println("headerMenu.getParentItem() ="+headerMenu.getParentItem());
+					formerlySelectedMenuItem = columnSelected.getText();
 					headerMenu.setVisible(true);
-//					combo.setBounds(colSelectionIndex * 100, 0, 200, 20);
-//					combo.setVisible(true);
-//					combo.setFocus();
-					
 				}
 			}
 
 		});
 
-		return viewerColumn;
+		return tableViewerColumn;
 	}
 	
-	private void setColumnHeaderMenu() {
-//		ColumnSelectionListener colListener = new ColumnSelectionListener();
-//		MenuItem menuItem = new MenuItem(Shell parentShell, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-//		menuItem.setText(CASRN_HDR);
-
-
-	}
-
 
 	/**
 	 * this method initializes the headerMenu with menuItems and a
@@ -353,8 +308,7 @@ public class ViewData extends ViewPart {
 	 *            headerMenu which allows user to rename the columns
 	 */
 	private void initializeColumnHeaderMenu() {
-//		ColumnSelectionListener colListener = new ColumnSelectionListener();
-//		menu.setData(columnSelected);
+		ColumnSelectionListener colListener = new ColumnSelectionListener();
 		headerMenu.addListener(SWT.Selection, new ColumnSelectionListener() {
 		      public void handleEvent(Event e) {
 		  		System.out.println("widgetSelected e= "+e);
@@ -362,50 +316,85 @@ public class ViewData extends ViewPart {
 		          
 		        }
 		      });
-		headerMenu.setLocation(300, 500);
-		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(CASRN_HDR);
+		MenuItem menuItem;
+
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IGNORE_HDR);
+		
+		new MenuItem(headerMenu, SWT.SEPARATOR); //----------
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_ASSESSMENT_METHOD_HDR);	
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CHARACTERIZATION_MODEL_HDR);	
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CAT_HDR);	
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CAT_INDICATOR_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
+		
+		new MenuItem(headerMenu, SWT.SEPARATOR); //----------
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(CHAR_FACTOR_HDR);		
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(FLOW_UNIT_HDR);
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(FLOW_PROPERTY_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(FLOW_UNIT_HDR);
+
+		new MenuItem(headerMenu, SWT.SEPARATOR); //----------
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(NAME_HDR);
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(ALT_NAME_HDR);
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.setText(CASRN_HDR);
+		
+		new MenuItem(headerMenu, SWT.SEPARATOR); //----------
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT1_HDR);
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT2_HDR);
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
+		menuItem.addListener(SWT.Selection, colListener);
 		menuItem.setText(CAT3_HDR);
 
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(IMPACT_CAT_HDR);
 
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
+		new MenuItem(headerMenu, SWT.SEPARATOR); //----------
 
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(CHAR_FACTOR_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(FLOW_UNIT_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, colListener);
-		menuItem.setText(IGNORE_HDR);
+		
 		// menuItem = new MenuItem(parent, SWT.NORMAL);
 		// menuItem.addListener(SWT.Selection, colListener);
 		// menuItem.setText("Custom...");
@@ -422,23 +411,26 @@ public class ViewData extends ViewPart {
 	 */
 	private class ColumnSelectionListener implements Listener {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets
-		 * .Event)
-		 * 
-		 * this event handler is called when the user right clicks on the column
-		 * to change the column header name.
-		 * columnSelected.setText(menuItemText) will set the column header to
-		 * the value of the menu item selected. If "Custom..." is selected, then
-		 * the user can set a custom name for the column header.
-		 */
 		@Override
 		public void handleEvent(Event event) {
+			System.out.println("event = "+ event);
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
 				String menuItemText = ((MenuItem) event.widget).getText();
+				MenuItem[] menuItems = headerMenu.getItems();
+				
+				for (MenuItem mi: menuItems){
+					if (formerlySelectedMenuItem.equals(mi.getText())){
+						mi.setEnabled(true);
+						break;
+					}
+				}
+				
+				for (MenuItem mi: menuItems){
+					if (event.widget.equals(mi)){
+						mi.setEnabled(false);
+						break;
+					}
+				}
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
