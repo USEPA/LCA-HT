@@ -426,7 +426,7 @@ public class ViewData extends ViewPart {
 				}
 				
 				for (MenuItem mi: menuItems){
-					if (event.widget.equals(mi)){
+					if ((!mi.getText().equals(IGNORE_HDR)) && (event.widget.equals(mi))){
 						mi.setEnabled(false);
 						break;
 					}
