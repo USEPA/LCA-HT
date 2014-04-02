@@ -114,8 +114,10 @@ public class ViewData extends ViewPart {
 		table = tableViewer.getTable();
 		// table.setBounds(0, 0, 650, 650);
 
-		headerMenu = new Menu(table);
-		initializeHeaderMenu();
+
+
+//		headerMenu = new Menu(table);
+//		initializeHeaderMenu();
 
 		rowMenu = new Menu(table);
 		initializeRowMenu();
@@ -169,6 +171,7 @@ public class ViewData extends ViewPart {
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		// System.out.println("tableProvider.getData()="+tableProvider.getData());
 		// System.out.println("tableProvider.getData().toString()="+tableProvider.getData().toString());
+
 		tableViewer.setInput(tableProvider.getData());
 		// viewer.refresh();
 
@@ -204,18 +207,23 @@ public class ViewData extends ViewPart {
 			// Define the menu and assign to the table
 
 			TableProvider tableProvider = TableKeeper.getTableProvider(key);
+			headerMenu = tableProvider.getMenu();
+			if (headerMenu == null){
+				headerMenu = new Menu(table);
+				initializeHeaderMenu();
+			}
 			DataRow header = tableProvider.getHeaderNames();
 			List<DataRow> tableData = tableProvider.getData();
 			DataRow dataRow = tableData.get(0);
 			while (header.getSize() < dataRow.getSize()) {
-				header.add("ignore");
+				header.add(IGNORE_HDR);
 			}
 			int numCol = header.getSize();
 			System.out.println("numCol = " + numCol);
 
 			for (int i = 0; i < numCol; i++) {
 				if (header.get(i) == null) {
-					header.set(i, "ignore");
+					header.set(i, IGNORE_HDR);
 				}
 				TableViewerColumn col = createTableViewerColumn(header.get(i),
 						100, i);
@@ -423,7 +431,7 @@ public class ViewData extends ViewPart {
 		menuItem.addListener(SWT.Selection, rowSelectionListener);
 		menuItem.setText("ignore rows");
 
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//		new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
 
 		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, rowSelectionListener);
@@ -484,9 +492,9 @@ public class ViewData extends ViewPart {
 				// table needs to be
 				// re-displayed
 				saveColumnNames();
+				TableKeeper.getTableProvider(key).setMenu(headerMenu);
 			}
 		}
-
 	}
 
 	private class RowSelectionListener implements Listener {

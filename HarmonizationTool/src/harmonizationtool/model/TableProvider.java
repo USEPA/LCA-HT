@@ -1,19 +1,14 @@
 package harmonizationtool.model;
 
-import harmonizationtool.utils.Util;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.eclipse.swt.widgets.Menu;
 
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -23,6 +18,7 @@ public class TableProvider {
 	private DataRow headerNames = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
 	private List<Resource> uriList = new ArrayList<Resource>();
+	private Menu menu = null;
 
 	// public List<Resource> uris = new ArrayList<Resource>();
 	public static final String SUBROW_PREFIX = "sr";
@@ -42,6 +38,14 @@ public class TableProvider {
 		uriList.add(uri);
 		System.out.println("Added URI: " + uri + ".  Now the uriList.size() is " + +uriList.size());
 
+	}
+	
+	public void setMenu(Menu menu){
+		this.menu = menu;
+	}
+	
+	public Menu getMenu(){
+		return menu;
 	}
 
 	public List<DataRow> getData() {
