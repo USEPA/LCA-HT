@@ -412,9 +412,14 @@ public class View extends ViewPart {
 
 					System.out.println("Ready to iterate...");
 					int csvRow = 0;
+
 					for (DataRow csvDataRow : dataRowList) {
 						if (csvRow % 10000 == 0) {
 							System.out.println("Finished reading data file row: " + csvRow);
+						}
+						if (ViewData.rowsToIgnore.contains(csvRow)){
+							csvRow++;
+							continue;
 						}
 
 						Literal drRowLit = model.createTypedLiteral(csvRow);
@@ -639,6 +644,10 @@ public class View extends ViewPart {
 					for (DataRow csvDataRow : dataRowList) {
 						if (csvRow % 10000 == 0) {
 							System.out.println("Finished reading data file row: " + csvRow);
+						}
+						if (ViewData.rowsToIgnore.contains(csvRow)){
+							csvRow++;
+							continue;
 						}
 
 						Literal drRowLit = model.createTypedLiteral(csvRow);
@@ -894,7 +903,10 @@ public class View extends ViewPart {
 					if (csvRow % 10000 == 0) {
 						System.out.println("Finished reading data file row: " + csvRow);
 					}
-
+					if (ViewData.rowsToIgnore.contains(csvRow)){
+						csvRow++;
+						continue;
+					}
 					Literal drRowLit = model.createTypedLiteral(csvRow);
 
 					String impactAssessmentMethod = null;  // REQUIRED
