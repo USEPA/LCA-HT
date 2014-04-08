@@ -1,14 +1,7 @@
 package harmonizationtool.model;
 
-import harmonizationtool.comands.SelectTDB;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class DataSetProvider {

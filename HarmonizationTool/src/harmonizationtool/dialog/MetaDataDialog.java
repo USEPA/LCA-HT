@@ -97,6 +97,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		super(parentShell);
 		// CASE 3 - NEW FILE TO ADD TO EXISTING DATA SET
 		// CASE 4 - NEW FILE TO ADD TO NEW DATA SET (CREATED HERE)
+
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
 		this.newDataSetProvider = new DataSetProvider();
@@ -105,6 +106,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSetProvider.getDataSetMD().setName(newDataSetTempName);
 		this.newDataSetProvider.setCuratorMD(new CuratorMD());
 		this.curDataSetProvider = this.newDataSetProvider;
+		if (DataSetKeeper.size() == 0) {
+			DataSetKeeper.add(newDataSetProvider);
+		}
 	}
 
 	// MAKE THE WHOLE DIALOG BOX

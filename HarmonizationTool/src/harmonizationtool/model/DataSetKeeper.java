@@ -15,7 +15,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSetKeeper {
 
-	private static List<DataSetProvider> dsList = new ArrayList<DataSetProvider>();
+	private static List<DataSetProvider> dataSetProviderList = new ArrayList<DataSetProvider>();
 
 	private DataSetKeeper() {
 	}
@@ -33,11 +33,11 @@ public class DataSetKeeper {
 					.getDataSetMD().getVersion()));
 			dataSetProvider.setTdbResource(tdbResource);
 		}
-		return dsList.add(dataSetProvider);
+		return dataSetProviderList.add(dataSetProvider);
 	}
 	
 	public static boolean remove(DataSetProvider dataSetProvider) {
-		return dsList.remove(dataSetProvider);
+		return dataSetProviderList.remove(dataSetProvider);
 	}
 	
 	public static boolean remove(DataSetProvider dataSetProvider, boolean removeTDBData) {
@@ -46,25 +46,31 @@ public class DataSetKeeper {
 			SelectTDB.removeAllWithSubject(tdbResource);
 			SelectTDB.removeAllWithObject(tdbResource);
 		}
-		return dsList.remove(dataSetProvider);
+		return dataSetProviderList.remove(dataSetProvider);
 	}
 
 	public static List<Integer> getIDs() {
 		List<Integer> ids = new ArrayList<Integer>();
-		Iterator<DataSetProvider> iterator = dsList.iterator();
+		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
 		while (iterator.hasNext()) {
-			ids.add(dsList.indexOf(iterator.next()));
+			ids.add(dataSetProviderList.indexOf(iterator.next()));
 		}
 		return ids;
 	}
 
 	public static DataSetProvider get(int index) {
-		return dsList.get(index);
+		if (index < 0){
+			return null;
+		}
+		if (index >= dataSetProviderList.size()){
+			return null;
+		}
+		return dataSetProviderList.get(index);
 	}
 
 	public static boolean hasIndex(int index) {
 		try {
-			dsList.get(index);
+			dataSetProviderList.get(index);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -72,11 +78,11 @@ public class DataSetKeeper {
 	}
 
 	public static Integer indexOf(DataSetProvider dataSetProvider) {
-		return dsList.indexOf(dataSetProvider);
+		return dataSetProviderList.indexOf(dataSetProvider);
 	}
 	
 	public static int indexOfDataSetName(String name) {
-		Iterator<DataSetProvider> iterator = dsList.iterator();
+		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
 		while(iterator.hasNext()){
 			DataSetProvider dataSetProvider = (DataSetProvider) iterator.next();
 			if (dataSetProvider.getDataSetMD().getName().equals(name)){
@@ -87,23 +93,23 @@ public class DataSetKeeper {
 	}
 
 	public static int size() {
-		return dsList.size();
+		return dataSetProviderList.size();
 	}
 
 	public static int getByTdbResource(Resource tdbResource) {
-		Iterator<DataSetProvider> iterator = dsList.iterator();
+		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
 		while (iterator.hasNext()) {
 			DataSetProvider dataSetProvider = iterator.next();
 			Resource resource = dataSetProvider.getTdbResource();
 			if (resource.equals(tdbResource)) {
-				return dsList.indexOf(dataSetProvider);
+				return dataSetProviderList.indexOf(dataSetProvider);
 			}
 		}
 		return -1;
 	}
 
 	public static DataSetProvider get(FileMD fileMD) {
-		for(DataSetProvider dataSetProvider : dsList){
+		for(DataSetProvider dataSetProvider : dataSetProviderList){
 			if(dataSetProvider.getFileMDList().contains(fileMD)){
 				return dataSetProvider;
 			}
