@@ -3,9 +3,6 @@ package harmonizationtool;
 import harmonizationtool.comands.SelectTDB;
 
 import harmonizationtool.dialog.MetaDataDialog;
-import harmonizationtool.dialog.MyDialog;
-import harmonizationtool.dialog.PlayArea;
-import harmonizationtool.handler.ShowDataViewHandler;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetProvider;
@@ -14,13 +11,6 @@ import harmonizationtool.model.FileMD;
 //import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.IdsInfoQuery;
-import harmonizationtool.query.IdsRowQuery;
-import harmonizationtool.query.QueryResults;
-import harmonizationtool.utils.DataSetMap;
-import harmonizationtool.utils.ResourceIdMgr;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
@@ -30,22 +20,12 @@ import harmonizationtool.vocabulary.SKOS;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -60,7 +40,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -69,7 +48,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -78,20 +56,9 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.function.library.date;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-//import com.hp.hpl.jena.vocabulary.NFO; // DOES NOT EXIST!!
-import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 public class View extends ViewPart {
 	public static final String ID = "HarmonizationTool.view";
@@ -107,7 +74,7 @@ public class View extends ViewPart {
 	private Action actionParseCategoriesToTDB;
 	private Action actionParseImpactAssessmentModelInfoToTDB;
 
-	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
+//	private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
 	/**
 	 * The content provider class is responsible for providing objects to the
