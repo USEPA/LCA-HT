@@ -1,6 +1,5 @@
 package harmonizationtool.utils;
 
-import harmonizationtool.View;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,22 +33,23 @@ public class CheckFileEncoding {
 			"MacCroatian", "MacCyrillic", "MacDingbat", "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacThai", "MacTurkish", "MacUkraine",
 			"MS950_HKSCS", "MS936", "PCK", "x-SJIS_0213", "Cp50220", "Cp50221", "MS874", "MS949", "MS950", "x-windows-iso2022jp"));
 
-	public String CheckFileEncoding(String path) {
+	public String execute(String path) {
+		String encoding = "ISO8859_1";
+		String issues = null;
 		if (path == null) {
-			return null;
+			issues = "(Filepath is null)";
+			return issues;
 		}
 
 		File file = new File(path);
 		if (!file.exists()) {
-			String msg = "File does not exist!";
-			// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			System.out.println(msg);
-			return null;
+			issues = "File: "+path+" does not exist!";
+			return issues;
 		}
 
 		BufferedReader bufferedReader = null;
 		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "ISO8859_1"));
+			bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), encoding));
 			// bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path),
 			// "UTF8"));
 			// bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path),
@@ -67,9 +67,8 @@ public class CheckFileEncoding {
 		}
 
 		if (bufferedReader == null) {
-			String msg = "Can not read file: " + path + "!";
-			System.out.println(msg);
-			return null;
+			issues = "Can not read file: " + path + "!";
+			return issues;
 		}
 
 		try {
@@ -86,13 +85,13 @@ public class CheckFileEncoding {
 					String nonAsciiChar = matcher.group();
 					int unicodeCharNumber = nonAsciiChar.codePointAt(0);
 					int colNumber = matcher.end();
-					System.out.println("On " + lineNumber + ", column " + colNumber + " found character number: " + unicodeCharNumber + " which looks like:" + nonAsciiChar);
+					issues+= "Line: " + lineNumber + ", column: " + colNumber + ". found character number: " + unicodeCharNumber + ". It looks like:" + nonAsciiChar +"\\n";
 				}
 			}
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		return null;
+		return issues;
 	}
 }
