@@ -8,7 +8,7 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.utils.CheckFileEncoding;
+import harmonizationtool.utils.FileEncodingA;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public class ImportCSV implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		System.out.println("executing Import CSV");
-//		ModelProvider modelProvider = new ModelProvider();
+		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();
 		FileMD fileMD = new FileMD();
 
@@ -74,15 +74,15 @@ public class ImportCSV implements IHandler {
 		File file = null;
 		if (path != null) {
 			file = new File(path);
-			
+
 			if (!file.exists()) {
-				
+
 				String msg = "File does not exist!";
 				Util.findView(View.ID).getViewSite().getActionBars()
 						.getStatusLineManager().setMessage(msg);
 				System.out.println(msg);
 				return null;
-			}			
+			}
 		}
 
 		FileReader fileReader = null;
@@ -98,7 +98,10 @@ public class ImportCSV implements IHandler {
 			System.out.println(msg);
 			return null;
 		}
-//		String issues = CheckFileEncoding(path);
+		FileEncodingA checkFileEncoding = new FileEncodingA();
+		String issues = checkFileEncoding.showFileIssues(path);
+		System.out.println("Issues found with file: " + path + ":\n" + issues);
+		
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
 		String[] values = null;
 		try {
@@ -118,7 +121,7 @@ public class ImportCSV implements IHandler {
 		fileMD.setSize(file.length());
 		fileMD.setLastModified(new Date(file.lastModified()));
 		fileMD.setReadTime(new Date());
-		
+
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
 		TableKeeper.saveTableProvider(path, tableProvider);
 
@@ -169,10 +172,9 @@ public class ImportCSV implements IHandler {
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent()
 				.getActiveShell(), fileMD);
 
-
 		dialog.create();
-		if (dialog.open() == MetaDataDialog.CANCEL){
-			//remove fileMD from Data Files viewer
+		if (dialog.open() == MetaDataDialog.CANCEL) {
+			// remove fileMD from Data Files viewer
 			view.remove(fileMD);
 
 		}
