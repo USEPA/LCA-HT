@@ -35,7 +35,6 @@ public class FileEncoding {
 			"MacCroatian", "MacCyrillic", "MacDingbat", "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacThai", "MacTurkish", "MacUkraine",
 			"MS950_HKSCS", "MS936", "PCK", "x-SJIS_0213", "Cp50220", "Cp50221", "MS874", "MS949", "MS950", "x-windows-iso2022jp"));
 
-
 	private void setData1(){
 		Map<String, Integer> codeBlockStarts = new LinkedHashMap<String, Integer>();
 		codeBlockStarts.put("Basic Latin",0);

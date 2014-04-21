@@ -3,7 +3,7 @@ package harmonizationtool.query;
 import com.hp.hpl.jena.query.ResultSet;
 
 public class QTemplate extends HarmonyQuery2Impl implements LabeledQuery {
-	public static final String LABEL = "Show Data Sets";
+	public static final String LABEL = "Query Template";
 
 	// private String param1;
 	// private String[] referenceDataSets;

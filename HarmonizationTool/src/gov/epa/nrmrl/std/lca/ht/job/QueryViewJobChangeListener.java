@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
+import java.util.Date;
+
 import harmonizationtool.QueryView;
 import harmonizationtool.utils.Util;
 
@@ -24,8 +26,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		System.out.println("Start date / time: "+new Date());
 	}
 
 	@Override
@@ -39,6 +40,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// when the job is done check that is of the correct instance
 		// if so then sync up with the default display. find the queryView and
 		// call its queryCallback method
+		System.out.println("End date / time: "+new Date());
 		job = event.getJob();
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {
