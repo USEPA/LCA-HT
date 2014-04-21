@@ -315,4 +315,3 @@ Export-Package: arq,
  tdb.cmdline,
  tdb.tools
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.apache.xerces;bundle-version="2.9.0"
