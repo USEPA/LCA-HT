@@ -180,8 +180,10 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				System.out.println("defaultTDBFile.list().length="
 						+ defaultTDBFile.list().length);
 				try {
+					System.out.println("defaultTDBFile.getPath() = "+defaultTDBFile.getPath());
 					dataset = TDBFactory
 							.createDataset(defaultTDBFile.getPath());
+					
 					assert dataset != null : "dataset cannot be null";
 					model = dataset.getDefaultModel();
 					graphStore = GraphStoreFactory.create(dataset);

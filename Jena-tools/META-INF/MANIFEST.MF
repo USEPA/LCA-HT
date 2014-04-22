@@ -314,4 +314,3 @@ Export-Package: arq,
  tdb,
  tdb.cmdline,
  tdb.tools
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
