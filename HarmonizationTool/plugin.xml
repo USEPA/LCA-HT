@@ -69,6 +69,12 @@
             name="Harmonize Compartments"
             restorable="true">
       </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.job.jobStatus"
+            id="gov.epa.nrmrl.std.lca.ht.job.jobStatus"
+            name="Job Status"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -185,6 +191,11 @@
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments.ShowHarmonizeCompartmentsHandler"
                      label="Show Harmonize Compartments"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.handler.ShowJobStatusHandler"
+                     label="Show Job Status"
                      style="push">
                </command>
             </menu>
@@ -334,6 +345,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"
             id="harmonizationtool.tree.viewer.ControlViewHandler"
             name="Show Control View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
+            id="harmonizationtool.handler.ShowJobStatusHandler"
+            name="Show Job Status">
       </command>
    </extension>
    <extension

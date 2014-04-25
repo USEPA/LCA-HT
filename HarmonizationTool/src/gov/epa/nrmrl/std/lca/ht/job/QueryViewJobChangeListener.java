@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Display;
 public class QueryViewJobChangeListener implements IJobChangeListener {
 	private String key;
 	private Job job = null;
+	private Date jobStartDate;
+	private Date jobEndDate;
 
 	public QueryViewJobChangeListener(QueryView queryView, String key) {
 		this.key = key;
@@ -26,7 +28,9 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		System.out.println("Start date / time: "+new Date());
+		jobStartDate = new Date();
+		System.out.println("Start date / time: "+jobStartDate);
+		JobStatus.textAdd("Job: "+key+" started: "+jobStartDate+"\\n");
 	}
 
 	@Override
@@ -40,8 +44,11 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// when the job is done check that is of the correct instance
 		// if so then sync up with the default display. find the queryView and
 		// call its queryCallback method
-		System.out.println("End date / time: "+new Date());
+		jobEndDate = new Date();
+		System.out.println("End date / time: "+jobEndDate);
 		job = event.getJob();
+		JobStatus.textAdd("Job: "+job.getName()+" finished: "+jobEndDate+"\\n");
+
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
