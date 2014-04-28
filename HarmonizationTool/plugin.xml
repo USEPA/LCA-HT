@@ -69,6 +69,12 @@
             name="Harmonize Compartments"
             restorable="true">
       </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
+            id="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
+            name="Job Status View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -170,6 +176,11 @@
                <command
                      commandId="HarmonizationTool.ResultsTreeEditorID"
                      label="Show Results Tree Editor"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
+                     label="Show Job Status"
                      style="push">
                </command>
                <command
@@ -329,6 +340,11 @@
             defaultHandler="harmonizationtool.handler.DeleteDataSetHandler"
             id="HarmonizationTool.DeleteDataSetId"
             name="Delete DataSet">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
+            id="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
+            name="Show Job Status">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"

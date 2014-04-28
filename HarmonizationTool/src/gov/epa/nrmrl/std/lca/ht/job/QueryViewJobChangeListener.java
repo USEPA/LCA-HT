@@ -27,8 +27,12 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
 		Date startDate = new Date();
-		System.out.println("Start date / time: "+startDate);
-		
+		String message = "Job: =>"+key+"<= started: "+startDate;
+		JobStatusView jobStatusView = (JobStatusView) Util.findView(JobStatusView.ID);
+		System.out.println("JobStatusView.ID " + JobStatusView.ID);
+		System.out.println("jobStatusView " + jobStatusView);
+		jobStatusView.add(message);
+//		JobStatusView.add("Job: =>"+key+"<= started: "+startDate);
 	}
 
 	@Override
@@ -45,6 +49,12 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		Date endDate = new Date();
 
 		System.out.println("End date / time: "+endDate);
+		String message = "Job: =>"+key+"<= ended: "+endDate;
+		JobStatusView jobStatusView = (JobStatusView) Util.findView(JobStatusView.ID);
+		jobStatusView.add(message);
+//		.setMessage(message);
+//		JobStatusView.add("Job: =>"+key+"<= ended: "+endDate);
+
 		job = event.getJob();
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {

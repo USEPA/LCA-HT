@@ -94,6 +94,7 @@ public class Util {
 	}
 
 	public static void showView(String viewID) throws PartInitException {
+		System.out.println("viewID = "+viewID);
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 				.showView(viewID);
 	}

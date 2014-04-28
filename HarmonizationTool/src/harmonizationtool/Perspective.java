@@ -8,7 +8,6 @@ public class Perspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
-//		layout.isFixed();
 		layout.setFixed(false);
 		layout.setEditorAreaVisible(false);
 		{
@@ -16,13 +15,13 @@ public class Perspective implements IPerspectiveFactory {
 
 			folderLayout.addView("HarmonizationTool.view");
 			folderLayout.addView("HarmonizationTool.QueryViewID");
-//			folderLayout.setProperty("thing", "big");
 		}
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder3", IPageLayout.LEFT, 0.8f, editorArea);
 			folderLayout.addView("HarmonizationTool.viewData");
 			folderLayout.addView("HarmonizationTool.ResultsViewID");
 			folderLayout.addView("HarmonizationTool.ResultsTreeEditorID");
+//			folderLayout.addView("gov.epa.nrmrl.std.lca.ht.job.JobStatusView");
 
 		}
 	}

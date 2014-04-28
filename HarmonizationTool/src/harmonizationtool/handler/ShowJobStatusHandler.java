@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.console.LightweightConsoleView;
+import gov.epa.nrmrl.std.lca.ht.job.JobStatusView;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -9,20 +9,23 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.ui.PartInitException;
 
-public class ShowLightWeightConsoleHandler implements IHandler {
+public class ShowJobStatusHandler implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
+
 	}
 
 	@Override
 	public void dispose() {
+
 	}
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
-			Util.showView(LightweightConsoleView.ID);
+			System.out.println("About to try to open....  JobStatus.ID = "+ JobStatusView.ID);
+			Util.showView(JobStatusView.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
@@ -43,5 +46,4 @@ public class ShowLightWeightConsoleHandler implements IHandler {
 	public void removeHandlerListener(IHandlerListener handlerListener) {
 
 	}
-
 }
