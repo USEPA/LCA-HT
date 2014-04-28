@@ -26,7 +26,9 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		System.out.println("Start date / time: "+new Date());
+		Date startDate = new Date();
+		System.out.println("Start date / time: "+startDate);
+		
 	}
 
 	@Override
@@ -40,7 +42,9 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// when the job is done check that is of the correct instance
 		// if so then sync up with the default display. find the queryView and
 		// call its queryCallback method
-		System.out.println("End date / time: "+new Date());
+		Date endDate = new Date();
+
+		System.out.println("End date / time: "+endDate);
 		job = event.getJob();
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {
