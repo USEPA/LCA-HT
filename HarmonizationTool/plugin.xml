@@ -54,13 +54,13 @@
       <view
             class="harmonizationtool.console.LightweightConsoleView"
             id="harmonizationtool.console.LightweightConsoleView"
-            name="LightWeightConsole"
+            name="Light Weight Console"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlView"
             id="harmonizationtool.tree.viewer.ControlView"
-            name="ResultsTreeControl"
+            name="Results Tree Control"
             restorable="true">
       </view>
       <view
