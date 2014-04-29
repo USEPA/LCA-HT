@@ -91,8 +91,8 @@ public class ExtQueryHandler implements IHandler {
 			
 
 			
-            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+//            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 			String title = resultsView.getTitle();
 			System.out.println("title= " + title);
 

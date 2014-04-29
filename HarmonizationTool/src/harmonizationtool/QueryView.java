@@ -167,8 +167,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -202,8 +202,8 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
 
 				// addFilename(path);
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
 
@@ -360,7 +360,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 					return;
 				}
 
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
@@ -477,7 +477,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 	 *            type of query requested
 	 */
 	public void queryCallback(ResultSet resultSet, String key) {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		LabeledQuery labeledQuery = queryFromKey(key);
 		String showResultsInWindow = ResultsView.ID;
 
@@ -487,7 +487,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		// .create((ResultSetRewindable) resultSet);
 		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
 		if (key.startsWith("Harmonize CAS")) { // HACK!!
-			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) page.findView(ResultsTreeEditor.ID);
+			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
@@ -507,7 +507,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			// resultsView.formatForTransform0();
 		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) page.findView(HarmonizeCompartments.ID);
+			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util.findView(HarmonizeCompartments.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
@@ -527,7 +527,7 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 			// resultsView.formatForTransform0();
 		} else {
-			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			resultsView.update(tableProvider);
 		}

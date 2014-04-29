@@ -8,6 +8,7 @@ import java.io.IOException;
 import harmonizationtool.ResultsView;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericQuery;
+import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -70,8 +71,8 @@ public class HTScriptHandler implements IHandler {
             GenericQuery iGenericQuery = new GenericQuery(queryStr,"Ext. File Query");
 
 //			addFilename(path);
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+//			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 			String title = resultsView.getTitle();
 			System.out.println("title= " + title);
 
