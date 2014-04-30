@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileEncoding2 {
+public class UnicodeCharacters2 {
 
 	private static String[] names115= new String[20941];
 

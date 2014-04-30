@@ -8,7 +8,7 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.utils.FileEncodingA;
+import harmonizationtool.utils.FileEncodingUtil;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -98,7 +98,7 @@ public class ImportCSV implements IHandler {
 			System.out.println(msg);
 			return null;
 		}
-		FileEncodingA checkFileEncoding = new FileEncodingA();
+		FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
 		String issues = checkFileEncoding.showFileIssues(path);
 		System.out.println("Issues found with file: " + path + ":\n" + issues);
 		

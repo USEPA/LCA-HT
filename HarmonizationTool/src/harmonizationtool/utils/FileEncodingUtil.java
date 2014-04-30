@@ -15,20 +15,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileEncodingA {
-
-	// ENCODINGS FOUND AT:
-	// http://docs.oracle.com/javase/7/docs/technotes/guides/intl/encoding.doc.html
+public class FileEncodingUtil {
 
 	private List<String> commonEncodingSets = new ArrayList<String>(
 			Arrays.asList("UTF8", "Cp1252", "ISO8859_1", "MacRoman"));
 	
-//	priate Hashmap(<String>,<Integer>) hashmap = new Hashmap(<String>,<Integer>);
 	private void init(){
 		final Map<Integer, String> characterNames = new LinkedHashMap<Integer, String>();
 		characterNames.put(0, "name");
 	}
 
+
+	// ENCODINGS FOUND AT:
+	// http://docs.oracle.com/javase/7/docs/technotes/guides/intl/encoding.doc.html
 
 	private List<String> basicEncodingSets = new ArrayList<String>(
 			Arrays.asList("Cp858", "Cp437", "Cp775", "Cp850", "Cp852", "Cp855",

@@ -114,9 +114,19 @@
                   style="push">
             </command>
             <command
+                  commandId="HarmonizationTool.TDB_Load"
+                  label="Load RDF / XML data"
+                  style="push">
+            </command>
+            <command
                   commandId="HarmonizationTool.SaveResults"
                   id="HarmonizationTool.SaveResults"
                   label="Save Results"
+                  style="push">
+            </command>
+            <command
+                  commandId="HarmonizationTool.TDB_Dump"
+                  label="Dump entire TDB"
                   style="push">
             </command>
             <command
@@ -158,15 +168,10 @@
          <menu
                label="Window">
             <menu
-                  label="Show View">
+                  label="Data">
                <command
                      commandId="HarmonizationTool.ShowDataFilesView"
                      label="Show Data File(s) View"
-                     style="push">
-               </command>
-               <command
-                     commandId="HarmonizationTool.ShowQueryView"
-                     label="Show Query View"
                      style="push">
                </command>
                <command
@@ -174,6 +179,9 @@
                      label="Show Data View"
                      style="push">
                </command>
+            </menu>
+            <menu
+                  label="Results">
                <command
                      commandId="HarmonizationTool.ShowResultsView"
                      label="Show Results View"
@@ -182,16 +190,6 @@
                <command
                      commandId="HarmonizationTool.ResultsTreeEditorID"
                      label="Show Results Tree Editor"
-                     style="push">
-               </command>
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
-                     label="Show Job Status"
-                     style="push">
-               </command>
-               <command
-                     commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
-                     label="Show Console"
                      style="push">
                </command>
                <command
@@ -205,10 +203,53 @@
                      style="push">
                </command>
             </menu>
+            <menu
+                  label="Meta">
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
+                     label="Show Job Status"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
+                     label="Show Console"
+                     style="push">
+               </command>
+            </menu>
+         </menu>
+         <menu
+               label="SPARQL">
+            <command
+                  commandId="HarmonizationTool.ShowQueryView"
+                  label="Show Query View"
+                  style="push">
+            </command>
+            <command
+                  commandId="HarmonizationTool.extQueryID"
+                  label="Query From File"
+                  style="push"
+                  tooltip="Run a (read-only) query from a file">
+            </command>
+            <command
+                  commandId="HarmonizationTool.extUpdateID"
+                  label="Update From File"
+                  style="push"
+                  tooltip="Run a (delete or insert) update from a file">
+            </command>
          </menu>
       </menuContribution>
       <menuContribution
             locationURI="popup:HarmonizationTool.QueryViewID">
+         <command
+               commandId="HarmonizationTool.TDB_Load"
+               label="Load RDF / XML data"
+               style="push">
+         </command>
+         <command
+               commandId="HarmonizationTool.TDB_Dump"
+               label="Dump entire TDB"
+               style="push">
+         </command>
          <command
                commandId="HarmonizationTool.extQueryID"
                label="Query From File"
@@ -220,16 +261,6 @@
                label="Update From File"
                style="push"
                tooltip="Run a (delete or insert) update from a file">
-         </command>
-         <command
-               commandId="HarmonizationTool.TDB_Load"
-               label="Load TDB from RDF / XML"
-               style="push">
-         </command>
-         <command
-               commandId="HarmonizationTool.TDB_Dump"
-               label="Dump TDB to RDF/XML"
-               style="push">
          </command>
       </menuContribution>
    </extension>

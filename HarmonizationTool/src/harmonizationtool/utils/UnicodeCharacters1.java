@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileEncoding {
+public class UnicodeCharacters1 {
 
 	// ENCODINGS FOUND AT:
 	// http://docs.oracle.com/javase/7/docs/technotes/guides/intl/encoding.doc.html

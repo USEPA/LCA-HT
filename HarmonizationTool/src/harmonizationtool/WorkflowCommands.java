@@ -61,7 +61,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 
-public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
+//public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
+public class WorkflowCommands extends ViewPart {
+
 	public static final String ID = "HarmonizationTool.WorkflowCommandsID";
 
 	private List<LabeledQuery> labeledQueries = new ArrayList<LabeledQuery>();
@@ -73,7 +75,7 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
 	private List<String> paramUpdates = new ArrayList<String>();
 
-	private Text windowQueryUpdate;
+//	private Text windowQueryUpdate;
 
 	private void createLabeledQueries() {
 		labeledQueries.add(new QDataSources());
@@ -125,7 +127,7 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 				System.out.println("title= " + title);
 
 				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+//				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
 				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
 				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
@@ -149,19 +151,7 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// txtTextArea.setText("new text");
-				String updateStr = windowQueryUpdate.getText();
-				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
-
-				// addFilename(path);
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-				String title = resultsView.getTitle();
-				System.out.println("title= " + title);
-
-				resultsView.update(iGenericUpdate.getData());
-				resultsView.update(iGenericUpdate.getQueryResults());
-
+				// THE BUTTON WAS PUSHED
 			}
 
 			@Override
@@ -171,47 +161,10 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
-		// txtTextArea.setBounds(297, 0, 148, 469);
-		windowQueryUpdate.setBounds(150, 0, 600, 500);
-
-		// Color queryWindowColor = new Color(device, 255, 255, 200);
-		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
-		windowQueryUpdate.setText("(query / update editor)");
-		// parent.setLayout(null);
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		Table table = viewer.getTable();
-		// table.setBounds(445, 0, 149, 469);
-		table.setBounds(0, 0, 150, 500);
-		viewer.setContentProvider(new QueryViewContentProvider(viewer));
-
-		// queryWindow.append("Query Window");
-		viewer.setLabelProvider(new QueryViewLabelProvider());
-		viewer.setInput(getViewSite());
-		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
-			@Override
-			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
-			}
-		});
-
-		// Cursor cursor = new Cursor(device, 19);
-		// Color red = new Color (device, 255, 0, 0);
 
 		makeActions();
 		hookContextMenu();
 
-		for (LabeledQuery labeledQuery : labeledQueries) {
-			addQuery(labeledQuery);
-		}
-
-		addUpdate(uDelDataSet);
-
-		SelectTDB.getInstance().addSelectedTDBListener(this);
 	}
 
 	@Override
@@ -286,21 +239,21 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	private static void printValues(int lineNumber, String[] as) {
-		System.out.println("Line " + lineNumber + " has " + as.length + " values:");
-		for (String s : as) {
-			System.out.println("\t|" + s + "|");
-		}
-		System.out.println();
-	}
-
-	private DataRow initDataRow(String[] values) {
-		DataRow dataRow = new DataRow();
-		for (String s : values) {
-			dataRow.add(s);
-		}
-		return dataRow;
-	}
+//	private static void printValues(int lineNumber, String[] as) {
+//		System.out.println("Line " + lineNumber + " has " + as.length + " values:");
+//		for (String s : as) {
+//			System.out.println("\t|" + s + "|");
+//		}
+//		System.out.println();
+//	}
+//
+//	private DataRow initDataRow(String[] values) {
+//		DataRow dataRow = new DataRow();
+//		for (String s : values) {
+//			dataRow.add(s);
+//		}
+//		return dataRow;
+//	}
 
 	private void makeActions() {
 
@@ -319,94 +272,7 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 
 				LabeledQuery labeledQuery = queryFromKey(key);
 				String showResultsInWindow = ResultsView.ID;
-//				if (labeledQuery != null) {
-//					if (labeledQuery instanceof HarmonyQuery2Impl) {
-//
-//						// Code to initiate query execution Job
-//						// once the job is done queryCallback(ResultSet
-//						// resultSet, String key) will be called to display
-//						// results
-//						QueryViewJob harmonyQuery2ImplJob = new QueryViewJob("Query", (HarmonyQuery2Impl) labeledQuery);
-//						((HarmonyQuery2Impl) labeledQuery).getParamaterFromUser();
-//						harmonyQuery2ImplJob.setPriority(Job.SHORT);
-//						harmonyQuery2ImplJob.setSystem(false);
-//						harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((WorkflowCommands) Util.findView(WorkflowCommands.ID), key));
-//						harmonyQuery2ImplJob.schedule();
-//
-//					}
-//
-//				}
-				// DialogQueryDataset dialog = new DialogQueryDataset(Display
-				// .getCurrent().getActiveShell());
-				//
-				//
-				// dialog.create();
-				// if (dialog.open() == Window.OK) {
-				// System.out.println("OK");
-				// String primaryDataSet = dialog.getPrimaryDataSet();
-				// String[] referenceDataSets = dialog.getReferenceDataSets();
-				// System.out.println(primaryDataSet);
-				// for (String s : referenceDataSets) {
-				// System.out.println(s);
-				// }
-				// // do query
-				//
-				//
-				//
-				// if (q instanceof IParamQuery) {
-				// System.out.println(" is instanceof IParamQuery");
-				// IParamQuery paramQuery = (IParamQuery) q;
-				// paramQuery.setPrimaryDataSet(primaryDataSet);
-				// paramQuery.setReferenceDataSets(referenceDataSets);
-				// System.out.println(q.getQuery());
-				//
-				// IWorkbenchPage page = PlatformUI.getWorkbench()
-				// .getActiveWorkbenchWindow().getActivePage();
-				// ResultsView resultsView = (ResultsView) page
-				// .findView(ResultsView.ID);
-				//
-				// // q.getData();
-				// System.out.println("It worked, now take this out and go back to work!");
-				// // resultsView.update(q.getData());
-				// // resultsView.update(q.getQueryResults());
-				//
-				// System.out.println("done");
-				// } else if (q instanceof IParamHarmonize) {
-				// System.out.println(" is instanceof IParamHarmonize");
-				// IParamHarmonize iParamHarmonize = (IParamHarmonize) q;
-				// iParamHarmonize.setQueryDataSet(primaryDataSet);
-				// iParamHarmonize.setReferenceDataSet(referenceDataSets[0]);
-				// System.out.println(q.getQuery());
-				//
-				// IWorkbenchPage page = PlatformUI.getWorkbench()
-				// .getActiveWorkbenchWindow().getActivePage();
-				// ResultsView resultsView = (ResultsView) page
-				// .findView(ResultsView.ID);
-				// // resultsView.update(q);
-				//
-				// // resultsView.iUpdate(q.getDataXform());
-				// // resultsView.iUpdate(q.getQueryResults());
-				//
-				// System.out.println("done");
-				// }
-				//
-				// }
-				// } else if (paramUpdates.contains(key)) {
-				//
-				// // GET THE UPDATE STRING (BUT DON'T RUN IT)
-				// HarmonyUpdate u = updateMap.get(key);
-				// System.out.println("u is:"+u.toString());
-				// String updateStr = u.getQuery();
-				//
-				// IWorkbenchPage page =
-				// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				// QueryView queryView = (QueryView)
-				// page.findView(QueryView.ID);
-				// queryView.setTextAreaContent(updateStr);
-				//
-				// System.out.println("done");
-				//
-				// }
+
 
 				try {
 					Util.showView(showResultsInWindow);
@@ -417,102 +283,5 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 			}
 		});
 
-	}
-
-	/**
-	 * this is method is called by QueryViewJobChangeListener once the QueryView
-	 * Job is complete
-	 * 
-	 * @param resultSet
-	 *            results of query
-	 * @param key
-	 *            type of query requested
-	 */
-	public void queryCallback(ResultSet resultSet, String key) {
-//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		LabeledQuery labeledQuery = queryFromKey(key);
-		String showResultsInWindow = ResultsView.ID;
-
-		resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
-		// ResultSet resultSet = q.getResultSet();
-		// TableProvider tableProvider = TableProvider
-		// .create((ResultSetRewindable) resultSet);
-		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-		if (key.startsWith("Harmonize CAS")) { // HACK!!
-			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
-			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-			// USE
-			// WHICH createTransform
-			// AND WHICH formatForTransfor()
-			// SHOULD BE KNOWN BY THE LabledQuery
-			// BUT CHOSEN BY THE CALLER
-			showResultsInWindow = ResultsTreeEditor.ID;
-
-			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
-			// resultsView.update(tableProvider);
-			try {
-				resultsTreeEditor.update(tableProvider);
-			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
-				e.printStackTrace();
-			}
-
-			// resultsView.formatForTransform0();
-		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util.findView(HarmonizeCompartments.ID);
-			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-			// USE
-			// WHICH createTransform
-			// AND WHICH formatForTransfor()
-			// SHOULD BE KNOWN BY THE LabledQuery
-			// BUT CHOSEN BY THE CALLER
-			showResultsInWindow = HarmonizeCompartments.ID;
-
-			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-			// resultsView.update(tableProvider);
-			try {
-				harmonizeCompartments.update(tableProvider);
-			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + harmonizeCompartments);
-				e.printStackTrace();
-			}
-
-			// resultsView.formatForTransform0();
-		} else {
-			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-			resultsView.update(tableProvider);
-		}
-
-	}
-
-	public void addFilename(final String url) {
-		viewer.add(url);
-	}
-
-	public void addQuery(LabeledQuery query) {
-		viewer.add(query.getLabel());
-		// queryMap.put(query.getLabel(), query);
-	}
-
-	public void addUpdate(HarmonyUpdate update) {
-		viewer.add(update.getLabel());
-		updateMap.put(update.getLabel(), update);
-	}
-
-	public void removeFilename(Object element) {
-		if (element == null)
-			return;
-
-		viewer.remove(element);
-	}
-
-	public void setTextAreaContent(String s) {
-		windowQueryUpdate.setText(s);
-		return;
-	}
-
-	@Override
-	public void TDBchanged(String tdb) {
 	}
 }
