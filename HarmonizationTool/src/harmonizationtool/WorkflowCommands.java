@@ -1,40 +1,20 @@
 package harmonizationtool;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.BufferedReader;
-
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
-import harmonizationtool.View.ViewContentProvider;
-import harmonizationtool.View.ViewLabelProvider;
 import harmonizationtool.comands.ISelectedTDBListener;
 import harmonizationtool.comands.SelectTDB;
-import harmonizationtool.dialog.DialogQueryDataset;
-import harmonizationtool.dialog.MyDialog;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelKeeper;
-import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
-import harmonizationtool.query.IParamHarmonize;
 import harmonizationtool.query.LabeledQuery;
 import harmonizationtool.query.QDataSetContents;
 
@@ -43,70 +23,42 @@ import harmonizationtool.query.QMatchCASandName;
 import harmonizationtool.query.UDelDataSet;
 
 import harmonizationtool.query.QCountMatches;
-import harmonizationtool.query.IParamQuery;
-import harmonizationtool.query.unused.QxCasNotInDB;
 import harmonizationtool.query.QDataSources;
 
-import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.utils.Util;
 
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.HandlerEvent;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.part.ViewPart;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Table;
 
 public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
@@ -562,22 +514,5 @@ public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 
 	@Override
 	public void TDBchanged(String tdb) {
-		// System.out.println("new TDB = " + tdb);
-		// String key = (String) selection.toList().get(0);
-		// String key = "Show Data Sources";
-		// System.out.println("key=" + key);
-		// HarmonyQuery q = queryMap.get(key);
-		// System.out.println(q.getQuery());
-
-		// IWorkbenchPage page = PlatformUI.getWorkbench()
-		// .getActiveWorkbenchWindow().getActivePage();
-		// ResultsView resultsView = (ResultsView)
-		// page.findView(ResultsView.ID);
-		// resultsView.update(q);
-
-		// resultsView.update(q.getData());
-		// resultsView.update(q.getQueryResults());
-		// System.out.println("done");
-
 	}
 }
