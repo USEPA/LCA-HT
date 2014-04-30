@@ -75,6 +75,12 @@
             name="Job Status View"
             restorable="true">
       </view>
+      <view
+            class="harmonizationtool.WorkflowCommands"
+            id="HarmonizationTool.WorkflowCommandsID"
+            name="Workflow Commands"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
