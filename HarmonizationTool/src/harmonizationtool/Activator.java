@@ -1,7 +1,17 @@
 package harmonizationtool;
 
+import java.util.Date;
+import java.util.ResourceBundle;
+
+import harmonizationtool.utils.Util;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LoggerManager;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -21,6 +31,7 @@ public class Activator extends AbstractUIPlugin {
 	public Activator() {
 	}
 
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
@@ -28,6 +39,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		new LoggerManager().Init();
 	}
 
 	/*

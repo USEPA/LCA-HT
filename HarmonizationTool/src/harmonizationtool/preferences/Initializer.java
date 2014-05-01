@@ -23,10 +23,9 @@ public class Initializer extends AbstractPreferenceInitializer {
         store.setDefault("curatorEmail", "");
         store.setDefault("workingDirectory", "");
         store.setDefault("outputDirectory", "");
-        store.setDefault("logFileRoot", "LCAHT");
+        store.setDefault("outputFileRoot", "LCAHT");
         Date startupDate = new Date();
-        store.setDefault("timestamp",Util.getLocalDateFmt(startupDate));
-        store.setValue("logFile", store.getString("logFileRoot")+"_"+store.getString("timestamp")+".log");
+        store.setDefault("startTimestamp",Util.getLocalDateFmt(startupDate));
         store.setDefault("defaultTDB", "");
 	}
 }
