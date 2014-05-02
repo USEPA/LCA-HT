@@ -12,6 +12,8 @@ import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
+
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -47,9 +49,13 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private List<Text> dialogValues = new ArrayList<Text>();
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = null;
-	private final String newDataSetTempName = "(new data set)";
+//	private final String newDataSetTempName = "(new data set)";
+	private String newDataSetTempName = "";
+
 	// private String newFileName = null;
 	// Label lbl_01 = null;
+	private Logger runLogger = Logger.getLogger("run");
+
 
 	private ComboFileSelectorListener comboFileSelectorListener;
 	protected String combDataSetSelectorSavedText = "";
@@ -79,6 +85,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			return;
 		}
 		this.curDataSetProvider = DataSetKeeper.get(0);
+		runLogger.info("SET META existing dataset");
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD,
@@ -90,7 +97,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.callingDataSetProvider = dataSetProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSetProvider = callingDataSetProvider;
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename());
 		// this.curFileMD = callingFileMD;
+		runLogger.info("SET META start - existing dataset");
+		runLogger.info("  start name = "+dataSetProvider.getDataSetMD().getName());
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
@@ -103,12 +113,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSetProvider = new DataSetProvider();
 		this.newDataSetProvider.addFileMD(callingFileMD);
 		this.newDataSetProvider.setDataSetMD(new DataSetMD());
-		this.newDataSetProvider.getDataSetMD().setName(newDataSetTempName);
+		this.newDataSetProvider.getDataSetMD().setName(fileMD.getFilename());
 		this.newDataSetProvider.setCuratorMD(new CuratorMD());
 		this.curDataSetProvider = this.newDataSetProvider;
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename());
+		
 		if (DataSetKeeper.size() == 0) {
 			DataSetKeeper.add(newDataSetProvider);
 		}
+		runLogger.info("SET META start - new file");
+
 	}
 
 	// MAKE THE WHOLE DIALOG BOX
@@ -204,6 +218,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 								+ e.toString());
 				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
 				populateDataSetMD();
+				runLogger.info("  DATASET SELECTED: "+comboDataSetSelector.getText());
 
 				// if (comboSelectionIndex == 0){
 				// comboDataSetSelector.setItem(0,
@@ -218,6 +233,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 								+ e.toString());
 				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
 				populateDataSetMD();
+				runLogger.info("  DATASET SELECTED: "+comboDataSetSelector.getText());
 
 				// if (comboSelectionIndex == 0){
 				// comboDataSetSelector.setItem(0,
@@ -454,16 +470,18 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void cancelPressed() {
 
 		super.cancelPressed();
+		runLogger.info("SET META cancel");
 	}
 
 	@Override
 	protected void okPressed() {
 		String dataSetName = comboDataSetSelector.getText();
-		if (dataSetName.equals(newDataSetTempName)) {
-			new GenericMessageBox(getParentShell(), "Invalid Name",
-					"Please click to choose a name for the new Data Set.");
-			return;
-		}
+//		if (dataSetName.equals(newDataSetTempName)) {
+//			new GenericMessageBox(getParentShell(), "Invalid Name",
+//					"Please click to choose a name for the new Data Set.");
+//			return;
+//		}
+		System.out.println("comboDataSetSelector.getText() "+comboDataSetSelector.getText());
 		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
 		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
 
@@ -474,15 +492,25 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dataSetMD.setContactAffiliation(dialogValues.get(6).getText());
 		dataSetMD.setContactEmail(dialogValues.get(7).getText());
 		dataSetMD.setContactPhone(dialogValues.get(8).getText());
+		runLogger.info("  SET META: name = "+dataSetName);
+		runLogger.info("  SET META: version = "+dialogValues.get(3).getText());
+		runLogger.info("  SET META: contactName = "+dialogValues.get(5).getText());
+		runLogger.info("  SET META: contactAffiliation = "+dialogValues.get(6).getText());
+		runLogger.info("  SET META: contactEmail = "+dialogValues.get(7).getText());
+		runLogger.info("  SET META: contactPhone = "+dialogValues.get(8).getText());
 
 		// curatorMD META DATA
 		curatorMD.setName(dialogValues.get(9).getText());
 		curatorMD.setAffiliation(dialogValues.get(10).getText());
 		curatorMD.setEmail(dialogValues.get(11).getText());
 		curatorMD.setPhone(dialogValues.get(12).getText());
+		runLogger.info("  SET META: curatorName = "+dialogValues.get(9).getText());
+		runLogger.info("  SET META: curatorAffiliation = "+dialogValues.get(10).getText());
+		runLogger.info("  SET META: curatorEmail = "+dialogValues.get(11).getText());
+		runLogger.info("  SET META: curatorPhone = "+dialogValues.get(12).getText());
 
 		if ((newDataSetProvider != null)
-				&& (comboSelectionIndex == DataSetKeeper.size())) {
+				&& (comboSelectionIndex == 0)) {
 
 			boolean success = DataSetKeeper.add(curDataSetProvider); // A
 																		// DataSetProvider
@@ -492,8 +520,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 					+ success);
 		} else if (newDataSetProvider != null) {
 			curDataSetProvider.addFileMD(callingFileMD);
+			runLogger.info("  SET META: associated file = "+callingFileMD.getPath()+"/"+callingFileMD.getFilename());
 		}
 		SelectTDB.syncDataSetProviderToTDB(curDataSetProvider);
+		runLogger.info("SET META complete");
+
 		super.okPressed();
 	}
 
@@ -599,34 +630,22 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
 	private String[] getDataSetInfo() {
-		List<String> toSort = new ArrayList<String>();
+		List<String> toSort = DataSetKeeper.getNames();
 		if (callingDataSetProvider != null) {
 			String[] results = new String[1];
 			results[0] = callingDataSetProvider.getDataSetMD().getName();
 			return results;
-		} else {
-			List<Integer> ids = DataSetKeeper.getIDs();
-			Iterator<Integer> iterator = ids.iterator();
-
-			while (iterator.hasNext()) {
-				int id = iterator.next();
-				toSort.add(DataSetKeeper.get(id).getDataSetMD().getName());
-			}
-			Collections.sort(toSort);
-		}
-
-		if (newDataSetProvider != null) {
-			String[] results = new String[DataSetKeeper.size() + 1];
+		} else if (newDataSetProvider != null) {
+			String[] results = new String[toSort.size() + 1];
 			// results[0] = newDataSetTempName;
 			for (int i = 0; i < toSort.size(); i++) {
-				results[i] = toSort.get(i);
+				results[i+1] = toSort.get(i);
 			}
-			results[DataSetKeeper.size()] = newDataSetTempName;
-			curDataSetProvider = DataSetKeeper.get(DataSetKeeper
-					.indexOfDataSetName(results[0]));
+			results[0] = newDataSetTempName;
+			curDataSetProvider = newDataSetProvider;
 			return results;
 		} else {
-			String[] results = new String[DataSetKeeper.size()];
+			String[] results = new String[toSort.size()];
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i] = toSort.get(i);
 			}

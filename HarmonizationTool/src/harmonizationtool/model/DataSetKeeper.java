@@ -4,6 +4,7 @@ import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.vocabulary.ECO;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,6 +57,24 @@ public class DataSetKeeper {
 			ids.add(dataSetProviderList.indexOf(iterator.next()));
 		}
 		return ids;
+	}
+	
+	public static List<String> getNames() {
+		List<String> results = new ArrayList<String>();
+		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
+		while (iterator.hasNext()) {
+			results.add(iterator.next().getDataSetMD().getName());
+		}
+		Collections.sort(results);
+		return results;
+	}
+	
+	public static String uniquify(String proposedNewDatasetName){
+		String uniqueName = proposedNewDatasetName;
+		while (indexOfDataSetName(uniqueName) >-1){
+			uniqueName+="_";
+		}
+		return uniqueName;
 	}
 
 	public static DataSetProvider get(int index) {
