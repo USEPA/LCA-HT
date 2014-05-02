@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
+import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -54,6 +55,7 @@ public class ImportCSV implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		Logger runLogger = Logger.getLogger("run");
 		System.out.println("executing Import CSV");
 		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();
@@ -75,7 +77,10 @@ public class ImportCSV implements IHandler {
 		if (path != null) {
 			file = new File(path);
 
+			runLogger.info("LOAD CSV " + path);
+
 			if (!file.exists()) {
+				runLogger.warn("# File not found\n");
 
 				String msg = "File does not exist!";
 				Util.findView(View.ID).getViewSite().getActionBars()
@@ -93,6 +98,8 @@ public class ImportCSV implements IHandler {
 		}
 		if (fileReader == null) {
 			String msg = "Can not read CSV file!";
+			runLogger.error("# File not readable\n");
+
 			Util.findView(View.ID).getViewSite().getActionBars()
 					.getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
@@ -100,8 +107,10 @@ public class ImportCSV implements IHandler {
 		}
 		FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
 		String issues = checkFileEncoding.showFileIssues(path);
-		System.out.println("Issues found with file: " + path + ":\n" + issues);
-		
+		if (issues != null) {
+			runLogger.warn("# Non-ASCII issues found:\n" + issues);
+			System.out.println("Issues found with file: " + path + ":\n" + issues);
+		}
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
 		String[] values = null;
 		try {
@@ -111,6 +120,8 @@ public class ImportCSV implements IHandler {
 		}
 		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
 			String msg = "No content in CSV file!";
+			runLogger.warn("# No content in CSV file!");
+
 			Util.findView(View.ID).getViewSite().getActionBars()
 					.getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
@@ -120,7 +131,13 @@ public class ImportCSV implements IHandler {
 		fileMD.setPath(path);
 		fileMD.setSize(file.length());
 		fileMD.setLastModified(new Date(file.lastModified()));
-		fileMD.setReadTime(new Date());
+		Date readStartTime = new Date();
+		fileMD.setReadTime(readStartTime);
+		runLogger.info("# File read at: "
+				+ Util.getLocalDateFmt(readStartTime));
+		runLogger.info("# File last modified: "
+				+ Util.getLocalDateFmt(new Date(file.lastModified())));
+		runLogger.info("# File size: " + file.length());
 
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
 		TableKeeper.saveTableProvider(path, tableProvider);
@@ -164,6 +181,10 @@ public class ImportCSV implements IHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Date readEndTime = new Date();
+		runLogger.info("# File read time (in seconds): "
+				+ readEndTime.compareTo(readStartTime));
+
 		String msg = "Finished reading file: " + path;
 		Util.findView(View.ID).getViewSite().getActionBars()
 				.getStatusLineManager().setMessage(msg);

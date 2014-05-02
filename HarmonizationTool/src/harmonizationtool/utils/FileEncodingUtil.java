@@ -127,7 +127,7 @@ public class FileEncodingUtil {
 					if (issues == null) {
 						issues = "";
 					}
-					issues += "Line: " + lineNumber + ", column: " + colNumber
+					issues += "###   Line: " + lineNumber + ", column: " + colNumber
 							+ ". found character number: " + unicodeCharNumber
 							+ ". It looks like:" + nonAsciiChar + "\n";
 				}
@@ -144,7 +144,7 @@ public class FileEncodingUtil {
 		for (String encoding : commonEncodingSets) {
 			System.out.println("Checking encoding: " + encoding);
 			String issue0 = showFileIssues(path, encoding);
-			allIssues += "Basic Encoding: " + encoding + ". Issues: \n"
+			allIssues += "##  Basic Encoding: " + encoding + ". Issues: \n"
 					+ issue0 + "\n";
 		}
 		// for (String encoding: basicEncodingSets){
