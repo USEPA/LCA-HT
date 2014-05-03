@@ -62,10 +62,10 @@ public class ExportTriplesHandler implements IHandler {
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
 				fileDialog.setFilterExtensions(new String[] { "*.ttl", "*.n3" });
 				String homeDir = System.getProperty("user.home");
-				String workingDir = Util.getPreferenceStore().getString(
-						"workingDir");
-				if (workingDir.length() > 0) {
-					fileDialog.setFilterPath(workingDir);
+				String workingDirectory = Util.getPreferenceStore().getString(
+						"workingDirectory");
+				if (workingDirectory.length() > 0) {
+					fileDialog.setFilterPath(workingDirectory);
 				} else {
 					fileDialog.setFilterPath(homeDir);
 				}

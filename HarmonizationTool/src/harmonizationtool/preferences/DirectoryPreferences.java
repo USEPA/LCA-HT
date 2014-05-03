@@ -49,7 +49,7 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements
 			addField(new DirectoryFieldEditor("outputDirectory",
 					"Output Direcotry:", getFieldEditorParent()));
 			StringFieldEditor stringFieldEditor = new StringFieldEditor(
-					"outputFileRoot", "Output File Root", composite);
+					"runfileRoot", "Runfile Root", composite);
 //			stringFieldEditor.getLabelControl(composite).setText(
 //					"Output File Root");
 			addField(stringFieldEditor);

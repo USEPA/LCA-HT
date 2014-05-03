@@ -2,26 +2,21 @@ package org.apache.log4j;
 
 import harmonizationtool.utils.Util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 public class LoggerManager {
-	private static String timestampValidFmt = Util
-			.getPreferenceStore()
-			.getString("startTimestamp")
-			.replace(":", "-")
-			.substring(
-					0,
-					Util.getPreferenceStore().getString("startTimestamp")
-							.length() - 5);
+	private static String timestampValidFmt = Util.getPreferenceStore().getString("startTimestamp").replace(":", "-")
+			.substring(0, Util.getPreferenceStore().getString("startTimestamp").length() - 5);
 
 	public static void Init() {
 		System.out.println("The logger init is executing");
 		setUpRootLogger();
 		setUpRunLogger();
-//		setUpTDBLogger();
+		// setUpTDBLogger();
 
-//		System.out.println("Wrote to root log!");
+		// System.out.println("Wrote to root log!");
 	}
 
 	private static void setUpRootLogger() {
@@ -29,41 +24,57 @@ public class LoggerManager {
 		BasicConfigurator.configure();
 		rootLogger.setLevel(Level.INFO);
 
-		PatternLayout layout = new PatternLayout(
-				"%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
+		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
 		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
 		rootLogger.addAppender(new ConsoleAppender(layout));
-//		try {
-//			// Define file appender with layout and output log file name
-//			RollingFileAppender fileAppender = new RollingFileAppender(layout,
-//					Util.getPreferenceStore().getString("outputDirectory")
-//							+ "/"
-//							+ Util.getPreferenceStore().getString(
-//									"outputFileRoot") + "_debug_"
-//							+ timestampValidFmt + ".txt");
-//			// Add the appender to root logger
-//			rootLogger.addAppender(fileAppender);
-//		} catch (IOException e) {
-//			System.out.println("Failed to add appender !!");
-//			System.out.println("e =" + e);
-//		}
-		rootLogger
-				.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
+		// try {
+		// // Define file appender with layout and output log file name
+		// RollingFileAppender fileAppender = new RollingFileAppender(layout,
+		// Util.getPreferenceStore().getString("outputDirectory")
+		// + "/"
+		// + Util.getPreferenceStore().getString(
+		// "outputFileRoot") + "_debug_"
+		// + timestampValidFmt + ".txt");
+		// // Add the appender to root logger
+		// rootLogger.addAppender(fileAppender);
+		// } catch (IOException e) {
+		// System.out.println("Failed to add appender !!");
+		// System.out.println("e =" + e);
+		// }
+		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
 	private static void setUpRunLogger() {
 		Logger runLogger = Logger.getLogger("run");
+		
+		// Establish the "runfiles" subfolder of outputfiles
+//		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
+//		if (outputDirectory.length() > 0) {
+//			fileDialog.setFilterPath(outputDirectory);
+//		} else {
+//			String homeDir = System.getProperty("user.home");
+//			fileDialog.setFilterPath(homeDir);
+//		}
+//
+//		String path = fileDialog.open();
+//		File file = null;
+//		if (path != null) {
+//			file = new File(path);
+//
+//			runLogger.info("LOAD CSV " + path);
+			
 
 		PatternLayout layout = new PatternLayout("%m%n");
 		try {
 			// Define file appender with layout and output log file name
 			RollingFileAppender fileAppender = new RollingFileAppender(layout,
 					Util.getPreferenceStore().getString("outputDirectory")
-							+ "/"
-							+ Util.getPreferenceStore().getString(
-									"outputFileRoot") + "_run_"
-							+ timestampValidFmt + ".txt");
+					+ File.separator
+					+ "runfiles"
+					+ File.separator
+					+ Util.getPreferenceStore().getString("outputFileRoot")
+					+ "_" + timestampValidFmt + ".txt");
 
 			// Add the appender to root logger
 			runLogger.addAppender(fileAppender);
@@ -72,32 +83,30 @@ public class LoggerManager {
 			System.out.println("e =" + e);
 		}
 		runLogger.setLevel(Level.INFO);
-		runLogger.info("# Started LCAHT at: "
-				+ Util.getLocalDateFmt(new Date()));
+		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
+
 	private static void setUpTDBLogger() {
-		Logger tdbLogger = Logger
-				.getLogger("com.hp.hpl.jena.tdb.base.file.BlockAccessMapped");
+		Logger tdbLogger = Logger.getLogger("com.hp.hpl.jena.tdb.base.file.BlockAccessMapped");
 
 		// PatternLayout layout = new PatternLayout("%m%n");
-		PatternLayout layout = new PatternLayout(
-				"%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
+		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
 
-//		try {
-//			// Define file appender with layout and output log file name
-//			RollingFileAppender fileAppender = new RollingFileAppender(layout,
-//					Util.getPreferenceStore().getString("outputDirectory")
-//							+ "/"
-//							+ Util.getPreferenceStore().getString(
-//									"outputFileRoot") + "_tdb_"
-//							+ timestampValidFmt + ".txt");
-//
-//			// Add the appender to root logger
-//			tdbLogger.addAppender(fileAppender);
-//		} catch (IOException e) {
-//			System.out.println("Failed to add appender !!");
-//			System.out.println("e =" + e);
-//		}
+		// try {
+		// // Define file appender with layout and output log file name
+		// RollingFileAppender fileAppender = new RollingFileAppender(layout,
+		// Util.getPreferenceStore().getString("outputDirectory")
+		// + "/"
+		// + Util.getPreferenceStore().getString(
+		// "outputFileRoot") + "_tdb_"
+		// + timestampValidFmt + ".txt");
+		//
+		// // Add the appender to root logger
+		// tdbLogger.addAppender(fileAppender);
+		// } catch (IOException e) {
+		// System.out.println("Failed to add appender !!");
+		// System.out.println("e =" + e);
+		// }
 		tdbLogger.setLevel(Level.TRACE);
 		// runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new
 		// Date()));

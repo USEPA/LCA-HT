@@ -240,10 +240,10 @@ public class View extends ViewPart {
 					filterPath = "c:\\";
 				}
 
-				String workingDir = Util.getPreferenceStore().getString(
-						"workingDir");
-				if (workingDir.length() > 0) {
-					dialog.setFilterPath(workingDir);
+				String workingDirectory = Util.getPreferenceStore().getString(
+						"workingDirectory");
+				if (workingDirectory.length() > 0) {
+					dialog.setFilterPath(workingDirectory);
 				} else {
 					dialog.setFilterPath(filterPath);
 				}

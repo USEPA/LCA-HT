@@ -72,7 +72,14 @@ public class DataSetKeeper {
 	public static String uniquify(String proposedNewDatasetName){
 		String uniqueName = proposedNewDatasetName;
 		while (indexOfDataSetName(uniqueName) >-1){
-			uniqueName+="_";
+			if (uniqueName.matches("/_\\d\\d$")){
+				String baseName = uniqueName.substring(0,uniqueName.length()-2);
+				int nextVal=Integer.parseInt(uniqueName.substring(baseName.length(), 2))+1;
+				uniqueName=baseName+nextVal;
+			}
+			else {
+				uniqueName+="_02";
+			}
 		}
 		return uniqueName;
 	}

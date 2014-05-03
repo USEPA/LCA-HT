@@ -350,6 +350,7 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		assert RDFS.label != null : "RDFS.label cannot be null";
 		assert dataSetMD.getName() != null : "dataSetMD.getName() cannot be null";
 		System.out.println("tdbResource = " + tdbResource);
+		
 
 		if (tdbResource.hasProperty(RDFS.label)) {
 			tdbResource.removeAll(RDFS.label);

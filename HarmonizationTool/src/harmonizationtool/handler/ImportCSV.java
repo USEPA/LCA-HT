@@ -64,9 +64,9 @@ public class ImportCSV implements IHandler {
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
-		String workingDir = Util.getPreferenceStore().getString("workingDir");
-		if (workingDir.length() > 0) {
-			fileDialog.setFilterPath(workingDir);
+		String workingDirectory = Util.getPreferenceStore().getString("workingDirectory");
+		if (workingDirectory.length() > 0) {
+			fileDialog.setFilterPath(workingDirectory);
 		} else {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);

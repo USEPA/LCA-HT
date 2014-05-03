@@ -510,19 +510,25 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: curatorPhone = "+dialogValues.get(12).getText());
 
 		if ((newDataSetProvider != null)
-				&& (comboSelectionIndex == 0)) {
-
+				&& (comboSelectionIndex < 1)) {
+			// comboSelectionIndex = -1 if no change issued
 			boolean success = DataSetKeeper.add(curDataSetProvider); // A
 																		// DataSetProvider
 																		// IS
 																		// BORN!!
 			System.out.println("Created new DataSetProvider succees: = "
 					+ success);
-		} else if (newDataSetProvider != null) {
+		}
+		if (callingFileMD != null) {
 			curDataSetProvider.addFileMD(callingFileMD);
 			runLogger.info("  SET META: associated file = "+callingFileMD.getPath()+"/"+callingFileMD.getFilename());
 		}
+
+		System.out.println("newDataSetProvider "+newDataSetProvider);
+		System.out.println("comboSelectionIndex "+comboSelectionIndex);
+
 		SelectTDB.syncDataSetProviderToTDB(curDataSetProvider);
+		
 		runLogger.info("SET META complete");
 
 		super.okPressed();

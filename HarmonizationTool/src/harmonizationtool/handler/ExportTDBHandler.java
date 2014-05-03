@@ -66,14 +66,14 @@ public class ExportTDBHandler implements IHandler {
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
 		fileDialog.setFilterExtensions(new String[] {"*.n3","*.rdf"});
-		String outputDir = Util.getPreferenceStore().getString(
-				"outputDir");
-		if (outputDir.startsWith("(same as") || outputDir.length() == 0) {
-			outputDir = Util.getPreferenceStore().getString(
-					"workingDir");
+		String outputDirectory = Util.getPreferenceStore().getString(
+				"outputDirectory");
+		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
+			outputDirectory = Util.getPreferenceStore().getString(
+					"workingDirectory");
 		}
-		if (outputDir.length() > 0) {
-			fileDialog.setFilterPath(outputDir);
+		if (outputDirectory.length() > 0) {
+			fileDialog.setFilterPath(outputDirectory);
 		} else {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
