@@ -97,7 +97,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.callingDataSetProvider = dataSetProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSetProvider = callingDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename());
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0,fileMD.getFilename().length()-4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing dataset");
 		runLogger.info("  start name = "+dataSetProvider.getDataSetMD().getName());
@@ -116,7 +116,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSetProvider.getDataSetMD().setName(fileMD.getFilename());
 		this.newDataSetProvider.setCuratorMD(new CuratorMD());
 		this.curDataSetProvider = this.newDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename());
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0,fileMD.getFilename().length()-4));
 		
 		if (DataSetKeeper.size() == 0) {
 			DataSetKeeper.add(newDataSetProvider);
