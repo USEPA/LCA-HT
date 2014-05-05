@@ -26,8 +26,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class DirectoryPreferences extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage {
+public class DirectoryPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	private Composite logFileComposite;
 
@@ -44,49 +43,38 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements
 
 	@Override
 	protected void createFieldEditors() {
-		String runFile = "[Output Directory]"
-				+ File.separator
-				+ "runfiles"
-				+ File.separator
-				+ Util.getPreferenceStore().getString("runfileRoot")
-				+ "_"
-				+ Util.getPreferenceStore().getString("startTimestamp")
-				+ ".txt";
+		String runFile = "[Output Directory]" + File.separator + "runfiles" + File.separator
+				+ Util.getPreferenceStore().getString("runfileRoot") + "_"
+				+ Util.getPreferenceStore().getString("startTimestamp") + ".txt";
 
-		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB:",
-				getFieldEditorParent()));
+		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB:", getFieldEditorParent()));
 
-		addField(new DirectoryFieldEditor("workingDirectory",
-				"Working Direcotry:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor("workingDirectory", "Working Direcotry:", getFieldEditorParent()));
 
-		addField(new DirectoryFieldEditor("outputDirectory",
-				"Output Direcotry:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor("outputDirectory", "Output Direcotry:", getFieldEditorParent()));
 
 		// Composite composite = new Composite();
 		Composite composite = getFieldEditorParent();
 
-		StringFieldEditor runfileRootEditor = new StringFieldEditor(
-				"runfileRoot", "Runfile Root", composite);
+		StringFieldEditor runfileRootEditor = new StringFieldEditor("runfileRoot", "Runfile Root", composite);
 
-		Text outputFileRoot = runfileRootEditor.getTextControl(composite);
+		Text runfileRoot = runfileRootEditor.getTextControl(composite);
 
-		final StringFieldEditor resultingRunfile = new StringFieldEditor("id",
-				"Resulting Runfile", -1,
+		final StringFieldEditor resultingRunfile = new StringFieldEditor("id", "Resulting Runfile", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, composite);
 		resultingRunfile.getTextControl(composite).setEditable(false);
 		resultingRunfile.getTextControl(composite).setText(runFile);
 
-		outputFileRoot.addModifyListener(new ModifyListener() {
+		runfileRoot.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
+
 				Text sourceText = (Text) e.getSource();
 				String logFile = sourceText.getText();
 				logFile += "_";
-				logFile += Util.getPreferenceStore()
-						.getString("startTimestamp") + ".txt";
-				resultingRunfile.setStringValue("[Output Directory]"
-						+ File.separator + "runfiles" + File.separator
+				logFile += LoggerManager.getTimeStampValidFmt() + ".txt";
+				resultingRunfile.setStringValue("[Output Directory]" + File.separator + "runfiles" + File.separator
 						+ logFile);
 				// Util.getPreferenceStore().setValue("logFile", logFile);
 			}
@@ -94,7 +82,7 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements
 
 		addField(runfileRootEditor);
 
-//		addField(resultingRunfile);
+		// addField(resultingRunfile);
 
 	}
 }

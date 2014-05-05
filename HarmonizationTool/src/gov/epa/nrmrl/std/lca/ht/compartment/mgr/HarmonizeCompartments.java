@@ -161,8 +161,7 @@ public class HarmonizeCompartments extends ViewPart {
 					model.add(annotationResource, DCTerms.dateSubmitted,
 							dateLiteral);
 					if (Util.getPreferenceStore().getString("userName") != null) {
-						Literal userName = model.createLiteral(Util
-								.getPreferenceStore().getString("userName"));
+						Literal userName = model.createLiteral(Util.getPreferenceStore().getString("userName"));
 						model.add(annotationResource, DCTerms.creator, userName);
 					}
 				}

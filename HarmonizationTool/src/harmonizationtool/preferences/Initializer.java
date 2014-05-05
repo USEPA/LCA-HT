@@ -25,7 +25,7 @@ public class Initializer extends AbstractPreferenceInitializer {
         store.setDefault("outputDirectory", store.getString("workingDirectory"));
         store.setDefault("runfileRoot", "LCAHT");
         Date startupDate = new Date();
-        store.setDefault("startTimestamp",Util.getLocalDateFmt(startupDate));
+		store.setDefault("startTimestamp",Util.getLocalDateFmt(startupDate));
         store.setDefault("defaultTDB", "");
 	}
 }

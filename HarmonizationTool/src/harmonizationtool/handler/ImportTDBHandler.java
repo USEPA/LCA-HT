@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.regex.Pattern;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -72,6 +74,8 @@ public class ImportTDBHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		Logger runLogger = Logger.getLogger("run");
+
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
 		if(SelectTDB.model== null){
@@ -139,6 +143,7 @@ public class ImportTDBHandler implements IHandler {
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
+					runLogger.info("LOAD RDF "+fileName);
 					SelectTDB.syncTDBToDataSetKeeper();
 
 				} catch (FileNotFoundException e1) {
@@ -153,6 +158,8 @@ public class ImportTDBHandler implements IHandler {
 				// System.out.println("Got a zip file");
 				try {
 					ZipFile zf = new ZipFile(fileName);
+					runLogger.info("LOAD RDF (zip file)"+fileName);
+
 					Enumeration entries = zf.entries();
 					// JenaReader jenaReader = new JenaReader();
 					while (entries.hasMoreElements()) {
@@ -168,7 +175,10 @@ public class ImportTDBHandler implements IHandler {
 									+ " zipped file:" + ze.getName());
 							BufferedReader zipStream = new BufferedReader(
 									new InputStreamReader(zf.getInputStream(ze)));
+							runLogger.info("  # zip file contains: "+ze.getName());
+
 							model.read(zipStream, null, inputType);
+							
 							SelectTDB.syncTDBToDataSetKeeper();
 
 							// jenaReader.read(model, zipStream, null);
@@ -187,6 +197,9 @@ public class ImportTDBHandler implements IHandler {
 			long change = now - was;
 			System.out.println("Was:" + was + " Added:" + change + " Now:"
 					+ now);
+			runLogger.info("  # RDF triples before: "+NumberFormat.getIntegerInstance().format(was));
+			runLogger.info("  # RDF triples after:  "+NumberFormat.getIntegerInstance().format(now));
+			runLogger.info("  # RDF triples added:  "+NumberFormat.getIntegerInstance().format(change));
 		}
 		// GenericUpdate iGenericInsert = new
 		// GenericUpdate(queryStr,"Ext. File Update");

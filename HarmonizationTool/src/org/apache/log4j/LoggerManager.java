@@ -19,6 +19,10 @@ public class LoggerManager {
 		// System.out.println("Wrote to root log!");
 	}
 
+	public static String getTimeStampValidFmt() {
+		return timestampValidFmt;
+	}
+
 	private static void setUpRootLogger() {
 		Logger rootLogger = Logger.getRootLogger();
 		BasicConfigurator.configure();
@@ -34,7 +38,7 @@ public class LoggerManager {
 		// Util.getPreferenceStore().getString("outputDirectory")
 		// + "/"
 		// + Util.getPreferenceStore().getString(
-		// "outputFileRoot") + "_debug_"
+		// "runfileRootRoot") + "_debug_"
 		// + timestampValidFmt + ".txt");
 		// // Add the appender to root logger
 		// rootLogger.addAppender(fileAppender);
@@ -47,33 +51,33 @@ public class LoggerManager {
 
 	private static void setUpRunLogger() {
 		Logger runLogger = Logger.getLogger("run");
-		
-		// Establish the "runfiles" subfolder of outputfiles
-//		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
-//		if (outputDirectory.length() > 0) {
-//			fileDialog.setFilterPath(outputDirectory);
-//		} else {
-//			String homeDir = System.getProperty("user.home");
-//			fileDialog.setFilterPath(homeDir);
-//		}
-//
-//		String path = fileDialog.open();
-//		File file = null;
-//		if (path != null) {
-//			file = new File(path);
-//
-//			runLogger.info("LOAD CSV " + path);
-			
+
+		// Establish the "runfiles" subfolder of runfiles
+		// String outputDirectory =
+		// Util.getPreferenceStore().getString("outputDirectory");
+		// if (outputDirectory.length() > 0) {
+		// fileDialog.setFilterPath(outputDirectory);
+		// } else {
+		// String homeDir = System.getProperty("user.home");
+		// fileDialog.setFilterPath(homeDir);
+		// }
+		//
+		// String path = fileDialog.open();
+		// File file = null;
+		// if (path != null) {
+		// file = new File(path);
+		//
+		// runLogger.info("LOAD CSV " + path);
 
 		PatternLayout layout = new PatternLayout("%m%n");
 		try {
 			// Define file appender with layout and output log file name
-			RollingFileAppender fileAppender = new RollingFileAppender(layout,
-					Util.getPreferenceStore().getString("outputDirectory")
+			RollingFileAppender fileAppender = new RollingFileAppender(layout, Util.getPreferenceStore().getString(
+					"outputDirectory")
 					+ File.separator
 					+ "runfiles"
 					+ File.separator
-					+ Util.getPreferenceStore().getString("outputFileRoot")
+					+ Util.getPreferenceStore().getString("runfileRoot")
 					+ "_" + timestampValidFmt + ".txt");
 
 			// Add the appender to root logger
@@ -98,7 +102,7 @@ public class LoggerManager {
 		// Util.getPreferenceStore().getString("outputDirectory")
 		// + "/"
 		// + Util.getPreferenceStore().getString(
-		// "outputFileRoot") + "_tdb_"
+		// "runfileRootRoot") + "_tdb_"
 		// + timestampValidFmt + ".txt");
 		//
 		// // Add the appender to root logger

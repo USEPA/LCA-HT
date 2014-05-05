@@ -14,6 +14,7 @@ import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -291,8 +292,12 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 	protected void okPressed() {
 		int index = DataSetKeeper.indexOfDataSetName(comboDataSetSelector.getText());
 		// CONFIRM DELETION OF DATASET
+		Logger runLogger = Logger.getLogger("run");
+		runLogger.info("DELETE DATA SET: name = "+comboDataSetSelector.getText());
 		DataSetProvider dataSetProvider = DataSetKeeper.get(index);
 		Resource tdbResource = dataSetProvider.getTdbResource();
+		runLogger.info("  DELETE TDB DATA: tdbReference = "+tdbResource);
+
 		DataSetKeeper.remove(dataSetProvider);
 		Model model = SelectTDB.model;
 		// StmtIterator stmtIterator = tdbResource.listProperties();
@@ -301,22 +306,31 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		SelectTDB.removeAllWithSubject(tdbResource);
 		// REMOVE ANYTHING WHICH HAS THIS AS A DATASOURCE (ALL WITH SUBJECT)
 		ResIterator iterator = model.listSubjectsWithProperty(ECO.hasDataSource, tdbResource);
+		int deletedQunatites = 0;
+		int deletedIndividuals = 0;
+
 		while (iterator.hasNext()) {
 			Resource resource = iterator.next();
 			List<Statement> quantities = resource.listProperties(ECO.hasQuantity).toList();
 			for (Statement quantity : quantities) {
 				Resource bn = quantity.getResource();
 //				int fred = SelectTDB.removeAllWithSubject(bn);
-				SelectTDB.removeAllWithSubject(bn);
+				deletedQunatites += SelectTDB.removeAllWithSubject(bn);
+
 //				System.out.println("part count: " + fred);
 //				if (bn.isAnon()) {
 //					System.out.println("yes, anonymous");
 //				}
 				quantity.remove();
 			}
-			SelectTDB.removeAllWithSubject(resource);
+			deletedIndividuals += SelectTDB.removeAllWithSubject(resource);
+
 
 		}
+		runLogger.info("  # Deleted members: "+deletedQunatites);
+		runLogger.info("  # Deleted dataset meta items: "+deletedIndividuals);
+
+
 		// IS THIS NEEDED IN CASE ANYTHING IS LEFT OVER?!?
 		// SelectTDB.removeAllWithObject(tdbResource);
 

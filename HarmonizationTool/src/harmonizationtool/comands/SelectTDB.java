@@ -258,9 +258,11 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 				String name = subject.getProperty(RDFS.label).getObject()
 						.toString();
 
-				while (DataSetKeeper.indexOfDataSetName(name) > -1) {
-					name += "+";
-				}
+//				while (DataSetKeeper.indexOfDataSetName(name) > -1) {
+//					name += "+";
+//				}
+				String newName = DataSetKeeper.uniquify(name);
+				name = DataSetKeeper.uniquify(name);
 				subject.getProperty(RDFS.label).changeObject(name);
 				dataSetMD.setName(name);
 
