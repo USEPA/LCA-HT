@@ -140,19 +140,6 @@
             </command>
          </menu>
          <menu
-               label="TDB">
-            <command
-                  commandId="harmonizationtool.tdb.select.id"
-                  label="Open TDB"
-                  style="push">
-            </command>
-            <command
-                  commandId="harmonizationtool.handler.CloseTDB"
-                  label="Close TDB"
-                  style="push">
-            </command>
-         </menu>
-         <menu
                label="Data Set">
             <command
                   commandId="HarmonizationTool.EditMetadataId"
@@ -166,7 +153,7 @@
             </command>
          </menu>
          <menu
-               label="Window">
+               label="Window Manager">
             <menu
                   label="Data">
                <command
@@ -235,6 +222,19 @@
                   label="Update From File"
                   style="push"
                   tooltip="Run a (delete or insert) update from a file">
+            </command>
+         </menu>
+         <menu
+               label="Advanced">
+            <command
+                  commandId="harmonizationtool.tdb.select.id"
+                  label="Open TDB"
+                  style="push">
+            </command>
+            <command
+                  commandId="harmonizationtool.handler.CloseTDB"
+                  label="Close TDB"
+                  style="push">
             </command>
          </menu>
       </menuContribution>
