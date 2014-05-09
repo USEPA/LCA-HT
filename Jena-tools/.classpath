@@ -11,7 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="jena-iri-0.9.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="jena-tdb-0.10.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="log4j-1.2.16.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-api-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="xercesImpl-2.10.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="xml-apis-1.4.01.jar"/>

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -71,20 +73,26 @@ public class DataSetKeeper {
 	
 	public static String uniquify(String proposedNewDatasetName){
 		String uniqueName = proposedNewDatasetName;
+		Pattern numberedEnding = Pattern.compile("(.*)_(\\d+)$");
+		 
 		while (indexOfDataSetName(uniqueName) >-1){
-			System.out.println("checking uniqueName: "+uniqueName);
-			if (uniqueName.matches("/_\\d\\d$")){
-				String baseName = uniqueName.substring(0,uniqueName.length()-2);
-				System.out.println("baseName: "+baseName);
+			
+//			System.out.println("checking uniqueName: "+uniqueName);
+//			Pattern numberedEnding = Pattern.compile("_\\d\\d$");
+			Matcher endingMatcher = numberedEnding.matcher(uniqueName);
+			
+			if (endingMatcher.find()){
+				String baseName = endingMatcher.group(1);
+//				System.out.println("Match, so baseName: "+baseName);
 
-				int nextVal=Integer.parseInt(uniqueName.substring(baseName.length(), 2))+1;
-				uniqueName=baseName+nextVal;
-				System.out.println("uniqueName is now: "+uniqueName);
+				int nextVal=Integer.parseInt(endingMatcher.group(2))+1;
+				uniqueName=baseName+"_"+nextVal;
+//				System.out.println("... and uniqueName is now: "+uniqueName);
 
 			}
 			else {
-				uniqueName+="_02";
-				System.out.println("uniqueName is now: "+uniqueName);
+				uniqueName+="_1";
+//				System.out.println("No match, so uniqueName is now: "+uniqueName);
 			}
 		}
 		return uniqueName;
