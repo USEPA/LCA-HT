@@ -1,5 +1,8 @@
 package org.apache.log4j;
 
+import harmonizationtool.console.LightweightConsoleView;
+import harmonizationtool.console.LoggerViewer;
+import harmonizationtool.console.LoggerWriter;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -88,6 +91,10 @@ public class LoggerManager {
 		}
 		runLogger.setLevel(Level.INFO);
 		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
+		
+		Appender appender = new WriterAppender(layout, new LoggerWriter(LoggerViewer.loggerArea));
+		runLogger.addAppender(appender);
+
 	}
 
 	private static void setUpTDBLogger() {

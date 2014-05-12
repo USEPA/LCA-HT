@@ -81,6 +81,12 @@
             name="Workflow Commands"
             restorable="true">
       </view>
+      <view
+            class="harmonizationtool.console.LoggerViewer"
+            id="harmonizationtool.console.LoggerViewer"
+            name="Logger"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -200,6 +206,11 @@
                <command
                      commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
                      label="Show Console"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.handler.ShowLoggerViewerHandler"
+                     label="Show Logger"
                      style="push">
                </command>
             </menu>
@@ -387,6 +398,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"
             id="harmonizationtool.tree.viewer.ControlViewHandler"
             name="Show Control View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowLoggerViewerHandler"
+            id="harmonizationtool.handler.ShowLoggerViewerHandler"
+            name="Show Logger">
       </command>
    </extension>
    <extension
