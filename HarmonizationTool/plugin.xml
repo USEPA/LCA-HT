@@ -82,7 +82,7 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.console.LoggerViewer"
+            class="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
             id="harmonizationtool.console.LoggerViewer"
             name="Logger"
             restorable="true">
@@ -196,24 +196,11 @@
                      style="push">
                </command>
             </menu>
-            <menu
-                  label="Meta">
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
-                     label="Show Job Status"
-                     style="push">
-               </command>
-               <command
-                     commandId="harmonizationtool.handler.ShowLightWeightConsoleHandler"
-                     label="Show Console"
-                     style="push">
-               </command>
-               <command
-                     commandId="harmonizationtool.handler.ShowLoggerViewerHandler"
-                     label="Show Logger"
-                     style="push">
-               </command>
-            </menu>
+            <command
+                  commandId="harmonizationtool.handler.ShowLoggerViewerHandler"
+                  label="Show Logger"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="SPARQL">
@@ -388,11 +375,6 @@
             defaultHandler="harmonizationtool.handler.DeleteDataSetHandler"
             id="HarmonizationTool.DeleteDataSetId"
             name="Delete DataSet">
-      </command>
-      <command
-            defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
-            id="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
-            name="Show Job Status">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"

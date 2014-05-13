@@ -129,7 +129,7 @@ public class FileEncodingUtil {
 					}
 					issues += "#     Line: " + lineNumber + ", column: " + colNumber
 							+ ". found character number: " + unicodeCharNumber
-							+ ". It looks like:" + nonAsciiChar + "\n";
+							+ ". It looks like:->" + nonAsciiChar + "<-"+ System.lineSeparator();
 				}
 			}
 		} catch (IOException e1) {

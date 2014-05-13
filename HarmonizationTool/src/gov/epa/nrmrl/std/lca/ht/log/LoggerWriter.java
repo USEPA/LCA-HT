@@ -1,4 +1,4 @@
-package harmonizationtool.console;
+package gov.epa.nrmrl.std.lca.ht.log;
 
 import java.io.StringWriter;
 import org.eclipse.swt.widgets.Text;

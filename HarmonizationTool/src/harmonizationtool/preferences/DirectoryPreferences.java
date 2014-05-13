@@ -2,10 +2,10 @@ package harmonizationtool.preferences;
 
 import java.io.File;
 
+import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import harmonizationtool.Activator;
 import harmonizationtool.utils.Util;
 
-import org.apache.log4j.LoggerManager;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;

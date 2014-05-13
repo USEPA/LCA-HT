@@ -1,4 +1,5 @@
-package harmonizationtool.console;
+package gov.epa.nrmrl.std.lca.ht.log;
+
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;

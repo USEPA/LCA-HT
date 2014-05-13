@@ -1,10 +1,17 @@
-package org.apache.log4j;
+package gov.epa.nrmrl.std.lca.ht.log;
 
 import harmonizationtool.utils.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 public class LoggerManager {
 	private static String timestampValidFmt = Util.getPreferenceStore().getString("startTimestamp").replace(":", "-")

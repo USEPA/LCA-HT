@@ -5,6 +5,7 @@ import java.util.Date;
 import harmonizationtool.QueryView;
 import harmonizationtool.utils.Util;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -28,20 +29,8 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
 		Date startDate = new Date();
-		String message = "Job: =>" + key + "<= started: " + startDate;
-		try {
-			Util.showView(JobStatusView.ID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		JobStatusView jobStatusView = (JobStatusView) Util
-				.findView(JobStatusView.ID);
-		System.out.println("JobStatusView.ID " + JobStatusView.ID);
-		System.out.println("jobStatusView " + jobStatusView);
-		if (jobStatusView != null) {
-			jobStatusView.add(message);
-		}
+		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
+		// String message = "Job: =>" + key + "<= started: " + startDate;
 	}
 
 	@Override
@@ -57,22 +46,25 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// call its queryCallback method
 		Date endDate = new Date();
 
-		System.out.println("End date / time: " + endDate);
-		String message = "Job: =>" + key + "<= ended: " + endDate;
-		JobStatusView jobStatusView = (JobStatusView) Util
-				.findView(JobStatusView.ID);
-		if (jobStatusView != null) {
-			jobStatusView.add(message);
-		}
+		// System.out.println("End date / time: " + endDate);
+		// String message = "Job: =>" + key + "<= ended: " + endDate;
+		// JobStatusView jobStatusView = (JobStatusView) Util
+		// .findView(JobStatusView.ID);
+		// if (jobStatusView != null) {
+		// jobStatusView.add(message);
+		// }
+
+		Logger.getLogger("run").info("Job: " + key + " ended: " + endDate);
 
 		job = event.getJob();
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					QueryView queryView = (QueryView) Util
-							.findView(QueryView.ID);
-					queryView.queryCallback(
-							((QueryViewJob) job).getResultSet(), key);
+					QueryView queryView = (QueryView) Util.findView(QueryView.ID);
+					if (((QueryViewJob) job).getResultSet() == null) {
+						return;
+					}
+					queryView.queryCallback(((QueryViewJob) job).getResultSet(), key);
 				}
 
 			});

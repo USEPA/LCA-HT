@@ -3,11 +3,11 @@ package harmonizationtool;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import harmonizationtool.utils.Util;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.LoggerManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

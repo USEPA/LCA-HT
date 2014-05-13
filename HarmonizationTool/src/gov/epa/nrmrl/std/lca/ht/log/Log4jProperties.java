@@ -1,4 +1,6 @@
-package org.apache.log4j;
+package gov.epa.nrmrl.std.lca.ht.log;
+
+import org.apache.log4j.Logger;
 
 public class Log4jProperties {
 	static Logger log = Logger.getLogger(Log4jProperties.class);
