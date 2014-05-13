@@ -56,6 +56,7 @@ public class ImportCSV implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
+
 		System.out.println("executing Import CSV");
 		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();

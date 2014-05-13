@@ -1,8 +1,5 @@
 package org.apache.log4j;
 
-import harmonizationtool.console.LightweightConsoleView;
-import harmonizationtool.console.LoggerViewer;
-import harmonizationtool.console.LoggerWriter;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -35,42 +32,11 @@ public class LoggerManager {
 		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
 		rootLogger.addAppender(new ConsoleAppender(layout));
-		// try {
-		// // Define file appender with layout and output log file name
-		// RollingFileAppender fileAppender = new RollingFileAppender(layout,
-		// Util.getPreferenceStore().getString("outputDirectory")
-		// + "/"
-		// + Util.getPreferenceStore().getString(
-		// "runfileRootRoot") + "_debug_"
-		// + timestampValidFmt + ".txt");
-		// // Add the appender to root logger
-		// rootLogger.addAppender(fileAppender);
-		// } catch (IOException e) {
-		// System.out.println("Failed to add appender !!");
-		// System.out.println("e =" + e);
-		// }
 		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
 	private static void setUpRunLogger() {
 		Logger runLogger = Logger.getLogger("run");
-
-		// Establish the "runfiles" subfolder of runfiles
-		// String outputDirectory =
-		// Util.getPreferenceStore().getString("outputDirectory");
-		// if (outputDirectory.length() > 0) {
-		// fileDialog.setFilterPath(outputDirectory);
-		// } else {
-		// String homeDir = System.getProperty("user.home");
-		// fileDialog.setFilterPath(homeDir);
-		// }
-		//
-		// String path = fileDialog.open();
-		// File file = null;
-		// if (path != null) {
-		// file = new File(path);
-		//
-		// runLogger.info("LOAD CSV " + path);
 
 		PatternLayout layout = new PatternLayout("%m%n");
 		try {
@@ -91,10 +57,6 @@ public class LoggerManager {
 		}
 		runLogger.setLevel(Level.INFO);
 		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
-		
-		Appender appender = new WriterAppender(layout, new LoggerWriter(LoggerViewer.loggerArea));
-		runLogger.addAppender(appender);
-
 	}
 
 	private static void setUpTDBLogger() {
