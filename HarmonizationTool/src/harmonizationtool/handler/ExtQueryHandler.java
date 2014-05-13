@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import harmonizationtool.QueryView;
-import harmonizationtool.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;

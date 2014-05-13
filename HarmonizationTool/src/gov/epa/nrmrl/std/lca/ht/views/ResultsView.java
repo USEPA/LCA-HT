@@ -1,9 +1,9 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import harmonizationtool.ViewData.MyColumnLabelProvider;
+import gov.epa.nrmrl.std.lca.ht.views.ViewData.MyColumnLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;

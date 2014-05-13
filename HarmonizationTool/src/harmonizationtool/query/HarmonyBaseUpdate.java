@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import harmonizationtool.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;

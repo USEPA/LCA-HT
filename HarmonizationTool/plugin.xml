@@ -15,32 +15,32 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="Perspective"
-            class="harmonizationtool.Perspective"
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.Perspective"
             id="HarmonizationTool.perspective">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="harmonizationtool.View"
+            class="gov.epa.nrmrl.std.lca.ht.views.View"
             id="HarmonizationTool.view"
             name="Data File(s)"
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.QueryView"
+            class="gov.epa.nrmrl.std.lca.ht.views.QueryView"
             id="HarmonizationTool.QueryViewID"
             name="Query"
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.ViewData"
+            class="gov.epa.nrmrl.std.lca.ht.views.ViewData"
             id="HarmonizationTool.viewData"
             name="Data View"
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.ResultsView"
+            class="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
             id="HarmonizationTool.ResultsViewID"
             name="Results"
             restorable="true">
@@ -76,9 +76,9 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.WorkflowCommands"
-            id="HarmonizationTool.WorkflowCommandsID"
-            name="Workflow Commands"
+            class="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+            id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+            name="Flows Workflow"
             restorable="true">
       </view>
       <view
@@ -170,6 +170,11 @@
                <command
                      commandId="HarmonizationTool.ShowDataView"
                      label="Show Data View"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
+                     label="Show Flows Workflow"
                      style="push">
                </command>
             </menu>
@@ -347,9 +352,9 @@
             name="Show Results Tree Editor">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.ShowHarmonizeCompartmentsHandler"
-            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments.ShowHarmonizeCompartmentsHandler"
-            name="Show Harmonize Compartments">
+            defaultHandler="harmonizationtool.handler.ShowFlowsWorkflowHandler"
+            id="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
+            name="Show FlowsWorkflow Compartments">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.CloseTDB"

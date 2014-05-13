@@ -2,7 +2,7 @@ package harmonizationtool.query.unused;
 
 import java.util.Map;
 
-import harmonizationtool.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.handler.ImportTDBHandler;
 import harmonizationtool.model.DataRow;

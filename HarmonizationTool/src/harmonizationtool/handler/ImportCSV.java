@@ -1,8 +1,8 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.QueryView;
-import harmonizationtool.View;
-import harmonizationtool.ViewData;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.View;
+import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;

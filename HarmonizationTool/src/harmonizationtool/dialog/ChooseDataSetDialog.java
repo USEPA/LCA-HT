@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import harmonizationtool.ViewData;
+import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.handler.ImportCSV;
 import harmonizationtool.model.CuratorMD;

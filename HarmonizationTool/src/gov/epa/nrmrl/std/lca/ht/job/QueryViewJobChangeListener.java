@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.Date;
 
-import harmonizationtool.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.utils.Util;
 
 import org.apache.log4j.Logger;

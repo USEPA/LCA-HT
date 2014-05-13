@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.perspectives;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;

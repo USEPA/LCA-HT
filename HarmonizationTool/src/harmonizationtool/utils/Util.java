@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import harmonizationtool.Activator;
-import harmonizationtool.ViewData;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.vocabulary.ECO;
 

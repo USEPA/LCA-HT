@@ -8,6 +8,7 @@ import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.comands.ISelectedTDBListener;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
@@ -112,54 +113,54 @@ public class WorkflowCommands extends ViewPart {
 
 		Device device = Display.getCurrent();
 
-		Button queryButton = new Button(parent, SWT.BORDER);
-		// btnNewButton.setBounds(149, 0, 148, 469);
-		queryButton.setBounds(20, 150, 100, 30);
-		queryButton.setAlignment(SWT.LEFT);
-		queryButton.setText("Run Query");
-		queryButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-				String title = resultsView.getTitle();
-				System.out.println("title= " + title);
-
-				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-//				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
-				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
-
-				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-				resultsView.update(tableProvider);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-		Button updateButton = new Button(parent, SWT.BORDER);
-		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
-		updateButton.setBounds(20, 190, 100, 30);
-		updateButton.setAlignment(SWT.LEFT);
-		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
-		// NOT WORK IN WINDOWS
-		updateButton.setText("Run Update");
-		updateButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// THE BUTTON WAS PUSHED
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
+//		Button queryButton = new Button(parent, SWT.BORDER);
+//		// btnNewButton.setBounds(149, 0, 148, 469);
+//		queryButton.setBounds(20, 150, 100, 30);
+//		queryButton.setAlignment(SWT.LEFT);
+//		queryButton.setText("Run Query");
+//		queryButton.addSelectionListener(new SelectionListener() {
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+////				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+//				String title = resultsView.getTitle();
+//				System.out.println("title= " + title);
+//
+//				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+////				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+//				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
+//
+//				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+//				resultsView.update(tableProvider);
+//			}
+//
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//		});
+//		Button updateButton = new Button(parent, SWT.BORDER);
+//		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+//		updateButton.setBounds(20, 190, 100, 30);
+//		updateButton.setAlignment(SWT.LEFT);
+//		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
+//		// NOT WORK IN WINDOWS
+//		updateButton.setText("Run Update");
+//		updateButton.addSelectionListener(new SelectionListener() {
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				// THE BUTTON WAS PUSHED
+//			}
+//
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//		});
 
 
 		makeActions();

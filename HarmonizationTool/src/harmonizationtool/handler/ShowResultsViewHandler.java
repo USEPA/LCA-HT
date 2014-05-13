@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;

@@ -1,13 +1,9 @@
 package harmonizationtool.dialog;
 
-import java.util.ArrayList;
-
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QListDataSets;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
-
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -23,16 +19,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 
 public class DialogQueryDataset extends TitleAreaDialog {
-
 	private Combo combo;
 	private List list;
 	private String primaryDataSet = null;
 	private String[] referenceDataSets = null;
-
 
 	public DialogQueryDataset(Shell parentShell) {
 		super(parentShell);

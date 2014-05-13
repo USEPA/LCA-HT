@@ -1,8 +1,8 @@
 package harmonizationtool.handler;
 
-import harmonizationtool.ResultsView;
-import harmonizationtool.QueryView.QueryViewContentProvider;
-import harmonizationtool.QueryView.QueryViewLabelProvider;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewLabelProvider;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.utils.Util;

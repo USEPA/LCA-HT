@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.views;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,8 +20,6 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
-import harmonizationtool.View.ViewContentProvider;
-import harmonizationtool.View.ViewLabelProvider;
 import harmonizationtool.comands.ISelectedTDBListener;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.dialog.DialogQueryDataset;

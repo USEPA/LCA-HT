@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import harmonizationtool.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;

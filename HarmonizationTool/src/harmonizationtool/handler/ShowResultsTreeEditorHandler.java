@@ -1,7 +1,7 @@
 package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
-import harmonizationtool.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
