@@ -169,12 +169,12 @@ public class ImportCSV implements IHandler {
 		viewData.update(path);
 
 		// BRING UP THE DATA FILE VIEW
-		try {
-			Util.showView(View.ID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Util.showView(View.ID);
+//		} catch (PartInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 

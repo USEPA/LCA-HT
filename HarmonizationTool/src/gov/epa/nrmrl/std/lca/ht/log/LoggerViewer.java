@@ -29,23 +29,10 @@ public class LoggerViewer extends ViewPart {
 		Logger.getLogger("run").info("createPartControl done in LoggerViewer");
 
 		Composite composite = new Composite(parent, SWT.NONE);
-
-		loggerArea = new Text(composite, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL |SWT.V_SCROLL);
-		loggerArea.setLocation(100, 0);
-		loggerArea.setSize(500, 200);
-
-		loggerArea.setEditable(false);
 		composite.setSize(600,200);
-
-		loggerWriter = new LoggerWriter(loggerArea);
-		// GridData gd = new GridData(GridData.FILL_BOTH);
-		// gd.horizontalSpan = 2;
-		// loggerArea.setLayoutData(gd);
-
-		loggerWriter = new LoggerWriter(loggerArea);
-
+		
 		Button btnClear = new Button(composite, SWT.NONE);
-		btnClear.setBounds(5, 40, 90, 25);
+		btnClear.setBounds(5, 5, 90, 25);
 		btnClear.setText("Clear");
 		btnClear.addSelectionListener(new SelectionListener() {
 			//
@@ -60,10 +47,17 @@ public class LoggerViewer extends ViewPart {
 				loggerArea.setText("");
 			}
 		});
+		
+		loggerArea = new Text(composite, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL |SWT.V_SCROLL);
+		loggerArea.setLocation(0, 35);
+		loggerArea.setSize(600, 165);
+
+		loggerArea.setEditable(false);
+
+
+		loggerWriter = new LoggerWriter(loggerArea);
 
 		configureLog();
-
-		
 	}
 
 	public void configureLog() {

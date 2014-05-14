@@ -330,6 +330,34 @@ public class ViewData extends ViewPart {
 		menuItem.setText(IGNORE_HDR);
 
 		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+		
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(NAME_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(ALT_NAME_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(CASRN_HDR);
+
+		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(CAT1_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(CAT2_HDR);
+
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.setText(CAT3_HDR);
+
+		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
@@ -368,34 +396,6 @@ public class ViewData extends ViewPart {
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText(FLOW_PROPERTY_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(NAME_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(ALT_NAME_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CASRN_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT1_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT2_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT3_HDR);
 
 		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
 
@@ -452,7 +452,6 @@ public class ViewData extends ViewPart {
 						break;
 					}
 				}
-				exportColumnStatus();
 //				System.out.println("got here");
 //				FlowsWorkflow.setAssignedColumnCount(assigned, total);
 				if (menuItemText != null) {
@@ -475,13 +474,14 @@ public class ViewData extends ViewPart {
 				// re-displayed
 				saveColumnNames();
 				TableKeeper.getTableProvider(key).setMenu(headerMenu);
+				exportColumnStatus();
 			}
 		}
 	}
 
 	private void exportColumnStatus() {
 		int assigned = 0;
-		for (Object col : columns) {
+		for (Object col : columns) {	
 			if (!((TableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
 				assigned++;
 			}

@@ -1,14 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import harmonizationtool.handler.ImportCSV;
 import harmonizationtool.model.FileMD;
-import harmonizationtool.utils.Util;
-
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
@@ -16,7 +8,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -85,7 +76,7 @@ public class FlowsWorkflow extends ViewPart {
 		});	
 		
 		textFileInfo = new Text(composite, SWT.BORDER);
-		textFileInfo.setText("(filename)");
+//		textFileInfo.setText("(filename)");
 		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textFileInfo.widthHint = 150;
 		textFileInfo.setLayoutData(gd_textFileInfo);
@@ -104,7 +95,7 @@ public class FlowsWorkflow extends ViewPart {
 		btnAssignColumns.setEnabled(false);
 		
 		textColumnsAssigned = new Text(composite, SWT.BORDER);
-		textColumnsAssigned.setText("(0 of 5)");
+//		textColumnsAssigned.setText("(0 of 5)");
 		GridData gd_textColumnsAssigned = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textColumnsAssigned.widthHint = 150;
 		textColumnsAssigned.setLayoutData(gd_textColumnsAssigned);
@@ -115,7 +106,7 @@ public class FlowsWorkflow extends ViewPart {
 		btnCheckData.setText("Check Data");
 		
 		textIssues = new Text(composite, SWT.BORDER);
-		textIssues.setText("(0 issues)");
+//		textIssues.setText("0 issues");
 		GridData gd_textIssues = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textIssues.widthHint = 150;
 		textIssues.setLayoutData(gd_textIssues);
@@ -126,7 +117,7 @@ public class FlowsWorkflow extends ViewPart {
 		btnAutoMatch.setText("Auto match");
 		
 		textAutoMatched = new Text(composite, SWT.BORDER);
-		textAutoMatched.setText("(430 of 600 rows match)");
+//		textAutoMatched.setText("(430 of 600 rows match)");
 		GridData gd_textAutoMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textAutoMatched.widthHint = 150;
 		textAutoMatched.setLayoutData(gd_textAutoMatched);
@@ -142,7 +133,7 @@ public class FlowsWorkflow extends ViewPart {
 		btnSemiautoMatch.setText("Semi-auto match");
 		
 		textSemiAutoMatched = new Text(composite, SWT.BORDER);
-		textSemiAutoMatched.setText("(100 of 170 rows confirmed)");
+//		textSemiAutoMatched.setText("(100 of 170 rows confirmed)");
 		GridData gd_textSemiAutoMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textSemiAutoMatched.widthHint = 150;
 		textSemiAutoMatched.setLayoutData(gd_textSemiAutoMatched);
@@ -153,7 +144,7 @@ public class FlowsWorkflow extends ViewPart {
 		btnManualMatch.setText("Manual match");
 		
 		textManualMatched = new Text(composite, SWT.BORDER);
-		textManualMatched.setText("(0 of 30");
+//		textManualMatched.setText("(0 of 30");
 		GridData gd_textManualMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textManualMatched.widthHint = 150;
 		textManualMatched.setLayoutData(gd_textManualMatched);
