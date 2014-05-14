@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
@@ -74,8 +76,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		super(parentShell);
 		// CASE 1 - EDIT DATA SET INFO FOR ANY EXISTING DATA SET
 		if (DataSetKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets",
-					"The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
 		if (DataSetKeeper.size() == 0) {
@@ -93,8 +94,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.callingDataSetProvider = dataSetProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSetProvider = callingDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename()
-				.substring(0, fileMD.getFilename().length() - 4));
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing dataset");
 		runLogger.info("  start name = " + dataSetProvider.getDataSetMD().getName());
@@ -113,8 +113,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSetProvider.getDataSetMD().setName(fileMD.getFilename());
 		this.newDataSetProvider.setCuratorMD(new CuratorMD());
 		this.curDataSetProvider = this.newDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename()
-				.substring(0, fileMD.getFilename().length() - 4));
+		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
 
 		if (DataSetKeeper.size() == 0) {
 			DataSetKeeper.add(newDataSetProvider);
@@ -349,8 +348,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		rowIndex++;
 		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-		copyCuratorInfo
-				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+		copyCuratorInfo.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
 		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
 		copyCuratorInfo.setText("Copy Info from Preferences");
 		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
@@ -464,18 +462,21 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: curatorEmail = " + dialogValues.get(11).getText());
 		runLogger.info("  SET META: curatorPhone = " + dialogValues.get(12).getText());
 
-		if ((newDataSetProvider != null) && (comboSelectionIndex < 1)) {
-			// comboSelectionIndex = -1 if no change issued
-			boolean success = DataSetKeeper.add(curDataSetProvider); // A
-																		// DataSetProvider
-																		// IS
-																		// BORN!!
-			System.out.println("Created new DataSetProvider succees: = " + success);
+		if (newDataSetProvider != null) {
+			FlowsWorkflow.setDataSet(dataSetName);
+			if (comboSelectionIndex < 1) {
+
+				// comboSelectionIndex = -1 if no change issued
+				boolean success = DataSetKeeper.add(curDataSetProvider); // A
+																			// DataSetProvider
+																			// IS
+																			// BORN!!
+				System.out.println("Created new DataSetProvider succees: = " + success);
+			}
 		}
 		if (callingFileMD != null) {
 			curDataSetProvider.addFileMD(callingFileMD);
-			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
-					+ callingFileMD.getFilename());
+			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/" + callingFileMD.getFilename());
 		}
 
 		System.out.println("newDataSetProvider " + newDataSetProvider);
@@ -491,8 +492,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private void renameDataSet() {
 		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
 		// comboDataSetSelector.getText());
-		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSetSelector.getText(),
-				comboDataSetSelector.getItems());
+		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSetSelector.getText(), comboDataSetSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
 		genericStringBox.open();
@@ -509,8 +509,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 
 		if (DataSetKeeper.indexOfDataSetName(newFileName) > -1) {
-			new GenericMessageBox(getParentShell(), "Duplicate Name",
-					"Data Set names must be unique.  Please choose a new name.");
+			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be unique.  Please choose a new name.");
 			return;
 		}
 		curDataSetProvider.getDataSetMD().setName(newFileName);
@@ -740,8 +739,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			System.out.println("ModifyEvent=" + e.toString());
 			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: "
-					+ comboFileSelector.getText());
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
 		}
 
 	}

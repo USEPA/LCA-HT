@@ -3,6 +3,7 @@ package harmonizationtool.handler;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.View;
 import gov.epa.nrmrl.std.lca.ht.views.ViewData;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
@@ -139,6 +140,7 @@ public class ImportCSV implements IHandler {
 		runLogger.info("# File last modified: "
 				+ Util.getLocalDateFmt(new Date(file.lastModified())));
 		runLogger.info("# File size: " + file.length());
+		FlowsWorkflow.setFileMD(fileMD);
 
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
 		TableKeeper.saveTableProvider(path, tableProvider);

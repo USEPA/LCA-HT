@@ -1,15 +1,22 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.handler.ImportCSV;
+import harmonizationtool.model.FileMD;
 import harmonizationtool.utils.Util;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -20,13 +27,16 @@ import org.eclipse.swt.widgets.Text;
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	private Text textFileInfo;
-	private Text textColumnsAssigned;
-	private Text textIssues;
-	private Text textAutoMatched;
-	private Text textSemiAutoMatched;
-	private Text textManualMatched;
+	private static Text textFileInfo;
+	private static Text textAssociatedDataset;
+	private static Text textColumnsAssigned;
+	private static Text textIssues;
+	private static Text textAutoMatched;
+	private static Text textSemiAutoMatched;
+	private static Text textManualMatched;
 	
+	private static Button btnDataset;
+	private static Button btnAssignColumns;
 	public FlowsWorkflow() {
 	}
 
@@ -57,16 +67,16 @@ public class FlowsWorkflow extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				new ImportCSV();
-				FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util
-						.findView(FlowsWorkflow.ID);
-			
-				// String s = btnMatchedExpand.getText().equals("Expand All") ?
-				// "Collapse All" :
-				// "Expand All";
-				// btnMatchedExpand.setText(s);
+				
+		        IHandlerService handlerService = (IHandlerService) getSite()
+		                .getService(IHandlerService.class);
+		        try {
+		            handlerService.executeCommand("HarmonizationTool.ImportCSV", null);
+		        } catch (Exception ex) {
+		            throw new RuntimeException("command with id \"HarmonizationTool.ImportCSV\" not found");
+		        }
 			}
-
+			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
@@ -81,9 +91,17 @@ public class FlowsWorkflow extends ViewPart {
 		textFileInfo.setLayoutData(gd_textFileInfo);
 		new Label(composite, SWT.NONE);
 		
-		Button btnAssignColumns = new Button(composite, SWT.CHECK);
-		btnAssignColumns.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		btnDataset = new Button(composite, SWT.CHECK);
+		btnDataset.setText("Dataset");
+		btnDataset.setEnabled(false);
+		
+		textAssociatedDataset = new Text(composite, SWT.BORDER);
+		textAssociatedDataset.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(composite, SWT.NONE);
+		
+		btnAssignColumns = new Button(composite, SWT.CHECK);
 		btnAssignColumns.setText("Assign Columns");
+		btnAssignColumns.setEnabled(false);
 		
 		textColumnsAssigned = new Text(composite, SWT.BORDER);
 		textColumnsAssigned.setText("(0 of 5)");
@@ -144,9 +162,94 @@ public class FlowsWorkflow extends ViewPart {
 		
 	}
 
+
+	public String getTextMetaFileInfo() {
+		return textFileInfo.getToolTipText();
+	}
+
+	public static void setTextMetaFileInfo(String metaFileInfo) {
+		textFileInfo.setToolTipText(metaFileInfo);
+	}
+	
+	public String getTextFileInfo() {
+		return textFileInfo.getText();
+	}
+
+	public static void setTextFileInfo(String fileInfo) {
+		textFileInfo.setText(fileInfo);
+	}
+
+	public String getTextAssociatedDataset() {
+		return textAssociatedDataset.getText();
+	}
+
+	public static void setTextAssociatedDataset(String associatedDataset) {
+		textAssociatedDataset.setText(associatedDataset);
+	}
+
+	public String getTextColumnsAssigned() {
+		return textColumnsAssigned.getText();
+	}
+
+	public static void setTextColumnsAssigned(String columnsAssigned) {
+		textColumnsAssigned.setText(columnsAssigned);
+	}
+
+	public String getTextIssues() {
+		return textIssues.getText();
+	}
+
+	public static void setTextIssues(String issues) {
+		textIssues.setText(issues);
+	}
+
+	public String getTextAutoMatched() {
+		return textAutoMatched.getText();
+	}
+
+	public static void setTextAutoMatched(String autoMatched) {
+		textAutoMatched.setText(autoMatched);
+	}
+
+	public String getTextSemiAutoMatched() {
+		return textSemiAutoMatched.getText();
+	}
+
+	public static void setTextSemiAutoMatched(String semiAutoMatched) {
+		textSemiAutoMatched.setText(semiAutoMatched);
+	}
+
+	public String getTextManualMatched() {
+		return textManualMatched.getText();
+	}
+
+	public static void setTextManualMatched(String manualMatched) {
+		textManualMatched.setText(manualMatched);
+	}
+
+	public static void setFileMD(FileMD fileMD) {
+		setTextFileInfo(fileMD.getFilename());
+		setTextMetaFileInfo(fileMD.getPath());
+	}
+	
+	public static void setDataSet(String dataSet){
+		setTextAssociatedDataset(dataSet);
+		btnDataset.setSelection(true);
+	}
+	
+	public static void setAssignedColumnCount(int count, int total){
+		if (count > 0){
+			btnAssignColumns.setSelection(true);
+		}
+		else {
+			btnAssignColumns.setSelection(false);
+		}
+		setTextColumnsAssigned(count+" of "+total);
+	}
+	
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-		
 	}
+
 }

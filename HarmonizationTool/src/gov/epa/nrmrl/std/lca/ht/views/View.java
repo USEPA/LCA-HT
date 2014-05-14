@@ -163,30 +163,30 @@ public class View extends ViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	private long filesizeLong;
-	private int filesizeInt;
+//	private long filesizeLong;
+//	private int filesizeInt;
 	// private date filedate_rdf = null;
 	// private Date filedate_java = null;
-	private Calendar filedate_java;
-	private String filenameStr; // FIXME: SHOULD USE THIS IN THE DATA SET
-	private List<Resource> dsList = new ArrayList<Resource>();
-
-	private static void printValues(int lineNumber, String[] as) {
-		System.out.println("Line " + lineNumber + " has " + as.length
-				+ " values:");
-		for (String s : as) {
-			System.out.println("\t|" + s + "|");
-		}
-		System.out.println();
-	}
-
-	private DataRow initDataRow(String[] values) {
-		DataRow dataRow = new DataRow();
-		for (String s : values) {
-			dataRow.add(s);
-		}
-		return dataRow;
-	}
+//	private Calendar filedate_java;
+//	private String filenameStr; // FIXME: SHOULD USE THIS IN THE DATA SET
+//	private List<Resource> dsList = new ArrayList<Resource>();
+//
+//	private static void printValues(int lineNumber, String[] as) {
+//		System.out.println("Line " + lineNumber + " has " + as.length
+//				+ " values:");
+//		for (String s : as) {
+//			System.out.println("\t|" + s + "|");
+//		}
+//		System.out.println();
+//	}
+//
+//	private DataRow initDataRow(String[] values) {
+//		DataRow dataRow = new DataRow();
+//		for (String s : values) {
+//			dataRow.add(s);
+//		}
+//		return dataRow;
+//	}
 
 	private void makeActions() {
 

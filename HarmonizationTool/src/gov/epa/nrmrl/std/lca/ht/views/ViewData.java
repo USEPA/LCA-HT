@@ -1,10 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
-
 /**
  * @author tec
  * 
@@ -55,7 +54,7 @@ public class ViewData extends ViewPart {
 	private TableColumn columnSelected = null;
 	private Color gray = new Color(Display.getCurrent(), 128, 128, 128);
 	private Color black = new Color(Display.getCurrent(), 0, 0, 0);
-//	private Color defaultTextColor;
+	// private Color defaultTextColor;
 
 	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
 	// e.g. ReCiPe or TRACI
@@ -69,7 +68,7 @@ public class ViewData extends ViewPart {
 
 	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
 	// IPCC Global Warming Potential (GWP)
-	
+
 	public static final String IMPACT_DIR_HDR = "Impact Direction";
 	// e.g. Resource , From , Emission , Uptake, etc.
 
@@ -102,51 +101,43 @@ public class ViewData extends ViewPart {
 	// }
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
 		// parent.setLayout(null);
 
-		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.READ_ONLY);
+		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		table = tableViewer.getTable();
 		// table.setBounds(0, 0, 650, 650);
 
-
-
-//		headerMenu = new Menu(table);
-//		initializeHeaderMenu();
+		// headerMenu = new Menu(table);
+		// initializeHeaderMenu();
 
 		rowMenu = new Menu(table);
 		initializeRowMenu();
 
-		tableViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					public void selectionChanged(
-							final SelectionChangedEvent event) {
-						IStructuredSelection selection = (IStructuredSelection) event
-								.getSelection();
-						// TableItem item =(TableItem)event.item;
-						// event.item;
-						System.out.println("============row selected=======");
+		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(final SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				// TableItem item =(TableItem)event.item;
+				// event.item;
+				System.out.println("============row selected=======");
 
-						System.out.println(selection.getClass().getName());
-						Iterator iterator = selection.iterator();
-						rowsSelected.clear();
-						while (iterator.hasNext()) {
-							// Object element = iterator.next();
-							// DataRow dataRow = (DataRow) iterator.next();
+				System.out.println(selection.getClass().getName());
+				Iterator iterator = selection.iterator();
+				rowsSelected.clear();
+				while (iterator.hasNext()) {
+					// Object element = iterator.next();
+					// DataRow dataRow = (DataRow) iterator.next();
 
-							int index = TableKeeper.getTableProvider(key)
-									.getIndex((DataRow) iterator.next());
-							rowsSelected.add(index);
-						}
-						System.out.println(rowsSelected);
-						rowMenu.setVisible(true);
-					}
-				});
+					int index = TableKeeper.getTableProvider(key).getIndex((DataRow) iterator.next());
+					rowsSelected.add(index);
+				}
+				System.out.println(rowsSelected);
+				rowMenu.setVisible(true);
+			}
+		});
 
 	}
 
@@ -208,7 +199,7 @@ public class ViewData extends ViewPart {
 
 			TableProvider tableProvider = TableKeeper.getTableProvider(key);
 			headerMenu = tableProvider.getMenu();
-			if (headerMenu == null){
+			if (headerMenu == null) {
 				headerMenu = new Menu(table);
 				initializeHeaderMenu();
 			}
@@ -225,8 +216,7 @@ public class ViewData extends ViewPart {
 				if (header.get(i) == null) {
 					header.set(i, IGNORE_HDR);
 				}
-				TableViewerColumn col = createTableViewerColumn(header.get(i),
-						100, i);
+				TableViewerColumn col = createTableViewerColumn(header.get(i), 100, i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
@@ -236,8 +226,7 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of columns
+	 * class for generating column labels. This class will handle a variable number of columns
 	 * 
 	 * @author tec
 	 */
@@ -283,10 +272,8 @@ public class ViewData extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound,
-			final int colNumber) {
-		final TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				tableViewer, SWT.NONE, colNumber);
+	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = tableViewerColumn.getColumn();
 		// viewerColumn.
 		tableColumn.setText(title);
@@ -302,10 +289,8 @@ public class ViewData extends ViewPart {
 				if (e.getSource() instanceof TableColumn) {
 					TableColumn col = (TableColumn) e.getSource();
 					columnSelected = col;
-					int colSelectionIndex = Integer.parseInt(col
-							.getToolTipText().substring(7));
-					System.out.println("colSelectionIndex ="
-							+ colSelectionIndex);
+					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
+					System.out.println("colSelectionIndex =" + colSelectionIndex);
 					formerlySelectedHeaderMenuItem = columnSelected.getText();
 					headerMenu.setVisible(true);
 				}
@@ -316,10 +301,8 @@ public class ViewData extends ViewPart {
 				if (e.getSource() instanceof TableColumn) {
 					TableColumn col = (TableColumn) e.getSource();
 					columnSelected = col;
-					int colSelectionIndex = Integer.parseInt(col
-							.getToolTipText().substring(7));
-					System.out.println("colSelectionIndex ="
-							+ colSelectionIndex);
+					int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
+					System.out.println("colSelectionIndex =" + colSelectionIndex);
 					formerlySelectedHeaderMenuItem = columnSelected.getText();
 					headerMenu.setVisible(true);
 				}
@@ -331,8 +314,7 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the columns
@@ -356,11 +338,11 @@ public class ViewData extends ViewPart {
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText(IMPACT_CHARACTERIZATION_MODEL_HDR);
-		
+
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText(IMPACT_DIR_HDR);
-		
+
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText(IMPACT_CAT_HDR);
@@ -431,7 +413,7 @@ public class ViewData extends ViewPart {
 		menuItem.addListener(SWT.Selection, rowSelectionListener);
 		menuItem.setText("ignore rows");
 
-//		new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
+		// new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
 
 		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, rowSelectionListener);
@@ -440,10 +422,9 @@ public class ViewData extends ViewPart {
 	}
 
 	/**
-	 * once the user has selected a column header for change this Listener will
-	 * set the column header to the value selected by the user. If the user
-	 * selects "Custom...", then a dialog is displayed so the user can enter a
-	 * custom value for the column header.
+	 * once the user has selected a column header for change this Listener will set the column
+	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
+	 * displayed so the user can enter a custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -456,7 +437,8 @@ public class ViewData extends ViewPart {
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
 				String menuItemText = ((MenuItem) event.widget).getText();
 				MenuItem[] menuItems = headerMenu.getItems();
-
+				int assigned = 0;
+				int total = menuItems.length;
 				for (MenuItem mi : menuItems) {
 					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
 						mi.setEnabled(true);
@@ -465,18 +447,18 @@ public class ViewData extends ViewPart {
 				}
 
 				for (MenuItem mi : menuItems) {
-					if ((!mi.getText().equals(IGNORE_HDR))
-							&& (event.widget.equals(mi))) {
+					if ((!mi.getText().equals(IGNORE_HDR)) && (event.widget.equals(mi))) {
 						mi.setEnabled(false);
 						break;
 					}
 				}
+				exportColumnStatus();
+//				System.out.println("got here");
+//				FlowsWorkflow.setAssignedColumnCount(assigned, total);
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite()
-								.getShell(), "Column Name Dialog",
-								"Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -497,6 +479,16 @@ public class ViewData extends ViewPart {
 		}
 	}
 
+	private void exportColumnStatus() {
+		int assigned = 0;
+		for (Object col : columns) {
+			if (!((TableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
+				assigned++;
+			}
+		}
+		FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
+	}
+
 	private class RowSelectionListener implements Listener {
 
 		@Override
@@ -504,7 +496,7 @@ public class ViewData extends ViewPart {
 			System.out.println("event = " + event);
 			if (event.widget instanceof MenuItem) {
 				String menuItemText = ((MenuItem) event.widget).getText();
-//				MenuItem[] menuItems = rowMenu.getItems();
+				// MenuItem[] menuItems = rowMenu.getItems();
 
 				if (menuItemText.equals("ignore rows")) {
 					for (int tableIndex : rowsSelected) {
@@ -522,16 +514,15 @@ public class ViewData extends ViewPart {
 						}
 					}
 				}
-//				saveColumnNames();
+				// saveColumnNames();
 			}
 		}
 
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column
-	 * components and passes them to the TableProvider so they can be retrieved
-	 * when the data table is re-displayed
+	 * this method retrieves the column header text values from the column components and passes
+	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();

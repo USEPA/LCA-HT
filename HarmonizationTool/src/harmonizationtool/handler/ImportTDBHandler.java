@@ -2,30 +2,18 @@ package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewLabelProvider;
 import harmonizationtool.comands.SelectTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.ModelProvider;
-import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
-import harmonizationtool.query.QueryResults;
-import harmonizationtool.query.unused.ZAssignDSIndex_with_param;
 import harmonizationtool.query.unused.XNumberDataSets;
 import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
-import java.util.regex.Pattern;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -34,23 +22,12 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.part.ViewPart;
-
-import com.hp.hpl.jena.*;
-import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ImportTDBHandler implements IHandler {
 	// TODO: REFACTOR TO CALL THIS SOMETHING MORE LIKE: ImportRDFHandler
