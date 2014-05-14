@@ -483,7 +483,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		System.out.println("comboSelectionIndex " + comboSelectionIndex);
 
 		SelectTDB.syncDataSetProviderToTDB(curDataSetProvider);
-
+		if (newDataSetProvider != null) {
+			FlowsWorkflow.setDataSetProvider(curDataSetProvider);
+		}
 		runLogger.info("SET META complete");
 
 		super.okPressed();
@@ -492,6 +494,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private void renameDataSet() {
 		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
 		// comboDataSetSelector.getText());
+		boolean sendToFlowsWorkflow = false;
+		if (FlowsWorkflow.getTextAssociatedDataset().equals(comboDataSetSelector.getText())){
+			sendToFlowsWorkflow = true;
+		}
 		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSetSelector.getText(), comboDataSetSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
@@ -523,6 +529,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		comboDataSetSelector.setItem(comboDataSetSelector.getSelectionIndex(), newFileName);
 		// comboDataSetSelector.setText(newFileName);
+		if (sendToFlowsWorkflow){
+			FlowsWorkflow.setTextAssociatedDataset(newFileName);
+		}
 	}
 
 	// private void dataSetProviderToTDB(DataSetProvider dsProvider) {
