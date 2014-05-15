@@ -19,7 +19,7 @@ public class FileEncodingUtil {
 
 	private final String cr = System.getProperty("line.separator");
 
-	private List<String> commonEncodingSets = new ArrayList<String>(Arrays.asList("UTF8", "Cp1252", "ISO8859_1", "MacRoman"));
+	private static List<String> commonEncodingSets = new ArrayList<String>(Arrays.asList("UTF8", "Cp1252", "ISO8859_1", "MacRoman"));
 
 	private void init() {
 		final Map<Integer, String> characterNames = new LinkedHashMap<Integer, String>();
@@ -29,12 +29,12 @@ public class FileEncodingUtil {
 	// ENCODINGS FOUND AT:
 	// http://docs.oracle.com/javase/7/docs/technotes/guides/intl/encoding.doc.html
 
-	private List<String> basicEncodingSets = new ArrayList<String>(Arrays.asList("Cp858", "Cp437", "Cp775", "Cp850", "Cp852", "Cp855", "Cp857", "Cp862", "Cp866", "ISO8859_1",
-			"ISO8859_2", "ISO8859_4", "ISO8859_5", "ISO8859_7", "ISO8859_9", "ISO8859_13", "ISO8859_15", "KOI8_R", "KOI8_U", "ASCII", "UTF8", "UTF-16", "UnicodeBigUnmarked",
-			"UnicodeLittleUnmarked", "UTF_32", "UTF_32BE", "UTF_32LE", "UTF_32BE_BOM", "UTF_32LE_BOM", "Cp1250", "Cp1251", "Cp1252", "Cp1253", "Cp1254", "Cp1257", "UnicodeBig",
-			"Cp737", "Cp874", "UnicodeLittle"));
+	private static List<String> basicEncodingSets = new ArrayList<String>(Arrays.asList("Cp858", "Cp437", "Cp775", "Cp850", "Cp852", "Cp855", "Cp857", "Cp862", "Cp866",
+			"ISO8859_1", "ISO8859_2", "ISO8859_4", "ISO8859_5", "ISO8859_7", "ISO8859_9", "ISO8859_13", "ISO8859_15", "KOI8_R", "KOI8_U", "ASCII", "UTF8", "UTF-16",
+			"UnicodeBigUnmarked", "UnicodeLittleUnmarked", "UTF_32", "UTF_32BE", "UTF_32LE", "UTF_32BE_BOM", "UTF_32LE_BOM", "Cp1250", "Cp1251", "Cp1252", "Cp1253", "Cp1254",
+			"Cp1257", "UnicodeBig", "Cp737", "Cp874", "UnicodeLittle"));
 
-	private List<String> extendedEncodingSet = new ArrayList<String>(Arrays.asList("Big5", "Big5_HKSCS", "EUC_JP", "EUC_KR", "GB18030", "EUC_CN", "GBK", "Cp838", "Cp1140",
+	private static List<String> extendedEncodingSet = new ArrayList<String>(Arrays.asList("Big5", "Big5_HKSCS", "EUC_JP", "EUC_KR", "GB18030", "EUC_CN", "GBK", "Cp838", "Cp1140",
 			"Cp1141", "Cp1142", "Cp1143", "Cp1144", "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149", "Cp037", "Cp1026", "Cp1047", "Cp273", "Cp277", "Cp278", "Cp280", "Cp284",
 			"Cp285", "Cp297", "Cp420", "Cp424", "Cp500", "Cp860", "Cp861", "Cp863", "Cp864", "Cp865", "Cp868", "Cp869", "Cp870", "Cp871", "Cp918", "ISO2022CN", "ISO2022JP",
 			"ISO2022KR", "ISO8859_3", "ISO8859_6", "ISO8859_8", "JIS_X0201", "JIS_X0212-1990", "SJIS", "TIS620", "Cp1255", "Cp1256", "Cp1258", "MS932", "Big5_Solaris",
@@ -133,5 +133,87 @@ public class FileEncodingUtil {
 		// "Extended Encoding: "+encoding+". Issues: \n"+issue0+"\n";
 		// }
 		return allIssues;
+	}
+
+	public static boolean containsEncoding(String encoding) {
+		if (basicEncodingSets.contains(encoding)) {
+			return true;
+		}
+		if (extendedEncodingSet.contains(encoding)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static List<NonAsciiChar> getFirstNonAsciiChar(String path, int encodingDepth) {
+		List<NonAsciiChar> nonAsciiChars = new ArrayList<NonAsciiChar>();
+		String nonAsciiRegexString = "[^ -~]";
+		// String nonAsciiRegexString = "[^\\p{ASCII}]";
+		Pattern nonAsciiPattern = Pattern.compile(nonAsciiRegexString);
+
+		List<String> encodingList = commonEncodingSets;
+		if (encodingDepth == 1) {
+			encodingList = basicEncodingSets;
+		} else if (encodingDepth == 2) {
+			encodingList = extendedEncodingSet;
+		}
+
+		if (path == null) {
+			return null;
+		}
+
+		File file = new File(path);
+		if (!file.exists()) {
+			return null;
+		}
+
+		for (String encoding : encodingList) {
+			NonAsciiChar nonAsciiChar = new NonAsciiChar();
+			System.out.println("encoding: "+encoding);
+			BufferedReader bufferedReader = null;
+			try {
+				bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), encoding));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (bufferedReader == null) {
+				continue;
+			}
+
+			try {
+				int lineNumber = 0;
+				while (bufferedReader.ready()) {
+					String line = bufferedReader.readLine();
+					lineNumber++;
+					System.out.print("linenumber: "+ lineNumber);
+					Matcher matcher = nonAsciiPattern.matcher(line);
+					if (matcher.find()) {
+						System.out.print("Got one: "+ matcher);
+
+						nonAsciiChar.lineNumber = lineNumber;
+						nonAsciiChar.character = matcher.group();
+						nonAsciiChar.unicodeCodepoint = nonAsciiChar.character.codePointAt(0);
+						nonAsciiChar.colNumber = matcher.end();
+//						continue;
+					}
+				}
+			} catch (IOException e1) {
+//				continue;
+				// IF AN ENCODING IS NOT COMPATIBLE, DON'T INCLUDE IT
+				// e1.printStackTrace();
+			}
+			if (nonAsciiChar.character != null) {
+				nonAsciiChars.add(nonAsciiChar);
+			}
+		}
+		// --
+		return nonAsciiChars;
 	}
 }

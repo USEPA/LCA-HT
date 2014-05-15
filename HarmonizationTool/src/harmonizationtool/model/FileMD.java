@@ -1,11 +1,14 @@
 package harmonizationtool.model;
 
 //import java.util.Calendar;
+import harmonizationtool.utils.FileEncodingUtil;
+
 import java.util.Date;
 
 public class FileMD {
 	private String filename;
 	private String path;
+	private String encoding = null;
 	private long size;
 	private Date lastModified;
 	private Date readTime;
@@ -38,6 +41,15 @@ public class FileMD {
 	}
 	public void setReadTime(Date readTime) {
 		this.readTime = readTime;
+	}
+	public String getEncoding() {
+		return encoding;
+	}
+	public void setEncoding(String encoding) {
+		if (!FileEncodingUtil.containsEncoding(encoding)){
+			// WARN THAT THIS ENCODING HAS NOT BEEN SEEN
+		}
+		this.encoding = encoding;
 	}
 	@Override
 	public String toString() {

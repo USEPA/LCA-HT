@@ -1,5 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetProvider;
@@ -305,6 +308,31 @@ public class FlowsWorkflow extends ViewPart {
 		setTextColumnsAssigned(count + " of " + total);
 	}
 
+	public CSVColCheck checkDataColContents(String colName, Pattern pattern, String message){
+		CSVColCheck results = null;
+		if (tableProvider == null){
+		tableProvider = TableKeeper
+				.getTableProvider(fileMD.getPath());
+		}
+		int index = tableProvider.getHeaderNamesAsStrings().indexOf(colName);
+		for (int i=0;i<tableProvider.getData().size();i++){
+			int iPlusOne = i+1;
+			DataRow row = tableProvider.getData().get(i);
+//		for (DataRow row: tableProvider.getData()){
+			String val = row.get(index);
+			System.out.println("value: "+val);
+			Matcher matcher = pattern.matcher(val);
+			int count = matcher.groupCount();
+//			for (hit: matcher.group)
+//					if(val.substring(0,1).equals(" ")){
+//				// LEADING SPACE
+//				System.out.println("Leading space on line: "+iPlusOne);
+//			}
+		}
+		return results;
+	}
+
+	
 	public String checkFlowableNameCol(){
 		String results = null;
 		if (tableProvider == null){

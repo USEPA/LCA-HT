@@ -10,6 +10,7 @@ import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.FileEncodingUtil;
+import harmonizationtool.utils.NonAsciiChar;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -63,8 +64,7 @@ public class ImportCSV implements IHandler {
 		TableProvider tableProvider = new TableProvider();
 		FileMD fileMD = new FileMD();
 
-		FileDialog fileDialog = new FileDialog(HandlerUtil
-				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
+		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 		String workingDirectory = Util.getPreferenceStore().getString("workingDirectory");
 		if (workingDirectory.length() > 0) {
@@ -85,8 +85,7 @@ public class ImportCSV implements IHandler {
 				runLogger.warn("# File not found\n");
 
 				String msg = "File does not exist!";
-				Util.findView(View.ID).getViewSite().getActionBars()
-						.getStatusLineManager().setMessage(msg);
+				Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 				System.out.println(msg);
 				return null;
 			}
@@ -102,17 +101,30 @@ public class ImportCSV implements IHandler {
 			String msg = "Can not read CSV file!";
 			runLogger.error("# File not readable\n");
 
-			Util.findView(View.ID).getViewSite().getActionBars()
-					.getStatusLineManager().setMessage(msg);
+			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
 			return null;
 		}
-		FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
-		String issues = checkFileEncoding.showFileIssues(path);
-		if (issues != null) {
-			runLogger.warn("# Non-ASCII issues found:\n" + issues);
-			System.out.println("Issues found with file: " + path + ":\n" + issues);
+		// FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
+		List<NonAsciiChar> nonAsciiCandidates = FileEncodingUtil.getFirstNonAsciiChar(path, 0);
+		String cr = System.getProperty("line.separator");
+		for (int i = 0; i < nonAsciiCandidates.size(); i++) {
+			NonAsciiChar nonAsciiChar = nonAsciiCandidates.get(i);
+			String message = "# Character Encoding info:"+cr;
+			message+="#    File: "+path+cr;
+			message+="#    Encoding: " + nonAsciiChar.encoding+cr;
+			message+="#    First non-ASCII character: ->"+nonAsciiChar.character+"<-"+cr;
+			message+="#    Occuring on line: "+nonAsciiChar.lineNumber+cr;
+			message+="#    Characters to the left: "+nonAsciiChar.colNumber+cr;
+			runLogger.info(message);
 		}
+
+		// checkFileEncoding.firstNonAsciiChars("basic");
+		// String issues = checkFileEncoding.showFileIssues(path);
+		// if (issues != null) {
+		// runLogger.warn("# Non-ASCII issues found:\n" + issues);
+		// System.out.println("Issues found with file: " + path + ":\n" + issues);
+		// }
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
 		String[] values = null;
 		try {
@@ -124,8 +136,7 @@ public class ImportCSV implements IHandler {
 			String msg = "No content in CSV file!";
 			runLogger.warn("# No content in CSV file!");
 
-			Util.findView(View.ID).getViewSite().getActionBars()
-					.getStatusLineManager().setMessage(msg);
+			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			System.out.println(msg);
 			return null;
 		}
@@ -135,10 +146,8 @@ public class ImportCSV implements IHandler {
 		fileMD.setLastModified(new Date(file.lastModified()));
 		Date readStartTime = new Date();
 		fileMD.setReadTime(readStartTime);
-		runLogger.info("# File read at: "
-				+ Util.getLocalDateFmt(readStartTime));
-		runLogger.info("# File last modified: "
-				+ Util.getLocalDateFmt(new Date(file.lastModified())));
+		runLogger.info("# File read at: " + Util.getLocalDateFmt(readStartTime));
+		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
 		runLogger.info("# File size: " + file.length());
 		FlowsWorkflow.setFileMD(fileMD);
 
@@ -160,8 +169,7 @@ public class ImportCSV implements IHandler {
 			}
 		}
 
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		ViewData viewData = (ViewData) page.findView(ViewData.ID);
 
 		String title = viewData.getTitle();
@@ -169,12 +177,12 @@ public class ImportCSV implements IHandler {
 		viewData.update(path);
 
 		// BRING UP THE DATA FILE VIEW
-//		try {
-//			Util.showView(View.ID);
-//		} catch (PartInitException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// Util.showView(View.ID);
+		// } catch (PartInitException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 
@@ -185,16 +193,13 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		Date readEndTime = new Date();
-		runLogger.info("# File read time (in seconds): "
-				+ readEndTime.compareTo(readStartTime));
+		runLogger.info("# File read time (in seconds): " + readEndTime.compareTo(readStartTime));
 
 		String msg = "Finished reading file: " + path;
-		Util.findView(View.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
+		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 
 		// NOW OPEN DIALOG WITH SOME PRE-POPULATE fileMD INFO
-		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent()
-				.getActiveShell(), fileMD);
+		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
 
 		dialog.create();
 		if (dialog.open() == MetaDataDialog.CANCEL) {
