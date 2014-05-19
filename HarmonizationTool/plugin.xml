@@ -34,7 +34,7 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.views.ViewData"
+            class="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
             id="HarmonizationTool.viewData"
             name="Data View"
             restorable="true">
@@ -322,7 +322,7 @@
             name="TDB Load">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.SaveResultsHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
             id="HarmonizationTool.SaveResults"
             name="Save Results">
       </command>
@@ -362,7 +362,7 @@
             name="Close TDB">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.ImportCSV"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.ImportCSV"
             id="HarmonizationTool.ImportCSV"
             name="Import CSV">
       </command>

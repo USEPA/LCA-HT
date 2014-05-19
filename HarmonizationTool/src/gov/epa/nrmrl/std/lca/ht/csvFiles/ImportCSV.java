@@ -1,8 +1,7 @@
-package harmonizationtool.handler;
+package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.View;
-import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
@@ -170,7 +169,7 @@ public class ImportCSV implements IHandler {
 		}
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		ViewData viewData = (ViewData) page.findView(ViewData.ID);
+		CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 
 		String title = viewData.getTitle();
 		System.out.println("title= " + title);
@@ -187,7 +186,7 @@ public class ImportCSV implements IHandler {
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 
 		try {
-			Util.showView(ViewData.ID);
+			Util.showView(CSVTableView.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

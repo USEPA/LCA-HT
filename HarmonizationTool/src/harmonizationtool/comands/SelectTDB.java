@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import gov.epa.nrmrl.std.lca.ht.views.ViewData;
 import harmonizationtool.Activator;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.CuratorMD;

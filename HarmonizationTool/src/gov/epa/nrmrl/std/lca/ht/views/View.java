@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.comands.SelectTDB;
 
 import harmonizationtool.dialog.MetaDataDialog;
@@ -295,7 +296,7 @@ public class View extends ViewPart {
 				// clear data from data view
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 				viewData.clearView(fileMD.getPath());
 			}
 		};
@@ -331,7 +332,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -417,7 +418,7 @@ public class View extends ViewPart {
 									.println("Finished reading data file row: "
 											+ csvRow);
 						}
-						if (ViewData.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
 							csvRow++;
 							continue;
 						}
@@ -433,7 +434,7 @@ public class View extends ViewPart {
 						Literal drCasLit = null;
 
 						try {
-							int index = headers.indexOf(ViewData.NAME_HDR);
+							int index = headers.indexOf(CSVTableView.NAME_HDR);
 							if (index > -1) {
 								String unescName = csvDataRow.getColumnValues()
 										.get(index);
@@ -458,7 +459,7 @@ public class View extends ViewPart {
 						}
 
 						try {
-							int index = headers.indexOf(ViewData.ALT_NAME_HDR);
+							int index = headers.indexOf(CSVTableView.ALT_NAME_HDR);
 							if (index > -1) {
 								String unescAltName = csvDataRow
 										.getColumnValues().get(index);
@@ -474,7 +475,7 @@ public class View extends ViewPart {
 						}
 
 						try {
-							int index = headers.indexOf(ViewData.CASRN_HDR);
+							int index = headers.indexOf(CSVTableView.CASRN_HDR);
 							if (index > -1) {
 								String unescCasrn = csvDataRow
 										.getColumnValues().get(index);
@@ -595,7 +596,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -682,7 +683,7 @@ public class View extends ViewPart {
 									.println("Finished reading data file row: "
 											+ csvRow);
 						}
-						if (ViewData.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
 							csvRow++;
 							continue;
 						}
@@ -694,7 +695,7 @@ public class View extends ViewPart {
 						String cat3 = null; // OPTIONAL
 
 						try {
-							int index = headers.indexOf(ViewData.CAT1_HDR);
+							int index = headers.indexOf(CSVTableView.CAT1_HDR);
 							if (index > -1) {
 								String unescCat1 = csvDataRow.getColumnValues()
 										.get(index);
@@ -718,7 +719,7 @@ public class View extends ViewPart {
 
 						try {
 							{
-								int index = headers.indexOf(ViewData.CAT2_HDR);
+								int index = headers.indexOf(CSVTableView.CAT2_HDR);
 								if (index > -1) {
 									String unescCat2 = csvDataRow
 											.getColumnValues().get(index);
@@ -731,7 +732,7 @@ public class View extends ViewPart {
 						}
 						try {
 							{
-								int index = headers.indexOf(ViewData.CAT3_HDR);
+								int index = headers.indexOf(CSVTableView.CAT3_HDR);
 								if (index > -1) {
 									String unescCat3 = csvDataRow
 											.getColumnValues().get(index);
@@ -848,12 +849,12 @@ public class View extends ViewPart {
 				FileMD fileMD = (FileMD) selection.toList().get(0);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 				viewData.update(fileMD.getPath());
 				// ... AND BRING UP THE DATA CONTENTS VIEW
 
 				try {
-					Util.showView(ViewData.ID);
+					Util.showView(CSVTableView.ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -876,7 +877,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					ViewData viewData = (ViewData) page.findView(ViewData.ID);
+					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -963,7 +964,7 @@ public class View extends ViewPart {
 									.println("Finished reading data file row: "
 											+ csvRow);
 						}
-						if (ViewData.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
 							csvRow++;
 							continue;
 						}
@@ -978,7 +979,7 @@ public class View extends ViewPart {
 						System.out.println("Ready to find header info 0");
 						try {
 							int index = headers
-									.indexOf(ViewData.IMPACT_ASSESSMENT_METHOD_HDR);
+									.indexOf(CSVTableView.IMPACT_ASSESSMENT_METHOD_HDR);
 							if (index > -1) {
 								String unescImpactAssessmentMethod = csvDataRow
 										.getColumnValues().get(index);
@@ -1005,7 +1006,7 @@ public class View extends ViewPart {
 
 						try {
 							int index = headers
-									.indexOf(ViewData.IMPACT_CHARACTERIZATION_MODEL_HDR);
+									.indexOf(CSVTableView.IMPACT_CHARACTERIZATION_MODEL_HDR);
 							if (index > -1) {
 								String unescImpactCharModel = csvDataRow
 										.getColumnValues().get(index);
@@ -1032,7 +1033,7 @@ public class View extends ViewPart {
 
 						try {
 							int index = headers
-									.indexOf(ViewData.IMPACT_CAT_HDR);
+									.indexOf(CSVTableView.IMPACT_CAT_HDR);
 							if (index > -1) {
 								String unescImpactCategory = csvDataRow
 										.getColumnValues().get(index);
@@ -1059,7 +1060,7 @@ public class View extends ViewPart {
 
 						try {
 							int index = headers
-									.indexOf(ViewData.IMPACT_CAT_INDICATOR_HDR);
+									.indexOf(CSVTableView.IMPACT_CAT_INDICATOR_HDR);
 							if (index > -1) {
 								String unescImpactCategoryIndicator = csvDataRow
 										.getColumnValues().get(index);
@@ -1086,7 +1087,7 @@ public class View extends ViewPart {
 
 						try {
 							int index = headers
-									.indexOf(ViewData.IMPACT_CAT_REF_UNIT_HDR);
+									.indexOf(CSVTableView.IMPACT_CAT_REF_UNIT_HDR);
 							if (index > -1) {
 								String unescReferenceUnit = csvDataRow
 										.getColumnValues().get(index);
@@ -1220,12 +1221,12 @@ public class View extends ViewPart {
 				FileMD fileMD = (FileMD) selection.toList().get(0);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				ViewData viewData = (ViewData) page.findView(ViewData.ID);
+				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
 				viewData.update(fileMD.getPath());
 				// ... AND BRING UP THE DATA CONTENTS VIEW
 
 				try {
-					Util.showView(ViewData.ID);
+					Util.showView(CSVTableView.ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

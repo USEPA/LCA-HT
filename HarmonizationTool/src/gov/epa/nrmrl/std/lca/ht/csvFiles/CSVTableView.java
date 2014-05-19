@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.views;
+package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,8 +34,8 @@ import org.eclipse.ui.part.ViewPart;
  * @author tec
  * 
  */
-public class ViewData extends ViewPart {
-	public ViewData() {
+public class CSVTableView extends ViewPart {
+	public CSVTableView() {
 	}
 
 	public static final String ID = "HarmonizationTool.viewData";
@@ -74,25 +74,25 @@ public class ViewData extends ViewPart {
 
 	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
 	// e.g. kg CO2 eq
-
+//
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
 	public static final String CAT3_HDR = "Sub-subcategory";
-
+//
 	public static final String NAME_HDR = "Flowable Name";
 	public static final String CASRN_HDR = "CASRN";
 	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
-
-	// ECO.ImpactCharacterizationFactor;
-	public static final String CHAR_FACTOR_HDR = "Characterization factor";
-	// THIS IS THE (float) NUMBER
-
-	public static final String FLOW_UNIT_HDR = "Flow Unit";
-	// e.g. kg
-
-	public static final String FLOW_PROPERTY_HDR = "Flow Property";
-	// e.g. mass
-
+//
+//	// ECO.ImpactCharacterizationFactor;
+//	public static final String CHAR_FACTOR_HDR = "Characterization factor";
+//	// THIS IS THE (float) NUMBER
+//
+//	public static final String FLOW_UNIT_HDR = "Flow Unit";
+//	// e.g. kg
+//
+//	public static final String FLOW_PROPERTY_HDR = "Flow Property";
+//	// e.g. mass
+//
 	public static final String IGNORE_HDR = "Ignore";
 
 	// @Override
@@ -324,85 +324,104 @@ public class ViewData extends ViewPart {
 		ColumnSelectionListener columnSelectionListener = new ColumnSelectionListener();
 
 		MenuItem menuItem;
-
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IGNORE_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-		
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(NAME_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(ALT_NAME_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CASRN_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT1_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT2_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CAT3_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_ASSESSMENT_METHOD_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_CHARACTERIZATION_MODEL_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_DIR_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_CAT_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_CAT_INDICATOR_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(CHAR_FACTOR_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(FLOW_UNIT_HDR);
-
-		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
-		menuItem.setText(FLOW_PROPERTY_HDR);
-
-		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-
-		// menuItem = new MenuItem(parent, SWT.NORMAL);
-		// menuItem.addListener(SWT.Selection, colListener);
-		// menuItem.setText("Custom...");
+		menuItem.setText("Ignore");
+		String lastParentGroup = "";
+		for (LcaCsvTableColumnType type: LcaCsvTableColumnType.values()){
+			String parentGroup = type.parentGroup;
+			if (!parentGroup.equals(lastParentGroup)){
+				new MenuItem(headerMenu, SWT.SEPARATOR);
+			}
+			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+			menuItem.addListener(SWT.Selection, columnSelectionListener);
+			menuItem.setText(type.displayString);
+		}
 	}
+	
+//	private void initializeHeaderMenu() {
+//		ColumnSelectionListener columnSelectionListener = new ColumnSelectionListener();
+//
+//		MenuItem menuItem;
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IGNORE_HDR);
+//
+//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//		
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(NAME_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(ALT_NAME_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(CASRN_HDR);
+//
+//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(CAT1_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(CAT2_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(CAT3_HDR);
+//
+//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_ASSESSMENT_METHOD_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_CHARACTERIZATION_MODEL_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_DIR_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_CAT_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_CAT_INDICATOR_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
+//
+//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(CHAR_FACTOR_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(FLOW_UNIT_HDR);
+//
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+//		menuItem.setText(FLOW_PROPERTY_HDR);
+//
+//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
+//
+//		// menuItem = new MenuItem(parent, SWT.NORMAL);
+//		// menuItem.addListener(SWT.Selection, colListener);
+//		// menuItem.setText("Custom...");
+//	}
 
 	private void initializeRowMenu() {
 		RowSelectionListener rowSelectionListener = new RowSelectionListener();
@@ -437,8 +456,8 @@ public class ViewData extends ViewPart {
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
 				String menuItemText = ((MenuItem) event.widget).getText();
 				MenuItem[] menuItems = headerMenu.getItems();
-				int assigned = 0;
-				int total = menuItems.length;
+//				int assigned = 0;
+//				int total = menuItems.length;
 				for (MenuItem mi : menuItems) {
 					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
 						mi.setEnabled(true);
@@ -447,7 +466,8 @@ public class ViewData extends ViewPart {
 				}
 
 				for (MenuItem mi : menuItems) {
-					if ((!mi.getText().equals(IGNORE_HDR)) && (event.widget.equals(mi))) {
+					boolean unique = LcaCsvTableColumnType.isUnique(mi.getText());
+					if ((unique && (event.widget.equals(mi)))) {
 						mi.setEnabled(false);
 						break;
 					}
@@ -467,7 +487,7 @@ public class ViewData extends ViewPart {
 					} else {
 						columnSelected.setText(menuItemText);
 					}
-
+//
 				}
 				// save the column names to the TableProvider in case the data
 				// table needs to be

@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.views.ViewData;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -28,7 +28,7 @@ public class ShowDataViewHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
-			Util.showView(ViewData.ID);
+			Util.showView(CSVTableView.ID);
 		} catch (PartInitException e1) {
 			e1.printStackTrace();
 		}

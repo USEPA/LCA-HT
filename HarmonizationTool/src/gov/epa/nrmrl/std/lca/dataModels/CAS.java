@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class CAS {
 	private static String cas;
-	private static Pattern acceptibleFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
+	public static Pattern acceptibleFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
 
 	public static boolean validStandardFormat(String candidate) {
 		Matcher matcher = acceptibleFormat.matcher(candidate);

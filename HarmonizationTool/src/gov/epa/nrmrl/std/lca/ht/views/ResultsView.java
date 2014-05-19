@@ -3,7 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.views.ViewData.MyColumnLabelProvider;
+//import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.MyColumnLabelProvider;
 import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
