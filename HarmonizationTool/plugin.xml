@@ -163,18 +163,18 @@
             <menu
                   label="Data">
                <command
-                     commandId="HarmonizationTool.ShowDataFilesView"
-                     label="Show Data File(s) View"
-                     style="push">
-               </command>
-               <command
-                     commandId="HarmonizationTool.ShowDataView"
-                     label="Show Data View"
-                     style="push">
-               </command>
-               <command
                      commandId="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
                      label="Show Flows Workflow"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView"
+                     label="Show CSV Table"
+                     style="push">
+               </command>
+               <command
+                     commandId="HarmonizationTool.ShowDataFilesView"
+                     label="Show Data File(s)"
                      style="push">
                </command>
             </menu>
@@ -337,9 +337,9 @@
             name="Show Query View">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.ShowDataViewHandler"
-            id="HarmonizationTool.ShowDataView"
-            name="Show Data View">
+            defaultHandler="harmonizationtool.handler.ShowCSVTableViewHandler"
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView"
+            name="Show CSV Table View">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowResultsViewHandler"

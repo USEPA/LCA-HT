@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.handlers.IHandlerService;
 
 public class ImportCSV implements IHandler {
 
@@ -45,7 +46,7 @@ public class ImportCSV implements IHandler {
 
 	}
 
-//	public static final String ID = "HarmonizationTool.ImportCSV";
+	public static final String ID = "harmonizationtool.handler.ImportCSV";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -164,6 +165,16 @@ public class ImportCSV implements IHandler {
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		CSVTableView cSVTableView = (CSVTableView) page.findView(CSVTableView.ID);
+		if (cSVTableView == null){
+			try {
+				Util.showView(CSVTableView.ID);
+				cSVTableView = (CSVTableView) page.findView(CSVTableView.ID);
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+		}
+		assert cSVTableView != null : "cSVTableView cannot be null";
 
 		String title = cSVTableView.getTitle();
 		System.out.println("title= " + title);
