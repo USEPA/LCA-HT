@@ -2,9 +2,10 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 public enum LcaCsvTableColumnType {
 	FLOWABLE_NAME ("Flowable Name","Flowable",true, true),
-	FLOWABLE_ALT_NAME ("Alt Flowable Name","Flowable",true, false),
-	CAS("CAS#","Flowable",false, true),
-
+	FLOWABLE_ALT_NAME ("Flowable Synonym","Flowable",true, false),
+	CAS("CAS","Flowable",false, true),
+	// Conventional Alternative Synonym
+	
 	CONTEXT("Context (primary)","Context",true, true),
 	CONTEXT1("Context (additional)","Context",false, false);
 
