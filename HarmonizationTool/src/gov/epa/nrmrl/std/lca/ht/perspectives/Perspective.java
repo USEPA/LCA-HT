@@ -18,7 +18,7 @@ public class Perspective implements IPerspectiveFactory {
 		}
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder3", IPageLayout.LEFT, 0.8f, editorArea);
-			folderLayout.addView("HarmonizationTool.viewData");
+			folderLayout.addView("gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView");
 			folderLayout.addView("HarmonizationTool.ResultsViewID");
 			folderLayout.addView("HarmonizationTool.ResultsTreeEditorID");
 //			folderLayout.addView("gov.epa.nrmrl.std.lca.ht.job.JobStatusView");

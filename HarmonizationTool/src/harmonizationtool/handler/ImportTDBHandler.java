@@ -190,8 +190,8 @@ public class ImportTDBHandler implements IHandler {
 
 		// resultsView.update(iGenericInsert.getData());
 		// resultsView.update(iGenericInsert.getQueryResults());
-		// ViewData.setKey(fileName);
-		// TableViewer tableViewer = viewData.getViewer();
+		// CSVTableView.setKey(fileName);
+		// TableViewer tableViewer = csvTableView.getViewer();
 		// tableViewer.setInput(new Object[] {""});
 		// resultsView.update(fileName);
 

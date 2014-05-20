@@ -3,9 +3,12 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import gov.epa.nrmrl.std.lca.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.Issue;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -38,13 +41,14 @@ public class CSVTableView extends ViewPart {
 	public CSVTableView() {
 	}
 
-	public static final String ID = "HarmonizationTool.viewData";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
+//	public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
 	private TableViewer tableViewer;
 	private Table table;
-	private static List<Object> columns = new ArrayList<Object>();
+	private static List<LcaCsvTableColumn> columns = new ArrayList<LcaCsvTableColumn>();
 	// the menu that is displayed when column header is right clicked
-	private Menu headerMenu;
+	private static Menu headerMenu;
 	private Menu rowMenu;
 	private String formerlySelectedHeaderMenuItem;
 
@@ -74,25 +78,25 @@ public class CSVTableView extends ViewPart {
 
 	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
 	// e.g. kg CO2 eq
-//
+	//
 	public static final String CAT1_HDR = "Category"; // e.g. air
 	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
 	public static final String CAT3_HDR = "Sub-subcategory";
-//
+	//
 	public static final String NAME_HDR = "Flowable Name";
 	public static final String CASRN_HDR = "CASRN";
 	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
-//
-//	// ECO.ImpactCharacterizationFactor;
-//	public static final String CHAR_FACTOR_HDR = "Characterization factor";
-//	// THIS IS THE (float) NUMBER
-//
-//	public static final String FLOW_UNIT_HDR = "Flow Unit";
-//	// e.g. kg
-//
-//	public static final String FLOW_PROPERTY_HDR = "Flow Property";
-//	// e.g. mass
-//
+	//
+	// // ECO.ImpactCharacterizationFactor;
+	// public static final String CHAR_FACTOR_HDR = "Characterization factor";
+	// // THIS IS THE (float) NUMBER
+	//
+	// public static final String FLOW_UNIT_HDR = "Flow Unit";
+	// // e.g. kg
+	//
+	// public static final String FLOW_PROPERTY_HDR = "Flow Property";
+	// // e.g. mass
+	//
 	public static final String IGNORE_HDR = "Ignore";
 
 	// @Override
@@ -101,7 +105,8 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -216,7 +221,7 @@ public class CSVTableView extends ViewPart {
 				if (header.get(i) == null) {
 					header.set(i, IGNORE_HDR);
 				}
-				TableViewerColumn col = createTableViewerColumn(header.get(i), 100, i);
+				LcaCsvTableColumn col = createTableViewerColumn(header.get(i), 100, i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
@@ -226,7 +231,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -272,9 +278,12 @@ public class CSVTableView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
-		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
-		final TableColumn tableColumn = tableViewerColumn.getColumn();
+	private LcaCsvTableColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+		// final LcaCsvTableColumn tableViewerColumn = new
+		// LcaCsvTableColumn(tableViewer, SWT.NONE, colNumber);
+		//
+		final LcaCsvTableColumn lcaCsvTableColumn = new LcaCsvTableColumn(tableViewer, SWT.NONE, colNumber);
+		final TableColumn tableColumn = lcaCsvTableColumn.getColumn();
 		// viewerColumn.
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
@@ -310,11 +319,16 @@ public class CSVTableView extends ViewPart {
 
 		});
 
-		return tableViewerColumn;
+		return lcaCsvTableColumn;
+	}
+	
+	public String getTitle(){
+		return "hello";
 	}
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a
+	 * ColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the columns
@@ -328,100 +342,23 @@ public class CSVTableView extends ViewPart {
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText("Ignore");
 		String lastParentGroup = "";
-		for (LcaCsvTableColumnType type: LcaCsvTableColumnType.values()){
+		for (LcaCsvTableColumnType type : LcaCsvTableColumnType.values()) {
 			String parentGroup = type.parentGroup;
-			if (!parentGroup.equals(lastParentGroup)){
+			if (!parentGroup.equals(lastParentGroup)) {
 				new MenuItem(headerMenu, SWT.SEPARATOR);
+				lastParentGroup = parentGroup;
 			}
 			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+
+			if (type.required) {
+				// DO SOMETHING TO HIGHLIGHT THIS
+			} else {
+				// DEFAULT ENTRY
+			}
 			menuItem.addListener(SWT.Selection, columnSelectionListener);
 			menuItem.setText(type.displayString);
 		}
 	}
-	
-//	private void initializeHeaderMenu() {
-//		ColumnSelectionListener columnSelectionListener = new ColumnSelectionListener();
-//
-//		MenuItem menuItem;
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IGNORE_HDR);
-//
-//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-//		
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(NAME_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(ALT_NAME_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(CASRN_HDR);
-//
-//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(CAT1_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(CAT2_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(CAT3_HDR);
-//
-//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_ASSESSMENT_METHOD_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_CHARACTERIZATION_MODEL_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_DIR_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_CAT_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_CAT_INDICATOR_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(IMPACT_CAT_REF_UNIT_HDR);
-//
-//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(CHAR_FACTOR_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(FLOW_UNIT_HDR);
-//
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
-//		menuItem.setText(FLOW_PROPERTY_HDR);
-//
-//		new MenuItem(headerMenu, SWT.SEPARATOR); // ----------
-//
-//		// menuItem = new MenuItem(parent, SWT.NORMAL);
-//		// menuItem.addListener(SWT.Selection, colListener);
-//		// menuItem.setText("Custom...");
-//	}
 
 	private void initializeRowMenu() {
 		RowSelectionListener rowSelectionListener = new RowSelectionListener();
@@ -441,9 +378,10 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * once the user has selected a column header for change this Listener will set the column
-	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
-	 * displayed so the user can enter a custom value for the column header.
+	 * once the user has selected a column header for change this Listener will
+	 * set the column header to the value selected by the user. If the user
+	 * selects "Custom...", then a dialog is displayed so the user can enter a
+	 * custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -456,8 +394,8 @@ public class CSVTableView extends ViewPart {
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
 				String menuItemText = ((MenuItem) event.widget).getText();
 				MenuItem[] menuItems = headerMenu.getItems();
-//				int assigned = 0;
-//				int total = menuItems.length;
+				// int assigned = 0;
+				// int total = menuItems.length;
 				for (MenuItem mi : menuItems) {
 					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
 						mi.setEnabled(true);
@@ -472,12 +410,13 @@ public class CSVTableView extends ViewPart {
 						break;
 					}
 				}
-//				System.out.println("got here");
-//				FlowsWorkflow.setAssignedColumnCount(assigned, total);
+				// System.out.println("got here");
+				// FlowsWorkflow.setAssignedColumnCount(assigned, total);
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog",
+								"Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -487,7 +426,7 @@ public class CSVTableView extends ViewPart {
 					} else {
 						columnSelected.setText(menuItemText);
 					}
-//
+					//
 				}
 				// save the column names to the TableProvider in case the data
 				// table needs to be
@@ -501,7 +440,7 @@ public class CSVTableView extends ViewPart {
 
 	private void exportColumnStatus() {
 		int assigned = 0;
-		for (Object col : columns) {	
+		for (Object col : columns) {
 			if (!((TableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
 				assigned++;
 			}
@@ -541,8 +480,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column components and passes
-	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
+	 * this method retrieves the column header text values from the column
+	 * components and passes them to the TableProvider so they can be retrieved
+	 * when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
@@ -553,5 +493,46 @@ public class CSVTableView extends ViewPart {
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		tableProvider.setHeaderNames(columnNames);
+	}
+
+	public static void checkColumns() {
+		List<QACheck> checks = createQAChecks();
+		for (LcaCsvTableColumn col : columns) {
+			LcaCsvTableColumnType type = col.getType();
+			if (type.equals(LcaCsvTableColumnType.FLOWABLE_NAME)) {
+				for(QACheck check:checks){
+					
+				}
+			}
+		}
+	}
+
+	public static List<QACheck> createQAChecks() {
+		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+		Pattern p = Pattern.compile("^\\s+(.*?)$");
+		Issue i = new Issue(
+				"Leading space(s)",
+				"Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
+				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
+				true);
+		qaCheckPack.add(new QACheck(p, i));
+		
+		p = Pattern.compile("^(.*?)\\s+$");
+		i = new Issue(
+				"Trailing space(s)",
+				"Following text, at least one white space character occurs.  This may be a non-printing character.",
+				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
+				true);
+		qaCheckPack.add(new QACheck(p, i));
+		
+		p = Pattern.compile("^\"([^\"]*)\"$");
+		i = new Issue(
+				"Bookend quotes",
+				"The text is surrounded by apparently superfluous double quote marks.",
+				"Remove these quote marks.  You may also use the auto-clean function.",
+				true);
+		qaCheckPack.add(new QACheck(p, i));
+		
+		return qaCheckPack;
 	}
 }

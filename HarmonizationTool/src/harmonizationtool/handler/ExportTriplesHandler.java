@@ -128,8 +128,8 @@ public class ExportTriplesHandler implements IHandler {
 
 //					resultsView.update(iGenericInsert.getData());
 //					resultsView.update(iGenericInsert.getQueryResults());
-					// ViewData.setKey(path);
-					// TableViewer tableViewer = viewData.getViewer();
+					// CSVTableView.setKey(path);
+					// TableViewer tableViewer = csvTableView.getViewer();
 					// tableViewer.setInput(new Object[] {""});
 //					resultsView.update(path);
 

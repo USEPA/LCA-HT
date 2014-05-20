@@ -1,6 +1,6 @@
-package gov.epa.nrmrl.std.lca.ht.csvFiles;
+package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.views.View;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.dialog.MetaDataDialog;
@@ -16,12 +16,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.log4j.Logger;
@@ -29,12 +25,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -52,7 +45,7 @@ public class ImportCSV implements IHandler {
 
 	}
 
-	// public String fileNameStr;
+//	public static final String ID = "HarmonizationTool.ImportCSV";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -109,12 +102,12 @@ public class ImportCSV implements IHandler {
 		String cr = System.getProperty("line.separator");
 		for (int i = 0; i < nonAsciiCandidates.size(); i++) {
 			NonAsciiChar nonAsciiChar = nonAsciiCandidates.get(i);
-			String message = "# Character Encoding info:"+cr;
-			message+="#    File: "+path+cr;
-			message+="#    Encoding: " + nonAsciiChar.encoding+cr;
-			message+="#    First non-ASCII character: ->"+nonAsciiChar.character+"<-"+cr;
-			message+="#    Occuring on line: "+nonAsciiChar.lineNumber+cr;
-			message+="#    Characters to the left: "+nonAsciiChar.colNumber+cr;
+			String message = "# Character Encoding info:" + cr;
+			message += "#    File: " + path + cr;
+			message += "#    Encoding: " + nonAsciiChar.encoding + cr;
+			message += "#    First non-ASCII character: ->" + nonAsciiChar.character + "<-" + cr;
+			message += "#    Occuring on line: " + nonAsciiChar.lineNumber + cr;
+			message += "#    Characters to the left: " + nonAsciiChar.colNumber + cr;
 			runLogger.info(message);
 		}
 
@@ -122,7 +115,8 @@ public class ImportCSV implements IHandler {
 		// String issues = checkFileEncoding.showFileIssues(path);
 		// if (issues != null) {
 		// runLogger.warn("# Non-ASCII issues found:\n" + issues);
-		// System.out.println("Issues found with file: " + path + ":\n" + issues);
+		// System.out.println("Issues found with file: " + path + ":\n" +
+		// issues);
 		// }
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
 		String[] values = null;
@@ -169,11 +163,11 @@ public class ImportCSV implements IHandler {
 		}
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
+		CSVTableView cSVTableView = (CSVTableView) page.findView(CSVTableView.ID);
 
-		String title = viewData.getTitle();
+		String title = cSVTableView.getTitle();
 		System.out.println("title= " + title);
-		viewData.update(path);
+		cSVTableView.update(path);
 
 		// BRING UP THE DATA FILE VIEW
 		// try {
@@ -186,7 +180,7 @@ public class ImportCSV implements IHandler {
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 
 		try {
-			Util.showView(CSVTableView.ID);
+			Util.showView(cSVTableView.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -78,8 +78,8 @@ public class HTScriptHandler implements IHandler {
 
 			resultsView.update(iGenericQuery.getData());
 			resultsView.update(iGenericQuery.getQueryResults());
-			// ViewData.setKey(path);
-			// TableViewer tableViewer = viewData.getViewer();
+			// CSVTableView.setKey(path);
+			// TableViewer tableViewer = csvTableView.getViewer();
 			// tableViewer.setInput(new Object[] {""});
 //			resultsView.update(path);
 		}

@@ -1,21 +1,59 @@
 package gov.epa.nrmrl.std.lca.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.LcaCsvTableColumn;
 import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
+import harmonizationtool.model.Status;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.TableColumn;
 
 public class QACheck {
-	public static Pattern pattern;
-	public static Issue issue;
+	private static String name;
+	private static Pattern pattern;
+	private static Issue issue;
 	
+	public QACheck(Pattern pattern, Issue issue){
+		this.name = null;
+		this.pattern = pattern;
+		this.issue = issue;
+	}
+	public QACheck(String name, Pattern pattern, Issue issue){
+		this.name = name;
+		this.pattern = pattern;
+		this.issue = issue;
+	}
+	
+	public Issue getIssue(){
+		return issue;
+	}
+	public void csvColQACheck(LcaCsvTableColumn column, QACheck qaCheck){
+		TableColumn tableColumn = (TableColumn) column.getColumn().getData();
+		@SuppressWarnings("unchecked")
+		List<String> items = (List<String>) tableColumn.getData();
+		int rowNum = 0;
+		for (String rowValue: items){
+			Matcher matcher = qaCheck.getPattern().matcher(rowValue);
+			if (matcher.find()){
+				qaCheck.getIssue().setStatus(Status.UNRESOLVED);
+				qaCheck.getIssue().setLocation("Row: "+rowNum);
+			}
+			rowNum++;
+		}
+//		thing = tableColumn.getData()
+//		Matcher matcher = 
 
-	public CSVColCheck csvColQACheck(TableColumn column, QACheck qaCheck){
-		CSVColCheck results = null;
+	}
+	private Pattern getPattern() {
+		return pattern;
+	}
+	
+//	public CSVColCheck csvColQACheck(TableColumn column, QACheck qaCheck){
+//		CSVColCheck results = null;
 //		if (tableProvider == null){
 //		tableProvider = TableKeeper
 //				.getTableProvider(fileMD.getPath());
@@ -36,7 +74,7 @@ public class QACheck {
 //				System.out.println("Leading space on line: "+iPlusOne);
 //			}
 //		}
-		return results;
-	}
+//		return results;
+//	}
 	
 }

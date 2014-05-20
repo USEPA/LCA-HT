@@ -1,9 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import gov.epa.nrmrl.std.lca.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetProvider;
@@ -95,9 +91,9 @@ public class FlowsWorkflow extends ViewPart {
 
 				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 				try {
-					handlerService.executeCommand("HarmonizationTool.ImportCSV", null);
+					handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
 				} catch (Exception ex) {
-					throw new RuntimeException("command with id \"HarmonizationTool.ImportCSV\" not found");
+					throw new RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 				}
 			}
 
@@ -146,6 +142,23 @@ public class FlowsWorkflow extends ViewPart {
 		Button btnCheckData = new Button(composite, SWT.NONE);
 		btnCheckData.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		btnCheckData.setText("Check Data");
+		
+		btnCheckData.addSelectionListener(new SelectionListener() {
+
+			// @Override
+			public void widgetSelected(SelectionEvent e) {
+
+				System.out.println("You pushed the 'check' button");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		
 
 		textIssues = new Text(composite, SWT.BORDER);
 		// textIssues.setText("0 issues");

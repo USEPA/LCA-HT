@@ -49,6 +49,17 @@ public enum LcaCsvTableColumnType {
 		}
 		return false;
 	}
+	
+	public static boolean isRequired(String displayString){
+		for (LcaCsvTableColumnType type: LcaCsvTableColumnType.values()){
+			if (type.displayString.equals(displayString)){
+				return type.required;
+			}
+		}
+		return false;
+	}
+	
+	
 //	public LcaCsvTableColumnType[] getCsvTableColumnTypes(){
 //		return LcaCsvTableColumnType.values();
 //	}

@@ -296,8 +296,8 @@ public class View extends ViewPart {
 				// clear data from data view
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
-				viewData.clearView(fileMD.getPath());
+				CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+				csvTableView.clearView(fileMD.getPath());
 			}
 		};
 		actionClose.setText("Close");
@@ -332,7 +332,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
+					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -596,7 +596,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
+					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -833,8 +833,8 @@ public class View extends ViewPart {
 		// String key = (String) selection.toList().get(0);
 		// IWorkbenchPage page = PlatformUI.getWorkbench()
 		// .getActiveWorkbenchWindow().getActivePage();
-		// ViewData viewData = (ViewData) page.findView(ViewData.ID);
-		// viewData.update(key);
+		// CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+		// csvTableView.update(key);
 		// }
 		//
 		// });
@@ -849,8 +849,8 @@ public class View extends ViewPart {
 				FileMD fileMD = (FileMD) selection.toList().get(0);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
-				viewData.update(fileMD.getPath());
+				CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+				csvTableView.update(fileMD.getPath());
 				// ... AND BRING UP THE DATA CONTENTS VIEW
 
 				try {
@@ -877,7 +877,7 @@ public class View extends ViewPart {
 					String key = fileMD.getPath();
 					IWorkbenchPage page = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow().getActivePage();
-					CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
+					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
 					Model model = SelectTDB.model;
@@ -1205,8 +1205,8 @@ public class View extends ViewPart {
 		// String key = (String) selection.toList().get(0);
 		// IWorkbenchPage page = PlatformUI.getWorkbench()
 		// .getActiveWorkbenchWindow().getActivePage();
-		// ViewData viewData = (ViewData) page.findView(ViewData.ID);
-		// viewData.update(key);
+		// CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+		// csvTableView.update(key);
 		// }
 		//
 		// });
@@ -1221,8 +1221,8 @@ public class View extends ViewPart {
 				FileMD fileMD = (FileMD) selection.toList().get(0);
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				CSVTableView viewData = (CSVTableView) page.findView(CSVTableView.ID);
-				viewData.update(fileMD.getPath());
+				CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+				csvTableView.update(fileMD.getPath());
 				// ... AND BRING UP THE DATA CONTENTS VIEW
 
 				try {
