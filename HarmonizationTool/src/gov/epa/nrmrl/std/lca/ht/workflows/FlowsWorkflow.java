@@ -147,8 +147,7 @@ public class FlowsWorkflow extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-
-				System.out.println("You pushed the 'check' button");
+				CSVTableView.checkColumns();
 			}
 
 			@Override

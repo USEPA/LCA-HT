@@ -3,12 +3,15 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import gov.epa.nrmrl.std.lca.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
+import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -41,10 +44,10 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
-//	public static final String ID = "HarmonizationTool.viewData";
+	// public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
 	private TableViewer tableViewer;
-	private Table table;
+	private static Table table;
 	private static List<CsvTableViewerColumn> columns = new ArrayList<CsvTableViewerColumn>();
 	// the menu that is displayed when column header is right clicked
 	private static Menu headerMenu;
@@ -281,6 +284,7 @@ public class CSVTableView extends ViewPart {
 
 		final CsvTableViewerColumn csvTableViewerColumn = new CsvTableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = csvTableViewerColumn.getColumn();
+		csvTableViewerColumn.setColumn(tableColumn);
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
 		tableColumn.setResizable(true);
@@ -317,10 +321,11 @@ public class CSVTableView extends ViewPart {
 
 		return csvTableViewerColumn;
 	}
-//	
-//	public String getTitle(){
-//		return "hello";
-//	}
+
+	//
+	// public String getTitle(){
+	// return "hello";
+	// }
 
 	/**
 	 * this method initializes the headerMenu with menuItems and a
@@ -436,10 +441,13 @@ public class CSVTableView extends ViewPart {
 
 	private void exportColumnStatus() {
 		int assigned = 0;
-		for (Object col : columns) {
-			if (!((CsvTableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
+		for (CsvTableViewerColumn col : columns) {
+			String headerName = col.getColumn().getText();
+			if (!headerName.equals(IGNORE_HDR)) {
 				assigned++;
+				col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
 			}
+			col.setType(null);
 		}
 		FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
 	}
@@ -492,43 +500,34 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void checkColumns() {
-		List<QACheck> checks = createQAChecks();
 		for (CsvTableViewerColumn col : columns) {
-			CsvTableViewerColumnType type = col.getType();
-			if (type.equals(CsvTableViewerColumnType.FLOWABLE_NAME)) {
-				for(QACheck check:checks){
+			if (col.getType() != null){
+				CSVColCheck csvColCheck = new CSVColCheck();
+				int colIndex = Integer.parseInt(col.getColumn().getToolTipText().substring(7));
+				List<String> columnValues = getColumnValues(colIndex);
+				for (QACheck check:QACheck.getQAChecks(col.getType())){
+					for(int i=0;i<columnValues.size();i++){
+						String val = columnValues.get(i);
 					
+						Matcher matcher = check.getPattern().matcher(val);
+						while (matcher.find()){
+							Issue issue = check.getIssue();
+							issue.setLocation("Line: "+i+" and position: "+matcher.end());
+							issue.setStatus(Status.UNRESOLVED);
+							csvColCheck.addIssue(issue);
+						}
+					}
 				}
 			}
 		}
 	}
-
-	public static List<QACheck> createQAChecks() {
-		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
-		Pattern p = Pattern.compile("^\\s+(.*?)$");
-		Issue i = new Issue(
-				"Leading space(s)",
-				"Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
-				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
-				true);
-		qaCheckPack.add(new QACheck(p, i));
-		
-		p = Pattern.compile("^(.*?)\\s+$");
-		i = new Issue(
-				"Trailing space(s)",
-				"Following text, at least one white space character occurs.  This may be a non-printing character.",
-				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
-				true);
-		qaCheckPack.add(new QACheck(p, i));
-		
-		p = Pattern.compile("^\"([^\"]*)\"$");
-		i = new Issue(
-				"Bookend quotes",
-				"The text is surrounded by apparently superfluous double quote marks.",
-				"Remove these quote marks.  You may also use the auto-clean function.",
-				true);
-		qaCheckPack.add(new QACheck(p, i));
-		
-		return qaCheckPack;
+	private static List<String> getColumnValues(int colIndex){
+		List<String> results = new ArrayList<String>();
+		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		List<DataRow> dataRowList = tableProvider.getData();
+		for(DataRow dataRow:dataRowList){
+			results.add(dataRow.get(colIndex));
+		}
+		return results;	
 	}
 }

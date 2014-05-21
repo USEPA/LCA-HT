@@ -1,5 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import java.util.Date;
+
+import gov.epa.nrmrl.std.lca.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.widgets.Table;
@@ -10,53 +15,36 @@ import org.eclipse.swt.widgets.TableColumn;
  * @author transue
  *
  */
+
 public final class CsvTableViewerColumn extends ViewerColumn {
 	private CsvTableViewerColumnType type = null;
+	private CSVColCheck csvColCheck = null;
 	private TableColumn column;
 
-	/**
-	 * Creates a new viewer column for the given {@link TableViewer} on a new
-	 * {@link TableColumn} with the given style bits. The column is added at the
-	 * end of the list of columns.
-	 * 
-	 * @param viewer
-	 *            the table viewer to which this column belongs
-	 * @param style
-	 *            the style used to create the column, for applicable style bits
-	 *            see {@link TableColumn}
-	 * @see TableColumn#TableColumn(Table, int)
-	 */
 	public CsvTableViewerColumn(TableViewer viewer, int style) {
 		this(viewer, style, -1);
 	}
 
-	/**
-	 * Creates a new viewer column for the given {@link TableViewer} on a new
-	 * {@link TableColumn} with the given style bits. The column is inserted at
-	 * the given index into the list of columns.
-	 * 
-	 * @param viewer
-	 *            the table viewer to which this column belongs
-	 * @param style
-	 *            the style used to create the column, for applicable style bits
-	 *            see {@link TableColumn}
-	 * @param index
-	 *            the index at which to place the newly created column
-	 * @see TableColumn#TableColumn(Table, int, int)
-	 */
 	public CsvTableViewerColumn(TableViewer viewer, int style, int index) {
 		this(viewer, createColumn(viewer.getTable(), style, index));
 	}
 
-	/**
-	 * Creates a new viewer column for the given {@link TableViewer} on the given
-	 * {@link TableColumn}.
-	 * 
-	 * @param viewer
-	 *            the table viewer to which this column belongs
-	 * @param column
-	 *            the underlying table column
-	 */
+	public CSVColCheck getCsvColCheck() {
+		return csvColCheck;
+	}
+
+	public void setCsvColCheck(CSVColCheck csvColCheck) {
+		this.csvColCheck = csvColCheck;
+	}
+
+	public void setType(CsvTableViewerColumnType type) {
+		this.type = type;
+	}
+
+	public void setColumn(TableColumn column) {
+		this.column = column;
+	}
+
 	public CsvTableViewerColumn(TableViewer viewer, TableColumn column) {
 		super(viewer, column);
 		this.column = column;
@@ -79,6 +67,19 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 
 	public CsvTableViewerColumnType getType() {
 		return type;
+	}
+
+	public void performStandaredChecks() {
+		if (csvColCheck == null){
+			csvColCheck = new CSVColCheck();
+			csvColCheck.setLastChecked(new Date());
+//			csvColCheck.setColumn(column);
+			csvColCheck.setIssues(null);
+		}
+		System.out.println("csvColCheck: "+csvColCheck);
+
+		System.out.println("getColumn().getData(): "+getColumn().getData());
+//		QACheck.checkColumn();
 	}
 	
 }

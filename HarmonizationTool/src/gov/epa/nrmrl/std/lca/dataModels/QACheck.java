@@ -1,11 +1,13 @@
 package gov.epa.nrmrl.std.lca.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumn;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
 import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +16,18 @@ import org.eclipse.swt.widgets.TableColumn;
 
 public class QACheck {
 	private static String name;
+	public static String getName() {
+		return name;
+	}
+	public static void setName(String name) {
+		QACheck.name = name;
+	}
+	public static void setPattern(Pattern pattern) {
+		QACheck.pattern = pattern;
+	}
+	public static void setIssue(Issue issue) {
+		QACheck.issue = issue;
+	}
 	private static Pattern pattern;
 	private static Issue issue;
 	
@@ -31,50 +45,59 @@ public class QACheck {
 	public Issue getIssue(){
 		return issue;
 	}
-	public void csvColQACheck(CsvTableViewerColumn column, QACheck qaCheck){
-		TableColumn tableColumn = (TableColumn) column.getColumn().getData();
-		@SuppressWarnings("unchecked")
-		List<String> items = (List<String>) tableColumn.getData();
-		int rowNum = 0;
-		for (String rowValue: items){
-			Matcher matcher = qaCheck.getPattern().matcher(rowValue);
-			if (matcher.find()){
-				qaCheck.getIssue().setStatus(Status.UNRESOLVED);
-				qaCheck.getIssue().setLocation("Row: "+rowNum);
-			}
-			rowNum++;
-		}
-//		thing = tableColumn.getData()
-//		Matcher matcher = 
-
-	}
-	private Pattern getPattern() {
+//	public void csvColQACheck(CsvTableViewerColumn column, QACheck qaCheck){
+////		TableColumn tableColumn = (TableColumn) column.getColumn().getData();
+//		@SuppressWarnings("unchecked")
+//		List<String> items = (List<String>) tableColumn.getData();
+//		int rowNum = 0;
+//		for (String rowValue: items){
+//			Matcher matcher = qaCheck.getPattern().matcher(rowValue);
+//			if (matcher.find()){
+//				qaCheck.getIssue().setStatus(Status.UNRESOLVED);
+//				qaCheck.getIssue().setLocation("Row: "+rowNum);
+//			}
+//			rowNum++;
+//		}
+////		thing = tableColumn.getData()
+////		Matcher matcher = 
+//
+//	}
+	public Pattern getPattern() {
 		return pattern;
 	}
 	
-//	public CSVColCheck csvColQACheck(TableColumn column, QACheck qaCheck){
-//		CSVColCheck results = null;
-//		if (tableProvider == null){
-//		tableProvider = TableKeeper
-//				.getTableProvider(fileMD.getPath());
-//		}
-//		int index = tableProvider.getHeaderNamesAsStrings().indexOf(colName);
-//		 Object thingy = column.getData();
-//		for (int i=0;i<column.;i++){
-//			int iPlusOne = i+1;
-//			DataRow row = tableProvider.getData().get(i);
-////		for (DataRow row: tableProvider.getData()){
-//			String val = row.get(index);
-//			System.out.println("value: "+val);
-//			Matcher matcher = qaCheck.pattern.matcher(val);
-//			int count = matcher.groupCount();
-////			for (hit: matcher.group)
-////					if(val.substring(0,1).equals(" ")){
-//				// LEADING SPACE
-//				System.out.println("Leading space on line: "+iPlusOne);
-//			}
-//		}
-//		return results;
-//	}
+	public static List<QACheck> getQAChecks() {
+		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+		Pattern p = Pattern.compile("^\\s+(.*?)$");
+		Issue i = new Issue(
+				"Leading space(s)",
+				"Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
+				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
+				true);
+		qaCheckPack.add(new QACheck(p, i));
+
+		p = Pattern.compile("^(.*?)\\s+$");
+		i = new Issue(
+				"Trailing space(s)",
+				"Following text, at least one white space character occurs.  This may be a non-printing character.",
+				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
+				true);
+		qaCheckPack.add(new QACheck(p, i));
+
+		p = Pattern.compile("^\"([^\"]*)\"$");
+		i = new Issue("Bookend quotes", "The text is surrounded by apparently superfluous double quote marks.",
+				"Remove these quote marks.  You may also use the auto-clean function.", true);
+		qaCheckPack.add(new QACheck(p, i));
+
+		return qaCheckPack;
+	}
+	public static void checkColumn(TableColumn column) {
+		Object data = column.getData();
+		System.out.println("data: "+data);
+		System.out.println("data.getClass(): "+data.getClass());
+	}
+	public static List<QACheck> getQAChecks(CsvTableViewerColumnType type) {
+		return getQAChecks();
+	}
 	
 }

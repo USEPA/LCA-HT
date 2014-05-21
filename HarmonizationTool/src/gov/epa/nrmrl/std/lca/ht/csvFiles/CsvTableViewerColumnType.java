@@ -1,27 +1,25 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 public enum CsvTableViewerColumnType {
-	FLOWABLE_NAME ("Flowable Name","Flowable",true, true),
-	FLOWABLE_ALT_NAME ("Flowable Synonym","Flowable",true, false),
-	CAS("CAS","Flowable",false, true),
+	FLOWABLE_NAME("Flowable Name", "Flowable", true, true), FLOWABLE_ALT_NAME("Flowable Synonym", "Flowable", true,
+			false), CAS("CAS", "Flowable", false, true),
 	// Conventional Alternative Synonym
-	
-	CONTEXT("Context (primary)","Context",true, true),
-	CONTEXT1("Context (additional)","Context",false, false);
 
-//	IMPACT_ASSESSMENT_METHOD_HDR,
-//	IMPACT_CHARACTERIZATION_MODEL_HDR,
-//	IMPACT_DIR_HDR,
-//	IMPACT_CAT_HDR,
-//	IMPACT_CAT_INDICATOR_HDR,
-//	IMPACT_CAT_REF_UNIT_HDR,
-//
-//	CHAR_FACTOR_HDR,
-//	FLOW_UNIT_HDR,
-//	FLOW_PROPERTY_HDR,
-//
-//	IGNORE_HDR;
-	
+	CONTEXT("Context (primary)", "Context", true, true), CONTEXT1("Context (additional)", "Context", false, false);
+
+	// IMPACT_ASSESSMENT_METHOD_HDR,
+	// IMPACT_CHARACTERIZATION_MODEL_HDR,
+	// IMPACT_DIR_HDR,
+	// IMPACT_CAT_HDR,
+	// IMPACT_CAT_INDICATOR_HDR,
+	// IMPACT_CAT_REF_UNIT_HDR,
+	//
+	// CHAR_FACTOR_HDR,
+	// FLOW_UNIT_HDR,
+	// FLOW_PROPERTY_HDR,
+	//
+	// IGNORE_HDR;
+
 	public String displayString;
 	public String parentGroup;
 	public boolean required;
@@ -34,33 +32,42 @@ public enum CsvTableViewerColumnType {
 		this.unique = unique;
 
 	}
-	
-	public String[] getParentGroups(){
+
+	public String[] getParentGroups() {
 		String[] result = new String[2];
 		result[0] = "Flowable";
 		result[1] = "Context";
 		return result;
 	}
-	public static boolean isUnique(String displayString){
-		for (CsvTableViewerColumnType type: CsvTableViewerColumnType.values()){
-			if (type.displayString.equals(displayString)){
+
+	public static boolean isUnique(String displayString) {
+		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
+			if (type.displayString.equals(displayString)) {
 				return type.unique;
 			}
 		}
 		return false;
 	}
-	
-	public static boolean isRequired(String displayString){
-		for (CsvTableViewerColumnType type: CsvTableViewerColumnType.values()){
-			if (type.displayString.equals(displayString)){
+
+	public static boolean isRequired(String displayString) {
+		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
+			if (type.displayString.equals(displayString)) {
 				return type.required;
 			}
 		}
 		return false;
 	}
-	
-	
-//	public CsvTableViewerColumnType[] getCsvTableColumnTypes(){
-//		return CsvTableViewerColumnType.values();
-//	}
+
+	public static CsvTableViewerColumnType getTypeFromDisplayString(String displayString) {
+		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
+			if (type.displayString.equals(displayString))
+				return type;
+		}
+		return null;
+
+	}
+
+	// public CsvTableViewerColumnType[] getCsvTableColumnTypes(){
+	// return CsvTableViewerColumnType.values();
+	// }
 }
