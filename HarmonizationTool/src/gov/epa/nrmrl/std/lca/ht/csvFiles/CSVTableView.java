@@ -14,6 +14,8 @@ import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
+
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -107,8 +109,7 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -233,8 +234,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of columns
+	 * class for generating column labels. This class will handle a variable number of columns
 	 * 
 	 * @author tec
 	 */
@@ -328,8 +328,7 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the columns
@@ -344,20 +343,20 @@ public class CSVTableView extends ViewPart {
 		menuItem.setText("Ignore");
 		String lastParentGroup = "";
 		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
-			String parentGroup = type.parentGroup;
+			String parentGroup = type.getParentGroup();
 			if (!parentGroup.equals(lastParentGroup)) {
 				new MenuItem(headerMenu, SWT.SEPARATOR);
 				lastParentGroup = parentGroup;
 			}
 			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 
-			if (type.required) {
+			if (type.isRequired()) {
 				// DO SOMETHING TO HIGHLIGHT THIS
 			} else {
 				// DEFAULT ENTRY
 			}
 			menuItem.addListener(SWT.Selection, columnSelectionListener);
-			menuItem.setText(type.displayString);
+			menuItem.setText(type.getDisplayString());
 		}
 	}
 
@@ -379,10 +378,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * once the user has selected a column header for change this Listener will
-	 * set the column header to the value selected by the user. If the user
-	 * selects "Custom...", then a dialog is displayed so the user can enter a
-	 * custom value for the column header.
+	 * once the user has selected a column header for change this Listener will set the column
+	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
+	 * displayed so the user can enter a custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -416,8 +414,7 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog",
-								"Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -446,6 +443,9 @@ public class CSVTableView extends ViewPart {
 			if (!headerName.equals(IGNORE_HDR)) {
 				assigned++;
 				col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
+				System.out.println("col.getType: "+col.getType());
+				System.out.println("col.getType().getDisplayString(): "+col.getType().getDisplayString());
+
 			}
 			col.setType(null);
 		}
@@ -484,9 +484,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column
-	 * components and passes them to the TableProvider so they can be retrieved
-	 * when the data table is re-displayed
+	 * this method retrieves the column header text values from the column components and passes
+	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
@@ -501,19 +500,22 @@ public class CSVTableView extends ViewPart {
 
 	public static void checkColumns() {
 		for (CsvTableViewerColumn col : columns) {
-			if (col.getType() != null){
+			if (col.getType() != null) {
+				System.out.println("col.getType().getDisplayString() "+ col.getType().getDisplayString());
 				CSVColCheck csvColCheck = new CSVColCheck();
 				int colIndex = Integer.parseInt(col.getColumn().getToolTipText().substring(7));
 				List<String> columnValues = getColumnValues(colIndex);
-				for (QACheck check:QACheck.getQAChecks(col.getType())){
-					for(int i=0;i<columnValues.size();i++){
+				System.out.println("columnValues.size() "+columnValues.size());
+				for (QACheck check : QACheck.getQAChecks(col.getType())) {
+					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
-					
+
 						Matcher matcher = check.getPattern().matcher(val);
-						while (matcher.find()){
+						while (matcher.find()) {
 							Issue issue = check.getIssue();
-							issue.setLocation("Line: "+i+" and position: "+matcher.end());
+							issue.setLocation("Line: " + i + " and position: " + matcher.end());
 							issue.setStatus(Status.UNRESOLVED);
+							Logger.getLogger("run").warn(issue.getDescription());
 							csvColCheck.addIssue(issue);
 						}
 					}
@@ -521,13 +523,14 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	private static List<String> getColumnValues(int colIndex){
+
+	private static List<String> getColumnValues(int colIndex) {
 		List<String> results = new ArrayList<String>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		List<DataRow> dataRowList = tableProvider.getData();
-		for(DataRow dataRow:dataRowList){
+		for (DataRow dataRow : dataRowList) {
 			results.add(dataRow.get(colIndex));
 		}
-		return results;	
+		return results;
 	}
 }
