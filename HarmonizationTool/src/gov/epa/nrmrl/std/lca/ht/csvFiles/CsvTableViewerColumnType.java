@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-public enum LcaCsvTableColumnType {
+public enum CsvTableViewerColumnType {
 	FLOWABLE_NAME ("Flowable Name","Flowable",true, true),
 	FLOWABLE_ALT_NAME ("Flowable Synonym","Flowable",true, false),
 	CAS("CAS","Flowable",false, true),
@@ -27,7 +27,7 @@ public enum LcaCsvTableColumnType {
 	public boolean required;
 	public boolean unique;
 
-	private LcaCsvTableColumnType(String displayString, String parentGroup, boolean required, boolean unique) {
+	private CsvTableViewerColumnType(String displayString, String parentGroup, boolean required, boolean unique) {
 		this.displayString = displayString;
 		this.parentGroup = parentGroup;
 		this.required = required;
@@ -42,7 +42,7 @@ public enum LcaCsvTableColumnType {
 		return result;
 	}
 	public static boolean isUnique(String displayString){
-		for (LcaCsvTableColumnType type: LcaCsvTableColumnType.values()){
+		for (CsvTableViewerColumnType type: CsvTableViewerColumnType.values()){
 			if (type.displayString.equals(displayString)){
 				return type.unique;
 			}
@@ -51,7 +51,7 @@ public enum LcaCsvTableColumnType {
 	}
 	
 	public static boolean isRequired(String displayString){
-		for (LcaCsvTableColumnType type: LcaCsvTableColumnType.values()){
+		for (CsvTableViewerColumnType type: CsvTableViewerColumnType.values()){
 			if (type.displayString.equals(displayString)){
 				return type.required;
 			}
@@ -60,7 +60,7 @@ public enum LcaCsvTableColumnType {
 	}
 	
 	
-//	public LcaCsvTableColumnType[] getCsvTableColumnTypes(){
-//		return LcaCsvTableColumnType.values();
+//	public CsvTableViewerColumnType[] getCsvTableColumnTypes(){
+//		return CsvTableViewerColumnType.values();
 //	}
 }

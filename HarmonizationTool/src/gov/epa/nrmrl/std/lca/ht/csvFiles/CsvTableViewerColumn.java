@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.TableColumn;
  * @author transue
  *
  */
-public final class LcaCsvTableColumn extends ViewerColumn {
-	private LcaCsvTableColumnType type = null;
+public final class CsvTableViewerColumn extends ViewerColumn {
+	private CsvTableViewerColumnType type = null;
 	private TableColumn column;
 
 	/**
@@ -26,7 +26,7 @@ public final class LcaCsvTableColumn extends ViewerColumn {
 	 *            see {@link TableColumn}
 	 * @see TableColumn#TableColumn(Table, int)
 	 */
-	public LcaCsvTableColumn(TableViewer viewer, int style) {
+	public CsvTableViewerColumn(TableViewer viewer, int style) {
 		this(viewer, style, -1);
 	}
 
@@ -44,7 +44,7 @@ public final class LcaCsvTableColumn extends ViewerColumn {
 	 *            the index at which to place the newly created column
 	 * @see TableColumn#TableColumn(Table, int, int)
 	 */
-	public LcaCsvTableColumn(TableViewer viewer, int style, int index) {
+	public CsvTableViewerColumn(TableViewer viewer, int style, int index) {
 		this(viewer, createColumn(viewer.getTable(), style, index));
 	}
 
@@ -57,7 +57,7 @@ public final class LcaCsvTableColumn extends ViewerColumn {
 	 * @param column
 	 *            the underlying table column
 	 */
-	public LcaCsvTableColumn(TableViewer viewer, TableColumn column) {
+	public CsvTableViewerColumn(TableViewer viewer, TableColumn column) {
 		super(viewer, column);
 		this.column = column;
 	}
@@ -77,24 +77,24 @@ public final class LcaCsvTableColumn extends ViewerColumn {
 		return column;
 	}
 
-	public LcaCsvTableColumnType getType() {
+	public CsvTableViewerColumnType getType() {
 		return type;
 	}
 	
 }
-//public final class LcaCsvTableColumn extends ViewerColumn {
+//public final class CsvTableViewerColumn extends ViewerColumn {
 //	private TableColumn column;
 //	private int colNumber;
-//	protected LcaCsvTableColumn(TableViewer viewer, TableColumn column) {
+//	protected CsvTableViewerColumn(TableViewer viewer, TableColumn column) {
 //		super(viewer, column);
 //		this.column = column;
 //	}
-//	protected LcaCsvTableColumn(TableViewer viewer, Widget columnOwner, int colNumber) {
+//	protected CsvTableViewerColumn(TableViewer viewer, Widget columnOwner, int colNumber) {
 //		super(viewer, columnOwner);
 //		this.colNumber = colNumber;
 //	}
 //
-//	public static LcaCsvTableColumnType type;
+//	public static CsvTableViewerColumnType type;
 
 
 //}

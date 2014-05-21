@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -46,7 +45,7 @@ public class CSVTableView extends ViewPart {
 	private static String key = null;
 	private TableViewer tableViewer;
 	private Table table;
-	private static List<LcaCsvTableColumn> columns = new ArrayList<LcaCsvTableColumn>();
+	private static List<CsvTableViewerColumn> columns = new ArrayList<CsvTableViewerColumn>();
 	// the menu that is displayed when column header is right clicked
 	private static Menu headerMenu;
 	private Menu rowMenu;
@@ -221,7 +220,7 @@ public class CSVTableView extends ViewPart {
 				if (header.get(i) == null) {
 					header.set(i, IGNORE_HDR);
 				}
-				LcaCsvTableColumn col = createTableViewerColumn(header.get(i), 100, i);
+				CsvTableViewerColumn col = createTableViewerColumn(header.get(i), 100, i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
@@ -278,13 +277,10 @@ public class CSVTableView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private LcaCsvTableColumn createTableViewerColumn(String title, int bound, final int colNumber) {
-		// final LcaCsvTableColumn tableViewerColumn = new
-		// LcaCsvTableColumn(tableViewer, SWT.NONE, colNumber);
-		//
-		final LcaCsvTableColumn lcaCsvTableColumn = new LcaCsvTableColumn(tableViewer, SWT.NONE, colNumber);
-		final TableColumn tableColumn = lcaCsvTableColumn.getColumn();
-		// viewerColumn.
+	private CsvTableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+
+		final CsvTableViewerColumn csvTableViewerColumn = new CsvTableViewerColumn(tableViewer, SWT.NONE, colNumber);
+		final TableColumn tableColumn = csvTableViewerColumn.getColumn();
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
 		tableColumn.setResizable(true);
@@ -319,12 +315,12 @@ public class CSVTableView extends ViewPart {
 
 		});
 
-		return lcaCsvTableColumn;
+		return csvTableViewerColumn;
 	}
-	
-	public String getTitle(){
-		return "hello";
-	}
+//	
+//	public String getTitle(){
+//		return "hello";
+//	}
 
 	/**
 	 * this method initializes the headerMenu with menuItems and a
@@ -342,7 +338,7 @@ public class CSVTableView extends ViewPart {
 		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		menuItem.setText("Ignore");
 		String lastParentGroup = "";
-		for (LcaCsvTableColumnType type : LcaCsvTableColumnType.values()) {
+		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
 			String parentGroup = type.parentGroup;
 			if (!parentGroup.equals(lastParentGroup)) {
 				new MenuItem(headerMenu, SWT.SEPARATOR);
@@ -404,7 +400,7 @@ public class CSVTableView extends ViewPart {
 				}
 
 				for (MenuItem mi : menuItems) {
-					boolean unique = LcaCsvTableColumnType.isUnique(mi.getText());
+					boolean unique = CsvTableViewerColumnType.isUnique(mi.getText());
 					if ((unique && (event.widget.equals(mi)))) {
 						mi.setEnabled(false);
 						break;
@@ -441,7 +437,7 @@ public class CSVTableView extends ViewPart {
 	private void exportColumnStatus() {
 		int assigned = 0;
 		for (Object col : columns) {
-			if (!((TableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
+			if (!((CsvTableViewerColumn) col).getColumn().getText().equals(IGNORE_HDR)) {
 				assigned++;
 			}
 		}
@@ -497,9 +493,9 @@ public class CSVTableView extends ViewPart {
 
 	public static void checkColumns() {
 		List<QACheck> checks = createQAChecks();
-		for (LcaCsvTableColumn col : columns) {
-			LcaCsvTableColumnType type = col.getType();
-			if (type.equals(LcaCsvTableColumnType.FLOWABLE_NAME)) {
+		for (CsvTableViewerColumn col : columns) {
+			CsvTableViewerColumnType type = col.getType();
+			if (type.equals(CsvTableViewerColumnType.FLOWABLE_NAME)) {
 				for(QACheck check:checks){
 					
 				}

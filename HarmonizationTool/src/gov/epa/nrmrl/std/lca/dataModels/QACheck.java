@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.LcaCsvTableColumn;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumn;
 import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
@@ -31,7 +31,7 @@ public class QACheck {
 	public Issue getIssue(){
 		return issue;
 	}
-	public void csvColQACheck(LcaCsvTableColumn column, QACheck qaCheck){
+	public void csvColQACheck(CsvTableViewerColumn column, QACheck qaCheck){
 		TableColumn tableColumn = (TableColumn) column.getColumn().getData();
 		@SuppressWarnings("unchecked")
 		List<String> items = (List<String>) tableColumn.getData();
