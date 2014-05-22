@@ -1,5 +1,6 @@
 package harmonizationtool;
 
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowData;
 import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
 
 import org.eclipse.ui.application.IWorkbenchConfigurer;
@@ -8,8 +9,6 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
-
-	private static final String PERSPECTIVE_ID = OriginalPerspective.ID;
 
 	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(
 			IWorkbenchWindowConfigurer configurer) {
@@ -24,7 +23,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	}
 
 	public String getInitialWindowPerspectiveId() {
-		return PERSPECTIVE_ID;
+		return FlowData.ID;
+//		return OriginalPerspective.ID;
 	}
 
 }

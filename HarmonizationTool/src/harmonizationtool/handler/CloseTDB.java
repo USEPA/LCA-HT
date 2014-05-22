@@ -24,7 +24,9 @@ public class CloseTDB implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		System.out.println("Closing TDB");
-		SelectTDB.dataset.close();
+		if (SelectTDB.dataset != null) {
+			SelectTDB.dataset.close();
+		}
 		return null;
 	}
 

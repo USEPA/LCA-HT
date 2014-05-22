@@ -96,21 +96,10 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="*">
-         <view
-               standalone="true"
-               minimized="false"
-               relative="org.eclipse.ui.editorss"
-               relationship="left"
-               id="HarmonizationTool.view">
-         </view>
-         <view
-               standalone="true"
-               minimized="false"
-               relative="org.eclipse.ui.editorss"
-               relationship="left"
-               id="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView">
-         </view>
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective">
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData">
       </perspectiveExtension>
    </extension>
    <extension

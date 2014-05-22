@@ -78,9 +78,9 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		queryResults = new QueryResults();
 		data = null;
 		if (SelectTDB.model == null) {
-			String msg = "ERROR no TDB open";
-			Util.findView(QueryView.ID).getViewSite().getActionBars()
-					.getStatusLineManager().setMessage(msg);
+//			String msg = "ERROR no TDB open";
+//			Util.findView(QueryView.ID).getViewSite().getActionBars()
+//					.getStatusLineManager().setMessage(msg);
 			return;
 		}
 

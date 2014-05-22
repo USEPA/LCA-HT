@@ -77,9 +77,9 @@ public class ImportCSV implements IHandler {
 			if (!file.exists()) {
 				runLogger.warn("# File not found\n");
 
-				String msg = "File does not exist!";
-				Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-				System.out.println(msg);
+//				String msg = "File does not exist!";
+//				Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//				System.out.println(msg);
 				return null;
 			}
 		}
@@ -91,11 +91,11 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		if (fileReader == null) {
-			String msg = "Can not read CSV file!";
+//			String msg = "Can not read CSV file!";
 			runLogger.error("# File not readable\n");
 
-			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			System.out.println(msg);
+//			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//			System.out.println(msg);
 			return null;
 		}
 		// FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
@@ -127,11 +127,11 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
-			String msg = "No content in CSV file!";
+//			String msg = "No content in CSV file!";
 			runLogger.warn("# No content in CSV file!");
 
-			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			System.out.println(msg);
+//			Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//			System.out.println(msg);
 			return null;
 		}
 		fileMD.setFilename(file.getName());
@@ -199,8 +199,8 @@ public class ImportCSV implements IHandler {
 		Date readEndTime = new Date();
 		runLogger.info("# File read time (in seconds): " + readEndTime.compareTo(readStartTime));
 
-		String msg = "Finished reading file: " + path;
-		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//		String msg = "Finished reading file: " + path;
+//		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 
 		// NOW OPEN DIALOG WITH SOME PRE-POPULATE fileMD INFO
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);

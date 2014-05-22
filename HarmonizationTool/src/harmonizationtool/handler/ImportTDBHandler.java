@@ -56,8 +56,8 @@ public class ImportTDBHandler implements IHandler {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
 		if(SelectTDB.model== null){
-			String msg = "ERROR no TDB open";
-			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//			String msg = "ERROR no TDB open";
+//			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
@@ -202,8 +202,8 @@ public class ImportTDBHandler implements IHandler {
 		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		// System.out.println("qGetNextDSIndex = "+qGetNextDSIndex.toString());
 
-		String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//		String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
+//		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 
 		
 		return null;

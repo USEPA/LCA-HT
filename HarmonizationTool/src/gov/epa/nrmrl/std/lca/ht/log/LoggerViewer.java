@@ -26,8 +26,9 @@ public class LoggerViewer extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
-		Logger.getLogger("run").info("createPartControl done in LoggerViewer");
-
+//		Logger.getLogger("run").info("createPartControl done in LoggerViewer");
+		// VERY DANGEROUS TO TRY TO DO THIS HERE (THE WIDGET DOESN'T EXIST YET)
+		
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setSize(600,200);
 		

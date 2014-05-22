@@ -114,10 +114,10 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	}
 
 	private void updateStatusLine() {
-		String msg;
-		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
-		Util.findView(QueryView.ID).getViewSite().getActionBars()
-				.getStatusLineManager().setMessage(msg);
+//		String msg;
+//		msg = "Using TDB: " + Util.getPreferenceStore().getString("defaultTDB");
+//		Util.findView(QueryView.ID).getViewSite().getActionBars()
+//				.getStatusLineManager().setMessage(msg);
 	}
 
 	private static void openTDB() {
@@ -133,10 +133,10 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 				redirectToPreferences();
 			}
-			String msg = "Opening TDB: "
-					+ Util.getPreferenceStore().getString("defaultTDB");
-			Util.findView(QueryView.ID).getViewSite().getActionBars()
-					.getStatusLineManager().setMessage(msg);
+//			String msg = "Opening TDB: "
+//					+ Util.getPreferenceStore().getString("defaultTDB");
+//			Util.findView(QueryView.ID).getViewSite().getActionBars()
+//					.getStatusLineManager().setMessage(msg);
 			String defaultTDB = Util.getPreferenceStore().getString(
 					"defaultTDB");
 			File defaultTDBFile = new File(defaultTDB);

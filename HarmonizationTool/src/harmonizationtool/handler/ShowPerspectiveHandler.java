@@ -7,6 +7,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
@@ -43,7 +46,6 @@ public class ShowPerspectiveHandler implements IHandler {
 			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowData.ID));
 		} else {
 			System.out.println("No match, dude.  Sorry!");
-
 		}
 
 		System.out.println("now id is " + iPerspectiveDescriptor.getId());

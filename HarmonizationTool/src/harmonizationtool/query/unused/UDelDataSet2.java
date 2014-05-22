@@ -32,9 +32,9 @@ public class UDelDataSet2 {
 		// Query query = QueryFactory.create(queryStr);
 		Model model = SelectTDB.model;
 		if (model == null) {
-			String msg = "ERROR no TDB open";
-			Util.findView(QueryView.ID).getViewSite().getActionBars()
-					.getStatusLineManager().setMessage(msg);
+//			String msg = "ERROR no TDB open";
+//			Util.findView(QueryView.ID).getViewSite().getActionBars()
+//					.getStatusLineManager().setMessage(msg);
 			return;
 		}
 		System.out.println("Running XNumberDataSets");

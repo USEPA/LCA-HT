@@ -10,7 +10,6 @@ public class FlowData implements IPerspectiveFactory {
 	public static final String PID = "<FlowData>";
 
 	public void createInitialLayout(IPageLayout layout) {
-		addPerspectiveShortcuts(layout);
 		String editorArea = layout.getEditorArea();
 		layout.setFixed(false);
 		layout.setEditorAreaVisible(false);
@@ -19,9 +18,10 @@ public class FlowData implements IPerspectiveFactory {
 		controlFolder.addView("gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow");
 		layout.addView("harmonizationtool.console.LoggerViewer", IPageLayout.BOTTOM, 0.75f, "Control and Status");
 
-		IFolderLayout dataFolder = layout.createFolder("CSV File", IPageLayout.LEFT, 0.71f, editorArea);
+		IFolderLayout dataFolder = layout.createFolder("CSV File", IPageLayout.LEFT, 0.95f, editorArea);
 		dataFolder.addView("gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView");
-		// folderLayout.addView("gov.epa.nrmrl.std.lca.ht.job.JobStatusView");
+
+		addPerspectiveShortcuts(layout);
 
 	}
 

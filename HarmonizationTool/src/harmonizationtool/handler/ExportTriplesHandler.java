@@ -53,8 +53,8 @@ public class ExportTriplesHandler implements IHandler {
 
 				System.out.println("executing Export Triples");
 				if(SelectTDB.model== null){
-					String msg = "ERROR no TDB open";
-					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+//					String msg = "ERROR no TDB open";
+//					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 					return null;
 				}
 				Model model = SelectTDB.model;

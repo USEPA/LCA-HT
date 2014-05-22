@@ -337,10 +337,10 @@ public class View extends ViewPart {
 
 					Model model = SelectTDB.model;
 					if (model == null) {
-						String msg = "ERROR no TDB open";
-						Util.findView(QueryView.ID).getViewSite()
-								.getActionBars().getStatusLineManager()
-								.setMessage(msg);
+//						String msg = "ERROR no TDB open";
+//						Util.findView(QueryView.ID).getViewSite()
+//								.getActionBars().getStatusLineManager()
+//								.setMessage(msg);
 						return;
 					}
 
@@ -446,10 +446,10 @@ public class View extends ViewPart {
 								// System.out.println("name=" + name);
 								drNameLit = model.createTypedLiteral(name);
 							} else {
-								String msg = "Flowables must have a \"Name\" field!";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "Flowables must have a \"Name\" field!";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT" WAY
 										// TO LEAVE
 							}
@@ -601,10 +601,10 @@ public class View extends ViewPart {
 
 					Model model = SelectTDB.model;
 					if (model == null) {
-						String msg = "ERROR no TDB open";
-						Util.findView(QueryView.ID).getViewSite()
-								.getActionBars().getStatusLineManager()
-								.setMessage(msg);
+//						String msg = "ERROR no TDB open";
+//						Util.findView(QueryView.ID).getViewSite()
+//								.getActionBars().getStatusLineManager()
+//								.setMessage(msg);
 						return;
 					}
 
@@ -703,10 +703,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "Categories must have a \"Cat1\" field!";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "Categories must have a \"Cat1\" field!";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
@@ -882,10 +882,10 @@ public class View extends ViewPart {
 
 					Model model = SelectTDB.model;
 					if (model == null) {
-						String msg = "ERROR no TDB open";
-						Util.findView(QueryView.ID).getViewSite()
-								.getActionBars().getStatusLineManager()
-								.setMessage(msg);
+//						String msg = "ERROR no TDB open";
+//						Util.findView(QueryView.ID).getViewSite()
+//								.getActionBars().getStatusLineManager()
+//								.setMessage(msg);
 						return;
 					}
 
@@ -988,10 +988,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "An impact assessment method must be assigned";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "An impact assessment method must be assigned";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
@@ -1015,10 +1015,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "An impact characterization model must be assigned";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "An impact characterization model must be assigned";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
@@ -1042,10 +1042,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "An impact category must be assigned";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "An impact category must be assigned";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
@@ -1069,10 +1069,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "An impact category indicator must be assigned";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "An impact category indicator must be assigned";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
@@ -1095,10 +1095,10 @@ public class View extends ViewPart {
 							}
 
 							else {
-								String msg = "An reference unit must be assigned";
-								Util.findView(QueryView.ID).getViewSite()
-										.getActionBars().getStatusLineManager()
-										.setMessage(msg);
+//								String msg = "An reference unit must be assigned";
+//								Util.findView(QueryView.ID).getViewSite()
+//										.getActionBars().getStatusLineManager()
+//										.setMessage(msg);
 								return; // FIXME -- IS THERE A "RIGHT"
 										// WAY
 										// TO LEAVE
