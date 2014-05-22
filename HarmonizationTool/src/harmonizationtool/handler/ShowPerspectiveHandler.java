@@ -35,12 +35,12 @@ public class ShowPerspectiveHandler implements IHandler {
 		String id = iPerspectiveDescriptor.getId();
 
 		System.out.println("id " + id);
-		if (id.equals(FlowData.PID)) {
+		if (id.equals(FlowData.ID)) {
 			System.out.println("Matched FlowData!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.PID));
-		} else if (id.equals(OriginalPerspective.PID)) {
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
+		} else if (id.equals(OriginalPerspective.ID)) {
 			System.out.println("Matched Original Perspective!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowData.PID));
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowData.ID));
 		} else {
 			System.out.println("No match, dude.  Sorry!");
 
