@@ -4,9 +4,12 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
-public class Perspective implements IPerspectiveFactory {
+public class OriginalPerspective implements IPerspectiveFactory {
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective";
+	public static final String PID = "<Original_Perspective>";
 
 	public void createInitialLayout(IPageLayout layout) {
+		addPerspectiveShortcuts(layout);
 		String editorArea = layout.getEditorArea();
 		layout.setFixed(false);
 		layout.setEditorAreaVisible(false);
@@ -26,4 +29,8 @@ public class Perspective implements IPerspectiveFactory {
 		}
 	}
 
+	private void addPerspectiveShortcuts(IPageLayout layout) {
+		layout.addPerspectiveShortcut(OriginalPerspective.ID);
+		layout.addPerspectiveShortcut(FlowData.ID);
+	}
 }

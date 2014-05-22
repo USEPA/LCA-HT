@@ -1,5 +1,7 @@
 package harmonizationtool;
 
+import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
+
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -7,7 +9,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
-	private static final String PERSPECTIVE_ID = "HarmonizationTool.perspective";
+	private static final String PERSPECTIVE_ID = OriginalPerspective.ID;
 
 	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(
 			IWorkbenchWindowConfigurer configurer) {

@@ -14,9 +14,14 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="Perspective"
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.Perspective"
-            id="HarmonizationTool.perspective">
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData"
+            name="Flow data">
+      </perspective>
+      <perspective
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
+            name="Original Perspective">
       </perspective>
    </extension>
    <extension
@@ -160,6 +165,14 @@
          </menu>
          <menu
                label="Window Manager">
+            <menu
+                  label="Work Flows">
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
+                     label="Show Perspectives"
+                     style="push">
+               </command>
+            </menu>
             <menu
                   label="Data">
                <command
@@ -390,6 +403,11 @@
             defaultHandler="harmonizationtool.handler.ShowLoggerViewerHandler"
             id="harmonizationtool.handler.ShowLoggerViewerHandler"
             name="Show Logger">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowPerspectiveHandler"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
+            name="Show Perspectives">
       </command>
    </extension>
    <extension
