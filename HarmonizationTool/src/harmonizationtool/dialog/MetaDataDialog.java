@@ -495,9 +495,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
 		// comboDataSetSelector.getText());
 		boolean sendToFlowsWorkflow = false;
-		if (FlowsWorkflow.getTextAssociatedDataset().equals(comboDataSetSelector.getText())){
-			sendToFlowsWorkflow = true;
-		}
+//		if (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSetSelector.getText())){
+//			sendToFlowsWorkflow = true;
+//		}
 		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSetSelector.getText(), comboDataSetSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
@@ -529,9 +529,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		comboDataSetSelector.setItem(comboDataSetSelector.getSelectionIndex(), newFileName);
 		// comboDataSetSelector.setText(newFileName);
-		if (sendToFlowsWorkflow){
-			FlowsWorkflow.setTextAssociatedDataset(newFileName);
-		}
+//		if (sendToFlowsWorkflow){
+//			FlowsWorkflow.setTextFileInfo(newFileName);
+//		}
 	}
 
 	// private void dataSetProviderToTDB(DataSetProvider dsProvider) {

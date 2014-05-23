@@ -109,10 +109,10 @@ public class FlowsWorkflow extends ViewPart {
 		textFileInfo.setEditable(false);
 
 		// textFileInfo.setText("(filename)");
-		// GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true,
-		// false, 1, 1);
-		// gd_textFileInfo.widthHint = 150;
-		// textFileInfo.setLayoutData(gd_textFileInfo);
+		 GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true,
+		 false, 1, 1);
+		 gd_textFileInfo.widthHint = 150;
+		 textFileInfo.setLayoutData(gd_textFileInfo);
 		//
 		// label_02 = new Label(composite, SWT.NONE);
 		// label_02.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,

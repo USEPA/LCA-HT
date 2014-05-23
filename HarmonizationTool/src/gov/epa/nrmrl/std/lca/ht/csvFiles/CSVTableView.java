@@ -295,6 +295,7 @@ public class CSVTableView extends ViewPart {
 
 		final CsvTableViewerColumn csvTableViewerColumn = new CsvTableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = csvTableViewerColumn.getColumn();
+		csvTableViewerColumn.setColumnNumber(colNumber);
 		csvTableViewerColumn.setColumn(tableColumn);
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
@@ -373,9 +374,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private void setIgnoreRowMenu() {
-//		while (rowMenu.getItemCount() >0){
-//			rowMenu.getItem(0).dispose();
-//		}
+		// while (rowMenu.getItemCount() >0){
+		// rowMenu.getItem(0).dispose();
+		// }
 		RowSelectionListener rowSelectionListener = new RowSelectionListener();
 
 		MenuItem menuItem;
@@ -391,25 +392,24 @@ public class CSVTableView extends ViewPart {
 		menuItem.setText("use rows");
 
 	}
-	
-//	private void setIssueRowMenu(){
-//		while (rowMenu.getItemCount() >0){
-//			rowMenu.getItem(0).dispose();
-//		}
-//		MenuItem menuItem;
-//
-////		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-////		menuItem.addListener(SWT.Selection, rowSelectionListener);
-////		menuItem.setText("resolve issue");
-////
-////		// new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
-////
-////		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-////		menuItem.addListener(SWT.Selection, rowSelectionListener);
-////		menuItem.setText("flag cell");
-//		
-//	}
-	
+
+	// private void setIssueRowMenu(){
+	// while (rowMenu.getItemCount() >0){
+	// rowMenu.getItem(0).dispose();
+	// }
+	// MenuItem menuItem;
+	//
+	// // menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+	// // menuItem.addListener(SWT.Selection, rowSelectionListener);
+	// // menuItem.setText("resolve issue");
+	// //
+	// // // new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
+	// //
+	// // menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+	// // menuItem.addListener(SWT.Selection, rowSelectionListener);
+	// // menuItem.setText("flag cell");
+	//
+	// }
 
 	/**
 	 * once the user has selected a column header for change this Listener will
@@ -537,29 +537,27 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void checkColumns() {
-		System.out.println("columns.size() " + columns.size());
+		int issuesFound = 0;
 		for (CsvTableViewerColumn col : columns) {
-			System.out.println("col is: " + col);
 			if (col.getType() != null) {
-				// System.out.println("col.getType().getDisplayString() " +
-				// col.getType().getDisplayString());
-				// System.out.println("Got here...");
 				CSVColCheck csvColCheck = new CSVColCheck();
-				// System.out.println("Didn't get here...");
-				int colIndex = Integer.parseInt(col.getColumn().getToolTipText().substring(7));
-				// System.out.println("The index is: " + colIndex);
-				List<String> columnValues = getColumnValues(colIndex);
+				List<String> columnValues = getColumnValues(col.getColumnNumber());
 				// System.out.println("columnValues.size() " +
 				// columnValues.size());
 				for (QACheck check : QACheck.getQAChecks(col.getType())) {
 					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
-//						System.out.println(val);
+						System.out.println("testing column # " + col.getColumnNumber());
+						System.out.println("check.getPattern() " + check.getPattern());
+						System.out.println("check.getIssue() " + check.getIssue());
+
 						Matcher matcher = check.getPattern().matcher(val);
 						while (matcher.find()) {
+							issuesFound++;
+							System.out.println("check.getIssue() " + check.getIssue());
 							Issue issue = check.getIssue();
 							issue.setRowNumber(i);
-							issue.setColNumber(colIndex);
+							issue.setColNumber(col.getColumnNumber());
 							issue.setLocation("Line: " + i + " and position: " + matcher.end());
 							issue.setStatus(Status.UNRESOLVED);
 							Logger.getLogger("run").warn(issue.getDescription());
@@ -571,6 +569,7 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 		}
+		FlowsWorkflow.setTextIssues(issuesFound + " issues found");
 	}
 
 	private static List<String> getColumnValues(int colIndex) {
@@ -592,7 +591,7 @@ public class CSVTableView extends ViewPart {
 		}
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		tableItem.setBackground(issue.getColNumber(), issue.getStatus().getColor());
-//		tableItem.set
+		// tableItem.set
 		return;
 	}
 

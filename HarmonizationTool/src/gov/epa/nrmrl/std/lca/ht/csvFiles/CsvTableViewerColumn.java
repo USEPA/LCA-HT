@@ -19,6 +19,7 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 	private CsvTableViewerColumnType type = null;
 	private CSVColCheck csvColCheck = null;
 	private TableColumn column;
+	private int columnNumber;
 
 	public CsvTableViewerColumn(TableViewer viewer, int style) {
 		this(viewer, style, -1);
@@ -79,6 +80,14 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 
 		System.out.println("getColumn().getData(): "+getColumn().getData());
 //		QACheck.checkColumn();
+	}
+
+	public int getColumnNumber() {
+		return columnNumber;
+	}
+
+	public void setColumnNumber(int columnNumber) {
+		this.columnNumber = columnNumber;
 	}
 	
 }
