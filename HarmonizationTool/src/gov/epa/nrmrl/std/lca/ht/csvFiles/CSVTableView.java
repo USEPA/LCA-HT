@@ -443,11 +443,12 @@ public class CSVTableView extends ViewPart {
 			if (!headerName.equals(IGNORE_HDR)) {
 				assigned++;
 				col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
-				System.out.println("col.getType: "+col.getType());
-				System.out.println("col.getType().getDisplayString(): "+col.getType().getDisplayString());
+				System.out.println("col.getType: " + col.getType());
+				System.out.println("col.getType().getDisplayString(): " + col.getType().getDisplayString());
 
+			} else {
+				col.setType(null);
 			}
-			col.setType(null);
 		}
 		FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
 	}
@@ -499,13 +500,18 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void checkColumns() {
+		System.out.println("columns.size() " + columns.size());
 		for (CsvTableViewerColumn col : columns) {
+			System.out.println("col is: " + col);
 			if (col.getType() != null) {
-				System.out.println("col.getType().getDisplayString() "+ col.getType().getDisplayString());
+//				System.out.println("col.getType().getDisplayString() " + col.getType().getDisplayString());
+//				System.out.println("Got here...");
 				CSVColCheck csvColCheck = new CSVColCheck();
+//				System.out.println("Didn't get here...");
 				int colIndex = Integer.parseInt(col.getColumn().getToolTipText().substring(7));
+				System.out.println("The index is: " + colIndex);
 				List<String> columnValues = getColumnValues(colIndex);
-				System.out.println("columnValues.size() "+columnValues.size());
+				System.out.println("columnValues.size() " + columnValues.size());
 				for (QACheck check : QACheck.getQAChecks(col.getType())) {
 					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
@@ -528,6 +534,7 @@ public class CSVTableView extends ViewPart {
 		List<String> results = new ArrayList<String>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		List<DataRow> dataRowList = tableProvider.getData();
+		System.out.println("dataRowList.size() " + dataRowList.size());
 		for (DataRow dataRow : dataRowList) {
 			results.add(dataRow.get(colIndex));
 		}

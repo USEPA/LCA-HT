@@ -6,4 +6,4 @@ public enum Status {
 	UNRESOLVED,
 	RESOLVED,
 	FATAL
-	}
+}

@@ -15,6 +15,7 @@ public class CSVColCheck {
 
 	public CSVColCheck() {
 		this.lastChecked = new Date();
+		System.out.println("new CSVColCheck, and it got its date");
 	}
 
 	public List<Issue> getIssues() {
