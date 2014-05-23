@@ -192,7 +192,7 @@ public class FileEncodingUtil {
 				while (bufferedReader.ready()) {
 					String line = bufferedReader.readLine();
 					lineNumber++;
-					System.out.print("linenumber: "+ lineNumber);
+//					System.out.print("linenumber: "+ lineNumber);
 					Matcher matcher = nonAsciiPattern.matcher(line);
 					if (matcher.find()) {
 						System.out.print("Got one: "+ matcher);

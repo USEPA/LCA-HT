@@ -93,7 +93,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		System.out.println("createDialogArea called");
-		setTitle("CSV file Meta Data");
+		setTitle("Delete a Data Set");
 
 		// CREATE THE COMPOSITE
 		Composite composite = new Composite(parent, SWT.NONE);

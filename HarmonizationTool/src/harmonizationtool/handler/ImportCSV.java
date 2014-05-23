@@ -148,8 +148,8 @@ public class ImportCSV implements IHandler {
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
 		TableKeeper.saveTableProvider(path, tableProvider);
 
-		View view = (View) Util.findView(View.ID);
-		view.add(fileMD);
+//		View view = (View) Util.findView(View.ID);
+//		view.add(fileMD);
 
 		while (values != null) {
 			// printValues(parser.getLineNumber(),values);
@@ -206,11 +206,11 @@ public class ImportCSV implements IHandler {
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
 
 		dialog.create();
-		if (dialog.open() == MetaDataDialog.CANCEL) {
-			// remove fileMD from Data Files viewer
-			view.remove(fileMD);
-
-		}
+		dialog.open();
+//		if (dialog.open() == MetaDataDialog.CANCEL) {
+//			// remove fileMD from Data Files viewer
+////			view.remove(fileMD);
+//		}
 
 		return null;
 	}
