@@ -3,48 +3,66 @@ package harmonizationtool.model;
 public class Issue {
 	private static String description;
 	private static String location;
+	private static int rowNumber;
+	public int getRowNumber() {
+		return rowNumber;
+	}
+
+	public void setRowNumber(int rowNumber) {
+		Issue.rowNumber = rowNumber;
+	}
+
+	public int getColNumber() {
+		return colNumber;
+	}
+
+	public void setColNumber(int colNumber) {
+		Issue.colNumber = colNumber;
+	}
+
+	private static int colNumber;
 	private static String details;
 	private static String suggestion;
 	private static Status status = null;
 	private static boolean autofix;
 	
-	public static String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public static void setDescription(String description) {
+	public void setDescription(String description) {
 		Issue.description = description;
 	}
 
-	public static String getDetails() {
+	public String getDetails() {
 		return details;
 	}
 
-	public static void setDetails(String details) {
+	public void setDetails(String details) {
 		Issue.details = details;
 	}
 
-	public static String getSuggestion() {
+	public String getSuggestion() {
 		return suggestion;
 	}
 
-	public static void setSuggestion(String suggestion) {
+	public void setSuggestion(String suggestion) {
 		Issue.suggestion = suggestion;
 	}
 
-	public static boolean isAutofix() {
+	public boolean isAutofix() {
 		return autofix;
 	}
 
-	public static void setAutofix(boolean autofix) {
+	public void setAutofix(boolean autofix) {
 		Issue.autofix = autofix;
 	}
 
-	public static String getLocation() {
+	public String getLocation() {
 		return location;
 	}
 
-	public static Status getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 

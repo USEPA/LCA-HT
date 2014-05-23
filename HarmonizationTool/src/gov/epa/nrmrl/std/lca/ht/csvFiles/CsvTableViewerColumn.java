@@ -3,7 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.Date;
 
 import gov.epa.nrmrl.std.lca.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerColumn;

@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import gov.epa.nrmrl.std.lca.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
@@ -35,6 +34,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -109,7 +109,8 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -123,7 +124,7 @@ public class CSVTableView extends ViewPart {
 		// initializeHeaderMenu();
 
 		rowMenu = new Menu(table);
-		initializeRowMenu();
+		setIgnoreRowMenu();
 
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(final SelectionChangedEvent event) {
@@ -180,7 +181,7 @@ public class CSVTableView extends ViewPart {
 		if ((key != null) && (key.equals(this.key))) {
 			// final Table table = tableViewer.getTable();
 			tableViewer.setInput(null);
-			removeColumns(table);
+			removeColumns();
 			table.setHeaderVisible(false);
 			table.setLinesVisible(false);
 		}
@@ -192,6 +193,15 @@ public class CSVTableView extends ViewPart {
 	 * @param table
 	 */
 	private void removeColumns(Table table) {
+		System.out.println(this.getClass().getName() + ".removeColumns(table)");
+		table.setRedraw(false);
+		while (table.getColumnCount() > 0) {
+			table.getColumns()[0].dispose();
+		}
+		table.setRedraw(true);
+	}
+
+	private void removeColumns() {
 		System.out.println(this.getClass().getName() + ".removeColumns(table)");
 		table.setRedraw(false);
 		while (table.getColumnCount() > 0) {
@@ -234,7 +244,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -328,7 +339,8 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a
+	 * ColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the columns
@@ -360,7 +372,10 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private void initializeRowMenu() {
+	private void setIgnoreRowMenu() {
+//		while (rowMenu.getItemCount() >0){
+//			rowMenu.getItem(0).dispose();
+//		}
 		RowSelectionListener rowSelectionListener = new RowSelectionListener();
 
 		MenuItem menuItem;
@@ -376,11 +391,31 @@ public class CSVTableView extends ViewPart {
 		menuItem.setText("use rows");
 
 	}
+	
+//	private void setIssueRowMenu(){
+//		while (rowMenu.getItemCount() >0){
+//			rowMenu.getItem(0).dispose();
+//		}
+//		MenuItem menuItem;
+//
+////		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+////		menuItem.addListener(SWT.Selection, rowSelectionListener);
+////		menuItem.setText("resolve issue");
+////
+////		// new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
+////
+////		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+////		menuItem.addListener(SWT.Selection, rowSelectionListener);
+////		menuItem.setText("flag cell");
+//		
+//	}
+	
 
 	/**
-	 * once the user has selected a column header for change this Listener will set the column
-	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
-	 * displayed so the user can enter a custom value for the column header.
+	 * once the user has selected a column header for change this Listener will
+	 * set the column header to the value selected by the user. If the user
+	 * selects "Custom...", then a dialog is displayed so the user can enter a
+	 * custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -414,7 +449,8 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog",
+								"Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -485,8 +521,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column components and passes
-	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
+	 * this method retrieves the column header text values from the column
+	 * components and passes them to the TableProvider so they can be retrieved
+	 * when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
@@ -504,24 +541,30 @@ public class CSVTableView extends ViewPart {
 		for (CsvTableViewerColumn col : columns) {
 			System.out.println("col is: " + col);
 			if (col.getType() != null) {
-//				System.out.println("col.getType().getDisplayString() " + col.getType().getDisplayString());
-//				System.out.println("Got here...");
+				// System.out.println("col.getType().getDisplayString() " +
+				// col.getType().getDisplayString());
+				// System.out.println("Got here...");
 				CSVColCheck csvColCheck = new CSVColCheck();
-//				System.out.println("Didn't get here...");
+				// System.out.println("Didn't get here...");
 				int colIndex = Integer.parseInt(col.getColumn().getToolTipText().substring(7));
-				System.out.println("The index is: " + colIndex);
+				// System.out.println("The index is: " + colIndex);
 				List<String> columnValues = getColumnValues(colIndex);
-				System.out.println("columnValues.size() " + columnValues.size());
+				// System.out.println("columnValues.size() " +
+				// columnValues.size());
 				for (QACheck check : QACheck.getQAChecks(col.getType())) {
 					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
-
+//						System.out.println(val);
 						Matcher matcher = check.getPattern().matcher(val);
 						while (matcher.find()) {
 							Issue issue = check.getIssue();
+							issue.setRowNumber(i);
+							issue.setColNumber(colIndex);
 							issue.setLocation("Line: " + i + " and position: " + matcher.end());
 							issue.setStatus(Status.UNRESOLVED);
 							Logger.getLogger("run").warn(issue.getDescription());
+							Logger.getLogger("run").warn("  ->" + issue.getLocation());
+							assignIssue(issue);
 							csvColCheck.addIssue(issue);
 						}
 					}
@@ -540,4 +583,17 @@ public class CSVTableView extends ViewPart {
 		}
 		return results;
 	}
+
+	private static void assignIssue(Issue issue) {
+		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		List<DataRow> dataRowList = tableProvider.getData();
+		if (issue.getRowNumber() >= dataRowList.size()) {
+			return;
+		}
+		TableItem tableItem = table.getItem(issue.getRowNumber());
+		tableItem.setBackground(issue.getColNumber(), issue.getStatus().getColor());
+//		tableItem.set
+		return;
+	}
+
 }

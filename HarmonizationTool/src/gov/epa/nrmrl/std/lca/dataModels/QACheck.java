@@ -1,8 +1,8 @@
 package gov.epa.nrmrl.std.lca.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColCheck;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumn;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
-import gov.epa.nrmrl.std.lca.ht.workflows.CSVColCheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
