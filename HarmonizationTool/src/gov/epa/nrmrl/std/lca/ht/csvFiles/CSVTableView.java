@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gov.epa.nrmrl.std.lca.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;

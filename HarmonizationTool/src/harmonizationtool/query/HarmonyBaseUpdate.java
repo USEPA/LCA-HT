@@ -1,7 +1,7 @@
 package harmonizationtool.query;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;

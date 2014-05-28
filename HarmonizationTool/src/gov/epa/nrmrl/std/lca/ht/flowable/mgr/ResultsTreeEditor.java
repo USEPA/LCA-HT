@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.ColumnLabelProvider;
-import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.QueryResults;

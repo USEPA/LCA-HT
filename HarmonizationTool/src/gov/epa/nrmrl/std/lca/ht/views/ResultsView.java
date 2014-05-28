@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.MyColumnLabelProvider;
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;

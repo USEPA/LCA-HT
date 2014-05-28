@@ -1,8 +1,8 @@
 package harmonizationtool.handler;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
-import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.query.unused.XNumberDataSets;
 import harmonizationtool.utils.Util;
 

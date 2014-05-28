@@ -2,10 +2,12 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 public enum CsvTableViewerColumnType {
 	FLOWABLE_NAME("Flowable Name", "Flowable", true, true),
-	FLOWABLE_ALT_NAME("Flowable Synonym", "Flowable", true, false), CAS("CAS", "Flowable", false, true),
+	FLOWABLE_ALT_NAME("Flowable Synonym", "Flowable", true, false),
+	CAS("CAS", "Flowable", false, true),
 	// Conventional Alternative Synonym
 
-	CONTEXT("Context (primary)", "Context", true, true), CONTEXT1("Context (additional)", "Context", false, false);
+	CONTEXT("Context (primary)", "Context", true, true),
+	CONTEXT1("Context (additional)", "Context", false, false);
 
 	// IMPACT_ASSESSMENT_METHOD_HDR,
 	// IMPACT_CHARACTERIZATION_MODEL_HDR,

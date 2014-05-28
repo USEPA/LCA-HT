@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;

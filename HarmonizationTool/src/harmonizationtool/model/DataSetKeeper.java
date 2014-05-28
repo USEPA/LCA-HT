@@ -1,6 +1,6 @@
 package harmonizationtool.model;
 
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.vocabulary.ECO;
 
 import java.util.ArrayList;

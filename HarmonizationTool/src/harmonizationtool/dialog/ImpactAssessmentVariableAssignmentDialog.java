@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import harmonizationtool.comands.SelectTDB;
+
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;

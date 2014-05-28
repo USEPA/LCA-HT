@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.tree.Node;

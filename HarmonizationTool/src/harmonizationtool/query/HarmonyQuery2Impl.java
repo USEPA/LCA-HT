@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;

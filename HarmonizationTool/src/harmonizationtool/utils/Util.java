@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.Activator;
-import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.jface.preference.IPreferenceStore;

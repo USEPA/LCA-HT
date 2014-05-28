@@ -1,9 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import harmonizationtool.tree.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 

@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.dataModels;
+package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 public class Flowable {
 	private static boolean relevantResource;

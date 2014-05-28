@@ -11,7 +11,7 @@ package harmonizationtool;
  *     Tom Schindl - initial API and implementation
  *******************************************************************************/
 
-import harmonizationtool.comands.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import harmonizationtool.vocabulary.ECO;
 
 import java.lang.reflect.InvocationTargetException;

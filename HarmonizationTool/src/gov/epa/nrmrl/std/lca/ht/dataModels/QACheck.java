@@ -1,40 +1,34 @@
-package gov.epa.nrmrl.std.lca.dataModels;
+package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColCheck;
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumn;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
-import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
-import harmonizationtool.model.Status;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.TableColumn;
 
 public class QACheck {
-	private static String name;
+	private String name;
 
-	public static String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public static void setName(String name) {
-		QACheck.name = name;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public static void setPattern(Pattern pattern) {
-		QACheck.pattern = pattern;
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
 	}
 
-	public static void setIssue(Issue issue) {
-		QACheck.issue = issue;
+	public void setIssue(Issue issue) {
+		this.issue = issue;
 	}
 
-	private static Pattern pattern;
-	private static Issue issue;
+	private Pattern pattern;
+	private Issue issue;
 
 	public QACheck(Pattern pattern, Issue issue) {
 		this.name = null;
@@ -73,13 +67,13 @@ public class QACheck {
 		return pattern;
 	}
 
-	public static List<QACheck> getQAChecks() {
+	public static List<QACheck> getGeneralQAChecks() {
 		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
 
 		Pattern p1 = Pattern.compile("^\"([^\"]*)\"$");
 		Issue i1 = new Issue("Bookend quotes", "The text is surrounded by apparently superfluous double quote marks.",
 				"Remove these quote marks.  You may also use the auto-clean function.", true);
-		qaCheckPack.add(new QACheck(p1, i1));
+		qaCheckPack.add(new QACheck(i1.getDescription(), p1, i1));
 
 		Pattern p2 = Pattern.compile("^\\s");
 
@@ -88,7 +82,7 @@ public class QACheck {
 				"Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
 				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
 				true);
-		qaCheckPack.add(new QACheck(p2, i2));
+		qaCheckPack.add(new QACheck(i2.getDescription(), p2, i2));
 
 		Pattern p3 = Pattern.compile("\\s$");
 		Issue i3 = new Issue(
@@ -96,8 +90,11 @@ public class QACheck {
 				"Following text, at least one white space character occurs.  This may be a non-printing character.",
 				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.",
 				true);
-		qaCheckPack.add(new QACheck(p3, i3));
+		qaCheckPack.add(new QACheck(i3.getDescription(), p3, i3));
 
+		for (QACheck qaCheck:qaCheckPack){
+			System.out.println("qaCheck.getName()"+qaCheck.getName());
+		}
 		return qaCheckPack;
 	}
 
@@ -108,7 +105,7 @@ public class QACheck {
 	}
 
 	public static List<QACheck> getQAChecks(CsvTableViewerColumnType type) {
-		return getQAChecks();
+		return getGeneralQAChecks();
 	}
 
 }

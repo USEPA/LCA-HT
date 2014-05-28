@@ -2,8 +2,8 @@ package harmonizationtool.query.unused;
 
 import java.util.Map;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import harmonizationtool.comands.SelectTDB;
 import harmonizationtool.handler.ImportTDBHandler;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.ModelProvider;
