@@ -32,14 +32,14 @@ public class ZAssignDSIndex_with_param extends HarmonyBaseUpdate implements IInt
 			try {
 				StringBuilder b = new StringBuilder();
 				b.append("##\n");
-				b.append("prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+				b.append("prefix ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 				b.append("prefix eco:    <http://ontology.earthster.org/eco/core#> \n");
 				b.append("\n");
-				b.append("insert {?ds_bn ethold:localSerialNumber "+this.next+" . }\n");
+				b.append("insert {?ds_bn ecogov:localSerialNumber "+this.next+" . }\n");
 				b.append("where {\n");
 				b.append("  select ?ds_bn where {\n");
 				b.append("    ?ds_bn a eco:DataSource .\n");
-				b.append("    filter (not exists {?ds_bn ethold:localSerialNumber ?num . })\n");
+				b.append("    filter (not exists {?ds_bn ecogov:localSerialNumber ?num . })\n");
 				b.append("  }\n");
 				b.append("limit 1\n");
 				b.append("}\n");

@@ -9,8 +9,8 @@ public class ZAssignDSIndex extends HarmonyBaseQuery {
 	{
 		StringBuilder b = new StringBuilder();
 		
-		b.append("prefix :       <http://epa.gov/nrmrl/std/lca/ethold#> \n");
-		b.append("prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("prefix :       <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
+		b.append("prefix ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("prefix eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("prefix skos:   <http://www.w3.org/2004/02/skos/core#> \n");
 		b.append("prefix owl:    <http://www.w3.org/2002/07/owl#> \n");
@@ -19,13 +19,13 @@ public class ZAssignDSIndex extends HarmonyBaseQuery {
 		b.append("prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append("\n");
 		b.append("\n");
-		b.append("insert {?ds2 ethold:localSerialNumber ?next . }\n");
+		b.append("insert {?ds2 ecogov:localSerialNumber ?next . }\n");
 		b.append("where {\n");
 		b.append("  select ?ds2 ?next where {\n");
 		b.append("    {\n");
 		b.append("      select ?ds2 where {\n");
 		b.append("        ?ds2 a eco:DataSource .\n");
-		b.append("        filter (not exists {?ds2 ethold:localSerialNumber ?num . })\n");
+		b.append("        filter (not exists {?ds2 ecogov:localSerialNumber ?num . })\n");
 		b.append("      }\n");
 		b.append("      limit 1\n");
 		b.append("    }\n");
@@ -41,7 +41,7 @@ public class ZAssignDSIndex extends HarmonyBaseQuery {
 		b.append("          select ?biggest where {\n");
 		b.append("            optional{\n");
 		b.append("              ?ds a eco:DataSource .\n");
-		b.append("              ?ds ethold:localSerialNumber ?biggest .\n");
+		b.append("              ?ds ecogov:localSerialNumber ?biggest .\n");
 		b.append("            }\n");
 		b.append("          }\n");
 		b.append("          order by desc(?biggest)\n");

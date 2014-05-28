@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewLabelProvider;

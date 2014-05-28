@@ -9,8 +9,8 @@ public class UDelDataSet extends HarmonyBaseUpdate implements HarmonyUpdate {
 		StringBuilder b = new StringBuilder();
 		
 		b.append("##\n");
-		b.append("prefix :       <http://epa.gov/nrmrl/std/lca/ethold#>\n");
-		b.append("prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#>\n");
+		b.append("prefix :       <http://epa.gov/nrmrl/std/lca/ecogov#>\n");
+		b.append("prefix ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#>\n");
 		b.append("prefix eco:    <http://ontology.earthster.org/eco/core#>\n");
 		b.append("prefix skos:   <http://www.w3.org/2004/02/skos/core#>\n");
 		b.append("prefix owl:    <http://www.w3.org/2002/07/owl#>\n");
@@ -27,7 +27,7 @@ public class UDelDataSet extends HarmonyBaseUpdate implements HarmonyUpdate {
 		b.append("#  ?ds ?p1 ?o1 .\n");
 		b.append("  ?s2 ?p2 ?o2 .\n");
 		b.append("  ?ds a eco:DataSource .\n");
-		b.append("  ?ds ethold:localSerialNumber <<local_id>> .\n");
+		b.append("  ?ds ecogov:localSerialNumber <<local_id>> .\n");
 		b.append("  ?s2 eco:hasDataSource ?ds .\n");
 		b.append("}\n");
 		b.append("\n");

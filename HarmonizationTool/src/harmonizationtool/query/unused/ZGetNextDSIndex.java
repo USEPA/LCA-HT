@@ -10,7 +10,7 @@ public class ZGetNextDSIndex extends HarmonyBaseQuery {
 		StringBuilder b = new StringBuilder();
 		
 		b.append("##\n");
-		b.append("prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("prefix ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("prefix eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("\n");
 		b.append("select (str(?biggest+1) as ?next) where {\n");
@@ -24,7 +24,7 @@ public class ZGetNextDSIndex extends HarmonyBaseQuery {
 		b.append("    select ?biggest where {\n");
 		b.append("      optional{\n");
 		b.append("        ?ds a eco:DataSource .\n");
-		b.append("        ?ds ethold:localSerialNumber ?biggest .\n");
+		b.append("        ?ds ecogov:localSerialNumber ?biggest .\n");
 		b.append("      }\n");
 		b.append("    }\n");
 		b.append("    order by desc(?biggest)\n");

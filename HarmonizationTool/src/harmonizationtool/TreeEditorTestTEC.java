@@ -15,7 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNodeRow;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNodeSubRow;
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.tree.Node;
 import harmonizationtool.vocabulary.ECO;
 

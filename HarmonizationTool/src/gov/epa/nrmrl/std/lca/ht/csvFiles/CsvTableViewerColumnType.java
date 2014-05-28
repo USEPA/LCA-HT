@@ -43,16 +43,16 @@ public enum CsvTableViewerColumnType {
 		return required;
 	}
 
-//	public void setRequired(boolean required) {
-//		this.required = required;
+//	public void setRequired(boolean requiredByParentGroup) {
+//		this.required = requiredByParentGroup;
 //	}
 
 	public boolean isUnique() {
 		return unique;
 	}
 
-//	public void setUnique(boolean unique) {
-//		this.unique = unique;
+//	public void setUnique(boolean onePerParentGroup) {
+//		this.unique = onePerParentGroup;
 //	}
 
 	private String parentGroup;

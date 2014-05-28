@@ -27,7 +27,7 @@ public class IdsInfoQuery extends HarmonyBaseUpdate {
 
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 //		b.append("PREFIX  " + this.dataSourceIRI.toString()
 //				+ ":  <http://data.lca.std.nrmrl.epa.gov/"
 //				+ this.dataSourceIRI.toString() + "#> \n");
@@ -45,7 +45,7 @@ public class IdsInfoQuery extends HarmonyBaseUpdate {
 		b.append("INSERT DATA  \n");
 		b.append("{ \n");
 		b.append("_:b0 rdf:type eco:DataSource ;  \n");
-		b.append("          ethold:localSerialNumber " + this.dataSourceLid.toString() +" ; \n");
+		b.append("          ecogov:localSerialNumber " + this.dataSourceLid.toString() +" ; \n");
 		b.append("          rdfs:label \"" + this.dataSourceName.toString()
 				+ "\"^^xsd:string ;  \n");
 		b.append("          rdfs:comment \"" + this.comment.toString()

@@ -2,7 +2,7 @@ package harmonizationtool.query.unused;
 
 import java.util.Map;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.handler.ImportTDBHandler;
 import harmonizationtool.model.DataRow;
@@ -30,7 +30,7 @@ public class UDelDataSet2 {
 
 	public void execute() {
 		// Query query = QueryFactory.create(queryStr);
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		if (model == null) {
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars()
@@ -38,8 +38,8 @@ public class UDelDataSet2 {
 			return;
 		}
 		System.out.println("Running XNumberDataSets");
-		// Dataset dataset = SelectTDB.dataset;
-		// GraphStore graphStore = SelectTDB.graphStore;
+		// Dataset dataset = ActiveTDB.dataset;
+		// GraphStore graphStore = ActiveTDB.graphStore;
 		// DataRow columnHeaders = new DataRow();
 		// queryResults.setColumnHeaders(columnHeaders);
 
@@ -60,7 +60,7 @@ public class UDelDataSet2 {
 		dataRow.add("" + model.size());
 
 		String eco_p = "http://ontology.earthster.org/eco/core#";
-		String ethold_p = "http://epa.gov/nrmrl/std/lca/ethold#";
+		String ecogov_p = "http://epa.gov/nrmrl/std/lca/ecogov#";
 		String afn_p = "http://jena.hpl.hp.com/ARQ/function#";
 		String fn_p = "http://www.w3.org/2005/xpath-functions#";
 		String owl_p = "http://www.w3.org/2002/07/owl#";
@@ -73,7 +73,7 @@ public class UDelDataSet2 {
 
 //		Resource ds = model.getResource(eco_p + "DataSource");
 //		Property a = model.getProperty(rdf_p + "type");
-		Property lid = model.getProperty(ethold_p + "localSerialNumber");
+		Property lid = model.getProperty(ecogov_p + "localSerialNumber");
 		Property hasDataSource = model.getProperty(eco_p+"hasDataSource");
 
 

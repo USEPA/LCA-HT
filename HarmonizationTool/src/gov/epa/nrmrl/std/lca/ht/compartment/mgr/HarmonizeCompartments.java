@@ -18,12 +18,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.tree.Node;
 import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ETHOLD;
+import harmonizationtool.vocabulary.ECOGOV;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.LCAHT;
@@ -130,20 +130,20 @@ public class HarmonizeCompartments extends ViewPart {
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
-				// Resource annotation = ETHOLD.Annotation;
+				// Resource annotation = ECOGOV.Annotation;
 				// Property isA = RDF.type;
 				// Resource Class = OWL.Class;
 				// Property creator = DCTerms.creator;
 				// Property dateSubmitted = DCTerms.dateSubmitted;
-				// Property hasComparison = ETHOLD.hasComparison;
+				// Property hasComparison = ECOGOV.hasComparison;
 				//
-				// Resource comparison = ETHOLD.Comparison;
-				// Property comparedSource = ETHOLD.comparedSource;
-				// Property comparedMaster = ETHOLD.comparedMaster;
-				// Property comparedEquivalence = ETHOLD.comparedEquivalence;
-				// Resource equivalent = ETHOLD.equivalent;
+				// Resource comparison = ECOGOV.Comparison;
+				// Property comparedSource = ECOGOV.comparedSource;
+				// Property comparedMaster = ECOGOV.comparedMaster;
+				// Property comparedEquivalence = ECOGOV.comparedEquivalence;
+				// Resource equivalent = ECOGOV.equivalent;
 
-				Model model = SelectTDB.model;
+				Model model = ActiveTDB.model;
 				// NEED TO DO THE FOLLOWING
 				// 1) Create a new Annotation (assigning it to the class
 				// Annotation)
@@ -154,7 +154,7 @@ public class HarmonizeCompartments extends ViewPart {
 					// 1) Create a new Annotation (assigning it to the class
 					// Annotation)
 					annotationResource = model.createResource();
-					model.add(annotationResource, RDF.type, ETHOLD.Annotation);
+					model.add(annotationResource, RDF.type, ECOGOV.Annotation);
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -199,15 +199,15 @@ public class HarmonizeCompartments extends ViewPart {
 
 						Resource comparisonResource = model.createResource();
 						model.add(comparisonResource, RDF.type,
-								ETHOLD.Comparison);
-						model.add(annotationResource, ETHOLD.hasComparison,
+								ECOGOV.Comparison);
+						model.add(annotationResource, ECOGOV.hasComparison,
 								comparisonResource);
-						model.add(comparisonResource, ETHOLD.comparedSource,
+						model.add(comparisonResource, ECOGOV.comparedSource,
 								queryCompartmentResource);
-						model.add(comparisonResource, ETHOLD.comparedMaster,
+						model.add(comparisonResource, ECOGOV.comparedMaster,
 								masterCompartmentResource);
 						model.add(comparisonResource,
-								ETHOLD.comparedEquivalence, ETHOLD.equivalent);
+								ECOGOV.comparedEquivalence, ECOGOV.equivalent);
 
 						// Literal compartmentName =
 						// model.createLiteral(qString);
@@ -381,7 +381,7 @@ public class HarmonizeCompartments extends ViewPart {
 	}
 
 	// private void confirmModelContanisCompartments(TreeNode treeNode){
-	// Model model = SelectTDB.model;
+	// Model model = ActiveTDB.model;
 	// if (treeNode.uri != null){
 	// if (!model.containsResource(treeNode.uri)){
 	// model.createResource(treeNode.uri);
@@ -395,7 +395,7 @@ public class HarmonizeCompartments extends ViewPart {
 	// }
 
 	// private void confirmResource(Resource uri) {
-	// Model model = SelectTDB.model;
+	// Model model = ActiveTDB.model;
 	// if (!model.containsResource(uri)) {
 	// model.createResource(uri);
 	// }
@@ -675,8 +675,8 @@ public class HarmonizeCompartments extends ViewPart {
 			// AnonId uri = new AnonId(dataRow.get(1)); // MIGHT THIS WORK?
 			Resource queryCompartmentResource = null;
 			// Resource fred = (Resource)uri;
-			// thing = SelectTDB.model.getResource(fred );
-			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(
+			// thing = ActiveTDB.model.getResource(fred );
+			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
 					RDF.type, FASC.Compartment));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();

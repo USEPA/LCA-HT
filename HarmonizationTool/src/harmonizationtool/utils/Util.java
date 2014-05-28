@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.Activator;
 import harmonizationtool.vocabulary.ECO;
 
@@ -105,11 +105,11 @@ public class Util {
 	
 
 	public static Resource resolveUriFromString(String uriString) {
-		Resource uri = SelectTDB.model.createResource();
+		Resource uri = ActiveTDB.model.createResource();
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-			uri = SelectTDB.model.getResource(uriString);
+			uri = ActiveTDB.model.getResource(uriString);
 		} else {
-			ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(
+			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
 					RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();

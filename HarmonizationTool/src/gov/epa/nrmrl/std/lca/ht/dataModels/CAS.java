@@ -1,18 +1,27 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import harmonizationtool.vocabulary.ECO;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class CAS extends LCADataType{
-	private static String cas;
-	private static Pattern acceptibleFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
+import com.hp.hpl.jena.rdf.model.Property;
 
-	public CAS(String displayString, String parentGroup, boolean required, boolean unique) {
-		super("CAS", "Flowable", false, true);
+public final class CAS extends LCADataType{
+//	private static String cas;
+	private static Pattern acceptableFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
+	// 	NOTE THE "FIRST" VALID CAS IS 50-00-0, I.E. FIRST COMPONENT >= 50
+	//  VALUES BEGINNING WITH 999, 977, OR 888 ARE FDA NUMBERS.  ONLY THE 888 MATCH CHECKSUMS
+
+	
+	public CAS(String displayString, String parentGroup, boolean required, boolean unique, boolean isLiteral, Property rdfProperty) {
+//		this.displayString = "CAS";
+		
+		super("CAS", "Flowable", false, true, true, ECO.casNumber);
 	}
 	
 	public static boolean validStandardFormat(String candidate) {
-		Matcher matcher = acceptibleFormat.matcher(candidate);
+		Matcher matcher = acceptableFormat.matcher(candidate);
 		if (matcher.find()) {
 			return true;
 		}

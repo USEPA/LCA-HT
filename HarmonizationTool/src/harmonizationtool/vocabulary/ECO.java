@@ -206,7 +206,7 @@ public class ECO {
     /** <p>hasValidationResult relates a model to a result from a process of validating that model.</p> */
     public static final Property hasValidationResult = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasValidationResult" );
 
-    /** <p>hasVariable relates an expression context to a variable valid in that context.  The values of the rdfs:label properties of all the variables in a context must be unique.</p> */
+    /** <p>hasVariable relates an expression context to a variable valid in that context.  The values of the rdfs:label properties of all the variables in a context must be onePerParentGroup.</p> */
     public static final Property hasVariable = m_model.createProperty( "http://ontology.earthster.org/eco/core#hasVariable" );
 
     /** <p>models relates a model to an entity it is a model of.</p> */

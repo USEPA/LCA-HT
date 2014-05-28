@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.query.unused.XNumberDataSets;
@@ -55,13 +55,13 @@ public class ImportTDBHandler implements IHandler {
 
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
-		if(SelectTDB.model== null){
+		if(ActiveTDB.model== null){
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
@@ -121,7 +121,7 @@ public class ImportTDBHandler implements IHandler {
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					runLogger.info("LOAD RDF "+fileName);
-					SelectTDB.syncTDBToDataSetKeeper();
+					ActiveTDB.syncTDBToDataSetKeeper();
 
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -156,7 +156,7 @@ public class ImportTDBHandler implements IHandler {
 
 							model.read(zipStream, null, inputType);
 							
-							SelectTDB.syncTDBToDataSetKeeper();
+							ActiveTDB.syncTDBToDataSetKeeper();
 
 							// jenaReader.read(model, zipStream, null);
 						}

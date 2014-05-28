@@ -5,16 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
-import gov.epa.nrmrl.std.lca.ht.tdb.ISelectedTDBListener;
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
-import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.LabeledQuery;
 import harmonizationtool.query.QDataSetContents;
@@ -40,10 +32,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -55,14 +43,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Table;
-
-//public class WorkflowCommands extends ViewPart implements ISelectedTDBListener {
 public class WorkflowCommands extends ViewPart {
 
 	public static final String ID = "HarmonizationTool.WorkflowCommandsID";

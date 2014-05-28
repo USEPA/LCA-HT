@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
@@ -77,7 +77,7 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		// create QueryResults to hold the query results
 		queryResults = new QueryResults();
 		data = null;
-		if (SelectTDB.model == null) {
+		if (ActiveTDB.model == null) {
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars()
 //					.getStatusLineManager().setMessage(msg);
@@ -85,8 +85,8 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(query,
-				SelectTDB.model);
-		// System.out.println("model.getNsPrefixMap()"+SelectTDB.model.getNsPrefixMap().toString());
+				ActiveTDB.model);
+		// System.out.println("model.getNsPrefixMap()"+ActiveTDB.model.getNsPrefixMap().toString());
 
 		try {
 			long startTime = System.currentTimeMillis();

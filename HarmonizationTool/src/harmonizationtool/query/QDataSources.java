@@ -25,7 +25,7 @@ public class QDataSources extends HarmonyQuery2Impl implements LabeledQuery {
 	private void buildQuery() {
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");

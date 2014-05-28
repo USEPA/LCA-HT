@@ -13,7 +13,7 @@ public class URenameDataSet extends HarmonyBaseUpdate {
 		String newName = "ds_014";
 		
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("PREFIX  td_999:  <http://data.lca.std.nrmrl.epa.gov/test_data_999#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");

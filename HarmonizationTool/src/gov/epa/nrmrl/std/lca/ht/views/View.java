@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
@@ -15,7 +15,7 @@ import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.ETHOLD;
+import harmonizationtool.vocabulary.ECOGOV;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.SKOS;
 
@@ -335,7 +335,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = SelectTDB.model;
+					Model model = ActiveTDB.model;
 					if (model == null) {
 //						String msg = "ERROR no TDB open";
 //						Util.findView(QueryView.ID).getViewSite()
@@ -358,24 +358,24 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ethold
+					// ecogov
 					// eco
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ethold_p
+					// Property HTCuratorName = model.getProperty(ecogov_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ethold_p
+					// model.getProperty(ecogov_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ethold_p
+					// Property HTCuratorPhone = model.getProperty(ecogov_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ethold_p
+					// Property HTCuratorEmail = model.getProperty(ecogov_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ethold_p + "dataParseTimeStamp");
+					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = SelectTDB.dataset;
-					// GraphStore graphStore = SelectTDB.graphStore;
+					// Dataset dataset = ActiveTDB.dataset;
+					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
@@ -532,10 +532,10 @@ public class View extends ViewPart {
 							subResourceHandle = newSub;
 							str2res.put(combined_str, subResourceHandle);
 						}
-						subResourceHandle.addLiteral(ETHOLD.foundOnRow,
+						subResourceHandle.addLiteral(ECOGOV.foundOnRow,
 								drRowLit);
 						subResourceHandle.addLiteral(
-								ETHOLD.sourceTableRowNumber, drRowLit);
+								ECOGOV.sourceTableRowNumber, drRowLit);
 
 						csvRow++;
 					}
@@ -599,7 +599,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = SelectTDB.model;
+					Model model = ActiveTDB.model;
 					if (model == null) {
 //						String msg = "ERROR no TDB open";
 //						Util.findView(QueryView.ID).getViewSite()
@@ -623,25 +623,25 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ethold
+					// ecogov
 					// eco
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ethold_p
+					// Property HTCuratorName = model.getProperty(ecogov_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ethold_p
+					// model.getProperty(ecogov_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ethold_p
+					// Property HTCuratorPhone = model.getProperty(ecogov_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ethold_p
+					// Property HTCuratorEmail = model.getProperty(ecogov_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ethold_p + "dataParseTimeStamp");
+					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = SelectTDB.dataset;
-					// GraphStore graphStore = SelectTDB.graphStore;
+					// Dataset dataset = ActiveTDB.dataset;
+					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
@@ -770,10 +770,10 @@ public class View extends ViewPart {
 							catResourceHandle = newCat;
 							str2res.put(combined_str, catResourceHandle);
 						}
-						catResourceHandle.addLiteral(ETHOLD.foundOnRow,
+						catResourceHandle.addLiteral(ECOGOV.foundOnRow,
 								drRowLit);
 						catResourceHandle.addLiteral(
-								ETHOLD.sourceTableRowNumber, drRowLit);
+								ECOGOV.sourceTableRowNumber, drRowLit);
 						csvRow++;
 					}
 					// -----------------------------------------
@@ -880,7 +880,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = SelectTDB.model;
+					Model model = ActiveTDB.model;
 					if (model == null) {
 //						String msg = "ERROR no TDB open";
 //						Util.findView(QueryView.ID).getViewSite()
@@ -904,25 +904,25 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ethold
+					// ecogov
 					// eco
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ethold_p
+					// Property HTCuratorName = model.getProperty(ecogov_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ethold_p
+					// model.getProperty(ecogov_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ethold_p
+					// Property HTCuratorPhone = model.getProperty(ecogov_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ethold_p
+					// Property HTCuratorEmail = model.getProperty(ecogov_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ethold_p + "dataParseTimeStamp");
+					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = SelectTDB.dataset;
-					// GraphStore graphStore = SelectTDB.graphStore;
+					// Dataset dataset = ActiveTDB.dataset;
+					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
@@ -1137,9 +1137,9 @@ public class View extends ViewPart {
 						// catResourceHandle = newCat;
 						// str2res.put(combined_str, catResourceHandle);
 						// }
-						// catResourceHandle.addLiteral(ETHOLD.foundOnRow,
+						// catResourceHandle.addLiteral(ECOGOV.foundOnRow,
 						// drRowLit);
-						// catResourceHandle.addLiteral(ETHOLD.sourceTableRowNumber,
+						// catResourceHandle.addLiteral(ECOGOV.sourceTableRowNumber,
 						// drRowLit);
 						// csvRow++;
 						// }

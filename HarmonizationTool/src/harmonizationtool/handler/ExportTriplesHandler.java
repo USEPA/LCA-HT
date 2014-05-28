@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
@@ -52,12 +52,12 @@ public class ExportTriplesHandler implements IHandler {
 //	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 				System.out.println("executing Export Triples");
-				if(SelectTDB.model== null){
+				if(ActiveTDB.model== null){
 //					String msg = "ERROR no TDB open";
 //					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 					return null;
 				}
-				Model model = SelectTDB.model;
+				Model model = ActiveTDB.model;
 //				ModelProvider modelProvider = new ModelProvider();
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
 				fileDialog.setFilterExtensions(new String[] { "*.ttl", "*.n3" });

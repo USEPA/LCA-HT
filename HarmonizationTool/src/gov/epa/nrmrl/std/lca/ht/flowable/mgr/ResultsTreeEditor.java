@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.ColumnLabelProvider;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
@@ -8,7 +8,7 @@ import harmonizationtool.query.QueryResults;
 import harmonizationtool.tree.Node;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.ETHOLD;
+import harmonizationtool.vocabulary.ECOGOV;
 import harmonizationtool.vocabulary.LCAHT;
 
 import java.lang.reflect.InvocationTargetException;
@@ -626,11 +626,11 @@ public class ResultsTreeEditor extends ViewPart {
 
 	//
 	// private Resource resolveUriFromString(String uriString) {
-	// Resource uri = SelectTDB.model.createResource();
+	// Resource uri = ActiveTDB.model.createResource();
 	// if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-	// uri = SelectTDB.model.getResource(uriString);
+	// uri = ActiveTDB.model.getResource(uriString);
 	// } else {
-	// ResIterator iterator = (SelectTDB.model.listSubjectsWithProperty(
+	// ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
 	// RDF.type, ECO.Substance));
 	// while (iterator.hasNext()) {
 	// Resource resource = iterator.next();
@@ -888,9 +888,9 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	public void commitMatches() {
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		Resource annotationResource = model.createResource();
-		model.add(annotationResource, RDF.type, ETHOLD.Annotation);
+		model.add(annotationResource, RDF.type, ECOGOV.Annotation);
 		// 2) Assign to it a date and creator
 		Date calendar = new Date();
 		Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -911,18 +911,18 @@ public class ResultsTreeEditor extends ViewPart {
 				Resource comparison = null;
 				System.out.println("got here");
 				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ETHOLD.equivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ECOGOV.equivalent);
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 					// System.out.println("  eq");
 
 				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ETHOLD.nonEquivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), ECOGOV.nonEquivalent);
 					// System.out.println("  non-eq");
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 
 				}
 				if (comparison != null) {
-					model.add(annotationResource, ETHOLD.hasComparison, comparison);
+					model.add(annotationResource, ECOGOV.hasComparison, comparison);
 					System.out.println("  Annotation adding a Comparison");
 
 				}
@@ -931,16 +931,16 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
 		}
 		Resource comparisonResource = model.createResource();
-		model.add(comparisonResource, RDF.type, ETHOLD.Comparison);
-		model.add(comparisonResource, ETHOLD.comparedSource, querySource);
-		model.add(comparisonResource, ETHOLD.comparedMaster, master);
-		model.add(comparisonResource, ETHOLD.comparedEquivalence, equivalence);
+		model.add(comparisonResource, RDF.type, ECOGOV.Comparison);
+		model.add(comparisonResource, ECOGOV.comparedSource, querySource);
+		model.add(comparisonResource, ECOGOV.comparedMaster, master);
+		model.add(comparisonResource, ECOGOV.comparedEquivalence, equivalence);
 		return comparisonResource;
 	}
 

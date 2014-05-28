@@ -289,7 +289,7 @@
          id="HarmonizationTool.importTriplesID"
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
             id="harmonizationtool.tdb.select.id"
             name="SelectTDB">
       </command>

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
@@ -300,11 +300,11 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		runLogger.info("  DELETE TDB DATA: tdbReference = "+tdbResource);
 
 		DataSetKeeper.remove(dataSetProvider);
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		// StmtIterator stmtIterator = tdbResource.listProperties();
 		// List<Property> toKill = new ArrayList<Property>();
 		// REMOVE THE DATA SOURCE INFO
-		SelectTDB.removeAllWithSubject(tdbResource);
+		ActiveTDB.removeAllWithSubject(tdbResource);
 		// REMOVE ANYTHING WHICH HAS THIS AS A DATASOURCE (ALL WITH SUBJECT)
 		ResIterator iterator = model.listSubjectsWithProperty(ECO.hasDataSource, tdbResource);
 		int deletedQunatites = 0;
@@ -315,8 +315,8 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 			List<Statement> quantities = resource.listProperties(ECO.hasQuantity).toList();
 			for (Statement quantity : quantities) {
 				Resource bn = quantity.getResource();
-//				int fred = SelectTDB.removeAllWithSubject(bn);
-				deletedQunatites += SelectTDB.removeAllWithSubject(bn);
+//				int fred = ActiveTDB.removeAllWithSubject(bn);
+				deletedQunatites += ActiveTDB.removeAllWithSubject(bn);
 
 //				System.out.println("part count: " + fred);
 //				if (bn.isAnon()) {
@@ -324,7 +324,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 //				}
 				quantity.remove();
 			}
-			deletedIndividuals += SelectTDB.removeAllWithSubject(resource);
+			deletedIndividuals += ActiveTDB.removeAllWithSubject(resource);
 
 
 		}
@@ -333,7 +333,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 
 
 		// IS THIS NEEDED IN CASE ANYTHING IS LEFT OVER?!?
-		// SelectTDB.removeAllWithObject(tdbResource);
+		// ActiveTDB.removeAllWithObject(tdbResource);
 
 		super.okPressed();
 	}

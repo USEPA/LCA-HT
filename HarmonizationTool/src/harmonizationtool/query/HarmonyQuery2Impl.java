@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -18,12 +18,12 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	@Override
 	public ResultSet getResultSet() {
 		System.out.println("query=\n"+query);
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		if(query == null){
 			throw new IllegalArgumentException("query cannot be null");
 		}
 		if(model== null){
-			throw new IllegalArgumentException("SelectTDB.model is null");
+			throw new IllegalArgumentException("ActiveTDB.model is null");
 		}
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());

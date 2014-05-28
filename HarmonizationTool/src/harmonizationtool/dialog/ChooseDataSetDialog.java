@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.DataSetMD;
@@ -433,7 +433,7 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 
 		dataSetProvider.setDataSetMD(dataSetMD);
 		dataSetProvider.setCuratorMD(curatorMD);
-		// Model model = SelectTDB.model;
+		// Model model = ActiveTDB.model;
 //		if (newDataSet) {
 //			DataSetKeeper.add(dataSetProvider); // A DataSetProvider IS BORN!!
 //												// (NEW)
@@ -441,7 +441,7 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 //			// int dataSetIdPlusOne = DataSetKeeper.indexOf(dataSetProvider) +
 //			// 1;
 //			// Resource newTDBResource = dataSetProvider.getTdbResource();
-//			// model.addLiteral(newTDBResource, ETHOLD.localSerialNumber,
+//			// model.addLiteral(newTDBResource, ECOGOV.localSerialNumber,
 //			// model.createTypedLiteral(dataSetIdPlusOne));
 //			// model.addLiteral(newTDBResource, RDFS.label,
 //			// model.createLiteral(dataSetMD.getName()));
@@ -461,21 +461,21 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 	}
 
 	private void dataSetProviderToTDB(DataSetProvider dsProvider) {
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		// int dataSetIdPlusOne = DataSetKeeper.indexOf(dsProvider) + 1;
 		Resource tdbResource = dsProvider.getTdbResource();
-		// if (model.contains(tdbResource, ETHOLD.localSerialNumber)) {
+		// if (model.contains(tdbResource, ECOGOV.localSerialNumber)) {
 		// NodeIterator nodeIterator = model.listObjectsOfProperty(
-		// tdbResource, ETHOLD.localSerialNumber);
+		// tdbResource, ECOGOV.localSerialNumber);
 		// while (nodeIterator.hasNext()) {
 		// RDFNode rdfNode = nodeIterator.next();
 		// System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-		// model.remove(tdbResource, ETHOLD.localSerialNumber,
+		// model.remove(tdbResource, ECOGOV.localSerialNumber,
 		// rdfNode.asLiteral());
 		// // model.
 		// }
 		// }
-		// model.addLiteral(tdbResource, ETHOLD.localSerialNumber,
+		// model.addLiteral(tdbResource, ECOGOV.localSerialNumber,
 		// model.createTypedLiteral(dataSetIdPlusOne));
 
 		if (model.contains(tdbResource, RDFS.label)) {
@@ -531,7 +531,7 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
 	private String[] getDataSetInfo() {
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 //		if (!dataSetEnabled) {
 //			Integer id = DataSetKeeper.indexOf(dataSetProvider);
 //			String name = dataSetProvider.getDataSetMD().getName();

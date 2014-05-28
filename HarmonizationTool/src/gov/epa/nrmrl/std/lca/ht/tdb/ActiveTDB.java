@@ -14,7 +14,7 @@ import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.ETHOLD;
+import harmonizationtool.vocabulary.ECOGOV;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -45,22 +45,22 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-public class SelectTDB implements IHandler, ISelectedTDB {
+public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model model = null;
 	public static Dataset dataset = null;
 	public static String tdbDir = null;
 	public static GraphStore graphStore = null;
-	private static SelectTDB instance = null;
-	private List<ISelectedTDBListener> selectedTDBListeners = new ArrayList<ISelectedTDBListener>();
+	private static ActiveTDB instance = null;
+	private List<IActiveTDBListener> activeTDBListeners = new ArrayList<IActiveTDBListener>();
 
-	public SelectTDB() {
-		System.out.println("created SelectTDB");
+	public ActiveTDB() {
+		System.out.println("created ActiveTDB");
 		instance = this;
 	}
 
-	public static SelectTDB getInstance() {
-		return instance;
-	}
+//	public static ActiveTDB getInstance() {
+//		return instance;
+//	}
 
 	public void finalize() {
 		System.out.println("closing dataset and model");
@@ -253,53 +253,53 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 							.toString());
 				}
 
-				// ETHOLD.dataSetContactName <=> ContactName
-				if (subject.hasProperty(ETHOLD.dataSetContactName)) {
+				// ECOGOV.dataSetContactName <=> ContactName
+				if (subject.hasProperty(ECOGOV.dataSetContactName)) {
 					dataSetMD.setContactName(subject
-							.getProperty(ETHOLD.dataSetContactName).getObject()
+							.getProperty(ECOGOV.dataSetContactName).getObject()
 							.toString());
 				}
-				// ETHOLD.dataSetContactAffiliation <=> ContactAffiliation
-				if (subject.hasProperty(ETHOLD.dataSetContactAffiliation)) {
+				// ECOGOV.dataSetContactAffiliation <=> ContactAffiliation
+				if (subject.hasProperty(ECOGOV.dataSetContactAffiliation)) {
 					dataSetMD.setContactAffiliation(subject
-							.getProperty(ETHOLD.dataSetContactAffiliation)
+							.getProperty(ECOGOV.dataSetContactAffiliation)
 							.getObject().toString());
 				}
-				// ETHOLD.dataSetContactEmail <=> ContactEmail
-				if (subject.hasProperty(ETHOLD.dataSetContactEmail)) {
+				// ECOGOV.dataSetContactEmail <=> ContactEmail
+				if (subject.hasProperty(ECOGOV.dataSetContactEmail)) {
 					dataSetMD.setContactEmail(subject
-							.getProperty(ETHOLD.dataSetContactEmail)
+							.getProperty(ECOGOV.dataSetContactEmail)
 							.getObject().toString());
 				}
-				// ETHOLD.dataSetContactPhone <=> ContactPhone
-				if (subject.hasProperty(ETHOLD.dataSetContactPhone)) {
+				// ECOGOV.dataSetContactPhone <=> ContactPhone
+				if (subject.hasProperty(ECOGOV.dataSetContactPhone)) {
 					dataSetMD.setContactPhone(subject
-							.getProperty(ETHOLD.dataSetContactPhone)
+							.getProperty(ECOGOV.dataSetContactPhone)
 							.getObject().toString());
 				}
 
-				// ETHOLD.dataSetCuratorName <=> CuratorName
-				if (subject.hasProperty(ETHOLD.dataSetCuratorName)) {
+				// ECOGOV.dataSetCuratorName <=> CuratorName
+				if (subject.hasProperty(ECOGOV.dataSetCuratorName)) {
 					curatorMD.setName(subject
-							.getProperty(ETHOLD.dataSetCuratorName).getObject()
+							.getProperty(ECOGOV.dataSetCuratorName).getObject()
 							.toString());
 				}
-				// ETHOLD.dataSetCuratorAffiliation <=> CuratorAffiliation
-				if (subject.hasProperty(ETHOLD.dataSetCuratorAffiliation)) {
+				// ECOGOV.dataSetCuratorAffiliation <=> CuratorAffiliation
+				if (subject.hasProperty(ECOGOV.dataSetCuratorAffiliation)) {
 					curatorMD.setAffiliation(subject
-							.getProperty(ETHOLD.dataSetCuratorAffiliation)
+							.getProperty(ECOGOV.dataSetCuratorAffiliation)
 							.getObject().toString());
 				}
-				// ETHOLD.dataSetCuratorEmail <=> CuratorEmail
-				if (subject.hasProperty(ETHOLD.dataSetCuratorEmail)) {
+				// ECOGOV.dataSetCuratorEmail <=> CuratorEmail
+				if (subject.hasProperty(ECOGOV.dataSetCuratorEmail)) {
 					curatorMD.setEmail(subject
-							.getProperty(ETHOLD.dataSetCuratorEmail)
+							.getProperty(ECOGOV.dataSetCuratorEmail)
 							.getObject().toString());
 				}
-				// ETHOLD.dataSetCuratorPhone <=> CuratorPhone
-				if (subject.hasProperty(ETHOLD.dataSetCuratorPhone)) {
+				// ECOGOV.dataSetCuratorPhone <=> CuratorPhone
+				if (subject.hasProperty(ECOGOV.dataSetCuratorPhone)) {
 					curatorMD.setPhone(subject
-							.getProperty(ETHOLD.dataSetCuratorPhone)
+							.getProperty(ECOGOV.dataSetCuratorPhone)
 							.getObject().toString());
 				}
 				// pref.localname <=> CuratorName
@@ -316,11 +316,11 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 
 	public static void syncDataSetProviderToTDB(DataSetProvider dsProvider) {
 		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or
-		// SelectTDB
+		// ActiveTDB
 		DataSetMD dataSetMD = dsProvider.getDataSetMD();
 		CuratorMD curatorMD = dsProvider.getCuratorMD();
 
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		Resource tdbResource = dsProvider.getTdbResource();
 		assert tdbResource != null : "tdbResource cannot be null";
 		assert RDFS.label != null : "RDFS.label cannot be null";
@@ -342,36 +342,36 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 		model.addLiteral(tdbResource, DCTerms.hasVersion,
 				model.createLiteral(dataSetMD.getVersion()));
 
-		tdbResource.removeAll(ETHOLD.dataSetContactName);
-		model.addLiteral(tdbResource, ETHOLD.dataSetContactName,
+		tdbResource.removeAll(ECOGOV.dataSetContactName);
+		model.addLiteral(tdbResource, ECOGOV.dataSetContactName,
 				model.createLiteral(dataSetMD.getContactName()));
 
-		tdbResource.removeAll(ETHOLD.dataSetContactAffiliation);
-		model.addLiteral(tdbResource, ETHOLD.dataSetContactAffiliation,
+		tdbResource.removeAll(ECOGOV.dataSetContactAffiliation);
+		model.addLiteral(tdbResource, ECOGOV.dataSetContactAffiliation,
 				model.createLiteral(dataSetMD.getContactAffiliation()));
 
-		tdbResource.removeAll(ETHOLD.dataSetContactEmail);
-		model.addLiteral(tdbResource, ETHOLD.dataSetContactEmail,
+		tdbResource.removeAll(ECOGOV.dataSetContactEmail);
+		model.addLiteral(tdbResource, ECOGOV.dataSetContactEmail,
 				model.createLiteral(dataSetMD.getContactEmail()));
 
-		tdbResource.removeAll(ETHOLD.dataSetContactPhone);
-		model.addLiteral(tdbResource, ETHOLD.dataSetContactPhone,
+		tdbResource.removeAll(ECOGOV.dataSetContactPhone);
+		model.addLiteral(tdbResource, ECOGOV.dataSetContactPhone,
 				model.createLiteral(dataSetMD.getContactPhone()));
 
-		tdbResource.removeAll(ETHOLD.dataSetCuratorName);
-		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorName,
+		tdbResource.removeAll(ECOGOV.dataSetCuratorName);
+		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorName,
 				model.createLiteral(curatorMD.getName()));
 
-		tdbResource.removeAll(ETHOLD.dataSetCuratorAffiliation);
-		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorAffiliation,
+		tdbResource.removeAll(ECOGOV.dataSetCuratorAffiliation);
+		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorAffiliation,
 				model.createLiteral(curatorMD.getAffiliation()));
 
-		tdbResource.removeAll(ETHOLD.dataSetCuratorEmail);
-		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorEmail,
+		tdbResource.removeAll(ECOGOV.dataSetCuratorEmail);
+		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorEmail,
 				model.createLiteral(curatorMD.getEmail()));
 
-		tdbResource.removeAll(ETHOLD.dataSetCuratorPhone);
-		model.addLiteral(tdbResource, ETHOLD.dataSetCuratorPhone,
+		tdbResource.removeAll(ECOGOV.dataSetCuratorPhone);
+		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorPhone,
 				model.createLiteral(curatorMD.getPhone()));
 
 		if (!dataSetMD.getComments().matches("^\\s*$")) {
@@ -462,13 +462,13 @@ public class SelectTDB implements IHandler, ISelectedTDB {
 	}
 
 	@Override
-	public void addSelectedTDBListener(ISelectedTDBListener listener) {
-		System.out.println("Added TDBListener = " + listener);
-		selectedTDBListeners.add(listener);
+	public void addSelectedTDBListener(IActiveTDBListener listener) {
+//		System.out.println("Added TDBListener = " + listener);
+//		activeTDBListeners.add(listener);
 	}
 
 	@Override
-	public void removeSelectedTDBListener(ISelectedTDBListener listener) {
+	public void removeSelectedTDBListener(IActiveTDBListener listener) {
 		// TODO Auto-generated method stub
 
 	}

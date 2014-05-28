@@ -1,6 +1,6 @@
 package harmonizationtool.model;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class DataSetKeeper {
 
 	public static boolean add(DataSetProvider dataSetProvider) {
 		if (dataSetProvider.getTdbResource() == null) {
-			Model model = SelectTDB.model;
+			Model model = ActiveTDB.model;
 			Resource tdbResource = model.createResource();
 			model.add(tdbResource, RDF.type, ECO.DataSource);
 			model.add(tdbResource, RDFS.label, model.createLiteral(dataSetProvider.getDataSetMD()
@@ -46,8 +46,8 @@ public class DataSetKeeper {
 	public static boolean remove(DataSetProvider dataSetProvider, boolean removeTDBData) {
 		if (removeTDBData){
 			Resource tdbResource = dataSetProvider.getTdbResource();
-			SelectTDB.removeAllWithSubject(tdbResource);
-			SelectTDB.removeAllWithObject(tdbResource);
+			ActiveTDB.removeAllWithSubject(tdbResource);
+			ActiveTDB.removeAllWithObject(tdbResource);
 		}
 		return dataSetProviderList.remove(dataSetProvider);
 	}

@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,8 +24,8 @@ public class CloseTDB implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		System.out.println("Closing TDB");
-		if (SelectTDB.dataset != null) {
-			SelectTDB.dataset.close();
+		if (ActiveTDB.dataset != null) {
+			ActiveTDB.dataset.close();
 		}
 		return null;
 	}

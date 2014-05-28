@@ -7,7 +7,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 	{
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
@@ -24,7 +24,7 @@ public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 //		b.append("  { ?s ?p ?o . \n");
 		b.append("  { ?s a eco:DataSource . \n");
 		b.append("    ?s rdfs:label ?label \n");
-//		b.append("    OPTIONAL { ?s ethold:localSerialNumber ?lid } \n");
+//		b.append("    OPTIONAL { ?s ecogov:localSerialNumber ?lid } \n");
 //		b.append("    OPTIONAL { ?s eco:hasMajorVersionNumber ?mj } \n");
 //		b.append("    OPTIONAL { ?s eco:hasMinorVersionNumber ?mi } \n");
 		b.append("    OPTIONAL { ?s dcterms:hasVersion ?vs } \n");

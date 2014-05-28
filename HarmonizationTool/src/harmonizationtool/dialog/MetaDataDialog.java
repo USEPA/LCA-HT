@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSetKeeper;
@@ -482,7 +482,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		System.out.println("newDataSetProvider " + newDataSetProvider);
 		System.out.println("comboSelectionIndex " + comboSelectionIndex);
 
-		SelectTDB.syncDataSetProviderToTDB(curDataSetProvider);
+		ActiveTDB.syncDataSetProviderToTDB(curDataSetProvider);
 		if (newDataSetProvider != null) {
 			FlowsWorkflow.setDataSetProvider(curDataSetProvider);
 		}
@@ -515,16 +515,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 
 		if (DataSetKeeper.indexOfDataSetName(newFileName) > -1) {
-			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be unique.  Please choose a new name.");
+			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
 		curDataSetProvider.getDataSetMD().setName(newFileName);
 		if (curDataSetProvider.getTdbResource() != null) {
-			// Literal oldNameLit = SelectTDB.model
+			// Literal oldNameLit = ActiveTDB.model
 			// .createLiteral(comboDataSetSelector.getText());
-			Literal newNameLit = SelectTDB.model.createLiteral(newFileName);
-			SelectTDB.removeAllWithSubjectPredicate(curDataSetProvider.getTdbResource(), RDFS.label);
-			SelectTDB.model.add(curDataSetProvider.getTdbResource(), RDFS.label, newNameLit);
+			Literal newNameLit = ActiveTDB.model.createLiteral(newFileName);
+			ActiveTDB.removeAllWithSubjectPredicate(curDataSetProvider.getTdbResource(), RDFS.label);
+			ActiveTDB.model.add(curDataSetProvider.getTdbResource(), RDFS.label, newNameLit);
 		}
 
 		comboDataSetSelector.setItem(comboDataSetSelector.getSelectionIndex(), newFileName);
@@ -536,10 +536,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	// private void dataSetProviderToTDB(DataSetProvider dsProvider) {
 	// // SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or
-	// // SelectTDB
+	// // ActiveTDB
 	// DataSetMD dataSetMD = dsProvider.getDataSetMD();
 	//
-	// Model model = SelectTDB.model;
+	// Model model = ActiveTDB.model;
 	// Resource tdbResource = dsProvider.getTdbResource();
 	// assert tdbResource != null : "tdbResource cannot be null";
 	// assert RDFS.label != null : "RDFS.label cannot be null";

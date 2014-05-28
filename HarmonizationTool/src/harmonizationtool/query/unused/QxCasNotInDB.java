@@ -42,7 +42,7 @@ public class QxCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 			try {
 				StringBuilder b = new StringBuilder();
 				b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-				b.append("PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> \n");
+				b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 				b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 				b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 				b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
@@ -60,9 +60,9 @@ public class QxCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 				b.append("  WHERE { \n");
 				
 				b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");
-				b.append("      ?ds_prim ethold:localSerialNumber " + primaryID + " . \n");
+				b.append("      ?ds_prim ecogov:localSerialNumber " + primaryID + " . \n");
 				b.append("      ?s2 eco:hasDataSource ?ds_match . \n");
-				b.append("      ?ds_match ethold:localSerialNumber ?match_lid . \n");
+				b.append("      ?ds_match ecogov:localSerialNumber ?match_lid . \n");
 				b.append("      filter (?ds_prim != ?ds_match) \n");
 //				b.append("  ?s1 eco:hasDataSource eco:"+primaryDataset+" . \n");
 				b.append("  ?s1 a eco:Flowable .  \n");
@@ -74,10 +74,10 @@ public class QxCasNotInDB extends HarmonyBaseQuery implements IParamQuery{
 				b.append("{SELECT ?s1 \n");
 				b.append("  WHERE { \n");
 				b.append("      ?s1 eco:hasDataSource ?ds_prim . \n");
-				b.append("      ?ds_prim ethold:localSerialNumber " + primaryID + " . \n");
+				b.append("      ?ds_prim ecogov:localSerialNumber " + primaryID + " . \n");
 //				b.append("  ?s1 eco:hasDataSource eco:"+primaryDataset+" . \n");
 				b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
-				b.append("      ?ds_match ethold:localSerialNumber ?match_lid . \n");
+				b.append("      ?ds_match ecogov:localSerialNumber ?match_lid . \n");
 				b.append("      filter (?ds_prim != ?ds_match) \n");
 				b.append("  ?s1 eco:casNumber ?cas .  \n");
 				b.append("  ?s2 eco:casNumber ?cas .   \n");

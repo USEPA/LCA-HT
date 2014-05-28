@@ -6335,7 +6335,7 @@ public class UnicodeCharacters2 {
 		names115[9334]="a nose-ring for an animal";
 		names115[9335]="cow or ox of one color, perfect";
 		names115[9336]="the female of certain animals; to bring forth young of animals";
-		names115[9337]="special, unique, distinguished";
+		names115[9337]="special, onePerParentGroup, distinguished";
 		names115[9338]="sacrifice, give up; sacrificial";
 		names115[9340]="ox shank, person's name";
 		names115[9341]="drag, pull, lead by hand";

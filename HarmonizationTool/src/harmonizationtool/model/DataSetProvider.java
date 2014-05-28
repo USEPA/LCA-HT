@@ -25,7 +25,7 @@ public class DataSetProvider {
 	public Resource getTdbResource() {
 
 //		if (tdbResource == null){
-//			tdbResource = SelectTDB.model.createResource();
+//			tdbResource = ActiveTDB.model.createResource();
 //		}
 //		assert tdbResource != null : "tdbResource cannot be null";
 		return tdbResource;

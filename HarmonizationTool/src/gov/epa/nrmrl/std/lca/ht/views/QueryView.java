@@ -10,8 +10,8 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
-import gov.epa.nrmrl.std.lca.ht.tdb.ISelectedTDBListener;
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+//import gov.epa.nrmrl.std.lca.ht.tdb.IActiveTDBListener;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericUpdate;
@@ -64,7 +64,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 
-public class QueryView extends ViewPart implements ISelectedTDBListener {
+//public class QueryView extends ViewPart implements IActiveTDBListener {
+public class QueryView extends ViewPart {
+
 	public static final String ID = "HarmonizationTool.QueryViewID";
 
 	private List<LabeledQuery> labeledQueries = new ArrayList<LabeledQuery>();
@@ -214,7 +216,12 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 
 		addUpdate(uDelDataSet);
 
-		SelectTDB.getInstance().addSelectedTDBListener(this);
+//		ActiveTDB.getInstance().addSelectedTDBListener(this);
+//		ActiveTDB().addSelectedTDBListener(this);
+		if (ActiveTDB.model == null){
+			
+		}
+
 	}
 
 	@Override
@@ -515,24 +522,24 @@ public class QueryView extends ViewPart implements ISelectedTDBListener {
 		return;
 	}
 
-	@Override
-	public void TDBchanged(String tdb) {
-		// System.out.println("new TDB = " + tdb);
-		// String key = (String) selection.toList().get(0);
-		// String key = "Show Data Sources";
-		// System.out.println("key=" + key);
-		// HarmonyQuery q = queryMap.get(key);
-		// System.out.println(q.getQuery());
-
-		// IWorkbenchPage page = PlatformUI.getWorkbench()
-		// .getActiveWorkbenchWindow().getActivePage();
-		// ResultsView resultsView = (ResultsView)
-		// page.findView(ResultsView.ID);
-		// resultsView.update(q);
-
-		// resultsView.update(q.getData());
-		// resultsView.update(q.getQueryResults());
-		// System.out.println("done");
-
-	}
+//	@Override
+//	public void TDBchanged(String tdb) {
+//		// System.out.println("new TDB = " + tdb);
+//		// String key = (String) selection.toList().get(0);
+//		// String key = "Show Data Sources";
+//		// System.out.println("key=" + key);
+//		// HarmonyQuery q = queryMap.get(key);
+//		// System.out.println(q.getQuery());
+//
+//		// IWorkbenchPage page = PlatformUI.getWorkbench()
+//		// .getActiveWorkbenchWindow().getActivePage();
+//		// ResultsView resultsView = (ResultsView)
+//		// page.findView(ResultsView.ID);
+//		// resultsView.update(q);
+//
+//		// resultsView.update(q.getData());
+//		// resultsView.update(q.getQueryResults());
+//		// System.out.println("done");
+//
+//	}
 }

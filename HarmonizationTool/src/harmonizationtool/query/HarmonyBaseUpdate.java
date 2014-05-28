@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.SelectTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
@@ -53,16 +53,16 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 	private void executeQuery() {
 //		Query query = QueryFactory.create(queryStr);
-		Model model = SelectTDB.model;
+		Model model = ActiveTDB.model;
 		if(model== null){
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return;
 		}
-//		String tdbDir = SelectTDB.tdbDir;
-//		Dataset dataset = SelectTDB.dataset;
+//		String tdbDir = ActiveTDB.tdbDir;
+//		Dataset dataset = ActiveTDB.dataset;
 		queryResults = new QueryResults();
-		GraphStore graphStore = SelectTDB.graphStore;
+		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
 		queryResults.setColumnHeaders(columnHeaders);
 		

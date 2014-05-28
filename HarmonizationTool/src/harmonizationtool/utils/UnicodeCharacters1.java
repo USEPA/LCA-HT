@@ -14856,7 +14856,7 @@ public class UnicodeCharacters1 {
 		names113[3281]="(same as standard form [char: 26001]) speckles; spots; mottles (same as [char: 30928]) a massive rock";
 		names113[3282]="(of land) poor and barren; field which is not arable";
 		names113[3283]="to punish; to chastise; to penalize, to kill; to execute, pedal ( a footboard) of a cart, brick work of a well, strong and durable, solid; firm";
-		names113[3284]="sound of falling rocks, loud noise, stone with strange and unique shapes";
+		names113[3284]="sound of falling rocks, loud noise, stone with strange and onePerParentGroup shapes";
 		names113[3285]="stoneware; stone implement, soap-stone, sound of the bumping rocks, (in music) a chord";
 		names113[3286]="(same as U+9696 [char: 22626]) a bank; a low wall; an entrenchment, a structure which slants to a lower center on all sides -- as a shipyard";
 		names113[3287]="rocks; stones, rocks paved bank, big rocks";
