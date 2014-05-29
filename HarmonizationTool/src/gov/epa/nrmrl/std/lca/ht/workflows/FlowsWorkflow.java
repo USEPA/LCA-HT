@@ -167,7 +167,7 @@ public class FlowsWorkflow extends ViewPart {
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("clicked...");
-				// CSVTableView.checkColumns();
+				 CSVTableView.checkColumns();
 				// FIXME
 				btnCSV2TDB.setEnabled(true);
 			}

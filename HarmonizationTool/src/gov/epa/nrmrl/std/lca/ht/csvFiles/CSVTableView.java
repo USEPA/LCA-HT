@@ -3,13 +3,17 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
+import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -612,49 +616,52 @@ public class CSVTableView extends ViewPart {
 		tableProvider.setHeaderNames(columnNames);
 	}
 
-	// public static void checkColumns() {
-	// int issuesFound = 0;
-	// for (TableViewerColumn col : columns) {
-	// if (col.getType() != null) {
-	// CSVColCheck csvColCheck = new CSVColCheck();
-	// // List<String> columnValues =
-	// getColumnValues(col.getColumn().getData());
-	// List<String> columnValues = col.getColumn().getData();
-	// // System.out.println("columnValues.size() " +
-	// // columnValues.size());
-	// LCADataType colType=col.getAssignedLCADataType();
-	// for (QACheck check : colType.getQaChecks()) {
-	// for (int i = 0; i < columnValues.size(); i++) {
-	// String val = columnValues.get(i);
-	// System.out.println("testing column # " + col.getColumnNumber());
-	// System.out.println("check.getPattern() " + check.getPattern());
-	// System.out.println("check.getIssue() " + check.getIssue());
-	//
-	// Matcher matcher = check.getPattern().matcher(val);
-	// while (matcher.find()) {
-	// issuesFound++;
-	// System.out.println("check.getIssue() " + check.getIssue());
-	// Issue issue = check.getIssue();
-	// issue.setRowNumber(i);
-	// issue.setColNumber(col.getColumnNumber());
-	// issue.setRowNumber(i);
-	// issue.setCharacterPosition(matcher.end());
-	// issue.setStatus(Status.UNRESOLVED);
-	//
-	// Logger.getLogger("run").warn(issue.getDescription());
-	// Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-	// Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
-	// Logger.getLogger("run").warn("  ->Character position" +
-	// issue.getCharacterPosition());
-	// assignIssue(issue);
-	// csvColCheck.addIssue(issue);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// FlowsWorkflow.setTextIssues(issuesFound + " issues found");
-	// }
+	public static void checkColumns() {
+		int issuesFound = 0;
+		int colIndex = -1;
+		for (TableViewerColumn col : columns) {
+			colIndex++;
+			if (!col.getColumn().getText().equals(IGNORE_HDR)) {
+
+				// if (col.getType() != null) {
+				CSVColCheck csvColCheck = new CSVColCheck();
+				List<String> columnValues = getColumnValues(colIndex);
+				// List<String> columnValues = col.getColumn().getData();
+				// System.out.println("columnValues.size() " +
+				// columnValues.size());
+				// LCADataType colType=col.getAssignedLCADataType();
+				for (QACheck check : QACheck.getGeneralQAChecks()) {
+					for (int i = 0; i < columnValues.size(); i++) {
+						String val = columnValues.get(i);
+						System.out.println("testing column # " + colIndex + " with val: " + val);
+						System.out.println("check.getPattern() " + check.getPattern());
+						System.out.println("check.getIssue() " + check.getIssue());
+
+						Matcher matcher = check.getPattern().matcher(val);
+						while (matcher.find()) {
+							issuesFound++;
+							System.out.println("check.getIssue() " + check.getIssue());
+							Issue issue = check.getIssue();
+							issue.setRowNumber(i);
+							issue.setColNumber(colIndex);
+							issue.setRowNumber(i);
+							issue.setCharacterPosition(matcher.end());
+							issue.setStatus(Status.UNRESOLVED);
+
+							Logger.getLogger("run").warn(issue.getDescription());
+							Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
+							Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
+							Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
+							assignIssue(issue);
+							csvColCheck.addIssue(issue);
+						}
+					}
+				}
+			}
+		}
+		FlowsWorkflow.setTextIssues(issuesFound + " issues found");
+	}
+
 	// FIXME FIXME
 	private static List<String> getColumnValues(int colIndex) {
 		List<String> results = new ArrayList<String>();

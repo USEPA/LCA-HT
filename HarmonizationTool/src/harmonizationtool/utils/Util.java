@@ -28,30 +28,25 @@ public class Util {
 	public static String getGMTDateFmt(Date date) {
 		// SimpleDateFormat dateFormatGmt = new
 		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-		SimpleDateFormat dateFormatGmt = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return dateFormatGmt.format(date);
 	}
 
 	public static String getLocalDateFmt(Date date) {
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);
 	}
-	
 
 	public static Date setDateFmt(String string) throws ParseException {
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.parse(string);
 	}
 
 	public static String splitCamelCase(String s) {
-		String result = s.replaceAll(String.format("%s|%s|%s",
-				"(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
+		String result = s.replaceAll(String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
 				"(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
 		String s1 = result.substring(0, 1);
 		String s2 = result.substring(1);
@@ -83,34 +78,39 @@ public class Util {
 	}
 
 	public static IViewPart findView(String viewID) {
+		// FIRST TRY TO FIND IT
+		// IF YOU CAN'T, THEN SHOW IT AND FIND IT
 		IViewPart view;
 		try {
-			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().findView(viewID);
+			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
 		} catch (Exception e) {
-			view = null;
+			try {
+				Util.showView(viewID);
+				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				view = null;
+			}
 		}
 		return view;
 	}
 
 	public static void showView(String viewID) throws PartInitException {
-		System.out.println("viewID = "+viewID);
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-				.showView(viewID);
+		System.out.println("viewID = " + viewID);
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
 	}
 
 	public static IPreferenceStore getPreferenceStore() {
 		return Activator.getDefault().getPreferenceStore();
 	}
-	
 
 	public static Resource resolveUriFromString(String uriString) {
 		Resource uri = ActiveTDB.model.createResource();
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
 			uri = ActiveTDB.model.getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
-					RDF.type, ECO.Substance));
+			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
