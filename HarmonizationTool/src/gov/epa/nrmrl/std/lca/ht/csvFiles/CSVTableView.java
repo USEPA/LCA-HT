@@ -51,7 +51,7 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
+//	private HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
 	// public static final String ID = "HarmonizationTool.viewData";
@@ -359,6 +359,7 @@ public class CSVTableView extends ViewPart {
 	 */
 
 	public void initializeHeaderMenu() {
+//		HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
 		if (headerMenu == null) {
 			headerMenu = new Menu(table);
 		}
@@ -368,7 +369,7 @@ public class CSVTableView extends ViewPart {
 		headerMenu = new Menu(table);
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+//		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
 		menuItem.setText("Ignore");
 	}
 
@@ -398,24 +399,36 @@ public class CSVTableView extends ViewPart {
 //		}
 //	}
 
-	public static void appendToHeaderMenu(HeaderMenuObj headerMenuObject) {
+	public  void appendToHeaderMenu(HeaderMenuObj headerMenuObject) {
 //		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
 
-		MenuItem menuItem0 = headerMenu.getItem(0);
-		Listener[] listeners = menuItem0.getListeners(0);
+//		MenuItem menuItem0 = headerMenu.getItem(0);
+//		Listener[] listeners = menuItem0.getListeners(0);
 
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.setText(headerMenuObject.headerString);
-		for (Listener listener:listeners){
-			menuItem.addListener(SWT.Selection, listener);
-
-		}
+		setSelectionListener();
+//		for (Listener listener:listeners){
+//			menuItem.addListener(SWT.Selection, listener);
+//		}
 //		menuItem.addListener(SWT.Selection, columnSelectionListener);
 		// DO SOMETHING TO MANAGE unique AND required BOOLEANS
 	}
 	
+//	private setSelectionListener(){
+//		
+//	}
 
-	public static void appendHeaderMenuDiv() {
+	private  void setSelectionListener() {
+		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
+
+		for (MenuItem item:headerMenu.getItems()){
+			item.addListener(SWT.Selection, columnSelectionListener);
+		}
+		
+	}
+
+	public static  void appendHeaderMenuDiv() {
 		new MenuItem(headerMenu, SWT.SEPARATOR);
 	}
 

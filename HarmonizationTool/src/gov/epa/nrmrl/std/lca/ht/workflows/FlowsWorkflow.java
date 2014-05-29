@@ -13,6 +13,7 @@ import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.utils.Util;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -352,14 +353,20 @@ public class FlowsWorkflow extends ViewPart {
 		} else {
 			setFileMD(dataSetProvider.getFileMDList().get(dataSetProvider.getFileMDList().size() - 1));
 		}
-//		CSVTableView.initializeHeaderMenu();
-		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Name", true, true));
-		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Synonym", false, false));
-		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("CAS", false, true));
+		setHeaderInfo();
+	}
+
+	private static void setHeaderInfo() {
+		CSVTableView csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
+		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Name", true, true));
+		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Synonym", false, false));
+		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("CAS", false, true));
 		CSVTableView.appendHeaderMenuDiv();
-//		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable UUID", false, true));
-		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (primary)", true, true));
-		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (additional)", false, false));	}
+
+		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (primary)", true, true));
+		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (additional)", false, false));
+
+	}
 
 	public static void setAssignedColumnCount(int count, int total) {
 		if (count > 0) {
