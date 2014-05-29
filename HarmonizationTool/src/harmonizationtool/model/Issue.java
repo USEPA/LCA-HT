@@ -1,71 +1,27 @@
 package harmonizationtool.model;
 
 public class Issue {
-	private static String description;
-	private static String location;
-	private static int rowNumber;
-	public int getRowNumber() {
-		return rowNumber;
+	private String description;
+	private String explanation;
+	private String suggestion;
+	private int rowNumber;
+	private int colNumber;
+	private int characterPosition;
+	private Status status = null;
+	private boolean autofix;
+
+	public Issue(String description, String explanation, String suggestion) {
+		this.setDescription(description);
+		this.setExplanation(explanation);
+		this.setSuggestion(suggestion);
 	}
 
-	public void setRowNumber(int rowNumber) {
-		Issue.rowNumber = rowNumber;
+	public Issue(String description, String explanation, String suggestion, boolean autofix) {
+		this.setDescription(description);
+		this.setExplanation(explanation);
+		this.setSuggestion(suggestion);
+		this.setAutofix(autofix);
 	}
-
-	public int getColNumber() {
-		return colNumber;
-	}
-
-	public void setColNumber(int colNumber) {
-		Issue.colNumber = colNumber;
-	}
-
-	private static int colNumber;
-	private static String details;
-	private static String suggestion;
-	private static Status status = null;
-	private static boolean autofix;
-	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		Issue.description = description;
-	}
-
-	public String getDetails() {
-		return details;
-	}
-
-	public void setDetails(String details) {
-		Issue.details = details;
-	}
-
-	public String getSuggestion() {
-		return suggestion;
-	}
-
-	public void setSuggestion(String suggestion) {
-		Issue.suggestion = suggestion;
-	}
-
-	public boolean isAutofix() {
-		return autofix;
-	}
-
-	public void setAutofix(boolean autofix) {
-		Issue.autofix = autofix;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
 
 	public void resolveIssue() {
 		if (status == Status.UNRESOLVED) {
@@ -73,24 +29,67 @@ public class Issue {
 		}
 	}
 
-	public Issue(String issue, String details, String suggestion) {
-		this.description = issue;
-		this.details = details;
+	public int getRowNumber() {
+		return rowNumber;
+	}
+
+	public void setRowNumber(int rowNumber) {
+		this.rowNumber = rowNumber;
+	}
+
+	public int getColNumber() {
+		return colNumber;
+	}
+
+	public void setColNumber(int colNumber) {
+		this.colNumber = colNumber;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSuggestion() {
+		return suggestion;
+	}
+
+	public void setSuggestion(String suggestion) {
 		this.suggestion = suggestion;
 	}
 
-	public Issue(String issue, String details, String suggestion, boolean autofix) {
-		this.description = issue;
-		this.details = details;
-		this.suggestion = suggestion;
+	public boolean isAutofix() {
+		return autofix;
+	}
+
+	public void setAutofix(boolean autofix) {
 		this.autofix = autofix;
+	}
+
+	public Status getStatus() {
+		return status;
 	}
 
 	public void setStatus(Status status) {
 		this.status = status;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public int getCharacterPosition() {
+		return characterPosition;
+	}
+
+	public void setCharacterPosition(int characterPosition) {
+		this.characterPosition = characterPosition;
 	}
 }

@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import java.util.Date;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 
 import org.eclipse.jface.viewers.TableViewer;
@@ -20,6 +21,7 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 	private CSVColCheck csvColCheck = null;
 	private TableColumn column;
 	private int columnNumber;
+	private LCADataType assignedLCADataType = null;
 
 	public CsvTableViewerColumn(TableViewer viewer, int style) {
 		this(viewer, style, -1);
@@ -88,6 +90,14 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 
 	public void setColumnNumber(int columnNumber) {
 		this.columnNumber = columnNumber;
+	}
+
+	public LCADataType getAssignedLCADataType() {
+		return assignedLCADataType;
+	}
+
+	public void setAssignedLCADataType(LCADataType assignedLCADataType) {
+		this.assignedLCADataType = assignedLCADataType;
 	}
 	
 }

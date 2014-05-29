@@ -1,6 +1,13 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.CAS;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataFamily;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.FileMD;
@@ -24,7 +31,10 @@ import org.eclipse.swt.widgets.Text;
 
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
+	
+	private List<LCADataType> lcaDataTypes;
 
+	private Flowable flowable = null;
 	private static Text textFileInfo;
 	// private static Text textAssociatedDataset;
 	private static Text textColumnsAssigned;
@@ -156,7 +166,8 @@ public class FlowsWorkflow extends ViewPart {
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("clicked...");
-				CSVTableView.checkColumns();
+//				CSVTableView.checkColumns();
+				//FIXME
 				btnCSV2TDB.setEnabled(true);
 			}
 
@@ -403,6 +414,16 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		return results;
+	}
+
+//	public List<LCADataFamily> getLCADataParents() {
+//		List<LCADataType> lcaDataTypes = new ArrayList<LCADataType>();
+//		lcaDataTypes.add(new CAS("", "", false, false, false, null));
+//		return lcaDataTypes;
+//	}
+
+	public void setLcaDataTypes(List<LCADataType> lcaDataTypes) {
+		this.lcaDataTypes = lcaDataTypes;
 	}
 
 }

@@ -1,12 +1,12 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
+//import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
 import harmonizationtool.model.Issue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.eclipse.swt.widgets.TableColumn;
+//import org.eclipse.swt.widgets.TableColumn;
 
 public class QACheck {
 	private String name;
@@ -98,14 +98,14 @@ public class QACheck {
 		return qaCheckPack;
 	}
 
-	public static void checkColumn(TableColumn column) {
-		Object data = column.getData();
-		System.out.println("data: " + data);
-		System.out.println("data.getClass(): " + data.getClass());
-	}
+//	public static void checkColumn(TableColumn column) {
+//		Object data = column.getData();
+//		System.out.println("data: " + data);
+//		System.out.println("data.getClass(): " + data.getClass());
+//	}
 
-	public static List<QACheck> getQAChecks(CsvTableViewerColumnType type) {
-		return getGeneralQAChecks();
-	}
+//	public static List<QACheck> getQAChecks(CsvTableViewerColumnType type) {
+//		return getGeneralQAChecks();
+//	}
 
 }
