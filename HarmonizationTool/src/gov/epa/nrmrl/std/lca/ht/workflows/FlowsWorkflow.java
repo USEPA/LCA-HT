@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
-	
+
 	private List<LCADataType> lcaDataTypes;
 
 	private Flowable flowable = null;
@@ -119,10 +119,9 @@ public class FlowsWorkflow extends ViewPart {
 		textFileInfo.setEditable(false);
 
 		// textFileInfo.setText("(filename)");
-		 GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true,
-		 false, 1, 1);
-		 gd_textFileInfo.widthHint = 150;
-		 textFileInfo.setLayoutData(gd_textFileInfo);
+		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_textFileInfo.widthHint = 150;
+		textFileInfo.setLayoutData(gd_textFileInfo);
 		//
 		// label_02 = new Label(composite, SWT.NONE);
 		// label_02.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
@@ -166,8 +165,8 @@ public class FlowsWorkflow extends ViewPart {
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("clicked...");
-//				CSVTableView.checkColumns();
-				//FIXME
+				// CSVTableView.checkColumns();
+				// FIXME
 				btnCSV2TDB.setEnabled(true);
 			}
 
@@ -265,6 +264,10 @@ public class FlowsWorkflow extends ViewPart {
 		// TODO Auto-generated method stub
 	}
 
+	// public FlowableHeaderObj[] getHeaderObjects(){
+	//
+	// }
+
 	public static String getTextMetaFileInfo() {
 		return textFileInfo.getToolTipText();
 	}
@@ -349,7 +352,14 @@ public class FlowsWorkflow extends ViewPart {
 		} else {
 			setFileMD(dataSetProvider.getFileMDList().get(dataSetProvider.getFileMDList().size() - 1));
 		}
-	}
+//		CSVTableView.initializeHeaderMenu();
+		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Name", true, true));
+		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Synonym", false, false));
+		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("CAS", false, true));
+		CSVTableView.appendHeaderMenuDiv();
+//		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable UUID", false, true));
+		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (primary)", true, true));
+		CSVTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (additional)", false, false));	}
 
 	public static void setAssignedColumnCount(int count, int total) {
 		if (count > 0) {
@@ -416,11 +426,11 @@ public class FlowsWorkflow extends ViewPart {
 		return results;
 	}
 
-//	public List<LCADataFamily> getLCADataParents() {
-//		List<LCADataType> lcaDataTypes = new ArrayList<LCADataType>();
-//		lcaDataTypes.add(new CAS("", "", false, false, false, null));
-//		return lcaDataTypes;
-//	}
+	// public List<LCADataFamily> getLCADataParents() {
+	// List<LCADataType> lcaDataTypes = new ArrayList<LCADataType>();
+	// lcaDataTypes.add(new CAS("", "", false, false, false, null));
+	// return lcaDataTypes;
+	// }
 
 	public void setLcaDataTypes(List<LCADataType> lcaDataTypes) {
 		this.lcaDataTypes = lcaDataTypes;

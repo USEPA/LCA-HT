@@ -5,6 +5,7 @@ import harmonizationtool.vocabulary.ECO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -19,7 +20,7 @@ public class Flowable {
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
 	
-	private Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
+	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
 
 	public List<QACheck> getQaChecks() {
 		List<QACheck> allChecks = new ArrayList<QACheck>();
@@ -39,6 +40,81 @@ public class Flowable {
 		headerList.add("Chemical formula");
 		headerList.add("SMILES");
 		return headerList;
+	}
+	
+//	private class FlowableHeaderObj {
+//		private String headerString;
+//		private boolean isRequired;
+//		private boolean isUnique;
+//		public FlowableHeaderObj(String headerString, boolean isRequired, boolean isUnique){
+//			this.headerString=headerString;
+//			this.isRequired = isRequired;
+//			this.isUnique = isUnique;
+//		}
+//	}
+	
+//	public void setQaChecks(List<QACheck> qaChecks) {
+//		this.qaChecks = qaChecks;
+//	}
+
+
+	public static boolean validStandardFormat(String candidate) {
+		Matcher matcher = acceptableCASFormat.matcher(candidate);
+		if (matcher.find()) {
+			return true;
+		}
+		return false;
+	}
+
+	public static String standardizeCAS(String candidate) {
+		String standardizedCas = "";
+		String digitsOnly = stripCASdigits(candidate);
+		if (digitsOnly == null) {
+			return digitsOnly;
+		}
+
+		Matcher digitMatcher = Pattern.compile("\\d").matcher(digitsOnly);
+		int digitsCount = digitMatcher.groupCount();
+		for (int i = 0; i < digitsCount; i++) {
+			if (i == digitsCount - 3 || i == digitsCount - 1) {
+				standardizedCas += "-";
+			}
+			standardizedCas += digitMatcher.group(i);
+		}
+		return standardizedCas;
+	}
+
+	public static String stripCASdigits(String candidate) {
+		String strippedCas = "";
+		Matcher digitMatcher = Pattern.compile("\\d").matcher(candidate);
+		int digitsCount = digitMatcher.groupCount();
+		for (int i = 0; i < digitsCount; i++) {
+			strippedCas += digitMatcher.group(i);
+		}
+		while (candidate.startsWith("0")) {
+			candidate = candidate.substring(1);
+		}
+		if (validStandardFormat(strippedCas)) {
+			return strippedCas;
+		}
+		return null;
+	}
+
+	public static boolean correctCASCheckSum(String casNumber) {
+		String strippedCas = stripCASdigits(casNumber);
+		if (strippedCas == null) {
+			return false;
+		}
+		int multiplier = 0;
+		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length(), 1));
+		for (int i = strippedCas.length() - 2; i >= 0; i--) {
+			multiplier++;
+			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, 1));
+		}
+		if (checksum % 10 == 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	public String getName() {

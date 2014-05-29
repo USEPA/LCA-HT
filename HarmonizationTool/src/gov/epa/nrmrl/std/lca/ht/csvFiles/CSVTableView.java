@@ -3,19 +3,11 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
-import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -47,15 +39,30 @@ public class CSVTableView extends ViewPart {
 	public CSVTableView() {
 	}
 
+	public static class HeaderMenuObj {
+		private String headerString;
+		private boolean isRequired;
+		private boolean isUnique;
+
+		public HeaderMenuObj(String headerString, boolean isRequired, boolean isUnique) {
+			this.headerString = headerString;
+			this.isRequired = isRequired;
+			this.isUnique = isUnique;
+		}
+	}
+
+	private HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
+
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
 	// public static final String ID = "HarmonizationTool.viewData";
 	private static String key = null;
 	private TableViewer tableViewer;
 	private static Table table;
-//	private static List<CsvTableViewerColumn> columns = new ArrayList<CsvTableViewerColumn>();
+	// private static List<CsvTableViewerColumn> columns = new
+	// ArrayList<CsvTableViewerColumn>();
 
 	private static List<TableViewerColumn> columns = new ArrayList<TableViewerColumn>();
-// the menu that is displayed when column header is right clicked
+	// the menu that is displayed when column header is right clicked
 	private static Menu headerMenu;
 	private Menu rowMenu;
 	private String formerlySelectedHeaderMenuItem;
@@ -113,7 +120,8 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -219,11 +227,11 @@ public class CSVTableView extends ViewPart {
 			// Define the menu and assign to the table
 
 			TableProvider tableProvider = TableKeeper.getTableProvider(key);
-			headerMenu = tableProvider.getMenu();
-			if (headerMenu == null) {
-				headerMenu = new Menu(table);
-				initializeHeaderMenu();
-			}
+			// headerMenu = tableProvider.getMenu();
+			// if (headerMenu == null) {
+			// headerMenu = new Menu(table);
+			initializeHeaderMenu();			
+			// }
 			DataRow header = tableProvider.getHeaderNames();
 			List<DataRow> tableData = tableProvider.getData();
 			DataRow dataRow = tableData.get(0);
@@ -247,7 +255,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of columns
+	 * class for generating column labels. This class will handle a variable
+	 * number of columns
 	 * 
 	 * @author tec
 	 */
@@ -297,8 +306,8 @@ public class CSVTableView extends ViewPart {
 
 		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = tableViewerColumn.getColumn();
-//		tableViewerColumn.setColumnNumber(colNumber);
-//		tableViewerColumn.setColumn(tableColumn);
+		// tableViewerColumn.setColumnNumber(colNumber);
+		// tableViewerColumn.setColumn(tableColumn);
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
 		tableColumn.setResizable(true);
@@ -342,35 +351,77 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a ColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a
+	 * HeaderMenuColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the columns
 	 */
 
-	private void initializeHeaderMenu() {
-		ColumnSelectionListener columnSelectionListener = new ColumnSelectionListener();
-
+	public void initializeHeaderMenu() {
+		if (headerMenu == null) {
+			headerMenu = new Menu(table);
+		}
+		else {
+		    headerMenu.dispose();
+		}
+		headerMenu = new Menu(table);
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
 		menuItem.setText("Ignore");
-		String lastParentGroup = "";
-		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
-			String parentGroup = type.getParentGroup();
-			if (!parentGroup.equals(lastParentGroup)) {
-				new MenuItem(headerMenu, SWT.SEPARATOR);
-				lastParentGroup = parentGroup;
-			}
-			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+	}
 
-			if (type.isRequired()) {
-				// DO SOMETHING TO HIGHLIGHT THIS
-			} else {
-				// DEFAULT ENTRY
-			}
-			menuItem.addListener(SWT.Selection, columnSelectionListener);
-			menuItem.setText(type.getDisplayString());
+//	public void initializeHeaderMenuOriginal() {
+////		HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
+//
+//		MenuItem menuItem;
+//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+//		menuItem.setText("Ignore");
+//		String lastParentGroup = "";
+//		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
+//			String parentGroup = type.getParentGroup();
+//			if (!parentGroup.equals(lastParentGroup)) {
+//				new MenuItem(headerMenu, SWT.SEPARATOR);
+//				lastParentGroup = parentGroup;
+//			}
+//			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+//
+//			if (type.isRequired()) {
+//				// DO SOMETHING TO HIGHLIGHT THIS
+//			} else {
+//				// DEFAULT ENTRY
+//			}
+//			menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+//			menuItem.setText(type.getDisplayString());
+//		}
+//	}
+
+	public static void appendToHeaderMenu(HeaderMenuObj headerMenuObject) {
+//		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
+
+		MenuItem menuItem0 = headerMenu.getItem(0);
+		Listener[] listeners = menuItem0.getListeners(0);
+
+		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.setText(headerMenuObject.headerString);
+		for (Listener listener:listeners){
+			menuItem.addListener(SWT.Selection, listener);
+
+		}
+//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		// DO SOMETHING TO MANAGE unique AND required BOOLEANS
+	}
+	
+
+	public static void appendHeaderMenuDiv() {
+		new MenuItem(headerMenu, SWT.SEPARATOR);
+	}
+
+	public void appendToHeaderMenu(HeaderMenuObj[] headerMenuObjects) {
+		for (HeaderMenuObj headerMenuObject : headerMenuObjects) {
+			appendToHeaderMenu(headerMenuObject);
 		}
 	}
 
@@ -413,14 +464,15 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * once the user has selected a column header for change this Listener will set the column
-	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
-	 * displayed so the user can enter a custom value for the column header.
+	 * once the user has selected a column header for change this Listener will
+	 * set the column header to the value selected by the user. If the user
+	 * selects "Custom...", then a dialog is displayed so the user can enter a
+	 * custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
 	 */
-	private class ColumnSelectionListener implements Listener {
+	private class HeaderMenuColumnSelectionListener implements Listener {
 
 		@Override
 		public void handleEvent(Event event) {
@@ -449,7 +501,8 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
+						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog",
+								"Enter a custom column label", "", null);
 						inputDialog.open();
 						int returnCode = inputDialog.getReturnCode();
 						if (returnCode == InputDialog.OK) {
@@ -466,27 +519,28 @@ public class CSVTableView extends ViewPart {
 				// re-displayed
 				saveColumnNames();
 				TableKeeper.getTableProvider(key).setMenu(headerMenu);
-//				exportColumnStatus();
+				// exportColumnStatus();
 			}
 		}
 	}
 
-//	private void exportColumnStatus() {
-//		int assigned = 0;
-//		for (TableViewerColumn col : columns) {
-//			String headerName = col.getColumn().getText();
-//			if (!headerName.equals(IGNORE_HDR)) {
-//				assigned++;
-//				col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
-//				System.out.println("col.getType: " + col.getType());
-//				System.out.println("col.getType().getDisplayString(): " + col.getType().getDisplayString());
-//
-//			} else {
-//				col.setType(null);
-//			}
-//		}
-//		FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
-//	}
+	// private void exportColumnStatus() {
+	// int assigned = 0;
+	// for (TableViewerColumn col : columns) {
+	// String headerName = col.getColumn().getText();
+	// if (!headerName.equals(IGNORE_HDR)) {
+	// assigned++;
+	// col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
+	// System.out.println("col.getType: " + col.getType());
+	// System.out.println("col.getType().getDisplayString(): " +
+	// col.getType().getDisplayString());
+	//
+	// } else {
+	// col.setType(null);
+	// }
+	// }
+	// FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
+	// }
 
 	private class RowSelectionListener implements Listener {
 
@@ -520,8 +574,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column components and passes
-	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
+	 * this method retrieves the column header text values from the column
+	 * components and passes them to the TableProvider so they can be retrieved
+	 * when the data table is re-displayed
 	 */
 	private void saveColumnNames() {
 		List<String> columnNames = new ArrayList<String>();
@@ -534,48 +589,50 @@ public class CSVTableView extends ViewPart {
 		tableProvider.setHeaderNames(columnNames);
 	}
 
-//	public static void checkColumns() {
-//		int issuesFound = 0;
-//		for (TableViewerColumn col : columns) {
-//			if (col.getType() != null) {
-//				CSVColCheck csvColCheck = new CSVColCheck();
-////				List<String> columnValues = getColumnValues(col.getColumn().getData());
-//				List<String> columnValues = col.getColumn().getData();
-//				// System.out.println("columnValues.size() " +
-//				// columnValues.size());
-//				LCADataType colType=col.getAssignedLCADataType();
-//				for (QACheck check : colType.getQaChecks()) {
-//					for (int i = 0; i < columnValues.size(); i++) {
-//						String val = columnValues.get(i);
-//						System.out.println("testing column # " + col.getColumnNumber());
-//						System.out.println("check.getPattern() " + check.getPattern());
-//						System.out.println("check.getIssue() " + check.getIssue());
-//
-//						Matcher matcher = check.getPattern().matcher(val);
-//						while (matcher.find()) {
-//							issuesFound++;
-//							System.out.println("check.getIssue() " + check.getIssue());
-//							Issue issue = check.getIssue();
-//							issue.setRowNumber(i);
-//							issue.setColNumber(col.getColumnNumber());
-//							issue.setRowNumber(i);
-//							issue.setCharacterPosition(matcher.end());
-//							issue.setStatus(Status.UNRESOLVED);
-//
-//							Logger.getLogger("run").warn(issue.getDescription());
-//							Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-//							Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
-//							Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
-//							assignIssue(issue);
-//							csvColCheck.addIssue(issue);
-//						}
-//					}
-//				}
-//			}
-//		}
-//		FlowsWorkflow.setTextIssues(issuesFound + " issues found");
-//	}
-// FIXME FIXME
+	// public static void checkColumns() {
+	// int issuesFound = 0;
+	// for (TableViewerColumn col : columns) {
+	// if (col.getType() != null) {
+	// CSVColCheck csvColCheck = new CSVColCheck();
+	// // List<String> columnValues =
+	// getColumnValues(col.getColumn().getData());
+	// List<String> columnValues = col.getColumn().getData();
+	// // System.out.println("columnValues.size() " +
+	// // columnValues.size());
+	// LCADataType colType=col.getAssignedLCADataType();
+	// for (QACheck check : colType.getQaChecks()) {
+	// for (int i = 0; i < columnValues.size(); i++) {
+	// String val = columnValues.get(i);
+	// System.out.println("testing column # " + col.getColumnNumber());
+	// System.out.println("check.getPattern() " + check.getPattern());
+	// System.out.println("check.getIssue() " + check.getIssue());
+	//
+	// Matcher matcher = check.getPattern().matcher(val);
+	// while (matcher.find()) {
+	// issuesFound++;
+	// System.out.println("check.getIssue() " + check.getIssue());
+	// Issue issue = check.getIssue();
+	// issue.setRowNumber(i);
+	// issue.setColNumber(col.getColumnNumber());
+	// issue.setRowNumber(i);
+	// issue.setCharacterPosition(matcher.end());
+	// issue.setStatus(Status.UNRESOLVED);
+	//
+	// Logger.getLogger("run").warn(issue.getDescription());
+	// Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
+	// Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
+	// Logger.getLogger("run").warn("  ->Character position" +
+	// issue.getCharacterPosition());
+	// assignIssue(issue);
+	// csvColCheck.addIssue(issue);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// FlowsWorkflow.setTextIssues(issuesFound + " issues found");
+	// }
+	// FIXME FIXME
 	private static List<String> getColumnValues(int colIndex) {
 		List<String> results = new ArrayList<String>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
@@ -598,5 +655,6 @@ public class CSVTableView extends ViewPart {
 		// tableItem.set
 		return;
 	}
+
 
 }
