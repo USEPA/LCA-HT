@@ -28,23 +28,20 @@ public class DataSetKeeper {
 			Model model = ActiveTDB.model;
 			Resource tdbResource = model.createResource();
 			model.add(tdbResource, RDF.type, ECO.DataSource);
-			model.add(tdbResource, RDFS.label, model.createLiteral(dataSetProvider.getDataSetMD()
-					.getName()));
-			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSetProvider.getDataSetMD()
-					.getComments()));
-			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetProvider
-					.getDataSetMD().getVersion()));
+			model.add(tdbResource, RDFS.label, model.createLiteral(dataSetProvider.getDataSetMD().getName()));
+			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSetProvider.getDataSetMD().getComments()));
+			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSetProvider.getDataSetMD().getVersion()));
 			dataSetProvider.setTdbResource(tdbResource);
 		}
 		return dataSetProviderList.add(dataSetProvider);
 	}
-	
+
 	public static boolean remove(DataSetProvider dataSetProvider) {
 		return dataSetProviderList.remove(dataSetProvider);
 	}
-	
+
 	public static boolean remove(DataSetProvider dataSetProvider, boolean removeTDBData) {
-		if (removeTDBData){
+		if (removeTDBData) {
 			Resource tdbResource = dataSetProvider.getTdbResource();
 			ActiveTDB.removeAllWithSubject(tdbResource);
 			ActiveTDB.removeAllWithObject(tdbResource);
@@ -60,7 +57,7 @@ public class DataSetKeeper {
 		}
 		return ids;
 	}
-	
+
 	public static List<String> getNames() {
 		List<String> results = new ArrayList<String>();
 		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
@@ -70,39 +67,38 @@ public class DataSetKeeper {
 		Collections.sort(results);
 		return results;
 	}
-	
-	public static String uniquify(String proposedNewDatasetName){
+
+	public static String uniquify(String proposedNewDatasetName) {
 		String uniqueName = proposedNewDatasetName;
 		Pattern numberedEnding = Pattern.compile("(.*)_(\\d+)$");
-		 
-		while (indexOfDataSetName(uniqueName) >-1){
-			
-//			System.out.println("checking uniqueName: "+uniqueName);
-//			Pattern numberedEnding = Pattern.compile("_\\d\\d$");
+
+		while (indexOfDataSetName(uniqueName) > -1) {
+
+			// System.out.println("checking uniqueName: "+uniqueName);
+			// Pattern numberedEnding = Pattern.compile("_\\d\\d$");
 			Matcher endingMatcher = numberedEnding.matcher(uniqueName);
-			
-			if (endingMatcher.find()){
+
+			if (endingMatcher.find()) {
 				String baseName = endingMatcher.group(1);
-//				System.out.println("Match, so baseName: "+baseName);
+				// System.out.println("Match, so baseName: "+baseName);
 
-				int nextVal=Integer.parseInt(endingMatcher.group(2))+1;
-				uniqueName=baseName+"_"+nextVal;
-//				System.out.println("... and uniqueName is now: "+uniqueName);
+				int nextVal = Integer.parseInt(endingMatcher.group(2)) + 1;
+				uniqueName = baseName + "_" + nextVal;
+				// System.out.println("... and uniqueName is now: "+uniqueName);
 
-			}
-			else {
-				uniqueName+="_1";
-//				System.out.println("No match, so uniqueName is now: "+uniqueName);
+			} else {
+				uniqueName += "_1";
+				// System.out.println("No match, so uniqueName is now: "+uniqueName);
 			}
 		}
 		return uniqueName;
 	}
 
 	public static DataSetProvider get(int index) {
-		if (index < 0){
+		if (index < 0) {
 			return null;
 		}
-		if (index >= dataSetProviderList.size()){
+		if (index >= dataSetProviderList.size()) {
 			return null;
 		}
 		return dataSetProviderList.get(index);
@@ -120,12 +116,12 @@ public class DataSetKeeper {
 	public static Integer indexOf(DataSetProvider dataSetProvider) {
 		return dataSetProviderList.indexOf(dataSetProvider);
 	}
-	
+
 	public static int indexOfDataSetName(String name) {
 		Iterator<DataSetProvider> iterator = dataSetProviderList.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			DataSetProvider dataSetProvider = (DataSetProvider) iterator.next();
-			if (dataSetProvider.getDataSetMD().getName().equals(name)){
+			if (dataSetProvider.getDataSetMD().getName().equals(name)) {
 				return DataSetKeeper.indexOf(dataSetProvider);
 			}
 		}
@@ -149,8 +145,17 @@ public class DataSetKeeper {
 	}
 
 	public static DataSetProvider get(FileMD fileMD) {
-		for(DataSetProvider dataSetProvider : dataSetProviderList){
-			if(dataSetProvider.getFileMDList().contains(fileMD)){
+		for (DataSetProvider dataSetProvider : dataSetProviderList) {
+			if (dataSetProvider.getFileMDList().contains(fileMD)) {
+				return dataSetProvider;
+			}
+		}
+		return null;
+	}
+
+	public static DataSetProvider getByName(String name) {
+		for (DataSetProvider dataSetProvider : dataSetProviderList) {
+			if (dataSetProvider.getDataSetMD().getName().equals(name)) {
 				return dataSetProvider;
 			}
 		}

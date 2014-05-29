@@ -60,6 +60,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	private static Button btnCheckData;
 	private static Button btnCSV2TDB;
+	private static Button btnAutoMatch;
 
 	private static FileMD fileMD;
 	private static DataSetProvider dataSetProvider;
@@ -169,7 +170,9 @@ public class FlowsWorkflow extends ViewPart {
 				System.out.println("clicked...");
 				 CSVTableView.checkColumns();
 				// FIXME
-				btnCSV2TDB.setEnabled(true);
+//				btnCSV2TDB.setEnabled(true);
+				 btnAutoMatch.setEnabled(true);
+
 			}
 
 			@Override
@@ -201,10 +204,29 @@ public class FlowsWorkflow extends ViewPart {
 		label_05.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_05.setText("5");
 
-		Button btnAutoMatch = new Button(composite, SWT.NONE);
+		btnAutoMatch = new Button(composite, SWT.NONE);
 		btnAutoMatch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		btnAutoMatch.setText("Auto match");
 		btnAutoMatch.setEnabled(false);
+		btnAutoMatch.addSelectionListener(new SelectionListener() {
+
+			// @Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("clicked...");
+				 CSVTableView.matchFlowables();
+				// FIXME
+//				btnCSV2TDB.setEnabled(true);
+//				 textAutoMatched.setEnabled(true);
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
 
 		textAutoMatched = new Text(composite, SWT.BORDER);
 		// textAutoMatched.setText("(430 of 600 rows match)");
@@ -224,7 +246,7 @@ public class FlowsWorkflow extends ViewPart {
 		});
 		btnSemiautoMatch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		btnSemiautoMatch.setText("Semi-auto match");
-		btnSemiautoMatch.setEnabled(false);
+//		btnSemiautoMatch.setEnabled(false);
 
 		textSemiAutoMatched = new Text(composite, SWT.BORDER);
 		// textSemiAutoMatched.setText("(100 of 170 rows confirmed)");

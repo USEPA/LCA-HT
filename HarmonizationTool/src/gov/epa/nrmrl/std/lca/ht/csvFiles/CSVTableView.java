@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.DataSetKeeper;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
@@ -36,6 +38,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author tec
@@ -81,6 +90,7 @@ public class CSVTableView extends ViewPart {
 	private TableColumn columnSelected = null;
 	private Color gray = new Color(Display.getCurrent(), 128, 128, 128);
 	private Color black = new Color(Display.getCurrent(), 0, 0, 0);
+	private static Color green = new Color(Display.getCurrent(), 128, 255, 255);
 	// private Color defaultTextColor;
 
 	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
@@ -633,9 +643,12 @@ public class CSVTableView extends ViewPart {
 				for (QACheck check : QACheck.getGeneralQAChecks()) {
 					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
-						System.out.println("testing column # " + colIndex + " with val: " + val);
-						System.out.println("check.getPattern() " + check.getPattern());
-						System.out.println("check.getIssue() " + check.getIssue());
+						// System.out.println("testing column # " + colIndex +
+						// " with val: " + val);
+						// System.out.println("check.getPattern() " +
+						// check.getPattern());
+						// System.out.println("check.getIssue() " +
+						// check.getIssue());
 
 						Matcher matcher = check.getPattern().matcher(val);
 						while (matcher.find()) {
@@ -662,12 +675,44 @@ public class CSVTableView extends ViewPart {
 		FlowsWorkflow.setTextIssues(issuesFound + " issues found");
 	}
 
-	// FIXME FIXME
+	public static void matchFlowables() {
+		Model model = ActiveTDB.model;
+		Resource masterFlowableDSResource = DataSetKeeper.getByName("Master_Flowables").getTdbResource();
+		// int issuesFound = 0;
+		int colIndex = -1;
+		for (TableViewerColumn col : columns) {
+			colIndex++;
+			if (col.getColumn().getText().equals("Flowable Name")) {
+				List<String> columnValues = getColumnValues(colIndex);
+				for (int i = 0; i < columnValues.size(); i++) {
+					String val = columnValues.get(i);
+					if (val != null) {
+						// Statement statement =
+						StmtIterator stmtIterator = model.listStatements(masterFlowableDSResource, RDFS.label, val);
+						// ResIterator resIterator =
+						// model.listResourcesWithProperty(RDFS.label, val);
+						while (stmtIterator.hasNext()) {
+							// Resource resource= resIterator.next();
+							colorCell(i, colIndex, green);
+						}
+					}
+				}
+			}
+		}
+		// FlowsWorkflow.setTextIssues(issuesFound + " issues found");
+	}
+
+	private static void colorCell(int rowNumber, int colNumber, Color color) {
+		TableItem tableItem = table.getItem(rowNumber);
+		tableItem.setBackground(colNumber, color);
+
+	}
+
 	private static List<String> getColumnValues(int colIndex) {
 		List<String> results = new ArrayList<String>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		List<DataRow> dataRowList = tableProvider.getData();
-		System.out.println("dataRowList.size() " + dataRowList.size());
+		// System.out.println("dataRowList.size() " + dataRowList.size());
 		for (DataRow dataRow : dataRowList) {
 			results.add(dataRow.get(colIndex));
 		}
