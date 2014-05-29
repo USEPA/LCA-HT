@@ -3,6 +3,8 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.TableKeeper;
@@ -51,7 +53,9 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-//	private HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
+	// private HeaderMenuColumnSelectionListener
+	// headerMenuColumnSelectionListener = new
+	// HeaderMenuColumnSelectionListener();
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
 	// public static final String ID = "HarmonizationTool.viewData";
@@ -230,7 +234,7 @@ public class CSVTableView extends ViewPart {
 			// headerMenu = tableProvider.getMenu();
 			// if (headerMenu == null) {
 			// headerMenu = new Menu(table);
-			initializeHeaderMenu();			
+			initializeHeaderMenu();
 			// }
 			DataRow header = tableProvider.getHeaderNames();
 			List<DataRow> tableData = tableProvider.getData();
@@ -359,76 +363,84 @@ public class CSVTableView extends ViewPart {
 	 */
 
 	public void initializeHeaderMenu() {
-//		HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
+		// HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener =
+		// new HeaderMenuColumnSelectionListener();
 		if (headerMenu == null) {
 			headerMenu = new Menu(table);
-		}
-		else {
-		    headerMenu.dispose();
+		} else {
+			headerMenu.dispose();
 		}
 		headerMenu = new Menu(table);
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+		// menuItem.addListener(SWT.Selection,
+		// headerMenuColumnSelectionListener);
 		menuItem.setText("Ignore");
 	}
 
-//	public void initializeHeaderMenuOriginal() {
-////		HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener = new HeaderMenuColumnSelectionListener();
-//
-//		MenuItem menuItem;
-//		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
-//		menuItem.setText("Ignore");
-//		String lastParentGroup = "";
-//		for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
-//			String parentGroup = type.getParentGroup();
-//			if (!parentGroup.equals(lastParentGroup)) {
-//				new MenuItem(headerMenu, SWT.SEPARATOR);
-//				lastParentGroup = parentGroup;
-//			}
-//			menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-//
-//			if (type.isRequired()) {
-//				// DO SOMETHING TO HIGHLIGHT THIS
-//			} else {
-//				// DEFAULT ENTRY
-//			}
-//			menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
-//			menuItem.setText(type.getDisplayString());
-//		}
-//	}
+	// public void initializeHeaderMenuOriginal() {
+	// // HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener =
+	// new HeaderMenuColumnSelectionListener();
+	//
+	// MenuItem menuItem;
+	// menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+	// menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+	// menuItem.setText("Ignore");
+	// String lastParentGroup = "";
+	// for (CsvTableViewerColumnType type : CsvTableViewerColumnType.values()) {
+	// String parentGroup = type.getParentGroup();
+	// if (!parentGroup.equals(lastParentGroup)) {
+	// new MenuItem(headerMenu, SWT.SEPARATOR);
+	// lastParentGroup = parentGroup;
+	// }
+	// menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+	//
+	// if (type.isRequired()) {
+	// // DO SOMETHING TO HIGHLIGHT THIS
+	// } else {
+	// // DEFAULT ENTRY
+	// }
+	// menuItem.addListener(SWT.Selection, headerMenuColumnSelectionListener);
+	// menuItem.setText(type.getDisplayString());
+	// }
+	// }
 
-	public  void appendToHeaderMenu(HeaderMenuObj headerMenuObject) {
-//		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
+	public void appendToHeaderMenu(HeaderMenuObj headerMenuObject) {
+		// HeaderMenuColumnSelectionListener columnSelectionListener = new
+		// HeaderMenuColumnSelectionListener();
 
-//		MenuItem menuItem0 = headerMenu.getItem(0);
-//		Listener[] listeners = menuItem0.getListeners(0);
+		// MenuItem menuItem0 = headerMenu.getItem(0);
+		// Listener[] listeners = menuItem0.getListeners(0);
 
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.setText(headerMenuObject.headerString);
-		setSelectionListener();
-//		for (Listener listener:listeners){
-//			menuItem.addListener(SWT.Selection, listener);
-//		}
-//		menuItem.addListener(SWT.Selection, columnSelectionListener);
+		resetSelectionListener();
+		// for (Listener listener:listeners){
+		// menuItem.addListener(SWT.Selection, listener);
+		// }
+		// menuItem.addListener(SWT.Selection, columnSelectionListener);
 		// DO SOMETHING TO MANAGE unique AND required BOOLEANS
 	}
-	
-//	private setSelectionListener(){
-//		
-//	}
 
-	private  void setSelectionListener() {
+	// private setSelectionListener(){
+	//
+	// }
+
+	private void resetSelectionListener() {
+		for (MenuItem menuItem : headerMenu.getItems()) {
+			for (Listener listener : menuItem.getListeners(SWT.Selection)) {
+				menuItem.removeListener(SWT.Selection, listener);
+			}
+		}
+
 		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
-
-		for (MenuItem item:headerMenu.getItems()){
+		for (MenuItem item : headerMenu.getItems()) {
 			item.addListener(SWT.Selection, columnSelectionListener);
 		}
-		
+
 	}
 
-	public static  void appendHeaderMenuDiv() {
+	public void appendHeaderMenuDiv() {
 		new MenuItem(headerMenu, SWT.SEPARATOR);
 	}
 
@@ -493,8 +505,7 @@ public class CSVTableView extends ViewPart {
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
 				String menuItemText = ((MenuItem) event.widget).getText();
 				MenuItem[] menuItems = headerMenu.getItems();
-				// int assigned = 0;
-				// int total = menuItems.length;
+
 				for (MenuItem mi : menuItems) {
 					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
 						mi.setEnabled(true);
@@ -509,8 +520,7 @@ public class CSVTableView extends ViewPart {
 						break;
 					}
 				}
-				// System.out.println("got here");
-				// FlowsWorkflow.setAssignedColumnCount(assigned, total);
+
 				if (menuItemText != null) {
 					if (menuItemText.equals("Custom...")) {
 						// allow the user to define a custom header name
@@ -532,28 +542,28 @@ public class CSVTableView extends ViewPart {
 				// re-displayed
 				saveColumnNames();
 				TableKeeper.getTableProvider(key).setMenu(headerMenu);
-				// exportColumnStatus();
+				exportColumnStatus();
 			}
 		}
 	}
 
-	// private void exportColumnStatus() {
-	// int assigned = 0;
-	// for (TableViewerColumn col : columns) {
-	// String headerName = col.getColumn().getText();
-	// if (!headerName.equals(IGNORE_HDR)) {
-	// assigned++;
-	// col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
-	// System.out.println("col.getType: " + col.getType());
-	// System.out.println("col.getType().getDisplayString(): " +
-	// col.getType().getDisplayString());
-	//
-	// } else {
-	// col.setType(null);
-	// }
-	// }
-	// FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
-	// }
+	private void exportColumnStatus() {
+		int assigned = 0;
+		for (TableViewerColumn col : columns) {
+			String headerName = col.getColumn().getText();
+			if (!headerName.equals(IGNORE_HDR)) {
+				assigned++;
+				// col.setType(CsvTableViewerColumnType.getTypeFromDisplayString(headerName));
+				// System.out.println("col.getType: " + col.getType());
+				// System.out.println("col.getType().getDisplayString(): " +
+				// col.getType().getDisplayString());
+
+				// } else {
+				// col.setType(null);
+			}
+		}
+		FlowsWorkflow.setAssignedColumnCount(assigned, columns.size());
+	}
 
 	private class RowSelectionListener implements Listener {
 
@@ -668,6 +678,5 @@ public class CSVTableView extends ViewPart {
 		// tableItem.set
 		return;
 	}
-
 
 }

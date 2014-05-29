@@ -16,6 +16,7 @@ import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.SWT;
@@ -357,11 +358,20 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	private static void setHeaderInfo() {
-		CSVTableView csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
+		CSVTableView csvTableView;
+		if (Util.findView(CSVTableView.ID) == null){
+			try {
+				Util.showView(CSVTableView.ID);
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
 		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Name", true, true));
 		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Synonym", false, false));
 		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("CAS", false, true));
-		CSVTableView.appendHeaderMenuDiv();
+		csvTableView.appendHeaderMenuDiv();
 
 		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (primary)", true, true));
 		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (additional)", false, false));
@@ -369,6 +379,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setAssignedColumnCount(int count, int total) {
+//		System.out.println("Made it!");
 		if (count > 0) {
 			btnCheckData.setEnabled(true);
 		} else {
