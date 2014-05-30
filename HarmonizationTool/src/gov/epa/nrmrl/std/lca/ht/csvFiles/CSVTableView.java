@@ -14,6 +14,7 @@ import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.vocabulary.ECO;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -677,27 +678,43 @@ public class CSVTableView extends ViewPart {
 
 	public static void matchFlowables() {
 		Model model = ActiveTDB.model;
-		Resource masterFlowableDSResource = DataSetKeeper.getByName("Master_Flowables").getTdbResource();
+		Resource masterFlowableDSResource = DataSetKeeper.getByName("Master_Flowables").getTdbResource(); // HACK	
+		if (masterFlowableDSResource == null){
+			System.out.println("Awww.  Why didn't we find it!");
+		}
 		// int issuesFound = 0;
 		int colIndex = -1;
 		for (TableViewerColumn col : columns) {
 			colIndex++;
+			Logger.getLogger("run").info("Checking column # "+colIndex);
 			if (col.getColumn().getText().equals("Flowable Name")) {
+				Logger.getLogger("run").info("Checking column # "+colIndex);
 				List<String> columnValues = getColumnValues(colIndex);
 				for (int i = 0; i < columnValues.size(); i++) {
+					if (i%100 == 0){
+						Logger.getLogger("run").info("  Completed "+i + "rows.");
+
+					}
 					String val = columnValues.get(i);
 					if (val != null) {
 						// Statement statement =
-						StmtIterator stmtIterator = model.listStatements(masterFlowableDSResource, RDFS.label, val);
+						// StmtIterator stmtIterator =
+						// model.listStatements(masterFlowableDSResource,
+						// RDFS.label, val);
 						// ResIterator resIterator =
-						// model.listResourcesWithProperty(RDFS.label, val);
-						while (stmtIterator.hasNext()) {
-							// Resource resource= resIterator.next();
-							colorCell(i, colIndex, green);
+						ResIterator resIterator = model.listResourcesWithProperty(RDFS.label, val);
+						while (resIterator.hasNext()) {
+							Resource resource = resIterator.next();
+							if (model.contains(resource, ECO.hasDataSource, masterFlowableDSResource)) {
+								colorCell(i, colIndex, green);
+
+							}
 						}
 					}
 				}
 			}
+			Logger.getLogger("run").info("  Finished checking.");
+
 		}
 		// FlowsWorkflow.setTextIssues(issuesFound + " issues found");
 	}
