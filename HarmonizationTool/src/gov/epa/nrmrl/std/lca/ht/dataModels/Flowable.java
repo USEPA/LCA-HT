@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.model.Issue;
 import harmonizationtool.vocabulary.ECO;
 
@@ -19,7 +20,7 @@ public class Flowable {
 	private String formula = null;
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
-	
+
 	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
 
 	public List<QACheck> getQaChecks() {
@@ -28,35 +29,64 @@ public class Flowable {
 		Pattern p1 = acceptableCASFormat;
 		Issue i1 = new Issue("Non-standard CAS format", "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
 				"Parse digits.  To parse the numeric components, use the auto-clean function.", true);
-		allChecks.add(new QACheck(i1.getDescription(), p1, i1));		
+		allChecks.add(new QACheck(i1.getDescription(), p1, i1));
 		return allChecks;
 	}
-	
-	public List<String> getHeadersList(){
-		List<String> headerList = new ArrayList<String>();
-		headerList.add("Flowable Name");
-		headerList.add("Flowable AltName");
-		headerList.add("CAS");
-		headerList.add("Chemical formula");
-		headerList.add("SMILES");
-		return headerList;
-	}
-	
-//	private class FlowableHeaderObj {
-//		private String headerString;
-//		private boolean isRequired;
-//		private boolean isUnique;
-//		public FlowableHeaderObj(String headerString, boolean isRequired, boolean isUnique){
-//			this.headerString=headerString;
-//			this.isRequired = isRequired;
-//			this.isUnique = isUnique;
-//		}
-//	}
-	
-//	public void setQaChecks(List<QACheck> qaChecks) {
-//		this.qaChecks = qaChecks;
+
+//	public List<String> getHeadersList() {
+//		List<String> headerList = new ArrayList<String>();
+//		headerList.add("Flowable Name");
+//		headerList.add("Flowable AltName");
+//		headerList.add("CAS");
+//		headerList.add("Chemical formula");
+//		headerList.add("SMILES");
+//		return headerList;
 //	}
 
+	public static CSVTableView.CSVColumnInfo[] getHeaderMenuObjects() {
+		CSVTableView.CSVColumnInfo[] results = new CSVTableView.CSVColumnInfo[5];
+		results[0] = new CSVTableView.CSVColumnInfo("Flowable Name", true, true, getFlowablesNameCheckList());
+		results[1] = new CSVTableView.CSVColumnInfo("Flowable Synonym", false, false, getFlowablesNameCheckList());
+		results[2] = new CSVTableView.CSVColumnInfo("CAS", false, true, getCASCheckList());
+		results[3] = new CSVTableView.CSVColumnInfo("Chemical formula", false, false, getFormulaCheckList());
+		results[4] = new CSVTableView.CSVColumnInfo("SMILES", false, false, getSMILESCheckList());
+		return results;
+	}
+
+	private static List<QACheck> getSMILESCheckList() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+	private static List<QACheck> getFormulaCheckList() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+	private static List<QACheck> getCASCheckList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static List<QACheck> getFlowablesNameCheckList() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+	// private class FlowableHeaderObj {
+	// private String headerString;
+	// private boolean isRequired;
+	// private boolean isUnique;
+	// public FlowableHeaderObj(String headerString, boolean isRequired, boolean isUnique){
+	// this.headerString=headerString;
+	// this.isRequired = isRequired;
+	// this.isUnique = isUnique;
+	// }
+	// }
+
+	// public void setQaChecks(List<QACheck> qaChecks) {
+	// this.qaChecks = qaChecks;
+	// }
 
 	public static boolean validStandardFormat(String candidate) {
 		Matcher matcher = acceptableCASFormat.matcher(candidate);
@@ -116,7 +146,7 @@ public class Flowable {
 		}
 		return false;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

@@ -8,6 +8,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.CAS;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataFamily;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.model.FileMD;
@@ -390,13 +391,12 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
-		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Name", true, true));
-		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Flowable Synonym", false, false));
-		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("CAS", false, true));
+		
 		csvTableView.appendHeaderMenuDiv();
-
-		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (primary)", true, true));
-		csvTableView.appendToHeaderMenu(new CSVTableView.HeaderMenuObj("Context (additional)", false, false));
+		csvTableView.appendToHeaderMenu(Flowable.getHeaderMenuObjects());
+		csvTableView.appendHeaderMenuDiv();
+		csvTableView.appendToHeaderMenu(new CSVTableView.CSVColumnInfo("Context (primary)", true, true, QACheck.getGeneralQAChecks()));
+		csvTableView.appendToHeaderMenu(new CSVTableView.CSVColumnInfo("Context (additional)", false, false, QACheck.getGeneralQAChecks()));
 
 	}
 
@@ -444,13 +444,19 @@ public class FlowsWorkflow extends ViewPart {
 	// int index =
 	// tableProvider.getHeaderNamesAsStrings().indexOf(ViewData.NAME_HDR);
 	// }
+	public String checkOneColumn(int colIndex){
+		String result = "";
+		
+		return result;
+	}
 
 	public String checkFlowableNameCol() {
 		String results = null;
 		if (tableProvider == null) {
 			tableProvider = TableKeeper.getTableProvider(fileMD.getPath());
 		}
-		int index = tableProvider.getHeaderNamesAsStrings().indexOf(CSVTableView.NAME_HDR);
+//		int index = tableProvider.getHeaderNamesAsStrings().indexOf(CSVTableView.NAME_HDR);
+		int index = tableProvider.getHeaderNamesAsStrings().indexOf("Flowable Name");
 		for (int i = 0; i < tableProvider.getData().size(); i++) {
 			int iPlusOne = i + 1;
 			DataRow row = tableProvider.getData().get(i);
