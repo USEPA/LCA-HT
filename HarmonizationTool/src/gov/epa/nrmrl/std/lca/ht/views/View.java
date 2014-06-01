@@ -433,71 +433,71 @@ public class View extends ViewPart {
 						Literal drAltNameLit = null;
 						Literal drCasLit = null;
 
-						try {
-							int index = headers.indexOf(CSVTableView.NAME_HDR);
-							if (index > -1) {
-								String unescName = csvDataRow.getColumnValues()
-										.get(index);
-								name = Util.escape(unescName);
-								if (unescName.matches("^\\s*$")) {
-									csvRow++;
-									continue;
-								}
-								// System.out.println("name=" + name);
-								drNameLit = model.createTypedLiteral(name);
-							} else {
-//								String msg = "Flowables must have a \"Name\" field!";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT" WAY
-										// TO LEAVE
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+//						try {
+//							int index = headers.indexOf(CSVTableView.NAME_HDR);
+//							if (index > -1) {
+//								String unescName = csvDataRow.getColumnValues()
+//										.get(index);
+//								name = Util.escape(unescName);
+//								if (unescName.matches("^\\s*$")) {
+//									csvRow++;
+//									continue;
+//								}
+//								// System.out.println("name=" + name);
+//								drNameLit = model.createTypedLiteral(name);
+//							} else {
+////								String msg = "Flowables must have a \"Name\" field!";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT" WAY
+//										// TO LEAVE
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 
-						try {
-							int index = headers.indexOf(CSVTableView.ALT_NAME_HDR);
-							if (index > -1) {
-								String unescAltName = csvDataRow
-										.getColumnValues().get(index);
-								altName = Util.escape(unescAltName);
-								// System.out.println("altName=" +
-								// altName);
-								drAltNameLit = model
-										.createTypedLiteral(altName);
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						try {
-							int index = headers.indexOf(CSVTableView.CASRN_HDR);
-							if (index > -1) {
-								String unescCasrn = csvDataRow
-										.getColumnValues().get(index);
-								casrn = Util.escape(unescCasrn);
-								casrn = casrn
-										.replaceFirst(
-												"^[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
-												"$1-$2-$3");
-								// REMOVE LEADING STUFF (INCLUDING ZEROS), ADD
-								// DASHES IF MISSING
-								if (casrn
-										.matches("^[1-9]\\d{1,6}\\-\\d\\d\\-\\d$")) {
-									drCasLit = model.createTypedLiteral(casrn);
-								} else if (!casrn.matches("^\\s*$")) {
-									System.out.println("casrn = " + casrn);
-								}
-
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+//						try {
+//							int index = headers.indexOf(CSVTableView.ALT_NAME_HDR);
+//							if (index > -1) {
+//								String unescAltName = csvDataRow
+//										.getColumnValues().get(index);
+//								altName = Util.escape(unescAltName);
+//								// System.out.println("altName=" +
+//								// altName);
+//								drAltNameLit = model
+//										.createTypedLiteral(altName);
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//
+//						try {
+//							int index = headers.indexOf(CSVTableView.CASRN_HDR);
+//							if (index > -1) {
+//								String unescCasrn = csvDataRow
+//										.getColumnValues().get(index);
+//								casrn = Util.escape(unescCasrn);
+//								casrn = casrn
+//										.replaceFirst(
+//												"^[^1-9]*(\\d{2,7})-?(\\d\\d)-?(\\d)\\D*$",
+//												"$1-$2-$3");
+//								// REMOVE LEADING STUFF (INCLUDING ZEROS), ADD
+//								// DASHES IF MISSING
+//								if (casrn
+//										.matches("^[1-9]\\d{1,6}\\-\\d\\d\\-\\d$")) {
+//									drCasLit = model.createTypedLiteral(casrn);
+//								} else if (!casrn.matches("^\\s*$")) {
+//									System.out.println("casrn = " + casrn);
+//								}
+//
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 
 						// System.out.println("name, cas, altName: " + name
 						// + ", " + casrn + ", " + altName);
@@ -694,55 +694,55 @@ public class View extends ViewPart {
 						String cat2 = null; // OPTIONAL
 						String cat3 = null; // OPTIONAL
 
-						try {
-							int index = headers.indexOf(CSVTableView.CAT1_HDR);
-							if (index > -1) {
-								String unescCat1 = csvDataRow.getColumnValues()
-										.get(index);
-								cat1 = Util.escape(unescCat1);
-							}
-
-							else {
-//								String msg = "Categories must have a \"Cat1\" field!";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						try {
-							{
-								int index = headers.indexOf(CSVTableView.CAT2_HDR);
-								if (index > -1) {
-									String unescCat2 = csvDataRow
-											.getColumnValues().get(index);
-									cat2 = Util.escape(unescCat2);
-								}
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						try {
-							{
-								int index = headers.indexOf(CSVTableView.CAT3_HDR);
-								if (index > -1) {
-									String unescCat3 = csvDataRow
-											.getColumnValues().get(index);
-									cat3 = Util.escape(unescCat3);
-								}
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+//						try {
+//							int index = headers.indexOf(CSVTableView.CAT1_HDR);
+//							if (index > -1) {
+//								String unescCat1 = csvDataRow.getColumnValues()
+//										.get(index);
+//								cat1 = Util.escape(unescCat1);
+//							}
+//
+//							else {
+////								String msg = "Categories must have a \"Cat1\" field!";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//
+//						try {
+//							{
+//								int index = headers.indexOf(CSVTableView.CAT2_HDR);
+//								if (index > -1) {
+//									String unescCat2 = csvDataRow
+//											.getColumnValues().get(index);
+//									cat2 = Util.escape(unescCat2);
+//								}
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						try {
+//							{
+//								int index = headers.indexOf(CSVTableView.CAT3_HDR);
+//								if (index > -1) {
+//									String unescCat3 = csvDataRow
+//											.getColumnValues().get(index);
+//									cat3 = Util.escape(unescCat3);
+//								}
+//							}
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 
 						Resource catResourceHandle = null;
 
@@ -977,137 +977,137 @@ public class View extends ViewPart {
 						String referenceUnit = null; // REQUIRED
 
 						System.out.println("Ready to find header info 0");
-						try {
-							int index = headers
-									.indexOf(CSVTableView.IMPACT_ASSESSMENT_METHOD_HDR);
-							if (index > -1) {
-								String unescImpactAssessmentMethod = csvDataRow
-										.getColumnValues().get(index);
-								impactAssessmentMethod = Util
-										.escape(unescImpactAssessmentMethod);
-							}
-
-							else {
-//								String msg = "An impact assessment method must be assigned";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							System.out.println("Failed...");
-							e.printStackTrace();
-						}
-
-						System.out.println("Ready to find header info 1");
-
-						try {
-							int index = headers
-									.indexOf(CSVTableView.IMPACT_CHARACTERIZATION_MODEL_HDR);
-							if (index > -1) {
-								String unescImpactCharModel = csvDataRow
-										.getColumnValues().get(index);
-								impactCharModel = Util
-										.escape(unescImpactCharModel);
-							}
-
-							else {
-//								String msg = "An impact characterization model must be assigned";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							System.out.println("Failed...");
-							e.printStackTrace();
-						}
-
-						System.out.println("Ready to find header info 2");
-
-						try {
-							int index = headers
-									.indexOf(CSVTableView.IMPACT_CAT_HDR);
-							if (index > -1) {
-								String unescImpactCategory = csvDataRow
-										.getColumnValues().get(index);
-								impactCategory = Util
-										.escape(unescImpactCategory);
-							}
-
-							else {
-//								String msg = "An impact category must be assigned";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							System.out.println("Failed...");
-							e.printStackTrace();
-						}
-
-						System.out.println("Ready to find header info 3");
-
-						try {
-							int index = headers
-									.indexOf(CSVTableView.IMPACT_CAT_INDICATOR_HDR);
-							if (index > -1) {
-								String unescImpactCategoryIndicator = csvDataRow
-										.getColumnValues().get(index);
-								impactCategoryIndicator = Util
-										.escape(unescImpactCategoryIndicator);
-							}
-
-							else {
-//								String msg = "An impact category indicator must be assigned";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							System.out.println("Failed...");
-							e.printStackTrace();
-						}
-
-						System.out.println("Ready to find header info 4");
-
-						try {
-							int index = headers
-									.indexOf(CSVTableView.IMPACT_CAT_REF_UNIT_HDR);
-							if (index > -1) {
-								String unescReferenceUnit = csvDataRow
-										.getColumnValues().get(index);
-								referenceUnit = Util.escape(unescReferenceUnit);
-							}
-
-							else {
-//								String msg = "An reference unit must be assigned";
-//								Util.findView(QueryView.ID).getViewSite()
-//										.getActionBars().getStatusLineManager()
-//										.setMessage(msg);
-								return; // FIXME -- IS THERE A "RIGHT"
-										// WAY
-										// TO LEAVE
-
-							}
-						} catch (Exception e) {
-							System.out.println("Failed...");
-							e.printStackTrace();
-						}
+//						try {
+//							int index = headers
+//									.indexOf(CSVTableView.IMPACT_ASSESSMENT_METHOD_HDR);
+//							if (index > -1) {
+//								String unescImpactAssessmentMethod = csvDataRow
+//										.getColumnValues().get(index);
+//								impactAssessmentMethod = Util
+//										.escape(unescImpactAssessmentMethod);
+//							}
+//
+//							else {
+////								String msg = "An impact assessment method must be assigned";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							System.out.println("Failed...");
+//							e.printStackTrace();
+//						}
+//
+//						System.out.println("Ready to find header info 1");
+//
+//						try {
+//							int index = headers
+//									.indexOf(CSVTableView.IMPACT_CHARACTERIZATION_MODEL_HDR);
+//							if (index > -1) {
+//								String unescImpactCharModel = csvDataRow
+//										.getColumnValues().get(index);
+//								impactCharModel = Util
+//										.escape(unescImpactCharModel);
+//							}
+//
+//							else {
+////								String msg = "An impact characterization model must be assigned";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							System.out.println("Failed...");
+//							e.printStackTrace();
+//						}
+//
+//						System.out.println("Ready to find header info 2");
+//
+//						try {
+//							int index = headers
+//									.indexOf(CSVTableView.IMPACT_CAT_HDR);
+//							if (index > -1) {
+//								String unescImpactCategory = csvDataRow
+//										.getColumnValues().get(index);
+//								impactCategory = Util
+//										.escape(unescImpactCategory);
+//							}
+//
+//							else {
+////								String msg = "An impact category must be assigned";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							System.out.println("Failed...");
+//							e.printStackTrace();
+//						}
+//
+//						System.out.println("Ready to find header info 3");
+//
+//						try {
+//							int index = headers
+//									.indexOf(CSVTableView.IMPACT_CAT_INDICATOR_HDR);
+//							if (index > -1) {
+//								String unescImpactCategoryIndicator = csvDataRow
+//										.getColumnValues().get(index);
+//								impactCategoryIndicator = Util
+//										.escape(unescImpactCategoryIndicator);
+//							}
+//
+//							else {
+////								String msg = "An impact category indicator must be assigned";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							System.out.println("Failed...");
+//							e.printStackTrace();
+//						}
+//
+//						System.out.println("Ready to find header info 4");
+//
+//						try {
+//							int index = headers
+//									.indexOf(CSVTableView.IMPACT_CAT_REF_UNIT_HDR);
+//							if (index > -1) {
+//								String unescReferenceUnit = csvDataRow
+//										.getColumnValues().get(index);
+//								referenceUnit = Util.escape(unescReferenceUnit);
+//							}
+//
+//							else {
+////								String msg = "An reference unit must be assigned";
+////								Util.findView(QueryView.ID).getViewSite()
+////										.getActionBars().getStatusLineManager()
+////										.setMessage(msg);
+//								return; // FIXME -- IS THERE A "RIGHT"
+//										// WAY
+//										// TO LEAVE
+//
+//							}
+//						} catch (Exception e) {
+//							System.out.println("Failed...");
+//							e.printStackTrace();
+//						}
 
 						System.out.println("Now ready to use header info");
 
