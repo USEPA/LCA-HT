@@ -42,7 +42,7 @@ public class CSVTableProvider extends TableProvider {
 
 	public DataRow getBlankStatusRow() {
 		DataRow result = new DataRow();
-		for (int i = 0; i < getHeaderNames().getSize(); i++) {
+		for (int i = 0; i < getHeaderRow().getSize(); i++) {
 			result.add("");
 		}
 		return result;

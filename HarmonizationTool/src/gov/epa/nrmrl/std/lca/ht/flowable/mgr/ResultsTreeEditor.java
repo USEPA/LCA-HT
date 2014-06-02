@@ -380,7 +380,7 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	private void createColumns(TableProvider tableProvider) {
-		DataRow columnHeaders = tableProvider.getHeaderNames();
+		DataRow columnHeaders = tableProvider.getHeaderRow();
 		for (int i = 0; i < columnHeaders.getSize(); i++) {
 			TreeViewerColumn columnSpecific = createColumn(i, columnHeaders.get(i));
 			if (i == 0) {
@@ -559,7 +559,7 @@ public class ResultsTreeEditor extends ViewPart {
 			return null;
 		}
 		// treeViewer.getTree().clearAll(true);
-		DataRow header = tableProvider.getHeaderNames();
+		DataRow header = tableProvider.getHeaderRow();
 		List<DataRow> data = tableProvider.getData();
 		List<Resource> uriList = tableProvider.getUriList();
 		DataRow firstRow = data.get(0);

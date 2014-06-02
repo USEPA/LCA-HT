@@ -94,40 +94,41 @@ public class CSVTableView extends ViewPart {
 	private static Color black = new Color(Display.getCurrent(), 0, 0, 0);
 	private static Color green = new Color(Display.getCurrent(), 128, 255, 255);
 
-//	public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
-//	// e.g. ReCiPe or TRACI
-//
-//	public static final String IMPACT_CAT_HDR = "Impact Category";
-//	// e.g. climate change
-//	// public static final Resource ImpactCategory = ECO.ImpactCategory;
-//
-//	public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator";
-//	// e.g. infrared radiative forcing
-//
-//	public static final String IMPACT_CHARACTERIZATION_MODEL_HDR = "Impact Characterization Model"; // e.g.
-//	// IPCC Global Warming Potential (GWP)
-//
-//	public static final String IMPACT_DIR_HDR = "Impact Direction";
-//	// e.g. Resource , From , Emission , Uptake, etc.
-//
-//	public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
-//	// e.g. kg CO2 eq
-//	//
-//	public static final String CAT1_HDR = "Category"; // e.g. air
-//	public static final String CAT2_HDR = "Subcategory"; // e.g. low population
-//	public static final String CAT3_HDR = "Sub-subcategory";
-//	//
-//	public static final String NAME_HDR = "Flowable Name";
-//	public static final String CASRN_HDR = "CASRN";
-//	public static final String ALT_NAME_HDR = "Flowable Alt_Name";
-//	//
-//	// // ECO.ImpactCharacterizationFactor;
-//	// public static final String CHAR_FACTOR_HDR = "Characterization factor";
-//	// // THIS IS THE (float) NUMBER
-//	//
-//	// public static final String FLOW_UNIT_HDR = "Flow Unit";
-//	// // e.g. kg
-//	//
+	// public static final String IMPACT_ASSESSMENT_METHOD_HDR = "Impact Assessment Method";
+	// // e.g. ReCiPe or TRACI
+	//
+	// public static final String IMPACT_CAT_HDR = "Impact Category";
+	// // e.g. climate change
+	// // public static final Resource ImpactCategory = ECO.ImpactCategory;
+	//
+	// public static final String IMPACT_CAT_INDICATOR_HDR = "Impact category indicator";
+	// // e.g. infrared radiative forcing
+	//
+	// public static final String IMPACT_CHARACTERIZATION_MODEL_HDR =
+	// "Impact Characterization Model"; // e.g.
+	// // IPCC Global Warming Potential (GWP)
+	//
+	// public static final String IMPACT_DIR_HDR = "Impact Direction";
+	// // e.g. Resource , From , Emission , Uptake, etc.
+	//
+	// public static final String IMPACT_CAT_REF_UNIT_HDR = "Impact cat ref unit";
+	// // e.g. kg CO2 eq
+	// //
+	// public static final String CAT1_HDR = "Category"; // e.g. air
+	// public static final String CAT2_HDR = "Subcategory"; // e.g. low population
+	// public static final String CAT3_HDR = "Sub-subcategory";
+	// //
+	// public static final String NAME_HDR = "Flowable Name";
+	// public static final String CASRN_HDR = "CASRN";
+	// public static final String ALT_NAME_HDR = "Flowable Alt_Name";
+	// //
+	// // // ECO.ImpactCharacterizationFactor;
+	// // public static final String CHAR_FACTOR_HDR = "Characterization factor";
+	// // // THIS IS THE (float) NUMBER
+	// //
+	// // public static final String FLOW_UNIT_HDR = "Flow Unit";
+	// // // e.g. kg
+	// //
 	// public static final String FLOW_PROPERTY_HDR = "Flow Property";
 	// // e.g. mass
 	//
@@ -138,38 +139,38 @@ public class CSVTableView extends ViewPart {
 	// super.dispose();
 	// }
 
-	private static MouseListener tableMouseListener = new MouseListener(){
+	private static MouseListener tableMouseListener = new MouseListener() {
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseDown(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseUp(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	};
-	
-	private static Listener tableListener = new Listener(){
+
+	private static Listener tableListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("event is "+event);
-//			System.out.println("event.index "+ event.index);
-//			System.out.println("event.text "+ event.text);
-//			System.out.println("event.widget "+ event.widget);
-//			System.out.println("event.item.getData() "+ event.item.getData());
+			System.out.println("event is " + event);
+			// System.out.println("event.index "+ event.index);
+			// System.out.println("event.text "+ event.text);
+			// System.out.println("event.widget "+ event.widget);
+			// System.out.println("event.item.getData() "+ event.item.getData());
 		}
-		
+
 	};
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize it.
@@ -182,7 +183,7 @@ public class CSVTableView extends ViewPart {
 				TableColumn col = (TableColumn) e.getSource();
 				columnSelected = col;
 				int colSelectionIndex = Integer.parseInt(col.getToolTipText().substring(7));
-				System.out.println("colSelectionIndex =" + colSelectionIndex);
+//				System.out.println("colSelectionIndex =" + colSelectionIndex);
 				formerlySelectedHeaderMenuItem = columnSelected.getText();
 				headerMenu.setVisible(true);
 			}
@@ -201,31 +202,29 @@ public class CSVTableView extends ViewPart {
 		}
 
 	};
-	
 
-//
-	private static Listener mouseListener = new Listener(){
+	//
+	private static Listener mouseListener = new Listener() {
 
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("The person clicked on this cell with event "+event);
+			System.out.println("The person clicked on this cell with event " + event);
 		}
 
-		
-		
 	};
-//	private static ISelectionChangedListener rowSelectionListener = new ISelectionChangedListener() {
-//		public void selectionChanged(final SelectionChangedEvent event) {
-//			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-//			Iterator iterator = selection.iterator();
-//			rowsSelected.clear();
-//			while (iterator.hasNext()) {
-//				int index = TableKeeper.getTableProvider(key).getIndex((DataRow) iterator.next());
-//				rowsSelected.add(index);
-//			}
-//			rowMenu.setVisible(true);
-//		}
-//	};
+	// private static ISelectionChangedListener rowSelectionListener = new
+	// ISelectionChangedListener() {
+	// public void selectionChanged(final SelectionChangedEvent event) {
+	// IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+	// Iterator iterator = selection.iterator();
+	// rowsSelected.clear();
+	// while (iterator.hasNext()) {
+	// int index = TableKeeper.getTableProvider(key).getIndex((DataRow) iterator.next());
+	// rowsSelected.add(index);
+	// }
+	// rowMenu.setVisible(true);
+	// }
+	// };
 	private static ISelectionChangedListener rowSelectionListener = new ISelectionChangedListener() {
 		public void selectionChanged(final SelectionChangedEvent event) {
 			System.out.println("event = " + event);
@@ -239,24 +238,24 @@ public class CSVTableView extends ViewPart {
 			rowMenu.setVisible(true);
 		}
 	};
-	
+
 	private static MouseListener cellSelectionListener = new MouseListener() {
-		
+
 		@Override
 		public void mouseUp(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		@Override
 		public void mouseDown(MouseEvent e) {
-			System.out.println("Event e = "+e);
+			System.out.println("Event e = " + e);
 		}
-		
+
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	};
 
@@ -274,10 +273,10 @@ public class CSVTableView extends ViewPart {
 		rowMenu = new Menu(table);
 		setIgnoreRowMenu();
 
-//		tableViewer.addSelectionChangedListener(rowSelectionListener);
+		// tableViewer.addSelectionChangedListener(rowSelectionListener);
 
-//	    table.addListener(SWT.MouseDown, tableListener);
-//	    table.addMouseListener(mouseListener);
+		// table.addListener(SWT.MouseDown, tableListener);
+		// table.addMouseListener(mouseListener);
 
 	}
 
@@ -351,26 +350,27 @@ public class CSVTableView extends ViewPart {
 			// if (headerMenu == null) {
 			// headerMenu = new Menu(table);
 			initializeHeaderMenu();
+			String defaultHeader = headerMenu.getItem(0).getText();
 			// }
-			DataRow header = tableProvider.getHeaderNames();
+			DataRow headerRow = tableProvider.getHeaderRow();
 			List<DataRow> tableData = tableProvider.getData();
 			DataRow dataRow = tableData.get(0);
-			while (header.getSize() < dataRow.getSize()) {
-				header.add(IGNORE_HDR);
+			while (headerRow.getSize() < dataRow.getSize()) {
+				headerRow.add(defaultHeader);
 			}
-			int numCol = header.getSize();
-			System.out.println("numCol = " + numCol);
+//			int numCol = headerRow.getSize();
+//			System.out.println("numCol = " + numCol);
 
-			for (int i = 0; i < numCol; i++) {
-				if (header.get(i) == null) {
-					header.set(i, IGNORE_HDR);
-				}
-				TableViewerColumn col = createTableViewerColumn(header.get(i), 100, i);
+			for (int i = 0; i < tableProvider.getColumnCount(); i++) {
+//				if (headerRow.get(i) == null) {
+//					headerRow.set(i, IGNORE_HDR);
+//				}
+				TableViewerColumn col = createTableViewerColumn(defaultHeader, 100, i);
 				col.setLabelProvider(new MyColumnLabelProvider(i));
 				// tableProvider.addHeaderName(titlesArray[i],col.hashCode());
 				columns.add(col);
 			}
-			saveColumnNames();
+//			saveColumnNames();
 		}
 	}
 
@@ -453,17 +453,14 @@ public class CSVTableView extends ViewPart {
 	public void initializeHeaderMenu() {
 		// HeaderMenuColumnSelectionListener headerMenuColumnSelectionListener =
 		// new HeaderMenuColumnSelectionListener();
-		if (headerMenu == null) {
-			headerMenu = new Menu(table);
-		} else {
+		if (headerMenu != null) {
 			headerMenu.dispose();
 		}
 		headerMenu = new Menu(table);
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		// menuItem.addListener(SWT.Selection,
-		// headerMenuColumnSelectionListener);
 		menuItem.setText("Ignore");
+		new MenuItem(headerMenu, SWT.SEPARATOR);
 	}
 
 	// public void initializeHeaderMenuOriginal() {
@@ -494,6 +491,10 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	public void appendToHeaderMenu(CSVColumnInfo csvColumnInfo) {
+		csvColumnInfo.indexInTable = -1;
+		csvColumnInfo.issues = new ArrayList<Issue>();
+		csvColumnInfo.status = Status.UNCHECKED;
+
 		// HeaderMenuColumnSelectionListener columnSelectionListener = new
 		// HeaderMenuColumnSelectionListener();
 
@@ -502,17 +503,9 @@ public class CSVTableView extends ViewPart {
 
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.setText(csvColumnInfo.headerString);
-		resetSelectionListener();
-		// for (Listener listener:listeners){
-		// menuItem.addListener(SWT.Selection, listener);
-		// }
-		// menuItem.addListener(SWT.Selection, columnSelectionListener);
-		// DO SOMETHING TO MANAGE unique AND required BOOLEANS
-	}
 
-	// private setSelectionListener(){
-	//
-	// }
+		resetSelectionListener(menuItem);
+	}
 
 	private void resetSelectionListener() {
 		for (MenuItem menuItem : headerMenu.getItems()) {
@@ -525,32 +518,43 @@ public class CSVTableView extends ViewPart {
 		for (MenuItem item : headerMenu.getItems()) {
 			item.addListener(SWT.Selection, columnSelectionListener);
 		}
+	}
 
+	private void resetSelectionListener(MenuItem menuItem) {
+		for (Listener listener : menuItem.getListeners(SWT.Selection)) {
+			menuItem.removeListener(SWT.Selection, listener);
+		}
+		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
+		menuItem.addListener(SWT.Selection, columnSelectionListener);
 	}
 
 	public void appendHeaderMenuDiv() {
 		new MenuItem(headerMenu, SWT.SEPARATOR);
 	}
 
-	public void appendToHeaderInfo(CSVColumnInfo csvColumnInfo) {
-		csvColumnsInfo.add(csvColumnInfo);
-	}
+	// public void appendToHeaderInfo(CSVColumnInfo csvColumnInfo) {
+	// csvColumnsInfo.add(csvColumnInfo);
+	// }
+	//
+	// public void appendToHeaderInfo(CSVColumnInfo[] csvColumnInfos) {
+	// for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
+	// csvColumnsInfo.add(csvColumnInfo);
+	// }
+	// }
+	//
+	// public void appendToHeaderInfo(List<CSVColumnInfo> csvColumnInfos) {
+	// for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
+	// csvColumnsInfo.add(csvColumnInfo);
+	// }
+	// }
 
-
-	public void appendToHeaderInfo(CSVColumnInfo[] csvColumnInfos) {
-		for (CSVColumnInfo csvColumnInfo: csvColumnInfos){
-			csvColumnsInfo.add(csvColumnInfo);
-		}
-	}
-	
-
-	public void appendToHeaderInfo(List<CSVColumnInfo> csvColumnInfos) {
-		for (CSVColumnInfo csvColumnInfo: csvColumnInfos){
-			csvColumnsInfo.add(csvColumnInfo);
-		}
-	}
-	
 	public void appendToHeaderMenu(CSVColumnInfo[] headerMenuObjects) {
+		for (CSVColumnInfo headerMenuObject : headerMenuObjects) {
+			appendToHeaderMenu(headerMenuObject);
+		}
+	}
+
+	public void appendToHeaderMenu(List<CSVColumnInfo> headerMenuObjects) {
 		for (CSVColumnInfo headerMenuObject : headerMenuObjects) {
 			appendToHeaderMenu(headerMenuObject);
 		}
@@ -571,7 +575,7 @@ public class CSVTableView extends ViewPart {
 
 		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, tinyRowSelectionListener);
-//		menuItem.addListener(SWT.Selection, (MouseListener) cellSelectionListener);
+		// menuItem.addListener(SWT.Selection, (MouseListener) cellSelectionListener);
 
 		menuItem.setText("ignore rows");
 
@@ -589,18 +593,18 @@ public class CSVTableView extends ViewPart {
 		// }
 		rowMenu.setData(null);
 
-//		RowSelectionListener rowSelectionListener = new RowSelectionListener();
+		// RowSelectionListener rowSelectionListener = new RowSelectionListener();
 
 		MenuItem menuItem;
 
 		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, rowSelectionListener);
+		// menuItem.addListener(SWT.Selection, rowSelectionListener);
 		menuItem.setText("ignore rows");
 
 		// new MenuItem(rowMenu, SWT.SEPARATOR); // ----------
 
 		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-//		menuItem.addListener(SWT.Selection, rowSelectionListener);
+		// menuItem.addListener(SWT.Selection, rowSelectionListener);
 		menuItem.setText("use rows");
 
 	}
@@ -637,44 +641,62 @@ public class CSVTableView extends ViewPart {
 		public void handleEvent(Event event) {
 			System.out.println("event = " + event);
 			if ((event.widget instanceof MenuItem) && (columnSelected != null)) {
-				String menuItemText = ((MenuItem) event.widget).getText();
-				MenuItem[] menuItems = headerMenu.getItems();
-
-				for (MenuItem mi : menuItems) {
-					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
-						mi.setEnabled(true);
+				MenuItem menuItem = (MenuItem) event.widget;
+				CSVColumnInfo csvColumnInfo = null;
+				String menuItemText = menuItem.getText();
+				for (CSVColumnInfo csvColInfo : csvColumnsInfo) {
+					if (menuItemText.equals(csvColInfo.headerString)) {
+						csvColumnInfo = csvColInfo;
 						break;
 					}
 				}
-
-				for (MenuItem mi : menuItems) {
-					boolean unique = CsvTableViewerColumnType.isUnique(mi.getText());
-					if ((unique && (event.widget.equals(mi)))) {
-						mi.setEnabled(false);
-						break;
-					}
+				if (csvColumnInfo == null) {
+					// NOT POSSIBLE?!?
+					return;
 				}
-
-				if (menuItemText != null) {
-					if (menuItemText.equals("Custom...")) {
-						// allow the user to define a custom header name
-						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
-						inputDialog.open();
-						int returnCode = inputDialog.getReturnCode();
-						if (returnCode == InputDialog.OK) {
-							String val = inputDialog.getValue();
-							columnSelected.setText(val);
-						}
-					} else {
-						columnSelected.setText(menuItemText);
-					}
-					//
+				if (csvColumnInfo.isUnique){
+					menuItem.setEnabled(false);
 				}
+//				MenuItem[] menuItems = headerMenu.getItems();
+
+//				for (MenuItem mi : menuItems) {
+//					if (formerlySelectedHeaderMenuItem.equals(mi.getText())) {
+//						mi.setEnabled(true);
+//						break;
+//					}
+//				}
+
+//				for (MenuItem mi : menuItems) {
+//					String headerText = mi.getText();
+//					boolean unique = CsvTableViewerColumnType.isUnique(mi.getText());
+//					if ((unique && (event.widget.equals(mi)))) {
+//						mi.setEnabled(false);
+//						break;
+//					}
+//				}
+
+//				if (menuItemText != null) {
+//					if (menuItemText.equals("Custom...")) {
+//						// allow the user to define a custom header name
+//						InputDialog inputDialog = new InputDialog(getViewSite().getShell(), "Column Name Dialog", "Enter a custom column label", "", null);
+//						inputDialog.open();
+//						int returnCode = inputDialog.getReturnCode();
+//						if (returnCode == InputDialog.OK) {
+//							String val = inputDialog.getValue();
+//							columnSelected.setText(val);
+//						}
+//					} else {
+//						columnSelected.setText(menuItemText);
+//					}
+
+					columnSelected.setText(menuItemText);
+//
+//				}
 				// save the column names to the TableProvider in case the data
 				// table needs to be
 				// re-displayed
-				saveColumnNames();
-				TableKeeper.getTableProvider(key).setMenu(headerMenu);
+//				saveColumnNames();
+//				TableKeeper.getTableProvider(key).setMenu(headerMenu);
 				exportColumnStatus();
 			}
 		}
@@ -733,16 +755,16 @@ public class CSVTableView extends ViewPart {
 	 * this method retrieves the column header text values from the column components and passes
 	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
-	private void saveColumnNames() {
-		List<String> columnNames = new ArrayList<String>();
-		// TableColumn[] tableColumns = tableViewer.getTable().getColumns();
-		TableColumn[] tableColumns = table.getColumns();
-		for (TableColumn tableColumn : tableColumns) {
-			columnNames.add(tableColumn.getText());
-		}
-		TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		tableProvider.setHeaderNames(columnNames);
-	}
+//	private void saveColumnNames() {
+//		List<String> columnNames = new ArrayList<String>();
+//		// TableColumn[] tableColumns = tableViewer.getTable().getColumns();
+//		TableColumn[] tableColumns = table.getColumns();
+//		for (TableColumn tableColumn : tableColumns) {
+//			columnNames.add(tableColumn.getText());
+//		}
+//		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+//		tableProvider.setHeaderNames(columnNames);
+//	}
 
 	public static void checkColumns() {
 		int issuesFound = 0;

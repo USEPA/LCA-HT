@@ -9,7 +9,9 @@ public enum Status {
 	WARNING(1, 255, 255, 0),
 	UNRESOLVED(2, 255, 0, 0),
 	RESOLVED(3, 0, 255, 0),
-	FATAL(4, 255, 150, 150);
+	FATAL(4, 255, 150, 150),
+	UNCHECKED(5, 0, 0, 0),
+	NOISSUES(6, 0, 255, 0);
 
 	private int value;
 	private int r;

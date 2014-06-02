@@ -16,7 +16,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class TableProvider {
 	private static int subRowNum;
-	private DataRow headerNames = new DataRow();
+	private DataRow headerRow = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
 	private List<Resource> uriList = new ArrayList<Resource>();
 	private Menu menu = null;
@@ -40,12 +40,45 @@ public class TableProvider {
 		System.out.println("Added URI: " + uri + ".  Now the uriList.size() is " + +uriList.size());
 
 	}
-	
-	public void setMenu(Menu menu){
+
+	public int getColumnCount() {
+		return data.get(0).getSize();
+	}
+
+	public String checkColumnCountConsistency() {
+		String issues = "";
+		int shorterRows = 0;
+		int longerRows = 0;
+		int colCount = getColumnCount();
+		if (headerRow.getSize() < colCount) {
+			issues = "Header row shorter than first data row.\\n";
+		} else if (headerRow.getSize() > colCount) {
+			issues = "Header row longer than first data row.\\n";
+		}
+		for (DataRow dataRow : data) {
+			if (dataRow.getSize() > colCount) {
+				longerRows++;
+			} else if (dataRow.getSize() < colCount) {
+				shorterRows++;
+			}
+		}
+		if (shorterRows > 0) {
+			issues += "Found " + shorterRows + "rows shorter than the first row.\\n";
+		}
+		if (longerRows > 0) {
+			issues += "Found " + longerRows + "rows longer than the first row.\\n";
+		}
+		if (issues.equals("")) {
+			return null;
+		}
+		return issues;
+	}
+
+	public void setMenu(Menu menu) {
 		this.menu = menu;
 	}
-	
-	public Menu getMenu(){
+
+	public Menu getMenu() {
 		return menu;
 	}
 
@@ -65,14 +98,14 @@ public class TableProvider {
 		return uriList.indexOf(uri);
 	}
 
-	public DataRow getHeaderNames() {
-		return headerNames;
+	public DataRow getHeaderRow() {
+		return headerRow;
 	}
 
 	public List<String> getHeaderNamesAsStrings() {
 		List<String> headerNamesAsStrings = new ArrayList<String>();
 		// System.out.println("headerNames.getSize()=" + headerNames.getSize());
-		Iterator<String> iter = headerNames.getIterator();
+		Iterator<String> iter = headerRow.getIterator();
 		while (iter.hasNext()) {
 			headerNamesAsStrings.add(iter.next());
 		}
@@ -84,13 +117,13 @@ public class TableProvider {
 	public void setHeaderNames(List<String> columnNames) {
 		assert columnNames != null : "columnNames cannot be null";
 		assert columnNames.size() != 0 : "columnNames cannot be empty";
-		if (headerNames == null) {
-			headerNames = new DataRow();
+		if (headerRow == null) {
+			headerRow = new DataRow();
 		} else {
-			headerNames.clear();
+			headerRow.clear();
 		}
 		for (String name : columnNames) {
-			headerNames.add(name);
+			headerRow.add(name);
 		}
 	}
 
@@ -102,7 +135,7 @@ public class TableProvider {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
 			tableProvider.addDataRow(dataRow);
-			Iterator<String> iterator = tableProvider.getHeaderNames().getIterator();
+			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
 				try {
@@ -114,8 +147,9 @@ public class TableProvider {
 					} else {
 						dataRow.add(rdfNode.toString());
 						System.out.println("Resource string is " + rdfNode.toString());
-						System.out.println("Type of RDFNode = "+RDFNode.class.getName());
-//						System.out.println("  soln.getResource(header) =" + soln.getResource(header));
+						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+						// System.out.println("  soln.getResource(header) =" +
+						// soln.getResource(header));
 						System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
@@ -141,13 +175,13 @@ public class TableProvider {
 		resultSetRewindable.reset();
 		List<String> origHeaderNames = resultSetRewindable.getResultVars();
 		String dataSetName = "DataSet";
-		tableProvider.headerNames.add(dataSetName); // THE FIRST COLUMN IS
+		tableProvider.headerRow.add(dataSetName); // THE FIRST COLUMN IS
 													// DataSet
 		Map<String, TransformCell> headerMap = new HashMap<String, TransformCell>();
 		for (String origHeader : origHeaderNames) {
 			int headerSplitPoint = origHeader.indexOf("_");
 			if (headerSplitPoint == -1) {
-				tableProvider.headerNames.add(origHeader); // NOT A
+				tableProvider.headerRow.add(origHeader); // NOT A
 															// subRowHeader. ADD
 															// IT
 				TransformCell transformCell = tableProvider.new TransformCell(0, origHeader);
@@ -180,11 +214,11 @@ public class TableProvider {
 						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, origHeaderField);
 						headerMap.put(origHeader, transformCell);
 						if (subRowNum == 1) {
-							tableProvider.headerNames.add(origHeaderField);
+							tableProvider.headerRow.add(origHeaderField);
 						}
 					}
 				} else {
-					tableProvider.headerNames.add(origHeader); // NOT A
+					tableProvider.headerRow.add(origHeader); // NOT A
 																// subRowHeader.
 																// ADD IT
 					TransformCell transformCell = tableProvider.new TransformCell(0, origHeader);
@@ -193,7 +227,7 @@ public class TableProvider {
 			}
 		}
 
-		System.out.println("tableProvider.headerNames.toString() = " + tableProvider.headerNames.toString());
+		System.out.println("tableProvider.headerNames.toString() = " + tableProvider.headerRow.toString());
 		System.out.println("headerMap.keySet().toString() = " + headerMap.keySet().toString());
 
 		boolean debugFlag = true;

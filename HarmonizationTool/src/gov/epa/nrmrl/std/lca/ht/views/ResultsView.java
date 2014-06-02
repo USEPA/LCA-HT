@@ -128,7 +128,7 @@ public class ResultsView extends ViewPart {
 		if (queryResults == null){
 			queryResults = new QueryResults();
 		}
-		queryResults.setColumnHeaders(tableProvider.getHeaderNames());
+		queryResults.setColumnHeaders(tableProvider.getHeaderRow());
 		queryResults.setTableProvider(tableProvider);
 
 		try {
@@ -192,7 +192,7 @@ public class ResultsView extends ViewPart {
 			TableProvider tableProvider) {
 
 		DataRow columnHeaders = new DataRow();
-		columnHeaders = tableProvider.getHeaderNames();
+		columnHeaders = tableProvider.getHeaderRow();
 
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();
