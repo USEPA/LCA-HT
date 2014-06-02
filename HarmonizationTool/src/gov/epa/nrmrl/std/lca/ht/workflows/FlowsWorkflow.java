@@ -1,13 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.dataModels.CAS;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
-import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataFamily;
-import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
+//import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSetProvider;
@@ -35,12 +32,10 @@ import org.eclipse.swt.widgets.Text;
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	private List<LCADataType> lcaDataTypes;
+//	private List<LCADataType> lcaDataTypes;
 
-	private Flowable flowable = null;
+//	private Flowable flowable = null;
 	private static Text textFileInfo;
-	// private static Text textAssociatedDataset;
-	private static Text textColumnsAssigned;
 	private static Text textIssues;
 	private static Text textCommitToDB;
 	private static Text textAutoMatched;
@@ -48,7 +43,7 @@ public class FlowsWorkflow extends ViewPart {
 	private static Text textManualMatched;
 
 	// private static Button btnDataset;
-	private static Button btnAssignColumns;
+//	private static Button btnAssignColumns;
 
 	private Label label_01;
 	private Label label_02;
@@ -57,7 +52,6 @@ public class FlowsWorkflow extends ViewPart {
 	private Label label_05;
 	private Label label_06;
 	private Label label_07;
-	private Label label_08;
 
 	private static Button btnCheckData;
 	private static Button btnCSV2TDB;
@@ -126,38 +120,10 @@ public class FlowsWorkflow extends ViewPart {
 		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textFileInfo.widthHint = 150;
 		textFileInfo.setLayoutData(gd_textFileInfo);
-		//
-		// label_02 = new Label(composite, SWT.NONE);
-		// label_02.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-		// false, 1, 1));
-		// label_02.setText("2");
-		//
-		// btnDataset = new Button(composite, SWT.CHECK);
-		// btnDataset.setText("Dataset");
-		// btnDataset.setEnabled(false);
-		//
-		// textAssociatedDataset = new Text(composite, SWT.BORDER);
-		// textAssociatedDataset.setLayoutData(new GridData(SWT.FILL,
-		// SWT.CENTER, true, false, 1, 1));
 
 		label_02 = new Label(composite, SWT.NONE);
 		label_02.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_02.setText("2");
-
-		Label message_02 = new Label(composite, SWT.NONE);
-		message_02.setText("Columns assigned");
-		// btnAssignColumns.setEnabled(false);
-
-		textColumnsAssigned = new Text(composite, SWT.BORDER);
-		// textColumnsAssigned.setText("(0 of 5)");
-		GridData gd_textColumnsAssigned = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textColumnsAssigned.widthHint = 150;
-		textColumnsAssigned.setEditable(false);
-		textColumnsAssigned.setLayoutData(gd_textColumnsAssigned);
-
-		label_03 = new Label(composite, SWT.NONE);
-		label_03.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_03.setText("3");
 
 		btnCheckData = new Button(composite, SWT.NONE);
 		btnCheckData.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -189,9 +155,9 @@ public class FlowsWorkflow extends ViewPart {
 		gd_textIssues.widthHint = 150;
 		textIssues.setLayoutData(gd_textIssues);
 
-		label_04 = new Label(composite, SWT.NONE);
-		label_04.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_04.setText("4");
+		label_03 = new Label(composite, SWT.NONE);
+		label_03.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_03.setText("3");
 
 		btnCSV2TDB = new Button(composite, SWT.NONE);
 		btnCSV2TDB.setEnabled(false);
@@ -201,9 +167,9 @@ public class FlowsWorkflow extends ViewPart {
 		textCommitToDB = new Text(composite, SWT.BORDER);
 		textCommitToDB.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		label_05 = new Label(composite, SWT.NONE);
-		label_05.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_05.setText("5");
+		label_04 = new Label(composite, SWT.NONE);
+		label_04.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_04.setText("4");
 
 		btnAutoMatch = new Button(composite, SWT.NONE);
 		btnAutoMatch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -235,9 +201,9 @@ public class FlowsWorkflow extends ViewPart {
 		gd_textAutoMatched.widthHint = 150;
 		textAutoMatched.setLayoutData(gd_textAutoMatched);
 
-		label_06 = new Label(composite, SWT.NONE);
-		label_06.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_06.setText("6");
+		label_05 = new Label(composite, SWT.NONE);
+		label_05.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_05.setText("5");
 
 		Button btnSemiautoMatch = new Button(composite, SWT.NONE);
 		btnSemiautoMatch.addSelectionListener(new SelectionAdapter() {
@@ -255,9 +221,9 @@ public class FlowsWorkflow extends ViewPart {
 		gd_textSemiAutoMatched.widthHint = 150;
 		textSemiAutoMatched.setLayoutData(gd_textSemiAutoMatched);
 
-		label_07 = new Label(composite, SWT.NONE);
-		label_07.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_07.setText("7");
+		label_06 = new Label(composite, SWT.NONE);
+		label_06.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_06.setText("6");
 
 		Button btnManualMatch = new Button(composite, SWT.NONE);
 		btnManualMatch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -271,14 +237,15 @@ public class FlowsWorkflow extends ViewPart {
 		textManualMatched.setLayoutData(gd_textManualMatched);
 		// TODO Auto-generated method stub
 
-		label_08 = new Label(composite, SWT.NONE);
-		label_08.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_08.setText("8");
+		label_07 = new Label(composite, SWT.NONE);
+		label_07.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_07.setText("7");
 
 		Button btnConcludeFile = new Button(composite, SWT.NONE);
 		btnConcludeFile.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		btnConcludeFile.setText("Cancel CSV");
 		btnConcludeFile.setEnabled(true);
+		new Label(composite, SWT.NONE);
 
 		// textManualMatched = new Text(composite, SWT.BORDER);
 		// // textManualMatched.setText("(0 of 30");
@@ -317,13 +284,13 @@ public class FlowsWorkflow extends ViewPart {
 	// textAssociatedDataset.setText(associatedDataset);
 	// }
 
-	public static String getTextColumnsAssigned() {
-		return textColumnsAssigned.getText();
-	}
-
-	public static void setTextColumnsAssigned(String columnsAssigned) {
-		textColumnsAssigned.setText(columnsAssigned);
-	}
+//	public static String getTextColumnsAssigned() {
+//		return textColumnsAssigned.getText();
+//	}
+//
+//	public static void setTextColumnsAssigned(String columnsAssigned) {
+//		textColumnsAssigned.setText(columnsAssigned);
+//	}
 
 	public static String getTextIssues() {
 		return textIssues.getText();
@@ -391,8 +358,7 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
-		
-		csvTableView.appendHeaderMenuDiv();
+//		csvTableView.appendHeaderMenuDiv();
 		csvTableView.appendToHeaderMenu(Flowable.getHeaderMenuObjects());
 		csvTableView.appendHeaderMenuDiv();
 		csvTableView.appendToHeaderMenu(new CSVTableView.CSVColumnInfo("Context (primary)", true, true, QACheck.getGeneralQAChecks()));
@@ -400,15 +366,15 @@ public class FlowsWorkflow extends ViewPart {
 
 	}
 
-	public static void setAssignedColumnCount(int count, int total) {
-//		System.out.println("Made it!");
-		if (count > 0) {
-			btnCheckData.setEnabled(true);
-		} else {
-			btnCheckData.setEnabled(false);
-		}
-		setTextColumnsAssigned(count + " of " + total);
-	}
+//	public static void setAssignedColumnCount(int count, int total) {
+////		System.out.println("Made it!");
+//		if (count > 0) {
+//			btnCheckData.setEnabled(true);
+//		} else {
+//			btnCheckData.setEnabled(false);
+//		}
+//		setTextColumnsAssigned(count + " of " + total);
+//	}
 
 	// public CSVColCheck checkDataColContents(String colName, Pattern pattern,
 	// String message){
@@ -478,8 +444,8 @@ public class FlowsWorkflow extends ViewPart {
 	// return lcaDataTypes;
 	// }
 
-	public void setLcaDataTypes(List<LCADataType> lcaDataTypes) {
-		this.lcaDataTypes = lcaDataTypes;
-	}
+//	public void setLcaDataTypes(List<LCADataType> lcaDataTypes) {
+//		this.lcaDataTypes = lcaDataTypes;
+//	}
 
 }
