@@ -175,7 +175,8 @@ public class FlowsWorkflow extends ViewPart {
 		// ======== ROW 5 =======================
 
 		// label_05 = new Label(composite, SWT.NONE);
-		// GridData gd_label_05 = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		// GridData gd_label_05 = new GridData(SWT.RIGHT, SWT.CENTER, false,
+		// false, 1, 1);
 		// gd_label_05.widthHint = 20;
 		// label_05.setLayoutData(gd_label_05);
 		// label_05.setText("5");
@@ -186,16 +187,19 @@ public class FlowsWorkflow extends ViewPart {
 		// public void widgetSelected(SelectionEvent e) {
 		// }
 		// });
-		// GridData gd_btnSemiautoMatch = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		// GridData gd_btnSemiautoMatch = new GridData(SWT.CENTER, SWT.CENTER,
+		// false, false, 1, 1);
 		// gd_btnSemiautoMatch.widthHint = 100;
 		// btnSemiautoMatch.setLayoutData(gd_btnSemiautoMatch);
 		// btnSemiautoMatch.setText("Semi-auto match");
 		// // btnSemiautoMatch.setEnabled(false);
 		//
-		// textSemiAutoMatched = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		// textSemiAutoMatched = new Text(composite, SWT.BORDER |
+		// SWT.READ_ONLY);
 		// textSemiAutoMatched.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		// // textSemiAutoMatched.setText("(100 of 170 rows confirmed)");
-		// GridData gd_textSemiAutoMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		// GridData gd_textSemiAutoMatched = new GridData(SWT.FILL, SWT.CENTER,
+		// true, false, 1, 1);
 		// gd_textSemiAutoMatched.widthHint = 150;
 		// textSemiAutoMatched.setLayoutData(gd_textSemiAutoMatched);
 
@@ -348,8 +352,10 @@ public class FlowsWorkflow extends ViewPart {
 		// csvTableView.appendHeaderMenuDiv();
 		csvTableView.appendToCSVColumnsInfo(Flowable.getHeaderMenuObjects());
 		csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck.getGeneralQAChecks()));
-		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck.getGeneralQAChecks()));
+		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck
+				.getGeneralQAChecks()));
+		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck
+				.getGeneralQAChecks()));
 
 	}
 
@@ -407,12 +413,12 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener autoMatchListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
 		}
 	};
 }

@@ -22,7 +22,7 @@ public class Flowable {
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
 
-	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
+	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$");
 
 //	public List<QACheck> getQaChecks() {
 //		List<QACheck> allChecks = new ArrayList<QACheck>();
@@ -75,15 +75,21 @@ public class Flowable {
 
 	private static List<QACheck> getCASCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+		Issue i1 = new Issue("Non-standard CAS format",
+				"CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.",
+				"Parse digits into a formatted CAS", true);
+		qaChecks.add(new QACheck(acceptableCASFormat, true, "$1$2$3", i1));
+
 		return qaChecks;
 	}
 
 	private static List<QACheck> getFlowablesNameCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		Pattern p1 = Pattern.compile("^[^\"]+\"[^\"]+$");
-		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(p1, false, i1));
+		Pattern p1 = Pattern.compile("^([^\"]+)\"([^\"]+)$");
+		Issue i1 = new Issue("Double quote",
+				"Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+				"Replace each double quote with two primes (single quote characters)", true);
+		qaChecks.add(new QACheck(p1, false, "$1''$2", i1));
 		return qaChecks;
 	}
 

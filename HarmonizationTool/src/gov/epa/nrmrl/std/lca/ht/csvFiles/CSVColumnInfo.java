@@ -17,6 +17,13 @@ public class CSVColumnInfo {
 	private List<Issue> issues = new ArrayList<Issue>();
 //	private int indexInTable = -1;
 
+	public CSVColumnInfo(String headerString) {
+		this.headerString = headerString;
+		this.isRequired = false;
+		this.isUnique = false;
+		this.checkLists = null;
+	}
+	
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
 		this.headerString = headerString;
 		this.isRequired = isRequired;
@@ -96,9 +103,9 @@ public class CSVColumnInfo {
 		this.issues.clear();
 	}
 
-	public CSVColumnInfo duplicate() {
-		CSVColumnInfo duplicate  = new CSVColumnInfo(headerString, isRequired, isRequired, checkLists);
-		return duplicate;
-	}
+//	public CSVColumnInfo duplicate() {
+//		CSVColumnInfo duplicate  = new CSVColumnInfo(headerString, isRequired, isRequired, checkLists);
+//		return duplicate;
+//	}
 
 }
