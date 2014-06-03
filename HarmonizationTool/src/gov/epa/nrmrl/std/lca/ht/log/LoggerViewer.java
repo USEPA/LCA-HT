@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.log;
 
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -14,26 +13,28 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class LoggerViewer extends ViewPart {
 	public static final String ID = "harmonizationtool.console.LoggerViewer";
 
 	LoggerWriter loggerWriter;
 	Text loggerArea;
+	private Text text;
 
 	public LoggerViewer() {
 		super();
 	}
 
 	public void createPartControl(Composite parent) {
-//		Logger.getLogger("run").info("createPartControl done in LoggerViewer");
-		// VERY DANGEROUS TO TRY TO DO THIS HERE (THE WIDGET DOESN'T EXIST YET)
-		
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setSize(600,200);
-		
-		Button btnClear = new Button(composite, SWT.NONE);
-		btnClear.setBounds(5, 5, 90, 25);
+
+		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
+		parent.setLayout(new GridLayout(1, false));
+
+		Button btnClear = new Button(parent, SWT.NONE);
 		btnClear.setText("Clear");
 		btnClear.addSelectionListener(new SelectionListener() {
 			//
@@ -48,16 +49,12 @@ public class LoggerViewer extends ViewPart {
 				loggerArea.setText("");
 			}
 		});
-		
-		loggerArea = new Text(composite, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL |SWT.V_SCROLL);
-		loggerArea.setLocation(0, 35);
-		loggerArea.setSize(600, 165);
 
-		loggerArea.setEditable(false);
-
-
+//		text = new Text(parent, SWT.BORDER);
+		loggerArea = new Text(parent, SWT.WRAP | SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		loggerArea.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		loggerArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		loggerWriter = new LoggerWriter(loggerArea);
-
 		configureLog();
 	}
 
@@ -74,7 +71,7 @@ public class LoggerViewer extends ViewPart {
 		appender.addFilter(tempFilter);
 		logger.addAppender(appender);
 	}
-	
+
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
