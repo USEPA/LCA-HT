@@ -22,7 +22,7 @@ public class Flowable {
 	private Resource rdfClass = ECO.Flowable;
 
 	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
-
+	
 	public List<QACheck> getQaChecks() {
 		List<QACheck> allChecks = new ArrayList<QACheck>();
 
@@ -33,15 +33,15 @@ public class Flowable {
 		return allChecks;
 	}
 
-//	public List<String> getHeadersList() {
-//		List<String> headerList = new ArrayList<String>();
-//		headerList.add("Flowable Name");
-//		headerList.add("Flowable AltName");
-//		headerList.add("CAS");
-//		headerList.add("Chemical formula");
-//		headerList.add("SMILES");
-//		return headerList;
-//	}
+	// public List<String> getHeadersList() {
+	// List<String> headerList = new ArrayList<String>();
+	// headerList.add("Flowable Name");
+	// headerList.add("Flowable AltName");
+	// headerList.add("CAS");
+	// headerList.add("Chemical formula");
+	// headerList.add("SMILES");
+	// return headerList;
+	// }
 
 	public static CSVTableView.CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVTableView.CSVColumnInfo[] results = new CSVTableView.CSVColumnInfo[5];
@@ -54,24 +54,35 @@ public class Flowable {
 	}
 
 	private static List<QACheck> getSMILESCheckList() {
-	// TODO Auto-generated method stub
-	return null;
-}
+		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
+		qaChecks.add(new QACheck(acceptableCASFormat , i1));
+		return qaChecks;
+	}
 
 	private static List<QACheck> getFormulaCheckList() {
-	// TODO Auto-generated method stub
-	return null;
-}
+		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+//		Pattern p1 = Pattern.compile("?([A-Z][a-z]?\\d*)+");
+//		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+//				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
+//		qaChecks.add(new QACheck(p1, i1));
+		return qaChecks;
+	}
 
 	private static List<QACheck> getCASCheckList() {
-		// TODO Auto-generated method stub
-		return null;
+		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+		return qaChecks;
 	}
 
 	private static List<QACheck> getFlowablesNameCheckList() {
-	// TODO Auto-generated method stub
-	return null;
-}
+		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+		Pattern p1 = Pattern.compile("\"");
+		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
+		qaChecks.add(new QACheck(p1, i1));
+		return qaChecks;
+	}
 
 	// private class FlowableHeaderObj {
 	// private String headerString;
