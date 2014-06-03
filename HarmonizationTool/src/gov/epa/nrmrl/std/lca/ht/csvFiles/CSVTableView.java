@@ -54,23 +54,23 @@ public class CSVTableView extends ViewPart {
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
 
-	public static class CSVColumnInfo {
-		private String headerString;
-		private boolean isRequired;
-		private boolean isUnique;
-		private List<QACheck> checkLists;
-		private Status status = null;
-		private List<Issue> issues = null;
-		private int indexInTable = -1;
-
-		public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
-			this.headerString = headerString;
-			this.isRequired = isRequired;
-			this.isUnique = isUnique;
-			this.checkLists = checkLists;
-		}
-
-	}
+//	public static class CSVColumnInfo {
+//		private String headerString;
+//		private boolean isRequired;
+//		private boolean isUnique;
+//		private List<QACheck> checkLists;
+//		private Status status = null;
+//		private List<Issue> issues = null;
+//		private int indexInTable = -1;
+//
+//		public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
+//			this.headerString = headerString;
+//			this.isRequired = isRequired;
+//			this.isUnique = isUnique;
+//			this.checkLists = checkLists;
+//		}
+//
+//	}
 
 	private static String key = null;
 	private TableViewer tableViewer;
@@ -445,22 +445,22 @@ public class CSVTableView extends ViewPart {
 		headerMenu = new Menu(table);
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		menuItem.setText(ignoreColumnInfo.headerString);
+		menuItem.setText(ignoreColumnInfo.getHeaderString());
 		menuItem.addListener(SWT.Selection, new HeaderMenuColumnSelectionListener());
 		new MenuItem(headerMenu, SWT.SEPARATOR);
 	}
 
 	public void appendToCSVColumnsInfo(CSVColumnInfo csvColumnInfo) {
-		csvColumnInfo.indexInTable = -1;
-		csvColumnInfo.issues = new ArrayList<Issue>();
-		csvColumnInfo.status = Status.UNCHECKED;
+		csvColumnInfo.setIndexInTable(-1);
+		csvColumnInfo.setIssues(new ArrayList<Issue>());
+		csvColumnInfo.setStatus(Status.UNCHECKED);
 
 		csvColumnsInfo.add(csvColumnInfo);
 
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-		System.out.println("added CSVColumnInfo.headerString = " + csvColumnInfo.headerString);
+		System.out.println("added CSVColumnInfo.headerString = " + csvColumnInfo.getHeaderString());
 		menuItem.addListener(SWT.Selection, new HeaderMenuColumnSelectionListener());
-		menuItem.setText(csvColumnInfo.headerString);
+		menuItem.setText(csvColumnInfo.getHeaderString());
 		resetSelectionListener(menuItem);
 	}
 
@@ -603,9 +603,9 @@ public class CSVTableView extends ViewPart {
 					return;
 				}
 
-				csvColumnInfo.indexInTable = columnIndex;
+				csvColumnInfo.setIndexInTable(columnIndex);
 
-				if (csvColumnInfo.isUnique) {
+				if (csvColumnInfo.isUnique()) {
 					menuItem.setEnabled(false);
 				}
 
@@ -729,9 +729,9 @@ public class CSVTableView extends ViewPart {
 	public static int checkCols() {
 		int issuesFound = 0;
 		for (CSVColumnInfo csvColumnInfo : csvColumnsInfo) {
-			if (csvColumnInfo.indexInTable > -1) {
-				List<String> columnValues = getColumnValues(csvColumnInfo.indexInTable);
-				for (QACheck qaCheck : csvColumnInfo.checkLists) {
+			if (csvColumnInfo.getIndexInTable() > -1) {
+				List<String> columnValues = getColumnValues(csvColumnInfo.getIndexInTable());
+				for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
 					for (int i = 0; i < columnValues.size(); i++) {
 						String val = columnValues.get(i);
 
@@ -741,7 +741,7 @@ public class CSVTableView extends ViewPart {
 							System.out.println("check.getIssue() " + qaCheck.getIssue());
 							Issue issue = qaCheck.getIssue();
 							issue.setRowNumber(i);
-							issue.setColNumber(csvColumnInfo.indexInTable);
+							issue.setColNumber(csvColumnInfo.getIndexInTable());
 							issue.setRowNumber(i);
 							issue.setCharacterPosition(matcher.end());
 							issue.setStatus(Status.UNRESOLVED);
@@ -751,8 +751,8 @@ public class CSVTableView extends ViewPart {
 							Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
 							Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
 							assignIssue(issue);
-							csvColumnInfo.issues.add(issue);
-							table.getColumn(csvColumnInfo.indexInTable).setToolTipText(csvColumnInfo.issues.size()+" issues below");
+							csvColumnInfo.addIssue(issue);
+							table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()+" issues below");
 						}
 					}
 				}
@@ -886,7 +886,7 @@ public class CSVTableView extends ViewPart {
 
 	private static CSVColumnInfo getCSVColumnInfoByHeaderString(String headerString) {
 		for (CSVColumnInfo csvColumnInfo : csvColumnsInfo) {
-			if (csvColumnInfo.headerString.equals(headerString)) {
+			if (csvColumnInfo.getHeaderString().equals(headerString)) {
 				return csvColumnInfo;
 			}
 		}

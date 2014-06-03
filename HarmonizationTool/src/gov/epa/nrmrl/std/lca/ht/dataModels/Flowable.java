@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.model.Issue;
 import harmonizationtool.vocabulary.ECO;
@@ -22,7 +23,7 @@ public class Flowable {
 	private Resource rdfClass = ECO.Flowable;
 
 	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
-	
+
 	public List<QACheck> getQaChecks() {
 		List<QACheck> allChecks = new ArrayList<QACheck>();
 
@@ -43,13 +44,13 @@ public class Flowable {
 	// return headerList;
 	// }
 
-	public static CSVTableView.CSVColumnInfo[] getHeaderMenuObjects() {
-		CSVTableView.CSVColumnInfo[] results = new CSVTableView.CSVColumnInfo[5];
-		results[0] = new CSVTableView.CSVColumnInfo("Flowable Name", true, true, getFlowablesNameCheckList());
-		results[1] = new CSVTableView.CSVColumnInfo("Flowable Synonym", false, false, getFlowablesNameCheckList());
-		results[2] = new CSVTableView.CSVColumnInfo("CAS", false, true, getCASCheckList());
-		results[3] = new CSVTableView.CSVColumnInfo("Chemical formula", false, false, getFormulaCheckList());
-		results[4] = new CSVTableView.CSVColumnInfo("SMILES", false, false, getSMILESCheckList());
+	public static CSVColumnInfo[] getHeaderMenuObjects() {
+		CSVColumnInfo[] results = new CSVColumnInfo[5];
+		results[0] = new CSVColumnInfo("Flowable Name", true, true, getFlowablesNameCheckList());
+		results[1] = new CSVColumnInfo("Flowable Synonym", false, false, getFlowablesNameCheckList());
+		results[2] = new CSVColumnInfo("CAS", false, true, getCASCheckList());
+		results[3] = new CSVColumnInfo("Chemical formula", false, false, getFormulaCheckList());
+		results[4] = new CSVColumnInfo("SMILES", false, false, getSMILESCheckList());
 		return results;
 	}
 
@@ -57,16 +58,18 @@ public class Flowable {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
 		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
 				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(acceptableCASFormat , i1));
+		qaChecks.add(new QACheck(acceptableCASFormat, i1));
 		return qaChecks;
 	}
 
 	private static List<QACheck> getFormulaCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-//		Pattern p1 = Pattern.compile("?([A-Z][a-z]?\\d*)+");
-//		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-//				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-//		qaChecks.add(new QACheck(p1, i1));
+		// Pattern p1 = Pattern.compile("?([A-Z][a-z]?\\d*)+");
+		// Issue i1 = new Issue("Double quote",
+		// "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+		// "Replace the double quote with two single quotes.  You may also use the auto-clean function.",
+		// true);
+		// qaChecks.add(new QACheck(p1, i1));
 		return qaChecks;
 	}
 

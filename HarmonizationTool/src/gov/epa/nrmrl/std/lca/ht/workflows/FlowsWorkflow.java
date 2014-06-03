@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 //import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
@@ -400,8 +401,8 @@ public class FlowsWorkflow extends ViewPart {
 		// csvTableView.appendHeaderMenuDiv();
 		csvTableView.appendToCSVColumnsInfo(Flowable.getHeaderMenuObjects());
 		csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToCSVColumnsInfo(new CSVTableView.CSVColumnInfo("Context (primary)", true, true, QACheck.getGeneralQAChecks()));
-		csvTableView.appendToCSVColumnsInfo(new CSVTableView.CSVColumnInfo("Context (additional)", false, false, QACheck.getGeneralQAChecks()));
+		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck.getGeneralQAChecks()));
+		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck.getGeneralQAChecks()));
 
 	}
 
