@@ -4,6 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CSVColumnInfo {
@@ -12,9 +13,9 @@ public class CSVColumnInfo {
 	private boolean isRequired;
 	private boolean isUnique;
 	private List<QACheck> checkLists;
-	private Status status = null;
-	private List<Issue> issues = null;
-	private int indexInTable = -1;
+	private Status status = Status.UNCHECKED;
+	private List<Issue> issues = new ArrayList<Issue>();
+//	private int indexInTable = -1;
 
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
 		this.headerString = headerString;
@@ -78,17 +79,26 @@ public class CSVColumnInfo {
 	public void addIssue(Issue issue) {
 		this.issues.add(issue);
 	}
-	
-	public int getIssueCount(){
+
+	public int getIssueCount() {
 		return this.issues.size();
 	}
 
-	public int getIndexInTable() {
-		return indexInTable;
+//	public int getIndexInTable() {
+//		return indexInTable;
+//	}
+//
+//	public void setIndexInTable(int indexInTable) {
+//		this.indexInTable = indexInTable;
+//	}
+
+	public void clearIssues() {
+		this.issues.clear();
 	}
 
-	public void setIndexInTable(int indexInTable) {
-		this.indexInTable = indexInTable;
+	public CSVColumnInfo duplicate() {
+		CSVColumnInfo duplicate  = new CSVColumnInfo(headerString, isRequired, isRequired, checkLists);
+		return duplicate;
 	}
 
 }

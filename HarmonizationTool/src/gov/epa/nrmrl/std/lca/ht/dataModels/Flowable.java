@@ -24,15 +24,15 @@ public class Flowable {
 
 	private static Pattern acceptableCASFormat = Pattern.compile("^\\d{2,}-\\d\\d-\\d$|^\\d{5,}$");
 
-	public List<QACheck> getQaChecks() {
-		List<QACheck> allChecks = new ArrayList<QACheck>();
-
-		Pattern p1 = acceptableCASFormat;
-		Issue i1 = new Issue("Non-standard CAS format", "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
-				"Parse digits.  To parse the numeric components, use the auto-clean function.", true);
-		allChecks.add(new QACheck(i1.getDescription(), p1, i1));
-		return allChecks;
-	}
+//	public List<QACheck> getQaChecks() {
+//		List<QACheck> allChecks = new ArrayList<QACheck>();
+//
+//		Pattern p1 = acceptableCASFormat;
+//		Issue i1 = new Issue("Non-standard CAS format", "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
+//				"Parse digits.  To parse the numeric components, use the auto-clean function.", true);
+//		allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
+//		return allChecks;
+//	}
 
 	// public List<String> getHeadersList() {
 	// List<String> headerList = new ArrayList<String>();
@@ -56,9 +56,9 @@ public class Flowable {
 
 	private static List<QACheck> getSMILESCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(acceptableCASFormat, i1));
+//		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+//				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
+//		qaChecks.add(new QACheck(acceptableCASFormat, i1));
 		return qaChecks;
 	}
 
@@ -80,10 +80,10 @@ public class Flowable {
 
 	private static List<QACheck> getFlowablesNameCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		Pattern p1 = Pattern.compile("\"");
+		Pattern p1 = Pattern.compile("^[^\"]+\"[^\"]+$");
 		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
 				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(p1, i1));
+		qaChecks.add(new QACheck(p1, false, i1));
 		return qaChecks;
 	}
 

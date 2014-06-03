@@ -76,34 +76,34 @@ public class LCADataType {
 		this.onePerParentGroup = unique;
 	}
 
-	public static List<QACheck> initializeQAChecks() {
-		List<QACheck> qaChecks = new ArrayList<QACheck>();
+//	public static List<QACheck> initializeQAChecks() {
+//		List<QACheck> qaChecks = new ArrayList<QACheck>();
+//
+//		Pattern p1 = Pattern.compile("^\"([^\"]*)\"$");
+//		Issue i1 = new Issue("Bookend quotes", "The text is surrounded by apparently superfluous double quote marks.",
+//				"Remove these quote marks.  You may also use the auto-clean function.", true);
+//		qaChecks.add(new QACheck(i1.getDescription(), p1, i1));
+//
+//		Pattern p2 = Pattern.compile("^\\s");
+//
+//		Issue i2 = new Issue("Leading space(s)", "Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
+//				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.", true);
+//		qaChecks.add(new QACheck(i2.getDescription(), p2, i2));
+//
+//		Pattern p3 = Pattern.compile("\\s$");
+//		Issue i3 = new Issue("Trailing space(s)", "Following text, at least one white space character occurs.  This may be a non-printing character.",
+//				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.", true);
+//		qaChecks.add(new QACheck(i3.getDescription(), p3, i3));
+//
+//		for (QACheck qaCheck : qaChecks) {
+//			System.out.println("qaCheck.getName()" + qaCheck.getName());
+//		}
+//		return qaChecks;
+//	}
 
-		Pattern p1 = Pattern.compile("^\"([^\"]*)\"$");
-		Issue i1 = new Issue("Bookend quotes", "The text is surrounded by apparently superfluous double quote marks.",
-				"Remove these quote marks.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(i1.getDescription(), p1, i1));
-
-		Pattern p2 = Pattern.compile("^\\s");
-
-		Issue i2 = new Issue("Leading space(s)", "Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
-				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(i2.getDescription(), p2, i2));
-
-		Pattern p3 = Pattern.compile("\\s$");
-		Issue i3 = new Issue("Trailing space(s)", "Following text, at least one white space character occurs.  This may be a non-printing character.",
-				"If you can not see and remove the leading space, search for non-ASCCI characters.  You may also use the auto-clean function.", true);
-		qaChecks.add(new QACheck(i3.getDescription(), p3, i3));
-
-		for (QACheck qaCheck : qaChecks) {
-			System.out.println("qaCheck.getName()" + qaCheck.getName());
-		}
-		return qaChecks;
-	}
-
-	public List<QACheck> getQaChecks() {
-		return initializeQAChecks();
-	}
+//	public List<QACheck> getQaChecks() {
+//		return initializeQAChecks();
+//	}
 
 	public void setQaChecks(List<QACheck> qaChecks) {
 		this.qaChecks = qaChecks;

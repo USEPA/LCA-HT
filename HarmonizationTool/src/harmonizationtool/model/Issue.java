@@ -8,7 +8,7 @@ public class Issue {
 	private int colNumber;
 	private int characterPosition;
 	private Status status = null;
-	private boolean autofix;
+//	private boolean autofix;
 
 	public Issue(String description, String explanation, String suggestion) {
 		this.setDescription(description);
@@ -20,7 +20,7 @@ public class Issue {
 		this.setDescription(description);
 		this.setExplanation(explanation);
 		this.setSuggestion(suggestion);
-		this.setAutofix(autofix);
+//		this.setAutofix(autofix);
 	}
 
 	public void resolveIssue() {
@@ -61,13 +61,13 @@ public class Issue {
 		this.suggestion = suggestion;
 	}
 
-	public boolean isAutofix() {
-		return autofix;
-	}
-
-	public void setAutofix(boolean autofix) {
-		this.autofix = autofix;
-	}
+//	public boolean isAutofix() {
+//		return autofix;
+//	}
+//
+//	public void setAutofix(boolean autofix) {
+//		this.autofix = autofix;
+//	}
 
 	public Status getStatus() {
 		return status;
