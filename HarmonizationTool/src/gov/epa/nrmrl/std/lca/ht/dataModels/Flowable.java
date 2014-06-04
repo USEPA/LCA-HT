@@ -22,7 +22,6 @@ public class Flowable {
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
 
-	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$");
 
 //	public List<QACheck> getQaChecks() {
 //		List<QACheck> allChecks = new ArrayList<QACheck>();
@@ -74,6 +73,7 @@ public class Flowable {
 	}
 
 	private static List<QACheck> getCASCheckList() {
+		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$");
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
 		Issue i1 = new Issue("Non-standard CAS format",
 				"CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.",
@@ -108,14 +108,22 @@ public class Flowable {
 	// this.qaChecks = qaChecks;
 	// }
 
-	public static boolean validStandardFormat(String candidate) {
-		Matcher matcher = acceptableCASFormat.matcher(candidate);
-		if (matcher.find()) {
-			return true;
-		}
-		return false;
-	}
+//	public static boolean validStandardFormat(String candidate) {
+//		Matcher matcher = acceptableCASFormat.matcher(candidate);
+//		if (matcher.find()) {
+//			return true;
+//		}
+//		return false;
+//	}
 
+	public static String stripCASdigits(String candidate) {
+		String strippedCas = "";
+		strippedCas = candidate.replaceAll("\\D","");
+		strippedCas = strippedCas.replace("^0+","");
+		if (Integer.parseInt(strippedCas) < 50000){return null;}
+		return strippedCas;
+	}
+	
 	public static String standardizeCAS(String candidate) {
 		String standardizedCas = "";
 		String digitsOnly = stripCASdigits(candidate);
@@ -123,31 +131,12 @@ public class Flowable {
 			return digitsOnly;
 		}
 
-		Matcher digitMatcher = Pattern.compile("\\d").matcher(digitsOnly);
-		int digitsCount = digitMatcher.groupCount();
-		for (int i = 0; i < digitsCount; i++) {
-			if (i == digitsCount - 3 || i == digitsCount - 1) {
-				standardizedCas += "-";
-			}
-			standardizedCas += digitMatcher.group(i);
-		}
+		standardizedCas=digitsOnly.substring(0,digitsOnly.length()-3);
+		standardizedCas+="-";
+		standardizedCas+=digitsOnly.substring(digitsOnly.length()-3,2);
+		standardizedCas+="-";
+		standardizedCas+=digitsOnly.substring(digitsOnly.length()-1,1);
 		return standardizedCas;
-	}
-
-	public static String stripCASdigits(String candidate) {
-		String strippedCas = "";
-		Matcher digitMatcher = Pattern.compile("\\d").matcher(candidate);
-		int digitsCount = digitMatcher.groupCount();
-		for (int i = 0; i < digitsCount; i++) {
-			strippedCas += digitMatcher.group(i);
-		}
-		while (candidate.startsWith("0")) {
-			candidate = candidate.substring(1);
-		}
-		if (validStandardFormat(strippedCas)) {
-			return strippedCas;
-		}
-		return null;
 	}
 
 	public static boolean correctCASCheckSum(String casNumber) {
@@ -156,7 +145,7 @@ public class Flowable {
 			return false;
 		}
 		int multiplier = 0;
-		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length(), 1));
+		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length()-1, 1));
 		for (int i = strippedCas.length() - 2; i >= 0; i--) {
 			multiplier++;
 			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, 1));
@@ -229,13 +218,5 @@ public class Flowable {
 
 	public void setRdfClass(Resource rdfClass) {
 		this.rdfClass = rdfClass;
-	}
-
-	public Pattern getAcceptableCASFormat() {
-		return acceptableCASFormat;
-	}
-
-	public void setAcceptableCASFormat(Pattern acceptableCASFormat) {
-		this.acceptableCASFormat = acceptableCASFormat;
 	}
 }

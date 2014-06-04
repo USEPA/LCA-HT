@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -77,6 +80,7 @@ public class CSVTableView extends ViewPart {
 	private static int tableColumnSelectedIndex = -1;
 
 	private static Color gray = new Color(Display.getCurrent(), 128, 128, 128);
+	// private static Color white = new Color(Display.getCurrent(), 255, 255, 255);
 	private static Color black = new Color(Display.getCurrent(), 0, 0, 0);
 	private static Color green = new Color(Display.getCurrent(), 128, 255, 255);
 
@@ -159,8 +163,7 @@ public class CSVTableView extends ViewPart {
 		public void widgetDefaultSelected(SelectionEvent e) {
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
-				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to "
-						+ tableColumnSelectedIndex);
+				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to " + tableColumnSelectedIndex);
 				tableColumnSelectedIndex = table.indexOf(col);
 
 				// tableColumnSelected = col;
@@ -211,26 +214,14 @@ public class CSVTableView extends ViewPart {
 	// }
 	// };
 	//
-	// private static MouseListener cellSelectionListener = new MouseListener()
-	// {
-	//
-	// @Override
-	// public void mouseUp(MouseEvent e) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// @Override
-	// public void mouseDown(MouseEvent e) {
-	// System.out.println("Event e = " + e);
-	// }
-	//
-	// @Override
-	// public void mouseDoubleClick(MouseEvent e) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// };
+	private static Listener cellSelectionListener = new Listener() {
+
+		@Override
+		public void handleEvent(Event event) {
+			Object cell = event.item;
+			System.out.println("cell " + cell);
+		}
+	};
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -348,8 +339,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of tableViewerColumns
+	 * class for generating column labels. This class will handle a variable number of
+	 * tableViewerColumns
 	 * 
 	 * @author tec
 	 */
@@ -422,8 +413,7 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * HeaderMenuColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a HeaderMenuColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the tableViewerColumns
@@ -565,10 +555,9 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * once the user has selected a column header for change this Listener will
-	 * set the column header to the value selected by the user. If the user
-	 * selects "Custom...", then a dialog is displayed so the user can enter a
-	 * custom value for the column header.
+	 * once the user has selected a column header for change this Listener will set the column
+	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
+	 * displayed so the user can enter a custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -697,9 +686,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column
-	 * components and passes them to the TableProvider so they can be retrieved
-	 * when the data table is re-displayed
+	 * this method retrieves the column header text values from the column components and passes
+	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
 	// private void saveColumnNames() {
 	// List<String> columnNames = new ArrayList<String>();
@@ -717,6 +705,15 @@ public class CSVTableView extends ViewPart {
 		for (int colIndex = 0; colIndex < assignedCSVColumnInfo.length; colIndex++) {
 			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 			if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
+				List<Issue> issueList = csvColumnInfo.getIssues();
+				if (issueList != null) {
+					for (int i = issueList.size() - 1; i >= 0; i--) {
+						Issue issue = issueList.get(i);
+						colorCell(issue.getRowNumber(), issue.getColNumber(), SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+						csvColumnInfo.getIssues().remove(issue);
+					}
+				}
+
 				csvColumnInfo.setIssues(new ArrayList<Issue>());
 				List<String> columnValues = getColumnValues(colIndex);
 				for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
@@ -739,6 +736,7 @@ public class CSVTableView extends ViewPart {
 								Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
 								Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
 								Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
+								assignIssue(issue);
 								csvColumnInfo.addIssue(issue);
 							}
 						} else {
@@ -937,7 +935,7 @@ public class CSVTableView extends ViewPart {
 		}
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		tableItem.setBackground(issue.getColNumber(), issue.getStatus().getColor());
-		// tableItem.set
+		tableItem.addListener(SWT.MouseDown, cellSelectionListener);
 		return;
 	}
 
