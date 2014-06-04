@@ -73,7 +73,7 @@ public class Flowable {
 	}
 
 	private static List<QACheck> getCASCheckList() {
-		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$");
+		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
 		Issue i1 = new Issue("Non-standard CAS format",
 				"CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.",
