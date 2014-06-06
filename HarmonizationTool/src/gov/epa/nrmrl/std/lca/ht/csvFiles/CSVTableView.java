@@ -1,13 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-//import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-//import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
@@ -28,7 +26,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -40,7 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
- * @author tec
+ * @author tec and Tom Transue
  * 
  */
 public class CSVTableView extends ViewPart {
@@ -57,7 +54,6 @@ public class CSVTableView extends ViewPart {
 	private static List<CSVColumnInfo> availableCSVColumnInfo = new ArrayList<CSVColumnInfo>();
 	private static CSVColumnInfo[] assignedCSVColumnInfo;
 	private static String csvColumnDefaultTooltip = "Ignore Column";
-
 	private static Menu headerMenu;
 	private static Menu rowMenu;
 	private static Menu cellFixMenu;
@@ -67,11 +63,6 @@ public class CSVTableView extends ViewPart {
 
 	private static int tableColumnSelectedIndex = -1;
 
-	// private static List<TableViewerColumn> tableViewerColumns = new
-	// ArrayList<TableViewerColumn>();
-	// private static String formerlySelectedHeaderMenuItem;
-	// private static TableViewerColumn tableViewerColumnSelected = null;
-	// private static TableColumn tableColumnSelected = null;
 	// private static Color white = new Color(Display.getCurrent(), 255, 255, 255);
 
 	// public static final String IMPACT_ASSESSMENT_METHOD_HDR =
@@ -101,10 +92,7 @@ public class CSVTableView extends ViewPart {
 	// public static final String CAT2_HDR = "Subcategory"; // e.g. low
 	// population
 	// public static final String CAT3_HDR = "Sub-subcategory";
-	// //
-	// public static final String NAME_HDR = "Flowable Name";
-	// public static final String CASRN_HDR = "CASRN";
-	// public static final String ALT_NAME_HDR = "Flowable Alt_Name";
+
 	// //
 	// // // ECO.ImpactCharacterizationFactor;
 	// // public static final String CHAR_FACTOR_HDR =
@@ -131,7 +119,6 @@ public class CSVTableView extends ViewPart {
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
 				tableColumnSelectedIndex = table.indexOf(col);
-				// tableColumnSelected = col;
 				System.out.println("(widgetSelected) tableColumnSelectedIndex set to " + tableColumnSelectedIndex);
 				headerMenu.setVisible(true);
 			}
@@ -141,18 +128,15 @@ public class CSVTableView extends ViewPart {
 		public void widgetDefaultSelected(SelectionEvent e) {
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
-				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to "
-						+ tableColumnSelectedIndex);
+				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to " + tableColumnSelectedIndex);
 				tableColumnSelectedIndex = table.indexOf(col);
-
-				// tableColumnSelected = col;
 				headerMenu.setVisible(true);
 			}
 		}
 
 	};
 
-	private static ISelectionChangedListener iSelectionChangedListener = new ISelectionChangedListener() {
+	private static ISelectionChangedListener rowsSelectedChangedListener = new ISelectionChangedListener() {
 		public void selectionChanged(final SelectionChangedEvent event) {
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 			Iterator iterator = selection.iterator();
@@ -164,18 +148,14 @@ public class CSVTableView extends ViewPart {
 			rowMenu.setVisible(true);
 		}
 	};
-	
-	
-	
+
 	private class RowMenuSelectionListener implements Listener {
 
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("RowMenuSelectionListener event = " + event);
+			// System.out.println("RowMenuSelectionListener event = " + event);
 			if (event.widget instanceof MenuItem) {
 				String menuItemText = ((MenuItem) event.widget).getText();
-				// MenuItem[] menuItems = rowMenu.getItems();
-
 				if (menuItemText.equals("ignore rows")) {
 					for (int tableIndex : rowsSelected) {
 						tableViewer.getTable().getItem(tableIndex).setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
@@ -198,12 +178,10 @@ public class CSVTableView extends ViewPart {
 
 	}
 
-
-
 	private static Listener cellSelectionMouseDownListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("event = "+event);
+			// System.out.println("event = " + event);
 			Rectangle clientArea = table.getClientArea();
 			Point pt = new Point(event.x, event.y);
 			int index = table.getTopIndex();
@@ -212,7 +190,7 @@ public class CSVTableView extends ViewPart {
 				TableItem item = table.getItem(index);
 				for (int i = 0; i < table.getColumnCount(); i++) {
 					Rectangle rect = item.getBounds(i);
-//					cell = item.get
+					// cell = item.get
 					if (rect.contains(pt)) {
 						System.out.println("Item " + index + "-" + i);
 						continue;
@@ -227,11 +205,11 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	};
-	
+
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("event = "+event);
+			System.out.println("event = " + event);
 			Rectangle clientArea = table.getClientArea();
 			Point pt = new Point(event.x, event.y);
 			int index = table.getTopIndex();
@@ -262,8 +240,8 @@ public class CSVTableView extends ViewPart {
 		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		table = tableViewer.getTable();
 
-		tableViewer.addSelectionChangedListener(iSelectionChangedListener);
-		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
+		tableViewer.addSelectionChangedListener(rowsSelectedChangedListener);
+		// table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
 		table.addListener(SWT.MouseDown, cellSelectionMouseDownListener);
 
 		initializeRowMenu();
@@ -366,8 +344,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of tableViewerColumns
+	 * class for generating column labels. This class will handle a variable number of
+	 * tableViewerColumns
 	 * 
 	 * @author tec
 	 */
@@ -440,8 +418,7 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * HeaderMenuColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a HeaderMenuColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the tableViewerColumns
@@ -577,10 +554,9 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * once the user has selected a column header for change this Listener will
-	 * set the column header to the value selected by the user. If the user
-	 * selects "Custom...", then a dialog is displayed so the user can enter a
-	 * custom value for the column header.
+	 * once the user has selected a column header for change this Listener will set the column
+	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
+	 * displayed so the user can enter a custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -677,11 +653,9 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-
 	/**
-	 * this method retrieves the column header text values from the column
-	 * components and passes them to the TableProvider so they can be retrieved
-	 * when the data table is re-displayed
+	 * this method retrieves the column header text values from the column components and passes
+	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
 	// private void saveColumnNames() {
 	// List<String> columnNames = new ArrayList<String>();
@@ -703,8 +677,7 @@ public class CSVTableView extends ViewPart {
 				if (issueList != null) {
 					for (int i = issueList.size() - 1; i >= 0; i--) {
 						Issue issue = issueList.get(i);
-						colorCell(issue.getRowNumber(), issue.getColNumber(),
-								SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+						colorCell(issue.getRowNumber(), issue.getColNumber(), SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 						csvColumnInfo.getIssues().remove(issue);
 					}
 				}
@@ -807,103 +780,6 @@ public class CSVTableView extends ViewPart {
 		return issuesRemaining;
 	}
 
-	// public static int checkColumns() {
-	// int issuesFound = 0;
-	// int colIndex = -1;
-	// for (TableViewerColumn col : tableViewerColumns) {
-	// colIndex++;
-	// if (!col.getColumn().getText().equals(headerMenu.getItem(0).getText())) {
-	//
-	// // if (col.getType() != null) {
-	// CSVColCheck csvColCheck = new CSVColCheck();
-	// List<String> columnValues = getColumnValues(colIndex);
-	// // List<String> columnValues = col.getColumn().getData();
-	// // System.out.println("columnValues.size() " +
-	// // columnValues.size());
-	// // LCADataType colType=col.getAssignedLCADataType();
-	// for (QACheck check : QACheck.getGeneralQAChecks()) {
-	// for (int i = 0; i < columnValues.size(); i++) {
-	// String val = columnValues.get(i);
-	// // System.out.println("testing column # " + colIndex +
-	// // " with val: " + val);
-	// // System.out.println("check.getPattern() " +
-	// // check.getPattern());
-	// // System.out.println("check.getIssue() " +
-	// // check.getIssue());
-	//
-	// Matcher matcher = check.getPattern().matcher(val);
-	// while (matcher.find()) {
-	// issuesFound++;
-	// System.out.println("check.getIssue() " + check.getIssue());
-	// Issue issue = check.getIssue();
-	// issue.setRowNumber(i);
-	// issue.setColNumber(colIndex);
-	// issue.setRowNumber(i);
-	// issue.setCharacterPosition(matcher.end());
-	// issue.setStatus(Status.UNRESOLVED);
-	//
-	// Logger.getLogger("run").warn(issue.getDescription());
-	// Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-	// Logger.getLogger("run").warn("  ->Column" + issue.getColNumber());
-	// Logger.getLogger("run").warn("  ->Character position" +
-	// issue.getCharacterPosition());
-	// assignIssue(issue);
-	// csvColCheck.addIssue(issue);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// return issuesFound;
-	// // FlowsWorkflow.setTextIssues(issuesFound + " issues found");
-	// }
-
-	// public static void matchFlowables() {
-	// Model model = ActiveTDB.model;
-	// Resource masterFlowableDSResource =
-	// DataSetKeeper.getByName("Master_Flowables").getTdbResource(); // HACK
-	// if (masterFlowableDSResource == null) {
-	// System.out.println("Awww.  Why didn't we find it!");
-	// }
-	// // int issuesFound = 0;
-	// int colIndex = -1;
-	// for (TableViewerColumn col : tableViewerColumns) {
-	// colIndex++;
-	// Logger.getLogger("run").info("Checking column # " + colIndex);
-	// if (col.getColumn().getText().equals("Flowable Name")) {
-	// Logger.getLogger("run").info("Checking column # " + colIndex);
-	// List<String> columnValues = getColumnValues(colIndex);
-	// for (int i = 0; i < columnValues.size(); i++) {
-	// if (i % 100 == 0) {
-	// Logger.getLogger("run").info("  Completed " + i + "rows.");
-	//
-	// }
-	// String val = columnValues.get(i);
-	// if (val != null) {
-	// // Statement statement =
-	// // StmtIterator stmtIterator =
-	// // model.listStatements(masterFlowableDSResource,
-	// // RDFS.label, val);
-	// // ResIterator resIterator =
-	// ResIterator resIterator = model.listResourcesWithProperty(RDFS.label,
-	// val);
-	// while (resIterator.hasNext()) {
-	// Resource resource = resIterator.next();
-	// if (model.contains(resource, ECO.hasDataSource,
-	// masterFlowableDSResource)) {
-	// colorCell(i, colIndex, green);
-	//
-	// }
-	// }
-	// }
-	// }
-	// }
-	// Logger.getLogger("run").info("  Finished checking.");
-	//
-	// }
-	// // FlowsWorkflow.setTextIssues(issuesFound + " issues found");
-	// }
-
 	private static void colorCell(int rowNumber, int colNumber, Color color) {
 		TableItem tableItem = table.getItem(rowNumber);
 		tableItem.setBackground(colNumber, color);
@@ -915,7 +791,6 @@ public class CSVTableView extends ViewPart {
 		List<String> results = new ArrayList<String>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		List<DataRow> dataRowList = tableProvider.getData();
-		// System.out.println("dataRowList.size() " + dataRowList.size());
 		for (DataRow dataRow : dataRowList) {
 			results.add(dataRow.get(colIndex));
 		}
@@ -923,9 +798,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void assignIssue(Issue issue) {
-		TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		List<DataRow> dataRowList = tableProvider.getData();
-		if (issue.getRowNumber() >= dataRowList.size()) {
+		if (issue.getRowNumber() >= table.getItemCount()) {
 			return;
 		}
 		TableItem tableItem = table.getItem(issue.getRowNumber());
