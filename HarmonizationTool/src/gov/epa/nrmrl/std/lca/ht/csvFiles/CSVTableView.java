@@ -449,9 +449,9 @@ public class CSVTableView extends ViewPart {
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		// System.out.println("added CSVColumnInfo.headerString = " +
 		// csvColumnInfo.getHeaderString());
+		clearMenuItemListeners(menuItem);
 		menuItem.addListener(SWT.Selection, new HeaderMenuColumnSelectionListener());
 		menuItem.setText(csvColumnInfo.getHeaderString());
-		resetSelectionListener(menuItem);
 	}
 
 	// private void resetSelectionListener() {
@@ -468,12 +468,19 @@ public class CSVTableView extends ViewPart {
 	// }
 	// }
 
-	private void resetSelectionListener(MenuItem menuItem) {
+	// private void resetSelectionListener(MenuItem menuItem) {
+	// for (Listener listener : menuItem.getListeners(SWT.Selection)) {
+	// menuItem.removeListener(SWT.Selection, listener);
+	// }
+	// HeaderMenuColumnSelectionListener columnSelectionListener = new
+	// HeaderMenuColumnSelectionListener();
+	// menuItem.addListener(SWT.Selection, columnSelectionListener);
+	// }
+
+	private void clearMenuItemListeners(MenuItem menuItem) {
 		for (Listener listener : menuItem.getListeners(SWT.Selection)) {
 			menuItem.removeListener(SWT.Selection, listener);
 		}
-		HeaderMenuColumnSelectionListener columnSelectionListener = new HeaderMenuColumnSelectionListener();
-		menuItem.addListener(SWT.Selection, columnSelectionListener);
 	}
 
 	public void appendHeaderMenuDiv() {
