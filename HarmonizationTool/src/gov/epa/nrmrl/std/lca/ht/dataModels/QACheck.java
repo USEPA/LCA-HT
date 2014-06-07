@@ -1,7 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-//import gov.epa.nrmrl.std.lca.ht.csvFiles.CsvTableViewerColumnType;
-import harmonizationtool.model.Issue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -9,61 +7,24 @@ import java.util.regex.Pattern;
 //import org.eclipse.swt.widgets.TableColumn;
 
 public class QACheck {
-	private String name;
-
+	private String description;
+	private String explanation;
+	private String suggestion;
 	private Pattern pattern;
+	private String replacement;
 	private boolean patternMustMatch;
-	private String replacement = null;
-	private Issue issue;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public void setPattern(Pattern pattern) {
 		this.pattern = pattern;
 	}
 
-	public void setIssue(Issue issue) {
-		this.issue = issue;
-	}
-
-	public QACheck(Pattern pattern, boolean patternMustMatch, Issue issue) {
-		this.name = null;
+	public QACheck(String description, String explanation, String suggestion, Pattern pattern, String replacement, boolean patternMustMatch) {
+		this.description = description;
+		this.explanation = explanation;
+		this.suggestion = suggestion;
 		this.pattern = pattern;
-		this.patternMustMatch = patternMustMatch;
-		this.issue = issue;
-	}
-
-	public QACheck(String name, Pattern pattern, boolean patternMustMatch, Issue issue) {
-		this.name = name;
-		this.pattern = pattern;
-		this.patternMustMatch = patternMustMatch;
-		this.issue = issue;
-	}
-
-	public QACheck(Pattern pattern, boolean patternMustMatch, String replacement, Issue issue) {
-		this.name = null;
-		this.pattern = pattern;
-		this.patternMustMatch = patternMustMatch;
 		this.replacement = replacement;
-		this.issue = issue;
-	}
-
-	public QACheck(String name, Pattern pattern, boolean patternMustMatch, String replacement, Issue issue) {
-		this.name = name;
-		this.pattern = pattern;
 		this.patternMustMatch = patternMustMatch;
-		this.replacement = replacement;
-		this.issue = issue;
-	}
-
-	public Issue getIssue() {
-		return issue;
 	}
 
 	public Pattern getPattern() {
@@ -72,38 +33,33 @@ public class QACheck {
 
 	public static List<QACheck> getGeneralQAChecks() {
 		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
-
+		String d1 = "Bookend quotes";
+		String e1 = "The text is surrounded by apparently superfluous double quote marks.";
+		String s1 = "Remove these quote marks";
 		Pattern p1 = Pattern.compile("^\"([^\"]*)\"$");
 		String r1 = "$1";
-		Issue i1 = new Issue("Bookend quotes",
-				"The text is surrounded by apparently superfluous double quote marks.",
-				"Remove these quote marks.");
-		qaCheckPack.add(new QACheck(i1.getDescription(), p1, false, r1, i1));
+		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, false));
 
+		String d2 = "Leading and trailing space(s)";
+		String e2 = "At least one white space character occurs both before and after text.";
+		String s2 = "Remove leading and trailing space(s)";
 		Pattern p2 = Pattern.compile("^\\s+(.*?)\\s+$");
 		String r2 = "$1";
-		Issue i2 = new Issue(
-				"Leading and trailing space(s)",
-				"At least one white space character occurs both before and after text.  These may be non-printing characters.",
-				"Remove leading and trailing space(s).");
-		qaCheckPack.add(new QACheck(i2.getDescription(), p2, false, r2, i2));
+		qaCheckPack.add(new QACheck(d2, e2, s2, p2, r2, false));
 
-		Pattern p3 = Pattern.compile("^(.*?)\\s+$");
+		String d3 = "Leading space(s)";
+		String e3 = "At least one white space character occurs before text.";
+		String s3 = "Remove leading space(s)";
+		Pattern p3 = Pattern.compile("^\\s+(.*)$");
 		String r3 = "$1";
+		qaCheckPack.add(new QACheck(d3, e3, s3, p3, r3, false));
 
-		Issue i3 = new Issue("Trailing space(s)", "Following text, at least one white space character occurs.  This may be a non-printing character.",
-				"Remove trailing space(s)");
-		qaCheckPack.add(new QACheck(i3.getDescription(), p3, false, r3, i3));
-
-		Pattern p4 = Pattern.compile("^\\s+(.*)");
+		String d4 = "Trailing space(s)";
+		String e4 = "At least one white space character occurs after text.";
+		String s4 = "Remove leading space(s)";
+		Pattern p4 = Pattern.compile("^(.*?)\\s+$");
 		String r4 = "$1";
-		Issue i4 = new Issue("Leading space(s)", "Preceeding text, at least one white space character occurs.  This may be a non-printing character.",
-				"Remove leading space(s)");
-		qaCheckPack.add(new QACheck(i2.getDescription(), p4, false, r4, i4));
-
-		for (QACheck qaCheck : qaCheckPack) {
-			System.out.println("qaCheck.getName()" + qaCheck.getName());
-		}
+		qaCheckPack.add(new QACheck(d4, e4, s4, p4, r4, false));
 		return qaCheckPack;
 	}
 
@@ -121,6 +77,30 @@ public class QACheck {
 
 	public void setReplacement(String replacement) {
 		this.replacement = replacement;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public String getSuggestion() {
+		return suggestion;
+	}
+
+	public void setSuggestion(String suggestion) {
+		this.suggestion = suggestion;
 	}
 
 	// public static void checkColumn(TableColumn column) {

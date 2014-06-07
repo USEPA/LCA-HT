@@ -1,34 +1,30 @@
 package harmonizationtool.model;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+
 public class Issue {
-	private String description;
-	private String explanation;
-	private String suggestion;
+	private QACheck qaCheck;
 	private int rowNumber;
 	private int colNumber;
 	private int characterPosition;
 	private Status status = null;
-//	private boolean autofix;
 
-	public Issue(String description, String explanation, String suggestion) {
-		this.setDescription(description);
-		this.setExplanation(explanation);
-		this.setSuggestion(suggestion);
+	public Issue(QACheck qaCheck, int rowNumber, int colNumber, int characterPosition, Status status){
+		this.qaCheck = qaCheck;
+		this.rowNumber = rowNumber;
+		this.colNumber = colNumber;
+		this.characterPosition = characterPosition;
+		this.status = status;
 	}
 
-	public Issue(String description, String explanation, String suggestion, boolean autofix) {
-		this.setDescription(description);
-		this.setExplanation(explanation);
-		this.setSuggestion(suggestion);
-//		this.setAutofix(autofix);
+	public QACheck getQaCheck() {
+		return qaCheck;
 	}
 
-	public void resolveIssue() {
-		if (status == Status.UNRESOLVED) {
-			status = Status.RESOLVED;
-		}
+	public void setQaCheck(QACheck qaCheck) {
+		this.qaCheck = qaCheck;
 	}
-
+	
 	public int getRowNumber() {
 		return rowNumber;
 	}
@@ -45,44 +41,12 @@ public class Issue {
 		this.colNumber = colNumber;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getSuggestion() {
-		return suggestion;
-	}
-
-	public void setSuggestion(String suggestion) {
-		this.suggestion = suggestion;
-	}
-
-//	public boolean isAutofix() {
-//		return autofix;
-//	}
-//
-//	public void setAutofix(boolean autofix) {
-//		this.autofix = autofix;
-//	}
-
 	public Status getStatus() {
 		return status;
 	}
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-
-	public String getExplanation() {
-		return explanation;
-	}
-
-	public void setExplanation(String explanation) {
-		this.explanation = explanation;
 	}
 
 	public int getCharacterPosition() {

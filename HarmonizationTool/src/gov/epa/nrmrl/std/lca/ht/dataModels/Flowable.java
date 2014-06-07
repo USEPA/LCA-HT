@@ -1,13 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import harmonizationtool.model.Issue;
 import harmonizationtool.vocabulary.ECO;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -21,17 +17,18 @@ public class Flowable {
 	private String formula = null;
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
+//	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
 
-
-//	public List<QACheck> getQaChecks() {
-//		List<QACheck> allChecks = new ArrayList<QACheck>();
-//
-//		Pattern p1 = acceptableCASFormat;
-//		Issue i1 = new Issue("Non-standard CAS format", "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
-//				"Parse digits.  To parse the numeric components, use the auto-clean function.", true);
-//		allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
-//		return allChecks;
-//	}
+	// public List<QACheck> getQaChecks() {
+	// List<QACheck> allChecks = new ArrayList<QACheck>();
+	//
+	// Pattern p1 = acceptableCASFormat;
+	// Issue i1 = new Issue("Non-standard CAS format",
+	// "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
+	// "Parse digits.  To parse the numeric components, use the auto-clean function.", true);
+	// allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
+	// return allChecks;
+	// }
 
 	// public List<String> getHeadersList() {
 	// List<String> headerList = new ArrayList<String>();
@@ -55,9 +52,11 @@ public class Flowable {
 
 	private static List<QACheck> getSMILESCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-//		Issue i1 = new Issue("Double quote", "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-//				"Replace the double quote with two single quotes.  You may also use the auto-clean function.", true);
-//		qaChecks.add(new QACheck(acceptableCASFormat, i1));
+		// Issue i1 = new Issue("Double quote",
+		// "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
+		// "Replace the double quote with two single quotes.  You may also use the auto-clean function.",
+		// true);
+		// qaChecks.add(new QACheck(acceptableCASFormat, i1));
 		return qaChecks;
 	}
 
@@ -73,23 +72,27 @@ public class Flowable {
 	}
 
 	private static List<QACheck> getCASCheckList() {
-		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		Issue i1 = new Issue("Non-standard CAS format",
-				"CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.",
-				"Parse digits into a formatted CAS", true);
-		qaChecks.add(new QACheck(acceptableCASFormat, true, "$1$2$3", i1));
 
+		String d1 = "Non-standard CAS format";
+		String e1 = "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
+		String s1 = "Parse digits into a formatted CAS";
+		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$");
+		String r1 = "$1-$2-$3";
+		qaChecks.add(new QACheck(d1, e1, s1, acceptableCASFormat, r1, true));
 		return qaChecks;
 	}
 
 	private static List<QACheck> getFlowablesNameCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		Pattern p1 = Pattern.compile("^([^\"]+)\"([^\"]+)$");
-		Issue i1 = new Issue("Double quote",
-				"Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-				"Replace each double quote with two primes (single quote characters)", true);
-		qaChecks.add(new QACheck(p1, false, "$1''$2", i1));
+
+		String d1 = "Non-allowed characters";
+		String e1 = "Various characters are not considered acceptible in standard chemical names.";
+		String s1 = "Check your data";
+		Pattern p1 = Pattern.compile("^([^\"]+)[\"]([^\"]+)$");
+		String r1 = null;
+
+		qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
 		return qaChecks;
 	}
 
@@ -108,22 +111,24 @@ public class Flowable {
 	// this.qaChecks = qaChecks;
 	// }
 
-//	public static boolean validStandardFormat(String candidate) {
-//		Matcher matcher = acceptableCASFormat.matcher(candidate);
-//		if (matcher.find()) {
-//			return true;
-//		}
-//		return false;
-//	}
+	// public static boolean validStandardFormat(String candidate) {
+	// Matcher matcher = acceptableCASFormat.matcher(candidate);
+	// if (matcher.find()) {
+	// return true;
+	// }
+	// return false;
+	// }
 
 	public static String stripCASdigits(String candidate) {
 		String strippedCas = "";
-		strippedCas = candidate.replaceAll("\\D","");
-		strippedCas = strippedCas.replace("^0+","");
-		if (Integer.parseInt(strippedCas) < 50000){return null;}
+		strippedCas = candidate.replaceAll("\\D", "");
+		strippedCas = strippedCas.replace("^0+", "");
+		if (Integer.parseInt(strippedCas) < 50000) {
+			return null;
+		}
 		return strippedCas;
 	}
-	
+
 	public static String standardizeCAS(String candidate) {
 		String standardizedCas = "";
 		String digitsOnly = stripCASdigits(candidate);
@@ -131,11 +136,11 @@ public class Flowable {
 			return digitsOnly;
 		}
 
-		standardizedCas=digitsOnly.substring(0,digitsOnly.length()-3);
-		standardizedCas+="-";
-		standardizedCas+=digitsOnly.substring(digitsOnly.length()-3,2);
-		standardizedCas+="-";
-		standardizedCas+=digitsOnly.substring(digitsOnly.length()-1,1);
+		standardizedCas = digitsOnly.substring(0, digitsOnly.length() - 3);
+		standardizedCas += "-";
+		standardizedCas += digitsOnly.substring(digitsOnly.length() - 3, 2);
+		standardizedCas += "-";
+		standardizedCas += digitsOnly.substring(digitsOnly.length() - 1, 1);
 		return standardizedCas;
 	}
 
@@ -145,7 +150,7 @@ public class Flowable {
 			return false;
 		}
 		int multiplier = 0;
-		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length()-1, 1));
+		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length() - 1, 1));
 		for (int i = strippedCas.length() - 2; i >= 0; i--) {
 			multiplier++;
 			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, 1));
