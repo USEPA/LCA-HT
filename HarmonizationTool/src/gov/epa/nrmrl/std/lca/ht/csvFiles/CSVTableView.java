@@ -253,7 +253,7 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText.equals("fix this cell")) {
 					fixCurrentlySelectedCell();
 					colorCell(rowNumSelected, colNumSelected, SWTResourceManager.getColor(SWT.COLOR_WHITE));
-				} else if (menuItemText.equals("fix this issue for this column")) {
+				} else if (menuItemText.equals("fix this issue type for this column")) {
 					fixIssueInColumn();
 					// for (int tableIndex : rowsSelected) {
 					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
@@ -613,10 +613,10 @@ public class CSVTableView extends ViewPart {
 		FixCellMenuSelectionListener fixCellMenuSelectionListener = new FixCellMenuSelectionListener();
 
 		MenuItem menuItem;
-
-		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
-		menuItem.setText("(menu not updated)");
+		//
+		// menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
+		// menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
+		// menuItem.setText("(menu not updated)");
 
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
@@ -626,9 +626,9 @@ public class CSVTableView extends ViewPart {
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
 		menuItem.setText("fix this issue for this column");
 
-		// menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
-		// menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
-		// menuItem.setText("edit this cell");
+		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
+		menuItem.setText("run character-encoding tool");
 
 	}
 
