@@ -139,8 +139,7 @@ public class CSVTableView extends ViewPart {
 		public void widgetDefaultSelected(SelectionEvent e) {
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
-				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to "
-						+ tableColumnSelectedIndex);
+				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to " + tableColumnSelectedIndex);
 				tableColumnSelectedIndex = table.indexOf(col);
 				headerMenu.setVisible(true);
 			}
@@ -174,16 +173,14 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText.equals("ignore row")) {
 					// for (int tableIndex : rowsSelected) {
 
-					tableViewer.getTable().getItem(rowNumSelected)
-							.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 					if (!rowsToIgnore.contains(rowNumSelected)) {
 						rowsToIgnore.add(rowNumSelected);
 					}
 					// }
 				} else if (menuItemText.equals("use row")) {
 					// for (int tableIndex : rowsSelected) {
-					tableViewer.getTable().getItem(rowNumSelected)
-							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
 						// int indexToRemove =
 						// rowsToIgnore.indexOf(rowNumSelected);
@@ -197,100 +194,33 @@ public class CSVTableView extends ViewPart {
 
 	}
 
-	private static int binSortPoint2CellRow(Point pt, int col) {
-		int fullRange = table.getItemCount();
-		System.out.println("fullRange " + fullRange);
-		int depth = 2;
-		int granularityToStep = 20;
-		int toTest = 0;
-		TableItem item = table.getItem(toTest);
-		Rectangle rect = item.getBounds(col);
-		System.out.println("rect: "+rect);
-		while (rect.width == 0){
-			toTest+=granularityToStep;
-			if (toTest > fullRange){
-				granularityToStep/= 2;
-				toTest=0;
-			}
-			item = table.getItem(toTest);
-			rect = item.getBounds(col);
-		}
-		int lastMove = 1;
-		while (!rect.contains(pt)) {
-			System.out.println("depth: " + depth + " . toTest: " + toTest);
-			System.out.println("rect.y: " + rect.y + " - pt.y: " + pt.y);
-
-			depth *= 2;
-			if (fullRange / depth < 1) {
-				depth = fullRange;
-			}
-			if (rect.y > pt.y) {
-				toTest -= fullRange / depth;
-				lastMove = -1;
-			} else {
-				toTest += fullRange / depth;
-				lastMove = 1;
-			}
-			if (toTest > fullRange) {
-				toTest = fullRange;
-			}
-			else if(toTest < 0){
-				toTest=0;
-			}
-			item = table.getItem(toTest);
-			rect = item.getBounds(col);
-			while (rect.width == 0){
-				// FIXME
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = table.getItem(row);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
 			}
 		}
-		return toTest;
+		return -1;
 	}
 
 	private static Listener cellSelectionMouseDownListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			Point pt = new Point(event.x, event.y);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
 			int clickedRow = 0;
 			int clickedCol = 0;
-			
-			TableItem item = table.getItem(clickedRow);
-			Rectangle rect = item.getBounds(clickedCol);
-			while (rect.width == 0){
-				clickedRow++;
-				item = table.getItem(clickedRow);
-				rect = item.getBounds(clickedCol);
-				if (clickedRow>=table.getItemCount()){
-					clickedRow = -1;
-					clickedCol++;
-				}
+			TableItem item = table.getItem(ptLeft);
+			if (item == null) {
+				return;
 			}
-			while  (rect.x + rect.width < pt.x) {
-				System.out.println("column checking... item: "+item+"   rect: "+ rect+ "    pt: "+pt);
-				clickedCol ++;
-				rect = item.getBounds(clickedCol);
+			clickedRow = table.indexOf(item);
+			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			if (clickedCol < 0) {
+				return;
 			}
-
-			clickedRow = binSortPoint2CellRow(pt, clickedCol);
-			//
-			// System.out.println("(click) Col: "+col);
-			// binSortPoint2CellRow(col)
-			//
-			// for (int row = 0; row < table.getItemCount(); row++) {
-			// if (row%1000 == 0){
-			// System.out.println("(click) Row: "+row);
-			// }
-			// else if (rect.x > pt.x) {
-			// col = table.getColumnCount();
-			// row = table.getItemCount();
-			// } else if (rect.contains(pt)) {
-			// clickedRow = row;
-			// clickedCol = col;
-			// System.out.println("Item " + clickedRow + "-" + clickedCol);
-			// col = table.getColumnCount();
-			// row = table.getItemCount();
-			// }
-			// }
-			// }
 
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
@@ -312,47 +242,25 @@ public class CSVTableView extends ViewPart {
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			Point pt = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
-			TableItem item = table.getItem(0);
-			Rectangle rect = item.getBounds(clickedCol);
-			while  (rect.x + rect.width < pt.x) {
-				System.out.println("column checking... item: "+item+"   rect: "+ rect+ "    pt: "+pt);
-				clickedCol ++;
-				rect = item.getBounds(clickedCol);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int hoverRow = 0;
+			int hoverCol = 0;
+			TableItem item = table.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			hoverRow = table.indexOf(item);
+
+			hoverCol = getTableColumnNumFromPoint(hoverRow, ptClick);
+			if (hoverCol < 0) {
+				return;
 			}
 
-			clickedRow = binSortPoint2CellRow(pt, clickedCol);
-			//
-			// for (int col = 0; col < table.getColumnCount(); col++) {
-			// System.out.println("(hover) Col: "+col);
-			// for (int row = 0; row < table.getItemCount(); row++) {
-			// if (row%1000 == 0){
-			// System.out.println("(click) Row: "+row);
-			// }
-			// TableItem item = table.getItem(row);
-			// Rectangle rect = item.getBounds(col);
-			// if (rect.x + rect.width < pt.x) {
-			// col++;
-			// } else if (rect.x > pt.x) {
-			// col = table.getColumnCount();
-			// row = table.getItemCount();
-			// } else if (rect.contains(pt)) {
-			// clickedRow = row;
-			// clickedCol = col;
-			// System.out.println("Item " + clickedRow + "-" + clickedCol);
-			// col = table.getColumnCount();
-			// row = table.getItemCount();
-			// }
-			// }
-			// }
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
-			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[clickedCol];
+			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[hoverCol];
 			Issue issueOfThisCell = null;
 			for (Issue issue : csvColumnInfo.getIssues()) {
-				if (issue.getRowNumber() == clickedRow) {
+				if (issue.getRowNumber() == hoverRow) {
 					issueOfThisCell = issue;
 				}
 			}
@@ -395,8 +303,7 @@ public class CSVTableView extends ViewPart {
 				} else if (menuItemText.equals("fix this issue type for this column")) {
 					fixIssueInColumn();
 					// for (int tableIndex : rowsSelected) {
-					tableViewer.getTable().getItem(rowNumSelected)
-							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
 						// int indexToRemove =
 						// rowsToIgnore.indexOf(rowNumSelected);
@@ -582,8 +489,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of tableViewerColumns
+	 * class for generating column labels. This class will handle a variable number of
+	 * tableViewerColumns
 	 * 
 	 * @author tec
 	 */
@@ -656,8 +563,7 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * HeaderMenuColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a HeaderMenuColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the tableViewerColumns
@@ -885,10 +791,9 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * once the user has selected a column header for change this Listener will
-	 * set the column header to the value selected by the user. If the user
-	 * selects "Custom...", then a dialog is displayed so the user can enter a
-	 * custom value for the column header.
+	 * once the user has selected a column header for change this Listener will set the column
+	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
+	 * displayed so the user can enter a custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -986,9 +891,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column
-	 * components and passes them to the TableProvider so they can be retrieved
-	 * when the data table is re-displayed
+	 * this method retrieves the column header text values from the column components and passes
+	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
 	 */
 	// private void saveColumnNames() {
 	// List<String> columnNames = new ArrayList<String>();
@@ -1010,8 +914,7 @@ public class CSVTableView extends ViewPart {
 				if (issueList != null) {
 					for (int i = issueList.size() - 1; i >= 0; i--) {
 						Issue issue = issueList.get(i);
-						colorCell(issue.getRowNumber(), colIndex,
-								SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+						colorCell(issue.getRowNumber(), colIndex, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 						csvColumnInfo.getIssues().remove(issue);
 					}
 				}
