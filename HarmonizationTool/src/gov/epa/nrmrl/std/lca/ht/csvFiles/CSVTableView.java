@@ -270,7 +270,6 @@ public class CSVTableView extends ViewPart {
 				setInfoMenu(issueOfThisCell);
 				infoMenu.setVisible(true);
 			}
-			// System.out.println("Still fine at 239");
 		}
 
 	};
@@ -703,9 +702,11 @@ public class CSVTableView extends ViewPart {
 				QACheck qaCheck = issue.getQaCheck();
 				if (qaCheck.getReplacement() != null) {
 					Matcher matcher = qaCheck.getPattern().matcher(startingText);
-					String thing = matcher.replaceFirst(qaCheck.getReplacement());
-					System.out.println("The value is now ->" + thing + "<-");
-					tableItem.setText(colNumSelected, thing);
+					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
+					System.out.println("The value is now ->" + fixedValue + "<-");
+					tableItem.setText(colNumSelected, fixedValue);
+					TableProvider tableProvider = TableKeeper.getTableProvider(key);
+					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
 				}

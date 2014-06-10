@@ -77,7 +77,7 @@ public class Flowable {
 		String d1 = "Non-standard CAS format";
 		String e1 = "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
 		String s1 = "Parse digits into a formatted CAS";
-		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$");
+		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
 		String r1 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d1, e1, s1, acceptableCASFormat, r1, true));
 		return qaChecks;
