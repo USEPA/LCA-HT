@@ -50,9 +50,12 @@ public class FlowsWorkflow extends ViewPart {
 	private Label label_06;
 	private Label label_07;
 
+
 	private static Button btnCheckData;
-	private static Button btnCSV2TDB;
 	private static Button btnAutoMatch;
+	private static Button btnCSV2TDB;
+	private static Button btnConcludeFile;
+
 
 	private static FileMD fileMD;
 	private static DataSetProvider dataSetProvider;
@@ -230,13 +233,15 @@ public class FlowsWorkflow extends ViewPart {
 		label_06.setLayoutData(gd_label_06);
 		label_06.setText("6");
 
-		Button btnConcludeFile = new Button(composite, SWT.NONE);
+		btnConcludeFile = new Button(composite, SWT.NONE);
 		GridData gd_btnConcludeFile = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnConcludeFile.widthHint = 100;
 		btnConcludeFile.setLayoutData(gd_btnConcludeFile);
 		btnConcludeFile.setText("Cancel CSV");
 		btnConcludeFile.setEnabled(true);
 		new Label(composite, SWT.NONE);
+		btnConcludeFile.addSelectionListener(concludeFileListener);
+
 
 		// textManualMatched = new Text(composite, SWT.BORDER);
 		// // textManualMatched.setText("(0 of 30");
@@ -421,6 +426,18 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	SelectionListener autoMatchListener = new SelectionListener() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			CSVTableView.matchFlowables();
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			CSVTableView.matchFlowables();
+		}
+	};
+	
+	SelectionListener concludeFileListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			CSVTableView.matchFlowables();
