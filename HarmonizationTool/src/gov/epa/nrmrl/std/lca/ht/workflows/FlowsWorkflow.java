@@ -394,10 +394,20 @@ public class FlowsWorkflow extends ViewPart {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			textIssues.setText(" ... checking data ...");
-			int issueCount = CSVTableView.checkCols();
-			textIssues.setText(issueCount + " issues found");
-			btnCSV2TDB.setEnabled(true);
-			btnAutoMatch.setEnabled(true);
+			int colsChecked = CSVTableView.countAssignedColumns();
+			if (colsChecked == 0) {
+				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				textIssues.setText("Assign at least one column first)");
+				btnAutoMatch.setEnabled(false);
+
+			} else {
+				int issueCount = CSVTableView.checkCols();
+				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+
+				textIssues.setText(issueCount + " issues. " + colsChecked + " columns checked");
+				// btnCSV2TDB.setEnabled(true);
+				btnAutoMatch.setEnabled(true);
+			}
 		}
 
 		@Override
@@ -413,12 +423,12 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener autoMatchListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			// CSVTableView.matchFlowables();
+			CSVTableView.matchFlowables();
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			// CSVTableView.matchFlowables();
+			CSVTableView.matchFlowables();
 		}
 	};
 }

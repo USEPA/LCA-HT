@@ -1,12 +1,12 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
@@ -16,14 +16,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -40,6 +35,9 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author tec and Tom Transue
@@ -140,7 +138,8 @@ public class CSVTableView extends ViewPart {
 		public void widgetDefaultSelected(SelectionEvent e) {
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
-				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to " + tableColumnSelectedIndex);
+				System.out.println("(widgetDefaultSelected) tableColumnSelectedIndex set to "
+						+ tableColumnSelectedIndex);
 				tableColumnSelectedIndex = table.indexOf(col);
 				headerMenu.setVisible(true);
 			}
@@ -174,14 +173,16 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText.equals("ignore row")) {
 					// for (int tableIndex : rowsSelected) {
 
-					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 					if (!rowsToIgnore.contains(rowNumSelected)) {
 						rowsToIgnore.add(rowNumSelected);
 					}
 					// }
 				} else if (menuItemText.equals("use row")) {
 					// for (int tableIndex : rowsSelected) {
-					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
 						// int indexToRemove =
 						// rowsToIgnore.indexOf(rowNumSelected);
@@ -303,18 +304,19 @@ public class CSVTableView extends ViewPart {
 				} else if (menuItemText.equals("fix this issue type for this column")) {
 					fixIssueInColumn();
 					// for (int tableIndex : rowsSelected) {
-					tableViewer.getTable().getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
 						// int indexToRemove =
 						// rowsToIgnore.indexOf(rowNumSelected);
 						rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					}
 					// }
-				
-			} else if (menuItemText.equals("standardize all CAS in this column")) {
-				standardizeAllCAS(colNumSelected);
-			}
-			
+
+				} else if (menuItemText.equals("standardize all CAS in this column")) {
+					standardizeAllCAS(colNumSelected);
+				}
+
 				// saveColumnNames();
 			}
 		}
@@ -493,8 +495,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable number of
-	 * tableViewerColumns
+	 * class for generating column labels. This class will handle a variable
+	 * number of tableViewerColumns
 	 * 
 	 * @author tec
 	 */
@@ -567,7 +569,8 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * this method initializes the headerMenu with menuItems and a HeaderMenuColumnSelectionListener
+	 * this method initializes the headerMenu with menuItems and a
+	 * HeaderMenuColumnSelectionListener
 	 * 
 	 * @param menu
 	 *            headerMenu which allows user to rename the tableViewerColumns
@@ -685,7 +688,6 @@ public class CSVTableView extends ViewPart {
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
 		menuItem.setText("fix this issue for this column");
-		
 
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
@@ -759,19 +761,17 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	
 
-	
-	private void standardizeAllCAS(int columnIndex){
+	private void standardizeAllCAS(int columnIndex) {
 		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[columnIndex];
-		if (!csvColumnInfo.getHeaderString().equals("CAS")){
+		if (!csvColumnInfo.getHeaderString().equals("CAS")) {
 			return;
 		}
-		for (int i=0;i<table.getItemCount();i++){
+		for (int i = 0; i < table.getItemCount(); i++) {
 			TableItem item = table.getItem(i);
 			String value = item.getText(columnIndex);
 			String fixedValue = Flowable.standardizeCAS(value);
-			if (fixedValue != null){
+			if (fixedValue != null) {
 				TableProvider tableProvider = TableKeeper.getTableProvider(key);
 				List<DataRow> dataRowList = tableProvider.getData();
 				DataRow toFix = dataRowList.get(i);
@@ -824,9 +824,10 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	/**
-	 * once the user has selected a column header for change this Listener will set the column
-	 * header to the value selected by the user. If the user selects "Custom...", then a dialog is
-	 * displayed so the user can enter a custom value for the column header.
+	 * once the user has selected a column header for change this Listener will
+	 * set the column header to the value selected by the user. If the user
+	 * selects "Custom...", then a dialog is displayed so the user can enter a
+	 * custom value for the column header.
 	 * 
 	 * @author tec 919-541-1500
 	 * 
@@ -924,8 +925,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * this method retrieves the column header text values from the column components and passes
-	 * them to the TableProvider so they can be retrieved when the data table is re-displayed
+	 * this method retrieves the column header text values from the column
+	 * components and passes them to the TableProvider so they can be retrieved
+	 * when the data table is re-displayed
 	 */
 	// private void saveColumnNames() {
 	// List<String> columnNames = new ArrayList<String>();
@@ -937,16 +939,17 @@ public class CSVTableView extends ViewPart {
 	// TableProvider tableProvider = TableKeeper.getTableProvider(key);
 	// tableProvider.setHeaderNames(columnNames);
 	// }
-	private static void clearIssueColors(CSVColumnInfo csvColumnInfo){
+	private static void clearIssueColors(CSVColumnInfo csvColumnInfo) {
 		List<Issue> issueList = csvColumnInfo.getIssues();
 		if (issueList != null) {
-			for (Issue issue:issueList) {
-				colorCell(issue.getRowNumber(), issue.getColNumber(), SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			for (Issue issue : issueList) {
+				colorCell(issue.getRowNumber(), issue.getColNumber(),
+						SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 			}
 		}
 	}
-	
-	private static int checkOneColumn(int colIndex){
+
+	private static int checkOneColumn(int colIndex) {
 		int issueCount = 0;
 		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 		if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
@@ -997,58 +1000,61 @@ public class CSVTableView extends ViewPart {
 	public static int checkCols() {
 		int totalIssueCount = 0;
 		for (int colIndex = 0; colIndex < assignedCSVColumnInfo.length; colIndex++) {
-			totalIssueCount+=checkOneColumn(colIndex);
+			totalIssueCount += checkOneColumn(colIndex);
 		}
 		return totalIssueCount;
 	}
-	
-//			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
-//			if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
-//				clearIssueColors(csvColumnInfo);
-//				csvColumnInfo.clearIssues();
-//				List<String> columnValues = getColumnValues(colIndex);
-//				for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
-//					for (int i = 0; i < columnValues.size(); i++) {
-//						if (rowsToIgnore.contains(i)) {
-//							continue;
-//						}
-//						String val = columnValues.get(i);
-//						Matcher matcher = qaCheck.getPattern().matcher(val);
-//
-//						if (qaCheck.isPatternMustMatch()) {
-//							if (!matcher.find()) {
-//								Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
-//								Logger.getLogger("run").warn(qaCheck.getDescription());
-//								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
-//								Logger.getLogger("run").warn("  ->Column " + colIndex);
-//								Logger.getLogger("run").warn("  ->Required pattern not found");
-//								assignIssue(issue);
-//								csvColumnInfo.addIssue(issue);
-//							}
-//						} else {
-//							while (matcher.find()) {
-//								Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.UNRESOLVED);
-//								Logger.getLogger("run").warn(qaCheck.getDescription());
-//								Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-//								Logger.getLogger("run").warn("  ->Column" + colIndex);
-//								Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
-//								assignIssue(issue);
-//								csvColumnInfo.addIssue(issue);
-//								// table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()
-//								// + " issues below");
-//							}
-//						}
-//					}
-//				}
-//				int issuesInCol = csvColumnInfo.getIssueCount();
-//				table.getColumn(colIndex).setToolTipText(issuesInCol + " issues");
-//				totalIssueCount += issuesInCol;
-//			} else {
-//				table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
-//			}
-//		}
-//		return totalIssueCount;
-//	}
+
+	// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+	// if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
+	// clearIssueColors(csvColumnInfo);
+	// csvColumnInfo.clearIssues();
+	// List<String> columnValues = getColumnValues(colIndex);
+	// for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
+	// for (int i = 0; i < columnValues.size(); i++) {
+	// if (rowsToIgnore.contains(i)) {
+	// continue;
+	// }
+	// String val = columnValues.get(i);
+	// Matcher matcher = qaCheck.getPattern().matcher(val);
+	//
+	// if (qaCheck.isPatternMustMatch()) {
+	// if (!matcher.find()) {
+	// Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
+	// Logger.getLogger("run").warn(qaCheck.getDescription());
+	// Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
+	// Logger.getLogger("run").warn("  ->Column " + colIndex);
+	// Logger.getLogger("run").warn("  ->Required pattern not found");
+	// assignIssue(issue);
+	// csvColumnInfo.addIssue(issue);
+	// }
+	// } else {
+	// while (matcher.find()) {
+	// Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(),
+	// Status.UNRESOLVED);
+	// Logger.getLogger("run").warn(qaCheck.getDescription());
+	// Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
+	// Logger.getLogger("run").warn("  ->Column" + colIndex);
+	// Logger.getLogger("run").warn("  ->Character position" +
+	// issue.getCharacterPosition());
+	// assignIssue(issue);
+	// csvColumnInfo.addIssue(issue);
+	// //
+	// table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()
+	// // + " issues below");
+	// }
+	// }
+	// }
+	// }
+	// int issuesInCol = csvColumnInfo.getIssueCount();
+	// table.getColumn(colIndex).setToolTipText(issuesInCol + " issues");
+	// totalIssueCount += issuesInCol;
+	// } else {
+	// table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
+	// }
+	// }
+	// return totalIssueCount;
+	// }
 
 	public static int autoFixColumn(int colIndex) {
 		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
@@ -1141,6 +1147,36 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 		return null;
+	}
+
+	public static int countAssignedColumns() {
+		int colsAssigned = 0;
+		for (CSVColumnInfo csvColumnInfo : assignedCSVColumnInfo) {
+			if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
+				colsAssigned++;
+			}
+		}
+		return colsAssigned;
+	}
+
+	public static void matchFlowables() {
+		for (int colIndex = 0; colIndex<assignedCSVColumnInfo.length;colIndex++){
+			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+			if (csvColumnInfo.getHeaderString().equals("Flowable Name")){
+				matchFlowableNames(colIndex);
+			}
+		}
+	}
+
+	private static void matchFlowableNames(int colIndex) {
+		for (int row = 0; row<table.getItemCount();row++){
+			TableItem item = table.getItem(row);
+			String flowableName = item.getText(colIndex);
+			Model model = ActiveTDB.model;
+//			String query = "select * where {?s ";
+			
+//			if (model.)
+		}
 	}
 
 }

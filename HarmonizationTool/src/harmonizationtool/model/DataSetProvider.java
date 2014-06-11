@@ -9,6 +9,7 @@ public class DataSetProvider {
 	private CuratorMD curatorMD;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	private Resource tdbResource;
+	private boolean isMaster = false;
 	
 	public DataSetMD getDataSetMD() {
 		return dataSetMD;
@@ -42,5 +43,11 @@ public class DataSetProvider {
 	public void remove(FileMD fileMD) {
 		fileMDList.remove(fileMD);
 		
+	}
+	public boolean isMaster() {
+		return isMaster;
+	}
+	public void setMaster(boolean isMaster) {
+		this.isMaster = isMaster;
 	}
 }
