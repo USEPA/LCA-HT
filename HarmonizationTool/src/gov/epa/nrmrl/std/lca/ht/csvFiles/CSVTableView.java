@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.Issue;
@@ -309,7 +310,11 @@ public class CSVTableView extends ViewPart {
 						rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					}
 					// }
-				}
+				
+			} else if (menuItemText.equals("standardize all CAS in this column")) {
+				standardizeAllCAS(colNumSelected);
+			}
+			
 				// saveColumnNames();
 			}
 		}
@@ -680,6 +685,11 @@ public class CSVTableView extends ViewPart {
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
 		menuItem.setText("fix this issue for this column");
+		
+
+		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
+		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
+		menuItem.setText("standardize all CAS in this column");
 
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, fixCellMenuSelectionListener);
@@ -748,6 +758,28 @@ public class CSVTableView extends ViewPart {
 				fixOneIssue(issue);
 			}
 		}
+	}
+	
+
+	
+	private void standardizeAllCAS(int columnIndex){
+		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[columnIndex];
+		if (!csvColumnInfo.getHeaderString().equals("CAS")){
+			return;
+		}
+		for (int i=0;i<table.getItemCount();i++){
+			TableItem item = table.getItem(i);
+			String value = item.getText(columnIndex);
+			String fixedValue = Flowable.standardizeCAS(value);
+			if (fixedValue != null){
+				TableProvider tableProvider = TableKeeper.getTableProvider(key);
+				List<DataRow> dataRowList = tableProvider.getData();
+				DataRow toFix = dataRowList.get(i);
+				toFix.set(columnIndex, fixedValue);
+				item.setText(columnIndex, fixedValue);
+			}
+		}
+		checkOneColumn(columnIndex);
 	}
 
 	// private void setFixCellRowMenu() {
@@ -905,66 +937,118 @@ public class CSVTableView extends ViewPart {
 	// TableProvider tableProvider = TableKeeper.getTableProvider(key);
 	// tableProvider.setHeaderNames(columnNames);
 	// }
+	private static void clearIssueColors(CSVColumnInfo csvColumnInfo){
+		List<Issue> issueList = csvColumnInfo.getIssues();
+		if (issueList != null) {
+			for (Issue issue:issueList) {
+				colorCell(issue.getRowNumber(), issue.getColNumber(), SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			}
+		}
+	}
+	
+	private static int checkOneColumn(int colIndex){
+		int issueCount = 0;
+		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+		if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
+			clearIssueColors(csvColumnInfo);
+			csvColumnInfo.clearIssues();
+			List<String> columnValues = getColumnValues(colIndex);
+			for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
+				for (int i = 0; i < columnValues.size(); i++) {
+					if (rowsToIgnore.contains(i)) {
+						continue;
+					}
+					String val = columnValues.get(i);
+					Matcher matcher = qaCheck.getPattern().matcher(val);
+
+					if (qaCheck.isPatternMustMatch()) {
+						if (!matcher.find()) {
+							Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
+							Logger.getLogger("run").warn(qaCheck.getDescription());
+							Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
+							Logger.getLogger("run").warn("  ->Column " + colIndex);
+							Logger.getLogger("run").warn("  ->Required pattern not found");
+							assignIssue(issue);
+							csvColumnInfo.addIssue(issue);
+						}
+					} else {
+						while (matcher.find()) {
+							Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.UNRESOLVED);
+							Logger.getLogger("run").warn(qaCheck.getDescription());
+							Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
+							Logger.getLogger("run").warn("  ->Column" + colIndex);
+							Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
+							assignIssue(issue);
+							csvColumnInfo.addIssue(issue);
+							// table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()
+							// + " issues below");
+						}
+					}
+				}
+			}
+			issueCount = csvColumnInfo.getIssueCount();
+			table.getColumn(colIndex).setToolTipText(issueCount + " issues");
+		} else {
+			table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
+		}
+		return issueCount;
+	}
 
 	public static int checkCols() {
 		int totalIssueCount = 0;
 		for (int colIndex = 0; colIndex < assignedCSVColumnInfo.length; colIndex++) {
-			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
-			if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
-				List<Issue> issueList = csvColumnInfo.getIssues();
-				if (issueList != null) {
-					for (int i = issueList.size() - 1; i >= 0; i--) {
-						Issue issue = issueList.get(i);
-						colorCell(issue.getRowNumber(), colIndex, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-						csvColumnInfo.getIssues().remove(issue);
-					}
-				}
-
-				csvColumnInfo.setIssues(new ArrayList<Issue>());
-				List<String> columnValues = getColumnValues(colIndex);
-				for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
-					for (int i = 0; i < columnValues.size(); i++) {
-						if (rowsToIgnore.contains(i)) {
-							continue;
-						}
-						String val = columnValues.get(i);
-						Matcher matcher = qaCheck.getPattern().matcher(val);
-
-						if (qaCheck.isPatternMustMatch()) {
-							if (!matcher.find()) {
-								Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
-								Logger.getLogger("run").warn(qaCheck.getDescription());
-								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
-								Logger.getLogger("run").warn("  ->Column " + colIndex);
-								Logger.getLogger("run").warn("  ->Required pattern not found");
-								assignIssue(issue);
-								csvColumnInfo.addIssue(issue);
-							}
-						} else {
-							while (matcher.find()) {
-								Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.UNRESOLVED);
-								Logger.getLogger("run").warn(qaCheck.getDescription());
-								Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-								Logger.getLogger("run").warn("  ->Column" + colIndex);
-								Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
-								assignIssue(issue);
-								csvColumnInfo.addIssue(issue);
-								// table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()
-								// + " issues below");
-							}
-						}
-					}
-				}
-				int issuesInCol = csvColumnInfo.getIssueCount();
-				table.getColumn(colIndex).setToolTipText(issuesInCol + " issues");
-				totalIssueCount += issuesInCol;
-			} else {
-				table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
-
-			}
+			totalIssueCount+=checkOneColumn(colIndex);
 		}
 		return totalIssueCount;
 	}
+	
+//			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+//			if (!csvColumnInfo.getHeaderString().equals(csvColumnDefaultTooltip)) {
+//				clearIssueColors(csvColumnInfo);
+//				csvColumnInfo.clearIssues();
+//				List<String> columnValues = getColumnValues(colIndex);
+//				for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
+//					for (int i = 0; i < columnValues.size(); i++) {
+//						if (rowsToIgnore.contains(i)) {
+//							continue;
+//						}
+//						String val = columnValues.get(i);
+//						Matcher matcher = qaCheck.getPattern().matcher(val);
+//
+//						if (qaCheck.isPatternMustMatch()) {
+//							if (!matcher.find()) {
+//								Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
+//								Logger.getLogger("run").warn(qaCheck.getDescription());
+//								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
+//								Logger.getLogger("run").warn("  ->Column " + colIndex);
+//								Logger.getLogger("run").warn("  ->Required pattern not found");
+//								assignIssue(issue);
+//								csvColumnInfo.addIssue(issue);
+//							}
+//						} else {
+//							while (matcher.find()) {
+//								Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.UNRESOLVED);
+//								Logger.getLogger("run").warn(qaCheck.getDescription());
+//								Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
+//								Logger.getLogger("run").warn("  ->Column" + colIndex);
+//								Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
+//								assignIssue(issue);
+//								csvColumnInfo.addIssue(issue);
+//								// table.getColumn(csvColumnInfo.getIndexInTable()).setToolTipText(csvColumnInfo.getIssueCount()
+//								// + " issues below");
+//							}
+//						}
+//					}
+//				}
+//				int issuesInCol = csvColumnInfo.getIssueCount();
+//				table.getColumn(colIndex).setToolTipText(issuesInCol + " issues");
+//				totalIssueCount += issuesInCol;
+//			} else {
+//				table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
+//			}
+//		}
+//		return totalIssueCount;
+//	}
 
 	public static int autoFixColumn(int colIndex) {
 		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];

@@ -39,6 +39,18 @@ public class Flowable {
 	// headerList.add("SMILES");
 	// return headerList;
 	// }
+	
+//	public static Issue fullyCheckCAS(String cas){
+//		QACheck casQACheck = makeCASQACheck();
+//		Issue issue = new Issue();
+//		return issue;
+//	}
+//	
+//	private QACheck makeCASQACheck(){
+//		QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null, null, null, false);
+//		casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
+//		return casQACheck;
+//	}
 
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
@@ -74,12 +86,19 @@ public class Flowable {
 	private static List<QACheck> getCASCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
 
-		String d1 = "Non-standard CAS format";
-		String e1 = "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
-		String s1 = "Parse digits into a formatted CAS";
-		Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
-		String r1 = "$1-$2-$3";
-		qaChecks.add(new QACheck(d1, e1, s1, acceptableCASFormat, r1, true));
+//		String d1 = "Non-standard CAS format";
+//		String e1 = "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
+//		String s1 = "Parse digits into a formatted CAS";
+//		Pattern p1 = Pattern.compile("^\\s*$");
+//		String r1 = "";
+//		qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
+		
+		String d2 = "Non-standard CAS format";
+		String e2 = "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
+		String s2 = "Parse digits into a formatted CAS";
+		Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
+//		String r2 = "$1-$2-$3";
+		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
 		return qaChecks;
 	}
 
@@ -123,7 +142,10 @@ public class Flowable {
 		String strippedCas = "";
 		strippedCas = candidate.replaceAll("\\D", "");
 		strippedCas = strippedCas.replace("^0+", "");
-		if (Integer.parseInt(strippedCas) < 50000) {
+		if (strippedCas.equals("")){
+			return null;
+		}
+		if (Integer.parseInt(strippedCas) < 10000) {
 			return null;
 		}
 		return strippedCas;
@@ -132,15 +154,17 @@ public class Flowable {
 	public static String standardizeCAS(String candidate) {
 		String standardizedCas = "";
 		String digitsOnly = stripCASdigits(candidate);
-		if (digitsOnly == null) {
+		if (digitsOnly == null || digitsOnly.equals("")) {
 			return digitsOnly;
 		}
-
+		if (Integer.parseInt(digitsOnly)<50000){
+			return null;
+		}
 		standardizedCas = digitsOnly.substring(0, digitsOnly.length() - 3);
 		standardizedCas += "-";
-		standardizedCas += digitsOnly.substring(digitsOnly.length() - 3, 2);
+		standardizedCas += digitsOnly.substring(digitsOnly.length() - 3, digitsOnly.length() - 1);
 		standardizedCas += "-";
-		standardizedCas += digitsOnly.substring(digitsOnly.length() - 1, 1);
+		standardizedCas += digitsOnly.substring(digitsOnly.length() - 1, digitsOnly.length());
 		return standardizedCas;
 	}
 

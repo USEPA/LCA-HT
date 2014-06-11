@@ -13,6 +13,7 @@ public class QACheck {
 	private Pattern pattern;
 	private String replacement;
 	private boolean patternMustMatch;
+	private Object handlerMethod = null;
 
 	public void setPattern(Pattern pattern) {
 		this.pattern = pattern;
@@ -108,6 +109,14 @@ public class QACheck {
 
 	public void setSuggestion(String suggestion) {
 		this.suggestion = suggestion;
+	}
+
+	public Object getHandlerMethod() {
+		return handlerMethod;
+	}
+
+	public void setHandlerMethod(Object handlerMethod) {
+		this.handlerMethod = handlerMethod;
 	}
 
 	// public static void checkColumn(TableColumn column) {
