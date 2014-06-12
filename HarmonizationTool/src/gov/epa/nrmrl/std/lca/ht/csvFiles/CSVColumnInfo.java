@@ -13,7 +13,7 @@ public class CSVColumnInfo {
 	private boolean isRequired;
 	private boolean isUnique;
 	private List<QACheck> checkLists;
-	private Status status = Status.UNCHECKED;
+//	private Status status = Status.UNCHECKED;
 	private List<Issue> issues = new ArrayList<Issue>();
 //	private int indexInTable = -1;
 
@@ -67,13 +67,13 @@ public class CSVColumnInfo {
 		this.checkLists.add(qaCheck);
 	}
 
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+//	public Status getStatus() {
+//		return status;
+//	}
+//
+//	public void setStatus(Status status) {
+//		this.status = status;
+//	}
 
 	public List<Issue> getIssues() {
 		return issues;

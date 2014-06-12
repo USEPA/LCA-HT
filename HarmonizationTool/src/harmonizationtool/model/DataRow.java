@@ -6,6 +6,8 @@ import java.util.List;
 
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
+	private List<String> toolTipValues = new ArrayList<String>();
+
 
 	public DataRow() {
 	}
@@ -39,11 +41,25 @@ public class DataRow {
 	public void set(int index, String string){
 		columnValues.set(index, string);		
 	}
-
-	public String get(int i) {
-		return columnValues.get(i);
+	
+	public void setToolTipValue(int index, String string){
+		while (toolTipValues.size() <= index){
+			toolTipValues.add("");
+		}
+		toolTipValues.set(index, string);		
 	}
 
+	public String get(int index) {
+		return columnValues.get(index);
+	}
+
+	public String getToolTipValue(int index) {
+		while (toolTipValues.size() <= index){
+			toolTipValues.add("");
+		}
+		return toolTipValues.get(index);
+	}
+	
 	public String join(String delimiter) {
 		if (columnValues.isEmpty()){
 			return "";
@@ -57,5 +73,20 @@ public class DataRow {
 
 	public void clear() {
 		columnValues.clear();
+		toolTipValues.clear();
+	}
+
+	public List<String> getToolTipValues() {
+		while (toolTipValues.size() < columnValues.size()){
+			toolTipValues.add("");
+		}
+		return toolTipValues;
+	}
+
+	public void setToolTipValues(List<String> toolTipValues) {
+		while (toolTipValues.size() < columnValues.size()){
+			toolTipValues.add("");
+		}
+		this.toolTipValues = toolTipValues;
 	}
 }
