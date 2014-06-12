@@ -12,6 +12,7 @@ public class CSVColumnInfo {
 	private String headerString;
 	private boolean isRequired;
 	private boolean isUnique;
+	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
 //	private Status status = Status.UNCHECKED;
 	private List<Issue> issues = new ArrayList<Issue>();
@@ -101,6 +102,14 @@ public class CSVColumnInfo {
 
 	public void clearIssues() {
 		this.issues.clear();
+	}
+
+	public boolean isLeftJustified() {
+		return leftJustified;
+	}
+
+	public void setLeftJustified(boolean leftJustified) {
+		this.leftJustified = leftJustified;
 	}
 
 //	public CSVColumnInfo duplicate() {

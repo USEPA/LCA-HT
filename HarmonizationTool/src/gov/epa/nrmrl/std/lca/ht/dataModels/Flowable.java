@@ -57,6 +57,7 @@ public class Flowable {
 		results[0] = new CSVColumnInfo("Flowable Name", true, true, getFlowablesNameCheckList());
 		results[1] = new CSVColumnInfo("Flowable Synonym", false, false, getFlowablesNameCheckList());
 		results[2] = new CSVColumnInfo("CAS", false, true, getCASCheckList());
+		results[2].setLeftJustified(false);
 		results[3] = new CSVColumnInfo("Chemical formula", false, false, getFormulaCheckList());
 		results[4] = new CSVColumnInfo("SMILES", false, false, getSMILESCheckList());
 		return results;
@@ -157,6 +158,7 @@ public class Flowable {
 		if (digitsOnly == null || digitsOnly.equals("")) {
 			return digitsOnly;
 		}
+		digitsOnly.replaceAll("^0+", "");
 		if (Integer.parseInt(digitsOnly)<50000){
 			return null;
 		}
