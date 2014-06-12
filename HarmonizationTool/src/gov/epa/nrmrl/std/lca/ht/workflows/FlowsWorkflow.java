@@ -355,11 +355,11 @@ public class FlowsWorkflow extends ViewPart {
 		}
 		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
 		// csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToCSVColumnsInfo(Flowable.getHeaderMenuObjects());
+		csvTableView.appendToAvailableCSVColumnInfo(Flowable.getHeaderMenuObjects());
 		csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck
+		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck
 				.getGeneralQAChecks()));
-		csvTableView.appendToCSVColumnsInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck
+		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck
 				.getGeneralQAChecks()));
 
 	}
@@ -407,7 +407,7 @@ public class FlowsWorkflow extends ViewPart {
 
 			} else {
 				int issueCount = CSVTableView.checkCols();
-				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
 				textIssues.setText(issueCount + " issues. " + colsChecked + " columns checked");
 				// btnCSV2TDB.setEnabled(true);

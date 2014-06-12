@@ -6,7 +6,9 @@ import java.util.List;
 
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
-	private List<String> toolTipValues = new ArrayList<String>();
+//	private List<String> toolTipValues = new ArrayList<String>();
+	private int rowNumber;
+	private String rowToolTip;
 
 
 	public DataRow() {
@@ -42,23 +44,23 @@ public class DataRow {
 		columnValues.set(index, string);		
 	}
 	
-	public void setToolTipValue(int index, String string){
-		while (toolTipValues.size() <= index){
-			toolTipValues.add("");
-		}
-		toolTipValues.set(index, string);		
-	}
+//	public void setToolTipValue(int index, String string){
+//		while (toolTipValues.size() <= index){
+//			toolTipValues.add("");
+//		}
+//		toolTipValues.set(index, string);		
+//	}
 
 	public String get(int index) {
 		return columnValues.get(index);
 	}
 
-	public String getToolTipValue(int index) {
-		while (toolTipValues.size() <= index){
-			toolTipValues.add("");
-		}
-		return toolTipValues.get(index);
-	}
+//	public String getToolTipValue(int index) {
+//		while (toolTipValues.size() <= index){
+//			toolTipValues.add("");
+//		}
+//		return toolTipValues.get(index);
+//	}
 	
 	public String join(String delimiter) {
 		if (columnValues.isEmpty()){
@@ -73,20 +75,36 @@ public class DataRow {
 
 	public void clear() {
 		columnValues.clear();
-		toolTipValues.clear();
+//		toolTipValues.clear();
 	}
 
-	public List<String> getToolTipValues() {
-		while (toolTipValues.size() < columnValues.size()){
-			toolTipValues.add("");
-		}
-		return toolTipValues;
+//	public List<String> getToolTipValues() {
+//		while (toolTipValues.size() < columnValues.size()){
+//			toolTipValues.add("");
+//		}
+//		return toolTipValues;
+//	}
+
+//	public void setToolTipValues(List<String> toolTipValues) {
+//		while (toolTipValues.size() < columnValues.size()){
+//			toolTipValues.add("");
+//		}
+//		this.toolTipValues = toolTipValues;
+//	}
+
+	public String getRowToolTip() {
+		return rowToolTip;
 	}
 
-	public void setToolTipValues(List<String> toolTipValues) {
-		while (toolTipValues.size() < columnValues.size()){
-			toolTipValues.add("");
-		}
-		this.toolTipValues = toolTipValues;
+	public void setRowToolTip(String rowToolTip) {
+		this.rowToolTip = rowToolTip;
+	}
+
+	public int getRowNumber() {
+		return rowNumber;
+	}
+
+	public void setRowNumber(int rowNumber) {
+		this.rowNumber = rowNumber;
 	}
 }

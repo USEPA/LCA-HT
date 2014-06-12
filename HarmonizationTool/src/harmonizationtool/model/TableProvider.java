@@ -29,6 +29,7 @@ public class TableProvider {
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
+		dataRow.setRowNumber(data.indexOf(dataRow));
 	}
 
 	public void addUri(Resource uri) {
@@ -124,6 +125,7 @@ public class TableProvider {
 		}
 		for (String name : columnNames) {
 			headerRow.add(name);
+			headerRow.setRowNumber(-1);
 		}
 	}
 
