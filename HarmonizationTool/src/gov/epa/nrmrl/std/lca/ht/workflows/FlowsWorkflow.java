@@ -355,8 +355,9 @@ public class FlowsWorkflow extends ViewPart {
 		}
 		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
 		// csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToAvailableCSVColumnInfo(Flowable.getHeaderMenuObjects());
-		csvTableView.appendHeaderMenuDiv();
+		csvTableView.appendToAvailableCSVColumnInfo("Flowable Fields",Flowable.getHeaderMenuObjects());
+//		csvTableView.appendHeaderMenuDiv();
+		
 		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo("Context (primary)", true, true, QACheck
 				.getGeneralQAChecks()));
 		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo("Context (additional)", false, false, QACheck
