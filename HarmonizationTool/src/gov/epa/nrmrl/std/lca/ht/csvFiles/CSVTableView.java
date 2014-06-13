@@ -31,12 +31,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -61,7 +63,8 @@ public class CSVTableView extends ViewPart {
 	private static Menu headerMenu;
 	private static Menu ignoreRowMenu;
 	private static Menu fixCellMenu;
-	private static Menu infoMenu;
+	// private static Menu infoMenu;
+	private static Text popup;
 
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
@@ -73,23 +76,57 @@ public class CSVTableView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(null);
+		popup = new Text(composite, SWT.BORDER | SWT.WRAP | SWT.MULTI);
+		popup.setEditable(false);
+		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		popup.setText("");
+		popup.setVisible(false);
+		popup.setLocation(90, 90);
+		popup.setBounds(90, 90, 300, 60);
+//		popup.addListener(SWT.Modify, popupResizeListener);
 
-		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+		tableViewer = new TableViewer(composite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY
+				| SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 
 		table = tableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
 		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
 		table.addListener(SWT.MouseExit, cellSelectionMouseExitListener);
 		table.addListener(SWT.MouseDown, cellSelectionMouseDownListener);
+		// table.setSize(composite.getBounds().width-20,
+		// composite.getBounds().height-20);
+		table.setSize(500, 500);
 
 		initializeIgnoreRowMenu();
 		initializeFixRowMenu();
-		initializeInfoMenu();
+		// popup = new Text(parent,SWT.NONE);
+		// popup.setText("");
+		// popup.setVisible(false);
+		// popup.setLocation(90, 90);
+		// initializeInfoMenu();
 	}
 
-	// private static SelectionListener colSelectionListener = new
-	// SelectionListener() {
+//	private static Listener popupResizeListener = new Listener() {
+//		public void handleEvent(Event e) {
+//			popup.setVisible(true);
+//			popup.setSize(300, 500);
+//			System.out.println("popup.getVerticalBar().getVisible()"+popup.getVerticalBar().getVisible());
+//
+//			int height = 5;
+//			while ((popup.getVerticalBar().getVisible()) && (height < 200)) {
+//				System.out.println("popup.getVerticalBar().getVisible()"+popup.getVerticalBar().getVisible());
+//				height += 5;
+//				popup.setSize(250, height);
+////				popup.getShell().pack(true);
+//			}
+//		}
+//	};
+
 	private static SelectionListener colSelectionListener = new SelectionListener() {
 
 		@Override
@@ -237,10 +274,16 @@ public class CSVTableView extends ViewPart {
 					}
 				}
 				if (issuesOfThisCell.size() > 0) {
-					setInfoMenu(issuesOfThisCell);
-					infoMenu.setVisible(true);
+					// setInfoMenu(issuesOfThisCell);
+					setPopup(issuesOfThisCell);
+					popup.setLocation(event.x + 20, event.y + 50);
+					popup.setVisible(true);
+					System.out.println("popup be visible now!");
+					System.out.println("table.getParent().getSize() = " + table.getParent().getSize());
+
 				} else {
-					infoMenu.setVisible(false);
+					// infoMenu.setVisible(false);
+					popup.setVisible(false);
 					ignoreRowMenu.setVisible(false);
 				}
 			}
@@ -252,10 +295,12 @@ public class CSVTableView extends ViewPart {
 		@Override
 		public void handleEvent(Event event) {
 			System.out.println("cellSelectionMouseExitListener event = " + event);
-			infoMenu.setVisible(false);
+			// infoMenu.setVisible(false);
+			popup.setVisible(false);
 		}
 
 	};
+	private Text text;
 
 	private class RowMenuSelectionListener implements Listener {
 
@@ -452,9 +497,9 @@ public class CSVTableView extends ViewPart {
 
 	}
 
-	private void initializeInfoMenu() {
-		infoMenu = new Menu(table);
-	}
+	// private void initializeInfoMenu() {
+	// infoMenu = new Menu(table);
+	// }
 
 	private void initializeFixRowMenu() {
 		fixCellMenu = new Menu(table);
@@ -495,39 +540,61 @@ public class CSVTableView extends ViewPart {
 		return -1;
 	}
 
-	private static void setInfoMenu(Issue issueOfThisCell) {
-		while (infoMenu.getItemCount() > 0) {
-			infoMenu.getItem(infoMenu.getItemCount() - 1).dispose();
-		}
-		MenuItem menuItem = new MenuItem(infoMenu, SWT.NORMAL);
-		menuItem.setText("- " + issueOfThisCell.getQaCheck().getDescription());
+	// private static void setInfoMenu(Issue issueOfThisCell) {
+	// while (infoMenu.getItemCount() > 0) {
+	// infoMenu.getItem(infoMenu.getItemCount() - 1).dispose();
+	// }
+	// MenuItem menuItem = new MenuItem(infoMenu, SWT.NORMAL);
+	// menuItem.setText("- " + issueOfThisCell.getQaCheck().getDescription());
+	//
+	// menuItem = new MenuItem(infoMenu, SWT.NORMAL);
+	// menuItem.setText("- " + issueOfThisCell.getQaCheck().getExplanation());
+	//
+	// // menuItem = new MenuItem(infoMenu, SWT.NORMAL);
+	// // menuItem.setText(issueOfThisCell.getQaCheck().getSuggestion());
+	// }
 
-		menuItem = new MenuItem(infoMenu, SWT.NORMAL);
-		menuItem.setText("- " + issueOfThisCell.getQaCheck().getExplanation());
+	// private static void setInfoMenu(List<Issue> issuesOfThisCell) {
+	// while (infoMenu.getItemCount() > 0) {
+	// infoMenu.getItem(infoMenu.getItemCount() - 1).dispose();
+	// }
+	// if (issuesOfThisCell.size() == 0) {
+	// return; // THIS SHOULDN'T HAPPEN
+	// }
+	// if (issuesOfThisCell.size() == 1) {
+	// setInfoMenu(issuesOfThisCell.get(0));
+	// return;
+	// }
+	//
+	// for (int i = 0; i < issuesOfThisCell.size(); i++) {
+	// MenuItem menuItem = new MenuItem(infoMenu, SWT.NORMAL);
+	// menuItem.setText(i + "- " +
+	// issuesOfThisCell.get(i).getQaCheck().getDescription());
+	//
+	// menuItem = new MenuItem(infoMenu, SWT.NORMAL);
+	// menuItem.setText("       - " +
+	// issuesOfThisCell.get(i).getQaCheck().getExplanation());
+	// }
+	// }
 
-		// menuItem = new MenuItem(infoMenu, SWT.NORMAL);
-		// menuItem.setText(issueOfThisCell.getQaCheck().getSuggestion());
-	}
-
-	private static void setInfoMenu(List<Issue> issuesOfThisCell) {
-		while (infoMenu.getItemCount() > 0) {
-			infoMenu.getItem(infoMenu.getItemCount() - 1).dispose();
-		}
+	private static void setPopup(List<Issue> issuesOfThisCell) {
 		if (issuesOfThisCell.size() == 0) {
 			return; // THIS SHOULDN'T HAPPEN
 		}
 		if (issuesOfThisCell.size() == 1) {
-			setInfoMenu(issuesOfThisCell.get(0));
+			String popupText = "- " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
+			popup.setText(popupText);
 			return;
 		}
+		String popupText = "0 - " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+		popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
+		for (int i = 1; i < issuesOfThisCell.size(); i++) {
 
-		for (int i = 0; i < issuesOfThisCell.size(); i++) {
-			MenuItem menuItem = new MenuItem(infoMenu, SWT.NORMAL);
-			menuItem.setText(i + "- " + issuesOfThisCell.get(i).getQaCheck().getDescription());
-
-			menuItem = new MenuItem(infoMenu, SWT.NORMAL);
-			menuItem.setText("       - " + issuesOfThisCell.get(i).getQaCheck().getExplanation());
+			popupText += "\n" + i + " - " + issuesOfThisCell.get(i).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(i).getQaCheck().getExplanation();
 		}
+		popup.setText(popupText);
 	}
 
 	/**
@@ -557,8 +624,11 @@ public class CSVTableView extends ViewPart {
 			assignedCSVColumnInfo[i] = new CSVColumnInfo(csvColumnDefaultTooltip);
 		}
 		colorRowNumberColumn();
-		TableColumn tableColumn = tableViewer.getTable().getColumn(0);
-		tableColumn.setAlignment(SWT.RIGHT);
+		// TableColumn tableColumn = tableViewer.getTable().getColumn(0);
+		// tableColumn.setAlignment(SWT.RIGHT);
+		table.setSize(table.getParent().getSize());
+		// System.out.println("table.getParent().getSize() = "
+		// +table.getParent().getSize());
 	}
 
 	private void colorRowNumberColumn() {
