@@ -45,7 +45,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
- * @author tec and Tom Transue
+ * @author Tommy E. Cathey and Tom Transue
  * 
  */
 public class CSVTableView extends ViewPart {
