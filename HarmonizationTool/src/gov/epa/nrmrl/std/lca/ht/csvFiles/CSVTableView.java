@@ -1,17 +1,18 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.tdb.*;
+import harmonizationtool.model.DataRow;
+import harmonizationtool.model.*;
+//import harmonizationtool.model.Status;
+import harmonizationtool.model.TableKeeper;
+import harmonizationtool.model.TableProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.Issue;
-import harmonizationtool.model.Status;
-import harmonizationtool.model.TableKeeper;
-import harmonizationtool.model.TableProvider;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -30,10 +31,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
