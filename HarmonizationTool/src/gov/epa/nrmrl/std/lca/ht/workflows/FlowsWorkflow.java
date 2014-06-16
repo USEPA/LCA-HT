@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.DataSetProvider;
@@ -378,23 +379,11 @@ public class FlowsWorkflow extends ViewPart {
 		}
 		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
 		// csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToAvailableCSVColumnInfo("Flowable Fields",
+		csvTableView.appendToAvailableCSVColumnInfo("Assign Flowable Fields",
 				Flowable.getHeaderMenuObjects());
-		// csvTableView.appendHeaderMenuDiv();
-
-		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo(
-				"Context (primary)", true, true, QACheck.getGeneralQAChecks()));
-		csvTableView.appendToAvailableCSVColumnInfo(new CSVColumnInfo(
-				"Context (additional)", false, false, QACheck
-						.getGeneralQAChecks()));
-
+		csvTableView.appendToAvailableCSVColumnInfo("Assign Flow Context Fields",
+				FlowContext.getHeaderMenuObjects());
 	}
-
-	// public String checkOneColumn(int colIndex) {
-	// String result = "";
-	//
-	// return result;
-	// }
 
 	SelectionListener loadCSVListener = new SelectionListener() {
 

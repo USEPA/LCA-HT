@@ -40,6 +40,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import sun.swing.MenuItemCheckIconFactory;
+
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
@@ -87,16 +89,14 @@ public class CSVTableView extends ViewPart {
 		composite.setLayout(null);
 		popup = new Text(composite, SWT.BORDER | SWT.WRAP);
 		popup.setEditable(false);
-		popup.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_INFO_BACKGROUND));
+		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		popup.setText("");
 		popup.setVisible(false);
 		popup.setLocation(90, 90);
 		popup.setBounds(90, 90, 300, 60);
 		// popup.addListener(SWT.Modify, popupResizeListener);
 
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.READ_ONLY);
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 
@@ -163,9 +163,7 @@ public class CSVTableView extends ViewPart {
 			if (e.getSource() instanceof TableColumn) {
 				System.out.println("SelectionListener event e= " + e);
 				TableColumn col = (TableColumn) e.getSource();
-				System.out
-						.println("(widgetDefaultSelected) colNumSelected set to "
-								+ colNumSelected);
+				System.out.println("(widgetDefaultSelected) colNumSelected set to " + colNumSelected);
 				colNumSelected = table.indexOf(col);
 				if (colNumSelected > 0) {
 					headerMenu.setVisible(true);
@@ -175,83 +173,142 @@ public class CSVTableView extends ViewPart {
 
 	};
 
-	private class HeaderMenuColumnSelectionListener implements Listener {
+	private class StandardizeAllCASListener implements Listener {
+		@Override
+		public void handleEvent(Event event) {
+			standardizeAllCAS(colNumSelected);
+		}
+	}
+
+	private class HeaderMenuColumnAssignmentListener implements Listener {
 
 		@Override
 		public void handleEvent(Event event) {
 			// SEVERAL POSSIBILITIES
-			// 1) COLUMN ASSIGNEMENT
-			//   a) NEW FROM IGNORE
-			//   b) IGNORE FROM ASSIGNED
-			//   c) RE-ASSIGNED
-			//   d) SAME ASSIGNMENT (NO CHANGE)
-			// 2) COLUMN ACTION
-			//   a) ON UNASSIGNED COLUMN (WHAT AND WHY?)
-			//   b) ON ASSIGNED COLUMN
-			
-			// MORE WORK HERE! FIXME FIXME FIXME FIXME
-			System.out.println("HeaderMenuColumnSelectionListener event.widget  = "
-							+ event.widget);
+			// a) DE-ASSIGN (RE-ACTIVATE THE MENU ITEM IF NEED BE)
+			// b) ASSIGN TO UNASSIGNED (DE-ACTIVATE THE MENU ITEM IF NEED BE)
+			// c) RE-ASSIGN (RE-ACTIVATE ONE MENU ITEM, AND MAYBE DE-ACTIVATE ANOTHER)
+			// d) NO CHANGE
 
-			if ((event.widget instanceof MenuItem) && (colNumSelected > 0)) {
-				MenuItem menuItem = (MenuItem) event.widget;
-				String menuItemText = menuItem.getText();
-				CSVColumnInfo selectedCSVColumnInfo = assignedCSVColumnInfo[colNumSelected];
-				CSVColumnInfo menuCSVColumnInfo = getCSVColumnInfoByHeaderString(menuItemText);
+			System.out.println("HeaderMenuColumnAssignmentListener event.widget  = " + event.widget);
+			if (!(event.widget instanceof MenuItem)) {
+				System.out.println("What's going on here?");
+				return;
+			}
+			if (colNumSelected == 0) {
+				// MAY HANDLE THIS AT SOME POINT
+				System.out.println("Clicked on col. zero.  How did this fire?");
+				return;
+			}
+			MenuItem menuItem = (MenuItem) event.widget;
+			String menuItemText = menuItem.getText();
+			System.out.println("menu text = " + menuItemText);
+			CSVColumnInfo selectedCSVColumnInfo = assignedCSVColumnInfo[colNumSelected];
+			CSVColumnInfo menuCSVColumnInfo = getCSVColumnInfoByHeaderString(menuItemText);
+			if (menuCSVColumnInfo == null) {
+				// POSSIBILITY a)
+				System.out.println("Possibility a");
+				if (selectedCSVColumnInfo == null) {
+					return;
+				}
+				MenuItem menuItemToReset = getHeaderMenuItemFromName(selectedCSVColumnInfo.getHeaderString());
+				if (menuItemToReset != null) {
+					menuItemToReset.setEnabled(true);
+				}
 
-				if (menuCSVColumnInfo.getHeaderString().equals(
-						selectedCSVColumnInfo.getHeaderString())) {
+				selectedCSVColumnInfo = null;
+				table.getColumn(colNumSelected).setText(csvColumnDefaultColumnHeader);
+				table.getColumn(colNumSelected).setToolTipText(csvColumnDefaultTooltip);
+				assignedCSVColumnInfo[colNumSelected] = null;
+				selectedCSVColumnInfo = null;
+			} else {
+				// THIS IS A COLUMN ASSIGNMENT
+				System.out.println("Possibility b, c, or d");
+				if (menuCSVColumnInfo.isUnique()) {
+					menuItem.setEnabled(false);
+				}
+				if (selectedCSVColumnInfo == null) {
+					// POSSIBILITY b
+					System.out.println("Possibility b");
+					selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(),
+							menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(),
+							menuCSVColumnInfo.getCheckLists());
+					selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
+					selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
+					assignedCSVColumnInfo[colNumSelected] = selectedCSVColumnInfo;
+					table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
+					table.getColumn(colNumSelected).setToolTipText("assigned");
+					return;
+				}
+				if (menuCSVColumnInfo.getHeaderString().equals(selectedCSVColumnInfo.getHeaderString())) {
+					// POSSIBILITY d
+					System.out.println("Possibility d");
 					// NO ACTION REQUIRED, NOTHING CHANGED
 					return;
 				}
-				if (menuCSVColumnInfo != null) {
+				// ONLY POSSIBILITY LEFT IS c
+				System.out.println("Possibility c");
 
-					selectedCSVColumnInfo.setHeaderString(menuCSVColumnInfo
-							.getHeaderString());
-					selectedCSVColumnInfo.setRequired(menuCSVColumnInfo
-							.isRequired());
-					selectedCSVColumnInfo.setUnique(menuCSVColumnInfo
-							.isUnique());
-					selectedCSVColumnInfo.setCheckLists(menuCSVColumnInfo
-							.getCheckLists());
-					selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo
-							.isLeftJustified());
-					// selectedCSVColumnInfo.setStatus(Status.UNCHECKED);
-					selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
-
-					if (menuCSVColumnInfo.isUnique()) {
-						menuItem.setEnabled(false);
-					}
-					TableColumn tableColumn = table.getColumn(colNumSelected);
-					if (selectedCSVColumnInfo.isLeftJustified()) {
-						tableColumn.setAlignment(SWT.LEFT);
-					} else {
-						tableColumn.setAlignment(SWT.RIGHT);
-					}
-					tableColumn.setText(menuItemText);
-					if (headerMenu.indexOf(menuItem) == 0) {
-						tableColumn.setToolTipText(csvColumnDefaultTooltip);
-					} else {
-						tableColumn.setToolTipText("Assigned");
-					}
+				MenuItem menuItemToReset = getHeaderMenuItemFromName(selectedCSVColumnInfo.getHeaderString());
+				if (menuItemToReset != null) {
+					menuItemToReset.setEnabled(true);
 				}
 
-				// ASSUME THEY'VE CLICKED AN ASSIGNED COLUMN FROM HERE ON
-				if (menuItemText.equals("Ignore This Column")) {
-					getMenuItemByHeaderString(
-							selectedCSVColumnInfo.getHeaderString())
-							.setEnabled(true);
-					assignedCSVColumnInfo[colNumSelected] = null;
-					table.getColumn(colNumSelected).setToolTipText(
-							csvColumnDefaultTooltip);
-					return;
-				}
-
-
-
-				// RESET PREVIOUS HEADER STRING FOR THE COLUMN SELECTED
-
+				selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(),
+						menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(), menuCSVColumnInfo.getCheckLists());
+				selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
+				selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
+				table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
+				table.getColumn(colNumSelected).setToolTipText("assigned");
+				assignedCSVColumnInfo[colNumSelected] = null;
 			}
+			// if (menuCSVColumnInfo.isUnique()) {
+			// // USER HAS CHOSEN A FIELD WHICH CAN HAVE ONLY ONE COLUMN
+			// // ASSIGNMENT
+			// menuItem.setEnabled(false);
+			// }
+
+			// if (menuCSVColumnInfo != null) {
+			//
+			// selectedCSVColumnInfo.setHeaderString(menuCSVColumnInfo
+			// .getHeaderString());
+			// selectedCSVColumnInfo.setRequired(menuCSVColumnInfo
+			// .isRequired());
+			// selectedCSVColumnInfo.setUnique(menuCSVColumnInfo.isUnique());
+			// selectedCSVColumnInfo.setCheckLists(menuCSVColumnInfo
+			// .getCheckLists());
+			// selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo
+			// .isLeftJustified());
+			// // selectedCSVColumnInfo.setStatus(Status.UNCHECKED);
+			// selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
+			//
+			// if (menuCSVColumnInfo.isUnique()) {
+			// menuItem.setEnabled(false);
+			// }
+			// TableColumn tableColumn = table.getColumn(colNumSelected);
+			// if (selectedCSVColumnInfo.isLeftJustified()) {
+			// tableColumn.setAlignment(SWT.LEFT);
+			// } else {
+			// tableColumn.setAlignment(SWT.RIGHT);
+			// }
+			// tableColumn.setText(menuItemText);
+			// if (headerMenu.indexOf(menuItem) == 0) {
+			// tableColumn.setToolTipText(csvColumnDefaultTooltip);
+			// } else {
+			// tableColumn.setToolTipText("Assigned");
+			// }
+			// }
+			//
+			// // ASSUME THEY'VE CLICKED AN ASSIGNED COLUMN FROM HERE ON
+			// if (menuItemText.equals("Ignore This Column")) {
+			// getMenuItemByHeaderString(
+			// selectedCSVColumnInfo.getHeaderString()).setEnabled(
+			// true);
+			// assignedCSVColumnInfo[colNumSelected] = null;
+			// table.getColumn(colNumSelected).setToolTipText(
+			// csvColumnDefaultTooltip);
+			// return;
+			// }
 		}
 	}
 
@@ -384,8 +441,7 @@ public class CSVTableView extends ViewPart {
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("cellSelectionMouseHoverListener event = "
-					+ event);
+			System.out.println("cellSelectionMouseHoverListener event = " + event);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int hoverRow = 0;
@@ -414,11 +470,10 @@ public class CSVTableView extends ViewPart {
 				if (issuesOfThisCell.size() > 0) {
 					// setInfoMenu(issuesOfThisCell);
 					setPopup(issuesOfThisCell);
-					popup.setLocation(event.x + 20, event.y + 50);
+					popup.setLocation(event.x + 30, event.y + 30);
 					popup.setVisible(true);
 					System.out.println("popup be visible now!");
-					System.out.println("table.getParent().getSize() = "
-							+ table.getParent().getSize());
+					System.out.println("table.getParent().getSize() = " + table.getParent().getSize());
 
 				} else {
 					// infoMenu.setVisible(false);
@@ -433,8 +488,7 @@ public class CSVTableView extends ViewPart {
 	private static Listener cellSelectionMouseExitListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			System.out.println("cellSelectionMouseExitListener event = "
-					+ event);
+			System.out.println("cellSelectionMouseExitListener event = " + event);
 			// infoMenu.setVisible(false);
 			popup.setVisible(false);
 		}
@@ -450,24 +504,16 @@ public class CSVTableView extends ViewPart {
 				System.out.println("RowMenuSelectionListener event = " + event);
 				String menuItemText = ((MenuItem) event.widget).getText();
 				if (menuItemText.equals("ignore row")) {
-					tableViewer
-							.getTable()
-							.getItem(rowNumSelected)
-							.setForeground(
-									SWTResourceManager.getColor(SWT.COLOR_GRAY));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 					if (!rowsToIgnore.contains(rowNumSelected)) {
 						rowsToIgnore.add(rowNumSelected);
 					}
 				} else if (menuItemText.equals("use row")) {
-					tableViewer
-							.getTable()
-							.getItem(rowNumSelected)
-							.setForeground(
-									SWTResourceManager
-											.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
-						rowsToIgnore.remove(rowsToIgnore
-								.indexOf(rowNumSelected));
+						rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					}
 				}
 			}
@@ -482,30 +528,20 @@ public class CSVTableView extends ViewPart {
 
 			System.out.println("Clicked on a cell with an issue");
 			if (event.widget instanceof MenuItem) {
-				System.out.println("FixCellMenuSelectionListener event = "
-						+ event);
+				System.out.println("FixCellMenuSelectionListener event = " + event);
 				String menuItemText = ((MenuItem) event.widget).getText();
 				if (menuItemText.equals("fix this cell")) {
 					fixCurrentlySelectedCell();
-					colorCell(rowNumSelected, colNumSelected,
-							SWTResourceManager
-									.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-				} else if (menuItemText
-						.equals("fix this issue type for this column")) {
+					colorCell(rowNumSelected, colNumSelected, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				} else if (menuItemText.equals("fix this issue type for this column")) {
 					fixIssueInColumn();
-					tableViewer
-							.getTable()
-							.getItem(rowNumSelected)
-							.setForeground(
-									SWTResourceManager
-											.getColor(SWT.COLOR_BLACK));
+					tableViewer.getTable().getItem(rowNumSelected)
+							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					if (rowsToIgnore.contains(rowNumSelected)) {
-						rowsToIgnore.remove(rowsToIgnore
-								.indexOf(rowNumSelected));
+						rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					}
 
-				} else if (menuItemText
-						.equals("standardize all CAS in this column")) {
+				} else if (menuItemText.equals("standardize all CAS in this column")) {
 					standardizeAllCAS(colNumSelected);
 				}
 			}
@@ -513,8 +549,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	/**
-	 * class for generating column labels. This class will handle a variable
-	 * number of tableViewerColumns
+	 * class for generating column labels. This class will handle a variable number of tableViewerColumns
 	 * 
 	 * @author tec
 	 */
@@ -616,20 +651,11 @@ public class CSVTableView extends ViewPart {
 		return true;
 	}
 
-	/**
-	 * this method initializes the headerMenu with menuItems and a
-	 * HeaderMenuColumnSelectionListener
-	 * 
-	 * @param menu
-	 *            headerMenu which allows user to rename the tableViewerColumns
-	 */
-
 	private void initializeHeaderMenu() {
 		if (headerMenu != null) {
 			headerMenu.dispose();
 		}
-		CSVColumnInfo ignoreColumnInfo = new CSVColumnInfo(
-				csvColumnDefaultColumnHeader);
+		CSVColumnInfo ignoreColumnInfo = new CSVColumnInfo(csvColumnDefaultColumnHeader);
 		availableCSVColumnInfo.add(ignoreColumnInfo);
 
 		headerMenu = new Menu(table);
@@ -638,11 +664,6 @@ public class CSVTableView extends ViewPart {
 		menuItem = new MenuItem(headerMenu, SWT.CASCADE);
 		menuItem.setText("Column Actions");
 		menuItem.setMenu(columnActionsMenu);
-		// menuItem.addListener(SWT.Selection, new
-		// HeaderMenuColumnSelectionListener());
-
-		// new MenuItem(headerMenu, SWT.SEPARATOR);
-
 	}
 
 	private void initializeColumnActionsMenu() {
@@ -659,13 +680,11 @@ public class CSVTableView extends ViewPart {
 
 		menuItem = new MenuItem(columnActionsMenu, SWT.NORMAL);
 		menuItem.setText("Standardize CAS");
-		menuItem.addListener(SWT.Selection,
-				new HeaderMenuColumnSelectionListener());
+		menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
 
-		menuItem = new MenuItem(columnActionsMenu, SWT.NORMAL);
-		menuItem.setText("Ignore This Column");
-		menuItem.addListener(SWT.Selection,
-				new HeaderMenuColumnSelectionListener());
+		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+		menuItem.setText("De-assign column");
+		menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 
 	}
 
@@ -715,6 +734,20 @@ public class CSVTableView extends ViewPart {
 
 	public void appendHeaderMenuDiv() {
 		new MenuItem(headerMenu, SWT.SEPARATOR);
+	}
+
+	private MenuItem getHeaderMenuItemFromName(String headerName) {
+		for (MenuItem item : headerMenu.getItems()) {
+			if (item.getMenu() != null) {
+				Menu childMenu = item.getMenu();
+				for (MenuItem childItem : childMenu.getItems()) {
+					if (childItem.getText().equals(headerName)) {
+						return childItem;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
@@ -770,23 +803,17 @@ public class CSVTableView extends ViewPart {
 			return; // THIS SHOULDN'T HAPPEN
 		}
 		if (issuesOfThisCell.size() == 1) {
-			String popupText = "- "
-					+ issuesOfThisCell.get(0).getQaCheck().getDescription();
-			popupText += "\n       - "
-					+ issuesOfThisCell.get(0).getQaCheck().getExplanation();
+			String popupText = "- " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
 			popup.setText(popupText);
 			return;
 		}
-		String popupText = "0 - "
-				+ issuesOfThisCell.get(0).getQaCheck().getDescription();
-		popupText += "\n       - "
-				+ issuesOfThisCell.get(0).getQaCheck().getExplanation();
+		String popupText = "0 - " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+		popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
 		for (int i = 1; i < issuesOfThisCell.size(); i++) {
 
-			popupText += "\n" + i + " - "
-					+ issuesOfThisCell.get(i).getQaCheck().getDescription();
-			popupText += "\n       - "
-					+ issuesOfThisCell.get(i).getQaCheck().getExplanation();
+			popupText += "\n" + i + " - " + issuesOfThisCell.get(i).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(i).getQaCheck().getExplanation();
 		}
 		popup.setText(popupText);
 	}
@@ -825,8 +852,7 @@ public class CSVTableView extends ViewPart {
 	private void colorRowNumberColumn() {
 		for (int i = 0; i < table.getItemCount(); i++) {
 			TableItem item = table.getItem(i);
-			item.setBackground(0,
-					SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			item.setBackground(0, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		}
 	}
 
@@ -882,19 +908,14 @@ public class CSVTableView extends ViewPart {
 			}
 			System.out.println("Adding columns");
 
-			TableViewerColumn tableViewerColumn = createTableViewerColumn("",
-					50, 0);
+			TableViewerColumn tableViewerColumn = createTableViewerColumn("", 50, 0);
 			tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
-			tableViewerColumn
-					.setLabelProvider(new RowIndexColumnLabelProvider());
+			tableViewerColumn.setLabelProvider(new RowIndexColumnLabelProvider());
 
 			for (int i = 0; i < tableProvider.getColumnCount(); i++) {
-				System.out.println("  Populating column " + i + 1
-						+ "with data from tableProvider column " + i);
-				tableViewerColumn = createTableViewerColumn(
-						csvColumnDefaultColumnHeader, 100, i + 1);
-				tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(
-						i + 1));
+				System.out.println("  Populating column " + i + 1 + "with data from tableProvider column " + i);
+				tableViewerColumn = createTableViewerColumn(csvColumnDefaultColumnHeader, 100, i + 1);
+				tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(i + 1));
 				// tableViewerColumn.getColumn()._addListener(SWT.MouseDown,
 				// columnMouseListener);
 			}
@@ -909,11 +930,9 @@ public class CSVTableView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private TableViewerColumn createTableViewerColumn(String title, int bound,
-			final int colNumber) {
+	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 
-		final TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				tableViewer, SWT.NONE, colNumber);
+		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = tableViewerColumn.getColumn();
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
@@ -935,18 +954,15 @@ public class CSVTableView extends ViewPart {
 
 		MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		clearMenuItemListeners(menuItem);
-		menuItem.addListener(SWT.Selection,
-				new HeaderMenuColumnSelectionListener());
+		menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 		menuItem.setText(csvColumnInfo.getHeaderString());
 	}
 
-	public void appendToAvailableCSVColumnInfo(Menu menuParent,
-			CSVColumnInfo csvColumnInfo) {
+	public void appendToAvailableCSVColumnInfo(Menu menuParent, CSVColumnInfo csvColumnInfo) {
 		availableCSVColumnInfo.add(csvColumnInfo);
 		MenuItem menuItem = new MenuItem(menuParent, SWT.NORMAL);
 		clearMenuItemListeners(menuItem);
-		menuItem.addListener(SWT.Selection,
-				new HeaderMenuColumnSelectionListener());
+		menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 		menuItem.setText(csvColumnInfo.getHeaderString());
 	}
 
@@ -956,8 +972,7 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public void appendToAvailableCSVColumnInfo(String fieldType,
-			CSVColumnInfo[] csvColumnInfos) {
+	public void appendToAvailableCSVColumnInfo(String fieldType, CSVColumnInfo[] csvColumnInfos) {
 		MenuItem menuParent = new MenuItem(headerMenu, SWT.CASCADE);
 		menuParent.setText(fieldType);
 		Menu newMenu = new Menu(headerMenu);
@@ -984,19 +999,14 @@ public class CSVTableView extends ViewPart {
 		TableItem tableItem = table.getItem(rowNumSelected);
 		String startingText = tableItem.getText(colNumSelected);
 		for (Issue issue : csvColumnInfo.getIssues()) {
-			if ((issue.getRowNumber() == rowNumSelected)
-					&& (!issue.getStatus().equals(Status.RESOLVED))) {
+			if ((issue.getRowNumber() == rowNumSelected) && (!issue.getStatus().equals(Status.RESOLVED))) {
 				QACheck qaCheck = issue.getQaCheck();
 				if (qaCheck.getReplacement() != null) {
-					Matcher matcher = qaCheck.getPattern()
-							.matcher(startingText);
-					String fixedValue = matcher.replaceFirst(qaCheck
-							.getReplacement());
+					Matcher matcher = qaCheck.getPattern().matcher(startingText);
+					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
 					tableItem.setText(colNumSelected, fixedValue);
-					TableProvider tableProvider = TableKeeper
-							.getTableProvider(key);
-					tableProvider.getData().get(rowNumSelected)
-							.set(colNumSelected, fixedValue);
+					TableProvider tableProvider = TableKeeper.getTableProvider(key);
+					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
 				}
@@ -1033,8 +1043,7 @@ public class CSVTableView extends ViewPart {
 		System.out.println("trying to fix: " + startingText);
 		QACheck qaCheckToFix = null;
 		for (Issue issue : csvColumnInfo.getIssues()) {
-			if ((issue.getRowNumber() == rowNumSelected)
-					&& (!issue.getStatus().equals(Status.RESOLVED))) {
+			if ((issue.getRowNumber() == rowNumSelected) && (!issue.getStatus().equals(Status.RESOLVED))) {
 				qaCheckToFix = issue.getQaCheck();
 			}
 		}
@@ -1076,8 +1085,7 @@ public class CSVTableView extends ViewPart {
 		if (issueList != null) {
 			for (Issue issue : issueList) {
 				colorCell(issue.getRowNumber(), issue.getColNumber(),
-						SWTResourceManager
-								.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+						SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 			}
 		}
 	}
@@ -1105,28 +1113,21 @@ public class CSVTableView extends ViewPart {
 
 				if (qaCheck.isPatternMustMatch()) {
 					if (!matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, colIndex, 0,
-								Status.UNRESOLVED);
+						Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.UNRESOLVED);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
-						Logger.getLogger("run").warn(
-								"  ->Row " + issue.getRowNumber());
+						Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
 						Logger.getLogger("run").warn("  ->Column " + colIndex);
-						Logger.getLogger("run").warn(
-								"  ->Required pattern not found");
+						Logger.getLogger("run").warn("  ->Required pattern not found");
 						assignIssue(issue);
 						csvColumnInfo.addIssue(issue);
 					}
 				} else {
 					while (matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, colIndex,
-								matcher.end(), Status.UNRESOLVED);
+						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.UNRESOLVED);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
-						Logger.getLogger("run").warn(
-								"  ->Row" + issue.getRowNumber());
+						Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
 						Logger.getLogger("run").warn("  ->Column" + colIndex);
-						Logger.getLogger("run").warn(
-								"  ->Character position"
-										+ issue.getCharacterPosition());
+						Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
 						assignIssue(issue);
 						csvColumnInfo.addIssue(issue);
 					}
@@ -1204,8 +1205,7 @@ public class CSVTableView extends ViewPart {
 
 	private static void colorCell(Issue issue) {
 		TableItem tableItem = table.getItem(issue.getRowNumber());
-		tableItem.setBackground(issue.getColNumber(), issue.getStatus()
-				.getColor());
+		tableItem.setBackground(issue.getColNumber(), issue.getStatus().getColor());
 	}
 
 	private static List<String> getColumnValues(int colIndex) {
@@ -1235,8 +1235,7 @@ public class CSVTableView extends ViewPart {
 		return;
 	}
 
-	private static CSVColumnInfo getCSVColumnInfoByHeaderString(
-			String headerString) {
+	private static CSVColumnInfo getCSVColumnInfoByHeaderString(String headerString) {
 		for (CSVColumnInfo csvColumnInfo : availableCSVColumnInfo) {
 			if (csvColumnInfo.getHeaderString().equals(headerString)) {
 				return csvColumnInfo;
