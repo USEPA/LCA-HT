@@ -126,7 +126,6 @@ public class Flowable {
 			return digitsOnly;
 		}
 		String noLeadingZeros = digitsOnly.replaceAll("^0+", "");
-		System.out.println("noLeadingZeros "+noLeadingZeros);
 		if (Integer.parseInt(noLeadingZeros)<50000){
 			return null;
 		}
