@@ -15,7 +15,7 @@ import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.ECOGOV;
+import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.SKOS;
 
@@ -532,10 +532,10 @@ public class View extends ViewPart {
 							subResourceHandle = newSub;
 							str2res.put(combined_str, subResourceHandle);
 						}
-						subResourceHandle.addLiteral(ECOGOV.foundOnRow,
+						subResourceHandle.addLiteral(FEDLCA.foundOnRow,
 								drRowLit);
 						subResourceHandle.addLiteral(
-								ECOGOV.sourceTableRowNumber, drRowLit);
+								FEDLCA.sourceTableRowNumber, drRowLit);
 
 						csvRow++;
 					}
@@ -770,10 +770,10 @@ public class View extends ViewPart {
 							catResourceHandle = newCat;
 							str2res.put(combined_str, catResourceHandle);
 						}
-						catResourceHandle.addLiteral(ECOGOV.foundOnRow,
+						catResourceHandle.addLiteral(FEDLCA.foundOnRow,
 								drRowLit);
 						catResourceHandle.addLiteral(
-								ECOGOV.sourceTableRowNumber, drRowLit);
+								FEDLCA.sourceTableRowNumber, drRowLit);
 						csvRow++;
 					}
 					// -----------------------------------------

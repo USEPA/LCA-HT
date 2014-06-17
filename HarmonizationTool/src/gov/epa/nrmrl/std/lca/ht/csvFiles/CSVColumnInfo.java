@@ -1,8 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataField;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.Issue;
-import harmonizationtool.model.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,22 @@ public class CSVColumnInfo {
 	private boolean isUnique;
 	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
-//	private Status status = Status.UNCHECKED;
+	// private Status status = Status.UNCHECKED;
 	private List<Issue> issues = new ArrayList<Issue>();
-//	private int indexInTable = -1;
+	// private int indexInTable = -1;
+	private LCADataField lcaDataField;
+
+	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified,
+			List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
+		super();
+		this.headerString = headerString;
+		this.isRequired = isRequired;
+		this.isUnique = isUnique;
+		this.leftJustified = leftJustified;
+		this.checkLists = checkLists;
+		this.issues = issues;
+		this.setLcaDataField(lcaDataField);
+	}
 
 	public CSVColumnInfo(String headerString) {
 		this.headerString = headerString;
@@ -24,7 +37,7 @@ public class CSVColumnInfo {
 		this.isUnique = false;
 		this.checkLists = null;
 	}
-	
+
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
 		this.headerString = headerString;
 		this.isRequired = isRequired;
@@ -68,13 +81,13 @@ public class CSVColumnInfo {
 		this.checkLists.add(qaCheck);
 	}
 
-//	public Status getStatus() {
-//		return status;
-//	}
-//
-//	public void setStatus(Status status) {
-//		this.status = status;
-//	}
+	// public Status getStatus() {
+	// return status;
+	// }
+	//
+	// public void setStatus(Status status) {
+	// this.status = status;
+	// }
 
 	public List<Issue> getIssues() {
 		return issues;
@@ -92,13 +105,13 @@ public class CSVColumnInfo {
 		return this.issues.size();
 	}
 
-//	public int getIndexInTable() {
-//		return indexInTable;
-//	}
-//
-//	public void setIndexInTable(int indexInTable) {
-//		this.indexInTable = indexInTable;
-//	}
+	// public int getIndexInTable() {
+	// return indexInTable;
+	// }
+	//
+	// public void setIndexInTable(int indexInTable) {
+	// this.indexInTable = indexInTable;
+	// }
 
 	public void clearIssues() {
 		this.issues.clear();
@@ -112,9 +125,11 @@ public class CSVColumnInfo {
 		this.leftJustified = leftJustified;
 	}
 
-//	public CSVColumnInfo duplicate() {
-//		CSVColumnInfo duplicate  = new CSVColumnInfo(headerString, isRequired, isRequired, checkLists);
-//		return duplicate;
-//	}
+	public LCADataField getLcaDataField() {
+		return lcaDataField;
+	}
 
+	public void setLcaDataField(LCADataField lcaDataField) {
+		this.lcaDataField = lcaDataField;
+	}
 }

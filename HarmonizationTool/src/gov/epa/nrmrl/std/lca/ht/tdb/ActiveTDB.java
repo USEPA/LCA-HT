@@ -14,7 +14,7 @@ import harmonizationtool.model.DataSetProvider;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.ECOGOV;
+import harmonizationtool.vocabulary.FEDLCA;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -254,52 +254,52 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 
 				// ECOGOV.dataSetContactName <=> ContactName
-				if (subject.hasProperty(ECOGOV.dataSetContactName)) {
+				if (subject.hasProperty(FEDLCA.dataSetContactName)) {
 					dataSetMD.setContactName(subject
-							.getProperty(ECOGOV.dataSetContactName).getObject()
+							.getProperty(FEDLCA.dataSetContactName).getObject()
 							.toString());
 				}
 				// ECOGOV.dataSetContactAffiliation <=> ContactAffiliation
-				if (subject.hasProperty(ECOGOV.dataSetContactAffiliation)) {
+				if (subject.hasProperty(FEDLCA.dataSetContactAffiliation)) {
 					dataSetMD.setContactAffiliation(subject
-							.getProperty(ECOGOV.dataSetContactAffiliation)
+							.getProperty(FEDLCA.dataSetContactAffiliation)
 							.getObject().toString());
 				}
 				// ECOGOV.dataSetContactEmail <=> ContactEmail
-				if (subject.hasProperty(ECOGOV.dataSetContactEmail)) {
+				if (subject.hasProperty(FEDLCA.dataSetContactEmail)) {
 					dataSetMD.setContactEmail(subject
-							.getProperty(ECOGOV.dataSetContactEmail)
+							.getProperty(FEDLCA.dataSetContactEmail)
 							.getObject().toString());
 				}
 				// ECOGOV.dataSetContactPhone <=> ContactPhone
-				if (subject.hasProperty(ECOGOV.dataSetContactPhone)) {
+				if (subject.hasProperty(FEDLCA.dataSetContactPhone)) {
 					dataSetMD.setContactPhone(subject
-							.getProperty(ECOGOV.dataSetContactPhone)
+							.getProperty(FEDLCA.dataSetContactPhone)
 							.getObject().toString());
 				}
 
 				// ECOGOV.dataSetCuratorName <=> CuratorName
-				if (subject.hasProperty(ECOGOV.dataSetCuratorName)) {
+				if (subject.hasProperty(FEDLCA.dataSetCuratorName)) {
 					curatorMD.setName(subject
-							.getProperty(ECOGOV.dataSetCuratorName).getObject()
+							.getProperty(FEDLCA.dataSetCuratorName).getObject()
 							.toString());
 				}
 				// ECOGOV.dataSetCuratorAffiliation <=> CuratorAffiliation
-				if (subject.hasProperty(ECOGOV.dataSetCuratorAffiliation)) {
+				if (subject.hasProperty(FEDLCA.dataSetCuratorAffiliation)) {
 					curatorMD.setAffiliation(subject
-							.getProperty(ECOGOV.dataSetCuratorAffiliation)
+							.getProperty(FEDLCA.dataSetCuratorAffiliation)
 							.getObject().toString());
 				}
 				// ECOGOV.dataSetCuratorEmail <=> CuratorEmail
-				if (subject.hasProperty(ECOGOV.dataSetCuratorEmail)) {
+				if (subject.hasProperty(FEDLCA.dataSetCuratorEmail)) {
 					curatorMD.setEmail(subject
-							.getProperty(ECOGOV.dataSetCuratorEmail)
+							.getProperty(FEDLCA.dataSetCuratorEmail)
 							.getObject().toString());
 				}
 				// ECOGOV.dataSetCuratorPhone <=> CuratorPhone
-				if (subject.hasProperty(ECOGOV.dataSetCuratorPhone)) {
+				if (subject.hasProperty(FEDLCA.dataSetCuratorPhone)) {
 					curatorMD.setPhone(subject
-							.getProperty(ECOGOV.dataSetCuratorPhone)
+							.getProperty(FEDLCA.dataSetCuratorPhone)
 							.getObject().toString());
 				}
 				// pref.localname <=> CuratorName
@@ -342,36 +342,36 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		model.addLiteral(tdbResource, DCTerms.hasVersion,
 				model.createLiteral(dataSetMD.getVersion()));
 
-		tdbResource.removeAll(ECOGOV.dataSetContactName);
-		model.addLiteral(tdbResource, ECOGOV.dataSetContactName,
+		tdbResource.removeAll(FEDLCA.dataSetContactName);
+		model.addLiteral(tdbResource, FEDLCA.dataSetContactName,
 				model.createLiteral(dataSetMD.getContactName()));
 
-		tdbResource.removeAll(ECOGOV.dataSetContactAffiliation);
-		model.addLiteral(tdbResource, ECOGOV.dataSetContactAffiliation,
+		tdbResource.removeAll(FEDLCA.dataSetContactAffiliation);
+		model.addLiteral(tdbResource, FEDLCA.dataSetContactAffiliation,
 				model.createLiteral(dataSetMD.getContactAffiliation()));
 
-		tdbResource.removeAll(ECOGOV.dataSetContactEmail);
-		model.addLiteral(tdbResource, ECOGOV.dataSetContactEmail,
+		tdbResource.removeAll(FEDLCA.dataSetContactEmail);
+		model.addLiteral(tdbResource, FEDLCA.dataSetContactEmail,
 				model.createLiteral(dataSetMD.getContactEmail()));
 
-		tdbResource.removeAll(ECOGOV.dataSetContactPhone);
-		model.addLiteral(tdbResource, ECOGOV.dataSetContactPhone,
+		tdbResource.removeAll(FEDLCA.dataSetContactPhone);
+		model.addLiteral(tdbResource, FEDLCA.dataSetContactPhone,
 				model.createLiteral(dataSetMD.getContactPhone()));
 
-		tdbResource.removeAll(ECOGOV.dataSetCuratorName);
-		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorName,
+		tdbResource.removeAll(FEDLCA.dataSetCuratorName);
+		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorName,
 				model.createLiteral(curatorMD.getName()));
 
-		tdbResource.removeAll(ECOGOV.dataSetCuratorAffiliation);
-		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorAffiliation,
+		tdbResource.removeAll(FEDLCA.dataSetCuratorAffiliation);
+		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorAffiliation,
 				model.createLiteral(curatorMD.getAffiliation()));
 
-		tdbResource.removeAll(ECOGOV.dataSetCuratorEmail);
-		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorEmail,
+		tdbResource.removeAll(FEDLCA.dataSetCuratorEmail);
+		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorEmail,
 				model.createLiteral(curatorMD.getEmail()));
 
-		tdbResource.removeAll(ECOGOV.dataSetCuratorPhone);
-		model.addLiteral(tdbResource, ECOGOV.dataSetCuratorPhone,
+		tdbResource.removeAll(FEDLCA.dataSetCuratorPhone);
+		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorPhone,
 				model.createLiteral(curatorMD.getPhone()));
 
 		if (!dataSetMD.getComments().matches("^\\s*$")) {

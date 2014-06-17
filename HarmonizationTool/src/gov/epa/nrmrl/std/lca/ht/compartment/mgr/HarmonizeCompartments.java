@@ -23,7 +23,7 @@ import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.tree.Node;
 import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ECOGOV;
+import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.LCAHT;
@@ -154,7 +154,7 @@ public class HarmonizeCompartments extends ViewPart {
 					// 1) Create a new Annotation (assigning it to the class
 					// Annotation)
 					annotationResource = model.createResource();
-					model.add(annotationResource, RDF.type, ECOGOV.Annotation);
+					model.add(annotationResource, RDF.type, FEDLCA.Annotation);
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -199,15 +199,15 @@ public class HarmonizeCompartments extends ViewPart {
 
 						Resource comparisonResource = model.createResource();
 						model.add(comparisonResource, RDF.type,
-								ECOGOV.Comparison);
-						model.add(annotationResource, ECOGOV.hasComparison,
+								FEDLCA.Comparison);
+						model.add(annotationResource, FEDLCA.hasComparison,
 								comparisonResource);
-						model.add(comparisonResource, ECOGOV.comparedSource,
+						model.add(comparisonResource, FEDLCA.comparedSource,
 								queryCompartmentResource);
-						model.add(comparisonResource, ECOGOV.comparedMaster,
+						model.add(comparisonResource, FEDLCA.comparedMaster,
 								masterCompartmentResource);
 						model.add(comparisonResource,
-								ECOGOV.comparedEquivalence, ECOGOV.equivalent);
+								FEDLCA.comparedEquivalence, FEDLCA.equivalent);
 
 						// Literal compartmentName =
 						// model.createLiteral(qString);
