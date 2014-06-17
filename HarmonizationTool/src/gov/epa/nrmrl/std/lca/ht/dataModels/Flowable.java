@@ -17,41 +17,8 @@ public class Flowable {
 	private String formula = null;
 	private String SMILES = null;
 	private Resource rdfClass = ECO.Flowable;
-//	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
 
-	// public List<QACheck> getQaChecks() {
-	// List<QACheck> allChecks = new ArrayList<QACheck>();
-	//
-	// Pattern p1 = acceptableCASFormat;
-	// Issue i1 = new Issue("Non-standard CAS format",
-	// "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
-	// "Parse digits.  To parse the numeric components, use the auto-clean function.", true);
-	// allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
-	// return allChecks;
-	// }
-
-	// public List<String> getHeadersList() {
-	// List<String> headerList = new ArrayList<String>();
-	// headerList.add("Flowable Name");
-	// headerList.add("Flowable AltName");
-	// headerList.add("CAS");
-	// headerList.add("Chemical formula");
-	// headerList.add("SMILES");
-	// return headerList;
-	// }
-	
-//	public static Issue fullyCheckCAS(String cas){
-//		QACheck casQACheck = makeCASQACheck();
-//		Issue issue = new Issue();
-//		return issue;
-//	}
-//	
-//	private QACheck makeCASQACheck(){
-//		QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null, null, null, false);
-//		casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
-//		return casQACheck;
-//	}
-
+	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists)
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
 		results[0] = new CSVColumnInfo("Flowable Name", true, true, getFlowablesNameCheckList());
@@ -158,15 +125,16 @@ public class Flowable {
 		if (digitsOnly == null || digitsOnly.equals("")) {
 			return digitsOnly;
 		}
-		digitsOnly.replaceAll("^0+", "");
-		if (Integer.parseInt(digitsOnly)<50000){
+		String noLeadingZeros = digitsOnly.replaceAll("^0+", "");
+		System.out.println("noLeadingZeros "+noLeadingZeros);
+		if (Integer.parseInt(noLeadingZeros)<50000){
 			return null;
 		}
-		standardizedCas = digitsOnly.substring(0, digitsOnly.length() - 3);
+		standardizedCas = noLeadingZeros.substring(0, noLeadingZeros.length() - 3);
 		standardizedCas += "-";
-		standardizedCas += digitsOnly.substring(digitsOnly.length() - 3, digitsOnly.length() - 1);
+		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 3, noLeadingZeros.length() - 1);
 		standardizedCas += "-";
-		standardizedCas += digitsOnly.substring(digitsOnly.length() - 1, digitsOnly.length());
+		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 1, noLeadingZeros.length());
 		return standardizedCas;
 	}
 
@@ -250,4 +218,39 @@ public class Flowable {
 	public void setRdfClass(Resource rdfClass) {
 		this.rdfClass = rdfClass;
 	}
+	
+//	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
+
+	// public List<QACheck> getQaChecks() {
+	// List<QACheck> allChecks = new ArrayList<QACheck>();
+	//
+	// Pattern p1 = acceptableCASFormat;
+	// Issue i1 = new Issue("Non-standard CAS format",
+	// "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
+	// "Parse digits.  To parse the numeric components, use the auto-clean function.", true);
+	// allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
+	// return allChecks;
+	// }
+
+	// public List<String> getHeadersList() {
+	// List<String> headerList = new ArrayList<String>();
+	// headerList.add("Flowable Name");
+	// headerList.add("Flowable AltName");
+	// headerList.add("CAS");
+	// headerList.add("Chemical formula");
+	// headerList.add("SMILES");
+	// return headerList;
+	// }
+	
+//	public static Issue fullyCheckCAS(String cas){
+//		QACheck casQACheck = makeCASQACheck();
+//		Issue issue = new Issue();
+//		return issue;
+//	}
+//	
+//	private QACheck makeCASQACheck(){
+//		QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null, null, null, false);
+//		casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
+//		return casQACheck;
+//	}
 }

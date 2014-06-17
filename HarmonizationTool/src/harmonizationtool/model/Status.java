@@ -5,13 +5,17 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Display;
 
 public enum Status {
-	NOTABLE(0, 0, 0, 255),
-	WARNING(1, 255, 255, 0),
-	UNRESOLVED(2, 255, 0, 0),
-	RESOLVED(3, 0, 255, 0),
+	UNCHECKED(0, 255, 255, 255),
+	NOISSUES(1, 255, 255, 255),
+	
+	NOTABLE(2, 0, 0, 255),
+	WARNING(3, 255, 255, 0),
 	FATAL(4, 255, 150, 150),
-	UNCHECKED(5, 0, 0, 0),
-	NOISSUES(6, 0, 255, 0);
+	
+	RESOLVED(10, 0, 255, 0);
+//	UNRESOLVED(2, 255, 0, 0),
+
+
 
 	private int value;
 	private int r;
