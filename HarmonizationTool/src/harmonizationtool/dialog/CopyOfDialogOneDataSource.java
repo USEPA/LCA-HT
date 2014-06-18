@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QListDataSources;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -41,7 +40,7 @@ public class CopyOfDialogOneDataSource extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Select a TDBDataset to analyze");
+		setTitle("Select a DataSource to analyze");
 		// Set the message
 		setMessage("Metadata", IMessageProvider.INFORMATION);
 

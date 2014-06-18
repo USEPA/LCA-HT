@@ -329,7 +329,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 		}
 		runLogger.info("  # Deleted members: "+deletedQunatites);
-		runLogger.info("  # Deleted TDBDataset meta items: "+deletedIndividuals);
+		runLogger.info("  # Deleted DataSource meta items: "+deletedIndividuals);
 
 
 		// IS THIS NEEDED IN CASE ANYTHING IS LEFT OVER?!?

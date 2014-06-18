@@ -83,7 +83,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			return;
 		}
 		this.curDataSetProvider = DataSetKeeper.get(0);
-		runLogger.info("SET META existing TDBDataset");
+		runLogger.info("SET META existing DataSource");
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD, DataSetProvider dataSetProvider) {
@@ -96,7 +96,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.curDataSetProvider = callingDataSetProvider;
 		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
-		runLogger.info("SET META start - existing TDBDataset");
+		runLogger.info("SET META start - existing DataSource");
 		runLogger.info("  start name = " + dataSetProvider.getDataSetMD().getName());
 	}
 

@@ -429,11 +429,11 @@ public class FlowsWorkflow extends ViewPart {
 			} else {
 				int triples = safeCommitFlowables2TDB();
 				triples += safeCommitFlowContexts2TDB();
-				textIssues.setText(triples + " triples added to TDB.");
+				textCommitToDB.setText(triples + " triples added to TDB.");
 				if (triples == 0) {
-					textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+					textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				} else {
-					textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+					textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 				}
 				btnAutoMatch.setEnabled(true);
 			}
@@ -492,6 +492,7 @@ public class FlowsWorkflow extends ViewPart {
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
 		Model model = ActiveTDB.model;
+		
 
 		long triples = model.size();
 		// CSVColumnInfo[] FlowableCSVColumnInfos =

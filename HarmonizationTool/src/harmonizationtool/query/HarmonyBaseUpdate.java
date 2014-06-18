@@ -59,8 +59,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 //			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return;
 		}
-//		String tdbDir = ActiveTDB.tdbDir;
-//		Dataset TDBDataset = ActiveTDB.TDBDataset;
+
 		queryResults = new QueryResults();
 		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
@@ -98,7 +97,6 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 		try {
 			proc.execute();
-//			TDBDataset.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

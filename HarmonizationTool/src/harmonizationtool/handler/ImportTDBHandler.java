@@ -3,7 +3,6 @@ package harmonizationtool.handler;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
-import harmonizationtool.query.unused.XNumberDataSets;
 import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
@@ -45,7 +44,7 @@ public class ImportTDBHandler implements IHandler {
 
 //	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
 //	private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
-	private XNumberDataSets xNumberDataSets = new XNumberDataSets();
+//	private XNumberDataSets xNumberDataSets = new XNumberDataSets();
 
 	// qGetNextDSIndex.
 

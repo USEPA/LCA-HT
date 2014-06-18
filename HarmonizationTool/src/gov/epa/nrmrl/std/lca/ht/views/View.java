@@ -13,7 +13,6 @@ import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.FASC;
@@ -23,8 +22,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import org.eclipse.jface.action.Action;
@@ -374,8 +371,6 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset TDBDataset = ActiveTDB.TDBDataset;
-					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
@@ -640,8 +635,6 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset TDBDataset = ActiveTDB.TDBDataset;
-					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
@@ -921,8 +914,6 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset TDBDataset = ActiveTDB.TDBDataset;
-					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
 
