@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class FileMD {
 	private String filename;
@@ -24,6 +25,7 @@ public class FileMD {
 
 	public FileMD() {
 		this.tdbResource = model.createResource();
+//		model.add(tdbResource, RDF.type, LCAHT.dataFile);
 	}
 	
 	public FileMD(Resource tdbResource) {
