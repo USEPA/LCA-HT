@@ -8,9 +8,9 @@ import java.util.Set;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.CuratorMD;
-import harmonizationtool.model.DataSetKeeper;
-import harmonizationtool.model.DataSetMD;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
@@ -102,7 +102,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		openTDB();
 		updateStatusLine();
 		try {
-			syncTDBToDataSetKeeper();
+			syncTDBToDataSourceKeeper();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException(
 					"***********THE TDB MAY BE BAD*******************");
@@ -194,13 +194,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	/**
-	 * Because the DataSetKeeper does not contain DataSets, but the TDB might,
-	 * we need to get DataSet info from the TDB Each TDB subject which is
-	 * rdf:type eco:DataSource should have a DataSetProvider NOTE:
-	 * eco:DataSource should change to lcaht:DataSet
+	 * Because the DataSourceKeeper does not contain DataSources, but the TDB might,
+	 * we need to get DataSources info from the TDB. Each TDB subject which is
+	 * rdf:type eco:DataSource should have a DataSourceProvider
 	 */
-	public static void syncTDBToDataSetKeeper() { // THIS IS CURRENTLY LIKE
-													// initiateDataSetKeeper
+	public static void syncTDBToDataSourceKeeper() {
 		if (model == null) {
 			openTDB();
 		}
@@ -210,11 +208,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		while (iterator.hasNext()) {
 			Resource subject = iterator.next();
 
-			int dataSetIndex = DataSetKeeper.getByTdbResource(subject);
-			if (dataSetIndex < 0) {
-				DataSetProvider dataSetProvider = new DataSetProvider();
-				dataSetProvider.setTdbResource(subject);
-				DataSetMD dataSetMD = new DataSetMD();
+			int dataSourceIndex = DataSourceKeeper.getByTdbResource(subject);
+			if (dataSourceIndex < 0) {
+				DataSourceProvider dataSourceProvider = new DataSourceProvider();
+				dataSourceProvider.setTdbResource(subject);
+				DataSourceMD dataSourceMD = new DataSourceMD();
 				CuratorMD curatorMD = new CuratorMD();
 
 				// RDFS.label <=> Name
@@ -232,74 +230,74 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				String name = subject.getProperty(RDFS.label).getObject()
 						.toString();
 
-//				while (DataSetKeeper.indexOfDataSetName(name) > -1) {
+//				while (DataSourceKeeper.indexOfdataSourceName(name) > -1) {
 //					name += "+";
 //				}
-				String newName = DataSetKeeper.uniquify(name);
-				name = DataSetKeeper.uniquify(name);
+				String newName = DataSourceKeeper.uniquify(name);
+				name = DataSourceKeeper.uniquify(name);
 				subject.getProperty(RDFS.label).changeObject(name);
-				dataSetMD.setName(name);
+				dataSourceMD.setName(name);
 
 				// RDFS.comment <=> Comments
 				if (subject.hasProperty(RDFS.comment)) {
-					dataSetMD.setComments(subject.getProperty(RDFS.comment)
+					dataSourceMD.setComments(subject.getProperty(RDFS.comment)
 							.getObject().toString());
 				}
 
 				// DCTerms.hasVersion <=> Version
 				if (subject.hasProperty(DCTerms.hasVersion)) {
-					dataSetMD.setVersion(subject
+					dataSourceMD.setVersion(subject
 							.getProperty(DCTerms.hasVersion).getObject()
 							.toString());
 				}
 
-				// ECOGOV.dataSetContactName <=> ContactName
-				if (subject.hasProperty(FEDLCA.dataSetContactName)) {
-					dataSetMD.setContactName(subject
-							.getProperty(FEDLCA.dataSetContactName).getObject()
+				// ECOGOV.dataSourceContactName <=> ContactName
+				if (subject.hasProperty(FEDLCA.dataSourceContactName)) {
+					dataSourceMD.setContactName(subject
+							.getProperty(FEDLCA.dataSourceContactName).getObject()
 							.toString());
 				}
-				// ECOGOV.dataSetContactAffiliation <=> ContactAffiliation
-				if (subject.hasProperty(FEDLCA.dataSetContactAffiliation)) {
-					dataSetMD.setContactAffiliation(subject
-							.getProperty(FEDLCA.dataSetContactAffiliation)
+				// ECOGOV.dataSourceContactAffiliation <=> ContactAffiliation
+				if (subject.hasProperty(FEDLCA.dataSourceContactAffiliation)) {
+					dataSourceMD.setContactAffiliation(subject
+							.getProperty(FEDLCA.dataSourceContactAffiliation)
 							.getObject().toString());
 				}
-				// ECOGOV.dataSetContactEmail <=> ContactEmail
-				if (subject.hasProperty(FEDLCA.dataSetContactEmail)) {
-					dataSetMD.setContactEmail(subject
-							.getProperty(FEDLCA.dataSetContactEmail)
+				// ECOGOV.dataSourceContactEmail <=> ContactEmail
+				if (subject.hasProperty(FEDLCA.dataSourceContactEmail)) {
+					dataSourceMD.setContactEmail(subject
+							.getProperty(FEDLCA.dataSourceContactEmail)
 							.getObject().toString());
 				}
-				// ECOGOV.dataSetContactPhone <=> ContactPhone
-				if (subject.hasProperty(FEDLCA.dataSetContactPhone)) {
-					dataSetMD.setContactPhone(subject
-							.getProperty(FEDLCA.dataSetContactPhone)
+				// ECOGOV.dataSourceContactPhone <=> ContactPhone
+				if (subject.hasProperty(FEDLCA.dataSourceContactPhone)) {
+					dataSourceMD.setContactPhone(subject
+							.getProperty(FEDLCA.dataSourceContactPhone)
 							.getObject().toString());
 				}
 
-				// ECOGOV.dataSetCuratorName <=> CuratorName
-				if (subject.hasProperty(FEDLCA.dataSetCuratorName)) {
+				// ECOGOV.dataSourceCuratorName <=> CuratorName
+				if (subject.hasProperty(FEDLCA.dataSourceCuratorName)) {
 					curatorMD.setName(subject
-							.getProperty(FEDLCA.dataSetCuratorName).getObject()
+							.getProperty(FEDLCA.dataSourceCuratorName).getObject()
 							.toString());
 				}
-				// ECOGOV.dataSetCuratorAffiliation <=> CuratorAffiliation
-				if (subject.hasProperty(FEDLCA.dataSetCuratorAffiliation)) {
+				// ECOGOV.dataSourceCuratorAffiliation <=> CuratorAffiliation
+				if (subject.hasProperty(FEDLCA.dataSourceCuratorAffiliation)) {
 					curatorMD.setAffiliation(subject
-							.getProperty(FEDLCA.dataSetCuratorAffiliation)
+							.getProperty(FEDLCA.dataSourceCuratorAffiliation)
 							.getObject().toString());
 				}
-				// ECOGOV.dataSetCuratorEmail <=> CuratorEmail
-				if (subject.hasProperty(FEDLCA.dataSetCuratorEmail)) {
+				// ECOGOV.dataSourceCuratorEmail <=> CuratorEmail
+				if (subject.hasProperty(FEDLCA.dataSourceCuratorEmail)) {
 					curatorMD.setEmail(subject
-							.getProperty(FEDLCA.dataSetCuratorEmail)
+							.getProperty(FEDLCA.dataSourceCuratorEmail)
 							.getObject().toString());
 				}
-				// ECOGOV.dataSetCuratorPhone <=> CuratorPhone
-				if (subject.hasProperty(FEDLCA.dataSetCuratorPhone)) {
+				// ECOGOV.dataSourceCuratorPhone <=> CuratorPhone
+				if (subject.hasProperty(FEDLCA.dataSourceCuratorPhone)) {
 					curatorMD.setPhone(subject
-							.getProperty(FEDLCA.dataSetCuratorPhone)
+							.getProperty(FEDLCA.dataSourceCuratorPhone)
 							.getObject().toString());
 				}
 				// pref.localname <=> CuratorName
@@ -307,24 +305,24 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				// pref.localname <=> CuratorEmail
 				// pref.localname <=> CuratorPhone
 
-				dataSetProvider.setDataSetMD(dataSetMD);
-				dataSetProvider.setCuratorMD(curatorMD);
-				DataSetKeeper.add(dataSetProvider);
+				dataSourceProvider.setDataSourceMD(dataSourceMD);
+				dataSourceProvider.setCuratorMD(curatorMD);
+				DataSourceKeeper.add(dataSourceProvider);
 			}
 		}
 	}
 
-	public static void syncDataSetProviderToTDB(DataSetProvider dsProvider) {
-		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or
+	public static void syncDataSourceProviderToTDB(DataSourceProvider dsProvider) {
+		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSourceProvider or
 		// ActiveTDB
-		DataSetMD dataSetMD = dsProvider.getDataSetMD();
+		DataSourceMD dataSourceMD = dsProvider.getDataSourceMD();
 		CuratorMD curatorMD = dsProvider.getCuratorMD();
 
 		Model model = ActiveTDB.model;
 		Resource tdbResource = dsProvider.getTdbResource();
 		assert tdbResource != null : "tdbResource cannot be null";
 		assert RDFS.label != null : "RDFS.label cannot be null";
-		assert dataSetMD.getName() != null : "dataSetMD.getName() cannot be null";
+		assert dataSourceMD.getName() != null : "dataSourceMD.getName() cannot be null";
 		System.out.println("tdbResource = " + tdbResource);
 		
 
@@ -332,52 +330,52 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbResource.removeAll(RDFS.label);
 		}
 		model.addLiteral(tdbResource, RDFS.label,
-				model.createLiteral(dataSetMD.getName()));
+				model.createLiteral(dataSourceMD.getName()));
 
 		// tdbResource.removeAll(RDFS.comment);
 		model.addLiteral(tdbResource, RDFS.comment,
-				model.createLiteral(dataSetMD.getComments()));
+				model.createLiteral(dataSourceMD.getComments()));
 
 		tdbResource.removeAll(DCTerms.hasVersion);
 		model.addLiteral(tdbResource, DCTerms.hasVersion,
-				model.createLiteral(dataSetMD.getVersion()));
+				model.createLiteral(dataSourceMD.getVersion()));
 
-		tdbResource.removeAll(FEDLCA.dataSetContactName);
-		model.addLiteral(tdbResource, FEDLCA.dataSetContactName,
-				model.createLiteral(dataSetMD.getContactName()));
+		tdbResource.removeAll(FEDLCA.dataSourceContactName);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceContactName,
+				model.createLiteral(dataSourceMD.getContactName()));
 
-		tdbResource.removeAll(FEDLCA.dataSetContactAffiliation);
-		model.addLiteral(tdbResource, FEDLCA.dataSetContactAffiliation,
-				model.createLiteral(dataSetMD.getContactAffiliation()));
+		tdbResource.removeAll(FEDLCA.dataSourceContactAffiliation);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceContactAffiliation,
+				model.createLiteral(dataSourceMD.getContactAffiliation()));
 
-		tdbResource.removeAll(FEDLCA.dataSetContactEmail);
-		model.addLiteral(tdbResource, FEDLCA.dataSetContactEmail,
-				model.createLiteral(dataSetMD.getContactEmail()));
+		tdbResource.removeAll(FEDLCA.dataSourceContactEmail);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceContactEmail,
+				model.createLiteral(dataSourceMD.getContactEmail()));
 
-		tdbResource.removeAll(FEDLCA.dataSetContactPhone);
-		model.addLiteral(tdbResource, FEDLCA.dataSetContactPhone,
-				model.createLiteral(dataSetMD.getContactPhone()));
+		tdbResource.removeAll(FEDLCA.dataSourceContactPhone);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceContactPhone,
+				model.createLiteral(dataSourceMD.getContactPhone()));
 
-		tdbResource.removeAll(FEDLCA.dataSetCuratorName);
-		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorName,
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorName);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceCuratorName,
 				model.createLiteral(curatorMD.getName()));
 
-		tdbResource.removeAll(FEDLCA.dataSetCuratorAffiliation);
-		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorAffiliation,
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorAffiliation);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceCuratorAffiliation,
 				model.createLiteral(curatorMD.getAffiliation()));
 
-		tdbResource.removeAll(FEDLCA.dataSetCuratorEmail);
-		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorEmail,
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorEmail);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceCuratorEmail,
 				model.createLiteral(curatorMD.getEmail()));
 
-		tdbResource.removeAll(FEDLCA.dataSetCuratorPhone);
-		model.addLiteral(tdbResource, FEDLCA.dataSetCuratorPhone,
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorPhone);
+		model.addLiteral(tdbResource, FEDLCA.dataSourceCuratorPhone,
 				model.createLiteral(curatorMD.getPhone()));
 
-		if (!dataSetMD.getComments().matches("^\\s*$")) {
+		if (!dataSourceMD.getComments().matches("^\\s*$")) {
 			// ONLY IF NOT ALL WHITE SPACES
 			model.addLiteral(tdbResource, RDFS.comment,
-					model.createLiteral(dataSetMD.getComments()));
+					model.createLiteral(dataSourceMD.getComments()));
 		}
 	}
 

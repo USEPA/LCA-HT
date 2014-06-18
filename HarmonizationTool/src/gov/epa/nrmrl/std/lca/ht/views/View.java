@@ -5,8 +5,8 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.DataSetKeeper;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 //import harmonizationtool.model.ModelKeeper;
 //import harmonizationtool.model.ModelProvider;
@@ -200,13 +200,13 @@ public class View extends ViewPart {
 				}
 				System.out.println(selection.getFirstElement().toString());
 				FileMD fileMD = (FileMD) selection.toList().get(0);
-				DataSetProvider dataSetProvider = DataSetKeeper.get(fileMD);
+				DataSourceProvider dataSourceProvider = DataSourceKeeper.get(fileMD);
 				// String key = (String) selection.toList().get(0);
-				// DataSetProvider dataSetProvider = DataSetKeeper.get(0); //
+				// DataSourceProvider dataSourceProvider = DataSourceKeeper.get(0); //
 				// FIXME
 				// Map<String, String> metaData = csvFile.metaData;
 				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent()
-						.getActiveShell(), fileMD, dataSetProvider);
+						.getActiveShell(), fileMD, dataSourceProvider);
 				dialog.create();
 				dialog.open();
 			}
@@ -285,9 +285,9 @@ public class View extends ViewPart {
 				FileMD fileMD = (FileMD) ((IStructuredSelection) iSelection)
 						.getFirstElement();
 				remove(fileMD);
-				DataSetProvider dataSetProvider = DataSetKeeper.get(fileMD);
-				if (dataSetProvider != null) {
-					dataSetProvider.remove(fileMD);
+				DataSourceProvider dataSourceProvider = DataSourceKeeper.get(fileMD);
+				if (dataSourceProvider != null) {
+					dataSourceProvider.remove(fileMD);
 				}
 
 				// clear data from data view
@@ -399,7 +399,7 @@ public class View extends ViewPart {
 					System.out.println("dataRowList.size = "
 							+ dataRowList.size());
 
-					Resource tdbResource = DataSetKeeper.get(fileMD)
+					Resource tdbResource = DataSourceKeeper.get(fileMD)
 							.getTdbResource();
 
 					Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
@@ -663,7 +663,7 @@ public class View extends ViewPart {
 					System.out.println("dataRowList.size = "
 							+ dataRowList.size());
 
-					Resource tdbResource = DataSetKeeper.get(fileMD)
+					Resource tdbResource = DataSourceKeeper.get(fileMD)
 							.getTdbResource();
 
 					Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();
@@ -942,7 +942,7 @@ public class View extends ViewPart {
 					System.out.println("dataRowList.size = "
 							+ dataRowList.size());
 
-					Resource tdbResource = DataSetKeeper.get(fileMD)
+					Resource tdbResource = DataSourceKeeper.get(fileMD)
 							.getTdbResource();
 
 					Hashtable<String, Resource> str2res = new Hashtable<String, Resource>();

@@ -22,7 +22,7 @@ import harmonizationtool.query.QDataSetContents;
 
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QMatchCASandName;
-import harmonizationtool.query.UDelDataSet;
+import harmonizationtool.query.UDelDataSource;
 
 import harmonizationtool.query.QCountMatches;
 import harmonizationtool.query.QDataSources;
@@ -73,7 +73,7 @@ public class QueryView extends ViewPart {
 
 	private TableViewer viewer;
 
-	private UDelDataSet uDelDataSet = new UDelDataSet();
+	private UDelDataSource uDelDataSource = new UDelDataSource();
 
 	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
 	private List<String> paramUpdates = new ArrayList<String>();
@@ -214,7 +214,7 @@ public class QueryView extends ViewPart {
 			addQuery(labeledQuery);
 		}
 
-		addUpdate(uDelDataSet);
+		addUpdate(uDelDataSource);
 
 //		ActiveTDB.getInstance().addSelectedTDBListener(this);
 //		ActiveTDB().addSelectedTDBListener(this);

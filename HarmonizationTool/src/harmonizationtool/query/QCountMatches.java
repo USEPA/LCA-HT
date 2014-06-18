@@ -1,7 +1,7 @@
 package harmonizationtool.query;
 
 import harmonizationtool.dialog.DialogQueryDataSource;
-import harmonizationtool.model.DataSetKeeper;
+import harmonizationtool.model.DataSourceKeeper;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -20,7 +20,7 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 	
 	public ResultSet getResultSet() {
-		if (DataSetKeeper.size() < 1){
+		if (DataSourceKeeper.size() < 1){
 			// THERE IS NO DATA TO GET
 			return super.getResultSet();
 		}
@@ -33,7 +33,7 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	public ResultSet getResultSet(String param1, String[] referenceDataSets) {
-		if (DataSetKeeper.size() < 1){
+		if (DataSourceKeeper.size() < 1){
 			// THERE IS NO DATA TO GET
 			return super.getResultSet();
 		}
@@ -57,7 +57,7 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	private void buildQuery() {
-		if (DataSetKeeper.size() < 1){
+		if (DataSourceKeeper.size() < 1){
 			// THERE IS NO DATA TO GET
 			setQuery(null);
 			return;

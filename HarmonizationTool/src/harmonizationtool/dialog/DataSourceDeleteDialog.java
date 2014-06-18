@@ -7,9 +7,9 @@ import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.CuratorMD;
-import harmonizationtool.model.DataSetKeeper;
-import harmonizationtool.model.DataSetMD;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
@@ -51,10 +51,10 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
-	private DataSetProvider curDataSetProvider = null;
-	private DataSetProvider callingDataSetProvider = null;
+	private DataSourceProvider curDataSourceProvider = null;
+	private DataSourceProvider callingDataSourceProvider = null;
 	private FileMD callingFileMD = null;
-	private Combo comboDataSetSelector = null;
+	private Combo comboDataSourceSelector = null;
 	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
 	private ComboFileSelectorListener comboFileSelectorListener;
@@ -72,21 +72,21 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	public DataSourceDeleteDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1 - CHOOSE A DATA SET TO DELETE
-		if (DataSetKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
+		if (DataSourceKeeper.size() == 0) {
+			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
-		if (DataSetKeeper.size() == 0) {
+		if (DataSourceKeeper.size() == 0) {
 			return;
 		}
-		this.curDataSetProvider = DataSetKeeper.get(0);
+		this.curDataSourceProvider = DataSourceKeeper.get(0);
 	}
 
-	public DataSourceDeleteDialog(Shell parentShell, DataSetProvider dataSetProvider) {
+	public DataSourceDeleteDialog(Shell parentShell, DataSourceProvider dataSourceProvider) {
 		// CASE 2 - DELETE A SPECIFIC DATA SET
 		super(parentShell);
-		this.callingDataSetProvider = dataSetProvider;
-		this.curDataSetProvider = callingDataSetProvider;
+		this.callingDataSourceProvider = dataSourceProvider;
+		this.curDataSourceProvider = callingDataSourceProvider;
 		// this.curFileMD = callingFileMD;
 	}
 
@@ -118,14 +118,13 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		rowIndex++;
 		Label lbl_01 = new Label(composite, SWT.RIGHT);
 		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lbl_01.setText("Name");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
-		comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
+		comboDataSourceSelector = new Combo(composite, SWT.READ_ONLY);
 
-		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		comboDataSetSelector.setItems(getDataSetInfo());
+		comboDataSourceSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		comboDataSourceSelector.setItems(getDataSourceInfo());
 
 		rowIndex++;
 		Label lbl_07 = new Label(composite, SWT.RIGHT);
@@ -189,7 +188,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		comboFileSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		// NEXT STEP: COLLECT FILE LIST INFO BASED ON WHAT IS PASSED, AND ADD
 		// OTHER
-		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSetSelector.getText());
+		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSourceSelector.getText());
 		comboFileSelectorListener = new ComboFileSelectorListener();
 		comboFileSelector.addModifyListener(comboFileSelectorListener);
 
@@ -273,8 +272,8 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		dialogValues.add(text_15); // 11 Curator Email
 		dialogValues.add(text_16); // 12 Curator Phone
 
-		comboDataSetSelector.select(0);
-		comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
+		comboDataSourceSelector.select(0);
+		comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
 
 		redrawDialogRows();
 
@@ -291,15 +290,15 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
-		int index = DataSetKeeper.indexOfDataSetName(comboDataSetSelector.getText());
-		// CONFIRM DELETION OF DATASET
+		int index = DataSourceKeeper.indexOfDataSourceName(comboDataSourceSelector.getText());
+		// CONFIRM DELETION OF DATASOURCE
 		Logger runLogger = Logger.getLogger("run");
-		runLogger.info("DELETE DATA SET: name = "+comboDataSetSelector.getText());
-		DataSetProvider dataSetProvider = DataSetKeeper.get(index);
-		Resource tdbResource = dataSetProvider.getTdbResource();
+		runLogger.info("DELETE DATASOURCE: name = "+comboDataSourceSelector.getText());
+		DataSourceProvider dataSourceProvider = DataSourceKeeper.get(index);
+		Resource tdbResource = dataSourceProvider.getTdbResource();
 		runLogger.info("  DELETE TDB DATA: tdbReference = "+tdbResource);
 
-		DataSetKeeper.remove(dataSetProvider);
+		DataSourceKeeper.remove(dataSourceProvider);
 		Model model = ActiveTDB.model;
 		// StmtIterator stmtIterator = tdbResource.listProperties();
 		// List<Property> toKill = new ArrayList<Property>();
@@ -339,58 +338,58 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	}
 
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
-	private String[] getDataSetInfo() {
+	private String[] getDataSourceInfo() {
 		List<String> toSort = new ArrayList<String>();
 
-		List<Integer> ids = DataSetKeeper.getIDs();
+		List<Integer> ids = DataSourceKeeper.getIDs();
 		Iterator<Integer> iterator = ids.iterator();
 
 		while (iterator.hasNext()) {
 			int id = iterator.next();
-			toSort.add(DataSetKeeper.get(id).getDataSetMD().getName());
+			toSort.add(DataSourceKeeper.get(id).getDataSourceMD().getName());
 		}
 		Collections.sort(toSort);
 
-		String[] results = new String[DataSetKeeper.size()];
+		String[] results = new String[DataSourceKeeper.size()];
 		for (int i = 0; i < toSort.size(); i++) {
 			results[i] = toSort.get(i);
 		}
-		curDataSetProvider = DataSetKeeper.get(DataSetKeeper.indexOfDataSetName(results[0]));
+		curDataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.indexOfDataSourceName(results[0]));
 		return results;
 
 	}
 
-	protected void populateDataSetMD() {
-		String selectedDataSetName = comboDataSetSelector.getText();
-		int selectedDataSetID = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
-		if (selectedDataSetID > -1) {
-			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
+	protected void populateDataSourceMD() {
+		String selectedDataSourceName = comboDataSourceSelector.getText();
+		int selectedDataSourceID = DataSourceKeeper.indexOfDataSourceName(selectedDataSourceName);
+		if (selectedDataSourceID > -1) {
+			curDataSourceProvider = DataSourceKeeper.get(selectedDataSourceID);
 		}
 
 		redrawDialogRows();
 	}
 
-	protected void redrawDialogDataSetMD() {
-		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
-		System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
-		dialogValues.get(3).setText(dataSetMD.getVersion());
-		dialogValues.get(4).setText(dataSetMD.getComments());
-		dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
-		dialogValues.get(7).setText(dataSetMD.getContactEmail());
-		dialogValues.get(8).setText(dataSetMD.getContactPhone());
+	protected void redrawDialogDataSourceMD() {
+		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
+		dialogValues.get(3).setText(dataSourceMD.getVersion());
+		dialogValues.get(4).setText(dataSourceMD.getComments());
+		dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
+		dialogValues.get(7).setText(dataSourceMD.getContactEmail());
+		dialogValues.get(8).setText(dataSourceMD.getContactPhone());
 	}
 
 	protected void redrawDialogFileMD() {
 		FileMD curFileMD = callingFileMD; // MAY BE NULL
 		int index = comboFileSelector.getSelectionIndex();
 		if (index >= 0) {
-			// if (curDataSetProvider != null) {
+			// if (curDataSourceProvider != null) {
 			if (callingFileMD != null) {
 				if (index > 0) {
-					curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
+					curFileMD = curDataSourceProvider.getFileMDList().get(index - 1);
 				}
 			} else {
-				curFileMD = curDataSetProvider.getFileMDList().get(index);
+				curFileMD = curDataSourceProvider.getFileMDList().get(index);
 			}
 			// }
 		}
@@ -407,7 +406,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogCuratorMD() {
-		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
+		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 		System.out.println("curatorMD.getName: = " + curatorMD.getName());
 		dialogValues.get(9).setText(curatorMD.getName());
 		dialogValues.get(10).setText(curatorMD.getAffiliation());
@@ -426,7 +425,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	protected void redrawDialogRows() {
 		clearDialogRows();
 
-		redrawDialogDataSetMD();
+		redrawDialogDataSourceMD();
 
 		createComboFileSelectorList();
 		redrawDialogFileMD();
@@ -436,15 +435,15 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 	protected void createComboFileSelectorList() {
 		comboFileSelector.removeAll();
-		if (curDataSetProvider == null) {
+		if (curDataSourceProvider == null) {
 			if (callingFileMD != null) {
 				comboFileSelector.add(callingFileMD.getFilename());
 			}
 			return;
 		}
-		List<FileMD> fileMDList = curDataSetProvider.getFileMDList();
+		List<FileMD> fileMDList = curDataSourceProvider.getFileMDList();
 		int selectionIndex = 0;
-		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+		if ((callingFileMD != null) && (callingDataSourceProvider == null)) {
 			comboFileSelector.add(callingFileMD.getFilename());
 		}
 		for (int i = 0; i < fileMDList.size(); i++) {

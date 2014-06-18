@@ -4,7 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.utils.Util;
 
@@ -39,9 +39,6 @@ public class FlowsWorkflow extends ViewPart {
 	// private static Text textSemiAutoMatched;
 	private static Text textManualMatched;
 
-	// private static Button btnDataset;
-	// private static Button btnAssignColumns;
-
 	private Label label_01;
 	private Label label_02;
 	private Label label_03;
@@ -56,7 +53,7 @@ public class FlowsWorkflow extends ViewPart {
 	private static Button btnConcludeFile;
 
 	private static FileMD fileMD;
-	private static DataSetProvider dataSetProvider;
+	private static DataSourceProvider dataSourceProvider;
 
 	// private static TableProvider tableProvider;
 
@@ -324,19 +321,14 @@ public class FlowsWorkflow extends ViewPart {
 		setTextMetaFileInfo(fileMD.getPath());
 	}
 
-	// public static void setDataSource(String dataSet) {
-	// // setTextAssociatedDataSource(dataSet);
-	// // btnDataSource.setSelection(true);
-	// }
-
-	public static void setDataSetProvider(DataSetProvider dsProvider) {
-		dataSetProvider = dsProvider;
-		// setDataSource(dataSetProvider.getDataSourceMD().getName());
+	public static void setDataSourceProvider(DataSourceProvider dsProvider) {
+		dataSourceProvider = dsProvider;
+		// setDataSource(dataSourceProvider.getDataSourceMD().getName());
 		if (getTextFileInfo().length() < 1) {
-			setFileMD(dataSetProvider.getFileMDList().get(0));
+			setFileMD(dataSourceProvider.getFileMDList().get(0));
 			// HACK: CHOOSE FIRST FILE
 		} else {
-			setFileMD(dataSetProvider.getFileMDList().get(dataSetProvider.getFileMDList().size() - 1));
+			setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size() - 1));
 		}
 		setHeaderInfo();
 	}

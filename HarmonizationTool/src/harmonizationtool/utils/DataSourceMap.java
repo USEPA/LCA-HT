@@ -5,18 +5,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-//public class DataSetMgr {
-
-//	private Integer DSid = null;
-public class DataSetMap {
+public class DataSourceMap {
 	private Map<Integer, Resource> idToResource = new ConcurrentHashMap<Integer, Resource>();
 	private Map<Resource, Integer> resourceToId = new ConcurrentHashMap<Resource, Integer>();
-	private static final DataSetMap instance = new DataSetMap();
+	private static final DataSourceMap instance = new DataSourceMap();
 
-	private DataSetMap() {
+	private DataSourceMap() {
 	}
 
-	public static DataSetMap getInstance() {
+	public static DataSourceMap getInstance() {
 		return instance;
 	}
 
@@ -31,7 +28,7 @@ public class DataSetMap {
 		return removedResource;
 	}
 
-	synchronized public Integer removeByDataSet(Resource resource) {
+	synchronized public Integer removeByDataSource(Resource resource) {
 		Integer removedId = resourceToId.remove(resource);
 		idToResource.remove(removedId);
 		return removedId;
@@ -41,7 +38,7 @@ public class DataSetMap {
 		return idToResource.containsKey(id);
 	}
 
-	public boolean containsDataSet(Resource resource) {
+	public boolean containsDataSource(Resource resource) {
 		return idToResource.containsValue(resource);
 	}
 
@@ -53,7 +50,7 @@ public class DataSetMap {
 		}
 	}
 
-	public Resource getDataSet(Integer id) {
+	public Resource getDataSource(Integer id) {
 		return idToResource.get(id);
 	}
 

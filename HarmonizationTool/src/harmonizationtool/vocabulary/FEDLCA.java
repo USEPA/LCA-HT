@@ -11,9 +11,8 @@ import com.hp.hpl.jena.vocabulary.VCARD;
 import com.hp.hpl.jena.vocabulary.DC_11;
 
 /**
- * Vocabulary definitions from being developed by the Environmental Modeling and
- * Visualization Lab (EMVL) Supporting work for PIs Troy Hawkins and Wes
- * Ingwersen, US EPA
+ * Vocabulary definitions from being developed by the Environmental Modeling and Visualization Lab (EMVL) Supporting
+ * work for PIs Troy Hawkins and Wes Ingwersen, US EPA
  * 
  * @author Tom Transue 03 Jan 2014 09:46
  */
@@ -70,23 +69,23 @@ public class FEDLCA {
 	public static final Resource Comparison = m_model
 			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#Comparison");
 
-	public static final Property dataSetContactName = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetContactName");
-	public static final Property dataSetContactAffiliation = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetContactAffiliation");
-	public static final Property dataSetContactEmail = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetContactEmail");
-	public static final Property dataSetContactPhone = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetContactPhone");
+	public static final Property dataSourceContactName = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactName");
+	public static final Property dataSourceContactAffiliation = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactAffiliation");
+	public static final Property dataSourceContactEmail = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactEmail");
+	public static final Property dataSourceContactPhone = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactPhone");
 
-	public static final Property dataSetCuratorName = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetCuratorName");
-	public static final Property dataSetCuratorAffiliation = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetCuratorAffiliation");
-	public static final Property dataSetCuratorEmail = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetCuratorEmail");
-	public static final Property dataSetCuratorPhone = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSetCuratorPhone");
+	public static final Property dataSourceCuratorName = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorName");
+	public static final Property dataSourceCuratorAffiliation = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorAffiliation");
+	public static final Property dataSourceCuratorEmail = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorEmail");
+	public static final Property dataSourceCuratorPhone = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorPhone");
 
 	public static final Property hasComparison = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasComparison");
@@ -99,8 +98,8 @@ public class FEDLCA {
 
 	/**
 	 * <p>
-	 * 'has compartment' is a static concept as opposed to either 'to' or 'from'
-	 * which represent transfer in an elementary flow
+	 * 'has compartment' is a static concept as opposed to either 'to' or 'from' which represent transfer in an
+	 * elementary flow
 	 * </p>
 	 */
 	public static final Property hasCompartment = m_model
@@ -115,8 +114,7 @@ public class FEDLCA {
 
 	/**
 	 * <p>
-	 * This is being used to associate a "EcosphereExhange" with an
-	 * "ElementaryFlow"
+	 * This is being used to associate a "EcosphereExhange" with an "ElementaryFlow"
 	 * </p>
 	 */
 	public static final Property hasElementaryFlow = m_model

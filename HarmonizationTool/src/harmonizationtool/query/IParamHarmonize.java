@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
 public interface IParamHarmonize {
-	void setQueryDataSet(String queryDataSet);
-	void setReferenceDataSet(String referenceDataSet);
+	void setQueryDataSource(String queryDataSource);
+	void setReferenceDataSource(String referenceDataSource);
 }

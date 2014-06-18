@@ -176,9 +176,8 @@ public class TableProvider {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
 		List<String> origHeaderNames = resultSetRewindable.getResultVars();
-		String dataSetName = "DataSet";
-		tableProvider.headerRow.add(dataSetName); // THE FIRST COLUMN IS
-													// DataSet
+		String dataSourceName = "DataSource";
+		tableProvider.headerRow.add(dataSourceName); // THE FIRST COLUMN IS DataSource
 		Map<String, TransformCell> headerMap = new HashMap<String, TransformCell>();
 		for (String origHeader : origHeaderNames) {
 			int headerSplitPoint = origHeader.indexOf("_");
@@ -194,9 +193,8 @@ public class TableProvider {
 				if (origHeaderPrefix.matches("^" + SUBROW_PREFIX + "\\d+$")) {
 					subRowNum = Integer.parseInt(origHeaderPrefix.substring(SUBROW_PREFIX.length()));
 
-					if (origHeaderField.equals(SUBROW_NAMEHEADER)) { // DataSet
-																		// FIELD
-						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSetName);
+					if (origHeaderField.equals(SUBROW_NAMEHEADER)) { // DataSource FIELD
+						TransformCell transformCell = tableProvider.new TransformCell(subRowNum, dataSourceName);
 						headerMap.put(origHeader, transformCell);
 					} else if (origHeaderField.equals(SUBROW_SUB_URI)) {
 						// tableProvider.addUri(Util.resolveUriFromString(uriString));
@@ -274,7 +272,8 @@ public class TableProvider {
 					while (dataRow.getSize() < colNum + 1) {
 						dataRow.add("");
 						if (debugFlag) {
-							System.out.println("rowNum:" + rowNum + " colNum:" + colNum + " dataRow.getSize() is now:" + dataRow.getSize());
+							System.out.println("rowNum:" + rowNum + " colNum:" + colNum + " dataRow.getSize() is now:"
+									+ dataRow.getSize());
 						}
 					}
 					try {

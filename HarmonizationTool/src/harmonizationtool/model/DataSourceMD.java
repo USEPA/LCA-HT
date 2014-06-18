@@ -1,6 +1,6 @@
 package harmonizationtool.model;
 
-public class DataSetMD {
+public class DataSourceMD {
 	private String name;
 	private String version;
 	private String comments;

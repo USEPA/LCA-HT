@@ -11,7 +11,7 @@ public class ModelProvider {
 	private Map<String, String> metaData = new LinkedHashMap<String, String>();
 	private List<String> headerNames = null;
 	private List<DataRow> data = new ArrayList<DataRow>();
-	public static final String DATA_SET_NAME = "dataSetName";
+//	public static final String DATASOURCE_NAME = "dataSourceName";
 
 	public void setMetaKeyValue(String key,String value) {
 		metaData.put(key, value);

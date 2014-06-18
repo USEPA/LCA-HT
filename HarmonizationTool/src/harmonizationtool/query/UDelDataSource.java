@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-public class UDelDataSet extends HarmonyBaseUpdate implements HarmonyUpdate {
+public class UDelDataSource extends HarmonyBaseUpdate implements HarmonyUpdate {
 
 	{
 		label = "Delete data set...";

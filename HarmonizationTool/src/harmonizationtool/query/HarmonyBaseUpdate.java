@@ -1,29 +1,13 @@
 package harmonizationtool.query;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.utils.Util;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;// DO I NEED THIS?
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.update.GraphStore;
-import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;

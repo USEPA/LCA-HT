@@ -1,7 +1,7 @@
 package harmonizationtool.handler;
 
 import harmonizationtool.dialog.MetaDataDialog;
-import harmonizationtool.model.DataSetKeeper;
+import harmonizationtool.model.DataSourceKeeper;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -25,7 +25,7 @@ public class EditMetadataHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DataSetKeeper.size() == 0){return null;}
+		if (DataSourceKeeper.size() == 0){return null;}
 		new MetaDataDialog(HandlerUtil.getActiveShell(event)).open();
 		return null;
 	}

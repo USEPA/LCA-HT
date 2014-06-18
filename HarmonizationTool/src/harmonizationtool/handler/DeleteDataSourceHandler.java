@@ -1,7 +1,7 @@
 package harmonizationtool.handler;
 
 import harmonizationtool.dialog.DataSourceDeleteDialog;
-import harmonizationtool.model.DataSetKeeper;
+import harmonizationtool.model.DataSourceKeeper;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -9,7 +9,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-public class DeleteDataSetHandler implements IHandler {
+public class DeleteDataSourceHandler implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -25,7 +25,7 @@ public class DeleteDataSetHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DataSetKeeper.size() == 0){return null;}
+		if (DataSourceKeeper.size() == 0){return null;}
 		DataSourceDeleteDialog dialog = new DataSourceDeleteDialog(HandlerUtil.getActiveShell(event));
 		dialog.create();
 		dialog.open();

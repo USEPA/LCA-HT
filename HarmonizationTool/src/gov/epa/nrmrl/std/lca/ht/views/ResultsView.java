@@ -330,11 +330,11 @@ public class ResultsView extends ViewPart {
 			Table table = viewer.getTable();
 //			TableColumn[] tableColumn = table.getColumns();
 			TableItem[] tableItems = table.getItems();
-			String keyDataSet = tableItems[0].getText(0);
+			String keyDataSource = tableItems[0].getText(0);
 			int keyDataRow = 0;
 			for (int i = 0; i < tableItems.length; i++) {
 				TableItem tableItem = tableItems[i];
-				if (keyDataSet.equals(tableItem.getText(0))) {
+				if (keyDataSource.equals(tableItem.getText(0))) {
 					keyDataRow = i;
 					tableItem.setBackground(0, SWTResourceManager
 							.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));

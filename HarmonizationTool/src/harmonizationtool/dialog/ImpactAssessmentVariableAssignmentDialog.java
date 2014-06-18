@@ -7,9 +7,9 @@ import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.CuratorMD;
-import harmonizationtool.model.DataSetKeeper;
-import harmonizationtool.model.DataSetMD;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
@@ -43,10 +43,10 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 	private boolean newFileMD = false;
 	private boolean newDataSet = false;
 	private boolean dataSetEnabled = true;
-	private DataSetProvider dataSetProvider = null;
-	private DataSetProvider tempDataSetProvider = null;
+	private DataSourceProvider dataSourceProvider = null;
+	private DataSourceProvider tempDataSetProvider = null;
 	private FileMD fileMD = null;
-	private DataSetMD dataSetMD = null;
+	private DataSourceMD dataSourceMD = null;
 	private CuratorMD curatorMD = null;
 	private Resource tdbResource = null;
 	private Combo combo = null;
@@ -65,43 +65,43 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		dataSetEnabled = true;
 		assert fileMD != null : "fileMD cannot be null";
 		this.fileMD = fileMD; // SET LOCAL VERSION
-		tempDataSetProvider = new DataSetProvider();
-		this.dataSetMD = new DataSetMD();
-		tempDataSetProvider.setDataSetMD(dataSetMD);
+		tempDataSetProvider = new DataSourceProvider();
+		this.dataSourceMD = new DataSourceMD();
+		tempDataSetProvider.setDataSourceMD(dataSourceMD);
 		this.curatorMD = new CuratorMD(true);
 		tempDataSetProvider.setCuratorMD(curatorMD);
 		tempDataSetProvider.addFileMD(fileMD); // THIS MEANS WE DON'T HAVE TO
 												// ADD IT AGAIN
-		dataSetProvider = tempDataSetProvider;
+		dataSourceProvider = tempDataSetProvider;
 		// curatorFromPrefs();
 	}
 
-	// YOU CAN GET HERE WITH A DataSetProvider
-	// WITH DataSetMD , CuratorMD , fileMDList , tdbResource
-	public ImpactAssessmentVariableAssignmentDialog(Shell parentShell, DataSetProvider dataSetProvider) {
+	// YOU CAN GET HERE WITH A DataSourceProvider
+	// WITH DataSourceMD , CuratorMD , fileMDList , tdbResource
+	public ImpactAssessmentVariableAssignmentDialog(Shell parentShell, DataSourceProvider dataSourceProvider) {
 		super(parentShell);
 		newFileMD = false;
 		newDataSet = false;
 		dataSetEnabled = false;
-		this.dataSetProvider = dataSetProvider;
-		dataSetMD = dataSetProvider.getDataSetMD();
-		curatorMD = dataSetProvider.getCuratorMD();
-		tdbResource = dataSetProvider.getTdbResource();
-		fileMD = dataSetProvider.getFileMDList().get(0);
+		this.dataSourceProvider = dataSourceProvider;
+		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		curatorMD = dataSourceProvider.getCuratorMD();
+		tdbResource = dataSourceProvider.getTdbResource();
+		fileMD = dataSourceProvider.getFileMDList().get(0);
 	}
 
-	// YOU CAN GET HERE WITH A FileMD AND A DataSetProvider
-	// WITH DataSetMD , CuratorMD , fileMDList , tdbResource
+	// YOU CAN GET HERE WITH A FileMD AND A DataSourceProvider
+	// WITH DataSourceMD , CuratorMD , fileMDList , tdbResource
 	public ImpactAssessmentVariableAssignmentDialog(Shell parentShell, FileMD fileMD,
-			DataSetProvider dataSetProvider) {
+			DataSourceProvider dataSourceProvider) {
 		super(parentShell);
 		newFileMD = false;
 		newDataSet = false;
 		dataSetEnabled = true;
-		this.dataSetProvider = dataSetProvider;
-		dataSetMD = dataSetProvider.getDataSetMD();
-		curatorMD = dataSetProvider.getCuratorMD();
-		tdbResource = dataSetProvider.getTdbResource();
+		this.dataSourceProvider = dataSourceProvider;
+		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		curatorMD = dataSourceProvider.getCuratorMD();
+		tdbResource = dataSourceProvider.getTdbResource();
 		this.fileMD = fileMD;
 	}
 
@@ -109,17 +109,17 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		super(parentShell);
 		newFileMD = false;
 		newDataSet = false;
-		if (DataSetKeeper.size() == 0) {
+		if (DataSourceKeeper.size() == 0) {
 			new GenericMessageBox(
 					parentShell,
 					"No Data Sets",
 					"The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
-		this.dataSetProvider = DataSetKeeper.get(0);
-		dataSetMD = dataSetProvider.getDataSetMD();
-		curatorMD = dataSetProvider.getCuratorMD();
-		tdbResource = dataSetProvider.getTdbResource();
+		this.dataSourceProvider = DataSourceKeeper.get(0);
+		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		curatorMD = dataSourceProvider.getCuratorMD();
+		tdbResource = dataSourceProvider.getTdbResource();
 	}
 
 	// MAKE THE WHOLE DIALOG BOX
@@ -457,14 +457,14 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 	@Override
 	protected void okPressed() {
 
-		// dataSetMD.setName(dialogValues.get(3).getText()); //FIXME
-		dataSetMD.setName(combo.getText()); // FIXME
-		dataSetMD.setVersion(dialogValues.get(3).getText());
-		dataSetMD.setComments(dialogValues.get(4).getText());
-		dataSetMD.setContactName(dialogValues.get(5).getText());
-		dataSetMD.setContactAffiliation(dialogValues.get(6).getText());
-		dataSetMD.setContactEmail(dialogValues.get(7).getText());
-		dataSetMD.setContactPhone(dialogValues.get(8).getText());
+		// dataSourceMD.setName(dialogValues.get(3).getText()); //FIXME
+		dataSourceMD.setName(combo.getText()); // FIXME
+		dataSourceMD.setVersion(dialogValues.get(3).getText());
+		dataSourceMD.setComments(dialogValues.get(4).getText());
+		dataSourceMD.setContactName(dialogValues.get(5).getText());
+		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
+		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
+		dataSourceMD.setContactPhone(dialogValues.get(8).getText());
 
 		// curatorMD META DATA
 		curatorMD.setName(dialogValues.get(9).getText());
@@ -472,38 +472,38 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		curatorMD.setEmail(dialogValues.get(11).getText());
 		curatorMD.setPhone(dialogValues.get(12).getText());
 
-		dataSetProvider.setDataSetMD(dataSetMD);
-		dataSetProvider.setCuratorMD(curatorMD);
+		dataSourceProvider.setDataSourceMD(dataSourceMD);
+		dataSourceProvider.setCuratorMD(curatorMD);
 		// Model model = ActiveTDB.model;
 		if (newDataSet) {
-			DataSetKeeper.add(dataSetProvider); // A DataSetProvider IS BORN!!
+			DataSourceKeeper.add(dataSourceProvider); // A DataSourceProvider IS BORN!!
 												// (NEW)
-			dataSetProviderToTDB(dataSetProvider);
-			// int dataSetIdPlusOne = DataSetKeeper.indexOf(dataSetProvider) +
+			dataSetProviderToTDB(dataSourceProvider);
+			// int dataSetIdPlusOne = DataSourceKeeper.indexOf(dataSourceProvider) +
 			// 1;
-			// Resource newTDBResource = dataSetProvider.getTdbResource();
+			// Resource newTDBResource = dataSourceProvider.getTdbResource();
 			// model.addLiteral(newTDBResource, ECOGOV.localSerialNumber,
 			// model.createTypedLiteral(dataSetIdPlusOne));
 			// model.addLiteral(newTDBResource, RDFS.label,
-			// model.createLiteral(dataSetMD.getName()));
+			// model.createLiteral(dataSourceMD.getName()));
 			// model.addLiteral(newTDBResource, RDFS.comment,
-			// model.createLiteral(dataSetMD.getComments()));
+			// model.createLiteral(dataSourceMD.getComments()));
 			// model.addLiteral(newTDBResource, DCTerms.hasVersion,
-			// model.createLiteral(dataSetMD.getVersion()));
+			// model.createLiteral(dataSourceMD.getVersion()));
 		} else if (newFileMD) {
-			dataSetProvider.addFileMD(tempDataSetProvider.getFileMDList()
+			dataSourceProvider.addFileMD(tempDataSetProvider.getFileMDList()
 					.get(0));
-			dataSetProviderToTDB(dataSetProvider);
+			dataSetProviderToTDB(dataSourceProvider);
 		} else {
-			dataSetProviderToTDB(dataSetProvider);
+			dataSetProviderToTDB(dataSourceProvider);
 		}
 
 		super.okPressed();
 	}
 
-	private void dataSetProviderToTDB(DataSetProvider dsProvider) {
+	private void dataSetProviderToTDB(DataSourceProvider dsProvider) {
 		Model model = ActiveTDB.model;
-		// int dataSetIdPlusOne = DataSetKeeper.indexOf(dsProvider) + 1;
+		// int dataSetIdPlusOne = DataSourceKeeper.indexOf(dsProvider) + 1;
 		Resource tdbResource = dsProvider.getTdbResource();
 		// if (model.contains(tdbResource, ECOGOV.localSerialNumber)) {
 		// NodeIterator nodeIterator = model.listObjectsOfProperty(
@@ -529,7 +529,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, RDFS.label,
-				model.createLiteral(dataSetMD.getName()));
+				model.createLiteral(dataSourceMD.getName()));
 
 		if (model.contains(tdbResource, RDFS.comment)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(
@@ -541,7 +541,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, RDFS.comment,
-				model.createLiteral(dataSetMD.getComments()));
+				model.createLiteral(dataSourceMD.getComments()));
 
 		if (model.contains(tdbResource, DCTerms.hasVersion)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(
@@ -554,13 +554,13 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, DCTerms.hasVersion,
-				model.createLiteral(dataSetMD.getVersion()));
+				model.createLiteral(dataSourceMD.getVersion()));
 
 	}
 
 	// private String[] getFileInfo() {
 	// List<String> filenameList = new ArrayList<String>();
-	// List<FileMD> fileList = dataSetProvider.getFileMDList();
+	// List<FileMD> fileList = dataSourceProvider.getFileMDList();
 	// for (FileMD fileMD : fileList) {
 	// int id = fileList.indexOf(fileMD);
 	// int idPlusOne = id + 1;
@@ -574,20 +574,20 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 	private String[] getDataSetInfo() {
 		Model model = ActiveTDB.model;
 		if (!dataSetEnabled) {
-			Integer id = DataSetKeeper.indexOf(dataSetProvider);
-			String name = dataSetProvider.getDataSetMD().getName();
-			// String version = dataSetProvider.getDataSetMD().getVersion();
+			Integer id = DataSourceKeeper.indexOf(dataSourceProvider);
+			String name = dataSourceProvider.getDataSourceMD().getName();
+			// String version = dataSourceProvider.getDataSetMD().getVersion();
 			// int id_plus_one = id + 1;
 			String[] results = new String[1];
 			// results[0] = id_plus_one + ": " + name + " " + version;
 			results[0] = name;
 			return results;
 		} else if (newFileMD) {
-			String[] results = new String[DataSetKeeper.size() + 1];
+			String[] results = new String[DataSourceKeeper.size() + 1];
 			List<String> toSort = new ArrayList<String>();
 			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
 			// // NEW)
-			List<Integer> ids = DataSetKeeper.getIDs();
+			List<Integer> ids = DataSourceKeeper.getIDs();
 			Iterator<Integer> iterator = ids.iterator();
 
 			Integer id = 0;
@@ -597,7 +597,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 				counter++;
 				id = iterator.next();
 				// id_plus_one = id + 1;
-				DataSetProvider dsProvider = DataSetKeeper.get(id);
+				DataSourceProvider dsProvider = DataSourceKeeper.get(id);
 				Resource tdbResource = dsProvider.getTdbResource();
 				if (model.contains(tdbResource, RDFS.label)) {
 					String name = model
@@ -629,13 +629,13 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 			return results;
 		} else {
-			// if (DataSetKeeper.size() == 0){return null;}
-			String[] results = new String[DataSetKeeper.size()];
+			// if (DataSourceKeeper.size() == 0){return null;}
+			String[] results = new String[DataSourceKeeper.size()];
 			List<String> toSort = new ArrayList<String>();
 
 			// results[0] = ""; // RESERVING THIS FOR THE FIRST ENTRY (DEFAULT =
 			// // NEW)
-			List<Integer> ids = DataSetKeeper.getIDs();
+			List<Integer> ids = DataSourceKeeper.getIDs();
 			Iterator<Integer> iterator = ids.iterator();
 
 			Integer id = 0;
@@ -645,7 +645,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 				// counter++;
 				id = iterator.next();
 				// id_plus_one = id + 1;
-				DataSetProvider dsProvider = DataSetKeeper.get(id);
+				DataSourceProvider dsProvider = DataSourceKeeper.get(id);
 				Resource tdbResource = dsProvider.getTdbResource();
 				// String name = "";
 				// String version = "";
@@ -689,7 +689,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 
 	private void populateFileMeta(int index) {
 		System.out.println("index = " + index);
-		List<FileMD> fileList = dataSetProvider.getFileMDList();
+		List<FileMD> fileList = dataSourceProvider.getFileMDList();
 		if (index < 0) {
 			return;
 		}
@@ -719,22 +719,22 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		// if ()
 		if (dataSetChosen.endsWith("new data set)")) {
 			newDataSet = true;
-			dataSetProvider = tempDataSetProvider;
+			dataSourceProvider = tempDataSetProvider;
 			fileMD = tempDataSetProvider.getFileMDList().get(0);
 			System.out.println("... it is new");
 		} else {
 			newDataSet = false;
-			int dsNum = DataSetKeeper.indexOfDataSetName(dataSetChosen);
+			int dsNum = DataSourceKeeper.indexOfDataSourceName(dataSetChosen);
 			if (dsNum > -1) {
-				dataSetProvider = DataSetKeeper.get(dsNum);
+				dataSourceProvider = DataSourceKeeper.get(dsNum);
 			} else {
-				dataSetProvider.getDataSetMD().setName(dataSetChosen);
-//				dataSetProvider = null;
+				dataSourceProvider.getDataSourceMD().setName(dataSetChosen);
+//				dataSourceProvider = null;
 //				System.out.println("What happened?");
 			}
 		}
 
-		List<FileMD> fileMDList = dataSetProvider.getFileMDList();
+		List<FileMD> fileMDList = dataSourceProvider.getFileMDList();
 		System.out.println("fileMDList has size: " + fileMDList.size());
 		if (tempDataSetProvider != null) {
 			fileMD = tempDataSetProvider.getFileMDList().get(0);
@@ -743,8 +743,8 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		} else {
 			fileMD = null;
 		}
-		dataSetMD = dataSetProvider.getDataSetMD();
-		curatorMD = dataSetProvider.getCuratorMD();
+		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		curatorMD = dataSourceProvider.getCuratorMD();
 		redrawDialogRows();
 	}
 
@@ -764,7 +764,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 										// NAME (TO ADD, PRESUMABLY)
 			tempFileMDList.add(tempDataSetProvider.getFileMDList().get(0));
 		}
-		tempFileMDList.addAll(dataSetProvider.getFileMDList());
+		tempFileMDList.addAll(dataSourceProvider.getFileMDList());
 		fileMDComboMgr.setItems(tempFileMDList);
 		fileMDComboMgr.setText(fileMD);
 
@@ -777,16 +777,16 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			dialogValues.get(2).setText(
 					Util.getLocalDateFmt(fileMD.getReadTime()));
 		}
-		if (dataSetMD != null) {
-			System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
-			// dialogValues.get(3).setText(dataSetMD.getName()); //FIXME
-			combo.setText(dataSetMD.getName());
-			dialogValues.get(3).setText(dataSetMD.getVersion());
-			dialogValues.get(4).setText(dataSetMD.getComments());
-			dialogValues.get(5).setText(dataSetMD.getContactName());
-			dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
-			dialogValues.get(7).setText(dataSetMD.getContactEmail());
-			dialogValues.get(8).setText(dataSetMD.getContactPhone());
+		if (dataSourceMD != null) {
+			System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
+			// dialogValues.get(3).setText(dataSourceMD.getName()); //FIXME
+			combo.setText(dataSourceMD.getName());
+			dialogValues.get(3).setText(dataSourceMD.getVersion());
+			dialogValues.get(4).setText(dataSourceMD.getComments());
+			dialogValues.get(5).setText(dataSourceMD.getContactName());
+			dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
+			dialogValues.get(7).setText(dataSourceMD.getContactEmail());
+			dialogValues.get(8).setText(dataSourceMD.getContactPhone());
 
 		}
 		if (curatorMD != null) {

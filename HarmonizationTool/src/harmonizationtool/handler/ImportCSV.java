@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.log4j.Logger;
@@ -55,6 +56,7 @@ public class ImportCSV implements IHandler {
 		System.out.println("executing Import CSV");
 		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();
+		// FileMD(String filename, String path, long size, Date lastModified, Date readTime)
 		FileMD fileMD = new FileMD();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);

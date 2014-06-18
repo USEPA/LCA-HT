@@ -8,9 +8,9 @@ import java.util.List;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.CuratorMD;
-import harmonizationtool.model.DataSetKeeper;
-import harmonizationtool.model.DataSetMD;
-import harmonizationtool.model.DataSetProvider;
+import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
@@ -42,24 +42,23 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class MetaDataDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
-	private DataSetProvider curDataSetProvider = null;
-	private DataSetProvider callingDataSetProvider = null;
-	private DataSetProvider newDataSetProvider = null;
+	private DataSourceProvider curDataSourceProvider = null;
+	private DataSourceProvider callingDataSourceProvider = null;
+	private DataSourceProvider newDataSourceProvider = null;
 	private FileMD callingFileMD = null;
-	private Combo comboDataSetSelector = null;
+	private Combo comboDataSourceSelector = null;
 	private Combo comboFileSelector = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = null;
-	// private final String newDataSetTempName = "(new data set)";
-	private String newDataSetTempName = "";
+	private String newDataSourceTempName = "";
 
 	// private String newFileName = null;
 	// Label lbl_01 = null;
 	private Logger runLogger = Logger.getLogger("run");
 
 	private ComboFileSelectorListener comboFileSelectorListener;
-	protected String combDataSetSelectorSavedText = "";
+	protected String combDataSourceSelectorSavedText = "";
 	// protected boolean comboKeyHeldDown = false;
 	private int comboSelectionIndex = -1;
 
@@ -75,29 +74,29 @@ public class MetaDataDialog extends TitleAreaDialog {
 	public MetaDataDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1 - EDIT DATA SET INFO FOR ANY EXISTING DATA SET
-		if (DataSetKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSets at this time.  Read a CSV or RDF file to create some.");
+		if (DataSourceKeeper.size() == 0) {
+			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
-		if (DataSetKeeper.size() == 0) {
+		if (DataSourceKeeper.size() == 0) {
 			return;
 		}
-		this.curDataSetProvider = DataSetKeeper.get(0);
+		this.curDataSourceProvider = DataSourceKeeper.get(0);
 		runLogger.info("SET META existing DataSource");
 	}
 
-	public MetaDataDialog(Shell parentShell, FileMD fileMD, DataSetProvider dataSetProvider) {
+	public MetaDataDialog(Shell parentShell, FileMD fileMD, DataSourceProvider dataSourceProvider) {
 		// CASE 2 - EDIT DATA SET INFO FOR ONE DATA SET ONLY (WITH A FILE
 		// SELECTED)
 		super(parentShell);
 		assert fileMD != null : "fileMD cannot be null";
-		this.callingDataSetProvider = dataSetProvider;
+		this.callingDataSourceProvider = dataSourceProvider;
 		this.callingFileMD = fileMD;
-		this.curDataSetProvider = callingDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
+		this.curDataSourceProvider = callingDataSourceProvider;
+		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing DataSource");
-		runLogger.info("  start name = " + dataSetProvider.getDataSetMD().getName());
+		runLogger.info("  start name = " + dataSourceProvider.getDataSourceMD().getName());
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
@@ -107,16 +106,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		this.newDataSetProvider = new DataSetProvider();
-		this.newDataSetProvider.addFileMD(callingFileMD);
-		this.newDataSetProvider.setDataSetMD(new DataSetMD());
-		this.newDataSetProvider.getDataSetMD().setName(fileMD.getFilename());
-		this.newDataSetProvider.setCuratorMD(new CuratorMD());
-		this.curDataSetProvider = this.newDataSetProvider;
-		newDataSetTempName = DataSetKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
+		this.newDataSourceProvider = new DataSourceProvider();
+		this.newDataSourceProvider.addFileMD(callingFileMD);
+		this.newDataSourceProvider.setDataSourceMD(new DataSourceMD());
+		this.newDataSourceProvider.getDataSourceMD().setName(fileMD.getFilename());
+		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
+		this.curDataSourceProvider = this.newDataSourceProvider;
+		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
 
-		if (DataSetKeeper.size() == 0) {
-			DataSetKeeper.add(newDataSetProvider);
+		if (DataSourceKeeper.size() == 0) {
+			DataSourceKeeper.add(newDataSourceProvider);
 		}
 		runLogger.info("SET META start - new file");
 
@@ -150,42 +149,41 @@ public class MetaDataDialog extends TitleAreaDialog {
 		rowIndex++;
 		Label lbl_01 = new Label(composite, SWT.RIGHT);
 		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		// lblAssociatedDataSet.setBounds(0, 0, 400, 14);
 		lbl_01.setText("Select");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
-		// if (newDataSetProvider != null) {
-		// comboDataSetSelector = new Combo(composite, SWT.DROP_DOWN);
-		// comboDataSetSelector
+		// if (newDataSourceProvider != null) {
+		// comboDataSourceSelector = new Combo(composite, SWT.DROP_DOWN);
+		// comboDataSourceSelector
 		// .setToolTipText("Choose an existing data set or type a name in the first selection to create a new one");
 		// } else {
-		comboDataSetSelector = new Combo(composite, SWT.READ_ONLY);
+		comboDataSourceSelector = new Combo(composite, SWT.READ_ONLY);
 		// }
-		comboDataSetSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		comboDataSetSelector.setItems(getDataSetInfo());
-		comboDataSetSelector.select(0);
+		comboDataSourceSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		comboDataSourceSelector.setItems(getDataSourceInfo());
+		comboDataSourceSelector.select(0);
 
-		// comboDataSetSelector.addKeyListener(new KeyListener() {
+		// comboDataSourceSelector.addKeyListener(new KeyListener() {
 		//
 		// private int comboSelectionIndexSaved;
 		//
 		// @Override
 		// public void keyReleased(KeyEvent e) {
-		// System.out.println("combDataSetSelectorSavedText :"
-		// + combDataSetSelectorSavedText);
-		// System.out.println("comboDataSetSelector.getText() :"
-		// + comboDataSetSelector.getText());
-		// System.out.println("comboDataSetSelector.getItem(0) :"
-		// + comboDataSetSelector.getItem(0));
+		// System.out.println("combDataSourceSelectorSavedText :"
+		// + combDataSourceSelectorSavedText);
+		// System.out.println("comboDataSourceSelector.getText() :"
+		// + comboDataSourceSelector.getText());
+		// System.out.println("comboDataSourceSelector.getItem(0) :"
+		// + comboDataSourceSelector.getItem(0));
 		//
 		// System.out.println("keyReleased=" + e.toString());
 		// comboKeyHeldDown = false;
 		// System.out.println("comboSelectionIndex = "
 		// + comboSelectionIndex);
 		// if (comboSelectionIndex != 0) {
-		// comboDataSetSelector.setText(combDataSetSelectorSavedText);
+		// comboDataSourceSelector.setText(combDataSourceSelectorSavedText);
 		// } else {
-		// comboDataSetSelector.setText(comboDataSetSelector.getText());
+		// comboDataSourceSelector.setText(comboDataSourceSelector.getText());
 		// }
 		// }
 		//
@@ -194,52 +192,52 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// System.out.println("keyPressed=" + e.toString());
 		// System.out.println("comboSelectionIndex = "
 		// + comboSelectionIndex);
-		// // comboDataSetSelector.setBackground(defaultBG);
+		// // comboDataSourceSelector.setBackground(defaultBG);
 		// if ((!comboKeyHeldDown) && (comboSelectionIndex != 0)) {
-		// combDataSetSelectorSavedText = comboDataSetSelector
+		// combDataSourceSelectorSavedText = comboDataSourceSelector
 		// .getText();
 		// }
 		// comboKeyHeldDown = true;
 		// }
 		// });
-		comboDataSetSelector.addSelectionListener(new SelectionListener() {
+		comboDataSourceSelector.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("combo.addSelectionListener.widgetSelectedr=" + e.toString());
-				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-				populateDataSetMD();
-				runLogger.info("  DATASET SELECTED: " + comboDataSetSelector.getText());
+				comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
+				populateDataSourceMD();
+				runLogger.info("  DATASOURCE SELECTED: " + comboDataSourceSelector.getText());
 
 				// if (comboSelectionIndex == 0){
-				// comboDataSetSelector.setItem(0,
-				// combDataSetSelectorSavedText);
+				// comboDataSourceSelector.setItem(0,
+				// combDataSourceSelectorSavedText);
 				// }
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				System.out.println("combo.addSelectionListener.widgetDefaultSelected=" + e.toString());
-				comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-				populateDataSetMD();
-				runLogger.info("  DATASET SELECTED: " + comboDataSetSelector.getText());
+				comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
+				populateDataSourceMD();
+				runLogger.info("  DATASOURCE SELECTED: " + comboDataSourceSelector.getText());
 
 				// if (comboSelectionIndex == 0){
-				// comboDataSetSelector.setItem(0,
-				// combDataSetSelectorSavedText);
+				// comboDataSourceSelector.setItem(0,
+				// combDataSourceSelectorSavedText);
 				// }
 			}
 
 		});
 
-		Button dataSetRename = new Button(composite, SWT.BORDER);
-		dataSetRename.setToolTipText("Click to rename this data set.");
-		dataSetRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80, 25);
-		dataSetRename.setText("Rename");
-		dataSetRename.addListener(SWT.Selection, new Listener() {
+		Button dataSourceRename = new Button(composite, SWT.BORDER);
+		dataSourceRename.setToolTipText("Click to rename this data set.");
+		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80, 25);
+		dataSourceRename.setText("Rename");
+		dataSourceRename.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				renameDataSet();
+				renameDataSource();
 			}
 		});
 
@@ -306,7 +304,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		comboFileSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		// NEXT STEP: COLLECT FILE LIST INFO BASED ON WHAT IS PASSED, AND ADD
 		// OTHER
-		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSetSelector.getText());
+		comboFileSelector.setToolTipText("Files associated with this data set." + comboDataSourceSelector.getText());
 		comboFileSelectorListener = new ComboFileSelectorListener();
 		comboFileSelector.addModifyListener(comboFileSelectorListener);
 
@@ -405,11 +403,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues.add(text_15); // 11 Curator Email
 		dialogValues.add(text_16); // 12 Curator Phone
 
-		// if (newDataSetProvider != null) {
+		// if (newDataSourceProvider != null) {
 		// lbl_01.setText("Type new name (or select existing)");
 		// }
-		// comboSelectionIndex = comboDataSetSelector.getSelectionIndex();
-		// defaultBG = comboDataSetSelector.getBackground();
+		// comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
+		// defaultBG = comboDataSourceSelector.getBackground();
 
 		redrawDialogRows();
 
@@ -427,24 +425,19 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
-		String dataSetName = comboDataSetSelector.getText();
-		// if (dataSetName.equals(newDataSetTempName)) {
-		// new GenericMessageBox(getParentShell(), "Invalid Name",
-		// "Please click to choose a name for the new Data Set.");
-		// return;
-		// }
-		System.out.println("comboDataSetSelector.getText() " + comboDataSetSelector.getText());
-		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
-		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
+		String dataSourceName = comboDataSourceSelector.getText();
+		System.out.println("comboDataSourceSelector.getText() " + comboDataSourceSelector.getText());
+		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
-		dataSetMD.setName(dataSetName);
-		dataSetMD.setVersion(dialogValues.get(3).getText());
-		dataSetMD.setComments(dialogValues.get(4).getText());
-		dataSetMD.setContactName(dialogValues.get(5).getText());
-		dataSetMD.setContactAffiliation(dialogValues.get(6).getText());
-		dataSetMD.setContactEmail(dialogValues.get(7).getText());
-		dataSetMD.setContactPhone(dialogValues.get(8).getText());
-		runLogger.info("  SET META: name = " + dataSetName);
+		dataSourceMD.setName(dataSourceName);
+		dataSourceMD.setVersion(dialogValues.get(3).getText());
+		dataSourceMD.setComments(dialogValues.get(4).getText());
+		dataSourceMD.setContactName(dialogValues.get(5).getText());
+		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
+		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
+		dataSourceMD.setContactPhone(dialogValues.get(8).getText());
+		runLogger.info("  SET META: name = " + dataSourceName);
 		runLogger.info("  SET META: version = " + dialogValues.get(3).getText());
 		runLogger.info("  SET META: comments = \"" + Util.escape(dialogValues.get(4).getText()) + "\"");
 		runLogger.info("  SET META: contactName = " + dialogValues.get(5).getText());
@@ -462,43 +455,42 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: curatorEmail = " + dialogValues.get(11).getText());
 		runLogger.info("  SET META: curatorPhone = " + dialogValues.get(12).getText());
 
-		if (newDataSetProvider != null) {
-			// FlowsWorkflow.setDataSet(dataSetName);
+		if (newDataSourceProvider != null) {
 			if (comboSelectionIndex < 1) {
 
 				// comboSelectionIndex = -1 if no change issued
-				boolean success = DataSetKeeper.add(curDataSetProvider); // A
-																			// DataSetProvider
+				boolean success = DataSourceKeeper.add(curDataSourceProvider); // A
+																			// DataSourceProvider
 																			// IS
 																			// BORN!!
-				System.out.println("Created new DataSetProvider succees: = " + success);
+				System.out.println("Created new DataSourceProvider succees: = " + success);
 			}
 		}
 		if (callingFileMD != null) {
-			curDataSetProvider.addFileMD(callingFileMD);
+			curDataSourceProvider.addFileMD(callingFileMD);
 			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/" + callingFileMD.getFilename());
 		}
 
-		System.out.println("newDataSetProvider " + newDataSetProvider);
+		System.out.println("newDataSourceProvider " + newDataSourceProvider);
 		System.out.println("comboSelectionIndex " + comboSelectionIndex);
 
-		ActiveTDB.syncDataSetProviderToTDB(curDataSetProvider);
-		if (newDataSetProvider != null) {
-			FlowsWorkflow.setDataSetProvider(curDataSetProvider);
+		ActiveTDB.syncDataSourceProviderToTDB(curDataSourceProvider);
+		if (newDataSourceProvider != null) {
+			FlowsWorkflow.setDataSourceProvider(curDataSourceProvider);
 		}
 		runLogger.info("SET META complete");
 
 		super.okPressed();
 	}
 
-	private void renameDataSet() {
+	private void renameDataSource() {
 		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
-		// comboDataSetSelector.getText());
+		// comboDataSourceSelector.getText());
 		boolean sendToFlowsWorkflow = false;
-		// if (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSetSelector.getText())){
+		// if (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSourceSelector.getText())){
 		// sendToFlowsWorkflow = true;
 		// }
-		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSetSelector.getText(), comboDataSetSelector.getItems());
+		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(), comboDataSourceSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
 		genericStringBox.open();
@@ -509,172 +501,88 @@ public class MetaDataDialog extends TitleAreaDialog {
 			return;
 		}
 
-		if (comboDataSetSelector.getText().equals(newFileName)) {
+		if (comboDataSourceSelector.getText().equals(newFileName)) {
 			// SAME NAME, DO NOTHING
 			return;
 		}
 
-		if (DataSetKeeper.indexOfDataSetName(newFileName) > -1) {
+		if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
 			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
-		curDataSetProvider.getDataSetMD().setName(newFileName);
-		if (curDataSetProvider.getTdbResource() != null) {
+		curDataSourceProvider.getDataSourceMD().setName(newFileName);
+		if (curDataSourceProvider.getTdbResource() != null) {
 			// Literal oldNameLit = ActiveTDB.model
-			// .createLiteral(comboDataSetSelector.getText());
+			// .createLiteral(comboDataSourceSelector.getText());
 			Literal newNameLit = ActiveTDB.model.createLiteral(newFileName);
-			ActiveTDB.removeAllWithSubjectPredicate(curDataSetProvider.getTdbResource(), RDFS.label);
-			ActiveTDB.model.add(curDataSetProvider.getTdbResource(), RDFS.label, newNameLit);
+			ActiveTDB.removeAllWithSubjectPredicate(curDataSourceProvider.getTdbResource(), RDFS.label);
+			ActiveTDB.model.add(curDataSourceProvider.getTdbResource(), RDFS.label, newNameLit);
 		}
 
-		comboDataSetSelector.setItem(comboDataSetSelector.getSelectionIndex(), newFileName);
-		// comboDataSetSelector.setText(newFileName);
-		// if (sendToFlowsWorkflow){
-		// FlowsWorkflow.setTextFileInfo(newFileName);
-		// }
+		comboDataSourceSelector.setItem(comboDataSourceSelector.getSelectionIndex(), newFileName);
+
 	}
 
-	// private void dataSetProviderToTDB(DataSetProvider dsProvider) {
-	// // SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSetProvider or
-	// // ActiveTDB
-	// DataSetMD dataSetMD = dsProvider.getDataSetMD();
-	//
-	// Model model = ActiveTDB.model;
-	// Resource tdbResource = dsProvider.getTdbResource();
-	// assert tdbResource != null : "tdbResource cannot be null";
-	// assert RDFS.label != null : "RDFS.label cannot be null";
-	// assert dataSetMD.getName() != null :
-	// "dataSetMD.getName() cannot be null";
-	// System.out.println("tdbResource = " + tdbResource);
-	//
-	// if (model.contains(tdbResource, RDFS.label)) {
-	// // REPLACE OTHER label(s)
-	// NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource,
-	// RDFS.label);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// assert rdfNode.isLiteral() : "DataSet RDFS.label value must be literal!";
-	// model.remove(tdbResource, RDFS.label, rdfNode.asLiteral());
-	// }
-	// }
-	//
-	// model.addLiteral(tdbResource, RDFS.label,
-	// model.createLiteral(dataSetMD.getName()));
-	//
-	// if (model.contains(tdbResource, RDFS.comment)) {
-	// // REPLACE OTHER comment(s)
-	// NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource,
-	// RDFS.comment);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-	// model.remove(tdbResource, RDFS.comment, rdfNode.asLiteral());
-	// }
-	// }
-	// if (!dataSetMD.getComments().matches("^\\s*$")) {
-	// // ONLY IF NOT ALL WHITE SPACES
-	// model.addLiteral(tdbResource, RDFS.comment,
-	// model.createLiteral(dataSetMD.getComments()));
-	// }
-	//
-	// if (model.contains(tdbResource, DCTerms.hasVersion)) {
-	// NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource,
-	// DCTerms.hasVersion);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-	// model.remove(tdbResource, DCTerms.hasVersion, rdfNode.asLiteral());
-	// }
-	// }
-	// if (!dataSetMD.getVersion().matches("^\\s*$")) {
-	// model.addLiteral(tdbResource, DCTerms.hasVersion,
-	// model.createLiteral(dataSetMD.getVersion()));
-	// }
-	// }
-
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
-	private String[] getDataSetInfo() {
-		List<String> toSort = DataSetKeeper.getNames();
-		if (callingDataSetProvider != null) {
+	private String[] getDataSourceInfo() {
+		List<String> toSort = DataSourceKeeper.getNames();
+		if (callingDataSourceProvider != null) {
 			String[] results = new String[1];
-			results[0] = callingDataSetProvider.getDataSetMD().getName();
+			results[0] = callingDataSourceProvider.getDataSourceMD().getName();
 			return results;
-		} else if (newDataSetProvider != null) {
+		} else if (newDataSourceProvider != null) {
 			String[] results = new String[toSort.size() + 1];
-			// results[0] = newDataSetTempName;
+			// results[0] = newDataSourceTempName;
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i + 1] = toSort.get(i);
 			}
-			results[0] = newDataSetTempName;
-			curDataSetProvider = newDataSetProvider;
+			results[0] = newDataSourceTempName;
+			curDataSourceProvider = newDataSourceProvider;
 			return results;
 		} else {
 			String[] results = new String[toSort.size()];
 			for (int i = 0; i < toSort.size(); i++) {
 				results[i] = toSort.get(i);
 			}
-			curDataSetProvider = DataSetKeeper.get(DataSetKeeper.indexOfDataSetName(results[0]));
+			curDataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.indexOfDataSourceName(results[0]));
 			return results;
 		}
 	}
 
-	protected void populateDataSetMD() {
-		String selectedDataSetName = comboDataSetSelector.getText();
-		int selectedDataSetID = DataSetKeeper.indexOfDataSetName(selectedDataSetName);
-		// if (newDataSetProvider != null) {
-		// if (comboSelectionIndex == DataSetKeeper.size()) {
-		// lbl_01.setText("Type new name (or select existing)");
-		// } else {
-		// lbl_01.setText("Select existing (or type name in 1st item)");
-		// }
-		// } else {
-		//
-		// }
+	protected void populateDataSourceMD() {
+		String selectedDataSourceName = comboDataSourceSelector.getText();
+		int selectedDataSourceID = DataSourceKeeper.indexOfDataSourceName(selectedDataSourceName);
 
-		// System.out.println("callingFileMD: "+callingFileMD);
-		// System.out.println("callingDataSetProvider: "+callingDataSetProvider);
-		// System.out.println("selectedDataSetID: "+selectedDataSetID);
-		// System.out.println("DataSetKeeper.indexOfDataSetName(selectedDataSetName): "+DataSetKeeper.indexOfDataSetName(selectedDataSetName));
-		// if ((callingFileMD != null)
-		// && (callingDataSetProvider == null)
-		// && (selectedDataSetID == 0)
-		// && (DataSetKeeper.indexOfDataSetName(selectedDataSetName) > -1)){
-		// comboDataSetSelector.setBackground(red);
-		// return;
-		// }
-		// comboDataSetSelector.setBackground(defaultBG);
-
-		if ((0 <= selectedDataSetID) && (selectedDataSetID < DataSetKeeper.size())) {
-			curDataSetProvider = DataSetKeeper.get(selectedDataSetID);
+		if ((0 <= selectedDataSourceID) && (selectedDataSourceID < DataSourceKeeper.size())) {
+			curDataSourceProvider = DataSourceKeeper.get(selectedDataSourceID);
 		} else {
-			curDataSetProvider = newDataSetProvider;
+			curDataSourceProvider = newDataSourceProvider;
 		}
 
 		redrawDialogRows();
 	}
 
-	protected void redrawDialogDataSetMD() {
-		DataSetMD dataSetMD = curDataSetProvider.getDataSetMD();
-		System.out.println("dataSetMD.getName: = " + dataSetMD.getName());
-		dialogValues.get(3).setText(dataSetMD.getVersion());
-		dialogValues.get(4).setText(dataSetMD.getComments());
-		dialogValues.get(5).setText(dataSetMD.getContactName());
-		dialogValues.get(6).setText(dataSetMD.getContactAffiliation());
-		dialogValues.get(7).setText(dataSetMD.getContactEmail());
-		dialogValues.get(8).setText(dataSetMD.getContactPhone());
+	protected void redrawDialogDataSourceMD() {
+		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
+		dialogValues.get(3).setText(dataSourceMD.getVersion());
+		dialogValues.get(4).setText(dataSourceMD.getComments());
+		dialogValues.get(5).setText(dataSourceMD.getContactName());
+		dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
+		dialogValues.get(7).setText(dataSourceMD.getContactEmail());
+		dialogValues.get(8).setText(dataSourceMD.getContactPhone());
 	}
 
 	protected void redrawDialogFileMD() {
 		FileMD curFileMD = callingFileMD; // MAY BE NULL
 		int index = comboFileSelector.getSelectionIndex();
 		if (index >= 0) {
-			// if (curDataSetProvider != null) {
 			if (callingFileMD != null) {
 				if (index > 0) {
-					curFileMD = curDataSetProvider.getFileMDList().get(index - 1);
+					curFileMD = curDataSourceProvider.getFileMDList().get(index - 1);
 				}
 			} else {
-				curFileMD = curDataSetProvider.getFileMDList().get(index);
+				curFileMD = curDataSourceProvider.getFileMDList().get(index);
 			}
 			// }
 		}
@@ -691,7 +599,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogCuratorMD() {
-		CuratorMD curatorMD = curDataSetProvider.getCuratorMD();
+		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 		System.out.println("curatorMD.getName: = " + curatorMD.getName());
 		dialogValues.get(9).setText(curatorMD.getName());
 		dialogValues.get(10).setText(curatorMD.getAffiliation());
@@ -710,7 +618,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void redrawDialogRows() {
 		clearDialogRows();
 
-		redrawDialogDataSetMD();
+		redrawDialogDataSourceMD();
 
 		createComboFileSelectorList();
 		redrawDialogFileMD();
@@ -720,15 +628,15 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	protected void createComboFileSelectorList() {
 		comboFileSelector.removeAll();
-		if (curDataSetProvider == null) {
+		if (curDataSourceProvider == null) {
 			if (callingFileMD != null) {
 				comboFileSelector.add(callingFileMD.getFilename());
 			}
 			return;
 		}
-		List<FileMD> fileMDList = curDataSetProvider.getFileMDList();
+		List<FileMD> fileMDList = curDataSourceProvider.getFileMDList();
 		int selectionIndex = 0;
-		if ((callingFileMD != null) && (callingDataSetProvider == null)) {
+		if ((callingFileMD != null) && (callingDataSourceProvider == null)) {
 			comboFileSelector.add(callingFileMD.getFilename());
 		}
 		for (int i = 0; i < fileMDList.size(); i++) {

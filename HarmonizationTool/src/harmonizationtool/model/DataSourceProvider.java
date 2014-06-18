@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class DataSetProvider {
-	private DataSetMD dataSetMD;
+public class DataSourceProvider {
+	private DataSourceMD dataSourceMD;
 	private CuratorMD curatorMD;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	private Resource tdbResource;
 	private boolean isMaster = false;
 	
-	public DataSetMD getDataSetMD() {
-		return dataSetMD;
+	public DataSourceMD getDataSourceMD() {
+		return dataSourceMD;
 	}
-	public void setDataSetMD(DataSetMD dataSetMD) {
-		this.dataSetMD = dataSetMD;
+	public void setDataSourceMD(DataSourceMD dataSourceMD) {
+		this.dataSourceMD = dataSourceMD;
 	}
 	public CuratorMD getCuratorMD() {
 		return curatorMD;
