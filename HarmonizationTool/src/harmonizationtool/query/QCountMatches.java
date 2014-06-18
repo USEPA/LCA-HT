@@ -68,7 +68,7 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 		}
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
@@ -152,7 +152,7 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 // ORIGINAL QUERY:
 // StringBuilder b = new StringBuilder();
 // b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-// b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
+// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
 // b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 // b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 // b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");

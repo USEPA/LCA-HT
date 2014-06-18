@@ -22,7 +22,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		b.append("PREFIX  ei:     <http://ontology.earthster.org/eco/ecoinvent#> \n");
 		b.append("PREFIX  eu:     <http://ontology.earthster.org/eco/unit#> \n");
 		b.append("PREFIX  ecocml: <http://ontology.earthster.org/eco/CML2001#> \n");
-		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
 		b.append("PREFIX  ds:  <http://data.lca.std.nrmrl.epa.gov/" + this.dataSourceIRI + "#> \n");
 		b.append(" \n");
 		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
@@ -51,14 +51,14 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		if ((this.altName != null) && (!this.altName.isEmpty())) {
 			b.append("                skos:altLabel \"" + this.altName + "\"^^xsd:string ; \n");
 		}
-		b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+		b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 		b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		//------------------- CATEGORY INFO
 		if ((this.cat != null) && (!this.cat.isEmpty())) {
 			b.append("ds:category_" + this.rowNumber + " a ecocml:category1 , \n");
 			b.append("                         owl:NamedIndividual ; \n");
 			b.append("                rdfs:label \"" + this.cat + "\"^^xsd:string ;  \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		}
 		//------------------- SUB-CATEGORY INFO
@@ -66,7 +66,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 			b.append("ds:subcategory_" + this.rowNumber + " a ecocml:category2 , \n"); 
 			b.append("                         owl:NamedIndividual ; \n");
 			b.append("                rdfs:label \"" + this.subcat + "\"^^xsd:string ;  \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		}
 		//------------------- 
@@ -81,7 +81,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 			b.append("                    eco:hasUnitOfMeasure [ a eco:UnitOfMeasure; rdfs:label \"" + this.impactCatRefUnit + "\"^^xsd:string ] \n");
 //        	b.append("                            eu:kgN_per_kg> \n");
         	b.append("                ] ; \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 //        	b.append("  }       \n"); 
 		}
@@ -123,14 +123,14 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		if ((this.altName != null) && (!this.altName.isEmpty())) {
 			b.append("                skos:altLabel \"" + this.altName + "\"^^xsd:string ; \n");
 		}
-		b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+		b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 		b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		//------------------- CATEGORY INFO
 		if ((this.cat != null) && (!this.cat.isEmpty())) {
 			b.append("ds:category_" + this.rowNumber + " a ecocml:category1 , \n");
 			b.append("                         owl:NamedIndividual ; \n");
 			b.append("                rdfs:label \"" + this.cat + "\"^^xsd:string ;  \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		}
 		//------------------- SUB-CATEGORY INFO
@@ -138,7 +138,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 			b.append("ds:subcategory_" + this.rowNumber + " a ecocml:category2 , \n"); 
 			b.append("                         owl:NamedIndividual ; \n");
 			b.append("                rdfs:label \"" + this.subcat + "\"^^xsd:string ;  \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 		}
 		//------------------- 
@@ -153,7 +153,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 			b.append("                    eco:hasUnitOfMeasure [ a eco:UnitOfMeasure; rdfs:label \"" + this.impactCatRefUnit + "\"^^xsd:string ] \n");
 //        	b.append("                            eu:kgN_per_kg> \n");
         	b.append("                ] ; \n");
-			b.append("                ecogov:importRow " + this.rowNumber + " ; \n");
+			b.append("                fedlca:importRow " + this.rowNumber + " ; \n");
 			b.append("                eco:hasDataSource eco:" + this.dataSourceIRI + " .  \n");
 //        	b.append("  }       \n"); 
 		}

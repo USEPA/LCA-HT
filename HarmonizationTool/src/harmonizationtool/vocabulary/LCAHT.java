@@ -119,6 +119,9 @@ public class LCAHT {
     public static final Property fileEncoding = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#fileEncoding" );
     public static final Property fileLastModified = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#fileLastModified" );
     public static final Property fileReadDate = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#fileReadDate" );
+    
+    public static final Property containsFile = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#containsFile" );
+
 
     
 

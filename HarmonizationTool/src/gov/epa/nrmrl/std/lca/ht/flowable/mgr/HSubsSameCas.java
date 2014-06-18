@@ -54,7 +54,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
 		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
@@ -89,7 +89,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append(" \n");
 		b.append("WHERE { \n");
 		b.append("      ?sub1 eco:hasDataSource ?ds1 . \n");
-		b.append("      OPTIONAL {?sub1 ecogov:foundOnRow ?qRow . } \n");
+		b.append("      OPTIONAL {?sub1 fedlca:foundOnRow ?qRow . } \n");
 		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
 		b.append("      filter regex(str(?ds1_name),\"" + param1 + "\") \n");
 		b.append("      ?sub1 eco:casNumber ?cas .  \n");

@@ -138,7 +138,7 @@ public class ImportCSV implements IHandler {
 		}
 		fileMD.setFilename(file.getName());
 		fileMD.setPath(path);
-		fileMD.setSize(file.length());
+		fileMD.setByteCount(file.length());
 		fileMD.setLastModified(new Date(file.lastModified()));
 		Date readStartTime = new Date();
 		fileMD.setReadTime(readStartTime);

@@ -482,7 +482,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			// int dataSetIdPlusOne = DataSourceKeeper.indexOf(dataSourceProvider) +
 			// 1;
 			// Resource newTDBResource = dataSourceProvider.getTdbResource();
-			// model.addLiteral(newTDBResource, ECOGOV.localSerialNumber,
+			// model.addLiteral(newTDBResource, FEDLCA.localSerialNumber,
 			// model.createTypedLiteral(dataSetIdPlusOne));
 			// model.addLiteral(newTDBResource, RDFS.label,
 			// model.createLiteral(dataSourceMD.getName()));
@@ -505,18 +505,18 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		Model model = ActiveTDB.model;
 		// int dataSetIdPlusOne = DataSourceKeeper.indexOf(dsProvider) + 1;
 		Resource tdbResource = dsProvider.getTdbResource();
-		// if (model.contains(tdbResource, ECOGOV.localSerialNumber)) {
+		// if (model.contains(tdbResource, FEDLCA.localSerialNumber)) {
 		// NodeIterator nodeIterator = model.listObjectsOfProperty(
-		// tdbResource, ECOGOV.localSerialNumber);
+		// tdbResource, FEDLCA.localSerialNumber);
 		// while (nodeIterator.hasNext()) {
 		// RDFNode rdfNode = nodeIterator.next();
 		// System.out.println("Is it literal? -- " + rdfNode.isLiteral());
-		// model.remove(tdbResource, ECOGOV.localSerialNumber,
+		// model.remove(tdbResource, FEDLCA.localSerialNumber,
 		// rdfNode.asLiteral());
 		// // model.
 		// }
 		// }
-		// model.addLiteral(tdbResource, ECOGOV.localSerialNumber,
+		// model.addLiteral(tdbResource, FEDLCA.localSerialNumber,
 		// model.createTypedLiteral(dataSetIdPlusOne));
 
 		if (model.contains(tdbResource, RDFS.label)) {
@@ -704,7 +704,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 
 		// dialogValues.get(0).setText(fileMD.getFilename());
 		fileMDCombo.setToolTipText(fileMD.getPath());
-		dialogValues.get(0).setText(fileMD.getSize() + "");
+		dialogValues.get(0).setText(fileMD.getByteCount() + "");
 		dialogValues.get(1).setText(
 				Util.getLocalDateFmt(fileMD.getLastModified()));
 		dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
@@ -771,7 +771,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		if (fileMD != null) {
 			// dialogValues.get(0).setText(fileMD.getFilename());
 			fileMDCombo.setToolTipText(fileMD.getPath());
-			dialogValues.get(0).setText(fileMD.getSize() + "");
+			dialogValues.get(0).setText(fileMD.getByteCount() + "");
 			dialogValues.get(1).setText(
 					Util.getLocalDateFmt(fileMD.getLastModified()));
 			dialogValues.get(2).setText(

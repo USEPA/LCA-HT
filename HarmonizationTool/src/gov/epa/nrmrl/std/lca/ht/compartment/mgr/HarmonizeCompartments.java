@@ -130,18 +130,18 @@ public class HarmonizeCompartments extends ViewPart {
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
-				// Resource annotation = ECOGOV.Annotation;
+				// Resource annotation = FEDLCA.Annotation;
 				// Property isA = RDF.type;
 				// Resource Class = OWL.Class;
 				// Property creator = DCTerms.creator;
 				// Property dateSubmitted = DCTerms.dateSubmitted;
-				// Property hasComparison = ECOGOV.hasComparison;
+				// Property hasComparison = FEDLCA.hasComparison;
 				//
-				// Resource comparison = ECOGOV.Comparison;
-				// Property comparedSource = ECOGOV.comparedSource;
-				// Property comparedMaster = ECOGOV.comparedMaster;
-				// Property comparedEquivalence = ECOGOV.comparedEquivalence;
-				// Resource equivalent = ECOGOV.equivalent;
+				// Resource comparison = FEDLCA.Comparison;
+				// Property comparedSource = FEDLCA.comparedSource;
+				// Property comparedMaster = FEDLCA.comparedMaster;
+				// Property comparedEquivalence = FEDLCA.comparedEquivalence;
+				// Resource equivalent = FEDLCA.equivalent;
 
 				Model model = ActiveTDB.model;
 				// NEED TO DO THE FOLLOWING

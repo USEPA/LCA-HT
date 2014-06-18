@@ -486,7 +486,7 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 
 		// dialogValues.get(0).setText(fileMD.getFilename());
 		fileMDCombo.setToolTipText(fileMD.getPath());
-		dialogValues.get(0).setText(fileMD.getSize() + "");
+		dialogValues.get(0).setText(fileMD.getByteCount() + "");
 		dialogValues.get(1).setText(Util.getLocalDateFmt(fileMD.getLastModified()));
 		dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
 	}
@@ -552,7 +552,7 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 		if (fileMD != null) {
 			// dialogValues.get(0).setText(fileMD.getFilename());
 			fileMDCombo.setToolTipText(fileMD.getPath());
-			dialogValues.get(0).setText(fileMD.getSize() + "");
+			dialogValues.get(0).setText(fileMD.getByteCount() + "");
 			dialogValues.get(1).setText(Util.getLocalDateFmt(fileMD.getLastModified()));
 			dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
 		}

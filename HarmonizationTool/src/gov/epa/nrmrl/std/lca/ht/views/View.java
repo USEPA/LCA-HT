@@ -355,21 +355,21 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ecogov
+					// fedlca
 					// eco
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ecogov_p
+					// Property HTCuratorName = model.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ecogov_p
+					// model.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ecogov_p
+					// Property HTCuratorPhone = model.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ecogov_p
+					// Property HTCuratorEmail = model.getProperty(fedlca_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ecogov_p + "dataParseTimeStamp");
+					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
@@ -618,22 +618,22 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ecogov
+					// fedlca
 					// eco
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ecogov_p
+					// Property HTCuratorName = model.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ecogov_p
+					// model.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ecogov_p
+					// Property HTCuratorPhone = model.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ecogov_p
+					// Property HTCuratorEmail = model.getProperty(fedlca_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ecogov_p + "dataParseTimeStamp");
+					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
@@ -897,22 +897,22 @@ public class View extends ViewPart {
 					// rdf
 					// rdfs
 					// xsd
-					// ecogov
+					// fedlca
 					// eco
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(ecogov_p
+					// Property HTCuratorName = model.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(ecogov_p
+					// model.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(ecogov_p
+					// Property HTCuratorPhone = model.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(ecogov_p
+					// Property HTCuratorEmail = model.getProperty(fedlca_p
 					// + "HTCuratorEmail");
 					// Property dataParseTimeStamp = model
-					// .getProperty(ecogov_p + "dataParseTimeStamp");
+					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
@@ -1128,9 +1128,9 @@ public class View extends ViewPart {
 						// catResourceHandle = newCat;
 						// str2res.put(combined_str, catResourceHandle);
 						// }
-						// catResourceHandle.addLiteral(ECOGOV.foundOnRow,
+						// catResourceHandle.addLiteral(FEDLCA.foundOnRow,
 						// drRowLit);
-						// catResourceHandle.addLiteral(ECOGOV.sourceTableRowNumber,
+						// catResourceHandle.addLiteral(FEDLCA.sourceTableRowNumber,
 						// drRowLit);
 						// csvRow++;
 						// }
