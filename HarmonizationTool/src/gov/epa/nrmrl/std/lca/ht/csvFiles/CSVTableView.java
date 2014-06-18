@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -463,8 +462,8 @@ public class CSVTableView extends ViewPart {
 				System.out.println("RowMenuSelectionListener event = " + event);
 				String menuItemText = ((MenuItem) event.widget).getText();
 				if (menuItemText.equals("ignore row")) {
-					Class<? extends String> thing = menuItemText.getClass();
-					System.out.println("The class is "+thing);
+//					Class<? extends String> thing = menuItemText.getClass();
+//					System.out.println("The class is "+thing);
 					tableViewer.getTable().getItem(rowNumSelected)
 							.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 					if (!rowsToIgnore.contains(rowNumSelected)) {

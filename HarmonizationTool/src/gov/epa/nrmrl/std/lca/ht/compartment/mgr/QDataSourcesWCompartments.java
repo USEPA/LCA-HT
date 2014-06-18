@@ -1,13 +1,16 @@
-package harmonizationtool.query;
+package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+
+import harmonizationtool.query.HarmonyBaseQuery;
 
 
-public class QListDataSets extends HarmonyBaseQuery {
+public class QDataSourcesWCompartments extends HarmonyBaseQuery {
 	{
-		label = "Data Sources: name, version";
+		label = "Data Sources with compartments: name";
 	}
 	{
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
 		b.append("PREFIX  ecogov: <http://epa.gov/nrmrl/std/lca/ecogov#> \n");
 		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
 		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
@@ -19,11 +22,11 @@ public class QListDataSets extends HarmonyBaseQuery {
 		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
-//		b.append("SELECT DISTINCT (str(?id) as ?lid) (\" \" as ?ws) (str(?label) as ?lab) (\" \" as ?ws2) (str(?vs) as ?version) (str(?mj) as ?maj) (\".\" as ?dot)  (str(?mi) as ?min) \n");
 		b.append("SELECT DISTINCT (str(?label) as ?lab)\n");
 		b.append("WHERE \n");
 		b.append("  { ?s a eco:DataSource . \n");
-//		b.append("    ?s ecogov:localSerialNumber ?id . \n");
+		b.append("    ?c rdf:type fasc:Compartment . \n");
+		b.append("    ?c eco:hasDataSource ?s . \n");
 		b.append("    ?s rdfs:label ?label \n");
 		b.append("  } \n");
 		b.append("order by ?label \n");

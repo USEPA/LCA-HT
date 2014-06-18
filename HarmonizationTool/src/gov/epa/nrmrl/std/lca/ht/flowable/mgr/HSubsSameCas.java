@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import harmonizationtool.dialog.DialogQueryDataset;
+import harmonizationtool.dialog.DialogQueryDataSource;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.LabeledQuery;
@@ -14,7 +14,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 	public static final String LABEL = "Harmonize CAS Matches";
 
 	private String param1;
-	private String[] referenceDataSets;
+	private String[] referenceDataSources;
 
 	public HSubsSameCas() {
 		super();
@@ -24,10 +24,10 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		return super.getResultSet();
 	}
 
-	public ResultSet getResultSet(String param1, String[] referenceDataSets) {
+	public ResultSet getResultSet(String param1, String[] referenceDataSoruces) {
 		// BRING IN THE PARAMETERS
 		this.param1 = param1;
-		this.referenceDataSets = referenceDataSets;
+		this.referenceDataSources = referenceDataSoruces;
 		// BUILD THE QUERY USING THE PARAMETERS
 		buildQuery();
 		// READY TO CALL getResultSet() ON THESUPER CLASS
@@ -35,19 +35,19 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	private void getDialog() {
-		DialogQueryDataset dialog = new DialogQueryDataset(Display.getCurrent()
+		DialogQueryDataSource dialog = new DialogQueryDataSource(Display.getCurrent()
 				.getActiveShell());
 		dialog.create();
 		if (dialog.open() == Window.OK) {
 			System.out.println("OK");
-			param1 = dialog.getPrimaryDataSet();
-			referenceDataSets = dialog.getReferenceDataSets();
+			param1 = dialog.getPrimaryDataSource();
+			referenceDataSources = dialog.getReferenceDataSources();
 		}
 	}
 
 	private void buildQuery() {
-		for (int i = 0; i < referenceDataSets.length; i++) {
-			if (referenceDataSets[i] == param1) {
+		for (int i = 0; i < referenceDataSources.length; i++) {
+			if (referenceDataSources[i] == param1) {
 				// REMOVE IT
 			}
 		}
@@ -73,7 +73,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("   (?sub1 as ?" + TableProvider.SUBROW_PREFIX + "1_"
 				+ TableProvider.SUBROW_SUB_URI + ") \n");
 
-		for (int i = 0; i < referenceDataSets.length; i++) {
+		for (int i = 0; i < referenceDataSources.length; i++) {
 			int iPlusTwo = i + 2;
 			b.append("   (str(?ds" + iPlusTwo + "_name) as ?"
 					+ TableProvider.SUBROW_PREFIX + iPlusTwo + "_"
@@ -95,16 +95,16 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("      ?sub1 eco:casNumber ?cas .  \n");
 		b.append("      ?sub1 rdfs:label ?name1 .  \n");
 
-		for (int i = 0; i < referenceDataSets.length; i++) {
+		for (int i = 0; i < referenceDataSources.length; i++) {
 			int iPlusTwo = i + 2;
-			String refDataSet = referenceDataSets[i];
+			String refDataSource = referenceDataSources[i];
 			b.append("OPTIONAL {");
 			b.append("      ?sub" + iPlusTwo + " eco:hasDataSource ?ds"
 					+ iPlusTwo + " . \n");
 			b.append("      ?ds" + iPlusTwo + " rdfs:label ?ds" + iPlusTwo
 					+ "_name . \n");
 			b.append("      filter regex(str(?ds" + iPlusTwo + "_name),\""
-					+ refDataSet + "\") \n");
+					+ refDataSource + "\") \n");
 			b.append("      ?sub" + iPlusTwo + " eco:casNumber ?cas . \n");
 			b.append("      ?sub" + iPlusTwo + " rdfs:label ?name" + iPlusTwo
 					+ " .  \n");
@@ -114,7 +114,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 
 		b.append("      filter ( \n");
 		b.append("     bound(?sub2) \n");
-		for (int i = 1; i < referenceDataSets.length; i++) {
+		for (int i = 1; i < referenceDataSources.length; i++) {
 			int iPlusTwo = i + 2;
 			b.append("  || bound(?sub" + iPlusTwo + ") \n");
 		}

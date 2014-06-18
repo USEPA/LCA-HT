@@ -1,10 +1,9 @@
-package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+package harmonizationtool.dialog;
 
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QListDataSets;
+import harmonizationtool.query.QListDataSources;
 import harmonizationtool.query.QueryResults;
-
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -18,17 +17,17 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
 
-public class DialogPickOneDataset extends TitleAreaDialog {
-
+public class DialogQueryDataSource extends TitleAreaDialog {
 	private Combo combo;
-	private String primaryDataSet = null;
-//	private String[] referenceDataSets = null;
+	private List list;
+	private String primaryDataSource = null;
+	private String[] referenceDataSources = null;
 
-
-	public DialogPickOneDataset(Shell parentShell) {
+	public DialogQueryDataSource(Shell parentShell) {
 		super(parentShell);
 	}
 
@@ -36,19 +35,19 @@ public class DialogPickOneDataset extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Select a dataset to analyze");
+		setTitle("Select a DataSource");
 		// Set the message
 		setMessage("Metadata", IMessageProvider.INFORMATION);
 
 	}
-	public String getPrimaryDataSet(){
-		return primaryDataSet;
+	public String getPrimaryDataSource(){
+		return primaryDataSource;
 	}
-//	public String[] getReferenceDataSets(){
-//		return referenceDataSets;
-//	}
+	public String[] getReferenceDataSources(){
+		return referenceDataSources;
+	}
 
-	private QDataSetsWCompartments qDataSets = new QDataSetsWCompartments();
+	private QListDataSources qDataSources = new QListDataSources();
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -65,25 +64,40 @@ public class DialogPickOneDataset extends TitleAreaDialog {
 		
 	
 		combo.setBounds(174, 25, 133, 22);
-		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
-		lblPrimaryDataSet.setBounds(29, 25, 122, 14);
-		lblPrimaryDataSet.setText("Data Set:");
+//		combo.setText("ds_001");
+		
+		list = new List(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL
+				| SWT.MULTI);
+		list.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("List selected");
+			}
+		});
+		list.setBounds(174, 70, 133, 100);
+		Label lblPrimaryDataSource = new Label(composite, SWT.RIGHT);
+		lblPrimaryDataSource.setBounds(29, 25, 122, 14);
+		lblPrimaryDataSource.setText("Primary Data Set:");
 		
 		GenericQuery iGenericQuery = new GenericQuery(
-				qDataSets.getQuery(), "Internal Query");
+				qDataSources.getQuery(), "Internal Query");
 		iGenericQuery.getData();
 		QueryResults parts = iGenericQuery.getQueryResults();
 		java.util.List<DataRow> resultRow = parts.getTableProvider().getData();
 		for (int i=0;i < resultRow.size();i++){
 			DataRow row = resultRow.get(i);
 			java.util.List<String> valueList = row.getColumnValues();
-		    String dataSet="";
+		    String dataSource="";
 			for(int j = 0; j<valueList.size();j++){
-				dataSet = dataSet + valueList.get(j);
+				dataSource = dataSource + valueList.get(j);
 			}
-			combo.add(dataSet);
-//			list.add(dataSet);
+			combo.add(dataSource);
+			list.add(dataSource);
 		}
+
+		Label lblCompareTo = new Label(composite, SWT.RIGHT);
+		lblCompareTo.setBounds(8, 70, 143, 14);
+		lblCompareTo.setText("Refernce Data Sets:");
 
 		return parent;
 	}
@@ -152,8 +166,8 @@ public class DialogPickOneDataset extends TitleAreaDialog {
 	// Coyy textFields because the UI gets disposed
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
-		primaryDataSet = combo.getText();
-//		referenceDataSets = list.getSelection();
+		primaryDataSource = combo.getText();
+		referenceDataSources = list.getSelection();
 	}
 
 	@Override

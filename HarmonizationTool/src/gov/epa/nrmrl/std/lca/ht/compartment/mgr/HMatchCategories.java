@@ -12,7 +12,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	public static final String LABEL = "Harmonize Compartments (Cats)";
 
 	private String param1;
-//	private String[] referenceDataSets;
+//	private String[] referenceDataSources;
 
 	public HMatchCategories() {
 		super();
@@ -22,10 +22,10 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 		return super.getResultSet();
 	}
 
-	public ResultSet getResultSet(String param1, String[] referenceDataSets) {
+	public ResultSet getResultSet(String param1, String[] referenceDataSources) {
 		// BRING IN THE PARAMETERS
 		this.param1 = param1;
-//		this.referenceDataSets = referenceDataSets;
+//		this.referenceDataSources = referenceDataSources;
 		// BUILD THE QUERY USING THE PARAMETERS
 		buildQuery();
 		// READY TO CALL getResultSet() ON THESUPER CLASS
@@ -33,19 +33,19 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 	}
 
 	private void getDialog() {
-		DialogPickOneDataset dialog = new DialogPickOneDataset(Display.getCurrent()
+		DialogPickOneDataSource dialog = new DialogPickOneDataSource(Display.getCurrent()
 				.getActiveShell());
 		dialog.create();
 		if (dialog.open() == Window.OK) {
 			System.out.println("OK");
-			param1 = dialog.getPrimaryDataSet();
-//			referenceDataSets = dialog.getReferenceDataSets();
+			param1 = dialog.getPrimaryDataSource();
+//			referenceDataSources = dialog.getReferenceDataSources();
 		}
 	}
 
 	private void buildQuery() {
-//		for (int i = 0; i < referenceDataSets.length; i++) {
-//			if (referenceDataSets[i] == param1) {
+//		for (int i = 0; i < referenceDataSources.length; i++) {
+//			if (referenceDataSources[i] == param1) {
 //				// REMOVE IT
 //			}
 //		}
@@ -107,11 +107,11 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 //		b.append ("      } \n");
 //		b.append ("    } \n");
 //		b.append ("  filter ( \n");
-//		String refDataSet = referenceDataSets[0];
-//		b.append ("    regex(?ds, \"^"+refDataSet+"$\") \n");
-//		for (int i = 1; i < referenceDataSets.length; i++) {
-//			refDataSet = referenceDataSets[i];
-//			b.append ("    || regex(?ds, \""+refDataSet+"\") \n");
+//		String refDataSource = referenceDataSources[0];
+//		b.append ("    regex(?ds, \"^"+refDataSource+"$\") \n");
+//		for (int i = 1; i < referenceDataSources.length; i++) {
+//			refDataSource = referenceDataSources[i];
+//			b.append ("    || regex(?ds, \""+refDataSource+"\") \n");
 //		}
 //		b.append ("  ) \n ");
 //		b.append ("  } \n");
@@ -137,7 +137,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 //		b.append("   (str(?comp1) as ?" + TableProvider.SUBROW_PREFIX + "1_compartment) \n");
 //
 //
-//		for (int i = 0; i < referenceDataSets.length; i++) {
+//		for (int i = 0; i < referenceDataSources.length; i++) {
 //			int iPlusTwo = i + 2;
 //			b.append("   (str(?ds" + iPlusTwo + "_name) as ?" + TableProvider.SUBROW_PREFIX
 //					+ iPlusTwo + "_" + TableProvider.SUBROW_NAMEHEADER + ") \n");
@@ -154,16 +154,16 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 //		b.append("      ?c1 rdf:type fasc:Compartment .  \n");
 //		b.append("      ?c1 rdfs:label ?comp1 .  \n");
 //
-//		for (int i = 0; i < referenceDataSets.length; i++) {
+//		for (int i = 0; i < referenceDataSources.length; i++) {
 //			int iPlusTwo = i + 2;
-//			String refDataSet = referenceDataSets[i];
+//			String refDataSource = referenceDataSources[i];
 //			b.append("OPTIONAL {");
 //			b.append("      ?c" + iPlusTwo + " eco:hasDataSource ?ds"
 //					+ iPlusTwo + " . \n");
 //			b.append("      ?ds" + iPlusTwo + " rdfs:label ?ds" + iPlusTwo
 //					+ "_name . \n");
 //			b.append("      filter regex(str(?ds" + iPlusTwo + "_name),\""
-//					+ refDataSet + "\") \n");
+//					+ refDataSource + "\") \n");
 //			b.append("      ?c" + iPlusTwo + " rdf:type fasc:Compartment . \n");
 //			b.append("      ?c" + iPlusTwo + " rdfs:label ?comp" + iPlusTwo
 //					+ " .  \n");
@@ -173,7 +173,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 //
 //		b.append("      filter ( \n");
 //		b.append("     bound(?c2) \n");
-//		for (int i = 1; i < referenceDataSets.length; i++) {
+//		for (int i = 1; i < referenceDataSources.length; i++) {
 //			int iPlusTwo = i + 2;
 //			b.append("  || bound(?c" + iPlusTwo + ") \n");
 //		}

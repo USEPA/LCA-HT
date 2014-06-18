@@ -48,7 +48,7 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-public class DataSetDeleteDialog extends TitleAreaDialog {
+public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
 	private DataSetProvider curDataSetProvider = null;
@@ -69,7 +69,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public DataSetDeleteDialog(Shell parentShell) {
+	public DataSourceDeleteDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1 - CHOOSE A DATA SET TO DELETE
 		if (DataSetKeeper.size() == 0) {
@@ -82,7 +82,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 		this.curDataSetProvider = DataSetKeeper.get(0);
 	}
 
-	public DataSetDeleteDialog(Shell parentShell, DataSetProvider dataSetProvider) {
+	public DataSourceDeleteDialog(Shell parentShell, DataSetProvider dataSetProvider) {
 		// CASE 2 - DELETE A SPECIFIC DATA SET
 		super(parentShell);
 		this.callingDataSetProvider = dataSetProvider;
@@ -329,7 +329,7 @@ public class DataSetDeleteDialog extends TitleAreaDialog {
 
 		}
 		runLogger.info("  # Deleted members: "+deletedQunatites);
-		runLogger.info("  # Deleted dataset meta items: "+deletedIndividuals);
+		runLogger.info("  # Deleted TDBDataset meta items: "+deletedIndividuals);
 
 
 		// IS THIS NEEDED IN CASE ANYTHING IS LEFT OVER?!?

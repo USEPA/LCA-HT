@@ -374,7 +374,7 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = ActiveTDB.dataset;
+					// Dataset TDBDataset = ActiveTDB.TDBDataset;
 					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
@@ -640,7 +640,7 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = ActiveTDB.dataset;
+					// Dataset TDBDataset = ActiveTDB.TDBDataset;
 					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);
@@ -921,7 +921,7 @@ public class View extends ViewPart {
 					// Property dataParseTimeStamp = model
 					// .getProperty(ecogov_p + "dataParseTimeStamp");
 
-					// Dataset dataset = ActiveTDB.dataset;
+					// Dataset TDBDataset = ActiveTDB.TDBDataset;
 					// GraphStore graphStore = ActiveTDB.graphStore;
 					DataRow columnHeaders = new DataRow();
 					// queryResults.setColumnHeaders(columnHeaders);

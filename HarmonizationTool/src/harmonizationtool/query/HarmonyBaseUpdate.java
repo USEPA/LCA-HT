@@ -60,7 +60,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 			return;
 		}
 //		String tdbDir = ActiveTDB.tdbDir;
-//		Dataset dataset = ActiveTDB.dataset;
+//		Dataset TDBDataset = ActiveTDB.TDBDataset;
 		queryResults = new QueryResults();
 		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
@@ -98,7 +98,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 		try {
 			proc.execute();
-//			dataset.commit();
+//			TDBDataset.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

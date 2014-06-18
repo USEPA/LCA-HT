@@ -38,7 +38,7 @@ public class UDelDataSet2 {
 			return;
 		}
 		System.out.println("Running XNumberDataSets");
-		// Dataset dataset = ActiveTDB.dataset;
+		// Dataset TDBDataset = ActiveTDB.TDBDataset;
 		// GraphStore graphStore = ActiveTDB.graphStore;
 		// DataRow columnHeaders = new DataRow();
 		// queryResults.setColumnHeaders(columnHeaders);

@@ -47,7 +47,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model model = null;
-	public static Dataset dataset = null;
+	public static Dataset TDBDataset = null;
 	public static String tdbDir = null;
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
@@ -63,13 +63,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 //	}
 
 	public void finalize() {
-		System.out.println("closing dataset and model");
+		System.out.println("closing TDBDataset and model");
 		cleanUp();
 	}
 
 	private void cleanUp() {
 		try {
-			dataset.close();
+			TDBDataset.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,11 +154,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				System.out.println("defaultTDBFile.list().length="
 						+ defaultTDBFile.list().length);
 				try {
-					dataset = TDBFactory
+					TDBDataset = TDBFactory
 							.createDataset(defaultTDBFile.getPath());
-					assert dataset != null : "dataset cannot be null";
-					model = dataset.getDefaultModel();
-					graphStore = GraphStoreFactory.create(dataset);
+					assert TDBDataset != null : "TDBDataset cannot be null";
+					model = TDBDataset.getDefaultModel();
+					graphStore = GraphStoreFactory.create(TDBDataset);
 
 				} catch (Exception e1) {
 					Shell shell = PlatformUI.getWorkbench()

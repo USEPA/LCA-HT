@@ -34,7 +34,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-public class ChooseDataSetDialog extends TitleAreaDialog {
+public class ChooseDataSourceDialog extends TitleAreaDialog {
 
 	public ModelProvider modelProvider = null;
 	private boolean newFileMD = false;
@@ -57,7 +57,7 @@ public class ChooseDataSetDialog extends TitleAreaDialog {
 	// YOU CAN GET HERE WITH A DataSetProvider
 	// WITH DataSetMD , CuratorMD , fileMDList , tdbResource
 
-	public ChooseDataSetDialog(Shell parentShell) {
+	public ChooseDataSourceDialog(Shell parentShell) {
 		super(parentShell);
 		newFileMD = false;
 		newDataSet = false;

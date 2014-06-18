@@ -3,11 +3,6 @@ package harmonizationtool.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.QDataSetsWCompartments;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QueryResults;
-
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -20,16 +15,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import sun.reflect.generics.tree.ReturnType;
 
 public class GenericStringBox extends TitleAreaDialog {
 
@@ -42,7 +32,7 @@ public class GenericStringBox extends TitleAreaDialog {
 
 	private List<String> nameList = new ArrayList<String>();
 
-	// private String[] referenceDataSets = null;
+	// private String[] referenceDataSources = null;
 
 	public GenericStringBox(Shell parentShell) {
 		super(parentShell);

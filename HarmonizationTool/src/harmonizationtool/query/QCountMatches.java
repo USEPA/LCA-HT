@@ -1,6 +1,6 @@
 package harmonizationtool.query;
 
-import harmonizationtool.dialog.DialogQueryDataset;
+import harmonizationtool.dialog.DialogQueryDataSource;
 import harmonizationtool.model.DataSetKeeper;
 
 import org.eclipse.jface.window.Window;
@@ -47,12 +47,12 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 	}
 
 	private void getDialog() {
-		DialogQueryDataset dialog = new DialogQueryDataset(Display.getCurrent().getActiveShell());
+		DialogQueryDataSource dialog = new DialogQueryDataSource(Display.getCurrent().getActiveShell());
 		dialog.create();
 		if (dialog.open() == Window.OK) {
 			System.out.println("OK");
-			param1 = dialog.getPrimaryDataSet();
-			referenceDataSets = dialog.getReferenceDataSets();
+			param1 = dialog.getPrimaryDataSource();
+			referenceDataSets = dialog.getReferenceDataSources();
 		}
 	}
 

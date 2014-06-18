@@ -69,7 +69,7 @@ public class Flowable {
 		results[3].setLeftJustified(false);
 		results[3].setLcaDataField(new LCADataField());
 		results[3].getLcaDataField().setResourceSubject(rdfClass);
-		results[3].getLcaDataField().setPropertyPredicate(FEDLCA.hasChemicalFormula);
+		results[3].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
 		results[3].getLcaDataField().setLiteralObjectType("String");
 		results[3].getLcaDataField().setRequired(false);
 		results[3].getLcaDataField().setFunctional(false);
@@ -86,16 +86,6 @@ public class Flowable {
 		results[4].getLcaDataField().setRequired(false);
 		results[4].getLcaDataField().setFunctional(false);
 		return results;
-	}
-
-	private static List<QACheck> getSMILESCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		// Issue i1 = new Issue("Double quote",
-		// "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
-		// "Replace the double quote with two single quotes.  You may also use the auto-clean function.",
-		// true);
-		// qaChecks.add(new QACheck(acceptableCASFormat, i1));
-		return qaChecks;
 	}
 
 	private static List<QACheck> getFormulaCheckList() {

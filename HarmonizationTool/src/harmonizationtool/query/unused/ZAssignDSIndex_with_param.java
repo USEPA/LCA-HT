@@ -8,7 +8,7 @@ public class ZAssignDSIndex_with_param extends HarmonyBaseUpdate implements IInt
 //	private String primaryDataset;
 //	private String[] refDatasets;
 	{
-		label = "Assign a localSerialNumber to one unassigned dataset";
+		label = "Assign a localSerialNumber to one unassigned TDBDataset";
 	}
 	@Override
 	public void setNext(int next) {

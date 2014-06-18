@@ -124,8 +124,15 @@ public class FEDLCA {
 
 	public static final Resource ImpactCharacterization = m_model
 			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#ImpactCharacterization");
+
 	public static final Resource FlowContext = m_model
 			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#FlowContext");
+
+	public static final Property flowContextPrimaryDescription = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextPrimaryDescription");
+
+	public static final Property flowContextSupplementalDescription = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextSupplementalDescription");
 
 	public static final Property hasFlowContext = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasFlowContext");
@@ -183,10 +190,7 @@ public class FEDLCA {
 
 	public static final Property hasCategory3 = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasCategory3");
-	
-	public static final Property hasChemicalFormula = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasChemicalFormula");
-	
+
 	public static final Property hasSmilesString = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasSmilesString");
 

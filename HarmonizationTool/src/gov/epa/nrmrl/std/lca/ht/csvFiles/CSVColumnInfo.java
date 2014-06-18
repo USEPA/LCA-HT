@@ -14,9 +14,7 @@ public class CSVColumnInfo {
 	private boolean isUnique;
 	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
-	// private Status status = Status.UNCHECKED;
 	private List<Issue> issues = new ArrayList<Issue>();
-	// private int indexInTable = -1;
 	private LCADataField lcaDataField;
 
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified,

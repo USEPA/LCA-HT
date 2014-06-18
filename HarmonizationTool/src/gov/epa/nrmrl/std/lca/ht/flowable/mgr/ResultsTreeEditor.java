@@ -482,9 +482,9 @@ public class ResultsTreeEditor extends ViewPart {
 	// List<DataRow> data = tableProvider.getData();
 	// DataRow firstRow = data.get(0);
 	// QuerySolution resultSetRow = resultSetRewindable.next();
-	// String keyDataSet = firstRow.get(0);
+	// String keyDataSource = firstRow.get(0);
 	// // THE ROW BELOW WOULD DO THE SAME THING
-	// // String keyDataSet =
+	// // String keyDataSource =
 	// //
 	// resultSetRow.get(TableProvider.SUBROW_PREFIX+"1_"+TableProvider.SUBROW_NAMEHEADER).asLiteral().getString();
 	//
@@ -521,7 +521,7 @@ public class ResultsTreeEditor extends ViewPart {
 	// resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
 	// }
 	//
-	// if (keyDataSet.equals(dataRow.get(0))) {
+	// if (keyDataSource.equals(dataRow.get(0))) {
 	// subRowIndex = 1;
 	// treeRow = new TreeNodeRow(trunk);
 	// treeRow.rowSubURI = resultSetRow.get(TableProvider.SUBROW_PREFIX +
@@ -563,7 +563,7 @@ public class ResultsTreeEditor extends ViewPart {
 		List<DataRow> data = tableProvider.getData();
 		List<Resource> uriList = tableProvider.getUriList();
 		DataRow firstRow = data.get(0);
-		String keyDataSet = firstRow.get(0);
+		String keyDataSource = firstRow.get(0);
 		// if (trunk == null) {
 		trunk = new TreeNode(null);
 		// }
@@ -582,7 +582,7 @@ public class ResultsTreeEditor extends ViewPart {
 		for (int i = 1; i < data.size(); i++) {
 			DataRow dataRow = data.get(i);
 			Resource uri = uriList.get(i);
-			if (keyDataSet.equals(dataRow.get(0))) {
+			if (keyDataSource.equals(dataRow.get(0))) {
 				treeNodeRow = new TreeNodeRow(trunk);
 				treeNodeRow.setUri(uri);
 				for (int col = 0; col < dataRow.getSize(); col++) {

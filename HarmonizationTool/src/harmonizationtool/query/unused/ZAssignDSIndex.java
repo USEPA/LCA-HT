@@ -4,7 +4,7 @@ import harmonizationtool.query.HarmonyBaseQuery;
 
 public class ZAssignDSIndex extends HarmonyBaseQuery {
 	{
-		label = "Assign the next localSerialNumber to an unassigned dataset";
+		label = "Assign the next localSerialNumber to an unassigned TDBDataset";
 	}
 	{
 		StringBuilder b = new StringBuilder();

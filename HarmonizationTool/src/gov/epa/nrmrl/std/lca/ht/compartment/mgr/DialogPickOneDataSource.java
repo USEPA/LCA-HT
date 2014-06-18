@@ -1,11 +1,8 @@
-package harmonizationtool.dialog;
-
-import java.util.ArrayList;
+package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import harmonizationtool.model.DataRow;
 import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QListDataSets;
-import harmonizationtool.query.unused.ZGetNextDSIndex;
+import harmonizationtool.query.QListDataSources;
 import harmonizationtool.query.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -21,19 +18,17 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 
-public class CopyOfDialogOneDataset extends TitleAreaDialog {
+public class DialogPickOneDataSource extends TitleAreaDialog {
 
 	private Combo combo;
-	private String primaryDataSet = null;
-//	private String[] referenceDataSets = null;
+	private String primaryDataSource = null;
+//	private String[] referenceDataSources = null;
 
 
-	public CopyOfDialogOneDataset(Shell parentShell) {
+	public DialogPickOneDataSource(Shell parentShell) {
 		super(parentShell);
 	}
 
@@ -41,19 +36,19 @@ public class CopyOfDialogOneDataset extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		// Set the title
-		setTitle("Select a dataset to analyze");
+		setTitle("Select a DataSource");
 		// Set the message
 		setMessage("Metadata", IMessageProvider.INFORMATION);
 
 	}
-	public String getPrimaryDataSet(){
-		return primaryDataSet;
+	public String getPrimaryDataSource(){
+		return primaryDataSource;
 	}
-//	public String[] getReferenceDataSets(){
-//		return referenceDataSets;
+//	public String[] getReferenceDataSources(){
+//		return referenceDataSources;
 //	}
 
-	private QListDataSets qDataSets = new QListDataSets();
+	private QDataSourcesWCompartments qDataSources = new QDataSourcesWCompartments();
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -70,24 +65,23 @@ public class CopyOfDialogOneDataset extends TitleAreaDialog {
 		
 	
 		combo.setBounds(174, 25, 133, 22);
-		Label lblPrimaryDataSet = new Label(composite, SWT.RIGHT);
-		lblPrimaryDataSet.setBounds(29, 25, 122, 14);
-		lblPrimaryDataSet.setText("Data Set:");
+		Label lblPrimaryDataSource = new Label(composite, SWT.RIGHT);
+		lblPrimaryDataSource.setBounds(29, 25, 122, 14);
+		lblPrimaryDataSource.setText("Data Set:");
 		
 		GenericQuery iGenericQuery = new GenericQuery(
-				qDataSets.getQuery(), "Internal Query");
+				qDataSources.getQuery(), "Internal Query");
 		iGenericQuery.getData();
 		QueryResults parts = iGenericQuery.getQueryResults();
 		java.util.List<DataRow> resultRow = parts.getTableProvider().getData();
 		for (int i=0;i < resultRow.size();i++){
 			DataRow row = resultRow.get(i);
 			java.util.List<String> valueList = row.getColumnValues();
-		    String dataSet="";
+		    String dataSource="";
 			for(int j = 0; j<valueList.size();j++){
-				dataSet = dataSet + valueList.get(j);
+				dataSource += valueList.get(j);
 			}
-			combo.add(dataSet);
-//			list.add(dataSet);
+			combo.add(dataSource);
 		}
 
 		return parent;
@@ -157,8 +151,8 @@ public class CopyOfDialogOneDataset extends TitleAreaDialog {
 	// Coyy textFields because the UI gets disposed
 	// and the Text Fields are not accessible any more.
 	private void saveInput() {
-		primaryDataSet = combo.getText();
-//		referenceDataSets = list.getSelection();
+		primaryDataSource = combo.getText();
+//		referenceDataSources = list.getSelection();
 	}
 
 	@Override
