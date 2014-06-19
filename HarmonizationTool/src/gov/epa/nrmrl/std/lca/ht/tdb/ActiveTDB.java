@@ -76,9 +76,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
-			model.removeAll(subject, predicate, rdfNode);
-		}
-		System.out.println("Filename: "+ stringLiteral + " added to TDB");
+			if (rdfNode.isLiteral()) {
+				model.removeAll(subject, predicate, rdfNode);
+			}		}
+		System.out.println("Filename: " + stringLiteral + " added to TDB");
 		model.add(subject, predicate, model.createTypedLiteral(stringLiteral));
 	}
 
@@ -86,8 +87,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
-			model.removeAll(subject, predicate, rdfNode);
-		}
+			if (rdfNode.isLiteral()) {
+				model.removeAll(subject, predicate, rdfNode);
+			}		}
 		model.add(subject, predicate, model.createTypedLiteral(longLiteral));
 	}
 
@@ -95,7 +97,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
-			model.removeAll(subject, predicate, rdfNode);
+			if (rdfNode.isLiteral()) {
+				model.removeAll(subject, predicate, rdfNode);
+			}
 		}
 		model.add(subject, predicate, model.createTypedLiteral(dateLiteral));
 	}

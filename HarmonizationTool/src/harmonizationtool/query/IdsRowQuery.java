@@ -23,6 +23,8 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		b.append("PREFIX  eu:     <http://ontology.earthster.org/eco/unit#> \n");
 		b.append("PREFIX  ecocml: <http://ontology.earthster.org/eco/CML2001#> \n");
 		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+
 		b.append("PREFIX  ds:  <http://data.lca.std.nrmrl.epa.gov/" + this.dataSourceIRI + "#> \n");
 		b.append(" \n");
 		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");

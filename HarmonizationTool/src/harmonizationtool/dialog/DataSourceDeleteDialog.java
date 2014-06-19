@@ -400,8 +400,8 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		} else {
 			comboFileSelector.setToolTipText(curFileMD.getPath());
 			dialogValues.get(0).setText(curFileMD.getByteCount() + "");
-			dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getLastModified()));
-			dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadTime()));
+			dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
+			dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
 		}
 	}
 

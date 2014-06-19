@@ -56,7 +56,7 @@ public class ImportCSV implements IHandler {
 		System.out.println("executing Import CSV");
 		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();
-		// FileMD(String filename, String path, long size, Date lastModified, Date readTime)
+		// FileMD(String filename, String path, long size, Date modifiedDate, Date readDate)
 		FileMD fileMD = new FileMD();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
@@ -139,10 +139,10 @@ public class ImportCSV implements IHandler {
 		fileMD.setFilename(file.getName());
 		fileMD.setPath(path);
 		fileMD.setByteCount(file.length());
-		fileMD.setLastModified(new Date(file.lastModified()));
-		Date readStartTime = new Date();
-		fileMD.setReadTime(readStartTime);
-		runLogger.info("# File read at: " + Util.getLocalDateFmt(readStartTime));
+		fileMD.setModifiedDate(new Date(file.lastModified()));
+		Date readDate = new Date();
+		fileMD.setReadDate(readDate);
+		runLogger.info("# File read at: " + Util.getLocalDateFmt(readDate));
 		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
 		runLogger.info("# File size: " + file.length());
 		FlowsWorkflow.setFileMD(fileMD);
@@ -198,8 +198,8 @@ public class ImportCSV implements IHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Date readEndTime = new Date();
-		runLogger.info("# File read time (in seconds): " + readEndTime.compareTo(readStartTime));
+		Date readEndDate = new Date();
+		runLogger.info("# File read time (in seconds): " + readEndDate.compareTo(readDate));
 
 //		String msg = "Finished reading file: " + path;
 //		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);

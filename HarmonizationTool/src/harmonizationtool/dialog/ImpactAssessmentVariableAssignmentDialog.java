@@ -706,8 +706,8 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		fileMDCombo.setToolTipText(fileMD.getPath());
 		dialogValues.get(0).setText(fileMD.getByteCount() + "");
 		dialogValues.get(1).setText(
-				Util.getLocalDateFmt(fileMD.getLastModified()));
-		dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadTime()));
+				Util.getLocalDateFmt(fileMD.getModifiedDate()));
+		dialogValues.get(2).setText(Util.getLocalDateFmt(fileMD.getReadDate()));
 	}
 
 	protected void populateMeta(String dataSetChosen) {
@@ -773,9 +773,9 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			fileMDCombo.setToolTipText(fileMD.getPath());
 			dialogValues.get(0).setText(fileMD.getByteCount() + "");
 			dialogValues.get(1).setText(
-					Util.getLocalDateFmt(fileMD.getLastModified()));
+					Util.getLocalDateFmt(fileMD.getModifiedDate()));
 			dialogValues.get(2).setText(
-					Util.getLocalDateFmt(fileMD.getReadTime()));
+					Util.getLocalDateFmt(fileMD.getReadDate()));
 		}
 		if (dataSourceMD != null) {
 			System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());

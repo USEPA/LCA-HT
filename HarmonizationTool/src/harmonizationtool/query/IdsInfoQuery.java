@@ -28,13 +28,7 @@ public class IdsInfoQuery extends HarmonyBaseUpdate {
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  " + this.dataSourceIRI.toString()
-//				+ ":  <http://data.lca.std.nrmrl.epa.gov/"
-//				+ this.dataSourceIRI.toString() + "#> \n");
-//		b.append("PREFIX  " + this.dataSourceIRI.toString()
-//				+ ":  <http://data.lca.std.nrmrl.epa.gov/"
-//				+ this.dataSourceIRI.toString() + "#> \n");
-		b.append(" \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
 		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
 		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
 		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");

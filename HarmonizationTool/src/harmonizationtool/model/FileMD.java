@@ -18,8 +18,8 @@ public class FileMD {
 	private String path;
 	private String encoding = null;
 	private long byteCount;
-	private Date lastModified;
-	private Date readTime;
+	private Date modifiedDate;
+	private Date readDate;
 	private Resource tdbResource;
 	private static final Model model = ActiveTDB.model;
 
@@ -32,19 +32,19 @@ public class FileMD {
 		this.tdbResource = tdbResource;
 	}
 
-	public FileMD(String filename, String path, long size, Date lastModified, Date readTime) {
+	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
 		super();
 		this.filename = filename;
 		this.path = path;
 		this.byteCount = size;
-		this.lastModified = lastModified;
-		this.readTime = readTime;
+		this.modifiedDate = modifiedDate;
+		this.readDate = readDate;
 		this.tdbResource = model.createResource();
 		model.add(this.tdbResource, LCAHT.fileName, model.createTypedLiteral(this.filename));
 		model.add(this.tdbResource, LCAHT.filePath, model.createTypedLiteral(this.path));
 		model.add(this.tdbResource, LCAHT.byteCount, model.createTypedLiteral(this.byteCount));
-		model.add(this.tdbResource, LCAHT.fileLastModified, model.createTypedLiteral(this.lastModified));
-		model.add(this.tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(this.readTime));
+		model.add(this.tdbResource, LCAHT.fileModifiedDate, model.createTypedLiteral(this.modifiedDate));
+		model.add(this.tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(this.readDate));
 	}
 
 	public String getFilename() {
@@ -81,22 +81,22 @@ public class FileMD {
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.byteCount, size);
 	}
 
-	public Date getLastModified() {
-		return lastModified;
+	public Date getModifiedDate() {
+		return modifiedDate;
 	}
 
-	public void setLastModified(Date lastModified) {
-		this.lastModified = lastModified;
-		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileLastModified, lastModified);
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
 	}
 
-	public Date getReadTime() {
-		return readTime;
+	public Date getReadDate() {
+		return readDate;
 	}
 
-	public void setReadTime(Date readTime) {
-		this.readTime = readTime;
-		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileReadDate, readTime);
+	public void setReadDate(Date readDate) {
+		this.readDate = readDate;
+		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
 	}
 
 	public String getEncoding() {
@@ -149,15 +149,15 @@ public class FileMD {
 		object = nodeIterator.next();
 		this.byteCount = (long) Integer.parseInt(object.toString());
 		
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileLastModified);
+		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileModifiedDate);
 		object = nodeIterator.next();
 		long dateLong = (long) Integer.parseInt(object.toString());
-		this.lastModified = new Date(dateLong);
+		this.modifiedDate = new Date(dateLong);
 		
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileReadDate);
 		object = nodeIterator.next();
 		dateLong = (long) Integer.parseInt(object.toString());
-		this.readTime = new Date(dateLong);
+		this.readDate = new Date(dateLong);
 	}
 
 //	public static FileMD syncFromTDB(Resource fileMDResource) {
