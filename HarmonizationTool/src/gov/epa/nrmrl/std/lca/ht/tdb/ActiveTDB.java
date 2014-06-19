@@ -34,6 +34,7 @@ import org.eclipse.ui.services.IServiceLocator;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -93,7 +94,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		model.add(subject, predicate, model.createTypedLiteral(longLiteral));
 	}
 
-	public static void replaceLiteral(Resource subject, Property predicate, Date dateLiteral) {
+	public static void replaceLiteral(Resource subject, Property predicate, Date dateObject) {
 		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
@@ -101,6 +102,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				model.removeAll(subject, predicate, rdfNode);
 			}
 		}
+		Literal dateLiteral = model.createTypedLiteral(dateObject);
 		model.add(subject, predicate, model.createTypedLiteral(dateLiteral));
 	}
 

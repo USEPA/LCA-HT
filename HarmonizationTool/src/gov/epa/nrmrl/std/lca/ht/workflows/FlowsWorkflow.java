@@ -357,7 +357,8 @@ public class FlowsWorkflow extends ViewPart {
 			try {
 				handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
 			} catch (Exception ex) {
-				throw new RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
+				ex.printStackTrace();
+//				throw new RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
 			btnCheckData.setEnabled(true);
 		}
