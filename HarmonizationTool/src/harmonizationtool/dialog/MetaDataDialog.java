@@ -14,6 +14,7 @@ import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
 import harmonizationtool.utils.Util;
+import harmonizationtool.vocabulary.LCAHT;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -35,6 +36,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -75,7 +79,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		super(parentShell);
 		// CASE 1 - EDIT DATA SET INFO FOR ANY EXISTING DATA SET
 		if (DataSourceKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data Sets",
+					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
 		if (DataSourceKeeper.size() == 0) {
@@ -93,7 +98,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.callingDataSourceProvider = dataSourceProvider;
 		this.callingFileMD = fileMD;
 		this.curDataSourceProvider = callingDataSourceProvider;
-		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
+		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
+				fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing DataSource");
 		runLogger.info("  start name = " + dataSourceProvider.getDataSourceMD().getName());
@@ -112,7 +118,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSourceProvider.getDataSourceMD().setName(fileMD.getFilename());
 		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
 		this.curDataSourceProvider = this.newDataSourceProvider;
-		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4));
+		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
+				fileMD.getFilename().length() - 4));
 
 		if (DataSourceKeeper.size() == 0) {
 			DataSourceKeeper.add(newDataSourceProvider);
@@ -346,7 +353,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		rowIndex++;
 		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-		copyCuratorInfo.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+		copyCuratorInfo
+				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
 		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
 		copyCuratorInfo.setText("Copy Info from Preferences");
 		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
@@ -460,15 +468,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 				// comboSelectionIndex = -1 if no change issued
 				boolean success = DataSourceKeeper.add(curDataSourceProvider); // A
-																			// DataSourceProvider
-																			// IS
-																			// BORN!!
+																				// DataSourceProvider
+																				// IS
+																				// BORN!!
 				System.out.println("Created new DataSourceProvider succees: = " + success);
 			}
 		}
 		if (callingFileMD != null) {
 			curDataSourceProvider.addFileMD(callingFileMD);
-			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/" + callingFileMD.getFilename());
+			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
+					+ callingFileMD.getFilename());
 		}
 
 		System.out.println("newDataSourceProvider " + newDataSourceProvider);
@@ -487,10 +496,12 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
 		// comboDataSourceSelector.getText());
 		boolean sendToFlowsWorkflow = false;
-		// if (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSourceSelector.getText())){
+		// if
+		// (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSourceSelector.getText())){
 		// sendToFlowsWorkflow = true;
 		// }
-		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(), comboDataSourceSelector.getItems());
+		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(),
+				comboDataSourceSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
 		genericStringBox.open();
@@ -507,7 +518,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 
 		if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be onePerParentGroup.  Please choose a new name.");
+			new GenericMessageBox(getParentShell(), "Duplicate Name",
+					"Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
 		curDataSourceProvider.getDataSourceMD().setName(newFileName);
@@ -593,8 +605,12 @@ public class MetaDataDialog extends TitleAreaDialog {
 		} else {
 			comboFileSelector.setToolTipText(curFileMD.getPath());
 			dialogValues.get(0).setText(curFileMD.getByteCount() + "");
-			dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
-			dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
+			if (curFileMD.getModifiedDate() != null) {
+				dialogValues.get(1).setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
+			}
+			if (curFileMD.getReadDate() != null) {
+				dialogValues.get(2).setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
+			}
 		}
 	}
 
@@ -656,7 +672,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 			System.out.println("ModifyEvent=" + e.toString());
 			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: "
+					+ comboFileSelector.getText());
 		}
 
 	}

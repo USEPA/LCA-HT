@@ -27,6 +27,9 @@ public class Util {
 	}
 
 	public static String getGMTDateFmt(Date date) {
+		if (date == null){
+			return null;
+		}
 		// SimpleDateFormat dateFormatGmt = new
 		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -35,6 +38,9 @@ public class Util {
 	}
 
 	public static String getLocalDateFmt(Date date) {
+		if (date == null){
+			return null;
+		}
 		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);

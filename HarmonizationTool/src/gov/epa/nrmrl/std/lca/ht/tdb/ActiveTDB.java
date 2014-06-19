@@ -57,7 +57,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
 
-	// private List<IActiveTDBListener> activeTDBListeners = new ArrayList<IActiveTDBListener>();
+	// private List<IActiveTDBListener> activeTDBListeners = new
+	// ArrayList<IActiveTDBListener>();
 
 	public ActiveTDB() {
 		System.out.println("created ActiveTDB");
@@ -79,7 +80,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			RDFNode rdfNode = nodeIterator.next();
 			if (rdfNode.isLiteral()) {
 				model.removeAll(subject, predicate, rdfNode);
-			}		}
+			}
+		}
 		System.out.println("Filename: " + stringLiteral + " added to TDB");
 		model.add(subject, predicate, model.createTypedLiteral(stringLiteral));
 	}
@@ -90,20 +92,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			RDFNode rdfNode = nodeIterator.next();
 			if (rdfNode.isLiteral()) {
 				model.removeAll(subject, predicate, rdfNode);
-			}		}
+			}
+		}
+		// NOTE A JAVA long BECOMES AN xsd:integer
 		model.add(subject, predicate, model.createTypedLiteral(longLiteral));
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, Date dateObject) {
-		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
-		while (nodeIterator.hasNext()) {
-			RDFNode rdfNode = nodeIterator.next();
-			if (rdfNode.isLiteral()) {
-				model.removeAll(subject, predicate, rdfNode);
+
+		NodeIterator nodeIterator;
+		try {
+			nodeIterator = model.listObjectsOfProperty(subject, predicate);
+
+			while (nodeIterator.hasNext()) {
+				RDFNode rdfNode = nodeIterator.next();
+				if (rdfNode.isLiteral()) {
+					model.removeAll(subject, predicate, rdfNode);
+				}
 			}
+			Literal dateLiteral = model.createTypedLiteral(dateObject);
+			model.add(subject, predicate, model.createTypedLiteral(dateLiteral));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("subject: " + subject);
+			System.out.println("predicate: " + predicate);
+
+			e.printStackTrace();
 		}
-		Literal dateLiteral = model.createTypedLiteral(dateObject);
-		model.add(subject, predicate, model.createTypedLiteral(dateLiteral));
 	}
 
 	private void cleanUp() {
@@ -218,8 +233,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	/**
-	 * Because the DataSourceKeeper does not contain DataSources, but the TDB might, we need to get DataSources info
-	 * from the TDB. Each TDB subject which is rdf:type eco:DataSource should have a DataSourceProvider
+	 * Because the DataSourceKeeper does not contain DataSources, but the TDB
+	 * might, we need to get DataSources info from the TDB. Each TDB subject
+	 * which is rdf:type eco:DataSource should have a DataSourceProvider
 	 */
 	public static void syncTDBToDataSourceKeeper() {
 		if (model == null) {
@@ -236,6 +252,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				dataSourceProvider.setTdbResource(dataSourceRDFResource);
 				DataSourceMD dataSourceMD = new DataSourceMD();
 				CuratorMD curatorMD = new CuratorMD();
+
+				NodeIterator nodeIterator = model.listObjectsOfProperty(dataSourceRDFResource, LCAHT.containsFile);
+				while (nodeIterator.hasNext()) {
+					RDFNode fileMDResource = nodeIterator.next();
+					if (!fileMDResource.isLiteral()) {
+						FileMD fileMD = new FileMD(fileMDResource.asResource());
+						fileMD.syncDataFromTDB();
+						dataSourceProvider.addFileMD(fileMD);
+					}
+				}
 
 				// RDFS.label <=> Name
 				if (dataSourceRDFResource.listProperties(RDFS.label).toList().size() > 1) {
@@ -313,29 +339,19 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				dataSourceProvider.setDataSourceMD(dataSourceMD);
 				dataSourceProvider.setCuratorMD(curatorMD);
 				DataSourceKeeper.add(dataSourceProvider);
-
-				NodeIterator nodeIterator = model.listObjectsOfProperty(dataSourceRDFResource, LCAHT.containsFile);
-				while (nodeIterator.hasNext()) {
-					RDFNode fileMDResource = nodeIterator.next();
-					if (!fileMDResource.isLiteral()) {
-						FileMD fileMD = new FileMD((Resource) fileMDResource);
-						fileMD.syncDataFromTDB();
-						dataSourceProvider.addFileMD(fileMD);
-					}
-				}
 			}
 		}
 
 	}
 
-	public static void syncDataSourceProviderToTDB(DataSourceProvider dsProvider) {
+	public static void syncDataSourceProviderToTDB(DataSourceProvider dataSourceProvider) {
 		// SHOULD BREAK OUT TO ITS OWN CLASS OR ADD TO DataSourceProvider or
 		// ActiveTDB
-		DataSourceMD dataSourceMD = dsProvider.getDataSourceMD();
-		CuratorMD curatorMD = dsProvider.getCuratorMD();
+		DataSourceMD dataSourceMD = dataSourceProvider.getDataSourceMD();
+		CuratorMD curatorMD = dataSourceProvider.getCuratorMD();
 
 		Model model = ActiveTDB.model;
-		Resource tdbResource = dsProvider.getTdbResource();
+		Resource tdbResource = dataSourceProvider.getTdbResource();
 		assert tdbResource != null : "tdbResource cannot be null";
 		assert RDFS.label != null : "RDFS.label cannot be null";
 		assert dataSourceMD.getName() != null : "dataSourceMD.getName() cannot be null";
@@ -383,6 +399,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (!dataSourceMD.getComments().matches("^\\s*$")) {
 			// ONLY IF NOT ALL WHITE SPACES
 			model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSourceMD.getComments()));
+		}
+
+		for (FileMD fileMD : dataSourceProvider.getFileMDList()) {
+			if (fileMD.getTdbResource() == null) {
+				fileMD.syncDataToTDB();
+			}
+			model.add(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 		}
 	}
 

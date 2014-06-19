@@ -2,8 +2,12 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.tdb.*;
-import harmonizationtool.model.*;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import harmonizationtool.model.DataRow;
+import harmonizationtool.model.Issue;
+import harmonizationtool.model.Status;
+import harmonizationtool.model.TableKeeper;
+import harmonizationtool.model.TableProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1158,9 +1162,7 @@ public class CSVTableView extends ViewPart {
 			TableItem item = table.getItem(row);
 			String flowableName = item.getText(colIndex);
 			Model model = ActiveTDB.model;
-			// String query = "select * where {?s ";
 
-			// if (model.)
 		}
 	}
 

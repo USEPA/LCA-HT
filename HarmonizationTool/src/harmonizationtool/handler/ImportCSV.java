@@ -1,15 +1,12 @@
 package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.views.View;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
-import harmonizationtool.utils.FileEncodingUtil;
-import harmonizationtool.utils.NonAsciiChar;
 import harmonizationtool.utils.Util;
 
 import java.io.File;
@@ -17,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.log4j.Logger;
@@ -33,7 +28,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.handlers.IHandlerService;
 
 public class ImportCSV implements IHandler {
 
@@ -101,18 +95,18 @@ public class ImportCSV implements IHandler {
 			return null;
 		}
 		// FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
-		List<NonAsciiChar> nonAsciiCandidates = FileEncodingUtil.getFirstNonAsciiChar(path, 0);
-		String cr = System.getProperty("line.separator");
-		for (int i = 0; i < nonAsciiCandidates.size(); i++) {
-			NonAsciiChar nonAsciiChar = nonAsciiCandidates.get(i);
-			String message = "# Character Encoding info:" + cr;
-			message += "#    File: " + path + cr;
-			message += "#    Encoding: " + nonAsciiChar.encoding + cr;
-			message += "#    First non-ASCII character: ->" + nonAsciiChar.character + "<-" + cr;
-			message += "#    Occuring on line: " + nonAsciiChar.lineNumber + cr;
-			message += "#    Characters to the left: " + nonAsciiChar.colNumber + cr;
-			runLogger.info(message);
-		}
+//		List<NonAsciiChar> nonAsciiCandidates = FileEncodingUtil.getFirstNonAsciiChar(path, 0);
+//		String cr = System.getProperty("line.separator");
+//		for (int i = 0; i < nonAsciiCandidates.size(); i++) {
+//			NonAsciiChar nonAsciiChar = nonAsciiCandidates.get(i);
+//			String message = "# Character Encoding info:" + cr;
+//			message += "#    File: " + path + cr;
+//			message += "#    Encoding: " + nonAsciiChar.encoding + cr;
+//			message += "#    First non-ASCII character: ->" + nonAsciiChar.character + "<-" + cr;
+//			message += "#    Occuring on line: " + nonAsciiChar.lineNumber + cr;
+//			message += "#    Characters to the left: " + nonAsciiChar.colNumber + cr;
+//			runLogger.info(message);
+//		}
 
 		// checkFileEncoding.firstNonAsciiChars("basic");
 		// String issues = checkFileEncoding.showFileIssues(path);
@@ -199,7 +193,9 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		Date readEndDate = new Date();
-		runLogger.info("# File read time (in seconds): " + readEndDate.compareTo(readDate));
+//		runLogger.info("# File read time (in seconds): " + readEndDate.compareTo(readDate));
+		int secondsRead = (int) ((readEndDate.getTime()-readDate.getTime())/1000);
+		runLogger.info("# File read time (in seconds): " + secondsRead);
 
 //		String msg = "Finished reading file: " + path;
 //		Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
