@@ -1,15 +1,46 @@
 package harmonizationtool.model;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
+
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.utils.Util;
+import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.FEDLCA;
 
 public class CuratorMD {
-	private String name;
-	private String affiliation;
-	private String email;
-	private String phone;
+	private String curatorName;
+	private String curatorAffiliation;
+	private String curatorEmail;
+	private String curatorPhone;
+	private Resource tdbResource;
+	private static final Model model = ActiveTDB.model;
+	
+	public CuratorMD(Resource tdbResource) {
+		this.tdbResource = tdbResource;
+//		model.add(tdbResource, RDF.type, ECO.DataSource);
+	}
+
+	public CuratorMD(String name, String affiliation, String email, String phone) {
+		super();
+		this.curatorName = name;
+		this.curatorAffiliation = affiliation;
+		this.curatorEmail = email;
+		this.curatorPhone = phone;
+		this.tdbResource = model.createResource();
+//		model.add(tdbResource, RDF.type, ECO.DataSource);
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorName, model.createTypedLiteral(this.curatorName));
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorAffiliation, model.createTypedLiteral(this.curatorAffiliation));
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorEmail, model.createTypedLiteral(this.curatorEmail));
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorPhone, model.createTypedLiteral(this.curatorPhone));
+	}
 
 	public CuratorMD() {
+		tdbResource = model.createResource();
+//		model.add(tdbResource, RDF.type, FEDLCA.curator);
 	}
+
 
 	public CuratorMD(boolean preferences) {
 		if (preferences) {
@@ -22,46 +53,57 @@ public class CuratorMD {
 	}
 
 	public String getName() {
-		if (name == null) {
-			name = "";
+		if (curatorName == null) {
+			curatorName = "";
 		}
-		return name;
+		return curatorName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.curatorName = name;
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorName, model.createTypedLiteral(this.curatorName));
 	}
 
 	public String getAffiliation() {
-		if (affiliation == null) {
-			affiliation = "";
+		if (curatorAffiliation == null) {
+			curatorAffiliation = "";
 		}
-		return affiliation;
+		return curatorAffiliation;
 	}
 
 	public void setAffiliation(String affiliation) {
-		this.affiliation = affiliation;
+		this.curatorAffiliation = affiliation;	
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorAffiliation, model.createTypedLiteral(this.curatorAffiliation));
 	}
 
 	public String getEmail() {
-		if (email == null) {
-			email = "";
+		if (curatorEmail == null) {
+			curatorEmail = "";
 		}
-		return email;
+		return curatorEmail;
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.curatorEmail = email;
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorEmail, model.createTypedLiteral(this.curatorEmail));
 	}
 
 	public String getPhone() {
-		if (phone == null) {
-			phone = "";
+		if (curatorPhone == null) {
+			curatorPhone = "";
 		}
-		return phone;
+		return curatorPhone;
 	}
 
 	public void setPhone(String phone) {
-		this.phone = phone;
+		this.curatorPhone = phone;
+//		model.add(this.tdbResource, FEDLCA.dataSourceCuratorPhone, model.createTypedLiteral(this.curatorPhone));
+	}
+	
+	public void remove(){
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorName);
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorAffiliation);
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorEmail);
+		tdbResource.removeAll(FEDLCA.dataSourceCuratorPhone);
 	}
 }

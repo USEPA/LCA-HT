@@ -56,7 +56,7 @@ public class FileMD {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileName, filename);
@@ -68,7 +68,7 @@ public class FileMD {
 
 	public void setPath(String path) {
 		this.path = path;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.filePath, path);
@@ -80,7 +80,7 @@ public class FileMD {
 
 	public void setByteCount(long size) {
 		this.byteCount = size;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.byteCount, size);
@@ -92,7 +92,7 @@ public class FileMD {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
@@ -104,7 +104,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
@@ -119,7 +119,7 @@ public class FileMD {
 			// WARN THAT THIS ENCODING HAS NOT BEEN SEEN
 		}
 		this.encoding = encoding;
-		if (tdbResource == null){
+		if (tdbResource == null) {
 			tdbResource = model.createResource();
 		}
 		ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
@@ -151,10 +151,10 @@ public class FileMD {
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileName);
 		if (nodeIterator.hasNext()) {
 			object = nodeIterator.next();
-			if (object.isLiteral()){
-				literal = (Literal) object;
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
 				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)){
+				if (javaObject.getClass().equals(String.class)) {
 					filename = (String) literal.getValue();
 				}
 			}
@@ -163,10 +163,10 @@ public class FileMD {
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.filePath);
 		if (nodeIterator.hasNext()) {
 			object = nodeIterator.next();
-			if (object.isLiteral()){
-				literal = (Literal) object;
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
 				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)){
+				if (javaObject.getClass().equals(String.class)) {
 					path = (String) literal.getValue();
 				}
 			}
@@ -175,10 +175,10 @@ public class FileMD {
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileEncoding);
 		if (nodeIterator.hasNext()) {
 			object = nodeIterator.next();
-			if (object.isLiteral()){
-				literal = (Literal) object;
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
 				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)){
+				if (javaObject.getClass().equals(String.class)) {
 					encoding = (String) literal.getValue();
 				}
 			}
@@ -187,52 +187,32 @@ public class FileMD {
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.byteCount);
 		if (nodeIterator.hasNext()) {
 			object = nodeIterator.next();
-			if (object.isLiteral()){
-				literal = (Literal) object;
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
 				Object javaObject = literal.getLong();
-				if (javaObject.getClass().equals(Long.class)){
-					byteCount = (Long) literal.getLong();
-				}
-				else {
-					System.out.println("javaObject.getClass(): "+ javaObject.getClass());
+				if (javaObject.getClass().equals(Long.class)) {
+					byteCount = literal.getLong();
 				}
 			}
 		}
-		
 
 		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileModifiedDate);
 		if (nodeIterator.hasNext()) {
 			object = nodeIterator.next();
-			if (object.isLiteral()){
-				literal = (Literal) object;
-				Object javaObject = literal.getValue();
-//				FIXME FIXME FIXME
-				if (javaObject.getClass().equals(Long.class)){
-					System.out.println("javaObject= "+javaObject);
-
-//					modifiedDate = new Date((Long) javaObject);
-				}
-				else {
-					System.out.println("fileModifiedDate javaObject.getClass(): "+ javaObject.getClass());
-					System.out.println("literal.getValue()= "+literal.getValue());
-//					System.out.println("theDate= "+theDate);
-//					Date theDate = (Date) javaObject;
-
-				}
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
+				modifiedDate = ActiveTDB.getDateFromLiteral(literal);
 			}
 		}
-		
-//		 nodeIterator = model.listObjectsOfProperty(tdbResource,
-//		 LCAHT.fileModifiedDate);
-//		 object = nodeIterator.next();
-//		 long dateLong = (long) Integer.parseInt(object.toString());
-//		 this.modifiedDate = new Date(dateLong);
-//		
-		// nodeIterator = model.listObjectsOfProperty(tdbResource,
-		// LCAHT.fileReadDate);
-		// object = nodeIterator.next();
-		// dateLong = (long) Integer.parseInt(object.toString());
-		// this.readDate = new Date(dateLong);
+
+		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileReadDate);
+		if (nodeIterator.hasNext()) {
+			object = nodeIterator.next();
+			if (object.isLiteral()) {
+				literal = object.asLiteral();
+				readDate = ActiveTDB.getDateFromLiteral(literal);
+			}
+		}
 	}
 
 	public void syncDataToTDB() {
@@ -242,15 +222,25 @@ public class FileMD {
 		model.add(tdbResource, RDF.type, LCAHT.dataFile);
 		model.add(tdbResource, LCAHT.fileName, model.createTypedLiteral(filename));
 		model.add(tdbResource, LCAHT.filePath, model.createTypedLiteral(path));
-//		Literal byteCountLiteral = model.createTypedLiteral(byteCount);
-//		model.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
-		// 	NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ. OF DIGITS)
-		//  NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO -2147483648 TO 2147483647)
+		// Literal byteCountLiteral = model.createTypedLiteral(byteCount);
+		// model.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
+		// NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ. OF
+		// DIGITS)
+		// NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO -2147483648
+		// TO 2147483647)
 		model.add(tdbResource, LCAHT.byteCount, model.createTypedLiteral(byteCount));
 		model.add(tdbResource, LCAHT.fileModifiedDate, model.createTypedLiteral(modifiedDate));
 		model.add(tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(readDate));
 	}
 
+	public void remove(){
+		tdbResource.removeAll(LCAHT.fileName);
+		tdbResource.removeAll(LCAHT.filePath);
+		tdbResource.removeAll(LCAHT.fileEncoding);
+		tdbResource.removeAll(LCAHT.byteCount);
+		tdbResource.removeAll(LCAHT.fileModifiedDate);
+		tdbResource.removeAll(LCAHT.fileReadDate);
+	}
 	// public static FileMD syncFromTDB(Resource fileMDResource) {
 	// FileMD fileMD = new FileMD(fileMDResource);
 	// return fileMD;

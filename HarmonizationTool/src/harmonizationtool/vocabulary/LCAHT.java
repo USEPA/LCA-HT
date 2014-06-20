@@ -15,6 +15,8 @@ public class LCAHT {
     /** <p>The RDF model that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
 
+
+
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "http://epa.gov/nrmrl/std/lca/ht/1.0#";
 
@@ -121,9 +123,4 @@ public class LCAHT {
     public static final Property fileReadDate = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#fileReadDate" );
     
     public static final Property containsFile = m_model.createProperty( "http://epa.gov/nrmrl/std/lca/ht/1.0#containsFile" );
-
-
-    
-
-    
  }

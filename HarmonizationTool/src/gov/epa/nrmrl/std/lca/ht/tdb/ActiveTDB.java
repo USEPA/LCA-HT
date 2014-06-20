@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.tdb;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -504,6 +506,27 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void setInstance(ActiveTDB instance) {
 		ActiveTDB.instance = instance;
+	}
+
+	public static Date getDateFromLiteral(Literal typedLiteralDate) {
+		Date resultingDate = null;
+		if (!typedLiteralDate.isLiteral()) {
+			return null;
+		}
+
+		Literal literalDate = typedLiteralDate.asLiteral();
+		String formattedDate = literalDate.getString();
+		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+
+		try {
+			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return resultingDate;
 	}
 
 }

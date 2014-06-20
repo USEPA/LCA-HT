@@ -11,8 +11,9 @@ import com.hp.hpl.jena.vocabulary.VCARD;
 import com.hp.hpl.jena.vocabulary.DC_11;
 
 /**
- * Vocabulary definitions from being developed by the Environmental Modeling and Visualization Lab (EMVL) Supporting
- * work for PIs Troy Hawkins and Wes Ingwersen, US EPA
+ * Vocabulary definitions from being developed by the Environmental Modeling and
+ * Visualization Lab (EMVL) Supporting work for PIs Troy Hawkins and Wes
+ * Ingwersen, US EPA
  * 
  * @author Tom Transue 03 Jan 2014 09:46
  */
@@ -98,8 +99,8 @@ public class FEDLCA {
 
 	/**
 	 * <p>
-	 * 'has compartment' is a static concept as opposed to either 'to' or 'from' which represent transfer in an
-	 * elementary flow
+	 * 'has compartment' is a static concept as opposed to either 'to' or 'from'
+	 * which represent transfer in an elementary flow
 	 * </p>
 	 */
 	public static final Property hasCompartment = m_model
@@ -114,7 +115,8 @@ public class FEDLCA {
 
 	/**
 	 * <p>
-	 * This is being used to associate a "EcosphereExhange" with an "ElementaryFlow"
+	 * This is being used to associate a "EcosphereExhange" with an
+	 * "ElementaryFlow"
 	 * </p>
 	 */
 	public static final Property hasElementaryFlow = m_model
@@ -191,5 +193,29 @@ public class FEDLCA {
 
 	public static final Property hasSmilesString = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasSmilesString");
+
+	public static final Property curatedBy = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#curatedBy");
+
+	// public static final Property contactName = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactName");
+	// public static final Property contactAffiliation = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactAffiliation");
+	// public static final Property contactEmail = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactEmail");
+	// public static final Property contactPhone = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactPhone");
+	// public static final Property curatorName = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorName");
+	// public static final Property curatorAffiliation = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorAffiliation");
+	// public static final Property curatorEmail = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorEmail");
+	// public static final Property curatorPhone = m_model
+	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorPhone");
+	
+
+	public static final Resource curator = m_model
+			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#curator");
 
 }
