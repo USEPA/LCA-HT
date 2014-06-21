@@ -68,20 +68,20 @@ public class DataSourceProvider {
 	}
 
 	public void removeFileMDList() {
-		for (FileMD fileMD : fileMDList) {
-			fileMD.remove();
-			tdbResource.removeAll(LCAHT.containsFile);
-			fileMDList.remove(fileMD);
-		}
+//		for (FileMD fileMD : fileMDList) {
+//			fileMD.remove();
+//			tdbResource.removeAll(LCAHT.containsFile);
+//			fileMDList.remove(fileMD);
+//		}
 		fileMDList = null;
 	}
 	
 	public void remove(){
-		removeFileMDList();
-		dataSourceMD.remove();
-		tdbResource.removeAll(ECO.hasDataSource);
-		curatorMD.remove();
-		tdbResource.removeAll(FEDLCA.curatedBy);
+//		removeFileMDList();
+//		dataSourceMD.remove();
+//		tdbResource.removeAll(ECO.hasDataSource);
+//		curatorMD.remove();
+//		tdbResource.removeAll(FEDLCA.curatedBy);
 	}
 
 	public boolean isMaster() {

@@ -20,7 +20,7 @@ public class DataSourceMD {
 	private String contactAffiliation;
 	private String contactEmail;
 	private String contactPhone;
-	private Resource tdbResource;
+//	private Resource tdbResource;
 	private static final Model model = ActiveTDB.model;
 
 	public DataSourceMD() {
@@ -138,14 +138,13 @@ public class DataSourceMD {
 //		model.add(this.tdbResource, FEDLCA.dataSourceContactPhone, model.createTypedLiteral(this.contactPhone));
 	}
 
-	public void remove() {
-		tdbResource.removeAll(RDFS.label);
-		tdbResource.removeAll(DCTerms.hasVersion);
-		tdbResource.removeAll(RDFS.comment);
-		tdbResource.removeAll(FEDLCA.dataSourceContactName);
-		tdbResource.removeAll(FEDLCA.dataSourceContactAffiliation);
-		tdbResource.removeAll(FEDLCA.dataSourceContactEmail);
-		tdbResource.removeAll(FEDLCA.dataSourceContactPhone);
-	}
-
+//	public void remove() {
+//		tdbResource.removeAll(RDFS.label);
+//		tdbResource.removeAll(DCTerms.hasVersion);
+//		tdbResource.removeAll(RDFS.comment);
+//		tdbResource.removeAll(FEDLCA.dataSourceContactName);
+//		tdbResource.removeAll(FEDLCA.dataSourceContactAffiliation);
+//		tdbResource.removeAll(FEDLCA.dataSourceContactEmail);
+//		tdbResource.removeAll(FEDLCA.dataSourceContactPhone);
+//	}
 }
