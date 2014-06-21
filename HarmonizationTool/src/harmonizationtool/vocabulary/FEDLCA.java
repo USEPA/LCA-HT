@@ -70,23 +70,8 @@ public class FEDLCA {
 	public static final Resource Comparison = m_model
 			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#Comparison");
 
-	public static final Property dataSourceContactName = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactName");
-	public static final Property dataSourceContactAffiliation = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactAffiliation");
-	public static final Property dataSourceContactEmail = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactEmail");
-	public static final Property dataSourceContactPhone = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactPhone");
 
-	public static final Property dataSourceCuratorName = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorName");
-	public static final Property dataSourceCuratorAffiliation = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorAffiliation");
-	public static final Property dataSourceCuratorEmail = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorEmail");
-	public static final Property dataSourceCuratorPhone = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceCuratorPhone");
+
 
 	public static final Property hasComparison = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasComparison");
@@ -176,8 +161,8 @@ public class FEDLCA {
 	public static final Property localSerialNumber = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#localSerialNumber");
 
-	public static final Property foundOnRow = m_model
-			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#foundOnRow");
+//	public static final Property foundOnRow = m_model
+//			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#foundOnRow");
 
 	public static final Property sourceTableRowNumber = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#sourceTableRowNumber");
@@ -194,28 +179,38 @@ public class FEDLCA {
 	public static final Property hasSmilesString = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasSmilesString");
 
+	
 	public static final Property curatedBy = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#curatedBy");
 
-	// public static final Property contactName = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactName");
-	// public static final Property contactAffiliation = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactAffiliation");
-	// public static final Property contactEmail = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactEmail");
-	// public static final Property contactPhone = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#contactPhone");
-	// public static final Property curatorName = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorName");
-	// public static final Property curatorAffiliation = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorAffiliation");
-	// public static final Property curatorEmail = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorEmail");
-	// public static final Property curatorPhone = m_model
-	// .createProperty("http://epa.gov/nrmrl/std/fedlca/1.0#curatorPhone");
+	public static final Property hasContactPerson = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasContactPerson");
 	
+	public static final Resource Person = m_model
+			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#Person");
+	
+	public static final Resource ContactPerson = m_model
+			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#ContactPerson");
+	
+	public static final Resource Curator = m_model
+			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#Curator");
 
-	public static final Resource curator = m_model
-			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#curator");
 
+	public static final Property personName = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#personName");
+	public static final Property affiliation = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#affiliation");
+	public static final Property email = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#email");
+	public static final Property voicePhone = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#voicePhone");
+
+//	public static final Property dataSourceContactName = m_model
+//			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactName");
+//	public static final Property dataSourceContactAffiliation = m_model
+//			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactAffiliation");
+//	public static final Property dataSourceContactEmail = m_model
+//			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactEmail");
+//	public static final Property dataSourceContactPhone = m_model
+//			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#dataSourceContactPhone");
 }

@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.CuratorMD;
+//import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
@@ -46,8 +46,8 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 	private DataSourceProvider dataSourceProvider = null;
 	private DataSourceProvider tempDataSetProvider = null;
 	private FileMD fileMD = null;
-	private DataSourceMD dataSourceMD = null;
-	private CuratorMD curatorMD = null;
+	private ContactMD dataSourceMD = null;
+//	private CuratorMD curatorMD = null;
 	private Resource tdbResource = null;
 	private Combo combo = null;
 	private Combo fileMDCombo = null;
@@ -66,10 +66,10 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		assert fileMD != null : "fileMD cannot be null";
 		this.fileMD = fileMD; // SET LOCAL VERSION
 		tempDataSetProvider = new DataSourceProvider();
-		this.dataSourceMD = new DataSourceMD();
+		this.dataSourceMD = new ContactMD();
 		tempDataSetProvider.setDataSourceMD(dataSourceMD);
-		this.curatorMD = new CuratorMD(true);
-		tempDataSetProvider.setCuratorMD(curatorMD);
+//		this.curatorMD = new CuratorMD(true);
+//		tempDataSetProvider.setCuratorMD(curatorMD);
 		tempDataSetProvider.addFileMD(fileMD); // THIS MEANS WE DON'T HAVE TO
 												// ADD IT AGAIN
 		dataSourceProvider = tempDataSetProvider;
@@ -85,7 +85,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		dataSetEnabled = false;
 		this.dataSourceProvider = dataSourceProvider;
 		dataSourceMD = dataSourceProvider.getDataSourceMD();
-		curatorMD = dataSourceProvider.getCuratorMD();
+//		curatorMD = dataSourceProvider.getCuratorMD();
 		tdbResource = dataSourceProvider.getTdbResource();
 		fileMD = dataSourceProvider.getFileMDList().get(0);
 	}
@@ -100,7 +100,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		dataSetEnabled = true;
 		this.dataSourceProvider = dataSourceProvider;
 		dataSourceMD = dataSourceProvider.getDataSourceMD();
-		curatorMD = dataSourceProvider.getCuratorMD();
+//		curatorMD = dataSourceProvider.getCuratorMD();
 		tdbResource = dataSourceProvider.getTdbResource();
 		this.fileMD = fileMD;
 	}
@@ -118,7 +118,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		}
 		this.dataSourceProvider = DataSourceKeeper.get(0);
 		dataSourceMD = dataSourceProvider.getDataSourceMD();
-		curatorMD = dataSourceProvider.getCuratorMD();
+//		curatorMD = dataSourceProvider.getCuratorMD();
 		tdbResource = dataSourceProvider.getTdbResource();
 	}
 
@@ -357,65 +357,65 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
 
-		Label lbl_12b = new Label(composite, SWT.LEFT);
-		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16,
-				SWT.BOLD));
-		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
-		lbl_12b.setText("Curator Information:");
-
-		rowIndex++;
-		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-		copyCuratorInfo
-				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
-		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
-		copyCuratorInfo.setText("Copy Info from Preferences");
-		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				dialogValues.get(9).setText(
-						Util.getPreferenceStore().getString("curatorName"));
-				dialogValues.get(10).setText(
-						Util.getPreferenceStore().getString("curatorAffiliation"));
-				dialogValues.get(11).setText(
-						Util.getPreferenceStore().getString("curatorEmail"));
-				dialogValues.get(12).setText(
-						Util.getPreferenceStore().getString("curatorPhone"));
-			}
-		});
-
-		rowIndex++;
-		Label lbl_13 = new Label(composite, SWT.RIGHT);
-		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
-		lbl_13.setText("Name");
-		Text text_13 = new Text(composite, SWT.BORDER);
-		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
-
-		rowIndex++;
-		Label lbl_14 = new Label(composite, SWT.RIGHT);
-		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_14.setText("Affiliation");
-		Text text_14 = new Text(composite, SWT.BORDER);
-		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
-
-		rowIndex++;
-		Label lbl_15 = new Label(composite, SWT.RIGHT);
-		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_15.setText("Email");
-		Text text_15 = new Text(composite, SWT.BORDER);
-		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
-
-		rowIndex++;
-		Label lbl_16 = new Label(composite, SWT.RIGHT);
-		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
-				rowHeight);
-		lbl_16.setText("Phone");
-		Text text_16 = new Text(composite, SWT.BORDER);
-		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
-				rowHeight);
+//		Label lbl_12b = new Label(composite, SWT.LEFT);
+//		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16,
+//				SWT.BOLD));
+//		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
+//		lbl_12b.setText("Curator Information:");
+//
+//		rowIndex++;
+//		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
+//		copyCuratorInfo
+//				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+//		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
+//		copyCuratorInfo.setText("Copy Info from Preferences");
+//		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				dialogValues.get(9).setText(
+//						Util.getPreferenceStore().getString("curatorName"));
+//				dialogValues.get(10).setText(
+//						Util.getPreferenceStore().getString("curatorAffiliation"));
+//				dialogValues.get(11).setText(
+//						Util.getPreferenceStore().getString("curatorEmail"));
+//				dialogValues.get(12).setText(
+//						Util.getPreferenceStore().getString("curatorPhone"));
+//			}
+//		});
+//
+//		rowIndex++;
+//		Label lbl_13 = new Label(composite, SWT.RIGHT);
+//		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
+//				rowHeight);
+//		lbl_13.setText("Name");
+//		Text text_13 = new Text(composite, SWT.BORDER);
+//		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
+//				rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_14 = new Label(composite, SWT.RIGHT);
+//		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_14.setText("Affiliation");
+//		Text text_14 = new Text(composite, SWT.BORDER);
+//		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
+//				rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_15 = new Label(composite, SWT.RIGHT);
+//		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_15.setText("Email");
+//		Text text_15 = new Text(composite, SWT.BORDER);
+//		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
+//				rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_16 = new Label(composite, SWT.RIGHT);
+//		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width,
+//				rowHeight);
+//		lbl_16.setText("Phone");
+//		Text text_16 = new Text(composite, SWT.BORDER);
+//		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width,
+//				rowHeight);
 
 		// dialogValues.add(text_02); // 00 File Name
 		dialogValues.add(text_03); // 00 File Size (bytes)
@@ -428,10 +428,10 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		dialogValues.add(text_10); // 06 Data Set Contact Affiliation
 		dialogValues.add(text_11); // 07 Data Set Contact Email
 //		dialogValues.add(text_12); // 08 Data Set Contact Phone
-		dialogValues.add(text_13); // 9 Curator Name
-		dialogValues.add(text_14); // 10 Curator Affiliation
-		dialogValues.add(text_15); // 11 Curator Email
-		dialogValues.add(text_16); // 12 Curator Phone
+//		dialogValues.add(text_13); // 9 Curator Name
+//		dialogValues.add(text_14); // 10 Curator Affiliation
+//		dialogValues.add(text_15); // 11 Curator Email
+//		dialogValues.add(text_16); // 12 Curator Phone
 
 		redrawDialogRows();
 
@@ -458,22 +458,22 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 	protected void okPressed() {
 
 		// dataSourceMD.setName(dialogValues.get(3).getText()); //FIXME
-		dataSourceMD.setName(combo.getText()); // FIXME
-		dataSourceMD.setVersion(dialogValues.get(3).getText());
-		dataSourceMD.setComments(dialogValues.get(4).getText());
+		dataSourceProvider.setDataSourceName(combo.getText()); // FIXME
+		dataSourceProvider.setVersion(dialogValues.get(3).getText());
+		dataSourceProvider.setComments(dialogValues.get(4).getText());
 		dataSourceMD.setContactName(dialogValues.get(5).getText());
 		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
 		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
 		dataSourceMD.setContactPhone(dialogValues.get(8).getText());
 
-		// curatorMD META DATA
-		curatorMD.setName(dialogValues.get(9).getText());
-		curatorMD.setAffiliation(dialogValues.get(10).getText());
-		curatorMD.setEmail(dialogValues.get(11).getText());
-		curatorMD.setPhone(dialogValues.get(12).getText());
-
+//		// curatorMD META DATA
+//		curatorMD.setName(dialogValues.get(9).getText());
+//		curatorMD.setAffiliation(dialogValues.get(10).getText());
+//		curatorMD.setEmail(dialogValues.get(11).getText());
+//		curatorMD.setPhone(dialogValues.get(12).getText());
+//
 		dataSourceProvider.setDataSourceMD(dataSourceMD);
-		dataSourceProvider.setCuratorMD(curatorMD);
+//		dataSourceProvider.setCuratorMD(curatorMD);
 		// Model model = ActiveTDB.model;
 		if (newDataSet) {
 			DataSourceKeeper.add(dataSourceProvider); // A DataSourceProvider IS BORN!!
@@ -529,7 +529,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, RDFS.label,
-				model.createLiteral(dataSourceMD.getName()));
+				model.createLiteral(dsProvider.getDataSourceName()));
 
 		if (model.contains(tdbResource, RDFS.comment)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(
@@ -541,7 +541,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, RDFS.comment,
-				model.createLiteral(dataSourceMD.getComments()));
+				model.createLiteral(dsProvider.getComments()));
 
 		if (model.contains(tdbResource, DCTerms.hasVersion)) {
 			NodeIterator nodeIterator = model.listObjectsOfProperty(
@@ -554,7 +554,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			}
 		}
 		model.addLiteral(tdbResource, DCTerms.hasVersion,
-				model.createLiteral(dataSourceMD.getVersion()));
+				model.createLiteral(dsProvider.getVersion()));
 
 	}
 
@@ -575,7 +575,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 		Model model = ActiveTDB.model;
 		if (!dataSetEnabled) {
 			Integer id = DataSourceKeeper.indexOf(dataSourceProvider);
-			String name = dataSourceProvider.getDataSourceMD().getName();
+			String name = dataSourceProvider.getDataSourceName();
 			// String version = dataSourceProvider.getDataSetMD().getVersion();
 			// int id_plus_one = id + 1;
 			String[] results = new String[1];
@@ -728,7 +728,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			if (dsNum > -1) {
 				dataSourceProvider = DataSourceKeeper.get(dsNum);
 			} else {
-				dataSourceProvider.getDataSourceMD().setName(dataSetChosen);
+				dataSourceProvider.setDataSourceName(dataSetChosen);
 //				dataSourceProvider = null;
 //				System.out.println("What happened?");
 			}
@@ -744,7 +744,7 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 			fileMD = null;
 		}
 		dataSourceMD = dataSourceProvider.getDataSourceMD();
-		curatorMD = dataSourceProvider.getCuratorMD();
+//		curatorMD = dataSourceProvider.getCuratorMD();
 		redrawDialogRows();
 	}
 
@@ -778,24 +778,23 @@ public class ImpactAssessmentVariableAssignmentDialog extends TitleAreaDialog {
 					Util.getLocalDateFmt(fileMD.getReadDate()));
 		}
 		if (dataSourceMD != null) {
-			System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
 			// dialogValues.get(3).setText(dataSourceMD.getName()); //FIXME
-			combo.setText(dataSourceMD.getName());
-			dialogValues.get(3).setText(dataSourceMD.getVersion());
-			dialogValues.get(4).setText(dataSourceMD.getComments());
+			combo.setText(dataSourceProvider.getDataSourceName());
+			dialogValues.get(3).setText(dataSourceProvider.getVersion());
+			dialogValues.get(4).setText(dataSourceProvider.getComments());
 			dialogValues.get(5).setText(dataSourceMD.getContactName());
 			dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
 			dialogValues.get(7).setText(dataSourceMD.getContactEmail());
 			dialogValues.get(8).setText(dataSourceMD.getContactPhone());
 
 		}
-		if (curatorMD != null) {
-			System.out.println("curatorMD.getName: = " + curatorMD.getName());
-			dialogValues.get(9).setText(curatorMD.getName());
-			dialogValues.get(10).setText(curatorMD.getAffiliation());
-			dialogValues.get(11).setText(curatorMD.getEmail());
-			dialogValues.get(12).setText(curatorMD.getPhone());
-		}
+//		if (curatorMD != null) {
+//			System.out.println("curatorMD.getName: = " + curatorMD.getName());
+//			dialogValues.get(9).setText(curatorMD.getName());
+//			dialogValues.get(10).setText(curatorMD.getAffiliation());
+//			dialogValues.get(11).setText(curatorMD.getEmail());
+//			dialogValues.get(12).setText(curatorMD.getPhone());
+//		}
 	}
 
 	private class FileMDComboMgr {

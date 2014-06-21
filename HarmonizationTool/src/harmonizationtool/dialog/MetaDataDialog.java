@@ -7,9 +7,9 @@ import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-import harmonizationtool.model.CuratorMD;
+//import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
@@ -102,7 +102,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing DataSource");
-		runLogger.info("  start name = " + dataSourceProvider.getDataSourceMD().getName());
+		runLogger.info("  start name = " + dataSourceProvider.getDataSourceMD().getContactName());
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
@@ -114,9 +114,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.callingFileMD = fileMD;
 		this.newDataSourceProvider = new DataSourceProvider();
 		this.newDataSourceProvider.addFileMD(callingFileMD);
-		this.newDataSourceProvider.setDataSourceMD(new DataSourceMD());
-		this.newDataSourceProvider.getDataSourceMD().setName(fileMD.getFilename());
-		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
+		this.newDataSourceProvider.setDataSourceMD(new ContactMD());
+		this.newDataSourceProvider.getDataSourceMD().setContactName(fileMD.getFilename());
+//		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
 		this.curDataSourceProvider = this.newDataSourceProvider;
 		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
 				fileMD.getFilename().length() - 4));
@@ -342,58 +342,58 @@ public class MetaDataDialog extends TitleAreaDialog {
 		text_05.setEditable(false);
 		text_05.setBackground(defaultBG);
 
-		rowIndex++;
-		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
-
-		Label lbl_12b = new Label(composite, SWT.LEFT);
-		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
-		lbl_12b.setText("Curator Information:");
-
-		rowIndex++;
-		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-		copyCuratorInfo
-				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
-		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
-		copyCuratorInfo.setText("Copy Info from Preferences");
-		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				dialogValues.get(9).setText(Util.getPreferenceStore().getString("curatorName"));
-				dialogValues.get(10).setText(Util.getPreferenceStore().getString("curatorAffiliation"));
-				dialogValues.get(11).setText(Util.getPreferenceStore().getString("curatorEmail"));
-				dialogValues.get(12).setText(Util.getPreferenceStore().getString("curatorPhone"));
-			}
-		});
-
-		rowIndex++;
-		Label lbl_13 = new Label(composite, SWT.RIGHT);
-		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_13.setText("Name");
-		Text text_13 = new Text(composite, SWT.BORDER);
-		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_14 = new Label(composite, SWT.RIGHT);
-		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_14.setText("Affiliation");
-		Text text_14 = new Text(composite, SWT.BORDER);
-		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_15 = new Label(composite, SWT.RIGHT);
-		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_15.setText("Email");
-		Text text_15 = new Text(composite, SWT.BORDER);
-		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_16 = new Label(composite, SWT.RIGHT);
-		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_16.setText("Phone");
-		Text text_16 = new Text(composite, SWT.BORDER);
-		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//		rowIndex++;
+//		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+//		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
+//
+//		Label lbl_12b = new Label(composite, SWT.LEFT);
+//		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+//		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
+//		lbl_12b.setText("Curator Information:");
+//
+//		rowIndex++;
+//		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
+//		copyCuratorInfo
+//				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+//		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
+//		copyCuratorInfo.setText("Copy Info from Preferences");
+//		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				dialogValues.get(9).setText(Util.getPreferenceStore().getString("curatorName"));
+//				dialogValues.get(10).setText(Util.getPreferenceStore().getString("curatorAffiliation"));
+//				dialogValues.get(11).setText(Util.getPreferenceStore().getString("curatorEmail"));
+//				dialogValues.get(12).setText(Util.getPreferenceStore().getString("curatorPhone"));
+//			}
+//		});
+//
+//		rowIndex++;
+//		Label lbl_13 = new Label(composite, SWT.RIGHT);
+//		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+//		lbl_13.setText("Name");
+//		Text text_13 = new Text(composite, SWT.BORDER);
+//		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_14 = new Label(composite, SWT.RIGHT);
+//		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_14.setText("Affiliation");
+//		Text text_14 = new Text(composite, SWT.BORDER);
+//		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_15 = new Label(composite, SWT.RIGHT);
+//		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_15.setText("Email");
+//		Text text_15 = new Text(composite, SWT.BORDER);
+//		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_16 = new Label(composite, SWT.RIGHT);
+//		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+//		lbl_16.setText("Phone");
+//		Text text_16 = new Text(composite, SWT.BORDER);
+//		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// dialogValues.add(text_02); // 00 File Name
 		dialogValues.add(text_03); // 00 File Size (bytes)
@@ -406,10 +406,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues.add(text_10); // 06 Data Set Contact Affiliation
 		dialogValues.add(text_11); // 07 Data Set Contact Email
 		dialogValues.add(text_12); // 08 Data Set Contact Phone
-		dialogValues.add(text_13); // 9 Curator Name
-		dialogValues.add(text_14); // 10 Curator Affiliation
-		dialogValues.add(text_15); // 11 Curator Email
-		dialogValues.add(text_16); // 12 Curator Phone
+//		dialogValues.add(text_13); // 9 Curator Name
+//		dialogValues.add(text_14); // 10 Curator Affiliation
+//		dialogValues.add(text_15); // 11 Curator Email
+//		dialogValues.add(text_16); // 12 Curator Phone
 
 		// if (newDataSourceProvider != null) {
 		// lbl_01.setText("Type new name (or select existing)");
@@ -435,12 +435,12 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void okPressed() {
 		String dataSourceName = comboDataSourceSelector.getText();
 		System.out.println("comboDataSourceSelector.getText() " + comboDataSourceSelector.getText());
-		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
-		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
+		ContactMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+//		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
-		dataSourceMD.setName(dataSourceName);
-		dataSourceMD.setVersion(dialogValues.get(3).getText());
-		dataSourceMD.setComments(dialogValues.get(4).getText());
+		curDataSourceProvider.setDataSourceName(dataSourceName);
+		curDataSourceProvider.setVersion(dialogValues.get(3).getText());
+		curDataSourceProvider.setComments(dialogValues.get(4).getText());
 		dataSourceMD.setContactName(dialogValues.get(5).getText());
 		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
 		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
@@ -453,15 +453,15 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: contactEmail = " + dialogValues.get(7).getText());
 		runLogger.info("  SET META: contactPhone = " + dialogValues.get(8).getText());
 
-		// curatorMD META DATA
-		curatorMD.setName(dialogValues.get(9).getText());
-		curatorMD.setAffiliation(dialogValues.get(10).getText());
-		curatorMD.setEmail(dialogValues.get(11).getText());
-		curatorMD.setPhone(dialogValues.get(12).getText());
-		runLogger.info("  SET META: curatorName = " + dialogValues.get(9).getText());
-		runLogger.info("  SET META: curatorAffiliation = " + dialogValues.get(10).getText());
-		runLogger.info("  SET META: curatorEmail = " + dialogValues.get(11).getText());
-		runLogger.info("  SET META: curatorPhone = " + dialogValues.get(12).getText());
+//		// curatorMD META DATA
+//		curatorMD.setName(dialogValues.get(9).getText());
+//		curatorMD.setAffiliation(dialogValues.get(10).getText());
+//		curatorMD.setEmail(dialogValues.get(11).getText());
+//		curatorMD.setPhone(dialogValues.get(12).getText());
+//		runLogger.info("  SET META: curatorName = " + dialogValues.get(9).getText());
+//		runLogger.info("  SET META: curatorAffiliation = " + dialogValues.get(10).getText());
+//		runLogger.info("  SET META: curatorEmail = " + dialogValues.get(11).getText());
+//		runLogger.info("  SET META: curatorPhone = " + dialogValues.get(12).getText());
 
 		if (newDataSourceProvider != null) {
 			if (comboSelectionIndex < 1) {
@@ -483,7 +483,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		System.out.println("newDataSourceProvider " + newDataSourceProvider);
 		System.out.println("comboSelectionIndex " + comboSelectionIndex);
 
-		ActiveTDB.syncDataSourceProviderToTDB(curDataSourceProvider);
+//		ActiveTDB.syncDataSourceProviderToTDB(curDataSourceProvider);
 		if (newDataSourceProvider != null) {
 			FlowsWorkflow.setDataSourceProvider(curDataSourceProvider);
 		}
@@ -522,7 +522,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 					"Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
-		curDataSourceProvider.getDataSourceMD().setName(newFileName);
+		curDataSourceProvider.setDataSourceName(newFileName);
 		if (curDataSourceProvider.getTdbResource() != null) {
 			// Literal oldNameLit = ActiveTDB.model
 			// .createLiteral(comboDataSourceSelector.getText());
@@ -540,7 +540,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		List<String> toSort = DataSourceKeeper.getNames();
 		if (callingDataSourceProvider != null) {
 			String[] results = new String[1];
-			results[0] = callingDataSourceProvider.getDataSourceMD().getName();
+			results[0] = callingDataSourceProvider.getDataSourceName();
 			return results;
 		} else if (newDataSourceProvider != null) {
 			String[] results = new String[toSort.size() + 1];
@@ -575,14 +575,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
-		System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
-		dialogValues.get(3).setText(dataSourceMD.getVersion());
-		dialogValues.get(4).setText(dataSourceMD.getComments());
-		dialogValues.get(5).setText(dataSourceMD.getContactName());
-		dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
-		dialogValues.get(7).setText(dataSourceMD.getContactEmail());
-		dialogValues.get(8).setText(dataSourceMD.getContactPhone());
+		ContactMD contactMD = curDataSourceProvider.getDataSourceMD();
+//		System.out.println("dataSourceMD.getName: = " + curDataSourceProvider.getDataSourceName());
+		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
+		dialogValues.get(4).setText(curDataSourceProvider.getComments());
+		dialogValues.get(5).setText(contactMD.getContactName());
+		dialogValues.get(6).setText(contactMD.getContactAffiliation());
+		dialogValues.get(7).setText(contactMD.getContactEmail());
+		dialogValues.get(8).setText(contactMD.getContactPhone());
 	}
 
 	protected void redrawDialogFileMD() {
@@ -614,14 +614,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
-	protected void redrawDialogCuratorMD() {
-		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
-		System.out.println("curatorMD.getName: = " + curatorMD.getName());
-		dialogValues.get(9).setText(curatorMD.getName());
-		dialogValues.get(10).setText(curatorMD.getAffiliation());
-		dialogValues.get(11).setText(curatorMD.getEmail());
-		dialogValues.get(12).setText(curatorMD.getPhone());
-	}
+//	protected void redrawDialogCuratorMD() {
+//		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
+//		System.out.println("curatorMD.getName: = " + curatorMD.getName());
+//		dialogValues.get(9).setText(curatorMD.getName());
+//		dialogValues.get(10).setText(curatorMD.getAffiliation());
+//		dialogValues.get(11).setText(curatorMD.getEmail());
+//		dialogValues.get(12).setText(curatorMD.getPhone());
+//	}
 
 	protected void clearDialogRows() {
 		Iterator<Text> dialogValueIterator = dialogValues.iterator();
@@ -639,7 +639,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		createComboFileSelectorList();
 		redrawDialogFileMD();
 
-		redrawDialogCuratorMD();
+//		redrawDialogCuratorMD();
 	}
 
 	protected void createComboFileSelectorList() {

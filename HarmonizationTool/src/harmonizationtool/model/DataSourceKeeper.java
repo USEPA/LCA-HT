@@ -27,10 +27,10 @@ public class DataSourceKeeper {
 		if (dataSourceProvider.getTdbResource() == null) {
 			Model model = ActiveTDB.model;
 			Resource tdbResource = model.createResource();
-			model.add(tdbResource, RDF.type, ECO.DataSource);
-			model.add(tdbResource, RDFS.label, model.createLiteral(dataSourceProvider.getDataSourceMD().getName()));
-			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSourceProvider.getDataSourceMD().getComments()));
-			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSourceProvider.getDataSourceMD().getVersion()));
+//			model.add(tdbResource, RDF.type, ECO.DataSource);
+//			model.add(tdbResource, RDFS.label, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getPersonName()));
+//			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getComments()));
+//			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getVersion()));
 			dataSourceProvider.setTdbResource(tdbResource);
 		}
 		return dataSourceProviderList.add(dataSourceProvider);
@@ -62,7 +62,7 @@ public class DataSourceKeeper {
 		List<String> results = new ArrayList<String>();
 		Iterator<DataSourceProvider> iterator = dataSourceProviderList.iterator();
 		while (iterator.hasNext()) {
-			results.add(iterator.next().getDataSourceMD().getName());
+			results.add(iterator.next().getDataSourceName());
 		}
 		Collections.sort(results);
 		return results;
@@ -121,7 +121,7 @@ public class DataSourceKeeper {
 		Iterator<DataSourceProvider> iterator = dataSourceProviderList.iterator();
 		while (iterator.hasNext()) {
 			DataSourceProvider dataSourceProvider = (DataSourceProvider) iterator.next();
-			if (dataSourceProvider.getDataSourceMD().getName().equals(name)) {
+			if (dataSourceProvider.getDataSourceName().equals(name)) {
 				return DataSourceKeeper.indexOf(dataSourceProvider);
 			}
 		}
@@ -155,7 +155,7 @@ public class DataSourceKeeper {
 
 	public static DataSourceProvider getByName(String name) {
 		for (DataSourceProvider dataSourceProvider : dataSourceProviderList) {
-			if (dataSourceProvider.getDataSourceMD().getName().equals(name)) {
+			if (dataSourceProvider.getDataSourceName().equals(name)) {
 				return dataSourceProvider;
 			}
 		}

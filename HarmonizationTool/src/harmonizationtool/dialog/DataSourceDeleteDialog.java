@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.CuratorMD;
+//import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.DataSourceMD;
+import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
@@ -22,30 +22,17 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class DataSourceDeleteDialog extends TitleAreaDialog {
@@ -223,38 +210,38 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
 
-		Label lbl_12b = new Label(composite, SWT.LEFT);
-		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
-		lbl_12b.setText("Curator Information:");
-
-		rowIndex++;
-		Label lbl_13 = new Label(composite, SWT.RIGHT);
-		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_13.setText("Name");
-		Text text_13 = new Text(composite, SWT.BORDER);
-		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_14 = new Label(composite, SWT.RIGHT);
-		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_14.setText("Affiliation");
-		Text text_14 = new Text(composite, SWT.BORDER);
-		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_15 = new Label(composite, SWT.RIGHT);
-		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		lbl_15.setText("Email");
-		Text text_15 = new Text(composite, SWT.BORDER);
-		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		rowIndex++;
-		Label lbl_16 = new Label(composite, SWT.RIGHT);
-		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_16.setText("Phone");
-		Text text_16 = new Text(composite, SWT.BORDER);
-		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//		Label lbl_12b = new Label(composite, SWT.LEFT);
+//		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+//		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
+//		lbl_12b.setText("Curator Information:");
+//
+//		rowIndex++;
+//		Label lbl_13 = new Label(composite, SWT.RIGHT);
+//		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+//		lbl_13.setText("Name");
+//		Text text_13 = new Text(composite, SWT.BORDER);
+//		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_14 = new Label(composite, SWT.RIGHT);
+//		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_14.setText("Affiliation");
+//		Text text_14 = new Text(composite, SWT.BORDER);
+//		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_15 = new Label(composite, SWT.RIGHT);
+//		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+//		lbl_15.setText("Email");
+//		Text text_15 = new Text(composite, SWT.BORDER);
+//		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+//
+//		rowIndex++;
+//		Label lbl_16 = new Label(composite, SWT.RIGHT);
+//		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+//		lbl_16.setText("Phone");
+//		Text text_16 = new Text(composite, SWT.BORDER);
+//		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// dialogValues.add(text_02); // 00 File Name
 		dialogValues.add(text_03); // 00 File Size (bytes)
@@ -267,10 +254,10 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		dialogValues.add(text_10); // 06 Data Set Contact Affiliation
 		dialogValues.add(text_11); // 07 Data Set Contact Email
 		dialogValues.add(text_12); // 08 Data Set Contact Phone
-		dialogValues.add(text_13); // 9 Curator Name
-		dialogValues.add(text_14); // 10 Curator Affiliation
-		dialogValues.add(text_15); // 11 Curator Email
-		dialogValues.add(text_16); // 12 Curator Phone
+//		dialogValues.add(text_13); // 9 Curator Name
+//		dialogValues.add(text_14); // 10 Curator Affiliation
+//		dialogValues.add(text_15); // 11 Curator Email
+//		dialogValues.add(text_16); // 12 Curator Phone
 
 		comboDataSourceSelector.select(0);
 		comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
@@ -346,7 +333,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 
 		while (iterator.hasNext()) {
 			int id = iterator.next();
-			toSort.add(DataSourceKeeper.get(id).getDataSourceMD().getName());
+			toSort.add(DataSourceKeeper.get(id).getDataSourceName());
 		}
 		Collections.sort(toSort);
 
@@ -370,10 +357,10 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		DataSourceMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
-		System.out.println("dataSourceMD.getName: = " + dataSourceMD.getName());
-		dialogValues.get(3).setText(dataSourceMD.getVersion());
-		dialogValues.get(4).setText(dataSourceMD.getComments());
+		ContactMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		System.out.println("dataSourceMD.getName: = " + curDataSourceProvider.getDataSourceName());
+		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
+		dialogValues.get(4).setText(curDataSourceProvider.getComments());
 		dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
 		dialogValues.get(7).setText(dataSourceMD.getContactEmail());
 		dialogValues.get(8).setText(dataSourceMD.getContactPhone());
@@ -405,14 +392,14 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		}
 	}
 
-	protected void redrawDialogCuratorMD() {
-		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
-		System.out.println("curatorMD.getName: = " + curatorMD.getName());
-		dialogValues.get(9).setText(curatorMD.getName());
-		dialogValues.get(10).setText(curatorMD.getAffiliation());
-		dialogValues.get(11).setText(curatorMD.getEmail());
-		dialogValues.get(12).setText(curatorMD.getPhone());
-	}
+//	protected void redrawDialogCuratorMD() {
+//		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
+//		System.out.println("curatorMD.getName: = " + curatorMD.getName());
+//		dialogValues.get(9).setText(curatorMD.getName());
+//		dialogValues.get(10).setText(curatorMD.getAffiliation());
+//		dialogValues.get(11).setText(curatorMD.getEmail());
+//		dialogValues.get(12).setText(curatorMD.getPhone());
+//	}
 
 	protected void clearDialogRows() {
 		Iterator<Text> dialogValueIterator = dialogValues.iterator();
@@ -430,7 +417,7 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 		createComboFileSelectorList();
 		redrawDialogFileMD();
 
-		redrawDialogCuratorMD();
+//		redrawDialogCuratorMD();
 	}
 
 	protected void createComboFileSelectorList() {

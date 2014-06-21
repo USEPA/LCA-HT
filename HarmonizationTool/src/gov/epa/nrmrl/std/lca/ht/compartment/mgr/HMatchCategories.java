@@ -149,7 +149,7 @@ public class HMatchCategories extends HarmonyQuery2Impl implements LabeledQuery 
 //		b.append(" \n");
 //		b.append("WHERE { \n");
 //		b.append("      ?c1 eco:hasDataSource ?ds1 . \n");
-//		b.append("      OPTIONAL {?c1 fedlca:foundOnRow ?qRow . } \n");
+//		b.append("      OPTIONAL {?c1 fedlca:sourceTableRowNumber ?qRow . } \n");
 //		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
 //		b.append("      filter regex(str(?ds1_name),\"" + param1 + "\") \n");
 //		b.append("      ?c1 rdf:type fasc:Compartment .  \n");
