@@ -8,7 +8,7 @@ import java.util.List;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 //import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.ContactMD;
+import harmonizationtool.model.Person;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
@@ -357,13 +357,13 @@ public class DataSourceDeleteDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		ContactMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		Person dataSourceMD = curDataSourceProvider.getContactPerson();
 		System.out.println("dataSourceMD.getName: = " + curDataSourceProvider.getDataSourceName());
 		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
 		dialogValues.get(4).setText(curDataSourceProvider.getComments());
-		dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
-		dialogValues.get(7).setText(dataSourceMD.getContactEmail());
-		dialogValues.get(8).setText(dataSourceMD.getContactPhone());
+		dialogValues.get(6).setText(dataSourceMD.getAffiliation());
+		dialogValues.get(7).setText(dataSourceMD.getEmail());
+		dialogValues.get(8).setText(dataSourceMD.getPhone());
 	}
 
 	protected void redrawDialogFileMD() {

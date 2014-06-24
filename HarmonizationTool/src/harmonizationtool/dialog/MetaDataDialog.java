@@ -9,10 +9,11 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 //import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.ContactMD;
+//import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
+import harmonizationtool.model.Person;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.LCAHT;
 
@@ -102,7 +103,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				fileMD.getFilename().length() - 4));
 		// this.curFileMD = callingFileMD;
 		runLogger.info("SET META start - existing DataSource");
-		runLogger.info("  start name = " + dataSourceProvider.getDataSourceMD().getContactName());
+		runLogger.info("  start name = " + dataSourceProvider.getContactPerson().getName());
 	}
 
 	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
@@ -113,9 +114,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
 		this.newDataSourceProvider = new DataSourceProvider();
+		this.newDataSourceProvider.setDataSourceName(fileMD.getFilename());
 		this.newDataSourceProvider.addFileMD(callingFileMD);
-		this.newDataSourceProvider.setDataSourceMD(new ContactMD());
-		this.newDataSourceProvider.getDataSourceMD().setContactName(fileMD.getFilename());
+		this.newDataSourceProvider.setContactPerson(new Person());
 //		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
 		this.curDataSourceProvider = this.newDataSourceProvider;
 		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
@@ -435,16 +436,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void okPressed() {
 		String dataSourceName = comboDataSourceSelector.getText();
 		System.out.println("comboDataSourceSelector.getText() " + comboDataSourceSelector.getText());
-		ContactMD dataSourceMD = curDataSourceProvider.getDataSourceMD();
+		Person contactPerson = curDataSourceProvider.getContactPerson();
 //		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
 		curDataSourceProvider.setDataSourceName(dataSourceName);
 		curDataSourceProvider.setVersion(dialogValues.get(3).getText());
 		curDataSourceProvider.setComments(dialogValues.get(4).getText());
-		dataSourceMD.setContactName(dialogValues.get(5).getText());
-		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
-		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
-		dataSourceMD.setContactPhone(dialogValues.get(8).getText());
+		contactPerson.setName(dialogValues.get(5).getText());
+		contactPerson.setAffiliation(dialogValues.get(6).getText());
+		contactPerson.setEmail(dialogValues.get(7).getText());
+		contactPerson.setPhone(dialogValues.get(8).getText());
 		runLogger.info("  SET META: name = " + dataSourceName);
 		runLogger.info("  SET META: version = " + dialogValues.get(3).getText());
 		runLogger.info("  SET META: comments = \"" + Util.escape(dialogValues.get(4).getText()) + "\"");
@@ -575,14 +576,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		ContactMD contactMD = curDataSourceProvider.getDataSourceMD();
+		Person contactPerson = curDataSourceProvider.getContactPerson();
 //		System.out.println("dataSourceMD.getName: = " + curDataSourceProvider.getDataSourceName());
 		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
 		dialogValues.get(4).setText(curDataSourceProvider.getComments());
-		dialogValues.get(5).setText(contactMD.getContactName());
-		dialogValues.get(6).setText(contactMD.getContactAffiliation());
-		dialogValues.get(7).setText(contactMD.getContactEmail());
-		dialogValues.get(8).setText(contactMD.getContactPhone());
+		dialogValues.get(5).setText(contactPerson.getName());
+		dialogValues.get(6).setText(contactPerson.getAffiliation());
+		dialogValues.get(7).setText(contactPerson.getEmail());
+		dialogValues.get(8).setText(contactPerson.getPhone());
 	}
 
 	protected void redrawDialogFileMD() {

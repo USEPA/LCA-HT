@@ -11,7 +11,8 @@ import java.util.Set;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.ContactMD;
+import harmonizationtool.model.Person;
+//import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.query.QGetAllProperties;
@@ -247,105 +248,55 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		while (iterator.hasNext()) {
 			Resource dataSourceRDFResource = iterator.next();
-
 			int dataSourceIndex = DataSourceKeeper.getByTdbResource(dataSourceRDFResource);
+			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
 			if (dataSourceIndex < 0) {
-				DataSourceProvider dataSourceProvider = new DataSourceProvider();
-				dataSourceProvider.setTdbResource(dataSourceRDFResource);
-				ContactMD dataSourceMD = new ContactMD();
-//				CuratorMD curatorMD = new CuratorMD();
-
-				NodeIterator nodeIterator = model.listObjectsOfProperty(dataSourceRDFResource, LCAHT.containsFile);
-				while (nodeIterator.hasNext()) {
-					RDFNode fileMDResource = nodeIterator.next();
-					if (!fileMDResource.isLiteral()) {
-						FileMD fileMD = new FileMD(fileMDResource.asResource());
-						fileMD.syncDataFromTDB();
-						dataSourceProvider.addFileMD(fileMD);
-					}
-				}
-
-				// RDFS.label <=> Name
-				List<Statement> labelStatements = dataSourceRDFResource.listProperties(RDFS.label).toList();
-				if (labelStatements.size() > 1) {
-					Logger.getLogger("run").warn("# !Data set has " + dataSourceRDFResource.listProperties(RDFS.label).toList().size() + " labels:");
-					for (int i = 0; i < labelStatements.size() - 2; i++) {
-						Statement statement = labelStatements.get(i);
-						Logger.getLogger("run").warn("#    - Removing label:   " + statement.getObject().toString());
-						statement.remove();
-					}
-					String label = labelStatements.get(labelStatements.size() - 1).getObject().toString();
-					Logger.getLogger("run").warn("#    - Keeping last label: " + label);
-				}
-				String dataSourceName = labelStatements.get(labelStatements.size() - 1).getObject().toString();
-
-				dataSourceName = DataSourceKeeper.uniquify(dataSourceName);
-				dataSourceRDFResource.getProperty(RDFS.label).changeObject(dataSourceName);
-				dataSourceProvider.setDataSourceName(dataSourceName);
-
-				// RDFS.comment <=> Comments
-				if (dataSourceRDFResource.hasProperty(RDFS.comment)) {
-					// FIXME: SHOULD A DataSource BE ALLOWED TO HAVE MORE THAN ONE COMMENT?
-					dataSourceProvider.setComments(dataSourceRDFResource.getProperty(RDFS.comment).getObject().toString());
-				}
-
-				// DCTerms.hasVersion <=> Version
-				if (dataSourceRDFResource.hasProperty(DCTerms.hasVersion)) {
-					dataSourceProvider.setVersion(dataSourceRDFResource.getProperty(DCTerms.hasVersion).getObject().toString());
-				}
-
-				//  ContactPerson Info
-				if (dataSourceRDFResource.hasProperty(FEDLCA.hasContactPerson)){
-					// FIXME: SHOULD THERE BE MORE THAN ONE CONTACT PERSON ALLOWED?
-					Statement statement = dataSourceRDFResource.getProperty(FEDLCA.hasContactPerson);
-					RDFNode person = statement.getObject();
-					if (person.asResource().hasProperty(FEDLCA.personName)){
-						dataSourceMD.setContactName(person.asResource().getProperty(FEDLCA.personName).getObject().toString());
-					}
-					if (person.asResource().hasProperty(FEDLCA.affiliation)){
-						dataSourceMD.setContactAffiliation(person.asResource().getProperty(FEDLCA.affiliation).getObject().toString());
-					}
-					if (person.asResource().hasProperty(FEDLCA.email)){
-						dataSourceMD.setContactEmail(person.asResource().getProperty(FEDLCA.email).getObject().toString());
-					}
-					if (person.asResource().hasProperty(FEDLCA.voicePhone)){
-						dataSourceMD.setContactPhone(person.asResource().getProperty(FEDLCA.voicePhone).getObject().toString());
-					}	
-				}
-
-				// THE DATASOURCE SHOULD NOT STORE THE CURATOR, EXCEPT IN ANNOTATIONS!!
-				
-				//  CuratorPerson Info
-//				if (dataSourceRDFResource.hasProperty(FEDLCA.curatedBy)){
-//					Statement statement = dataSourceRDFResource.getProperty(FEDLCA.curatedBy);
-//					RDFNode person = statement.getObject();
-//					if (person.asResource().hasProperty(FEDLCA.personName)){
-//						dataSourceMD.setContactName(person.asResource().getProperty(FEDLCA.personName).getObject().toString());
-//					}
-//					if (person.asResource().hasProperty(FEDLCA.affiliation)){
-//						dataSourceMD.setContactAffiliation(person.asResource().getProperty(FEDLCA.affiliation).getObject().toString());
-//					}
-//					if (person.asResource().hasProperty(FEDLCA.email)){
-//						dataSourceMD.setContactEmail(person.asResource().getProperty(FEDLCA.email).getObject().toString());
-//					}
-//					if (person.asResource().hasProperty(FEDLCA.voicePhone)){
-//						dataSourceMD.setContactPhone(person.asResource().getProperty(FEDLCA.voicePhone).getObject().toString());
-//					}	
-//				}		
-
-				dataSourceProvider.setDataSourceMD(dataSourceMD);
-//				dataSourceProvider.setCuratorMD(curatorMD);
-				DataSourceKeeper.add(dataSourceProvider);
+				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
+//				dataSourceProvider.syncFromTDB();
+//				DataSourceKeeper.add(dataSourceProvider);
 			}
 		}
-
 	}
 
+	public static String getStringFromLiteral(RDFNode rdfNode){
+		if (!rdfNode.isLiteral()){
+			return null;
+		}
+		Literal literal = rdfNode.asLiteral();
+		Object value = literal.getValue();
+		if (value instanceof String){
+			return (String) value;
+		}
+		return null;
+	}
+	
+	public static Long getLongFromLiteral(RDFNode rdfNode){
+		if (!rdfNode.isLiteral()){
+			return null;
+		}
+		Literal literal = rdfNode.asLiteral();
+		Object value = literal.getValue();
+		if (value instanceof Long){
+			return (Long) value;
+		}
+		return null;
+	}
+	
+	public static Integer getIntegerFromLiteral(RDFNode rdfNode){
+		if (!rdfNode.isLiteral()){
+			return null;
+		}
+		Literal literal = rdfNode.asLiteral();
+		Object value = literal.getValue();
+		if (value instanceof Integer){
+			return (Integer) value;
+		}
+		return null;
+	}
 //	public static void syncDataSourceProviderToTDB(DataSourceProvider dataSourceProvider) {
 //		// THIS SHOULD NOT BE NECESSARY, AS JAVA OBJECTS SHOULD SYNC ON CHANGE
 //
 //		DataSourceMD dataSourceMD = dataSourceProvider.getDataSourceMD();
-//		CuratorMD curatorMD = dataSourceProvider.getCuratorMD();
 //
 //		Model model = ActiveTDB.model;
 //		Resource tdbResource = dataSourceProvider.getTdbResource();

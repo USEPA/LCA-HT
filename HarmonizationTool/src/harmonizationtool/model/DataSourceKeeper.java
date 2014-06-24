@@ -1,8 +1,5 @@
 package harmonizationtool.model;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.ECO;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,44 +7,33 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSourceKeeper {
-
 	private static List<DataSourceProvider> dataSourceProviderList = new ArrayList<DataSourceProvider>();
+
+	// protected final static Model model = ActiveTDB.model;
 
 	private DataSourceKeeper() {
 	}
 
 	public static boolean add(DataSourceProvider dataSourceProvider) {
-		if (dataSourceProvider.getTdbResource() == null) {
-			Model model = ActiveTDB.model;
-			Resource tdbResource = model.createResource();
-//			model.add(tdbResource, RDF.type, ECO.DataSource);
-//			model.add(tdbResource, RDFS.label, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getPersonName()));
-//			model.add(tdbResource, RDFS.comment, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getComments()));
-//			model.add(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSourceProvider.getDataSourceContactMD().getVersion()));
-			dataSourceProvider.setTdbResource(tdbResource);
-		}
 		return dataSourceProviderList.add(dataSourceProvider);
 	}
 
 	public static boolean remove(DataSourceProvider dataSourceProvider) {
+		dataSourceProvider.remove();
 		return dataSourceProviderList.remove(dataSourceProvider);
 	}
 
-	public static boolean remove(DataSourceProvider dataSourceProvider, boolean removeTDBData) {
-		if (removeTDBData) {
-			Resource tdbResource = dataSourceProvider.getTdbResource();
-			ActiveTDB.removeAllWithSubject(tdbResource);
-			ActiveTDB.removeAllWithObject(tdbResource);
-		}
-		return dataSourceProviderList.remove(dataSourceProvider);
-	}
+	// public static boolean remove(DataSourceProvider dataSourceProvider, boolean removeTDBData) {
+	// if (removeTDBData) {
+	// Resource tdbResource = dataSourceProvider.getTdbResource();
+	// ActiveTDB.removeAllWithSubject(tdbResource);
+	// ActiveTDB.removeAllWithObject(tdbResource);
+	// }
+	// return dataSourceProviderList.remove(dataSourceProvider);
+	// }
 
 	public static List<Integer> getIDs() {
 		List<Integer> ids = new ArrayList<Integer>();
@@ -68,14 +54,17 @@ public class DataSourceKeeper {
 		return results;
 	}
 
+	/**
+	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE TDB
+	 * 
+	 * @param proposedNewDataSourceName
+	 * @return
+	 */
 	public static String uniquify(String proposedNewDataSourceName) {
 		String uniqueName = proposedNewDataSourceName;
 		Pattern numberedEnding = Pattern.compile("(.*)_(\\d+)$");
 
 		while (indexOfDataSourceName(uniqueName) > -1) {
-
-			// System.out.println("checking uniqueName: "+uniqueName);
-			// Pattern numberedEnding = Pattern.compile("_\\d\\d$");
 			Matcher endingMatcher = numberedEnding.matcher(uniqueName);
 
 			if (endingMatcher.find()) {
@@ -161,5 +150,4 @@ public class DataSourceKeeper {
 		}
 		return null;
 	}
-
 }

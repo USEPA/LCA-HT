@@ -31,7 +31,7 @@ public class FileMD {
 
 	public FileMD(Resource tdbResource) {
 		this.tdbResource = tdbResource;
-		model.add(tdbResource, RDF.type, LCAHT.dataFile);
+		syncDataFromTDB();
 	}
 
 	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
@@ -233,7 +233,7 @@ public class FileMD {
 		model.add(tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(readDate));
 	}
 
-	public void remove(){
+	public void remove() {
 		tdbResource.removeAll(LCAHT.fileName);
 		tdbResource.removeAll(LCAHT.filePath);
 		tdbResource.removeAll(LCAHT.fileEncoding);

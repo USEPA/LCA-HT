@@ -8,23 +8,27 @@ import harmonizationtool.vocabulary.LCAHT;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSourceProvider {
 	private String dataSourceName;
-	private String version;
-	private String comments;
-	private ContactMD dataSourceMD;
-	// private CuratorMD curatorMD;
+	private String version = "";
+	private String comments = "";
+	private Person contactPerson;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	// private List<Annotation> annotationList = new ArrayList<Annotation>();
 
 	private Resource tdbResource;
-	private static final Model model = ActiveTDB.model;
+	protected final static Model model = ActiveTDB.model;
 	private boolean isMaster = false;
 
 	public DataSourceProvider() {
@@ -32,21 +36,21 @@ public class DataSourceProvider {
 		model.add(tdbResource, RDF.type, ECO.DataSource);
 	}
 
-	public ContactMD getDataSourceMD() {
-		return dataSourceMD;
+	public DataSourceProvider(Resource tdbResource) {
+		this.tdbResource = tdbResource;
+		syncFromTDB();
+		if (DataSourceKeeper.getByTdbResource(tdbResource) < 0) {
+			DataSourceKeeper.add(this);
+		}
 	}
 
-	public void setDataSourceMD(ContactMD dataSourceMD) {
-		this.dataSourceMD = dataSourceMD;
+	public Person getContactPerson() {
+		return contactPerson;
 	}
 
-	// public CuratorMD getCuratorMD() {
-	// return curatorMD;
-	// }
-	//
-	// public void setCuratorMD(CuratorMD curatorMD) {
-	// this.curatorMD = curatorMD;
-	// }
+	public void setContactPerson(Person contactPerson) {
+		this.contactPerson = contactPerson;
+	}
 
 	public Resource getTdbResource() {
 		if (tdbResource == null) {
@@ -84,11 +88,12 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
-
-		// dataSourceMD.remove();
-		tdbResource.removeAll(ECO.hasDataSource);
-		// curatorMD.remove();
-		// tdbResource.removeAll(FEDLCA.curatedBy);
+		contactPerson.remove();
+		tdbResource.removeAll(FEDLCA.hasContactPerson);
+		tdbResource.removeAll(RDFS.label);
+		tdbResource.removeAll(RDFS.comment);
+		tdbResource.removeAll(DCTerms.hasVersion);
+		model.remove(tdbResource, RDF.type, ECO.DataSource);
 	}
 
 	public boolean isMaster() {
@@ -105,7 +110,7 @@ public class DataSourceProvider {
 
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
-		 model.add(this.tdbResource, RDFS.label, model.createTypedLiteral(this.dataSourceName));
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
 	}
 
 	public String getVersion() {
@@ -114,7 +119,7 @@ public class DataSourceProvider {
 
 	public void setVersion(String version) {
 		this.version = version;
-		 model.add(this.tdbResource, DCTerms.hasVersion, model.createTypedLiteral(this.version));
+		ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
 	}
 
 	public String getComments() {
@@ -123,7 +128,57 @@ public class DataSourceProvider {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-		 model.add(this.tdbResource, RDFS.comment, model.createTypedLiteral(this.comments));
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
+	}
 
+	public void syncFromTDB() {
+		List<Statement> labelStatements = tdbResource.listProperties(RDFS.label).toList();
+		if (labelStatements.size() > 0) {
+			dataSourceName = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
+			if (dataSourceName == null) {
+				return;
+			}
+			// RDFNode rdfNode = labelStatements.get(0).getObject();
+			// if (rdfNode.isLiteral()) {
+			// Object value = rdfNode.asLiteral().getValue();
+			// if (value instanceof String) {
+			// dataSourceName = (String) value;
+			// }
+			// }
+		}
+
+		labelStatements = tdbResource.listProperties(RDFS.comment).toList();
+		if (labelStatements.size() > 0) {
+			comments = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
+		}
+		if (comments == null) {
+			comments = "";
+		}
+
+		labelStatements = tdbResource.listProperties(DCTerms.hasVersion).toList();
+		if (labelStatements.size() > 0) {
+			version = labelStatements.get(0).getObject().toString();
+		}
+		if (version == null) {
+			version = "";
+		}
+
+		NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.hasContactPerson);
+		while (nodeIterator.hasNext()) {
+			RDFNode contactPersonNode = nodeIterator.next();
+			if (!contactPersonNode.isLiteral()) {
+				Person person = new Person(contactPersonNode.asResource());
+				contactPerson = person;
+			}
+		}
+
+		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.containsFile);
+		while (nodeIterator.hasNext()) {
+			RDFNode fileMDResource = nodeIterator.next();
+			if (!fileMDResource.isLiteral()) {
+				FileMD fileMD = new FileMD(fileMDResource.asResource());
+				addFileMD(fileMD);
+			}
+		}
 	}
 }

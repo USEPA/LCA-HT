@@ -8,7 +8,7 @@ import java.util.List;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 //import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.ContactMD;
+import harmonizationtool.model.Person;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.model.ModelProvider;
@@ -42,13 +42,14 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 	private DataSourceProvider dataSourceProvider = null;
 	private DataSourceProvider tempDataSourceProvider = null;
 	private FileMD fileMD = null;
-	private ContactMD dataSourceMD = null;
+//	private Person dataSourceMD = null;
 //	private CuratorMD curatorMD = null;
 	private Resource tdbResource = null;
 	private Combo combo = null;
 	private Combo fileMDCombo = null;
 	private List<Text> dialogValues = new ArrayList<Text>();
 	private FileMDComboMgr fileMDComboMgr;
+	private Person dataSourceMD;
 
 	// YOU CAN GET HERE WITH A NEW FILE (FOR A NEW OR EXISTING DATA SET)
 	/**
@@ -67,7 +68,7 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 			return;
 		}
 		this.dataSourceProvider = DataSourceKeeper.get(0);
-		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		dataSourceMD = dataSourceProvider.getContactPerson();
 //		curatorMD = dataSourceProvider.getCuratorMD();
 		tdbResource = dataSourceProvider.getTdbResource();
 	}
@@ -374,10 +375,10 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 		dataSourceProvider.setDataSourceName(combo.getText()); // FIXME
 		dataSourceProvider.setVersion(dialogValues.get(3).getText());
 		dataSourceProvider.setComments(dialogValues.get(4).getText());
-		dataSourceMD.setContactName(dialogValues.get(5).getText());
-		dataSourceMD.setContactAffiliation(dialogValues.get(6).getText());
-		dataSourceMD.setContactEmail(dialogValues.get(7).getText());
-		dataSourceMD.setContactPhone(dialogValues.get(8).getText());
+		dataSourceMD.setName(dialogValues.get(5).getText());
+		dataSourceMD.setAffiliation(dialogValues.get(6).getText());
+		dataSourceMD.setEmail(dialogValues.get(7).getText());
+		dataSourceMD.setPhone(dialogValues.get(8).getText());
 
 //		// curatorMD META DATA
 //		curatorMD.setName(dialogValues.get(9).getText());
@@ -385,7 +386,7 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 //		curatorMD.setEmail(dialogValues.get(11).getText());
 //		curatorMD.setPhone(dialogValues.get(12).getText());
 
-		dataSourceProvider.setDataSourceMD(dataSourceMD);
+		dataSourceProvider.setContactPerson(dataSourceMD);
 //		dataSourceProvider.setCuratorMD(curatorMD);
 
 		dataSourceProviderToTDB(dataSourceProvider);
@@ -524,7 +525,7 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 		} else {
 			fileMD = null;
 		}
-		dataSourceMD = dataSourceProvider.getDataSourceMD();
+		dataSourceMD = dataSourceProvider.getContactPerson();
 //		curatorMD = dataSourceProvider.getCuratorMD();
 		redrawDialogRows();
 	}
@@ -562,10 +563,10 @@ public class ChooseDataSourceDialog extends TitleAreaDialog {
 			combo.setText(dataSourceProvider.getDataSourceName());
 			dialogValues.get(3).setText(dataSourceProvider.getVersion());
 			dialogValues.get(4).setText(dataSourceProvider.getComments());
-			dialogValues.get(5).setText(dataSourceMD.getContactName());
-			dialogValues.get(6).setText(dataSourceMD.getContactAffiliation());
-			dialogValues.get(7).setText(dataSourceMD.getContactEmail());
-			dialogValues.get(8).setText(dataSourceMD.getContactPhone());
+			dialogValues.get(5).setText(dataSourceMD.getName());
+			dialogValues.get(6).setText(dataSourceMD.getAffiliation());
+			dialogValues.get(7).setText(dataSourceMD.getEmail());
+			dialogValues.get(8).setText(dataSourceMD.getPhone());
 
 		}
 //		if (curatorMD != null) {

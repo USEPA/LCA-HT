@@ -13,9 +13,6 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ContactMD {
-//	private String dataSourceName;
-//	private String version;
-//	private String comments;
 	private String contactName;
 	private String contactAffiliation;
 	private String contactEmail;
