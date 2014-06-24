@@ -55,10 +55,14 @@ public class CSVTableView extends ViewPart {
 	private String key = null;
 	private static TableViewer tableViewer;
 	private static Table table;
+
+
 	private TextCellEditor editor;
 
 	private static List<CSVColumnInfo> availableCSVColumnInfo = new ArrayList<CSVColumnInfo>();
 	private static CSVColumnInfo[] assignedCSVColumnInfo;
+
+
 	private static String csvColumnDefaultColumnHeader = "   -   ";
 	private static String csvColumnDefaultTooltip = "Ignore Column";
 	private static Menu headerMenu;
@@ -1165,5 +1169,19 @@ public class CSVTableView extends ViewPart {
 
 		}
 	}
+	
+	public static CSVColumnInfo[] getAssignedCSVColumnInfo() {
+		return assignedCSVColumnInfo;
+	}
 
+	public static void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {
+		CSVTableView.assignedCSVColumnInfo = assignedCSVColumnInfo;
+	}
+	public static Table getTable() {
+		return table;
+	}
+
+	public static void setTable(Table table) {
+		CSVTableView.table = table;
+	}
 }

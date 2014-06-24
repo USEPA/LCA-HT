@@ -17,6 +17,9 @@ public class CSVColumnInfo {
 	private List<Issue> issues = new ArrayList<Issue>();
 	private LCADataField lcaDataField;
 
+	public CSVColumnInfo(){
+		
+	}
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified,
 			List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
 		super();

@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
@@ -13,8 +14,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
 
-	private static Resource rdfClass = FASC.Compartment;
+	private String primaryFlowContext;
+	private String additionalFlowContext;
+	private Resource tdbResource;
 	
+	private static final Resource rdfClass = FASC.Compartment;
+	
+	public FlowContext(){
+		this.tdbResource = ActiveTDB.model.createResource();
+	}
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[2];
 		
@@ -53,5 +61,26 @@ public class FlowContext {
 //
 //		qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
 		return qaChecks;
+	}
+
+	public String getPrimaryFlowContext() {
+		return primaryFlowContext;
+	}
+
+	public void setPrimaryFlowContext(String primaryFlowContext) {
+		this.primaryFlowContext = primaryFlowContext;
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, primaryFlowContext);
+	}
+
+	public String getAdditionalFlowContext() {
+		return additionalFlowContext;
+	}
+
+	public void setAdditionalFlowContext(String additionalFlowContext) {
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, additionalFlowContext);
+	}
+	
+	public void addAdditionalFlowContext(String additionalFlowContext) {
+		tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContext);
 	}
 }

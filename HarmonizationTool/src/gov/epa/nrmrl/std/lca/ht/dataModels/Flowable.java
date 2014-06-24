@@ -1,31 +1,41 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.SKOS;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Flowable {
-//	private String name = "";
-//	private String cas = null;
-//	private boolean isEmission = false;
-//	private boolean isResource = false;
-//	private List<String> altNames = null;
-//	private String formula = null;
-//	private String SMILES = null;
-	private static Resource rdfClass = ECO.Flowable;
+	private String name = null;
+	private String cas = "";
+	private boolean isEmission = false;
+	private boolean isResource = false;
+	private List<String> synonyms = null;
+	private String formula = "";
+	private String smiles = "";
+	private static final Resource rdfClass = ECO.Flowable;
+	private Resource tdbResource;
+	private static final Model model = ActiveTDB.model;
 
-	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists)
+	public Flowable() {
+		this.tdbResource = model.createResource();
+	}
+
+	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>
+	// checkLists)
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
-		
+
 		results[0] = new CSVColumnInfo("Flowable Name");
 		results[0].setRequired(true);
 		results[0].setUnique(true);
@@ -36,7 +46,7 @@ public class Flowable {
 		results[0].getLcaDataField().setLiteralObjectType("String");
 		results[0].getLcaDataField().setRequired(true);
 		results[0].getLcaDataField().setFunctional(true);
-		
+
 		results[1] = new CSVColumnInfo("", false, false, getFlowablesNameCheckList());
 		results[1] = new CSVColumnInfo("Flowable Synonym");
 		results[1].setRequired(false);
@@ -60,12 +70,11 @@ public class Flowable {
 		results[2].getLcaDataField().setLiteralObjectType("String");
 		results[2].getLcaDataField().setRequired(false);
 		results[2].getLcaDataField().setFunctional(true);
-		
-		results[3] = new CSVColumnInfo("Chemical formula", false, false, getFormulaCheckList());
+
 		results[3] = new CSVColumnInfo("Chemical formula");
 		results[3].setRequired(false);
 		results[3].setUnique(false);
-		results[3].setCheckLists(getCASCheckList());
+		results[3].setCheckLists(getFormulaCheckList());
 		results[3].setLeftJustified(false);
 		results[3].setLcaDataField(new LCADataField());
 		results[3].getLcaDataField().setResourceSubject(rdfClass);
@@ -73,15 +82,15 @@ public class Flowable {
 		results[3].getLcaDataField().setLiteralObjectType("String");
 		results[3].getLcaDataField().setRequired(false);
 		results[3].getLcaDataField().setFunctional(false);
-		
-		results[4] = new CSVColumnInfo("Chemical formula");
+
+		results[4] = new CSVColumnInfo("SMILES");
 		results[4].setRequired(false);
 		results[4].setUnique(false);
 		results[4].setCheckLists(getSmilesCheckList());
 		results[4].setLeftJustified(false);
 		results[4].setLcaDataField(new LCADataField());
 		results[4].getLcaDataField().setResourceSubject(rdfClass);
-		results[4].getLcaDataField().setPropertyPredicate(FEDLCA.hasSmilesString);
+		results[4].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
 		results[4].getLcaDataField().setLiteralObjectType("String");
 		results[4].getLcaDataField().setRequired(false);
 		results[4].getLcaDataField().setFunctional(false);
@@ -102,31 +111,32 @@ public class Flowable {
 	private static List<QACheck> getCASCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
 
-//		String d1 = "Non-standard CAS format";
-//		String e1 = "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
-//		String s1 = "Parse digits into a formatted CAS";
-//		Pattern p1 = Pattern.compile("^\\s*$");
-//		String r1 = "";
-//		qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
-		
+		// String d1 = "Non-standard CAS format";
+		// String e1 =
+		// "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
+		// String s1 = "Parse digits into a formatted CAS";
+		// Pattern p1 = Pattern.compile("^\\s*$");
+		// String r1 = "";
+		// qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
+
 		String d2 = "Non-standard CAS format";
 		String e2 = "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
 		String s2 = "Parse digits into a formatted CAS";
 		Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
-//		String r2 = "$1-$2-$3";
+		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
 		return qaChecks;
 	}
 
 	private static List<QACheck> getSmilesCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-		
-//		String d1 = "Invalid SMILES";
-//		String e1 = "Characters disallowed in SMILES include ...";
-//		String s1 = "Check the SMILES source.";
-//		Pattern p1 = Pattern.compile(" GET FROM TOMMY");
-//		String r2 = null;
-//		qaChecks.add(new QACheck(d1, e1, s1, p1, null, true));
+
+		// String d1 = "Invalid SMILES";
+		// String e1 = "Characters disallowed in SMILES include ...";
+		// String s1 = "Check the SMILES source.";
+		// Pattern p1 = Pattern.compile(" GET FROM TOMMY");
+		// String r2 = null;
+		// qaChecks.add(new QACheck(d1, e1, s1, p1, null, true));
 		return qaChecks;
 	}
 
@@ -170,7 +180,7 @@ public class Flowable {
 		String strippedCas = "";
 		strippedCas = candidate.replaceAll("\\D", "");
 		strippedCas = strippedCas.replace("^0+", "");
-		if (strippedCas.equals("")){
+		if (strippedCas.equals("")) {
 			return null;
 		}
 		if (Integer.parseInt(strippedCas) < 10000) {
@@ -186,7 +196,7 @@ public class Flowable {
 			return digitsOnly;
 		}
 		String noLeadingZeros = digitsOnly.replaceAll("^0+", "");
-		if (Integer.parseInt(noLeadingZeros)<50000){
+		if (Integer.parseInt(noLeadingZeros) < 50000) {
 			return null;
 		}
 		standardizedCas = noLeadingZeros.substring(0, noLeadingZeros.length() - 3);
@@ -214,71 +224,95 @@ public class Flowable {
 		return false;
 	}
 
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//
-//	public String getCas() {
-//		return cas;
-//	}
-//
-//	public void setCas(String cas) {
-//		this.cas = cas;
-//	}
-//
-//	public boolean isEmission() {
-//		return isEmission;
-//	}
-//
-//	public void setEmission(boolean isEmission) {
-//		this.isEmission = isEmission;
-//	}
-//
-//	public boolean isResource() {
-//		return isResource;
-//	}
-//
-//	public void setResource(boolean isResource) {
-//		this.isResource = isResource;
-//	}
-//
-//	public String getFormula() {
-//		return formula;
-//	}
-//
-//	public void setFormula(String formula) {
-//		this.formula = formula;
-//	}
-//
-//	public String getSMILES() {
-//		return SMILES;
-//	}
-//
-//	public void setSMILES(String sMILES) {
-//		SMILES = sMILES;
-//	}
-//
-//	public List<String> getAltNames() {
-//		return altNames;
-//	}
-//
-//	public void setAltNames(List<String> altNames) {
-//		this.altNames = altNames;
-//	}
-
-	public Resource getRdfClass() {
-		return rdfClass;
+	public String getName() {
+		return name;
 	}
 
-	public void setRdfClass(Resource rdfClass) {
-		this.rdfClass = rdfClass;
+	public void setName(String name) {
+		this.name = name;
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, name);
+	}
+
+	public String getCas() {
+		return cas;
+	}
+
+	public void setCas(String cas) {
+		this.cas = cas;
+		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
+	}
+
+	public boolean isEmission() {
+		return isEmission;
+	}
+
+	public void setEmission(boolean isEmission) {
+		this.isEmission = isEmission;
+		if (isEmission) {
+			model.add(tdbResource, RDF.type, FASC.EmissionCompartment);
+		} else {
+			model.remove(tdbResource, RDF.type, FASC.EmissionCompartment);
+		}
+	}
+
+	public boolean isResource() {
+		return isResource;
+	}
+
+	public void setResource(boolean isResource) {
+		this.isResource = isResource;
+		if (isResource) {
+			model.add(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+		} else {
+			model.remove(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+		}
+	}
+
+	public List<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(List<String> synonyms) {
+		this.synonyms = synonyms;
+		tdbResource.removeAll(SKOS.altLabel);
+		for (String synonym : synonyms) {
+			model.add(tdbResource, SKOS.altLabel, model.createTypedLiteral(synonym));
+		}
 	}
 	
-//	private static Pattern acceptableCASFormat = Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
+	public void addSynonym(String synonym){
+		model.add(tdbResource, SKOS.altLabel, model.createTypedLiteral(synonym));
+	}
+
+	public String getFormula() {
+		return formula;
+	}
+
+	public void setFormula(String formula) {
+		this.formula = formula;
+		ActiveTDB.replaceLiteral(tdbResource, ECO.chemicalFormula, formula);
+	}
+
+	public String getSmiles() {
+		return smiles;
+	}
+
+	public void setSmiles(String smiles) {
+		this.smiles = smiles;
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
+
+	}
+
+	public Resource getTdbResource() {
+		return tdbResource;
+	}
+
+	public void setTdbResource(Resource tdbResource) {
+		this.tdbResource = tdbResource;
+	}
+
+	// private static Pattern acceptableCASFormat =
+	// Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
 
 	// public List<QACheck> getQaChecks() {
 	// List<QACheck> allChecks = new ArrayList<QACheck>();
@@ -300,16 +334,17 @@ public class Flowable {
 	// headerList.add("SMILES");
 	// return headerList;
 	// }
-	
-//	public static Issue fullyCheckCAS(String cas){
-//		QACheck casQACheck = makeCASQACheck();
-//		Issue issue = new Issue();
-//		return issue;
-//	}
-//	
-//	private QACheck makeCASQACheck(){
-//		QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null, null, null, false);
-//		casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
-//		return casQACheck;
-//	}
+
+	// public static Issue fullyCheckCAS(String cas){
+	// QACheck casQACheck = makeCASQACheck();
+	// Issue issue = new Issue();
+	// return issue;
+	// }
+	//
+	// private QACheck makeCASQACheck(){
+	// QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null,
+	// null, null, false);
+	// casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
+	// return casQACheck;
+	// }
 }

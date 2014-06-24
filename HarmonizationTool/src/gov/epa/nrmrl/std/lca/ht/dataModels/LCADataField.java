@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 

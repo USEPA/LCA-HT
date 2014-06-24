@@ -86,7 +86,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				model.removeAll(subject, predicate, rdfNode);
 			}
 		}
-		System.out.println("Filename: " + stringLiteral + " added to TDB");
+//		System.out.println("Filename: " + stringLiteral + " added to TDB");
 		model.add(subject, predicate, model.createTypedLiteral(stringLiteral));
 	}
 
