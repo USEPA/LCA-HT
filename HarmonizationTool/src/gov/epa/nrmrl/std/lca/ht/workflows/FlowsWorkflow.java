@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -10,6 +11,7 @@ import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
 
 import org.apache.log4j.Logger;
@@ -428,7 +430,7 @@ public class FlowsWorkflow extends ViewPart {
 				textCommitToDB.setText("Assign and check columns first)");
 				btnAutoMatch.setEnabled(false);
 			} else {
-				int triples = safeCommitFlowables2TDB();
+				int triples = safeCommitColumns2TDB();
 				triples += safeCommitFlowContexts2TDB();
 				textCommitToDB.setText(triples + " triples added to TDB.");
 				if (triples == 0) {
@@ -474,23 +476,13 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	private int safeCommitFlowables2TDB() {
+	private int safeCommitColumns2TDB() {
 		// THE SAFE PART MEANS
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
 		Model model = ActiveTDB.model;
 
 		long triples = model.size();
-		// CSVColumnInfo[] flowableFields = Flowable.getHeaderMenuObjects();
-		// CSVColumnInfo assignedColumn = CSVTableView.getAssignedCSVColumnInfo()[i];
-		// if (assignedColumn != null){
-		// for (CSVColumnInfo flowableField: flowableFields){
-		// if (flowableField.getHeaderString().equals(assignedColumn.getHeaderString())){
-		// assignedColumn.getLcaDataField();
-		// }
-		// }
-		// }
-		// }
 		Table table = CSVTableView.getTable();
 		CSVColumnInfo[] assignedCSVColumns = CSVTableView.getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
@@ -518,14 +510,24 @@ public class FlowsWorkflow extends ViewPart {
 					} else if (headerName.equals("Context (primary)")) {
 						flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
 					} else if (headerName.equals("Context (additional)")) {
-						flowContext.setAdditionalFlowContext(dataRow.get(colNumber - 1));
+						flowContext.addAdditionalFlowContext(dataRow.get(colNumber - 1));
 					}
 				}
 			}
+			Flow flow = new Flow();
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
-					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber);
+					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber+1);
 					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+					flow.getTdbResource().addProperty(ECO.hasFlowable, flowable.getTdbResource());
+				}
+			}
+			if (flowContext.getPrimaryFlowContext() != null) {
+				if (!flowContext.getPrimaryFlowContext().equals("")) {
+					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber+1);
+					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
+					flow.getTdbResource().addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
 				}
 			}
 		}
