@@ -32,6 +32,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 //import org.eclipse.swt.widgets.Canvas;
 
@@ -431,8 +436,8 @@ public class FlowsWorkflow extends ViewPart {
 				btnAutoMatch.setEnabled(false);
 			} else {
 				int triples = safeCommitColumns2TDB();
-				triples += safeCommitFlowContexts2TDB();
-				textCommitToDB.setText(triples + " triples added to TDB.");
+				// triples += safeCommitFlowContexts2TDB();
+				textCommitToDB.setText(triples + " triples added");
 				if (triples == 0) {
 					textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				} else {
@@ -455,12 +460,14 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener autoMatchListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
+			autoMatch();
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
+			autoMatch();
 		}
 	};
 
@@ -515,16 +522,18 @@ public class FlowsWorkflow extends ViewPart {
 				}
 			}
 			Flow flow = new Flow();
+			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
+			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
-					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber+1);
+					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
 					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(ECO.hasFlowable, flowable.getTdbResource());
 				}
 			}
 			if (flowContext.getPrimaryFlowContext() != null) {
 				if (!flowContext.getPrimaryFlowContext().equals("")) {
-					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber+1);
+					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
 					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
 					flow.getTdbResource().addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
@@ -535,17 +544,62 @@ public class FlowsWorkflow extends ViewPart {
 		return (int) newTriples;
 	}
 
-	private int safeCommitFlowContexts2TDB() {
-		// THE SAFE PART MEANS
-		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
+	private void autoMatch() {
 		Model model = ActiveTDB.model;
+		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
+		StmtIterator stmtIterator = dataSourceTDBResource.listProperties(ECO.hasFlowable);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Resource flowableTdbResource = statement.getObject().asResource();
+			StmtIterator flowablePropertyStatements = flowableTdbResource.listProperties();
+			while (flowablePropertyStatements.hasNext()) {
+				Statement flowableStatement = flowablePropertyStatements.next();
+				ResIterator matchIterator = model.listSubjectsWithProperty(flowableStatement.getPredicate(), flowableStatement.getObject());
+				while (matchIterator.hasNext()) {
+					Resource matchThing = matchIterator.next();
+					if (!matchThing.equals(flowableStatement.getResource())) {
+						Statement rowNumberStatement = flowableTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
+						int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+						CSVTableView.getTable().getItem(row - 1).setBackground(0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					}
+				}
+			}
+			// thing = model.listSubjectsWithProperty(arg0, arg1)
+		}
+		stmtIterator = dataSourceTDBResource.listProperties(FEDLCA.hasFlowContext);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Resource flowContextTdbResource = statement.getObject().asResource();
+			StmtIterator flowablePropertyStatements = flowContextTdbResource.listProperties();
+			while (flowablePropertyStatements.hasNext()) {
+				Statement flowContextStatement = flowablePropertyStatements.next();
+				ResIterator matchIterator = model.listSubjectsWithProperty(flowContextStatement.getPredicate(), flowContextStatement.getObject());
+				while (matchIterator.hasNext()) {
+					Resource matchThing = matchIterator.next();
+					if (!matchThing.equals(flowContextStatement.getResource())) {
+						Statement rowNumberStatement = flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
+						int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+						CSVTableView.getTable().getItem(row - 1).setBackground(0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					}
+				}
+			}
+			// thing = model.listSubjectsWithProperty(arg0, arg1)
+		}
 
-		long triples = model.size();
-		// CSVColumnInfo[] FlowableCSVColumnInfos =
-		// CSVTableView.getFlowableCSVColumnInfos();
-
-		long newTriples = model.size() - triples;
-		return (int) newTriples;
+		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
 	}
+
+	// private int safeCommitFlowContexts2TDB() {
+	// // THE SAFE PART MEANS
+	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
+	// // TRIPLES FROM THIS FILE SHOULD BE REMOVED
+	// Model model = ActiveTDB.model;
+	//
+	// long triples = model.size();
+	// // CSVColumnInfo[] FlowableCSVColumnInfos =
+	// // CSVTableView.getFlowableCSVColumnInfos();
+	//
+	// long newTriples = model.size() - triples;
+	// return (int) newTriples;
+	// }
 }
