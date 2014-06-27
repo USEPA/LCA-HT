@@ -139,7 +139,7 @@ public class ImportCSV implements IHandler {
 		runLogger.info("# File read at: " + Util.getLocalDateFmt(readDate));
 		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
 		runLogger.info("# File size: " + file.length());
-		FlowsWorkflow.setFileMD(fileMD);
+//		FlowsWorkflow.setFileMD(fileMD);
 
 		// IF WE GOT CONTENT, THEN SAVE THIS FILE (MODEL) AND ADD IT TO THE MENU
 		TableKeeper.saveTableProvider(path, tableProvider);
@@ -202,10 +202,11 @@ public class ImportCSV implements IHandler {
 
 		// NOW OPEN DIALOG WITH SOME PRE-POPULATE fileMD INFO
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
-
+		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
 		dialog.create();
 		dialog.open();
-//		if (dialog.open() == MetaDataDialog.CANCEL) {
+		// FIXME - GET THE DataSourceProvider TO THE CSVTableView
+//		if (dialog.open() == MetaDataDialog.CANCEL) { //FIXME
 //			// remove fileMD from Data Files viewer
 ////			view.remove(fileMD);
 //		}

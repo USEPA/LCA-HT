@@ -2,8 +2,9 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+//import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
+import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
@@ -74,6 +75,8 @@ public class CSVTableView extends ViewPart {
 
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
+	
+	private static DataSourceProvider dataSourceProvider;
 
 	public static List<Integer> rowsToIgnore = new ArrayList<Integer>();
 
@@ -1150,25 +1153,25 @@ public class CSVTableView extends ViewPart {
 		return colsAssigned;
 	}
 
-	public static void matchFlowables() {
-		for (int colIndex = 1; colIndex < assignedCSVColumnInfo.length; colIndex++) {
-			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
-			if (csvColumnInfo != null) {
-				if (csvColumnInfo.getHeaderString().equals("Flowable Name")) {
-					matchFlowableNames(colIndex);
-				}
-			}
-		}
-	}
+//	public static void matchFlowables() {
+//		for (int colIndex = 1; colIndex < assignedCSVColumnInfo.length; colIndex++) {
+//			CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+//			if (csvColumnInfo != null) {
+//				if (csvColumnInfo.getHeaderString().equals("Flowable Name")) {
+//					matchFlowableNames(colIndex);
+//				}
+//			}
+//		}
+//	}
 
-	private static void matchFlowableNames(int colIndex) {
-		for (int row = 0; row < table.getItemCount(); row++) {
-			TableItem item = table.getItem(row);
-			String flowableName = item.getText(colIndex);
-			Model model = ActiveTDB.model;
-
-		}
-	}
+//	private static void matchFlowableNames(int colIndex) {
+//		for (int row = 0; row < table.getItemCount(); row++) {
+//			TableItem item = table.getItem(row);
+//			String flowableName = item.getText(colIndex);
+//			Model model = ActiveTDB.model;
+//
+//		}
+//	}
 	
 	public static CSVColumnInfo[] getAssignedCSVColumnInfo() {
 		return assignedCSVColumnInfo;
@@ -1183,5 +1186,13 @@ public class CSVTableView extends ViewPart {
 
 	public static void setTable(Table table) {
 		CSVTableView.table = table;
+	}
+
+	public static DataSourceProvider getDataSourceProvider() {
+		return dataSourceProvider;
+	}
+
+	public static void setDataSourceProvider(DataSourceProvider dsp) {
+		dataSourceProvider = dsp;
 	}
 }

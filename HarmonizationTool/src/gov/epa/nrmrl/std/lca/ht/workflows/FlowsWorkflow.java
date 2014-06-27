@@ -1,10 +1,14 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
+import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceProvider;
@@ -32,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -66,8 +71,8 @@ public class FlowsWorkflow extends ViewPart {
 	private static Button btnCSV2TDB;
 	private static Button btnConcludeFile;
 
-	private static FileMD fileMD;
-	private static DataSourceProvider dataSourceProvider;
+	// private static FileMD fileMD;
+	// private static DataSourceProvider dataSourceProvider;
 
 	// private static TableProvider tableProvider;
 
@@ -329,23 +334,24 @@ public class FlowsWorkflow extends ViewPart {
 		textManualMatched.setText(manualMatched);
 	}
 
-	public static void setFileMD(FileMD newFileMD) {
-		fileMD = newFileMD;
-		setTextFileInfo("Filename: " + fileMD.getFilename());
-		setTextMetaFileInfo(fileMD.getPath());
-	}
+	// public static void setFileMD(FileMD newFileMD) {
+	// fileMD = newFileMD;
+	// setTextFileInfo("Filename: " + fileMD.getFilename());
+	// setTextMetaFileInfo(fileMD.getPath());
+	// }
 
-	public static void setDataSourceProvider(DataSourceProvider dsProvider) {
-		dataSourceProvider = dsProvider;
-		// setDataSource(dataSourceProvider.getDataSourceMD().getName());
-		if (getTextFileInfo().length() < 1) {
-			setFileMD(dataSourceProvider.getFileMDList().get(0));
-			// HACK: CHOOSE FIRST FILE
-		} else {
-			setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size() - 1));
-		}
-		setHeaderInfo();
-	}
+	// public static void setDataSourceProvider(DataSourceProvider dsProvider) {
+	// dataSourceProvider = dsProvider;
+	// // setDataSource(dataSourceProvider.getDataSourceMD().getName());
+	// if (getTextFileInfo().length() < 1) {
+	// setFileMD(dataSourceProvider.getFileMDList().get(0));
+	// // HACK: CHOOSE FIRST FILE
+	// } else {
+	// setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size() -
+	// 1));
+	// }
+	// setHeaderInfo();
+	// }
 
 	private static void setHeaderInfo() {
 		CSVTableView csvTableView;
@@ -375,6 +381,7 @@ public class FlowsWorkflow extends ViewPart {
 				// throw new
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
+			setHeaderInfo();
 			btnCheckData.setEnabled(true);
 		}
 
@@ -386,6 +393,7 @@ public class FlowsWorkflow extends ViewPart {
 			} catch (Exception ex) {
 				throw new RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
+			setHeaderInfo();
 			btnCheckData.setEnabled(true);
 		}
 	};
@@ -474,12 +482,12 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener concludeFileListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			CSVTableView.matchFlowables();
+			// CSVTableView.matchFlowables();
 		}
 	};
 
@@ -522,6 +530,7 @@ public class FlowsWorkflow extends ViewPart {
 				}
 			}
 			Flow flow = new Flow();
+			DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
 			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
 			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
@@ -545,46 +554,63 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	private void autoMatch() {
+		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+		DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
+
 		Model model = ActiveTDB.model;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		StmtIterator stmtIterator = dataSourceTDBResource.listProperties(ECO.hasFlowable);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
-			Resource flowableTdbResource = statement.getObject().asResource();
-			StmtIterator flowablePropertyStatements = flowableTdbResource.listProperties();
-			while (flowablePropertyStatements.hasNext()) {
-				Statement flowableStatement = flowablePropertyStatements.next();
-				ResIterator matchIterator = model.listSubjectsWithProperty(flowableStatement.getPredicate(), flowableStatement.getObject());
-				while (matchIterator.hasNext()) {
-					Resource matchThing = matchIterator.next();
-					if (!matchThing.equals(flowableStatement.getResource())) {
-						Statement rowNumberStatement = flowableTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-						int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
-						CSVTableView.getTable().getItem(row - 1).setBackground(0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource.asNode());
+		int count = 0;
+		while (resourceIterator.hasNext()) {
+			count++;
+			System.out.println("count: " + count);
+			Resource dataItem = resourceIterator.next();
+			int rowNumber = -1;
+			Resource tableRowResource = dataItem.getPropertyResourceValue(FEDLCA.sourceTableRowNumber);
+			if (tableRowResource == null) {
+				continue;
+			}
+			System.out.println("tableRowResource.getClass() = " + tableRowResource.getClass());
+
+			if (tableRowResource.isLiteral()) {
+				rowNumber = tableRowResource.asLiteral().getInt();
+				System.out.println("rowNumber = " + rowNumber);
+				StmtIterator dataItemProperties = dataItem.listProperties();
+				while (dataItemProperties.hasNext()) {
+					Statement dataItemStatement = dataItemProperties.next();
+					// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
+					ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemStatement.getPredicate(), dataItemStatement.getPredicate());
+					while (matchingResourcesIterator.hasNext()) {
+						Resource matchingResource = matchingResourcesIterator.next();
+						if (!matchingResource.equals(dataItem)) {
+							MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
+							if (matchCandidate.confirmRDFtypeMatch()) {
+								matchCandidates.add(matchCandidate);
+							}
+						}
 					}
 				}
 			}
-			// thing = model.listSubjectsWithProperty(arg0, arg1)
 		}
-		stmtIterator = dataSourceTDBResource.listProperties(FEDLCA.hasFlowContext);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
-			Resource flowContextTdbResource = statement.getObject().asResource();
-			StmtIterator flowablePropertyStatements = flowContextTdbResource.listProperties();
-			while (flowablePropertyStatements.hasNext()) {
-				Statement flowContextStatement = flowablePropertyStatements.next();
-				ResIterator matchIterator = model.listSubjectsWithProperty(flowContextStatement.getPredicate(), flowContextStatement.getObject());
-				while (matchIterator.hasNext()) {
-					Resource matchThing = matchIterator.next();
-					if (!matchThing.equals(flowContextStatement.getResource())) {
-						Statement rowNumberStatement = flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-						int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
-						CSVTableView.getTable().getItem(row - 1).setBackground(0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-					}
-				}
-			}
-			// thing = model.listSubjectsWithProperty(arg0, arg1)
-		}
+		System.out.println("matchCandidates.size()=" + matchCandidates.size());
+		// while (flowablePropertyStatements.hasNext()) {
+		// Statement flowContextStatement = flowablePropertyStatements.next();
+		// ResIterator matchIterator =
+		// model.listSubjectsWithProperty(flowContextStatement.getPredicate(),
+		// flowContextStatement.getObject());
+		// while (matchIterator.hasNext()) {
+		// Resource matchThing = matchIterator.next();
+		// if (!matchThing.equals(flowContextStatement.getResource())) {
+		// Statement rowNumberStatement =
+		// flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
+		// int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+		// CSVTableView.getTable().getItem(row - 1).setBackground(0,
+		// SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		// }
+		// }
+		// }
+		// thing = model.listSubjectsWithProperty(arg0, arg1)
+		// }
 
 		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
 	}

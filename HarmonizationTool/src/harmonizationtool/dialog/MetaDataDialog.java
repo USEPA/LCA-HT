@@ -114,7 +114,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
 		this.newDataSourceProvider = new DataSourceProvider();
-		this.newDataSourceProvider.setDataSourceName(fileMD.getFilename());
+		this.newDataSourceProvider.setDataSourceName(fileMD.getFilename()); //FIXME 
 		this.newDataSourceProvider.addFileMD(callingFileMD);
 		this.newDataSourceProvider.setContactPerson(new Person());
 //		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
@@ -425,6 +425,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		return control;
 	}
 
+	public DataSourceProvider getCurDataSourceProvider() {
+		return curDataSourceProvider;
+	}
+
 	@Override
 	protected void cancelPressed() {
 
@@ -485,9 +489,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		System.out.println("comboSelectionIndex " + comboSelectionIndex);
 
 //		ActiveTDB.syncDataSourceProviderToTDB(curDataSourceProvider);
-		if (newDataSourceProvider != null) {
-			FlowsWorkflow.setDataSourceProvider(curDataSourceProvider);
-		}
+//		if (newDataSourceProvider != null) {
+//			FlowsWorkflow.setDataSourceProvider(curDataSourceProvider);
+//		}
 		runLogger.info("SET META complete");
 
 		super.okPressed();
