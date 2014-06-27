@@ -381,6 +381,8 @@ public class FlowsWorkflow extends ViewPart {
 				// throw new
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
+			textFileInfo.setText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getPath());
+			// FIXME - GET THE RIGHT FILE NAME, NOT JUST THE FIRST
 			setHeaderInfo();
 			btnCheckData.setEnabled(true);
 		}
@@ -559,33 +561,38 @@ public class FlowsWorkflow extends ViewPart {
 
 		Model model = ActiveTDB.model;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource.asNode());
-		int count = 0;
+		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// dataSourceTDBResource.asNode());
+		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		// int count = 0;
 		while (resourceIterator.hasNext()) {
-			count++;
-			System.out.println("count: " + count);
+			// count++;
+			// System.out.println("count: " + count);
 			Resource dataItem = resourceIterator.next();
 			int rowNumber = -1;
-			Resource tableRowResource = dataItem.getPropertyResourceValue(FEDLCA.sourceTableRowNumber);
-			if (tableRowResource == null) {
-				continue;
-			}
-			System.out.println("tableRowResource.getClass() = " + tableRowResource.getClass());
+			Statement rowNumberStatement = dataItem.getProperty(FEDLCA.sourceTableRowNumber);
+			if (rowNumberStatement != null) {
+				if (rowNumberStatement.getObject().isLiteral()) {
+					rowNumber = rowNumberStatement.getObject().asLiteral().getInt();
+					// System.out.println("rowNumber = " + rowNumber);
+					StmtIterator dataItemProperties = dataItem.listProperties();
+					while (dataItemProperties.hasNext()) {
+						Statement dataItemStatement = dataItemProperties.next();
+						Property dataItemProperty = dataItemStatement.getPredicate();
+						RDFNode dataItemRDFNode = dataItemStatement.getObject();
 
-			if (tableRowResource.isLiteral()) {
-				rowNumber = tableRowResource.asLiteral().getInt();
-				System.out.println("rowNumber = " + rowNumber);
-				StmtIterator dataItemProperties = dataItem.listProperties();
-				while (dataItemProperties.hasNext()) {
-					Statement dataItemStatement = dataItemProperties.next();
-					// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
-					ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemStatement.getPredicate(), dataItemStatement.getPredicate());
-					while (matchingResourcesIterator.hasNext()) {
-						Resource matchingResource = matchingResourcesIterator.next();
-						if (!matchingResource.equals(dataItem)) {
-							MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
-							if (matchCandidate.confirmRDFtypeMatch()) {
-								matchCandidates.add(matchCandidate);
+						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
+
+						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
+							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							while (matchingResourcesIterator.hasNext()) {
+								Resource matchingResource = matchingResourcesIterator.next();
+								if (!matchingResource.equals(dataItem)) {
+									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
+									if (matchCandidate.confirmRDFtypeMatch()) {
+										matchCandidates.add(matchCandidate);
+									}
+								}
 							}
 						}
 					}
