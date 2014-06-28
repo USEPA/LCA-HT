@@ -564,10 +564,10 @@ public class FlowsWorkflow extends ViewPart {
 		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
 		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
-		// int count = 0;
+		int count = 0;
 		while (resourceIterator.hasNext()) {
-			// count++;
-			// System.out.println("count: " + count);
+			count++;
+			System.out.println("count: " + count);
 			Resource dataItem = resourceIterator.next();
 			int rowNumber = -1;
 			Statement rowNumberStatement = dataItem.getProperty(FEDLCA.sourceTableRowNumber);
@@ -580,12 +580,14 @@ public class FlowsWorkflow extends ViewPart {
 						Statement dataItemStatement = dataItemProperties.next();
 						Property dataItemProperty = dataItemStatement.getPredicate();
 						RDFNode dataItemRDFNode = dataItemStatement.getObject();
+//						System.out.println("dataItemStatement: "+dataItemStatement);
 
 						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
 							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
+								System.out.println("Found a match for dataItemStatement: "+dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
 								if (!matchingResource.equals(dataItem)) {
 									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);

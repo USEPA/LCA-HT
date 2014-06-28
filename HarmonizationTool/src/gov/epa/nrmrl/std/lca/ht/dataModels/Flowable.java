@@ -29,6 +29,7 @@ public class Flowable {
 
 	public Flowable() {
 		this.tdbResource = model.createResource();
+		this.tdbResource.addProperty(RDF.type, ECO.Flowable);
 	}
 
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>

@@ -15,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
@@ -25,9 +26,13 @@ public class FlowContext {
 	private Resource tdbResource;
 
 	private static final Resource rdfClass = FASC.Compartment;
+//	private static final Resource rdfClass = FEDLCA.FlowContext;
 
+	
 	public FlowContext() {
 		this.tdbResource = ActiveTDB.model.createResource();
+		this.tdbResource.addProperty(RDF.type, FEDLCA.FlowContext);
+		this.tdbResource.addProperty(RDF.type, FASC.Compartment);
 	}
 
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
