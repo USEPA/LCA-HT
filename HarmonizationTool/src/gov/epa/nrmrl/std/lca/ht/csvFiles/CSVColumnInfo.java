@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataField;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.Issue;
 
@@ -15,13 +14,17 @@ public class CSVColumnInfo {
 	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
 	private List<Issue> issues = new ArrayList<Issue>();
-	private LCADataField lcaDataField;
 
-	public CSVColumnInfo(){
-		
+	// private LCADataField lcaDataField;
+
+	public CSVColumnInfo() {
+
 	}
-	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified,
-			List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
+
+	// public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean
+	// leftJustified,
+	// List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
+	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue> issues) {
 		super();
 		this.headerString = headerString;
 		this.isRequired = isRequired;
@@ -29,7 +32,7 @@ public class CSVColumnInfo {
 		this.leftJustified = leftJustified;
 		this.checkLists = checkLists;
 		this.issues = issues;
-		this.setLcaDataField(lcaDataField);
+		// this.setLcaDataField(lcaDataField);
 	}
 
 	public CSVColumnInfo(String headerString) {
@@ -126,11 +129,11 @@ public class CSVColumnInfo {
 		this.leftJustified = leftJustified;
 	}
 
-	public LCADataField getLcaDataField() {
-		return lcaDataField;
-	}
-
-	public void setLcaDataField(LCADataField lcaDataField) {
-		this.lcaDataField = lcaDataField;
-	}
+	// public LCADataField getLcaDataField() {
+	// return lcaDataField;
+	// }
+	//
+	// public void setLcaDataField(LCADataField lcaDataField) {
+	// this.lcaDataField = lcaDataField;
+	// }
 }

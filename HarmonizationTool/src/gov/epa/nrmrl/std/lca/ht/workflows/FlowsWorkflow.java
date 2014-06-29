@@ -3,22 +3,34 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
+import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
+import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
+import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
+import harmonizationtool.model.TableProvider;
+import harmonizationtool.query.HarmonyQuery2Impl;
+import harmonizationtool.query.LabeledQuery;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -35,6 +47,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -471,7 +485,15 @@ public class FlowsWorkflow extends ViewPart {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// CSVTableView.matchFlowables();
-			autoMatch();
+			String jobKey = "autoMatch_01";
+			
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
+			autoMatchJob.setPriority(Job.SHORT);
+			autoMatchJob.setSystem(false);
+			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID), jobKey));
+			autoMatchJob.schedule();
+			
+//			autoMatch();
 		}
 
 		@Override
@@ -555,7 +577,81 @@ public class FlowsWorkflow extends ViewPart {
 		return (int) newTriples;
 	}
 
-	private void autoMatch() {
+	public static Integer[] autoMatch() {
+		Integer[] results = new Integer[3];
+		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+		DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
+
+		Model model = ActiveTDB.model;
+		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
+		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// dataSourceTDBResource.asNode());
+		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		int count = 0;
+		while (resourceIterator.hasNext()) {
+			count++;
+			System.out.println("count: " + count);
+			Resource dataItem = resourceIterator.next();
+			int rowNumber = -1;
+			Statement rowNumberStatement = dataItem.getProperty(FEDLCA.sourceTableRowNumber);
+			if (rowNumberStatement != null) {
+				if (rowNumberStatement.getObject().isLiteral()) {
+					rowNumber = rowNumberStatement.getObject().asLiteral().getInt();
+					// System.out.println("rowNumber = " + rowNumber);
+					StmtIterator dataItemProperties = dataItem.listProperties();
+					while (dataItemProperties.hasNext()) {
+						Statement dataItemStatement = dataItemProperties.next();
+						Property dataItemProperty = dataItemStatement.getPredicate();
+						RDFNode dataItemRDFNode = dataItemStatement.getObject();
+//						System.out.println("dataItemStatement: "+dataItemStatement);
+
+						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
+
+						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
+							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							while (matchingResourcesIterator.hasNext()) {
+								System.out.println("Found a match for dataItemStatement: "+dataItemStatement);
+								Resource matchingResource = matchingResourcesIterator.next();
+								if (!matchingResource.equals(dataItem)) {
+									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
+									if (matchCandidate.confirmRDFtypeMatch()) {
+										matchCandidates.add(matchCandidate);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		System.out.println("matchCandidates.size()=" + matchCandidates.size());
+		results[0] = matchCandidates.size();
+		results[1] = 0;
+		results[2] = 0;
+		return results;
+		// while (flowablePropertyStatements.hasNext()) {
+		// Statement flowContextStatement = flowablePropertyStatements.next();
+		// ResIterator matchIterator =
+		// model.listSubjectsWithProperty(flowContextStatement.getPredicate(),
+		// flowContextStatement.getObject());
+		// while (matchIterator.hasNext()) {
+		// Resource matchThing = matchIterator.next();
+		// if (!matchThing.equals(flowContextStatement.getResource())) {
+		// Statement rowNumberStatement =
+		// flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
+		// int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+		// CSVTableView.getTable().getItem(row - 1).setBackground(0,
+		// SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		// }
+		// }
+		// }
+		// thing = model.listSubjectsWithProperty(arg0, arg1)
+		// }
+
+		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
+	}
+
+	private void autoMatch_01() {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
 
@@ -623,7 +719,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
 	}
-
+	
 	// private int safeCommitFlowContexts2TDB() {
 	// // THE SAFE PART MEANS
 	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
@@ -637,4 +733,63 @@ public class FlowsWorkflow extends ViewPart {
 	// long newTriples = model.size() - triples;
 	// return (int) newTriples;
 	// }
+	
+	public void queryCallback(Integer[] results, String key) {
+//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		// FIXME FIXME -- REDO ALL BELOW
+//		LabeledQuery labeledQuery = queryFromKey(key);
+//		String showResultsInWindow = ResultsView.ID;
+//
+//		resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
+//		// ResultSet resultSet = q.getResultSet();
+//		// TableProvider tableProvider = TableProvider
+//		// .create((ResultSetRewindable) resultSet);
+//		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
+//		if (key.startsWith("Harmonize CAS")) { // HACK!!
+//			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+//			// USE
+//			// WHICH createTransform
+//			// AND WHICH formatForTransfor()
+//			// SHOULD BE KNOWN BY THE LabledQuery
+//			// BUT CHOSEN BY THE CALLER
+//			showResultsInWindow = ResultsTreeEditor.ID;
+//
+//			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+//			// resultsView.update(tableProvider);
+//			try {
+//				resultsTreeEditor.update(tableProvider);
+//			} catch (Exception e) {
+//				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
+//				e.printStackTrace();
+//			}
+//
+//			// resultsView.formatForTransform0();
+//		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
+//			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util.findView(HarmonizeCompartments.ID);
+//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+//			// USE
+//			// WHICH createTransform
+//			// AND WHICH formatForTransfor()
+//			// SHOULD BE KNOWN BY THE LabledQuery
+//			// BUT CHOSEN BY THE CALLER
+//			showResultsInWindow = HarmonizeCompartments.ID;
+//
+//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+//			// resultsView.update(tableProvider);
+//			try {
+//				harmonizeCompartments.update(tableProvider);
+//			} catch (Exception e) {
+//				System.out.println("resultsTreeEditor=" + harmonizeCompartments);
+//				e.printStackTrace();
+//			}
+//
+//			// resultsView.formatForTransform0();
+//		} else {
+//			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+//			resultsView.update(tableProvider);
+//		}
+
+	}
 }

@@ -31,7 +31,7 @@ public class FlowContext {
 	
 	public FlowContext() {
 		this.tdbResource = ActiveTDB.model.createResource();
-		this.tdbResource.addProperty(RDF.type, FEDLCA.FlowContext);
+//		this.tdbResource.addProperty(RDF.type, FEDLCA.FlowContext);
 		this.tdbResource.addProperty(RDF.type, FASC.Compartment);
 	}
 
@@ -42,23 +42,23 @@ public class FlowContext {
 		results[0].setRequired(true);
 		results[0].setUnique(true);
 		results[0].setCheckLists(getContextNameCheckList());
-		results[0].setLcaDataField(new LCADataField());
-		results[0].getLcaDataField().setResourceSubject(rdfClass);
-		results[0].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextPrimaryDescription);
-		results[0].getLcaDataField().setLiteralObjectType("String");
-		results[0].getLcaDataField().setRequired(true);
-		results[0].getLcaDataField().setFunctional(true);
+//		results[0].setLcaDataField(new LCADataField());
+//		results[0].getLcaDataField().setResourceSubject(rdfClass);
+//		results[0].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextPrimaryDescription);
+//		results[0].getLcaDataField().setLiteralObjectType("String");
+//		results[0].getLcaDataField().setRequired(true);
+//		results[0].getLcaDataField().setFunctional(true);
 
 		results[1] = new CSVColumnInfo("Context (additional)");
 		results[1].setRequired(false);
 		results[1].setUnique(false);
 		results[1].setCheckLists(getContextNameCheckList());
-		results[1].setLcaDataField(new LCADataField());
-		results[1].getLcaDataField().setResourceSubject(rdfClass);
-		results[1].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextSupplementalDescription);
-		results[1].getLcaDataField().setLiteralObjectType("String");
-		results[1].getLcaDataField().setRequired(false);
-		results[1].getLcaDataField().setFunctional(false);
+//		results[1].setLcaDataField(new LCADataField());
+//		results[1].getLcaDataField().setResourceSubject(rdfClass);
+//		results[1].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextSupplementalDescription);
+//		results[1].getLcaDataField().setLiteralObjectType("String");
+//		results[1].getLcaDataField().setRequired(false);
+//		results[1].getLcaDataField().setFunctional(false);
 		return results;
 	}
 
