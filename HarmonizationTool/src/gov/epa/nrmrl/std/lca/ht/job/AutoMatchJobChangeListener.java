@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.Date;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.utils.Util;
@@ -24,7 +25,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	private String key;
 	private Job job = null;
 
-	public AutoMatchJobChangeListener(FlowsWorkflow flowsWorkflow, String key) {
+	public AutoMatchJobChangeListener(FlowsWorkflow flowsWorkflow, CSVTableView csvTableView, String key) {
 		this.key = key;
 	}
 	@Override

@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -485,15 +486,23 @@ public class FlowsWorkflow extends ViewPart {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// CSVTableView.matchFlowables();
-			String jobKey = "autoMatch_01";
-			
-			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
+			CSVTableView csvTableView = CSVTableView();
+			String jobKey = "autoMatch_02";
+			System.out.println("About to start job");
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", csvTableView);
 			autoMatchJob.setPriority(Job.SHORT);
 			autoMatchJob.setSystem(false);
-			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID), jobKey));
+			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID),(CSVTableView) Util.findView(CSVTableView.ID) , jobKey));
 			autoMatchJob.schedule();
+			System.out.println("Job started");
+
 			
 //			autoMatch();
+		}
+
+		private CSVTableView CSVTableView() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override
@@ -577,6 +586,22 @@ public class FlowsWorkflow extends ViewPart {
 		return (int) newTriples;
 	}
 
+	public static Integer[] autoMatch_02(CSVTableView csvTableView) {
+		Integer[] results = new Integer[3];
+		Table table = CSVTableView.getTable();
+		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++){
+			TableItem row = table.getItem(rowNumber);
+//			row.setBackground(SWTResourceManager.getColor(SWT.COLOR_MAGENTA));
+//			
+		}
+//		table.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		return results;
+	}
+	
+	private static void matchOneRow(int rowNumber){
+		
+	}
+	
 	public static Integer[] autoMatch() {
 		Integer[] results = new Integer[3];
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
