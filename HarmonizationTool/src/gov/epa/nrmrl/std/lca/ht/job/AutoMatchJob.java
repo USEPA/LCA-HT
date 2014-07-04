@@ -16,21 +16,20 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class AutoMatchJob extends Job {
 //	private FlowsWorkflow flowsWorkflow;
-	private CSVTableView csvTableView;
+//	private CSVTableView csvTableView;
 	private Integer[] results = new Integer[3];
 	// 1: HIGH EVIDENCE HITS
 	// 2: LOWER EVIDENCE HITS
 	// 3: NO EVIDENCE ITEMS (UNMATCHED)
 
-	public AutoMatchJob(String name, CSVTableView csvTableView) {
+	public AutoMatchJob(String name) {
 		super(name);
-		this.csvTableView = csvTableView;
 //		this.harmonyQuery2Impl = harmonyQuery2Impl;
 	}
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		results = FlowsWorkflow.autoMatch_02(csvTableView);
+		results = FlowsWorkflow.autoMatch();
 		return Status.OK_STATUS;
 	}
 
