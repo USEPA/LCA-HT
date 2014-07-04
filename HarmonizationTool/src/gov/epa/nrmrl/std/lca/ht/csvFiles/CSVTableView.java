@@ -827,11 +827,10 @@ public class CSVTableView extends ViewPart {
 			tableViewerColumn.setLabelProvider(new RowIndexColumnLabelProvider());
 
 			for (int i = 0; i < tableProvider.getColumnCount(); i++) {
-				System.out.println("  Populating column " + i + 1 + "with data from tableProvider column " + i);
+				int iplus1 = i+1;
+				System.out.println("Populating column " + iplus1 + "with data from tableProvider column " + i);
 				tableViewerColumn = createTableViewerColumn(csvColumnDefaultColumnHeader, 100, i + 1);
 				tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(i + 1));
-				// tableViewerColumn.getColumn()._addListener(SWT.MouseDown,
-				// columnMouseListener);
 			}
 		}
 	}

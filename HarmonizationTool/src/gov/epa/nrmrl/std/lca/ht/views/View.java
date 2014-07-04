@@ -199,9 +199,9 @@ public class View extends ViewPart {
 				// DataSourceProvider dataSourceProvider = DataSourceKeeper.get(0); //
 				// FIXME
 				// Map<String, String> metaData = csvFile.metaData;
-				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD, dataSourceProvider);
-				dialog.create();
-				dialog.open();
+//				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD, dataSourceProvider);
+//				dialog.create();
+//				dialog.open();
 			}
 		};
 		editMeta.setText("Edit Meta Data");

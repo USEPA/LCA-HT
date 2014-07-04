@@ -2,7 +2,6 @@ package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.Date;
 
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.utils.Util;
 
@@ -11,7 +10,6 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PartInitException;
 
 /**
  * @author Tommy Cathey 919-541-1500
@@ -42,24 +40,14 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void done(IJobChangeEvent event) {
-		// when the job is done check that is of the correct instance
-		// if so then sync up with the default display. find the queryView and
-		// call its queryCallback method
-		Date endDate = new Date();
 
-		// System.out.println("End date / time: " + endDate);
-		// String message = "Job: =>" + key + "<= ended: " + endDate;
-		// JobStatusView jobStatusView = (JobStatusView) Util
-		// .findView(JobStatusView.ID);
-		// if (jobStatusView != null) {
-		// jobStatusView.add(message);
-		// }
+		Date endDate = new Date();
 
 		Logger.getLogger("run").info("Job: " + key + " ended: " + endDate);
 
 		job = event.getJob();
 		if (job instanceof AutoMatchJob) {
-			Display.getDefault().asyncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util.findView(FlowsWorkflow.ID);
 					if (((AutoMatchJob) job).getHitCounts() == null) {
@@ -69,6 +57,17 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 				}
 			});
 		}
+//		if (job instanceof AutoMatchJob) {
+//			Display.getDefault().asyncExec(new Runnable() {
+//				public void run() {
+//					FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util.findView(FlowsWorkflow.ID);
+//					if (((AutoMatchJob) job).getHitCounts() == null) {
+//						return;
+//					}
+//					flowsWorkflow.queryCallback(((AutoMatchJob) job).getHitCounts(), key);
+//				}
+//			});
+//		}
 	}
 
 	@Override

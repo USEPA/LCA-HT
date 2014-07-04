@@ -25,7 +25,7 @@ public class EditMetadataHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (DataSourceKeeper.size() == 0){return null;}
+//		if (DataSourceKeeper.size() == 0){return null;}
 		new MetaDataDialog(HandlerUtil.getActiveShell(event)).open();
 		return null;
 	}

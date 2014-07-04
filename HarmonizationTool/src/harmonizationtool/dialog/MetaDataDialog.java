@@ -1,22 +1,15 @@
 package harmonizationtool.dialog;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-//import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
-//import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
-import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.Person;
 import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.LCAHT;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -28,8 +21,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-//import org.eclipse.swt.events.KeyEvent;
-//import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -37,18 +28,13 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MetaDataDialog extends TitleAreaDialog {
 
-	public ModelProvider modelProvider = null;
 	private DataSourceProvider curDataSourceProvider = null;
-	private DataSourceProvider callingDataSourceProvider = null;
 	private DataSourceProvider newDataSourceProvider = null;
 	private FileMD callingFileMD = null;
 	private Combo comboDataSourceSelector = null;
@@ -56,7 +42,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private List<Text> dialogValues = new ArrayList<Text>();
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = null;
-	private String newDataSourceTempName = "";
 
 	// private String newFileName = null;
 	// Label lbl_01 = null;
@@ -64,69 +49,45 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	private ComboFileSelectorListener comboFileSelectorListener;
 	protected String combDataSourceSelectorSavedText = "";
-	// protected boolean comboKeyHeldDown = false;
 	private int comboSelectionIndex = -1;
 
-	// THERE ARE THREE WAYS TO CALL THIS:
-	// CASE 1) SIMPLY TO VIEW OR EDIT DATA SET INFO
-	// CASE 2) WITH A SELECTED FILE AND ITS DATA SET
-	// CASE 3) WITH A NEW FILE TO ADD TO AN EXISTING DATA SET
-	// CASE 4) WITH A NEW FILE TO ADD TO A NEW DATA SET (CREATED HERE)
+	// CALL THIS:
+	// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
+	// CASE 2) WITH A NEW FILE TO
+	// 2a) CREATE A NEW DATA SOURCE
+	// 2b) ADD TO AN EXISTING DATA SOURCE
 
 	/**
 	 * @wbp.parser.constructor
 	 */
 	public MetaDataDialog(Shell parentShell) {
 		super(parentShell);
-		// CASE 1 - EDIT DATA SET INFO FOR ANY EXISTING DATA SET
+		// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
+		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
 		if (DataSourceKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets",
-					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			return;
 		}
-		if (DataSourceKeeper.size() == 0) {
-			return;
-		}
+		this.callingFileMD = null;
 		this.curDataSourceProvider = DataSourceKeeper.get(0);
 		runLogger.info("SET META existing DataSource");
 	}
 
-	public MetaDataDialog(Shell parentShell, FileMD fileMD, DataSourceProvider dataSourceProvider) {
-		// CASE 2 - EDIT DATA SET INFO FOR ONE DATA SET ONLY (WITH A FILE
-		// SELECTED)
-		super(parentShell);
-		assert fileMD != null : "fileMD cannot be null";
-		this.callingDataSourceProvider = dataSourceProvider;
-		this.callingFileMD = fileMD;
-		this.curDataSourceProvider = callingDataSourceProvider;
-		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
-				fileMD.getFilename().length() - 4));
-		// this.curFileMD = callingFileMD;
-		runLogger.info("SET META start - existing DataSource");
-		runLogger.info("  start name = " + dataSourceProvider.getContactPerson().getName());
-	}
-
 	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
 		super(parentShell);
-		// CASE 3 - NEW FILE TO ADD TO EXISTING DATA SET
-		// CASE 4 - NEW FILE TO ADD TO NEW DATA SET (CREATED HERE)
+		// CASE 2) WITH A NEW FILE TO
+		// 2a) CREATE A NEW DATA SOURCE
+		// 2b) ADD TO AN EXISTING DATA SOURCE
 
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
 		this.newDataSourceProvider = new DataSourceProvider();
-		this.newDataSourceProvider.setDataSourceName(fileMD.getFilename()); //FIXME 
+		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4)));
 		this.newDataSourceProvider.addFileMD(callingFileMD);
 		this.newDataSourceProvider.setContactPerson(new Person());
-//		this.newDataSourceProvider.setCuratorMD(new CuratorMD());
 		this.curDataSourceProvider = this.newDataSourceProvider;
-		newDataSourceTempName = DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
-				fileMD.getFilename().length() - 4));
-
-		if (DataSourceKeeper.size() == 0) {
-			DataSourceKeeper.add(newDataSourceProvider);
-		}
+		DataSourceKeeper.add(newDataSourceProvider);
 		runLogger.info("SET META start - new file");
-
 	}
 
 	// MAKE THE WHOLE DIALOG BOX
@@ -343,58 +304,58 @@ public class MetaDataDialog extends TitleAreaDialog {
 		text_05.setEditable(false);
 		text_05.setBackground(defaultBG);
 
-//		rowIndex++;
-//		Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-//		sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
-//
-//		Label lbl_12b = new Label(composite, SWT.LEFT);
-//		lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-//		lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
-//		lbl_12b.setText("Curator Information:");
-//
-//		rowIndex++;
-//		Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-//		copyCuratorInfo
-//				.setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
-//		copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
-//		copyCuratorInfo.setText("Copy Info from Preferences");
-//		copyCuratorInfo.addListener(SWT.Selection, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-//				dialogValues.get(9).setText(Util.getPreferenceStore().getString("curatorName"));
-//				dialogValues.get(10).setText(Util.getPreferenceStore().getString("curatorAffiliation"));
-//				dialogValues.get(11).setText(Util.getPreferenceStore().getString("curatorEmail"));
-//				dialogValues.get(12).setText(Util.getPreferenceStore().getString("curatorPhone"));
-//			}
-//		});
-//
-//		rowIndex++;
-//		Label lbl_13 = new Label(composite, SWT.RIGHT);
-//		lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-//		lbl_13.setText("Name");
-//		Text text_13 = new Text(composite, SWT.BORDER);
-//		text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-//
-//		rowIndex++;
-//		Label lbl_14 = new Label(composite, SWT.RIGHT);
-//		lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-//		lbl_14.setText("Affiliation");
-//		Text text_14 = new Text(composite, SWT.BORDER);
-//		text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-//
-//		rowIndex++;
-//		Label lbl_15 = new Label(composite, SWT.RIGHT);
-//		lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-//		lbl_15.setText("Email");
-//		Text text_15 = new Text(composite, SWT.BORDER);
-//		text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-//
-//		rowIndex++;
-//		Label lbl_16 = new Label(composite, SWT.RIGHT);
-//		lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-//		lbl_16.setText("Phone");
-//		Text text_16 = new Text(composite, SWT.BORDER);
-//		text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		// rowIndex++;
+		// Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		// sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
+		//
+		// Label lbl_12b = new Label(composite, SWT.LEFT);
+		// lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+		// lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
+		// lbl_12b.setText("Curator Information:");
+		//
+		// rowIndex++;
+		// Button copyCuratorInfo = new Button(composite, SWT.BORDER);
+		// copyCuratorInfo
+		// .setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
+		// copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
+		// copyCuratorInfo.setText("Copy Info from Preferences");
+		// copyCuratorInfo.addListener(SWT.Selection, new Listener() {
+		// @Override
+		// public void handleEvent(Event event) {
+		// dialogValues.get(9).setText(Util.getPreferenceStore().getString("curatorName"));
+		// dialogValues.get(10).setText(Util.getPreferenceStore().getString("curatorAffiliation"));
+		// dialogValues.get(11).setText(Util.getPreferenceStore().getString("curatorEmail"));
+		// dialogValues.get(12).setText(Util.getPreferenceStore().getString("curatorPhone"));
+		// }
+		// });
+		//
+		// rowIndex++;
+		// Label lbl_13 = new Label(composite, SWT.RIGHT);
+		// lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		// lbl_13.setText("Name");
+		// Text text_13 = new Text(composite, SWT.BORDER);
+		// text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		//
+		// rowIndex++;
+		// Label lbl_14 = new Label(composite, SWT.RIGHT);
+		// lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+		// lbl_14.setText("Affiliation");
+		// Text text_14 = new Text(composite, SWT.BORDER);
+		// text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		//
+		// rowIndex++;
+		// Label lbl_15 = new Label(composite, SWT.RIGHT);
+		// lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
+		// lbl_15.setText("Email");
+		// Text text_15 = new Text(composite, SWT.BORDER);
+		// text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		//
+		// rowIndex++;
+		// Label lbl_16 = new Label(composite, SWT.RIGHT);
+		// lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		// lbl_16.setText("Phone");
+		// Text text_16 = new Text(composite, SWT.BORDER);
+		// text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// dialogValues.add(text_02); // 00 File Name
 		dialogValues.add(text_03); // 00 File Size (bytes)
@@ -407,10 +368,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues.add(text_10); // 06 Data Set Contact Affiliation
 		dialogValues.add(text_11); // 07 Data Set Contact Email
 		dialogValues.add(text_12); // 08 Data Set Contact Phone
-//		dialogValues.add(text_13); // 9 Curator Name
-//		dialogValues.add(text_14); // 10 Curator Affiliation
-//		dialogValues.add(text_15); // 11 Curator Email
-//		dialogValues.add(text_16); // 12 Curator Phone
+		// dialogValues.add(text_13); // 9 Curator Name
+		// dialogValues.add(text_14); // 10 Curator Affiliation
+		// dialogValues.add(text_15); // 11 Curator Email
+		// dialogValues.add(text_16); // 12 Curator Phone
 
 		// if (newDataSourceProvider != null) {
 		// lbl_01.setText("Type new name (or select existing)");
@@ -441,7 +402,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		String dataSourceName = comboDataSourceSelector.getText();
 		System.out.println("comboDataSourceSelector.getText() " + comboDataSourceSelector.getText());
 		Person contactPerson = curDataSourceProvider.getContactPerson();
-//		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
+		// CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
 		curDataSourceProvider.setDataSourceName(dataSourceName);
 		curDataSourceProvider.setVersion(dialogValues.get(3).getText());
@@ -458,55 +419,22 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: contactEmail = " + dialogValues.get(7).getText());
 		runLogger.info("  SET META: contactPhone = " + dialogValues.get(8).getText());
 
-//		// curatorMD META DATA
-//		curatorMD.setName(dialogValues.get(9).getText());
-//		curatorMD.setAffiliation(dialogValues.get(10).getText());
-//		curatorMD.setEmail(dialogValues.get(11).getText());
-//		curatorMD.setPhone(dialogValues.get(12).getText());
-//		runLogger.info("  SET META: curatorName = " + dialogValues.get(9).getText());
-//		runLogger.info("  SET META: curatorAffiliation = " + dialogValues.get(10).getText());
-//		runLogger.info("  SET META: curatorEmail = " + dialogValues.get(11).getText());
-//		runLogger.info("  SET META: curatorPhone = " + dialogValues.get(12).getText());
-
 		if (newDataSourceProvider != null) {
-			if (comboSelectionIndex < 1) {
-
-				// comboSelectionIndex = -1 if no change issued
-				boolean success = DataSourceKeeper.add(curDataSourceProvider); // A
-																				// DataSourceProvider
-																				// IS
-																				// BORN!!
-				System.out.println("Created new DataSourceProvider succees: = " + success);
+			if (comboSelectionIndex > 0) {
+				DataSourceKeeper.remove(newDataSourceProvider);
+				curDataSourceProvider.addFileMD(callingFileMD);
+				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/" + callingFileMD.getFilename());
 			}
 		}
-		if (callingFileMD != null) {
-			curDataSourceProvider.addFileMD(callingFileMD);
-			runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
-					+ callingFileMD.getFilename());
-		}
 
-		System.out.println("newDataSourceProvider " + newDataSourceProvider);
-		System.out.println("comboSelectionIndex " + comboSelectionIndex);
-
-//		ActiveTDB.syncDataSourceProviderToTDB(curDataSourceProvider);
-//		if (newDataSourceProvider != null) {
-//			FlowsWorkflow.setDataSourceProvider(curDataSourceProvider);
-//		}
 		runLogger.info("SET META complete");
 
 		super.okPressed();
 	}
 
 	private void renameDataSource() {
-		// GenericStringBox genericStringBox = new GenericStringBox(getShell(),
-		// comboDataSourceSelector.getText());
-		boolean sendToFlowsWorkflow = false;
-		// if
-		// (FlowsWorkflow.getTextFileInfo().endsWith(comboDataSourceSelector.getText())){
-		// sendToFlowsWorkflow = true;
-		// }
-		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(),
-				comboDataSourceSelector.getItems());
+
+		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(), comboDataSourceSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
 		genericStringBox.open();
@@ -523,8 +451,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 
 		if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-			new GenericMessageBox(getParentShell(), "Duplicate Name",
-					"Data Set names must be onePerParentGroup.  Please choose a new name.");
+			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
 		curDataSourceProvider.setDataSourceName(newFileName);
@@ -535,35 +462,34 @@ public class MetaDataDialog extends TitleAreaDialog {
 			ActiveTDB.removeAllWithSubjectPredicate(curDataSourceProvider.getTdbResource(), RDFS.label);
 			ActiveTDB.model.add(curDataSourceProvider.getTdbResource(), RDFS.label, newNameLit);
 		}
-
 		comboDataSourceSelector.setItem(comboDataSourceSelector.getSelectionIndex(), newFileName);
-
 	}
 
 	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
 	private String[] getDataSourceInfo() {
-		List<String> toSort = DataSourceKeeper.getNames();
-		if (callingDataSourceProvider != null) {
-			String[] results = new String[1];
-			results[0] = callingDataSourceProvider.getDataSourceName();
-			return results;
-		} else if (newDataSourceProvider != null) {
-			String[] results = new String[toSort.size() + 1];
-			// results[0] = newDataSourceTempName;
-			for (int i = 0; i < toSort.size(); i++) {
-				results[i + 1] = toSort.get(i);
-			}
-			results[0] = newDataSourceTempName;
-			curDataSourceProvider = newDataSourceProvider;
-			return results;
-		} else {
-			String[] results = new String[toSort.size()];
-			for (int i = 0; i < toSort.size(); i++) {
-				results[i] = toSort.get(i);
+		List<String> sortedNames = DataSourceKeeper.getNames();
+		String[] results = new String[sortedNames.size()];
+
+		if (newDataSourceProvider == null) {
+			for (int i = 0; i < sortedNames.size(); i++) {
+				results[i] = sortedNames.get(i);
 			}
 			curDataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.indexOfDataSourceName(results[0]));
-			return results;
+		} else {
+			results[0] = newDataSourceProvider.getDataSourceName();
+			boolean seen = false;
+			for (int i = 0; i < sortedNames.size(); i++) {
+				if (sortedNames.get(i).equals(results[0])) {
+					seen = true;
+				} else if (seen) {
+					results[i] = sortedNames.get(i);
+				} else {
+					results[i + 1] = sortedNames.get(i);
+				}
+			}
+			curDataSourceProvider = newDataSourceProvider;
 		}
+		return results;
 	}
 
 	protected void populateDataSourceMD() {
@@ -581,7 +507,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	protected void redrawDialogDataSourceMD() {
 		Person contactPerson = curDataSourceProvider.getContactPerson();
-//		System.out.println("dataSourceMD.getName: = " + curDataSourceProvider.getDataSourceName());
+		// System.out.println("dataSourceMD.getName: = " +
+		// curDataSourceProvider.getDataSourceName());
 		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
 		dialogValues.get(4).setText(curDataSourceProvider.getComments());
 		dialogValues.get(5).setText(contactPerson.getName());
@@ -619,14 +546,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
-//	protected void redrawDialogCuratorMD() {
-//		CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
-//		System.out.println("curatorMD.getName: = " + curatorMD.getName());
-//		dialogValues.get(9).setText(curatorMD.getName());
-//		dialogValues.get(10).setText(curatorMD.getAffiliation());
-//		dialogValues.get(11).setText(curatorMD.getEmail());
-//		dialogValues.get(12).setText(curatorMD.getPhone());
-//	}
+	// protected void redrawDialogCuratorMD() {
+	// CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
+	// System.out.println("curatorMD.getName: = " + curatorMD.getName());
+	// dialogValues.get(9).setText(curatorMD.getName());
+	// dialogValues.get(10).setText(curatorMD.getAffiliation());
+	// dialogValues.get(11).setText(curatorMD.getEmail());
+	// dialogValues.get(12).setText(curatorMD.getPhone());
+	// }
 
 	protected void clearDialogRows() {
 		Iterator<Text> dialogValueIterator = dialogValues.iterator();
@@ -644,22 +571,22 @@ public class MetaDataDialog extends TitleAreaDialog {
 		createComboFileSelectorList();
 		redrawDialogFileMD();
 
-//		redrawDialogCuratorMD();
+		// redrawDialogCuratorMD();
 	}
 
 	protected void createComboFileSelectorList() {
 		comboFileSelector.removeAll();
-		if (curDataSourceProvider == null) {
-			if (callingFileMD != null) {
-				comboFileSelector.add(callingFileMD.getFilename());
-			}
-			return;
-		}
+		// if (curDataSourceProvider == null) {
+		// if (callingFileMD != null) {
+		// comboFileSelector.add(callingFileMD.getFilename());
+		// }
+		// return;
+		// }
 		List<FileMD> fileMDList = curDataSourceProvider.getFileMDList();
 		int selectionIndex = 0;
-		if ((callingFileMD != null) && (callingDataSourceProvider == null)) {
-			comboFileSelector.add(callingFileMD.getFilename());
-		}
+		// if (callingFileMD != null) {
+		// comboFileSelector.add(callingFileMD.getFilename());
+		// }
 		for (int i = 0; i < fileMDList.size(); i++) {
 			FileMD fileMD = fileMDList.get(i);
 			comboFileSelector.add(fileMD.getFilename());
@@ -677,8 +604,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			System.out.println("ModifyEvent=" + e.toString());
 			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: "
-					+ comboFileSelector.getText());
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
 		}
 
 	}

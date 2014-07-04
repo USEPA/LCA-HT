@@ -3,27 +3,17 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceProvider;
-import harmonizationtool.model.FileMD;
-import harmonizationtool.model.TableProvider;
-import harmonizationtool.query.HarmonyQuery2Impl;
-import harmonizationtool.query.LabeledQuery;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
@@ -47,8 +37,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -395,7 +383,9 @@ public class FlowsWorkflow extends ViewPart {
 				// throw new
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
-			textFileInfo.setText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getPath());
+			textFileInfo.setText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getFilename());
+			textFileInfo.setToolTipText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getPath());
+
 			// FIXME - GET THE RIGHT FILE NAME, NOT JUST THE FIRST
 			setHeaderInfo();
 			btnCheckData.setEnabled(true);
@@ -486,8 +476,8 @@ public class FlowsWorkflow extends ViewPart {
 		public void widgetSelected(SelectionEvent e) {
 			// CSVTableView.matchFlowables();
 			String jobKey = "autoMatch_01";
-			
-			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
+			Table table = CSVTableView.getTable();
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", table);
 			autoMatchJob.setPriority(Job.SHORT);
 			autoMatchJob.setSystem(false);
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID), jobKey));
