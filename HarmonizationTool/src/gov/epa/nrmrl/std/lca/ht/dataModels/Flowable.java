@@ -10,7 +10,6 @@ import harmonizationtool.vocabulary.SKOS;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -23,12 +22,13 @@ public class Flowable {
 	private List<String> synonyms = null;
 	private String formula = "";
 	private String smiles = "";
+
 	private static final Resource rdfClass = ECO.Flowable;
 	private Resource tdbResource;
-	private static final Model model = ActiveTDB.model;
+//	private static final Model model = ActiveTDB.model;
 
 	public Flowable() {
-		this.tdbResource = model.createResource();
+		this.tdbResource = ActiveTDB.model.createResource();
 		this.tdbResource.addProperty(RDF.type, ECO.Flowable);
 	}
 
@@ -41,6 +41,8 @@ public class Flowable {
 		results[0].setRequired(true);
 		results[0].setUnique(true);
 		results[0].setCheckLists(getFlowablesNameCheckList());
+		results[0].setRDFClass(rdfClass);
+		results[0].setTdbProperty(RDFS.label);
 //		results[0].setLcaDataField(new LCADataField());
 //		results[0].getLcaDataField().setResourceSubject(rdfClass);
 //		results[0].getLcaDataField().setPropertyPredicate(RDFS.label);
@@ -53,6 +55,8 @@ public class Flowable {
 		results[1].setRequired(false);
 		results[1].setUnique(false);
 		results[1].setCheckLists(getFlowablesNameCheckList());
+		results[1].setRDFClass(rdfClass);
+		results[1].setTdbProperty(SKOS.altLabel);
 //		results[1].setLcaDataField(new LCADataField());
 //		results[1].getLcaDataField().setResourceSubject(rdfClass);
 //		results[1].getLcaDataField().setPropertyPredicate(SKOS.altLabel);
@@ -65,6 +69,8 @@ public class Flowable {
 		results[2].setUnique(true);
 		results[2].setCheckLists(getCASCheckList());
 		results[2].setLeftJustified(false);
+		results[2].setRDFClass(rdfClass);
+		results[2].setTdbProperty(ECO.casNumber);
 //		results[2].setLcaDataField(new LCADataField());
 //		results[2].getLcaDataField().setResourceSubject(rdfClass);
 //		results[2].getLcaDataField().setPropertyPredicate(ECO.casNumber);
@@ -77,6 +83,8 @@ public class Flowable {
 		results[3].setUnique(false);
 		results[3].setCheckLists(getFormulaCheckList());
 		results[3].setLeftJustified(false);
+		results[3].setRDFClass(rdfClass);
+		results[3].setTdbProperty(ECO.chemicalFormula);
 //		results[3].setLcaDataField(new LCADataField());
 //		results[3].getLcaDataField().setResourceSubject(rdfClass);
 //		results[3].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
@@ -89,6 +97,8 @@ public class Flowable {
 		results[4].setUnique(false);
 		results[4].setCheckLists(getSmilesCheckList());
 		results[4].setLeftJustified(false);
+		results[4].setRDFClass(rdfClass);
+		results[4].setTdbProperty(FEDLCA.hasSmilesString);
 //		results[4].setLcaDataField(new LCADataField());
 //		results[4].getLcaDataField().setResourceSubject(rdfClass);
 //		results[4].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
@@ -250,9 +260,9 @@ public class Flowable {
 	public void setEmission(boolean isEmission) {
 		this.isEmission = isEmission;
 		if (isEmission) {
-			model.add(tdbResource, RDF.type, FASC.EmissionCompartment);
+			ActiveTDB.model.add(tdbResource, RDF.type, FASC.EmissionCompartment);
 		} else {
-			model.remove(tdbResource, RDF.type, FASC.EmissionCompartment);
+			ActiveTDB.model.remove(tdbResource, RDF.type, FASC.EmissionCompartment);
 		}
 	}
 
@@ -263,9 +273,9 @@ public class Flowable {
 	public void setResource(boolean isResource) {
 		this.isResource = isResource;
 		if (isResource) {
-			model.add(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+			ActiveTDB.model.add(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
 		} else {
-			model.remove(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+			ActiveTDB.model.remove(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
 		}
 	}
 
@@ -277,12 +287,12 @@ public class Flowable {
 		this.synonyms = synonyms;
 		tdbResource.removeAll(SKOS.altLabel);
 		for (String synonym : synonyms) {
-			model.add(tdbResource, SKOS.altLabel, model.createTypedLiteral(synonym));
+			ActiveTDB.model.add(tdbResource, SKOS.altLabel, ActiveTDB.model.createTypedLiteral(synonym));
 		}
 	}
 	
 	public void addSynonym(String synonym){
-		model.add(tdbResource, SKOS.altLabel, model.createTypedLiteral(synonym));
+		ActiveTDB.model.add(tdbResource, SKOS.altLabel, ActiveTDB.model.createTypedLiteral(synonym));
 	}
 
 	public String getFormula() {
@@ -348,4 +358,7 @@ public class Flowable {
 	// casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
 	// return casQACheck;
 	// }
+	public static Resource getRdfclass() {
+		return rdfClass;
+	}
 }

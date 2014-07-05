@@ -42,6 +42,8 @@ public class FlowContext {
 		results[0].setRequired(true);
 		results[0].setUnique(true);
 		results[0].setCheckLists(getContextNameCheckList());
+		results[0].setRDFClass(rdfClass);
+		results[0].setTdbProperty(FASC.hasCompartment);
 //		results[0].setLcaDataField(new LCADataField());
 //		results[0].getLcaDataField().setResourceSubject(rdfClass);
 //		results[0].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextPrimaryDescription);
@@ -53,6 +55,8 @@ public class FlowContext {
 		results[1].setRequired(false);
 		results[1].setUnique(false);
 		results[1].setCheckLists(getContextNameCheckList());
+		results[1].setRDFClass(rdfClass);
+		results[1].setTdbProperty(FEDLCA.flowContextSupplementalDescription);
 //		results[1].setLcaDataField(new LCADataField());
 //		results[1].getLcaDataField().setResourceSubject(rdfClass);
 //		results[1].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextSupplementalDescription);
@@ -122,6 +126,10 @@ public class FlowContext {
 		// NEXT STATEMENT REPLACES ABOVE
 		this.tdbResource.removeProperties();
 		this.tdbResource = tdbResource;
+	}
+
+	public static Resource getRdfclass() {
+		return rdfClass;
 	}
 
 }

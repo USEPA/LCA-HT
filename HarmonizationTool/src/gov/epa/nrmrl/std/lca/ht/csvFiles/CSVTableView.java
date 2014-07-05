@@ -2,9 +2,9 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-//import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceProvider;
+import harmonizationtool.model.FileMD;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
@@ -43,8 +43,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.hp.hpl.jena.rdf.model.Model;
-
 /**
  * @author Tommy E. Cathey and Tom Transue
  * 
@@ -55,13 +53,16 @@ public class CSVTableView extends ViewPart {
 
 	private static String tableProviderKey = null;
 
+//	private static FileMD fileMD;
+//	private static DataSourceProvider dataSourceProvider;
+
 	private static TableViewer tableViewer;
 	private static Table table;
 
 	private TextCellEditor editor;
 
 	private static List<CSVColumnInfo> availableCSVColumnInfo = new ArrayList<CSVColumnInfo>();
-//	private static CSVColumnInfo[] assignedCSVColumnInfo;
+	// private static CSVColumnInfo[] assignedCSVColumnInfo;
 
 	private static String csvColumnDefaultColumnHeader = "   -   ";
 	private static String csvColumnDefaultTooltip = "Ignore Column";
@@ -75,20 +76,11 @@ public class CSVTableView extends ViewPart {
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
 
-	private static DataSourceProvider dataSourceProvider;
-
 	public static List<Integer> rowsToIgnore = new ArrayList<Integer>();
 
 	public CSVTableView() {
 	}
 
-	// //=
-	// @Override
-	// public void createPartControl(final Composite parent) {
-	//
-	//
-	// }
-	// //=
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -217,8 +209,8 @@ public class CSVTableView extends ViewPart {
 				String value = item.getText(colNumSelected);
 				String fixedValue = Flowable.standardizeCAS(value);
 				if (fixedValue != null) {
-//					TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-					
+					// TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+
 					List<DataRow> dataRowList = tableProvider.getData();
 					DataRow toFix = dataRowList.get(i);
 					toFix.set(colNumSelected - 1, fixedValue);
@@ -256,7 +248,7 @@ public class CSVTableView extends ViewPart {
 			System.out.println("menu text = " + menuItemText);
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 			CSVColumnInfo selectedCSVColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
-//			CSVColumnInfo selectedCSVColumnInfo = assignedCSVColumnInfo[colNumSelected];
+			// CSVColumnInfo selectedCSVColumnInfo = assignedCSVColumnInfo[colNumSelected];
 			CSVColumnInfo menuCSVColumnInfo = getCSVColumnInfoByHeaderString(menuItemText);
 			if (menuCSVColumnInfo == null) {
 				// POSSIBILITY a)
@@ -393,7 +385,8 @@ public class CSVTableView extends ViewPart {
 				ignoreRowMenu.setVisible(true);
 				// item.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 			} else {
-//				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[clickedCol];
+				// CSVColumnInfo csvColumnInfo =
+				// tableProvider.getAssignedCSVColumnInfo()[clickedCol];
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[clickedCol];
 				Issue issueOfThisCell = null;
@@ -432,7 +425,7 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			if (hoverCol > 0) {
-//				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[hoverCol];
+				// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[hoverCol];
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[hoverCol];
 
@@ -719,6 +712,15 @@ public class CSVTableView extends ViewPart {
 		return -1;
 	}
 
+	public static void updateCheckedData() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		for (int rowNumber = tableProvider.getLastUpdated(); rowNumber <= tableProvider.getLastChecked(); rowNumber++) {
+			if (!rowsToIgnore.contains(rowNumber)) {
+				colorCell(rowNumber, 0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+			}
+		}
+	}
+
 	private static void setPopup(List<Issue> issuesOfThisCell) {
 		if (issuesOfThisCell.size() == 0) {
 			return; // THIS SHOULDN'T HAPPEN
@@ -778,7 +780,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public void clearView(String key) {
-		if ((key != null) && (key.equals(this.tableProviderKey))) {
+		if ((key != null) && (key.equals(tableProviderKey))) {
 			tableViewer.setInput(null);
 			removeColumns();
 			table.setHeaderVisible(false);
@@ -914,7 +916,7 @@ public class CSVTableView extends ViewPart {
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
-//		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumSelected];
+		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumSelected];
 		if (csvColumnInfo == null) {
 			return;
 		}
@@ -927,7 +929,7 @@ public class CSVTableView extends ViewPart {
 					Matcher matcher = qaCheck.getPattern().matcher(startingText);
 					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
 					tableItem.setText(colNumSelected, fixedValue);
-//					TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+					// TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
@@ -993,7 +995,7 @@ public class CSVTableView extends ViewPart {
 		int issueCount = 0;
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colIndex];
-//		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 		if (csvColumnInfo == null) {
 			table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
 			return 0;
@@ -1052,7 +1054,7 @@ public class CSVTableView extends ViewPart {
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colIndex];
-//		CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
+		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 		if (csvColumnInfo == null) {
 			return 0;
 		}
@@ -1145,14 +1147,14 @@ public class CSVTableView extends ViewPart {
 		return null;
 	}
 
-	private static MenuItem getMenuItemByHeaderString(String headerString) {
-		for (MenuItem menuItem : headerMenu.getItems()) {
-			if (menuItem.getText().equals(headerString)) {
-				return menuItem;
-			}
-		}
-		return null;
-	}
+	// private static MenuItem getMenuItemByHeaderString(String headerString) {
+	// for (MenuItem menuItem : headerMenu.getItems()) {
+	// if (menuItem.getText().equals(headerString)) {
+	// return menuItem;
+	// }
+	// }
+	// return null;
+	// }
 
 	public static int countAssignedColumns() {
 		int colsAssigned = 0;
@@ -1188,35 +1190,43 @@ public class CSVTableView extends ViewPart {
 	// }
 	// }
 
-//	public static CSVColumnInfo[] getAssignedCSVColumnInfo() {
-//		return assignedCSVColumnInfo;
-//	}
-//
-//	public static void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {
-//		CSVTableView.assignedCSVColumnInfo = assignedCSVColumnInfo;
-//	}
+	// public static CSVColumnInfo[] getAssignedCSVColumnInfo() {
+	// return assignedCSVColumnInfo;
+	// }
+	//
+	// public static void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {
+	// CSVTableView.assignedCSVColumnInfo = assignedCSVColumnInfo;
+	// }
 
 	public static Table getTable() {
 		return table;
 	}
 
-	public static void setTable(Table table) {
-		CSVTableView.table = table;
-	}
-
-	public static DataSourceProvider getDataSourceProvider() {
-		return dataSourceProvider;
-	}
-
-	public static void setDataSourceProvider(DataSourceProvider dsp) {
-		dataSourceProvider = dsp;
-	}
+	// public static void setTable(Table table) {
+	// CSVTableView.table = table;
+	// }
 
 	public static String getTableProviderKey() {
 		return tableProviderKey;
 	}
 
 	public void setTableProviderKey(String tableProviderKey) {
-		this.tableProviderKey = tableProviderKey;
+		CSVTableView.tableProviderKey = tableProviderKey;
 	}
+
+//	public static FileMD getFileMD() {
+//		return fileMD;
+//	}
+//
+//	public static void setFileMD(FileMD fileMD) {
+//		CSVTableView.fileMD = fileMD;
+//	}
+
+//	public static DataSourceProvider getDataSourceProvider() {
+//		return dataSourceProvider;
+//	}
+//
+//	public static void setDataSourceProvider(DataSourceProvider dataSourceProvider) {
+//		CSVTableView.dataSourceProvider = dataSourceProvider;
+//	}
 }

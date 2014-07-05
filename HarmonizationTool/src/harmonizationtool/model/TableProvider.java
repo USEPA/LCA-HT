@@ -10,8 +10,13 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class TableProvider {
+	private DataSourceProvider dataSourceProvider = null;
+	private FileMD fileMD = null;
+
 	private DataRow headerRow = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
+	private int lastChecked;
+	private int lastUpdated;
 
 	private CSVColumnInfo[] assignedCSVColumnInfo = null;
 
@@ -130,6 +135,38 @@ public class TableProvider {
 			}
 		}
 		return tableProvider;
+	}
+
+	public int getLastChecked() {
+		return lastChecked;
+	}
+
+	public void setLastChecked(int lastChecked) {
+		this.lastChecked = lastChecked;
+	}
+
+	public int getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(int lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	public DataSourceProvider getDataSourceProvider() {
+		return dataSourceProvider;
+	}
+
+	public void setDataSourceProvider(DataSourceProvider dataSourceProvider) {
+		this.dataSourceProvider = dataSourceProvider;
+	}
+
+	public FileMD getFileMD() {
+		return fileMD;
+	}
+
+	public void setFileMD(FileMD fileMD) {
+		this.fileMD = fileMD;
 	}
 
 //	private class TransformCell {

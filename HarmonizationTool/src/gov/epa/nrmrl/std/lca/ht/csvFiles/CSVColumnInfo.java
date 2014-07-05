@@ -6,6 +6,9 @@ import harmonizationtool.model.Issue;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+
 public class CSVColumnInfo {
 
 	private String headerString;
@@ -14,6 +17,8 @@ public class CSVColumnInfo {
 	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
 	private List<Issue> issues = new ArrayList<Issue>();
+	private Resource rdfClass;
+	private Property tdbProperty;
 
 	// private LCADataField lcaDataField;
 
@@ -127,6 +132,22 @@ public class CSVColumnInfo {
 
 	public void setLeftJustified(boolean leftJustified) {
 		this.leftJustified = leftJustified;
+	}
+
+	public Resource getRDFClass() {
+		return rdfClass;
+	}
+
+	public void setRDFClass(Resource rdfClass) {
+		this.rdfClass = rdfClass;
+	}
+
+	public Property getTdbProperty() {
+		return tdbProperty;
+	}
+
+	public void setTdbProperty(Property tdbProperty) {
+		this.tdbProperty = tdbProperty;
 	}
 
 	// public LCADataField getLcaDataField() {

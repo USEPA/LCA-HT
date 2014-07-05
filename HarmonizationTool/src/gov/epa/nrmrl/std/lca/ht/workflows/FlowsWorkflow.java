@@ -384,8 +384,8 @@ public class FlowsWorkflow extends ViewPart {
 				// throw new
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
-			textFileInfo.setText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getFilename());
-			textFileInfo.setToolTipText(CSVTableView.getDataSourceProvider().getFileMDList().get(0).getPath());
+			textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+			textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
 
 			// FIXME - GET THE RIGHT FILE NAME, NOT JUST THE FIRST
 			setHeaderInfo();
@@ -546,7 +546,7 @@ public class FlowsWorkflow extends ViewPart {
 				}
 			}
 			Flow flow = new Flow();
-			DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
+			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
 			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
@@ -561,7 +561,7 @@ public class FlowsWorkflow extends ViewPart {
 					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
 					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
-					flow.getTdbResource().addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
+//					flow.getTdbResource().addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
 				}
 			}
 		}
@@ -572,7 +572,7 @@ public class FlowsWorkflow extends ViewPart {
 	public static Integer[] autoMatch() {
 		Integer[] results = new Integer[3];
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-		DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
 		Model model = ActiveTDB.model;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
@@ -645,7 +645,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	private void autoMatch_01() {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-		DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
 		Model model = ActiveTDB.model;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();

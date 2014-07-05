@@ -23,9 +23,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public class ImportCSV implements IHandler {
@@ -122,7 +120,7 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
-		// String msg = "No content in CSV file!";
+			// String msg = "No content in CSV file!";
 			runLogger.warn("# No content in CSV file!");
 
 			// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
@@ -140,14 +138,16 @@ public class ImportCSV implements IHandler {
 		runLogger.info("# File size: " + file.length());
 
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
-//		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
 		dialog.create();
 		if (dialog.open() == MetaDataDialog.CANCEL) { // FIXME
 			fileMD.remove();
 			return null;
 		}
 
+		tableProvider.setFileMD(fileMD);
+		tableProvider.setDataSourceProvider(dialog.getCurDataSourceProvider());
 		TableKeeper.saveTableProvider(path, tableProvider);
+		
 
 		// READ THE FILE NOW
 		while (values != null) {
@@ -159,24 +159,22 @@ public class ImportCSV implements IHandler {
 				e.printStackTrace();
 			}
 		}
+		// FIXME - THE USE OF CSVTableView MUST BE SET PROPERLY, AS STATIC INSTEAD OF THIS HACK
+		CSVTableView csvTableView = null;
+		try {
+			Util.showView(CSVTableView.ID);
+			csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}
 
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 		if (csvTableView == null) {
-			try {
-				Util.showView(CSVTableView.ID);
-				csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
-			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			return "Could not open CSVTableView!";
 		}
 		assert csvTableView != null : "cSVTableView cannot be null";
 
-		String title = csvTableView.getTitle();
-		System.out.println("title= " + title);
-		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
-		
+//		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
+//		CSVTableView.setFileMD(fileMD);
 		csvTableView.update(path);
 
 		// BRING UP THE DATA FILE VIEW
@@ -190,7 +188,7 @@ public class ImportCSV implements IHandler {
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 
 		try {
-			Util.showView(csvTableView.ID);
+			Util.showView(CSVTableView.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
