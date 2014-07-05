@@ -14,6 +14,7 @@ import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceProvider;
+import harmonizationtool.model.TableKeeper;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
@@ -476,14 +477,14 @@ public class FlowsWorkflow extends ViewPart {
 		public void widgetSelected(SelectionEvent e) {
 			// CSVTableView.matchFlowables();
 			String jobKey = "autoMatch_01";
-			Table table = CSVTableView.getTable();
-			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", table);
+			// Table table = CSVTableView.getTable();
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", CSVTableView.getTableProviderKey());
 			autoMatchJob.setPriority(Job.SHORT);
 			autoMatchJob.setSystem(false);
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-			
-//			autoMatch();
+
+			// autoMatch();
 		}
 
 		@Override
@@ -513,7 +514,8 @@ public class FlowsWorkflow extends ViewPart {
 
 		long triples = model.size();
 		Table table = CSVTableView.getTable();
-		CSVColumnInfo[] assignedCSVColumns = CSVTableView.getAssignedCSVColumnInfo();
+
+		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
 			Item item = table.getItem(rowNumber);
 			DataRow dataRow = (DataRow) item.getData();
@@ -593,14 +595,14 @@ public class FlowsWorkflow extends ViewPart {
 						Statement dataItemStatement = dataItemProperties.next();
 						Property dataItemProperty = dataItemStatement.getPredicate();
 						RDFNode dataItemRDFNode = dataItemStatement.getObject();
-//						System.out.println("dataItemStatement: "+dataItemStatement);
+						// System.out.println("dataItemStatement: "+dataItemStatement);
 
 						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
 							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
-								System.out.println("Found a match for dataItemStatement: "+dataItemStatement);
+								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
 								if (!matchingResource.equals(dataItem)) {
 									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
@@ -666,14 +668,14 @@ public class FlowsWorkflow extends ViewPart {
 						Statement dataItemStatement = dataItemProperties.next();
 						Property dataItemProperty = dataItemStatement.getPredicate();
 						RDFNode dataItemRDFNode = dataItemStatement.getObject();
-//						System.out.println("dataItemStatement: "+dataItemStatement);
+						// System.out.println("dataItemStatement: "+dataItemStatement);
 
 						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
 							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
-								System.out.println("Found a match for dataItemStatement: "+dataItemStatement);
+								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
 								if (!matchingResource.equals(dataItem)) {
 									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
@@ -709,7 +711,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
 	}
-	
+
 	// private int safeCommitFlowContexts2TDB() {
 	// // THE SAFE PART MEANS
 	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
@@ -723,63 +725,67 @@ public class FlowsWorkflow extends ViewPart {
 	// long newTriples = model.size() - triples;
 	// return (int) newTriples;
 	// }
-	
+
 	public void queryCallback(Integer[] results, String key) {
-//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		// IWorkbenchPage page =
+		// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		// FIXME FIXME -- REDO ALL BELOW
-//		LabeledQuery labeledQuery = queryFromKey(key);
-//		String showResultsInWindow = ResultsView.ID;
-//
-//		resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
-//		// ResultSet resultSet = q.getResultSet();
-//		// TableProvider tableProvider = TableProvider
-//		// .create((ResultSetRewindable) resultSet);
-//		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-//		if (key.startsWith("Harmonize CAS")) { // HACK!!
-//			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
-//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-//			// USE
-//			// WHICH createTransform
-//			// AND WHICH formatForTransfor()
-//			// SHOULD BE KNOWN BY THE LabledQuery
-//			// BUT CHOSEN BY THE CALLER
-//			showResultsInWindow = ResultsTreeEditor.ID;
-//
-//			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
-//			// resultsView.update(tableProvider);
-//			try {
-//				resultsTreeEditor.update(tableProvider);
-//			} catch (Exception e) {
-//				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
-//				e.printStackTrace();
-//			}
-//
-//			// resultsView.formatForTransform0();
-//		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-//			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util.findView(HarmonizeCompartments.ID);
-//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-//			// USE
-//			// WHICH createTransform
-//			// AND WHICH formatForTransfor()
-//			// SHOULD BE KNOWN BY THE LabledQuery
-//			// BUT CHOSEN BY THE CALLER
-//			showResultsInWindow = HarmonizeCompartments.ID;
-//
-//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-//			// resultsView.update(tableProvider);
-//			try {
-//				harmonizeCompartments.update(tableProvider);
-//			} catch (Exception e) {
-//				System.out.println("resultsTreeEditor=" + harmonizeCompartments);
-//				e.printStackTrace();
-//			}
-//
-//			// resultsView.formatForTransform0();
-//		} else {
-//			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-//			resultsView.update(tableProvider);
-//		}
+		// LabeledQuery labeledQuery = queryFromKey(key);
+		// String showResultsInWindow = ResultsView.ID;
+		//
+		// resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
+		// // ResultSet resultSet = q.getResultSet();
+		// // TableProvider tableProvider = TableProvider
+		// // .create((ResultSetRewindable) resultSet);
+		// setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
+		// if (key.startsWith("Harmonize CAS")) { // HACK!!
+		// ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor)
+		// Util.findView(ResultsTreeEditor.ID);
+		// // FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+		// // USE
+		// // WHICH createTransform
+		// // AND WHICH formatForTransfor()
+		// // SHOULD BE KNOWN BY THE LabledQuery
+		// // BUT CHOSEN BY THE CALLER
+		// showResultsInWindow = ResultsTreeEditor.ID;
+		//
+		// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable)
+		// resultSet);
+		// // resultsView.update(tableProvider);
+		// try {
+		// resultsTreeEditor.update(tableProvider);
+		// } catch (Exception e) {
+		// System.out.println("resultsTreeEditor=" + resultsTreeEditor);
+		// e.printStackTrace();
+		// }
+		//
+		// // resultsView.formatForTransform0();
+		// } else if (key.startsWith("Harmonize Compart")) { // HACK!!
+		// HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments)
+		// Util.findView(HarmonizeCompartments.ID);
+		// // FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+		// // USE
+		// // WHICH createTransform
+		// // AND WHICH formatForTransfor()
+		// // SHOULD BE KNOWN BY THE LabledQuery
+		// // BUT CHOSEN BY THE CALLER
+		// showResultsInWindow = HarmonizeCompartments.ID;
+		//
+		// TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		// // resultsView.update(tableProvider);
+		// try {
+		// harmonizeCompartments.update(tableProvider);
+		// } catch (Exception e) {
+		// System.out.println("resultsTreeEditor=" + harmonizeCompartments);
+		// e.printStackTrace();
+		// }
+		//
+		// // resultsView.formatForTransform0();
+		// } else {
+		// ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+		// TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		// resultsView.update(tableProvider);
+		// }
 
 	}
 }

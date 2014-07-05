@@ -47,7 +47,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 
 		job = event.getJob();
 		if (job instanceof AutoMatchJob) {
-			Display.getDefault().syncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util.findView(FlowsWorkflow.ID);
 					if (((AutoMatchJob) job).getHitCounts() == null) {

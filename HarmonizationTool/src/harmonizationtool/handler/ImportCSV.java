@@ -161,22 +161,23 @@ public class ImportCSV implements IHandler {
 		}
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		CSVTableView cSVTableView = (CSVTableView) page.findView(CSVTableView.ID);
-		if (cSVTableView == null) {
+		CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
+		if (csvTableView == null) {
 			try {
 				Util.showView(CSVTableView.ID);
-				cSVTableView = (CSVTableView) page.findView(CSVTableView.ID);
+				csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 			} catch (PartInitException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		assert cSVTableView != null : "cSVTableView cannot be null";
+		assert csvTableView != null : "cSVTableView cannot be null";
 
-		String title = cSVTableView.getTitle();
+		String title = csvTableView.getTitle();
 		System.out.println("title= " + title);
 		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
-		cSVTableView.update(path);
+		
+		csvTableView.update(path);
 
 		// BRING UP THE DATA FILE VIEW
 		// try {
@@ -189,7 +190,7 @@ public class ImportCSV implements IHandler {
 		// ... AND BRING UP THE DATA CONTENTS VIEW
 
 		try {
-			Util.showView(cSVTableView.ID);
+			Util.showView(csvTableView.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

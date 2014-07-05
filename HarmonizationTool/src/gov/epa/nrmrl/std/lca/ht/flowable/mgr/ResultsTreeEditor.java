@@ -561,7 +561,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// treeViewer.getTree().clearAll(true);
 		DataRow header = tableProvider.getHeaderRow();
 		List<DataRow> data = tableProvider.getData();
-		List<Resource> uriList = tableProvider.getUriList();
+//		List<Resource> uriList = tableProvider.getUriList();
 		DataRow firstRow = data.get(0);
 		String keyDataSource = firstRow.get(0);
 		// if (trunk == null) {
@@ -569,7 +569,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// }
 		// new TreeNodeRow(trunk);
 		TreeNodeRow treeNodeRow = new TreeNodeRow(trunk);
-		treeNodeRow.setUri(uriList.get(0));
+//		treeNodeRow.setUri(uriList.get(0));
 		int uriCol = -1;
 		for (int col = 0; col < firstRow.getSize(); col++) {
 
@@ -581,10 +581,10 @@ public class ResultsTreeEditor extends ViewPart {
 
 		for (int i = 1; i < data.size(); i++) {
 			DataRow dataRow = data.get(i);
-			Resource uri = uriList.get(i);
+//			Resource uri = uriList.get(i);
 			if (keyDataSource.equals(dataRow.get(0))) {
 				treeNodeRow = new TreeNodeRow(trunk);
-				treeNodeRow.setUri(uri);
+//				treeNodeRow.setUri(uri);
 				for (int col = 0; col < dataRow.getSize(); col++) {
 
 					treeNodeRow.addColumnLabel(dataRow.get(col));
@@ -595,7 +595,7 @@ public class ResultsTreeEditor extends ViewPart {
 				treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
 				for (int col = 0; col < dataRow.getSize(); col++) {
 					treeNodeSubRow.addColumnLabel(dataRow.get(col));
-					treeNodeSubRow.setUri(uri);
+//					treeNodeSubRow.setUri(uri);
 
 					if (treeNodeSubRow.getColumnLabel(col).toUpperCase().equals(treeNodeRow.getColumnLabel(col).toUpperCase())) {
 						treeNodeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);

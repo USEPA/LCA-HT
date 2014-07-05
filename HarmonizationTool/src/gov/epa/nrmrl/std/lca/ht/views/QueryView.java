@@ -458,7 +458,10 @@ public class QueryView extends ViewPart {
 			// BUT CHOSEN BY THE CALLER
 			showResultsInWindow = ResultsTreeEditor.ID;
 
-			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+//			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+			// THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
+			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+
 			// resultsView.update(tableProvider);
 			try {
 				resultsTreeEditor.update(tableProvider);
