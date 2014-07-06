@@ -44,7 +44,7 @@ public class CSVColumnInfo {
 		this.headerString = headerString;
 		this.isRequired = false;
 		this.isUnique = false;
-		this.checkLists = null;
+		// this.checkLists = null;
 	}
 
 	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
@@ -52,6 +52,21 @@ public class CSVColumnInfo {
 		this.isRequired = isRequired;
 		this.isUnique = isUnique;
 		this.checkLists = checkLists;
+	}
+
+	public CSVColumnInfo(CSVColumnInfo menuCSVColumnInfo) {
+//		CSVColumnInfo newCSVColumnInfo = new CSVColumnInfo();
+		this.headerString = menuCSVColumnInfo.getHeaderString();
+		this.isRequired = menuCSVColumnInfo.isRequired();
+		this.isUnique = menuCSVColumnInfo.isUnique();
+		this.leftJustified = menuCSVColumnInfo.isLeftJustified();
+		this.rdfClass = menuCSVColumnInfo.getRDFClass();
+		this.tdbProperty = menuCSVColumnInfo.getTdbProperty();
+		this.checkLists = menuCSVColumnInfo.copyCheckLists();
+		// BUT DON'T COPY ISSUES
+		// this.issues = menuCSVColumnInfo.copyIssues();
+		// INITIALIZE INSTEAD
+		this.issues = new ArrayList<Issue>();
 	}
 
 	public String getHeaderString() {
@@ -80,6 +95,15 @@ public class CSVColumnInfo {
 
 	public List<QACheck> getCheckLists() {
 		return checkLists;
+	}
+
+	public List<QACheck> copyCheckLists() {
+		List<QACheck> results = new ArrayList<QACheck>();
+		for (QACheck qaCheck : checkLists) {
+			QACheck newQACheck = new QACheck(qaCheck);
+			results.add(newQACheck);
+		}
+		return results;
 	}
 
 	public void setCheckLists(List<QACheck> checkLists) {

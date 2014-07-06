@@ -275,10 +275,11 @@ public class CSVTableView extends ViewPart {
 				if (selectedCSVColumnInfo == null) {
 					// POSSIBILITY b
 					System.out.println("Possibility b");
-					selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(), menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(),
-							menuCSVColumnInfo.getCheckLists());
-					selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
-					selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
+					selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo);
+//					selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(), menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(),
+//							menuCSVColumnInfo.getCheckLists());
+//					selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
+//					selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
 					if (menuCSVColumnInfo.isLeftJustified()) {
 						table.getColumn(colNumSelected).setAlignment(SWT.LEFT);
 					} else {
@@ -303,10 +304,11 @@ public class CSVTableView extends ViewPart {
 					menuItemToReset.setEnabled(true);
 				}
 
-				selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(), menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(),
-						menuCSVColumnInfo.getCheckLists());
-				selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
-				selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
+				selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo);
+//				selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo.getHeaderString(), menuCSVColumnInfo.isRequired(), menuCSVColumnInfo.isUnique(),
+//						menuCSVColumnInfo.getCheckLists());
+//				selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
+//				selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
 				if (menuCSVColumnInfo.isLeftJustified()) {
 					table.getColumn(colNumSelected).setAlignment(SWT.LEFT);
 				} else {

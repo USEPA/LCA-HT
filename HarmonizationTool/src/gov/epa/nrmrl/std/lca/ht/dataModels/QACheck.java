@@ -28,6 +28,15 @@ public class QACheck {
 		this.patternMustMatch = patternMustMatch;
 	}
 
+	public QACheck(QACheck qaCheck) {
+		this.description = qaCheck.getDescription();
+		this.explanation = qaCheck.getExplanation();
+		this.suggestion = qaCheck.getSuggestion();
+		this.pattern = qaCheck.getPattern();
+		this.replacement = qaCheck.getReplacement();
+		this.patternMustMatch = qaCheck.isPatternMustMatch();
+	}
+
 	public Pattern getPattern() {
 		return pattern;
 	}
@@ -61,12 +70,12 @@ public class QACheck {
 		Pattern p4 = Pattern.compile("^(.*?)\\s+$");
 		String r4 = "$1";
 		qaCheckPack.add(new QACheck(d4, e4, s4, p4, r4, false));
-		
+
 		String d5 = "Non-ASCII character";
 		String e5 = "A character outside the standard ASCII printable range was detected.  The document encoding may be incorrect, in which case these characters may not be handled correctly.";
 		String s5 = "Run the character-encoding tool";
 		Pattern p5 = Pattern.compile("[^ -~]");
-		String r5 = null;		
+		String r5 = null;
 		qaCheckPack.add(new QACheck(d5, e5, s5, p5, r5, false));
 		return qaCheckPack;
 	}

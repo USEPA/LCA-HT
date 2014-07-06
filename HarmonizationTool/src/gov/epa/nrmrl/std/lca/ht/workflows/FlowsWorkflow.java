@@ -38,6 +38,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -45,6 +47,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 //import org.eclipse.swt.widgets.Canvas;
 
@@ -552,6 +555,20 @@ public class FlowsWorkflow extends ViewPart {
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
 					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
+					RDFNode thing = flowable.getTdbResource().getProperty(FEDLCA.sourceTableRowNumber).getObject();
+					System.out.println("thing = " + thing);
+					RDFDatatype thing2 = thing.asLiteral().getDatatype();
+					System.out.println("thing2 = " + thing2);
+					Resource fred = XSD.integer;
+					System.out.println("fred = " + fred);
+					// FIXME FIXME FIXME
+					// THE NEXT STEP IS TO DEFINE EACH LITERAL DATA TYPE (FOR READ AND WRITE)
+					// IN THIS WAY THE SAVING TO RDF CAN BE MORE SYSTEMATIC (NOT REQUIRING
+					// CUSTOMIZING THIS CODE SO MUCH)
+
+					// Literal thing2 = thing.asLiteral();
+					// System.out.println("thing2.getDatatype() = "+thing2.getDatatype());
+
 					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(ECO.hasFlowable, flowable.getTdbResource());
 				}
@@ -561,7 +578,8 @@ public class FlowsWorkflow extends ViewPart {
 					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
 					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
-//					flow.getTdbResource().addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
+					// flow.getTdbResource().addProperty(FEDLCA.hasFlowContext,
+					// flowContext.getTdbResource());
 				}
 			}
 		}

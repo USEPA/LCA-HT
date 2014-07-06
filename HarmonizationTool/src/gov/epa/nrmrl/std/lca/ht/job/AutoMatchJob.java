@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -30,6 +31,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -93,7 +95,13 @@ public class AutoMatchJob extends Job {
 
 			// FIRST DO Flowable
 			Resource rdfClass = Flowable.getRdfclass();
+			// FIXME - THIS DOESN'T WORK, BUT WITH INTERNET, I CAN FIGURE IT OUT
+//			RDFDatatype integerType = (RDFDatatype) XSD.integer;
+//			Literal rowLiteral = model.createTypedLiteral(rowNumber, integerType);
 			Literal rowLiteral = model.createTypedLiteral(rowNumber);
+			System.out.println("rowLiteral.getDatatype() = "+rowLiteral.getDatatype());
+			
+
 			ResIterator resIterator = model.listSubjectsWithProperty(FEDLCA.sourceTableRowNumber, rowLiteral);
 			Resource itemToMatchTDBResource = null;
 			while (resIterator.hasNext()) {
