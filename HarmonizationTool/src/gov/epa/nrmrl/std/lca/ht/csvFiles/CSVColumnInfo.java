@@ -6,6 +6,7 @@ import harmonizationtool.model.Issue;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -19,9 +20,13 @@ public class CSVColumnInfo {
 	private List<Issue> issues = new ArrayList<Issue>();
 	private Resource rdfClass;
 	private Property tdbProperty;
-
-	// private LCADataField lcaDataField;
-
+	private RDFDatatype rdfDatatype;
+	// THE ASSUMPTION HERE IS:
+	// 1) EACH CSVColumnInfo REPRESENTS AN ATTRIBUTE OF A THING WHOSE CLASS IS rdfClass;
+	// 2) THAT THING HAS AN ATTRIBUTE SUCH THAT THE FOLLOW TWO TRIPES ARE TRUE:
+	// a)   ?thing a rdfClass .
+	// b)   ?thing tdbProperty [fieldValue (CONVERTED TO A TYPED LITERAL)]
+	
 	public CSVColumnInfo() {
 
 	}
@@ -29,16 +34,16 @@ public class CSVColumnInfo {
 	// public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean
 	// leftJustified,
 	// List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
-	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue> issues) {
-		super();
-		this.headerString = headerString;
-		this.isRequired = isRequired;
-		this.isUnique = isUnique;
-		this.leftJustified = leftJustified;
-		this.checkLists = checkLists;
-		this.issues = issues;
-		// this.setLcaDataField(lcaDataField);
-	}
+//	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue> issues) {
+//		super();
+//		this.headerString = headerString;
+//		this.isRequired = isRequired;
+//		this.isUnique = isUnique;
+//		this.leftJustified = leftJustified;
+//		this.checkLists = checkLists;
+//		this.issues = issues;
+//		// this.setLcaDataField(lcaDataField);
+//	}
 
 	public CSVColumnInfo(String headerString) {
 		this.headerString = headerString;
@@ -62,6 +67,7 @@ public class CSVColumnInfo {
 		this.leftJustified = menuCSVColumnInfo.isLeftJustified();
 		this.rdfClass = menuCSVColumnInfo.getRDFClass();
 		this.tdbProperty = menuCSVColumnInfo.getTdbProperty();
+		this.rdfDatatype = menuCSVColumnInfo.getRdfDatatype();
 		this.checkLists = menuCSVColumnInfo.copyCheckLists();
 		// BUT DON'T COPY ISSUES
 		// this.issues = menuCSVColumnInfo.copyIssues();
@@ -172,6 +178,14 @@ public class CSVColumnInfo {
 
 	public void setTdbProperty(Property tdbProperty) {
 		this.tdbProperty = tdbProperty;
+	}
+
+	public RDFDatatype getRdfDatatype() {
+		return rdfDatatype;
+	}
+
+	public void setRdfDatatype(RDFDatatype rdfDatatype) {
+		this.rdfDatatype = rdfDatatype;
 	}
 
 	// public LCADataField getLcaDataField() {

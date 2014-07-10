@@ -10,9 +10,13 @@ import harmonizationtool.vocabulary.SKOS;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class Flowable {
 	private String name = null;
@@ -43,12 +47,7 @@ public class Flowable {
 		results[0].setCheckLists(getFlowablesNameCheckList());
 		results[0].setRDFClass(rdfClass);
 		results[0].setTdbProperty(RDFS.label);
-//		results[0].setLcaDataField(new LCADataField());
-//		results[0].getLcaDataField().setResourceSubject(rdfClass);
-//		results[0].getLcaDataField().setPropertyPredicate(RDFS.label);
-//		results[0].getLcaDataField().setLiteralObjectType("String");
-//		results[0].getLcaDataField().setRequired(true);
-//		results[0].getLcaDataField().setFunctional(true);
+		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[1] = new CSVColumnInfo("", false, false, getFlowablesNameCheckList());
 		results[1] = new CSVColumnInfo("Flowable Synonym");
@@ -57,12 +56,7 @@ public class Flowable {
 		results[1].setCheckLists(getFlowablesNameCheckList());
 		results[1].setRDFClass(rdfClass);
 		results[1].setTdbProperty(SKOS.altLabel);
-//		results[1].setLcaDataField(new LCADataField());
-//		results[1].getLcaDataField().setResourceSubject(rdfClass);
-//		results[1].getLcaDataField().setPropertyPredicate(SKOS.altLabel);
-//		results[1].getLcaDataField().setLiteralObjectType("String");
-//		results[1].getLcaDataField().setRequired(false);
-//		results[1].getLcaDataField().setFunctional(false);
+		results[1].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[2] = new CSVColumnInfo("CAS");
 		results[2].setRequired(false);
@@ -71,12 +65,7 @@ public class Flowable {
 		results[2].setLeftJustified(false);
 		results[2].setRDFClass(rdfClass);
 		results[2].setTdbProperty(ECO.casNumber);
-//		results[2].setLcaDataField(new LCADataField());
-//		results[2].getLcaDataField().setResourceSubject(rdfClass);
-//		results[2].getLcaDataField().setPropertyPredicate(ECO.casNumber);
-//		results[2].getLcaDataField().setLiteralObjectType("String");
-//		results[2].getLcaDataField().setRequired(false);
-//		results[2].getLcaDataField().setFunctional(true);
+		results[2].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[3] = new CSVColumnInfo("Chemical formula");
 		results[3].setRequired(false);
@@ -85,12 +74,7 @@ public class Flowable {
 		results[3].setLeftJustified(false);
 		results[3].setRDFClass(rdfClass);
 		results[3].setTdbProperty(ECO.chemicalFormula);
-//		results[3].setLcaDataField(new LCADataField());
-//		results[3].getLcaDataField().setResourceSubject(rdfClass);
-//		results[3].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
-//		results[3].getLcaDataField().setLiteralObjectType("String");
-//		results[3].getLcaDataField().setRequired(false);
-//		results[3].getLcaDataField().setFunctional(false);
+		results[3].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[4] = new CSVColumnInfo("SMILES");
 		results[4].setRequired(false);
@@ -99,12 +83,8 @@ public class Flowable {
 		results[4].setLeftJustified(false);
 		results[4].setRDFClass(rdfClass);
 		results[4].setTdbProperty(FEDLCA.hasSmilesString);
-//		results[4].setLcaDataField(new LCADataField());
-//		results[4].getLcaDataField().setResourceSubject(rdfClass);
-//		results[4].getLcaDataField().setPropertyPredicate(ECO.chemicalFormula);
-//		results[4].getLcaDataField().setLiteralObjectType("String");
-//		results[4].getLcaDataField().setRequired(false);
-//		results[4].getLcaDataField().setFunctional(false);
+		results[4].setRdfDatatype(XSDDatatype.XSDstring);
+
 		return results;
 	}
 
@@ -241,8 +221,32 @@ public class Flowable {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, name);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, rdfDatatype, name);
+//		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, name);
 	}
+	
+	public List<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(List<String> synonyms) {
+		this.synonyms = synonyms;
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[1].getRdfDatatype();
+
+		tdbResource.removeAll(SKOS.altLabel);
+		for (String synonym : synonyms) {
+			Literal synonymLiteral = ActiveTDB.model.createTypedLiteral(synonym, rdfDatatype);
+			ActiveTDB.model.add(tdbResource, SKOS.altLabel, synonymLiteral);
+		}
+	}
+	
+	public void addSynonym(String synonym){
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[1].getRdfDatatype();
+		Literal synonymLiteral = ActiveTDB.model.createTypedLiteral(synonym, rdfDatatype);
+		ActiveTDB.model.add(tdbResource, SKOS.altLabel, synonymLiteral);
+	}
+
 
 	public String getCas() {
 		return cas;
@@ -250,7 +254,9 @@ public class Flowable {
 
 	public void setCas(String cas) {
 		this.cas = cas;
-		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[2].getRdfDatatype();
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, rdfDatatype, cas);
+//		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
 	}
 
 	public boolean isEmission() {
@@ -279,21 +285,6 @@ public class Flowable {
 		}
 	}
 
-	public List<String> getSynonyms() {
-		return synonyms;
-	}
-
-	public void setSynonyms(List<String> synonyms) {
-		this.synonyms = synonyms;
-		tdbResource.removeAll(SKOS.altLabel);
-		for (String synonym : synonyms) {
-			ActiveTDB.model.add(tdbResource, SKOS.altLabel, ActiveTDB.model.createTypedLiteral(synonym));
-		}
-	}
-	
-	public void addSynonym(String synonym){
-		ActiveTDB.model.add(tdbResource, SKOS.altLabel, ActiveTDB.model.createTypedLiteral(synonym));
-	}
 
 	public String getFormula() {
 		return formula;
@@ -301,7 +292,9 @@ public class Flowable {
 
 	public void setFormula(String formula) {
 		this.formula = formula;
-		ActiveTDB.replaceLiteral(tdbResource, ECO.chemicalFormula, formula);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[3].getRdfDatatype();
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, rdfDatatype, formula);
+//		ActiveTDB.replaceLiteral(tdbResource, ECO.chemicalFormula, formula);
 	}
 
 	public String getSmiles() {
@@ -310,7 +303,9 @@ public class Flowable {
 
 	public void setSmiles(String smiles) {
 		this.smiles = smiles;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[4].getRdfDatatype();
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, rdfDatatype, smiles);
+//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
 
 	}
 

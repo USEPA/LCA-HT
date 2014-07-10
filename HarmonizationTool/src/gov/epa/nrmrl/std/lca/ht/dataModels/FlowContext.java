@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -42,27 +44,19 @@ public class FlowContext {
 		results[0].setRequired(true);
 		results[0].setUnique(true);
 		results[0].setCheckLists(getContextNameCheckList());
+		results[0].setLeftJustified(true);
 		results[0].setRDFClass(rdfClass);
 		results[0].setTdbProperty(FASC.hasCompartment);
-//		results[0].setLcaDataField(new LCADataField());
-//		results[0].getLcaDataField().setResourceSubject(rdfClass);
-//		results[0].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextPrimaryDescription);
-//		results[0].getLcaDataField().setLiteralObjectType("String");
-//		results[0].getLcaDataField().setRequired(true);
-//		results[0].getLcaDataField().setFunctional(true);
+		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[1] = new CSVColumnInfo("Context (additional)");
 		results[1].setRequired(false);
 		results[1].setUnique(false);
 		results[1].setCheckLists(getContextNameCheckList());
+		results[1].setLeftJustified(true);
 		results[1].setRDFClass(rdfClass);
 		results[1].setTdbProperty(FEDLCA.flowContextSupplementalDescription);
-//		results[1].setLcaDataField(new LCADataField());
-//		results[1].getLcaDataField().setResourceSubject(rdfClass);
-//		results[1].getLcaDataField().setPropertyPredicate(FEDLCA.flowContextSupplementalDescription);
-//		results[1].getLcaDataField().setLiteralObjectType("String");
-//		results[1].getLcaDataField().setRequired(false);
-//		results[1].getLcaDataField().setFunctional(false);
+		results[1].setRdfDatatype(XSDDatatype.XSDstring);
 		return results;
 	}
 
@@ -86,7 +80,8 @@ public class FlowContext {
 
 	public void setPrimaryFlowContext(String primaryFlowContext) {
 		this.primaryFlowContext = primaryFlowContext;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, primaryFlowContext);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
 	}
 
 	public List<String> getAdditionalFlowContexts() {
@@ -95,15 +90,19 @@ public class FlowContext {
 
 	public void setAdditionalFlowContexts(List<String> additionalFlowContexts) {
 		this.additionalFlowContexts = additionalFlowContexts;
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
 		tdbResource.removeAll(FEDLCA.flowContextSupplementalDescription);
 		for(String additionalFlowContext:additionalFlowContexts){
-			ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, additionalFlowContext);			
+			Literal additionalFlowContextLiteral = ActiveTDB.model.createTypedLiteral(additionalFlowContext, rdfDatatype);
+			tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContextLiteral);			
 		}
 	}
 
 	public void addAdditionalFlowContext(String additionalFlowContext) {
 		this.additionalFlowContexts.add(additionalFlowContext);
-		tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContext);
+		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
+		Literal additionalFlowContextLiteral = ActiveTDB.model.createTypedLiteral(additionalFlowContext, rdfDatatype);
+		tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContextLiteral);
 	}
 
 

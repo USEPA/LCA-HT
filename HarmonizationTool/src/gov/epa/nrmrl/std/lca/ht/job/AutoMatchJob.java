@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -57,6 +58,7 @@ public class AutoMatchJob extends Job {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
+		Resource tableDataSource = tableProvider.getDataSourceProvider().getTdbResource();
 		Model model = ActiveTDB.model;
 		// Table table = CSVTableView.getTable();
 		System.out.println("Table :" + tableProvider);
@@ -93,15 +95,11 @@ public class AutoMatchJob extends Job {
 		for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
+			int rowNumberPlusOne = rowNumber + 1;
+			Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+
 			// FIRST DO Flowable
 			Resource rdfClass = Flowable.getRdfclass();
-			// FIXME - THIS DOESN'T WORK, BUT WITH INTERNET, I CAN FIGURE IT OUT
-//			RDFDatatype integerType = (RDFDatatype) XSD.integer;
-//			Literal rowLiteral = model.createTypedLiteral(rowNumber, integerType);
-			Literal rowLiteral = model.createTypedLiteral(rowNumber);
-			System.out.println("rowLiteral.getDatatype() = "+rowLiteral.getDatatype());
-			
-
 			ResIterator resIterator = model.listSubjectsWithProperty(FEDLCA.sourceTableRowNumber, rowLiteral);
 			Resource itemToMatchTDBResource = null;
 			while (resIterator.hasNext()) {
@@ -110,6 +108,7 @@ public class AutoMatchJob extends Job {
 					break;
 				}
 			}
+//			if ()
 			ResIterator resourceIterator = model.listSubjectsWithProperty(RDF.type, rdfClass);
 			while (resourceIterator.hasNext()) {
 				Resource candidate = resourceIterator.next();

@@ -35,6 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IServiceLocator;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -76,6 +77,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public void finalize() {
 		System.out.println("closing TDBDataset and model");
 		cleanUp();
+	}
+	
+	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		Literal newRDFNode = model.createTypedLiteral(thingLiteral, rdfDatatype);
+		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
+		while (nodeIterator.hasNext()) {
+			RDFNode rdfNode = nodeIterator.next();
+			if (rdfNode.isLiteral()) {
+				if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)){
+				model.removeAll(subject, predicate, rdfNode);
+				}
+			}
+		}
+		model.add(subject, predicate, newRDFNode);
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, String stringLiteral) {

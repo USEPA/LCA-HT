@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -520,6 +521,9 @@ public class FlowsWorkflow extends ViewPart {
 
 		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
+			int rowNumberPlusOne = rowNumber + 1;
+			Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+
 			Item item = table.getItem(rowNumber);
 			DataRow dataRow = (DataRow) item.getData();
 			Flowable flowable = new Flowable();
@@ -527,6 +531,7 @@ public class FlowsWorkflow extends ViewPart {
 			for (int colNumber = 1; colNumber < assignedCSVColumns.length; colNumber++) {
 				CSVColumnInfo csvColumnnInfo = assignedCSVColumns[colNumber];
 				if (csvColumnnInfo != null) {
+					
 					String headerName = csvColumnnInfo.getHeaderString();
 					if (headerName.equals("Flowable Name")) {
 						if (flowable.getName() != null) {
@@ -554,32 +559,16 @@ public class FlowsWorkflow extends ViewPart {
 			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
-					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
-					RDFNode thing = flowable.getTdbResource().getProperty(FEDLCA.sourceTableRowNumber).getObject();
-					System.out.println("thing = " + thing);
-					RDFDatatype thing2 = thing.asLiteral().getDatatype();
-					System.out.println("thing2 = " + thing2);
-					Resource fred = XSD.integer;
-					System.out.println("fred = " + fred);
-					// FIXME FIXME FIXME
-					// THE NEXT STEP IS TO DEFINE EACH LITERAL DATA TYPE (FOR READ AND WRITE)
-					// IN THIS WAY THE SAVING TO RDF CAN BE MORE SYSTEMATIC (NOT REQUIRING
-					// CUSTOMIZING THIS CODE SO MUCH)
-
-					// Literal thing2 = thing.asLiteral();
-					// System.out.println("thing2.getDatatype() = "+thing2.getDatatype());
-
+					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowLiteral);
 					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(ECO.hasFlowable, flowable.getTdbResource());
 				}
 			}
 			if (flowContext.getPrimaryFlowContext() != null) {
 				if (!flowContext.getPrimaryFlowContext().equals("")) {
-					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowNumber + 1);
+					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowLiteral);
 					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
-					// flow.getTdbResource().addProperty(FEDLCA.hasFlowContext,
-					// flowContext.getTdbResource());
 				}
 			}
 		}
