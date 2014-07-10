@@ -62,12 +62,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public boolean preWindowShellClose() {
 		System.out.println("ApplicationWorkbenchWindowAdvisor.preWindowShellClose()");
-		return super.preWindowShellClose();
-	}
-
-	@Override
-	public void postWindowClose() {
-		System.out.println("ApplicationWorkbenchWindowAdvisor.postWindowClose()");
 		try {
 			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
@@ -82,6 +76,27 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		} catch (NotHandledException e) {
 			e.printStackTrace();
 		}
+		
+		return super.preWindowShellClose();
+	}
+
+	@Override
+	public void postWindowClose() {
+		System.out.println("ApplicationWorkbenchWindowAdvisor.postWindowClose()");
+//		try {
+//			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+//			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+//			Command command = commandService.getCommand("harmonizationtool.handler.CloseTDB");
+//			command.executeWithChecks(new ExecutionEvent());
+//		} catch (ExecutionException e) {
+//			e.printStackTrace();
+//		} catch (NotDefinedException e) {
+//			e.printStackTrace();
+//		} catch (NotEnabledException e) {
+//			e.printStackTrace();
+//		} catch (NotHandledException e) {
+//			e.printStackTrace();
+//		}
 		super.postWindowClose();
 	}
 }
