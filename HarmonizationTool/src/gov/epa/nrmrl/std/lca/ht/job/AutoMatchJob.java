@@ -96,36 +96,33 @@ public class AutoMatchJob extends Job {
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
 			int rowNumberPlusOne = rowNumber + 1;
-			Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+			// Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+			Resource dataSource = tableProvider.getDataSourceProvider().getTdbResource();
 
 			// FIRST DO Flowable
 			Resource rdfClass = Flowable.getRdfclass();
-			ResIterator resIterator = model.listSubjectsWithProperty(FEDLCA.sourceTableRowNumber, rowLiteral);
-			Resource itemToMatchTDBResource = null;
-			while (resIterator.hasNext()) {
-				itemToMatchTDBResource = resIterator.next();
-				if (model.contains(itemToMatchTDBResource, RDF.type, rdfClass)) {
-					break;
-				}
-			}
-//			if ()
-			ResIterator resourceIterator = model.listSubjectsWithProperty(RDF.type, rdfClass);
-			while (resourceIterator.hasNext()) {
-				Resource candidate = resourceIterator.next();
-				if (!model.contains(candidate, ECO.hasDataSource, tableProvider.getDataSourceProvider().getTdbResource())) {
-					for (int colNumber : flowableColumnNumbers) {
-						Property property = assignedCSVColumnInfo[colNumber].getTdbProperty();
-						Literal literalToMatch = itemToMatchTDBResource.getPropertyResourceValue(property).asLiteral();
-						if (model.contains(candidate, property, literalToMatch)) {
-							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource, candidate);
-							matchCandidates.add(matchCandidate);
-							System.out.println("Row: " + rowNumber + ". Col: " + colNumber);
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									CSVTableView.updateCheckedData();
-									FlowsWorkflow.setTextFileInfo("Going...");
-								}
-							});
+
+			for (int colNumber : flowableColumnNumbers) {
+				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
+				Property property = csvColumnInfo.getTdbProperty();
+				String dataRowValue = dataRow.get(colNumber);
+				Literal dataRowLiteral = ActiveTDB.model.createTypedLiteral(dataRowValue,
+						csvColumnInfo.getRdfDatatype());
+				ResIterator resIterator = ActiveTDB.model.listResourcesWithProperty(property, dataRowLiteral);
+				Resource itemToMatchTDBResource = null;
+				while (resIterator.hasNext()) {
+					Resource candidateResource = resIterator.next();
+					if (ActiveTDB.model.containsLiteral(candidateResource, RDF.type, rdfClass)) {
+						if (ActiveTDB.model.containsLiteral(candidateResource, ECO.hasDataSource, dataSource.asNode())) {
+							itemToMatchTDBResource = candidateResource;
+						} else {
+							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource,
+									candidateResource);
+							if (matchCandidate.confirmRDFtypeMatch()) {
+								matchCandidates.add(matchCandidate);
+								System.out
+										.println("Got a candidate for row: " + rowNumberPlusOne + "col: " + colNumber);
+							}
 						}
 					}
 				}

@@ -7,6 +7,7 @@ import harmonizationtool.vocabulary.LCAHT;
 
 import java.util.Date;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -21,6 +22,7 @@ public class Person {
 	private String affiliation;
 	private String email;
 	private String phone;
+	private static final Resource rdfClass = ECO.Person;
 	private Resource tdbResource;
 	protected final static Model model = ActiveTDB.model;
 
@@ -57,7 +59,7 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, name);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, XSDDatatype.XSDstring, name);
 	}
 
 	public String getAffiliation() {
@@ -69,7 +71,7 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, affiliation);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, XSDDatatype.XSDstring, affiliation);
 	}
 
 	public String getEmail() {
@@ -81,7 +83,7 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, email);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, XSDDatatype.XSDstring, email);
 	}
 
 	public String getPhone() {
@@ -93,7 +95,7 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, phone);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, XSDDatatype.XSDstring, phone);
 	}
 
 	public void syncDataFromTDB() {
@@ -156,5 +158,17 @@ public class Person {
 		tdbResource.removeAll(FEDLCA.affiliation);
 		tdbResource.removeAll(FEDLCA.email);
 		tdbResource.removeAll(FEDLCA.voicePhone);
+	}
+
+	public static Resource getRdfclass() {
+		return rdfClass;
+	}
+
+	public Resource getTdbResource() {
+		return tdbResource;
+	}
+
+	public void setTdbResource(Resource tdbResource) {
+		this.tdbResource = tdbResource;
 	}
 }

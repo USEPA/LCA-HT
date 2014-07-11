@@ -391,7 +391,6 @@ public class FlowsWorkflow extends ViewPart {
 			textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
 			textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
 
-			// FIXME - GET THE RIGHT FILE NAME, NOT JUST THE FIRST
 			setHeaderInfo();
 			btnCheckData.setEnabled(true);
 		}

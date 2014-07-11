@@ -50,6 +50,8 @@ public class DataSourceProvider {
 
 	public void setContactPerson(Person contactPerson) {
 		this.contactPerson = contactPerson;
+		tdbResource.removeAll(FEDLCA.hasContactPerson);
+		tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
 	}
 
 	public Resource getTdbResource() {
@@ -157,7 +159,8 @@ public class DataSourceProvider {
 
 		labelStatements = tdbResource.listProperties(DCTerms.hasVersion).toList();
 		if (labelStatements.size() > 0) {
-			version = labelStatements.get(0).getObject().toString();
+			comments = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
+//			version = labelStatements.get(0).getObject().toString();
 		}
 		if (version == null) {
 			version = "";

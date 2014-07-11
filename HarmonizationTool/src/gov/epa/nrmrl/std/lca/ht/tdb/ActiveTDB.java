@@ -266,7 +266,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			int dataSourceIndex = DataSourceKeeper.getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
 			if (dataSourceIndex < 0) {
-				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
+//				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
+				new DataSourceProvider(dataSourceRDFResource);
+				// THE CONSTRUCTOR ABOVE SYNCS THE DataSourceProvider AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
 //				dataSourceProvider.syncFromTDB();
 //				DataSourceKeeper.add(dataSourceProvider);
 			}

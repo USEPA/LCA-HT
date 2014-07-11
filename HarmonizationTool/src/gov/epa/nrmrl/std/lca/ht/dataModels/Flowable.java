@@ -16,7 +16,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 public class Flowable {
 	private String name = null;
@@ -49,7 +48,6 @@ public class Flowable {
 		results[0].setTdbProperty(RDFS.label);
 		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
-		results[1] = new CSVColumnInfo("", false, false, getFlowablesNameCheckList());
 		results[1] = new CSVColumnInfo("Flowable Synonym");
 		results[1].setRequired(false);
 		results[1].setUnique(false);

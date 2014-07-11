@@ -65,7 +65,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
 		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
 		if (DataSourceKeeper.size() == 0) {
-			new GenericMessageBox(parentShell, "No Data Sets", "The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data Sets",
+					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
+			cancelPressed();
 			return;
 		}
 		this.callingFileMD = null;
@@ -82,7 +84,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
 		this.newDataSourceProvider = new DataSourceProvider();
-		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0, fileMD.getFilename().length() - 4)));
+		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
+				fileMD.getFilename().length() - 4)));
 		this.newDataSourceProvider.addFileMD(callingFileMD);
 		this.newDataSourceProvider.setContactPerson(new Person());
 		this.curDataSourceProvider = this.newDataSourceProvider;
@@ -414,16 +417,17 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: name = " + dataSourceName);
 		runLogger.info("  SET META: version = " + dialogValues.get(3).getText());
 		runLogger.info("  SET META: comments = \"" + Util.escape(dialogValues.get(4).getText()) + "\"");
-		runLogger.info("  SET META: contactName = " + dialogValues.get(5).getText());
-		runLogger.info("  SET META: contactAffiliation = " + dialogValues.get(6).getText());
-		runLogger.info("  SET META: contactEmail = " + dialogValues.get(7).getText());
-		runLogger.info("  SET META: contactPhone = " + dialogValues.get(8).getText());
+		runLogger.info("  SET META: contactName = " + contactPerson.getName());
+		runLogger.info("  SET META: contactAffiliation = " + contactPerson.getAffiliation());
+		runLogger.info("  SET META: contactEmail = " + contactPerson.getEmail());
+		runLogger.info("  SET META: contactPhone = " + contactPerson.getPhone());
 
 		if (newDataSourceProvider != null) {
 			if (comboSelectionIndex > 0) {
 				DataSourceKeeper.remove(newDataSourceProvider);
 				curDataSourceProvider.addFileMD(callingFileMD);
-				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/" + callingFileMD.getFilename());
+				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
+						+ callingFileMD.getFilename());
 			}
 		}
 
@@ -434,7 +438,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	private void renameDataSource() {
 
-		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(), comboDataSourceSelector.getItems());
+		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboDataSourceSelector.getText(),
+				comboDataSourceSelector.getItems());
 
 		genericStringBox.create("Name Data Set", "Please type a new data set name");
 		genericStringBox.open();
@@ -451,7 +456,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 
 		if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-			new GenericMessageBox(getParentShell(), "Duplicate Name", "Data Set names must be onePerParentGroup.  Please choose a new name.");
+			new GenericMessageBox(getParentShell(), "Duplicate Name",
+					"Data Set names must be onePerParentGroup.  Please choose a new name.");
 			return;
 		}
 		curDataSourceProvider.setDataSourceName(newFileName);
@@ -506,15 +512,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		Person contactPerson = curDataSourceProvider.getContactPerson();
-		// System.out.println("dataSourceMD.getName: = " +
-		// curDataSourceProvider.getDataSourceName());
 		dialogValues.get(3).setText(curDataSourceProvider.getVersion());
 		dialogValues.get(4).setText(curDataSourceProvider.getComments());
-		dialogValues.get(5).setText(contactPerson.getName());
-		dialogValues.get(6).setText(contactPerson.getAffiliation());
-		dialogValues.get(7).setText(contactPerson.getEmail());
-		dialogValues.get(8).setText(contactPerson.getPhone());
+		
+		Person contactPerson = curDataSourceProvider.getContactPerson();
+		if (contactPerson != null) {
+			dialogValues.get(5).setText(contactPerson.getName());
+			dialogValues.get(6).setText(contactPerson.getAffiliation());
+			dialogValues.get(7).setText(contactPerson.getEmail());
+			dialogValues.get(8).setText(contactPerson.getPhone());
+		}
 	}
 
 	protected void redrawDialogFileMD() {
@@ -604,7 +611,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 			System.out.println("ModifyEvent=" + e.toString());
 			System.out.println("fileMDCombo index " + comboFileSelector.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: " + comboFileSelector.getText());
+			System.out.println("choice is " + comboFileSelector.getSelectionIndex() + " with value: "
+					+ comboFileSelector.getText());
 		}
 
 	}

@@ -23,9 +23,10 @@ public class CSVColumnInfo {
 	private RDFDatatype rdfDatatype;
 	// THE ASSUMPTION HERE IS:
 	// 1) EACH CSVColumnInfo REPRESENTS AN ATTRIBUTE OF A THING WHOSE CLASS IS rdfClass;
-	// 2) THAT THING HAS AN ATTRIBUTE SUCH THAT THE FOLLOW TWO TRIPES ARE TRUE:
+	// 2) THAT THING HAS AN ATTRIBUTE DEFINED BY THE FIELD VALUE
+	// SO THE FOLLOW TWO TRIPES ARE TRUE:
 	// a)   ?thing a rdfClass .
-	// b)   ?thing tdbProperty [fieldValue (CONVERTED TO A TYPED LITERAL)]
+	// b)   ?thing tdbProperty [fieldValue (CONVERTED TO A TYPED LITERAL OF TYPE rdfDatatype)]
 	
 	public CSVColumnInfo() {
 
@@ -47,17 +48,17 @@ public class CSVColumnInfo {
 
 	public CSVColumnInfo(String headerString) {
 		this.headerString = headerString;
-		this.isRequired = false;
-		this.isUnique = false;
+//		this.isRequired = false;
+//		this.isUnique = false;
 		// this.checkLists = null;
 	}
 
-	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
-		this.headerString = headerString;
-		this.isRequired = isRequired;
-		this.isUnique = isUnique;
-		this.checkLists = checkLists;
-	}
+//	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
+//		this.headerString = headerString;
+//		this.isRequired = isRequired;
+//		this.isUnique = isUnique;
+//		this.checkLists = checkLists;
+//	}
 
 	public CSVColumnInfo(CSVColumnInfo menuCSVColumnInfo) {
 //		CSVColumnInfo newCSVColumnInfo = new CSVColumnInfo();

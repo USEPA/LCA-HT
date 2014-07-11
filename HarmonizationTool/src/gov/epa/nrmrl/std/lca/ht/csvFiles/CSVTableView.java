@@ -3,8 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.DataSourceProvider;
-import harmonizationtool.model.FileMD;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.model.TableKeeper;
