@@ -159,7 +159,7 @@ public class DataSourceProvider {
 
 		labelStatements = tdbResource.listProperties(DCTerms.hasVersion).toList();
 		if (labelStatements.size() > 0) {
-			comments = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
+			version = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
 //			version = labelStatements.get(0).getObject().toString();
 		}
 		if (version == null) {

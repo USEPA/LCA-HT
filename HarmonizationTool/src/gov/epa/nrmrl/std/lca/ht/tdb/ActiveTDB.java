@@ -140,7 +140,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-	private void cleanUp() {
+	public static void cleanUp() {
 		try {
 			TDBDataset.close();
 		} catch (Exception e) {
@@ -171,10 +171,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
+		System.out.println("about to open TDB = "+model);
 		openTDB();
+		System.out.println("model = "+model);
+
 		updateStatusLine();
 		try {
+//			System.out.println("model = "+model);
 			syncTDBToDataSourceKeeper();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
@@ -219,7 +222,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					assert TDBDataset != null : "TDBDataset cannot be null";
 					model = TDBDataset.getDefaultModel();
 					graphStore = GraphStoreFactory.create(TDBDataset);
-
+					System.out.println("TDB Successfully initiated!");
 				} catch (Exception e1) {
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 					StringBuilder b = new StringBuilder();

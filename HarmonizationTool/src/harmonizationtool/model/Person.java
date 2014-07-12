@@ -106,17 +106,21 @@ public class Person {
 			return;
 		}
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.personName);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					name = (String) literal.getValue();
-				}
-			}
-		}
+		Resource resource = tdbResource.getPropertyResourceValue(FEDLCA.personName);
+		Literal asLiteral = resource.asLiteral();
+		name = (String)asLiteral.getValue();
+//		
+//		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.personName);
+//		if (nodeIterator.hasNext()) {
+//			object = nodeIterator.next();
+//			if (object.isLiteral()) {
+//				literal = object.asLiteral();
+//				Object javaObject = literal.getValue();
+//				if (javaObject.getClass().equals(String.class)) {
+//					name = (String) literal.getValue();
+//				}
+//			}
+//		}
 
 		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.affiliation);
 		if (nodeIterator.hasNext()) {

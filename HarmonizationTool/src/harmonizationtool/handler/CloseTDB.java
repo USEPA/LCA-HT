@@ -25,7 +25,8 @@ public class CloseTDB implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		System.out.println("Closing TDB");
 		if (ActiveTDB.TDBDataset != null) {
-			ActiveTDB.TDBDataset.close();
+			ActiveTDB.cleanUp();
+//			ActiveTDB.TDBDataset.close();
 		}
 		return null;
 	}
