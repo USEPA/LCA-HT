@@ -113,15 +113,15 @@ public class MetaDataDialog extends TitleAreaDialog {
 		int rowIndex = 0;
 
 		rowIndex = 0;
-		Label lbl_5b = new Label(composite, SWT.LEFT);
-		lbl_5b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_5b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
-		lbl_5b.setText("Data Set Information:");
+		Label lbl_section1 = new Label(composite, SWT.LEFT);
+		lbl_section1.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+		lbl_section1.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
+		lbl_section1.setText("Data Set Information:");
 
 		rowIndex++;
-		Label lbl_01 = new Label(composite, SWT.RIGHT);
-		lbl_01.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_01.setText("Select");
+		Label lbl_selectDataSource = new Label(composite, SWT.RIGHT);
+		lbl_selectDataSource.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_selectDataSource.setText("Select");
 
 		// ADD THE DATA SET CHOOSER PULL DOWN
 		// if (newDataSourceProvider != null) {
@@ -134,44 +134,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		comboDataSourceSelector.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 		comboDataSourceSelector.setItems(getDataSourceInfo());
 		comboDataSourceSelector.select(0);
-
-		// comboDataSourceSelector.addKeyListener(new KeyListener() {
-		//
-		// private int comboSelectionIndexSaved;
-		//
-		// @Override
-		// public void keyReleased(KeyEvent e) {
-		// System.out.println("combDataSourceSelectorSavedText :"
-		// + combDataSourceSelectorSavedText);
-		// System.out.println("comboDataSourceSelector.getText() :"
-		// + comboDataSourceSelector.getText());
-		// System.out.println("comboDataSourceSelector.getItem(0) :"
-		// + comboDataSourceSelector.getItem(0));
-		//
-		// System.out.println("keyReleased=" + e.toString());
-		// comboKeyHeldDown = false;
-		// System.out.println("comboSelectionIndex = "
-		// + comboSelectionIndex);
-		// if (comboSelectionIndex != 0) {
-		// comboDataSourceSelector.setText(combDataSourceSelectorSavedText);
-		// } else {
-		// comboDataSourceSelector.setText(comboDataSourceSelector.getText());
-		// }
-		// }
-		//
-		// @Override
-		// public void keyPressed(KeyEvent e) {
-		// System.out.println("keyPressed=" + e.toString());
-		// System.out.println("comboSelectionIndex = "
-		// + comboSelectionIndex);
-		// // comboDataSourceSelector.setBackground(defaultBG);
-		// if ((!comboKeyHeldDown) && (comboSelectionIndex != 0)) {
-		// combDataSourceSelectorSavedText = comboDataSourceSelector
-		// .getText();
-		// }
-		// comboKeyHeldDown = true;
-		// }
-		// });
 		comboDataSourceSelector.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -180,11 +142,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 				comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
 				populateDataSourceMD();
 				runLogger.info("  DATASOURCE SELECTED: " + comboDataSourceSelector.getText());
-
-				// if (comboSelectionIndex == 0){
-				// comboDataSourceSelector.setItem(0,
-				// combDataSourceSelectorSavedText);
-				// }
 			}
 
 			@Override
@@ -193,11 +150,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 				comboSelectionIndex = comboDataSourceSelector.getSelectionIndex();
 				populateDataSourceMD();
 				runLogger.info("  DATASOURCE SELECTED: " + comboDataSourceSelector.getText());
-
-				// if (comboSelectionIndex == 0){
-				// comboDataSourceSelector.setItem(0,
-				// combDataSourceSelectorSavedText);
-				// }
 			}
 
 		});
@@ -214,57 +166,57 @@ public class MetaDataDialog extends TitleAreaDialog {
 		});
 
 		rowIndex++;
-		Label lbl_07 = new Label(composite, SWT.RIGHT);
-		lbl_07.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_07.setText("Version");
-		Text text_07 = new Text(composite, SWT.BORDER);
-		text_07.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		Label lbl_version = new Label(composite, SWT.RIGHT);
+		lbl_version.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_version.setText("Version");
+		Text text_version = new Text(composite, SWT.BORDER);
+		text_version.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
-		Label lbl_08 = new Label(composite, SWT.RIGHT);
-		lbl_08.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_08.setText("Comments");
-		Text text_08 = new Text(composite, SWT.BORDER | SWT.WRAP);
-		text_08.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight * 2);
+		Label lbl_comments = new Label(composite, SWT.RIGHT);
+		lbl_comments.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_comments.setText("Comments");
+		Text text_comments = new Text(composite, SWT.BORDER | SWT.WRAP);
+		text_comments.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight * 2);
 
 		rowIndex++;
 		rowIndex++;
-		Label lbl_09 = new Label(composite, SWT.RIGHT);
-		lbl_09.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_09.setText("Contact Name");
-		Text text_09 = new Text(composite, SWT.BORDER);
-		text_09.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		Label lbl_contactName = new Label(composite, SWT.RIGHT);
+		lbl_contactName.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_contactName.setText("Contact Name");
+		Text text_contactName = new Text(composite, SWT.BORDER);
+		text_contactName.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
-		Label lbl_10 = new Label(composite, SWT.RIGHT);
-		lbl_10.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_10.setText("Contact Affiliation");
-		Text text_10 = new Text(composite, SWT.BORDER);
-		text_10.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		Label lbl_contactAffiliation = new Label(composite, SWT.RIGHT);
+		lbl_contactAffiliation.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_contactAffiliation.setText("Contact Affiliation");
+		Text text_contactAffiliation = new Text(composite, SWT.BORDER);
+		text_contactAffiliation.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
-		Label lbl_11 = new Label(composite, SWT.RIGHT);
-		lbl_11.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_11.setText("Contact Email");
-		Text text_11 = new Text(composite, SWT.BORDER);
-		text_11.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		Label lbl_contactEmail = new Label(composite, SWT.RIGHT);
+		lbl_contactEmail.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_contactEmail.setText("Contact Email");
+		Text text_contactEmail = new Text(composite, SWT.BORDER);
+		text_contactEmail.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		rowIndex++;
-		Label lbl_12 = new Label(composite, SWT.RIGHT);
-		lbl_12.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_12.setText("Contact Phone");
-		Text text_12 = new Text(composite, SWT.BORDER);
-		text_12.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		Label lbl_contactPhone = new Label(composite, SWT.RIGHT);
+		lbl_contactPhone.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_contactPhone.setText("Contact Phone");
+		Text text_contactPhone = new Text(composite, SWT.BORDER);
+		text_contactPhone.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		// NEXT STEP: ADD FileMD DATA
 		rowIndex++;
 		Label sep_01a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep_01a.setBounds(50, rowIndex * disBtwnRows - 5, 250, 2);
 
-		Label lbl_1b = new Label(composite, SWT.LEFT);
-		lbl_1b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-		lbl_1b.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
-		lbl_1b.setText("File Information:");
+		Label lbl_section2 = new Label(composite, SWT.LEFT);
+		lbl_section2.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
+		lbl_section2.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
+		lbl_section2.setText("File Information:");
 
 		rowIndex++;
 		Label lbl_02 = new Label(composite, SWT.RIGHT);
@@ -281,100 +233,41 @@ public class MetaDataDialog extends TitleAreaDialog {
 		comboFileSelector.addModifyListener(comboFileSelectorListener);
 
 		rowIndex++;
-		Label lbl_03 = new Label(composite, SWT.RIGHT);
-		lbl_03.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_03.setText("Size (bytes)");
-		Text text_03 = new Text(composite, SWT.BORDER);
-		text_03.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_03.setEditable(false);
-		text_03.setBackground(defaultBG);
+		Label lbl_fileSize = new Label(composite, SWT.RIGHT);
+		lbl_fileSize.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_fileSize.setText("Size (bytes)");
+		Text text_fileSize = new Text(composite, SWT.BORDER);
+		text_fileSize.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		text_fileSize.setEditable(false);
+		text_fileSize.setBackground(defaultBG);
 
 		rowIndex++;
-		Label lbl_04 = new Label(composite, SWT.RIGHT);
-		lbl_04.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_04.setText("Last Modified");
-		Text text_04 = new Text(composite, SWT.BORDER);
-		text_04.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_04.setEditable(false);
-		text_04.setBackground(defaultBG);
+		Label lbl_lastModified = new Label(composite, SWT.RIGHT);
+		lbl_lastModified.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_lastModified.setText("Last Modified");
+		Text text_lastModified = new Text(composite, SWT.BORDER);
+		text_lastModified.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		text_lastModified.setEditable(false);
+		text_lastModified.setBackground(defaultBG);
 
 		rowIndex++;
-		Label lbl_05 = new Label(composite, SWT.RIGHT);
-		lbl_05.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		lbl_05.setText("Read Time");
-		Text text_05 = new Text(composite, SWT.BORDER);
-		text_05.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		text_05.setEditable(false);
-		text_05.setBackground(defaultBG);
+		Label lbl_fileReadTime = new Label(composite, SWT.RIGHT);
+		lbl_fileReadTime.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		lbl_fileReadTime.setText("Read Time");
+		Text text_fileReadTime = new Text(composite, SWT.BORDER);
+		text_fileReadTime.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		text_fileReadTime.setEditable(false);
+		text_fileReadTime.setBackground(defaultBG);
 
-		// rowIndex++;
-		// Label sep_12a = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		// sep_12a.setBounds(60, rowIndex * disBtwnRows - 5, 250, 2);
-		//
-		// Label lbl_12b = new Label(composite, SWT.LEFT);
-		// lbl_12b.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
-		// lbl_12b.setBounds(5, rowIndex * disBtwnRows, col1Width + col2Width, 20);
-		// lbl_12b.setText("Curator Information:");
-		//
-		// rowIndex++;
-		// Button copyCuratorInfo = new Button(composite, SWT.BORDER);
-		// copyCuratorInfo
-		// .setToolTipText("Values for the Curator will be copied from curator info set in the preferences.");
-		// copyCuratorInfo.setBounds(col2Left, rowIndex * disBtwnRows, 250, 25);
-		// copyCuratorInfo.setText("Copy Info from Preferences");
-		// copyCuratorInfo.addListener(SWT.Selection, new Listener() {
-		// @Override
-		// public void handleEvent(Event event) {
-		// dialogValues.get(9).setText(Util.getPreferenceStore().getString("curatorName"));
-		// dialogValues.get(10).setText(Util.getPreferenceStore().getString("curatorAffiliation"));
-		// dialogValues.get(11).setText(Util.getPreferenceStore().getString("curatorEmail"));
-		// dialogValues.get(12).setText(Util.getPreferenceStore().getString("curatorPhone"));
-		// }
-		// });
-		//
-		// rowIndex++;
-		// Label lbl_13 = new Label(composite, SWT.RIGHT);
-		// lbl_13.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		// lbl_13.setText("Name");
-		// Text text_13 = new Text(composite, SWT.BORDER);
-		// text_13.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		//
-		// rowIndex++;
-		// Label lbl_14 = new Label(composite, SWT.RIGHT);
-		// lbl_14.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		// lbl_14.setText("Affiliation");
-		// Text text_14 = new Text(composite, SWT.BORDER);
-		// text_14.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		//
-		// rowIndex++;
-		// Label lbl_15 = new Label(composite, SWT.RIGHT);
-		// lbl_15.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, 20);
-		// lbl_15.setText("Email");
-		// Text text_15 = new Text(composite, SWT.BORDER);
-		// text_15.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-		//
-		// rowIndex++;
-		// Label lbl_16 = new Label(composite, SWT.RIGHT);
-		// lbl_16.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		// lbl_16.setText("Phone");
-		// Text text_16 = new Text(composite, SWT.BORDER);
-		// text_16.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
-
-		// dialogValues.add(text_02); // 00 File Name
-		dialogValues.add(text_03); // 00 File Size (bytes)
-		dialogValues.add(text_04); // 01 File Last Modified
-		dialogValues.add(text_05); // 02 File Read Time
-		// dialogValues.add(text_06); // 03 Data Set Name
-		dialogValues.add(text_07); // 03 Data Set Version
-		dialogValues.add(text_08); // 04 Data Set Comments
-		dialogValues.add(text_09); // 05 Data Set Contact Name
-		dialogValues.add(text_10); // 06 Data Set Contact Affiliation
-		dialogValues.add(text_11); // 07 Data Set Contact Email
-		dialogValues.add(text_12); // 08 Data Set Contact Phone
-		// dialogValues.add(text_13); // 9 Curator Name
-		// dialogValues.add(text_14); // 10 Curator Affiliation
-		// dialogValues.add(text_15); // 11 Curator Email
-		// dialogValues.add(text_16); // 12 Curator Phone
+		dialogValues.add(text_fileSize);           // 00 File Size (bytes)
+		dialogValues.add(text_lastModified);       // 01 File Last Modified
+		dialogValues.add(text_fileReadTime);       // 02 File Read Time
+		dialogValues.add(text_version);            // 03 Data Set Version
+		dialogValues.add(text_comments);           // 04 Data Set Comments
+		dialogValues.add(text_contactName);        // 05 Data Set Contact Name
+		dialogValues.add(text_contactAffiliation); // 06 Data Set Contact Affiliation
+		dialogValues.add(text_contactEmail);       // 07 Data Set Contact Email
+		dialogValues.add(text_contactPhone);       // 08 Data Set Contact Phone
 
 		// if (newDataSourceProvider != null) {
 		// lbl_01.setText("Type new name (or select existing)");
@@ -407,6 +300,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		// CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
+//		dialogValues.add(text_fileSize);           // 00 File Size (bytes)
+//		dialogValues.add(text_lastModified);       // 01 File Last Modified
+//		dialogValues.add(text_fileReadTime);       // 02 File Read Time
+//		dialogValues.add(text_version);            // 03 Data Set Version
+//		dialogValues.add(text_comments);           // 04 Data Set Comments
+//		dialogValues.add(text_contactName);        // 05 Data Set Contact Name
+//		dialogValues.add(text_contactAffiliation); // 06 Data Set Contact Affiliation
+//		dialogValues.add(text_contactEmail);       // 07 Data Set Contact Email
+//		dialogValues.add(text_contactPhone);       // 08 Data Set Contact Phone
+		
 		curDataSourceProvider.setDataSourceName(dataSourceName);
 		curDataSourceProvider.setVersion(dialogValues.get(3).getText());
 		curDataSourceProvider.setComments(dialogValues.get(4).getText());
