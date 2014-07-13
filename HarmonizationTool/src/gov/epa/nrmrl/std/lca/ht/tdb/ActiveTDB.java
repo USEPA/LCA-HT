@@ -15,6 +15,7 @@ import harmonizationtool.model.Person;
 //import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.FileMD;
+import harmonizationtool.model.PersonKeeper;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
@@ -146,11 +147,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			model.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			model.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		try {
 			graphStore.close();
 		} catch (Exception e) {
@@ -178,6 +179,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		updateStatusLine();
 		try {
 //			System.out.println("model = "+model);
+			syncTDBToPersonKeeper();
+			syncTDBToFileMDKeeper();
 			syncTDBToDataSourceKeeper();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
@@ -250,6 +253,40 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			e.printStackTrace();
 		} catch (NotHandledException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static void syncTDBToPersonKeeper() {
+		if (model == null) {
+			openTDB();
+		}
+		assert model != null : "model should not be null";
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.Person);
+		while (iterator.hasNext()) {
+			Resource personRDFResource = iterator.next();
+			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
+			int personIndex = PersonKeeper.getByTdbResource(personRDFResource);
+			if (personIndex < 0) {
+				new Person(personRDFResource);
+				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
+			}
+		}
+	}
+
+	public static void syncTDBToFileMDKeeper() {
+		if (model == null) {
+			openTDB();
+		}
+		assert model != null : "model should not be null";
+		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
+		while (iterator.hasNext()) {
+			Resource fileMDRDFResource = iterator.next();
+			int personIndex = PersonKeeper.getByTdbResource(fileMDRDFResource);
+			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
+			if (personIndex < 0) {
+//				new FileMD(fileMDRDFResource);
+				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
+			}
 		}
 	}
 

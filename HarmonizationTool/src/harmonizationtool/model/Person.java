@@ -33,7 +33,7 @@ public class Person {
 
 	public Person(Resource tdbResource) {
 		this.tdbResource = tdbResource;
-		syncDataFromTDB();
+//		syncDataFromTDB();
 	}
 
 	public Person(String name, String affiliation, String email, String phone) {
@@ -59,7 +59,9 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, XSDDatatype.XSDstring, name);
+		tdbResource.removeAll(FEDLCA.personName);
+		tdbResource.addProperty(FEDLCA.personName, name);
+//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, XSDDatatype.XSDstring, name);
 	}
 
 	public String getAffiliation() {
@@ -71,7 +73,9 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, XSDDatatype.XSDstring, affiliation);
+		tdbResource.removeAll(FEDLCA.affiliation);
+		tdbResource.addProperty(FEDLCA.affiliation, affiliation);
+//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, XSDDatatype.XSDstring, affiliation);
 	}
 
 	public String getEmail() {
@@ -83,7 +87,9 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, XSDDatatype.XSDstring, email);
+		tdbResource.removeAll(FEDLCA.email);
+		tdbResource.addProperty(FEDLCA.email, email);
+//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, XSDDatatype.XSDstring, email);
 	}
 
 	public String getPhone() {
@@ -95,66 +101,29 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, XSDDatatype.XSDstring, phone);
+		tdbResource.removeAll(FEDLCA.voicePhone);
+		tdbResource.addProperty(FEDLCA.voicePhone, phone);
+//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, XSDDatatype.XSDstring, phone);
 	}
 
 	public void syncDataFromTDB() {
-		NodeIterator nodeIterator;
-		RDFNode object;
-		Literal literal;
+		RDFNode resource;
+
 		if (tdbResource == null) {
 			return;
 		}
 
-		Resource resource = tdbResource.getPropertyResourceValue(FEDLCA.personName);
-		Literal asLiteral = resource.asLiteral();
-		name = (String)asLiteral.getValue();
-//		
-//		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.personName);
-//		if (nodeIterator.hasNext()) {
-//			object = nodeIterator.next();
-//			if (object.isLiteral()) {
-//				literal = object.asLiteral();
-//				Object javaObject = literal.getValue();
-//				if (javaObject.getClass().equals(String.class)) {
-//					name = (String) literal.getValue();
-//				}
-//			}
-//		}
+		resource = tdbResource.getProperty(FEDLCA.personName).getObject();
+		name = ActiveTDB.getStringFromLiteral(resource);
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.affiliation);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					affiliation = (String) literal.getValue();
-				}
-			}
-		}
-		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.email);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					email = (String) literal.getValue();
-				}
-			}
-		}
-		nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.voicePhone);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					phone = (String) literal.getValue();
-				}
-			}
-		}
+		resource = tdbResource.getProperty(FEDLCA.affiliation).getObject();
+		affiliation = ActiveTDB.getStringFromLiteral(resource);
+
+		resource = tdbResource.getProperty(FEDLCA.email).getObject();
+		email = ActiveTDB.getStringFromLiteral(resource);
+
+		resource = tdbResource.getProperty(FEDLCA.voicePhone).getObject();
+		phone = ActiveTDB.getStringFromLiteral(resource);
 	}
 
 	public void remove() {

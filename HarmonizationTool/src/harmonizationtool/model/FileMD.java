@@ -31,7 +31,7 @@ public class FileMD {
 
 	public FileMD(Resource tdbResource) {
 		this.tdbResource = tdbResource;
-		syncDataFromTDB();
+//		syncDataFromTDB();
 	}
 
 	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {

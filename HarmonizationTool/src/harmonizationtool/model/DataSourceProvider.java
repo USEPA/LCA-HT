@@ -134,54 +134,49 @@ public class DataSourceProvider {
 	}
 
 	public void syncFromTDB() {
-		List<Statement> labelStatements = tdbResource.listProperties(RDFS.label).toList();
-		if (labelStatements.size() > 0) {
-			dataSourceName = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
-			if (dataSourceName == null) {
-				return;
-			}
-			// RDFNode rdfNode = labelStatements.get(0).getObject();
-			// if (rdfNode.isLiteral()) {
-			// Object value = rdfNode.asLiteral().getValue();
-			// if (value instanceof String) {
-			// dataSourceName = (String) value;
-			// }
-			// }
+		RDFNode rdfNode;
+		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+
+		if (rdfNode == null) {
+			dataSourceName = DataSourceKeeper.uniquify("unkownName");
+		} else {
+			dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
+		}
+		
+		rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
+		if (rdfNode == null) {
+			version = "";
+		} else {
+			version = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
 
-		labelStatements = tdbResource.listProperties(RDFS.comment).toList();
-		if (labelStatements.size() > 0) {
-			comments = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
-		}
-		if (comments == null) {
+		rdfNode = tdbResource.getProperty(RDFS.comment).getObject();
+		if (rdfNode == null) {
 			comments = "";
+		} else {
+			comments = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
 
-		labelStatements = tdbResource.listProperties(DCTerms.hasVersion).toList();
-		if (labelStatements.size() > 0) {
-			version = ActiveTDB.getStringFromLiteral(labelStatements.get(0).getObject());
-//			version = labelStatements.get(0).getObject().toString();
-		}
 		if (version == null) {
 			version = "";
 		}
 
-		NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, FEDLCA.hasContactPerson);
-		while (nodeIterator.hasNext()) {
-			RDFNode contactPersonNode = nodeIterator.next();
-			if (!contactPersonNode.isLiteral()) {
-				Person person = new Person(contactPersonNode.asResource());
-				contactPerson = person;
-			}
-		}
+//		rdfNode = tdbResource.getProperty(FEDLCA.hasContactPerson).getObject();
+//		if (rdfNode != null){
+//			Person person = PersonKeeper.getPersonByTdbResource(rdfNode.asResource());
+//			if (person != null){
+//				person.syncDataFromTDB();
+//				this.contactPerson = person;
+//			}
+//		}
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.containsFile);
-		while (nodeIterator.hasNext()) {
-			RDFNode fileMDResource = nodeIterator.next();
-			if (!fileMDResource.isLiteral()) {
-				FileMD fileMD = new FileMD(fileMDResource.asResource());
-				addFileMD(fileMD);
-			}
-		}
+//		NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.containsFile);
+//		while (nodeIterator.hasNext()) {
+//			RDFNode fileMDResource = nodeIterator.next();
+//			if (!fileMDResource.isLiteral()) {
+//				FileMD fileMD = new FileMD(fileMDResource.asResource());
+//				addFileMD(fileMD);
+//			}
+//		}
 	}
 }

@@ -87,7 +87,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
 				fileMD.getFilename().length() - 4)));
 		this.newDataSourceProvider.addFileMD(callingFileMD);
-		this.newDataSourceProvider.setContactPerson(new Person());
+//		this.newDataSourceProvider.setContactPerson(new Person());
 		this.curDataSourceProvider = this.newDataSourceProvider;
 		DataSourceKeeper.add(newDataSourceProvider);
 		runLogger.info("SET META start - new file");
@@ -298,17 +298,20 @@ public class MetaDataDialog extends TitleAreaDialog {
 		String dataSourceName = comboDataSourceSelector.getText();
 		System.out.println("comboDataSourceSelector.getText() " + comboDataSourceSelector.getText());
 		Person contactPerson = curDataSourceProvider.getContactPerson();
+		if (contactPerson == null){
+			contactPerson = new Person();
+		}
 		// CuratorMD curatorMD = curDataSourceProvider.getCuratorMD();
 
-//		dialogValues.add(text_fileSize);           // 00 File Size (bytes)
-//		dialogValues.add(text_lastModified);       // 01 File Last Modified
-//		dialogValues.add(text_fileReadTime);       // 02 File Read Time
-//		dialogValues.add(text_version);            // 03 Data Set Version
-//		dialogValues.add(text_comments);           // 04 Data Set Comments
-//		dialogValues.add(text_contactName);        // 05 Data Set Contact Name
-//		dialogValues.add(text_contactAffiliation); // 06 Data Set Contact Affiliation
-//		dialogValues.add(text_contactEmail);       // 07 Data Set Contact Email
-//		dialogValues.add(text_contactPhone);       // 08 Data Set Contact Phone
+//		fileSize             // 00 File Size (bytes)
+//		lastModified         // 01 File Last Modified
+//		fileReadTime         // 02 File Read Time
+//		version              // 03 Data Set Version
+//		comments             // 04 Data Set Comments
+//		contactName          // 05 Data Set Contact Name
+//		contactAffiliation   // 06 Data Set Contact Affiliation
+//		contactEmail         // 07 Data Set Contact Email
+//		contactPhone         // 08 Data Set Contact Phone
 		
 		curDataSourceProvider.setDataSourceName(dataSourceName);
 		curDataSourceProvider.setVersion(dialogValues.get(3).getText());
