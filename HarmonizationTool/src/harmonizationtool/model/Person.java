@@ -29,25 +29,33 @@ public class Person {
 	public Person() {
 		this.tdbResource = model.createResource();
 		model.add(tdbResource, RDF.type, ECO.Person);
+		PersonKeeper.add(this);
 	}
 
 	public Person(Resource tdbResource) {
 		this.tdbResource = tdbResource;
-//		syncDataFromTDB();
+		syncDataFromTDB();
+		PersonKeeper.add(this);
 	}
 
 	public Person(String name, String affiliation, String email, String phone) {
 		super();
-		this.name = name;
-		this.affiliation = affiliation;
-		this.email = email;
-		this.phone = phone;
-		this.tdbResource = model.createResource();
-		model.add(tdbResource, RDF.type, ECO.Person);
-		model.add(this.tdbResource, FEDLCA.personName, model.createTypedLiteral(this.name));
-		model.add(this.tdbResource, FEDLCA.affiliation, model.createTypedLiteral(this.affiliation));
-		model.add(this.tdbResource, FEDLCA.email, model.createTypedLiteral(this.email));
-		model.add(this.tdbResource, FEDLCA.voicePhone, model.createTypedLiteral(this.phone));
+		setName(name);
+		setAffiliation(affiliation);
+		setEmail(email);
+		setPhone(phone);
+//		this.name = name;
+//		this.affiliation = affiliation;
+//		this.email = email;
+//		this.phone = phone;
+//		this.tdbResource = model.createResource();
+//		model.add(tdbResource, RDF.type, ECO.Person);
+//		model.add(this.tdbResource, FEDLCA.personName, model.createTypedLiteral(this.name));
+//		model.add(this.tdbResource, FEDLCA.affiliation, model.createTypedLiteral(this.affiliation));
+//		model.add(this.tdbResource, FEDLCA.email, model.createTypedLiteral(this.email));
+//		model.add(this.tdbResource, FEDLCA.voicePhone, model.createTypedLiteral(this.phone));
+		PersonKeeper.add(this);
+
 	}
 
 	public String getName() {

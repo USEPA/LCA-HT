@@ -1,5 +1,8 @@
 package harmonizationtool.model;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import harmonizationtool.vocabulary.ECO;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -7,7 +10,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class PersonKeeper {
 	private static List<Person> personList = new ArrayList<Person>();
@@ -18,7 +23,11 @@ public class PersonKeeper {
 	}
 
 	public static boolean add(Person person) {
-		return personList.add(person);
+		if (!personList.contains(person)){
+			personList.add(person);
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean remove(Person person) {
@@ -94,8 +103,7 @@ public class PersonKeeper {
 		}
 		return null;
 	}
-	
-	
+
 	public static int getByTdbResource(Resource tdbResource) {
 		Iterator<Person> iterator = personList.iterator();
 		while (iterator.hasNext()) {
@@ -107,7 +115,6 @@ public class PersonKeeper {
 		}
 		return -1;
 	}
-
 
 	public static Person getByName(String name) {
 		for (Person person : personList) {
@@ -124,5 +131,17 @@ public class PersonKeeper {
 
 	public static void setPersonList(List<Person> personList) {
 		PersonKeeper.personList = personList;
+	}
+
+	public static void syncFromTDB() {
+		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.Person);
+		while (iterator.hasNext()) {
+			Resource personRDFResource = iterator.next();
+			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
+			int personIndex = getByTdbResource(personRDFResource);
+			if (personIndex < 0) {
+				new Person(personRDFResource);
+			}
+		}
 	}
 }

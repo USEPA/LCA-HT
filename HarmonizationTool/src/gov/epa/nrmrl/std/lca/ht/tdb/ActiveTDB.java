@@ -179,7 +179,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		updateStatusLine();
 		try {
 //			System.out.println("model = "+model);
-			syncTDBToPersonKeeper();
+			PersonKeeper.syncFromTDB();
+//			syncTDBToPersonKeeper();
 			syncTDBToFileMDKeeper();
 			syncTDBToDataSourceKeeper();
 		} catch (Exception e) {
