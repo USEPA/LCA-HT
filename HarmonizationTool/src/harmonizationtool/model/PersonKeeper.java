@@ -137,7 +137,7 @@ public class PersonKeeper {
 		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.Person);
 		while (iterator.hasNext()) {
 			Resource personRDFResource = iterator.next();
-			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
+			// NOW SEE IF THE Person IS IN THE PersonKeeper YET
 			int personIndex = getByTdbResource(personRDFResource);
 			if (personIndex < 0) {
 				new Person(personRDFResource);

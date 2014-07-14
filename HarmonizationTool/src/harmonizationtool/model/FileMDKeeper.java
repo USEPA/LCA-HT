@@ -1,5 +1,9 @@
 package harmonizationtool.model;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.LCAHT;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -7,7 +11,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class FileMDKeeper {
 	private static List<FileMD> fileMDList = new ArrayList<FileMD>();
@@ -122,5 +128,16 @@ public class FileMDKeeper {
 
 	public static void setFileMDList(List<FileMD> fileMDList) {
 		FileMDKeeper.fileMDList = fileMDList;
+	}
+	public static void syncFromTDB() {
+		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
+		while (iterator.hasNext()) {
+			Resource fileMDRDFResource = iterator.next();
+			// NOW SEE IF THE Person IS IN THE PersonKeeper YET
+			int fileMDIndex = getByTdbResource(fileMDRDFResource);
+			if (fileMDIndex < 0) {
+				new FileMD(fileMDRDFResource);
+			}
+		}
 	}
 }

@@ -1,5 +1,8 @@
 package harmonizationtool.model;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import harmonizationtool.vocabulary.ECO;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -7,7 +10,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DataSourceKeeper {
 	private static List<DataSourceProvider> dataSourceProviderList = new ArrayList<DataSourceProvider>();
@@ -26,7 +31,8 @@ public class DataSourceKeeper {
 		return dataSourceProviderList.remove(dataSourceProvider);
 	}
 
-	// public static boolean remove(DataSourceProvider dataSourceProvider, boolean removeTDBData) {
+	// public static boolean remove(DataSourceProvider dataSourceProvider,
+	// boolean removeTDBData) {
 	// if (removeTDBData) {
 	// Resource tdbResource = dataSourceProvider.getTdbResource();
 	// ActiveTDB.removeAllWithSubject(tdbResource);
@@ -55,7 +61,8 @@ public class DataSourceKeeper {
 	}
 
 	/**
-	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE TDB
+	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE
+	 * TDB
 	 * 
 	 * @param proposedNewDataSourceName
 	 * @return
@@ -149,5 +156,17 @@ public class DataSourceKeeper {
 			}
 		}
 		return null;
+	}
+
+	public static void syncFromTDB() {
+		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+		while (iterator.hasNext()) {
+			Resource dataSourceRDFResource = iterator.next();
+			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
+			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
+			if (dataSourceIndex < 0) {
+				new DataSourceProvider(dataSourceRDFResource);
+			}
+		}
 	}
 }

@@ -3,19 +3,12 @@ package harmonizationtool.model;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.LCAHT;
 
-import java.util.Date;
-
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Person {
 	private String name;
@@ -28,7 +21,14 @@ public class Person {
 
 	public Person() {
 		this.tdbResource = model.createResource();
-		model.add(tdbResource, RDF.type, ECO.Person);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			model.add(tdbResource, RDF.type, ECO.Person);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+
 		PersonKeeper.add(this);
 	}
 
@@ -44,16 +44,20 @@ public class Person {
 		setAffiliation(affiliation);
 		setEmail(email);
 		setPhone(phone);
-//		this.name = name;
-//		this.affiliation = affiliation;
-//		this.email = email;
-//		this.phone = phone;
-//		this.tdbResource = model.createResource();
-//		model.add(tdbResource, RDF.type, ECO.Person);
-//		model.add(this.tdbResource, FEDLCA.personName, model.createTypedLiteral(this.name));
-//		model.add(this.tdbResource, FEDLCA.affiliation, model.createTypedLiteral(this.affiliation));
-//		model.add(this.tdbResource, FEDLCA.email, model.createTypedLiteral(this.email));
-//		model.add(this.tdbResource, FEDLCA.voicePhone, model.createTypedLiteral(this.phone));
+		// this.name = name;
+		// this.affiliation = affiliation;
+		// this.email = email;
+		// this.phone = phone;
+		// this.tdbResource = model.createResource();
+		// model.add(tdbResource, RDF.type, ECO.Person);
+		// model.add(this.tdbResource, FEDLCA.personName,
+		// model.createTypedLiteral(this.name));
+		// model.add(this.tdbResource, FEDLCA.affiliation,
+		// model.createTypedLiteral(this.affiliation));
+		// model.add(this.tdbResource, FEDLCA.email,
+		// model.createTypedLiteral(this.email));
+		// model.add(this.tdbResource, FEDLCA.voicePhone,
+		// model.createTypedLiteral(this.phone));
 		PersonKeeper.add(this);
 
 	}
@@ -67,9 +71,16 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		tdbResource.removeAll(FEDLCA.personName);
-		tdbResource.addProperty(FEDLCA.personName, name);
-//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, XSDDatatype.XSDstring, name);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.personName);
+			tdbResource.addProperty(FEDLCA.personName, name);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName,
+		// XSDDatatype.XSDstring, name);
 	}
 
 	public String getAffiliation() {
@@ -81,9 +92,16 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		tdbResource.removeAll(FEDLCA.affiliation);
-		tdbResource.addProperty(FEDLCA.affiliation, affiliation);
-//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, XSDDatatype.XSDstring, affiliation);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.affiliation);
+			tdbResource.addProperty(FEDLCA.affiliation, affiliation);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation,
+		// XSDDatatype.XSDstring, affiliation);
 	}
 
 	public String getEmail() {
@@ -95,9 +113,16 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		tdbResource.removeAll(FEDLCA.email);
-		tdbResource.addProperty(FEDLCA.email, email);
-//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, XSDDatatype.XSDstring, email);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.email);
+			tdbResource.addProperty(FEDLCA.email, email);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email,
+		// XSDDatatype.XSDstring, email);
 	}
 
 	public String getPhone() {
@@ -109,9 +134,16 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		tdbResource.removeAll(FEDLCA.voicePhone);
-		tdbResource.addProperty(FEDLCA.voicePhone, phone);
-//		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, XSDDatatype.XSDstring, phone);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.voicePhone);
+			tdbResource.addProperty(FEDLCA.voicePhone, phone);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone,
+		// XSDDatatype.XSDstring, phone);
 	}
 
 	public void syncDataFromTDB() {
@@ -135,10 +167,17 @@ public class Person {
 	}
 
 	public void remove() {
-		tdbResource.removeAll(FEDLCA.personName);
-		tdbResource.removeAll(FEDLCA.affiliation);
-		tdbResource.removeAll(FEDLCA.email);
-		tdbResource.removeAll(FEDLCA.voicePhone);
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.personName);
+			tdbResource.removeAll(FEDLCA.affiliation);
+			tdbResource.removeAll(FEDLCA.email);
+			tdbResource.removeAll(FEDLCA.voicePhone);
+
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
 	}
 
 	public static Resource getRdfclass() {

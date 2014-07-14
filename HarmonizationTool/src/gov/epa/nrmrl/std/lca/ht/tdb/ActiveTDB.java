@@ -9,20 +9,17 @@ import java.util.List;
 import java.util.Set;
 
 import harmonizationtool.dialog.GenericMessageBox;
-import harmonizationtool.model.CuratorMD;
 import harmonizationtool.model.DataSourceKeeper;
+import harmonizationtool.model.FileMDKeeper;
 import harmonizationtool.model.Person;
 //import harmonizationtool.model.ContactMD;
 import harmonizationtool.model.DataSourceProvider;
-import harmonizationtool.model.FileMD;
 import harmonizationtool.model.PersonKeeper;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.LCAHT;
 
-import org.apache.log4j.Logger;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -52,9 +49,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model model = null;
@@ -180,9 +175,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		try {
 //			System.out.println("model = "+model);
 			PersonKeeper.syncFromTDB();
+			FileMDKeeper.syncFromTDB();
+			DataSourceKeeper.syncFromTDB();
 //			syncTDBToPersonKeeper();
-			syncTDBToFileMDKeeper();
-			syncTDBToDataSourceKeeper();
+//			syncTDBToFileMDKeeper();
+//			syncTDBToDataSourceKeeper();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
@@ -225,7 +222,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					TDBDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 					assert TDBDataset != null : "TDBDataset cannot be null";
 					model = TDBDataset.getDefaultModel();
-					graphStore = GraphStoreFactory.create(TDBDataset);
+//					graphStore = GraphStoreFactory.create(TDBDataset);
 					System.out.println("TDB Successfully initiated!");
 				} catch (Exception e1) {
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
