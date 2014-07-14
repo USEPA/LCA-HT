@@ -11,15 +11,9 @@ import java.util.Set;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.DataSourceKeeper;
 import harmonizationtool.model.FileMDKeeper;
-import harmonizationtool.model.Person;
-//import harmonizationtool.model.ContactMD;
-import harmonizationtool.model.DataSourceProvider;
 import harmonizationtool.model.PersonKeeper;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.LCAHT;
-
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -49,7 +43,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model model = null;
@@ -254,65 +247,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-//	public static void syncTDBToPersonKeeper() {
-//		if (model == null) {
-//			openTDB();
-//		}
-//		assert model != null : "model should not be null";
-//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.Person);
-//		while (iterator.hasNext()) {
-//			Resource personRDFResource = iterator.next();
-//			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
-//			int personIndex = PersonKeeper.getByTdbResource(personRDFResource);
-//			if (personIndex < 0) {
-//				new Person(personRDFResource);
-//				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-//			}
-//		}
-//	}
-//
-//	public static void syncTDBToFileMDKeeper() {
-//		if (model == null) {
-//			openTDB();
-//		}
-//		assert model != null : "model should not be null";
-//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
-//		while (iterator.hasNext()) {
-//			Resource fileMDRDFResource = iterator.next();
-//			int personIndex = PersonKeeper.getByTdbResource(fileMDRDFResource);
-//			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-//			if (personIndex < 0) {
-////				new FileMD(fileMDRDFResource);
-//				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * Because the DataSourceKeeper does not contain DataSources, but the TDB might, we need to get
-//	 * DataSources info from the TDB. Each TDB subject which is rdf:type eco:DataSource should have
-//	 * a DataSourceProvider
-//	 */
-//	public static void syncTDBToDataSourceKeeper() {
-//		if (model == null) {
-//			openTDB();
-//		}
-//		assert model != null : "model should not be null";
-//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
-//		while (iterator.hasNext()) {
-//			Resource dataSourceRDFResource = iterator.next();
-//			int dataSourceIndex = DataSourceKeeper.getByTdbResource(dataSourceRDFResource);
-//			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-//			if (dataSourceIndex < 0) {
-////				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
-//				new DataSourceProvider(dataSourceRDFResource);
-//				// THE CONSTRUCTOR ABOVE SYNCS THE DataSourceProvider AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-////				dataSourceProvider.syncFromTDB();
-////				DataSourceKeeper.add(dataSourceProvider);
-//			}
-//		}
-//	}
-
 	public static String getStringFromLiteral(RDFNode rdfNode){
 		if (!rdfNode.isLiteral()){
 			return null;
@@ -348,65 +282,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		return null;
 	}
-//	public static void syncDataSourceProviderToTDB(DataSourceProvider dataSourceProvider) {
-//		// THIS SHOULD NOT BE NECESSARY, AS JAVA OBJECTS SHOULD SYNC ON CHANGE
-//
-//		DataSourceMD dataSourceMD = dataSourceProvider.getDataSourceMD();
-//
-//		Model model = ActiveTDB.model;
-//		Resource tdbResource = dataSourceProvider.getTdbResource();
-//		assert tdbResource != null : "tdbResource cannot be null";
-//		assert RDFS.label != null : "RDFS.label cannot be null";
-//		assert dataSourceMD.getPersonName() != null : "dataSourceMD.getName() cannot be null";
-//		System.out.println("tdbResource = " + tdbResource);
-//
-//		if (tdbResource.hasProperty(RDFS.label)) {
-//			tdbResource.removeAll(RDFS.label);
-//		}
-//		model.addLiteral(tdbResource, RDFS.label, model.createLiteral(dataSourceMD.getPersonName()));
-//
-//		// tdbResource.removeAll(RDFS.comment);
-//		model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSourceMD.getComments()));
-//
-//		tdbResource.removeAll(DCTerms.hasVersion);
-//		model.addLiteral(tdbResource, DCTerms.hasVersion, model.createLiteral(dataSourceMD.getVersion()));
-//
-//		tdbResource.removeAll(FEDLCA.personName);
-//		model.addLiteral(tdbResource, FEDLCA.personName, model.createLiteral(dataSourceMD.getContactName()));
-//
-//		tdbResource.removeAll(FEDLCA.affiliation);
-//		model.addLiteral(tdbResource, FEDLCA.affiliation, model.createLiteral(dataSourceMD.getContactAffiliation()));
-//
-//		tdbResource.removeAll(FEDLCA.email);
-//		model.addLiteral(tdbResource, FEDLCA.email, model.createLiteral(dataSourceMD.getContactEmail()));
-//
-//		tdbResource.removeAll(FEDLCA.voicePhone);
-//		model.addLiteral(tdbResource, FEDLCA.voicePhone, model.createLiteral(dataSourceMD.getContactPhone()));
-//
-//		tdbResource.removeAll(FEDLCA.personName);
-//		model.addLiteral(tdbResource, FEDLCA.personName, model.createLiteral(curatorMD.getName()));
-//
-//		tdbResource.removeAll(FEDLCA.affiliation);
-//		model.addLiteral(tdbResource, FEDLCA.affiliation, model.createLiteral(curatorMD.getAffiliation()));
-//
-//		tdbResource.removeAll(FEDLCA.email);
-//		model.addLiteral(tdbResource, FEDLCA.email, model.createLiteral(curatorMD.getEmail()));
-//
-//		tdbResource.removeAll(FEDLCA.voicePhone);
-//		model.addLiteral(tdbResource, FEDLCA.voicePhone, model.createLiteral(curatorMD.getPhone()));
-//
-//		if (!dataSourceMD.getComments().matches("^\\s*$")) {
-//			// ONLY IF NOT ALL WHITE SPACES
-//			model.addLiteral(tdbResource, RDFS.comment, model.createLiteral(dataSourceMD.getComments()));
-//		}
-//
-//		for (FileMD fileMD : dataSourceProvider.getFileMDList()) {
-//			if (fileMD.getTdbResource() == null) {
-//				fileMD.syncDataToTDB();
-//			}
-//			model.add(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-//		}
-//	}
 
 	public static int removeAllWithSubject(Resource subject) {
 		int count = 0;

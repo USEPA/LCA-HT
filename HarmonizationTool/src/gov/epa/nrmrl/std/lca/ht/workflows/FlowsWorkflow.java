@@ -561,7 +561,7 @@ public class FlowsWorkflow extends ViewPart {
 			}
 			Flow flow = new Flow();
 			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
-			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
+//			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
 			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {

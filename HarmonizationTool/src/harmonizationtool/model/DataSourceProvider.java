@@ -55,6 +55,9 @@ public class DataSourceProvider {
 	}
 
 	public void setContactPerson(Person contactPerson) {
+		if (contactPerson == null){
+			return;
+		}
 		this.contactPerson = contactPerson;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
@@ -162,10 +165,10 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
+		contactPerson.remove();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
-			contactPerson.remove();
 			tdbResource.removeAll(FEDLCA.hasContactPerson);
 			tdbResource.removeAll(RDFS.label);
 			tdbResource.removeAll(RDFS.comment);

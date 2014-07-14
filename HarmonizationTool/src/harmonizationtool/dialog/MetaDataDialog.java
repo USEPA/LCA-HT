@@ -84,7 +84,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
 				fileMD.getFilename().length() - 4)));
 		this.newDataSourceProvider.addFileMD(callingFileMD);
-		// this.newDataSourceProvider.setContactPerson(new Person());
 		this.curDataSourceProvider = this.newDataSourceProvider;
 		DataSourceKeeper.add(newDataSourceProvider);
 		runLogger.info("SET META start - new file");
@@ -304,7 +303,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues[1].setText(curDataSourceProvider.getComments());
 
 		Person contactPerson = curDataSourceProvider.getContactPerson();
-
 		if (contactPerson == null) {
 			contactPerson = new Person();
 			curDataSourceProvider.setContactPerson(contactPerson);
