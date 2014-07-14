@@ -6,15 +6,13 @@ import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.LCAHT;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -32,8 +30,16 @@ public class DataSourceProvider {
 	private boolean isMaster = false;
 
 	public DataSourceProvider() {
-		tdbResource = model.createResource();
-		model.add(tdbResource, RDF.type, ECO.DataSource);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource = model.createResource();
+			model.add(tdbResource, RDF.type, ECO.DataSource);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public DataSourceProvider(Resource tdbResource) {
@@ -50,13 +56,29 @@ public class DataSourceProvider {
 
 	public void setContactPerson(Person contactPerson) {
 		this.contactPerson = contactPerson;
-		tdbResource.removeAll(FEDLCA.hasContactPerson);
-		tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeAll(FEDLCA.hasContactPerson);
+			tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public Resource getTdbResource() {
 		if (tdbResource == null) {
-			tdbResource = ActiveTDB.model.createResource();
+			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+			ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+			try {
+				tdbResource = ActiveTDB.model.createResource();
+				ActiveTDB.TDBDataset.commit();
+			} finally {
+				ActiveTDB.TDBDataset.end();
+			}
+			// ---- END SAFE -WRITE- TRANSACTION ---
 		}
 		assert tdbResource != null : "tdbResource cannot be null";
 		return tdbResource;
@@ -68,17 +90,67 @@ public class DataSourceProvider {
 
 	public void addFileMD(FileMD fileMD) {
 		fileMDList.add(fileMD);
-		tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public List<FileMD> getFileMDList() {
 		return fileMDList;
 	}
 
+	public List<FileMD> getFileMDListNewestFirst() {
+		List<FileMD> results = new ArrayList<FileMD>();
+		for (FileMD fileMD: fileMDList){
+			Date readDate = fileMD.getReadDate();
+			int index = results.size();
+			for (FileMD newFileMD:results){
+				Date newReadDate = newFileMD.getReadDate();
+				if (readDate.after(newReadDate)){
+					index = results.indexOf(newFileMD);
+					break;
+				}
+			}
+			results.add(index, fileMD);
+		}
+		return results;
+	}
+	
+	public List<FileMD> getFileMDListOldestFirst() {
+		List<FileMD> results = new ArrayList<FileMD>();
+		for (FileMD fileMD: fileMDList){
+			Date readDate = fileMD.getReadDate();
+			int index = results.size();
+			for (FileMD newFileMD:results){
+				Date newReadDate = newFileMD.getReadDate();
+				if (readDate.before(newReadDate)){
+					index = results.indexOf(newFileMD);
+					break;
+				}
+			}
+			results.add(index, fileMD);
+		}
+		return results;
+	}
+	
 	public void remove(FileMD fileMD) {
-		fileMD.remove();
+		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
-		ActiveTDB.model.remove(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			ActiveTDB.model.remove(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void removeFileMDList() {
@@ -90,12 +162,20 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
-		contactPerson.remove();
-		tdbResource.removeAll(FEDLCA.hasContactPerson);
-		tdbResource.removeAll(RDFS.label);
-		tdbResource.removeAll(RDFS.comment);
-		tdbResource.removeAll(DCTerms.hasVersion);
-		model.remove(tdbResource, RDF.type, ECO.DataSource);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			contactPerson.remove();
+			tdbResource.removeAll(FEDLCA.hasContactPerson);
+			tdbResource.removeAll(RDFS.label);
+			tdbResource.removeAll(RDFS.comment);
+			tdbResource.removeAll(DCTerms.hasVersion);
+			model.remove(tdbResource, RDF.type, ECO.DataSource);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public boolean isMaster() {
@@ -112,7 +192,15 @@ public class DataSourceProvider {
 
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getVersion() {
@@ -121,7 +209,15 @@ public class DataSourceProvider {
 
 	public void setVersion(String version) {
 		this.version = version;
-		ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getComments() {
@@ -130,7 +226,15 @@ public class DataSourceProvider {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		try {
+			ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void syncFromTDB() {
@@ -142,7 +246,7 @@ public class DataSourceProvider {
 		} else {
 			dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
-		
+
 		rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
 		if (rdfNode == null) {
 			version = "";
@@ -160,23 +264,5 @@ public class DataSourceProvider {
 		if (version == null) {
 			version = "";
 		}
-
-//		rdfNode = tdbResource.getProperty(FEDLCA.hasContactPerson).getObject();
-//		if (rdfNode != null){
-//			Person person = PersonKeeper.getPersonByTdbResource(rdfNode.asResource());
-//			if (person != null){
-//				person.syncDataFromTDB();
-//				this.contactPerson = person;
-//			}
-//		}
-
-//		NodeIterator nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.containsFile);
-//		while (nodeIterator.hasNext()) {
-//			RDFNode fileMDResource = nodeIterator.next();
-//			if (!fileMDResource.isLiteral()) {
-//				FileMD fileMD = new FileMD(fileMDResource.asResource());
-//				addFileMD(fileMD);
-//			}
-//		}
 	}
 }

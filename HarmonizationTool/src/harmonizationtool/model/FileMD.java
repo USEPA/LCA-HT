@@ -27,6 +27,7 @@ public class FileMD {
 	private static final Model model = ActiveTDB.model;
 
 	public FileMD() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			this.tdbResource = model.createResource();
@@ -34,6 +35,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 		FileMDKeeper.add(this);
 	}
 
@@ -50,26 +52,7 @@ public class FileMD {
 		setByteCount(size);
 		setModifiedDate(modifiedDate);
 		setReadDate(readDate);
-
-		// this.filename = filename;
-		// this.path = path;
-		// this.byteCount = size;
-		// this.modifiedDate = modifiedDate;
-		// this.readDate = readDate;
-		// this.tdbResource = model.createResource();
-		// model.add(tdbResource, RDF.type, LCAHT.dataFile);
-		// model.add(this.tdbResource, LCAHT.fileName,
-		// model.createTypedLiteral(this.filename));
-		// model.add(this.tdbResource, LCAHT.filePath,
-		// model.createTypedLiteral(this.path));
-		// model.add(this.tdbResource, LCAHT.byteCount,
-		// model.createTypedLiteral(this.byteCount));
-		// model.add(this.tdbResource, LCAHT.fileModifiedDate,
-		// model.createTypedLiteral(this.modifiedDate));
-		// model.add(this.tdbResource, LCAHT.fileReadDate,
-		// model.createTypedLiteral(this.readDate));
 		FileMDKeeper.add(this);
-
 	}
 
 	public String getFilename() {
@@ -77,6 +60,7 @@ public class FileMD {
 	}
 
 	public void setFilename(String filename) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			this.filename = filename;
@@ -85,11 +69,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-		//
-		// if (tdbResource == null) {
-		// tdbResource = model.createResource();
-		// }
-		// ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileName, filename);
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getPath() {
@@ -98,6 +78,7 @@ public class FileMD {
 
 	public void setPath(String path) {
 		this.path = path;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.filePath);
@@ -106,10 +87,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-		// if (tdbResource == null) {
-		// tdbResource = model.createResource();
-		// }
-		// ActiveTDB.replaceLiteral(tdbResource, LCAHT.filePath, path);
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public long getByteCount() {
@@ -118,25 +96,17 @@ public class FileMD {
 
 	public void setByteCount(long size) {
 		this.byteCount = size;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.byteCount);
 			tdbResource.addLiteral(LCAHT.byteCount, byteCount);
-			// tdbResource.removeAll(LCAHT.filePath);
-			// tdbResource.addProperty(LCAHT.filePath, path);
 			ActiveTDB.TDBDataset.commit();
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-		// tdbResource.removeAll(LCAHT.byteCount);
-		// tdbResource.addLiteral(LCAHT.byteCount, byteCount);
-		// tdbResource.addProperty(LCAHT.byteCount, size);
-		//
-		// if (tdbResource == null) {
-		// tdbResource = model.createResource();
-		// }
-		// ActiveTDB.replaceLiteral(tdbResource, LCAHT.byteCount, size);
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public Date getModifiedDate() {
@@ -145,6 +115,7 @@ public class FileMD {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
@@ -153,13 +124,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-
-		//
-		// if (tdbResource == null) {
-		// tdbResource = model.createResource();
-		// }
-		// ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileModifiedDate,
-		// modifiedDate);
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public Date getReadDate() {
@@ -168,6 +133,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.fileReadDate);
@@ -176,12 +142,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-
-		//
-		// if (tdbResource == null) {
-		// tdbResource = model.createResource();
-		// }
-		// ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getEncoding() {
@@ -193,7 +154,7 @@ public class FileMD {
 			// WARN THAT THIS ENCODING HAS NOT BEEN SEEN
 		}
 		this.encoding = encoding;
-		
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
@@ -201,7 +162,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	@Override
@@ -216,6 +177,7 @@ public class FileMD {
 	public void setTdbResource(Resource tdbResource) {
 		assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			model.add(tdbResource, RDF.type, LCAHT.dataFile);
@@ -223,7 +185,7 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void syncDataFromTDB() {
@@ -302,6 +264,7 @@ public class FileMD {
 	}
 
 	public void syncDataToTDB() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			if (tdbResource == null) {
@@ -325,12 +288,13 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void remove() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
-
 			tdbResource.removeAll(LCAHT.fileName);
 			tdbResource.removeAll(LCAHT.filePath);
 			tdbResource.removeAll(LCAHT.fileEncoding);
@@ -340,10 +304,6 @@ public class FileMD {
 		} finally {
 			ActiveTDB.TDBDataset.end();
 		}
-
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	// public static FileMD syncFromTDB(Resource fileMDResource) {
-	// FileMD fileMD = new FileMD(fileMDResource);
-	// return fileMD;
-	// }
 }

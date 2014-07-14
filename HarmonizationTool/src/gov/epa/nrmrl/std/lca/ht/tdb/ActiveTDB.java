@@ -173,13 +173,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 		updateStatusLine();
 		try {
-//			System.out.println("model = "+model);
-			PersonKeeper.syncFromTDB();
-			FileMDKeeper.syncFromTDB();
-			DataSourceKeeper.syncFromTDB();
-//			syncTDBToPersonKeeper();
-//			syncTDBToFileMDKeeper();
-//			syncTDBToDataSourceKeeper();
+			syncTDBtoLCAHT();
 		} catch (Exception e) {
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
@@ -189,6 +183,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
+	public static void syncTDBtoLCAHT(){
+		PersonKeeper.syncFromTDB();
+		FileMDKeeper.syncFromTDB();
+		DataSourceKeeper.syncFromTDB();
+	}
+	
 	private void updateStatusLine() {
 
 	}
@@ -222,7 +222,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					TDBDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 					assert TDBDataset != null : "TDBDataset cannot be null";
 					model = TDBDataset.getDefaultModel();
-//					graphStore = GraphStoreFactory.create(TDBDataset);
+					graphStore = GraphStoreFactory.create(TDBDataset);
 					System.out.println("TDB Successfully initiated!");
 				} catch (Exception e1) {
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -254,64 +254,64 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-	public static void syncTDBToPersonKeeper() {
-		if (model == null) {
-			openTDB();
-		}
-		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.Person);
-		while (iterator.hasNext()) {
-			Resource personRDFResource = iterator.next();
-			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
-			int personIndex = PersonKeeper.getByTdbResource(personRDFResource);
-			if (personIndex < 0) {
-				new Person(personRDFResource);
-				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-			}
-		}
-	}
-
-	public static void syncTDBToFileMDKeeper() {
-		if (model == null) {
-			openTDB();
-		}
-		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
-		while (iterator.hasNext()) {
-			Resource fileMDRDFResource = iterator.next();
-			int personIndex = PersonKeeper.getByTdbResource(fileMDRDFResource);
-			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-			if (personIndex < 0) {
-//				new FileMD(fileMDRDFResource);
-				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-			}
-		}
-	}
-
-	/**
-	 * Because the DataSourceKeeper does not contain DataSources, but the TDB might, we need to get
-	 * DataSources info from the TDB. Each TDB subject which is rdf:type eco:DataSource should have
-	 * a DataSourceProvider
-	 */
-	public static void syncTDBToDataSourceKeeper() {
-		if (model == null) {
-			openTDB();
-		}
-		assert model != null : "model should not be null";
-		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
-		while (iterator.hasNext()) {
-			Resource dataSourceRDFResource = iterator.next();
-			int dataSourceIndex = DataSourceKeeper.getByTdbResource(dataSourceRDFResource);
-			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-			if (dataSourceIndex < 0) {
-//				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
-				new DataSourceProvider(dataSourceRDFResource);
-				// THE CONSTRUCTOR ABOVE SYNCS THE DataSourceProvider AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
-//				dataSourceProvider.syncFromTDB();
-//				DataSourceKeeper.add(dataSourceProvider);
-			}
-		}
-	}
+//	public static void syncTDBToPersonKeeper() {
+//		if (model == null) {
+//			openTDB();
+//		}
+//		assert model != null : "model should not be null";
+//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.Person);
+//		while (iterator.hasNext()) {
+//			Resource personRDFResource = iterator.next();
+//			// NOW SEE IF THE DataSource IS IN THE PersonKeeper YET
+//			int personIndex = PersonKeeper.getByTdbResource(personRDFResource);
+//			if (personIndex < 0) {
+//				new Person(personRDFResource);
+//				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
+//			}
+//		}
+//	}
+//
+//	public static void syncTDBToFileMDKeeper() {
+//		if (model == null) {
+//			openTDB();
+//		}
+//		assert model != null : "model should not be null";
+//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
+//		while (iterator.hasNext()) {
+//			Resource fileMDRDFResource = iterator.next();
+//			int personIndex = PersonKeeper.getByTdbResource(fileMDRDFResource);
+//			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
+//			if (personIndex < 0) {
+////				new FileMD(fileMDRDFResource);
+//				// THE CONSTRUCTOR ABOVE SYNCS AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
+//			}
+//		}
+//	}
+//
+//	/**
+//	 * Because the DataSourceKeeper does not contain DataSources, but the TDB might, we need to get
+//	 * DataSources info from the TDB. Each TDB subject which is rdf:type eco:DataSource should have
+//	 * a DataSourceProvider
+//	 */
+//	public static void syncTDBToDataSourceKeeper() {
+//		if (model == null) {
+//			openTDB();
+//		}
+//		assert model != null : "model should not be null";
+//		ResIterator iterator = model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+//		while (iterator.hasNext()) {
+//			Resource dataSourceRDFResource = iterator.next();
+//			int dataSourceIndex = DataSourceKeeper.getByTdbResource(dataSourceRDFResource);
+//			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
+//			if (dataSourceIndex < 0) {
+////				DataSourceProvider dataSourceProvider = new DataSourceProvider(dataSourceRDFResource);
+//				new DataSourceProvider(dataSourceRDFResource);
+//				// THE CONSTRUCTOR ABOVE SYNCS THE DataSourceProvider AUTOMATICALLY, SO THE STATEMENTS BELOW AREN'T NEEDED
+////				dataSourceProvider.syncFromTDB();
+////				DataSourceKeeper.add(dataSourceProvider);
+//			}
+//		}
+//	}
 
 	public static String getStringFromLiteral(RDFNode rdfNode){
 		if (!rdfNode.isLiteral()){

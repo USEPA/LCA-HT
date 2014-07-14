@@ -3,15 +3,19 @@ package harmonizationtool.query;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableProvider;
+import harmonizationtool.vocabulary.ECO;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class HarmonyBaseUpdate implements HarmonyQuery {
 
@@ -36,11 +40,11 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	}
 
 	private void executeQuery() {
-//		Query query = QueryFactory.create(queryStr);
+		// Query query = QueryFactory.create(queryStr);
 		Model model = ActiveTDB.model;
-		if(model== null){
-//			String msg = "ERROR no TDB open";
-//			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		if (model == null) {
+			// String msg = "ERROR no TDB open";
+			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return;
 		}
 
@@ -48,65 +52,71 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
 		queryResults.setColumnHeaders(columnHeaders);
-		
+
 		long change = model.size();
-		
+
 		columnHeaders.add("Model");
 		columnHeaders.add("Size");
-		
+
 		System.err.printf("Before Update: %s\n", model.size());
-//		data.add("Before Update");
-//		data.add(""+model.size());
-		
+		// data.add("Before Update");
+		// data.add(""+model.size());
+
 		TableProvider tableProvider = new TableProvider();
 		queryResults.setTableProvider(tableProvider);
 		DataRow dataRow = new DataRow();
 		tableProvider.addDataRow(dataRow);
 		dataRow.add("Before Update");
-		dataRow.add(""+ model.size());
+		dataRow.add("" + model.size());
 
-//		Resource s = model.createResource("<http://I>");
-//		Property p = model.createProperty("<http://am>");
-//		Resource o = model.createResource("<http://I>");
-//		Statement statement = model.createStatement(s, p, o);
-//		model.add(statement);
-//		model.add(s, p, o);
-//		model.add(s,p,"hello");
+		// Resource s = model.createResource("<http://I>");
+		// Property p = model.createProperty("<http://am>");
+		// Resource o = model.createResource("<http://I>");
+		// Statement statement = model.createStatement(s, p, o);
+		// model.add(statement);
+		// model.add(s, p, o);
+		// model.add(s,p,"hello");
 
-//		model.getResource(arg0);
+		// model.getResource(arg0);
 		long startTime = System.currentTimeMillis();
 		String sparqlUpdateString = queryStr;
 		System.out.println("query = " + sparqlUpdateString.toString());
-		UpdateRequest request = UpdateFactory.create(sparqlUpdateString);
-		UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
+			UpdateRequest request = UpdateFactory.create(sparqlUpdateString);
+			UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 			proc.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
+			ActiveTDB.TDBDataset.commit();
+		} finally {
+			ActiveTDB.TDBDataset.end();
 		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		System.out.println("Time elapsed: " + elapsedTimeSec);
 		System.err.printf("After Update: %s\n", model.size());
-//		data.add("After Update");
-//		data.add("" + model.size());
+		// data.add("After Update");
+		// data.add("" + model.size());
 		DataRow dataRow2 = new DataRow();
 		tableProvider.addDataRow(dataRow2);
 		dataRow2.add("After Update");
 		dataRow2.add("" + model.size());
-		
+
 		change = model.size() - change;
 		System.err.printf("Net Increase: %s\n", change);
 		DataRow dataRow3 = new DataRow();
 		tableProvider.addDataRow(dataRow3);
-		
+
 		String increase = "New Triples:";
-		
-		if (change < 0){
+
+		if (change < 0) {
 			increase = "Triples removed:";
-			change=0-change;
+			change = 0 - change;
 		}
-//		data.add(increase);
-//		data.add("" + change);
+		// data.add(increase);
+		// data.add("" + change);
 		dataRow3.add(increase);
 		dataRow3.add("" + change);
 
@@ -124,11 +134,11 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	public QueryResults getQueryResults() {
 		return queryResults;
 	}
-//
-//	@Override
-//	public List<String> getDataXform() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	//
+	// @Override
+	// public List<String> getDataXform() {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 }

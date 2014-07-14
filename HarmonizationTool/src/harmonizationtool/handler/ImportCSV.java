@@ -69,10 +69,6 @@ public class ImportCSV implements IHandler {
 
 			if (!file.exists()) {
 				runLogger.warn("# File not found\n");
-
-				// String msg = "File does not exist!";
-				// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-				// System.out.println(msg);
 				return null;
 			}
 		}
@@ -84,34 +80,10 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		if (fileReader == null) {
-			// String msg = "Can not read CSV file!";
 			runLogger.error("# File not readable\n");
-
-			// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			// System.out.println(msg);
 			return null;
 		}
-		// FileEncodingUtil checkFileEncoding = new FileEncodingUtil();
-		// List<NonAsciiChar> nonAsciiCandidates = FileEncodingUtil.getFirstNonAsciiChar(path, 0);
-		// String cr = System.getProperty("line.separator");
-		// for (int i = 0; i < nonAsciiCandidates.size(); i++) {
-		// NonAsciiChar nonAsciiChar = nonAsciiCandidates.get(i);
-		// String message = "# Character Encoding info:" + cr;
-		// message += "#    File: " + path + cr;
-		// message += "#    Encoding: " + nonAsciiChar.encoding + cr;
-		// message += "#    First non-ASCII character: ->" + nonAsciiChar.character + "<-" + cr;
-		// message += "#    Occuring on line: " + nonAsciiChar.lineNumber + cr;
-		// message += "#    Characters to the left: " + nonAsciiChar.colNumber + cr;
-		// runLogger.info(message);
-		// }
 
-		// checkFileEncoding.firstNonAsciiChars("basic");
-		// String issues = checkFileEncoding.showFileIssues(path);
-		// if (issues != null) {
-		// runLogger.warn("# Non-ASCII issues found:\n" + issues);
-		// System.out.println("Issues found with file: " + path + ":\n" +
-		// issues);
-		// }
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
 		String[] values = null;
 		try {
@@ -120,11 +92,10 @@ public class ImportCSV implements IHandler {
 			e.printStackTrace();
 		}
 		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
-			// String msg = "No content in CSV file!";
 			runLogger.warn("# No content in CSV file!");
 
 			// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			// System.out.println(msg);
+			// System.out.println(" No content in CSV file!");
 			return null;
 		}
 		fileMD.setFilename(file.getName());
@@ -137,16 +108,23 @@ public class ImportCSV implements IHandler {
 		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
 		runLogger.info("# File size: " + file.length());
 
+		System.out.println("All's fine before opening dialog");
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
 		dialog.create();
 		if (dialog.open() == MetaDataDialog.CANCEL) { // FIXME
 			fileMD.remove();
 			return null;
 		}
-
+		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(fileMD);
+		System.out.println("FileMD set in tableProvider");
+
 		tableProvider.setDataSourceProvider(dialog.getCurDataSourceProvider());
+		System.out.println("DataSource set in tableProvider");
+
 		TableKeeper.saveTableProvider(path, tableProvider);
+		System.out.println("Save tableProvider in TableKeeper");
+
 		
 
 		// READ THE FILE NOW

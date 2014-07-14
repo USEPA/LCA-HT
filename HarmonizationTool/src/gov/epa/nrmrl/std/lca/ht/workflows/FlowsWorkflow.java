@@ -388,8 +388,15 @@ public class FlowsWorkflow extends ViewPart {
 				// throw new
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
-			textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
-			textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+			String key = CSVTableView.getTableProviderKey();
+			if (key == null){
+				System.out.println("The CSVTableView does not have a table!");
+			} else {
+				textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+				textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+			}
+//			textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+//			textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
 
 			setHeaderInfo();
 			btnCheckData.setEnabled(true);

@@ -120,7 +120,7 @@ public class ImportTDBHandler implements IHandler {
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					runLogger.info("LOAD RDF "+fileName);
-					ActiveTDB.syncTDBToDataSourceKeeper();
+					ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -155,7 +155,7 @@ public class ImportTDBHandler implements IHandler {
 
 							model.read(zipStream, null, inputType);
 							
-							ActiveTDB.syncTDBToDataSourceKeeper();
+							ActiveTDB.syncTDBtoLCAHT();
 
 							// jenaReader.read(model, zipStream, null);
 						}
