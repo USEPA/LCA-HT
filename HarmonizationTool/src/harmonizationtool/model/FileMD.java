@@ -19,7 +19,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class FileMD {
 	private String filename;
 	private String path;
-	private String encoding = null;
+	private String encoding;
 	private long byteCount;
 	private Date modifiedDate;
 	private Date readDate;
@@ -189,107 +189,76 @@ public class FileMD {
 	}
 
 	public void syncDataFromTDB() {
-		NodeIterator nodeIterator;
-		RDFNode object;
-		Literal literal;
+		// NodeIterator nodeIterator;
+		System.out.println("sync line: 1");
+
+		RDFNode rdfNode;
 		if (tdbResource == null) {
 			return;
 		}
+		System.out.println("sync line: 2");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileName);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					filename = (String) literal.getValue();
-				}
-			}
+		rdfNode = tdbResource.getProperty(LCAHT.fileName).getObject();
+		if (rdfNode != null) {
+			filename = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
+		System.out.println("sync line: 3");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.filePath);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					path = (String) literal.getValue();
-				}
-			}
+		rdfNode = tdbResource.getProperty(LCAHT.filePath).getObject();
+		if (rdfNode != null) {
+			path = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
+		System.out.println("sync line: 4");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileEncoding);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getValue();
-				if (javaObject.getClass().equals(String.class)) {
-					encoding = (String) literal.getValue();
-				}
-			}
-		}
+//		rdfNode = tdbResource.getProperty(LCAHT.fileEncoding).getObject();
+//		if (rdfNode != null) {
+//			encoding = ActiveTDB.getStringFromLiteral(rdfNode);
+//		}
+//		System.out.println("sync line: 5");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.byteCount);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				Object javaObject = literal.getLong();
-				if (javaObject.getClass().equals(Long.class)) {
-					byteCount = literal.getLong();
-				}
-			}
-		}
+		byteCount = 123; // TEMP HACK FIXME
+		// rdfNode = tdbResource.getProperty(LCAHT.byteCount).getObject();
+		// byteCount = rdfNode.asLiteral().getLong();
+		System.out.println("sync line: 6");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileModifiedDate);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				modifiedDate = ActiveTDB.getDateFromLiteral(literal);
-			}
-		}
+		// rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
+		// modifiedDate = new Date(rdfNode.asLiteral().getLong());
+		modifiedDate = new Date(); // TEMP HACK FIXME
+		System.out.println("sync line: 7");
 
-		nodeIterator = model.listObjectsOfProperty(tdbResource, LCAHT.fileReadDate);
-		if (nodeIterator.hasNext()) {
-			object = nodeIterator.next();
-			if (object.isLiteral()) {
-				literal = object.asLiteral();
-				readDate = ActiveTDB.getDateFromLiteral(literal);
-			}
-		}
+		// rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
+		// readDate = new Date(rdfNode.asLiteral().getLong());
+		readDate = new Date(); // TEMP HACK FIXME
+		System.out.println("sync line: 8");
 	}
 
-	public void syncDataToTDB() {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			if (tdbResource == null) {
-				tdbResource = model.createResource();
-			}
-			model.add(tdbResource, RDF.type, LCAHT.dataFile);
-			model.add(tdbResource, LCAHT.fileName, model.createTypedLiteral(filename));
-			model.add(tdbResource, LCAHT.filePath, model.createTypedLiteral(path));
-			// Literal byteCountLiteral = model.createTypedLiteral(byteCount);
-			// model.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
-			// NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ.
-			// OF
-			// DIGITS)
-			// NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO
-			// -2147483648
-			// TO 2147483647)
-			model.add(tdbResource, LCAHT.byteCount, model.createTypedLiteral(byteCount));
-			model.add(tdbResource, LCAHT.fileModifiedDate, model.createTypedLiteral(modifiedDate));
-			model.add(tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(readDate));
-			ActiveTDB.TDBDataset.commit();
-		} finally {
-			ActiveTDB.TDBDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-	}
+	// public void syncDataToTDB() {
+	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+	// ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+	// try {
+	// if (tdbResource == null) {
+	// tdbResource = model.createResource();
+	// }
+	// model.add(tdbResource, RDF.type, LCAHT.dataFile);
+	// model.add(tdbResource, LCAHT.fileName, model.createTypedLiteral(filename));
+	// model.add(tdbResource, LCAHT.filePath, model.createTypedLiteral(path));
+	// // Literal byteCountLiteral = model.createTypedLiteral(byteCount);
+	// // model.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
+	// // NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ.
+	// // OF
+	// // DIGITS)
+	// // NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO
+	// // -2147483648
+	// // TO 2147483647)
+	// model.add(tdbResource, LCAHT.byteCount, model.createTypedLiteral(byteCount));
+	// model.add(tdbResource, LCAHT.fileModifiedDate, model.createTypedLiteral(modifiedDate));
+	// model.add(tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(readDate));
+	// ActiveTDB.TDBDataset.commit();
+	// } finally {
+	// ActiveTDB.TDBDataset.end();
+	// }
+	// // ---- END SAFE -WRITE- TRANSACTION ---
+	// }
 
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---

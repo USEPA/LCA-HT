@@ -96,7 +96,7 @@ public class FileMDKeeper {
 	}
 	
 	
-	public static int getByTdbResource(Resource tdbResource) {
+	public static int getIndexByTdbResource(Resource tdbResource) {
 		Iterator<FileMD> iterator = fileMDList.iterator();
 		while (iterator.hasNext()) {
 			FileMD fileMD = iterator.next();
@@ -129,8 +129,8 @@ public class FileMDKeeper {
 		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
 		while (iterator.hasNext()) {
 			Resource fileMDRDFResource = iterator.next();
-			// NOW SEE IF THE Person IS IN THE PersonKeeper YET
-			int fileMDIndex = getByTdbResource(fileMDRDFResource);
+			// NOW SEE IF THE FileMD IS IN THE FileMDKeeper YET
+			int fileMDIndex = getIndexByTdbResource(fileMDRDFResource);
 			if (fileMDIndex < 0) {
 				new FileMD(fileMDRDFResource);
 			}

@@ -413,69 +413,41 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
-	private void renameDataSource() {
-
-//		GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboSelectorDataSource.getText(),
-//				comboSelectorDataSource.getItems());
-//
-//		genericStringBox.create("Name Data Set", "Please type a new data set name");
-//		genericStringBox.open();
-//
-//		String newFileName = genericStringBox.getResultString();
-//		if (newFileName == null) {
-//			// cancel PRESSED
-//			return;
-//		}
-//
-//		if (comboSelectorDataSource.getText().equals(newFileName)) {
-//			// SAME NAME, DO NOTHING
-//			return;
-//		}
-//
-//		if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-//			new GenericMessageBox(getParentShell(), "Duplicate Name",
-//					"Data Set names must be onePerParentGroup.  Please choose a new name.");
-//			return;
-//		}
-//		curDataSourceProvider.setDataSourceName(newFileName);
-//		comboSelectorDataSource.setItem(comboSelectorDataSource.getSelectionIndex(), newFileName);
-	}
-
 	private final class RenameButtonClickListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
 			System.out.println("About to new box...");
-//			GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboSelectorDataSource.getText(),
-//					comboSelectorDataSource.getItems());
-//			System.out.println("About to create box...");
-//
-//			genericStringBox.create("Name Data Set", "Please type a new data set name");
-//			System.out.println("About to open box...");
-//
-//			genericStringBox.open();
-//
-//			System.out.println("Box is open...");
-//
-//			String newFileName = genericStringBox.getResultString();
-//			if (newFileName == null) {
-//				// cancel PRESSED
-//				return;
-//			}
-//
-//			if (comboSelectorDataSource.getText().equals(newFileName)) {
-//				if (comboSelectorDataSource.getText().equals(newFileName)) {
-//					// SAME NAME, DO NOTHING
-//					return;
-//				}
-//
-//				if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-//					new GenericMessageBox(getParentShell(), "Duplicate Name",
-//							"Data Set names must be onePerParentGroup.  Please choose a new name.");
-//					return;
-//				}
-//				curDataSourceProvider.setDataSourceName(newFileName);
-//				comboSelectorDataSource.setItem(comboSelectorDataSource.getSelectionIndex(), newFileName);
-//			}
+			GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboSelectorDataSource.getText(),
+					comboSelectorDataSource.getItems());
+			System.out.println("About to create box...");
+
+			genericStringBox.create("Name Data Set", "Please type a new data set name");
+			System.out.println("About to open box...");
+
+			genericStringBox.open();
+
+			System.out.println("Box is open...");
+
+			String newFileName = genericStringBox.getResultString();
+			if (newFileName == null) {
+				// cancel PRESSED
+				return;
+			}
+
+			if (comboSelectorDataSource.getText().equals(newFileName)) {
+				if (comboSelectorDataSource.getText().equals(newFileName)) {
+					// SAME NAME, DO NOTHING
+					return;
+				}
+
+				if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
+					new GenericMessageBox(getParentShell(), "Duplicate Name",
+							"Data Set names must be onePerParentGroup.  Please choose a new name.");
+					return;
+				}
+				curDataSourceProvider.setDataSourceName(newFileName);
+				comboSelectorDataSource.setItem(comboSelectorDataSource.getSelectionIndex(), newFileName);
+			}
 		}
 	}
 

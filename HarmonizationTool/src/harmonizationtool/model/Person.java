@@ -24,7 +24,7 @@ public class Person {
 		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
 		try {
 			this.tdbResource = model.createResource();
-			model.add(tdbResource, RDF.type, ECO.Person);
+			this.tdbResource.addProperty(RDF.type, ECO.Person);
 			ActiveTDB.TDBDataset.commit();
 		} finally {
 			ActiveTDB.TDBDataset.end();
@@ -39,29 +39,24 @@ public class Person {
 		PersonKeeper.add(this);
 	}
 
-	public Person(String name, String affiliation, String email, String phone) {
-		super();
-		setName(name);
-		setAffiliation(affiliation);
-		setEmail(email);
-		setPhone(phone);
-		// this.name = name;
-		// this.affiliation = affiliation;
-		// this.email = email;
-		// this.phone = phone;
-		// this.tdbResource = model.createResource();
-		// model.add(tdbResource, RDF.type, ECO.Person);
-		// model.add(this.tdbResource, FEDLCA.personName,
-		// model.createTypedLiteral(this.name));
-		// model.add(this.tdbResource, FEDLCA.affiliation,
-		// model.createTypedLiteral(this.affiliation));
-		// model.add(this.tdbResource, FEDLCA.email,
-		// model.createTypedLiteral(this.email));
-		// model.add(this.tdbResource, FEDLCA.voicePhone,
-		// model.createTypedLiteral(this.phone));
-		PersonKeeper.add(this);
-
-	}
+//	public Person(String name, String affiliation, String email, String phone) {
+////		super();
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+//		try {
+//			this.tdbResource = model.createResource();
+//			this.tdbResource.addProperty(RDF.type, ECO.Person);
+//			ActiveTDB.TDBDataset.commit();
+//		} finally {
+//			ActiveTDB.TDBDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
+//		setName(name);
+//		setAffiliation(affiliation);
+//		setEmail(email);
+//		setPhone(phone);
+//		PersonKeeper.add(this);
+//	}
 
 	public String getName() {
 		if (name == null) {
