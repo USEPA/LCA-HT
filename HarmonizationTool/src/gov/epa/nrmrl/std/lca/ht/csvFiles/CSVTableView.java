@@ -1185,7 +1185,7 @@ public class CSVTableView extends ViewPart {
 	// for (int row = 0; row < table.getItemCount(); row++) {
 	// TableItem item = table.getItem(row);
 	// String flowableName = item.getText(colIndex);
-	// Model model = ActiveTDB.model;
+	// Model tdbModel = ActiveTDB.tdbModel;
 	//
 	// }
 	// }

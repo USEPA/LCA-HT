@@ -55,12 +55,12 @@ public class ImportTriplesHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 //	public Object execute(ExecutionEvent event) throws ExecutionException {
 				System.out.println("executing Import Triples");
-				if(ActiveTDB.model== null){
+				if(ActiveTDB.tdbModel== null){
 //					String msg = "ERROR no TDB open";
 //					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 					return null;
 				}
-				Model model = ActiveTDB.model;
+				Model model = ActiveTDB.tdbModel;
 //				ModelProvider modelProvider = new ModelProvider();
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 				fileDialog.setFilterExtensions(new String[] { "*.n3" });
@@ -98,7 +98,7 @@ public class ImportTriplesHandler implements IHandler {
 //							jenaReader.setProperty("n3", SA);
 							model.read(inputStream, "N3");
 //							OPTIONS: "RDF/XML" "N-TRIPLE" "TURTLE" = "TTL" "N3"
-//							jenaReader.read(model, inputStream, null); // DEFAULT IS RDF / XML
+//							jenaReader.read(tdbModel, inputStream, null); // DEFAULT IS RDF / XML
 						
 						} catch (FileNotFoundException e1) {
 							// TODO Auto-generated catch block

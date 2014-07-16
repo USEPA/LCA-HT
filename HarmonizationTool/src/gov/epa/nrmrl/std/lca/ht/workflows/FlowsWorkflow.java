@@ -520,7 +520,7 @@ public class FlowsWorkflow extends ViewPart {
 		// THE SAFE PART MEANS
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 
 		long triples = model.size();
 		Table table = CSVTableView.getTable();
@@ -528,7 +528,7 @@ public class FlowsWorkflow extends ViewPart {
 		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
 			int rowNumberPlusOne = rowNumber + 1;
-			Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+			Literal rowLiteral = ActiveTDB.tdbModel.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
 
 			Item item = table.getItem(rowNumber);
 			DataRow dataRow = (DataRow) item.getData();
@@ -555,7 +555,7 @@ public class FlowsWorkflow extends ViewPart {
 					} else if (headerName.equals("Context (primary)")) {
 						flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
 					} else if (headerName.equals("Context (additional)")) {
-						flowContext.addAdditionalFlowContext(dataRow.get(colNumber - 1));
+						flowContext.addSupplementaryFlowContext(dataRow.get(colNumber - 1));
 					}
 				}
 			}
@@ -587,9 +587,9 @@ public class FlowsWorkflow extends ViewPart {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
 		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
 		int count = 0;
@@ -637,7 +637,7 @@ public class FlowsWorkflow extends ViewPart {
 		// while (flowablePropertyStatements.hasNext()) {
 		// Statement flowContextStatement = flowablePropertyStatements.next();
 		// ResIterator matchIterator =
-		// model.listSubjectsWithProperty(flowContextStatement.getPredicate(),
+		// tdbModel.listSubjectsWithProperty(flowContextStatement.getPredicate(),
 		// flowContextStatement.getObject());
 		// while (matchIterator.hasNext()) {
 		// Resource matchThing = matchIterator.next();
@@ -650,7 +650,7 @@ public class FlowsWorkflow extends ViewPart {
 		// }
 		// }
 		// }
-		// thing = model.listSubjectsWithProperty(arg0, arg1)
+		// thing = tdbModel.listSubjectsWithProperty(arg0, arg1)
 		// }
 
 		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
@@ -660,9 +660,9 @@ public class FlowsWorkflow extends ViewPart {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
 		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
 		int count = 0;
@@ -706,7 +706,7 @@ public class FlowsWorkflow extends ViewPart {
 		// while (flowablePropertyStatements.hasNext()) {
 		// Statement flowContextStatement = flowablePropertyStatements.next();
 		// ResIterator matchIterator =
-		// model.listSubjectsWithProperty(flowContextStatement.getPredicate(),
+		// tdbModel.listSubjectsWithProperty(flowContextStatement.getPredicate(),
 		// flowContextStatement.getObject());
 		// while (matchIterator.hasNext()) {
 		// Resource matchThing = matchIterator.next();
@@ -719,7 +719,7 @@ public class FlowsWorkflow extends ViewPart {
 		// }
 		// }
 		// }
-		// thing = model.listSubjectsWithProperty(arg0, arg1)
+		// thing = tdbModel.listSubjectsWithProperty(arg0, arg1)
 		// }
 
 		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
@@ -729,13 +729,13 @@ public class FlowsWorkflow extends ViewPart {
 	// // THE SAFE PART MEANS
 	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 	// // TRIPLES FROM THIS FILE SHOULD BE REMOVED
-	// Model model = ActiveTDB.model;
+	// Model tdbModel = ActiveTDB.tdbModel;
 	//
-	// long triples = model.size();
+	// long triples = tdbModel.size();
 	// // CSVColumnInfo[] FlowableCSVColumnInfos =
 	// // CSVTableView.getFlowableCSVColumnInfos();
 	//
-	// long newTriples = model.size() - triples;
+	// long newTriples = tdbModel.size() - triples;
 	// return (int) newTriples;
 	// }
 

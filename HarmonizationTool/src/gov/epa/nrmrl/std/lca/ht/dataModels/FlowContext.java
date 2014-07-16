@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
+import harmonizationtool.vocabulary.SKOS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -23,18 +25,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class FlowContext {
 
 	private String primaryFlowContext;
-//	private String additionalFlowContext;
-	private List<String> additionalFlowContexts = new ArrayList<String>();
+	private List<String> supplementaryFlowContexts;
 	private Resource tdbResource;
 
 	private static final Resource rdfClass = FASC.Compartment;
-//	private static final Resource rdfClass = FEDLCA.FlowContext;
 
-	
+	// private static final Resource rdfClass = FEDLCA.FlowContext;
+
 	public FlowContext() {
-		this.tdbResource = ActiveTDB.model.createResource();
-//		this.tdbResource.addProperty(RDF.type, FEDLCA.FlowContext);
-		this.tdbResource.addProperty(RDF.type, FASC.Compartment);
+		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
 
 	public static CSVColumnInfo[] getHeaderMenuObjects() {
@@ -84,44 +83,42 @@ public class FlowContext {
 		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
 	}
 
-	public List<String> getAdditionalFlowContexts() {
-		return additionalFlowContexts;
+	public List<String> getsupplementaryFlowContexts() {
+		return supplementaryFlowContexts;
 	}
 
-	public void setAdditionalFlowContexts(List<String> additionalFlowContexts) {
-		this.additionalFlowContexts = additionalFlowContexts;
-		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		tdbResource.removeAll(FEDLCA.flowContextSupplementalDescription);
-		for(String additionalFlowContext:additionalFlowContexts){
-			Literal additionalFlowContextLiteral = ActiveTDB.model.createTypedLiteral(additionalFlowContext, rdfDatatype);
-			tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContextLiteral);			
+	public void setSupplementaryFlowContexts(List<String> supplementaryFlowContexts) {
+		ActiveTDB.removeAllObjects(tdbResource, FEDLCA.flowContextSupplementalDescription);
+		this.supplementaryFlowContexts = supplementaryFlowContexts;
+		for (String supplementaryFlowContext : supplementaryFlowContexts) {
+			ActiveTDB.addLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 		}
 	}
 
-	public void addAdditionalFlowContext(String additionalFlowContext) {
-		this.additionalFlowContexts.add(additionalFlowContext);
-		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		Literal additionalFlowContextLiteral = ActiveTDB.model.createTypedLiteral(additionalFlowContext, rdfDatatype);
-		tdbResource.addProperty(FEDLCA.flowContextSupplementalDescription, additionalFlowContextLiteral);
+	public void addSupplementaryFlowContext(String supplementaryFlowContext) {
+		if (supplementaryFlowContexts == null) {
+			supplementaryFlowContexts = new ArrayList<String>();
+		}
+		supplementaryFlowContexts.add(supplementaryFlowContext);
+		ActiveTDB.addLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 	}
 
-
-	public void removeAdditionalFlowContext(String additionalFlowContext) {
-		this.additionalFlowContexts.remove(additionalFlowContext);
-		Literal literal = ActiveTDB.model.createLiteral(additionalFlowContext);
-		ActiveTDB.model.remove(this.tdbResource, FEDLCA.flowContextSupplementalDescription,literal);
+	public void removeSupplementaryFlowContext(String supplementaryFlowContext) {
+		this.supplementaryFlowContexts.remove(supplementaryFlowContext);
+		Literal literalToRemove = ActiveTDB.createTypedLiteral(supplementaryFlowContext);
+		ActiveTDB.removeStatement(tdbResource, FEDLCA.flowContextSupplementalDescription, literalToRemove);
 	}
-	
+
 	public Resource getTdbResource() {
 		return tdbResource;
 	}
 
 	public void setTdbResource(Resource tdbResource) {
-//		StmtIterator stmtIterator = this.tdbResource.listProperties();
-//		while (stmtIterator.hasNext()){
-//			Statement statement = stmtIterator.next();
-//			ActiveTDB.model.remove(statement);
-//		}
+		// StmtIterator stmtIterator = this.tdbResource.listProperties();
+		// while (stmtIterator.hasNext()){
+		// Statement statement = stmtIterator.next();
+		// ActiveTDB.tdbModel.remove(statement);
+		// }
 		// NEXT STATEMENT REPLACES ABOVE
 		this.tdbResource.removeProperties();
 		this.tdbResource = tdbResource;

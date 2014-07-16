@@ -114,11 +114,11 @@ public class Util {
 	}
 
 	public static Resource resolveUriFromString(String uriString) {
-		Resource uri = ActiveTDB.model.createResource();
+		Resource uri = ActiveTDB.tdbModel.createResource();
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-			uri = ActiveTDB.model.getResource(uriString);
+			uri = ActiveTDB.tdbModel.getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.Substance));
+			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {

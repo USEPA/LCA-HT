@@ -25,7 +25,7 @@
 // */
 //
 //public class FASC {
-//    /** <p>The RDF model that holds the vocabulary terms</p> */
+//    /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
 //    private static Model m_model = ModelFactory.createDefaultModel();
 //
 //    /** <p>The namespace of the vocabulary as a string</p> */
@@ -60,7 +60,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
  */
 
 public class FASC {
-    /** <p>The RDF model that holds the vocabulary terms</p> */
+    /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
 
     /** <p>The namespace of the vocabulary as a string</p> */

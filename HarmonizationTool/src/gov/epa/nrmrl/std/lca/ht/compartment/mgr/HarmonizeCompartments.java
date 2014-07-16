@@ -143,7 +143,7 @@ public class HarmonizeCompartments extends ViewPart {
 				// Property comparedEquivalence = FEDLCA.comparedEquivalence;
 				// Resource equivalent = FEDLCA.equivalent;
 
-				Model model = ActiveTDB.model;
+				Model model = ActiveTDB.tdbModel;
 				// NEED TO DO THE FOLLOWING
 				// 1) Create a new Annotation (assigning it to the class
 				// Annotation)
@@ -210,25 +210,25 @@ public class HarmonizeCompartments extends ViewPart {
 								FEDLCA.comparedEquivalence, FEDLCA.equivalent);
 
 						// Literal compartmentName =
-						// model.createLiteral(qString);
+						// tdbModel.createLiteral(qString);
 						// ResIterator resIterator =
-						// model.listResourcesWithProperty(RDFS.label,
+						// tdbModel.listResourcesWithProperty(RDFS.label,
 						// compartmentName);
 						// while (resIterator.hasNext()) {
 						// Resource candidateCompartment = resIterator.next();
-						// if (!model.contains(candidateCompartment, RDF.type,
+						// if (!tdbModel.contains(candidateCompartment, RDF.type,
 						// FASC.Compartment)) {
 						// continue;
 						// }
-						// if (model.contains(candidateCompartment,
+						// if (tdbModel.contains(candidateCompartment,
 						// ECO.hasDataSource)) {
 						// NodeIterator nodeIterator =
-						// model.listObjectsOfProperty(candidateCompartment,
+						// tdbModel.listObjectsOfProperty(candidateCompartment,
 						// ECO.hasDataSource);
 						//
 						// }
 						// }
-						// Statement statement = model.createStatement(arg0,
+						// Statement statement = tdbModel.createStatement(arg0,
 						// arg1, arg2);
 					} else {
 						System.out.println("matchModel[" + i + "] is null!");
@@ -381,10 +381,10 @@ public class HarmonizeCompartments extends ViewPart {
 	}
 
 	// private void confirmModelContanisCompartments(TreeNode treeNode){
-	// Model model = ActiveTDB.model;
+	// Model tdbModel = ActiveTDB.tdbModel;
 	// if (treeNode.uri != null){
-	// if (!model.containsResource(treeNode.uri)){
-	// model.createResource(treeNode.uri);
+	// if (!tdbModel.containsResource(treeNode.uri)){
+	// tdbModel.createResource(treeNode.uri);
 	// }
 	// }
 	// Iterator<Node> iterator = treeNode.getChildIterator();
@@ -395,9 +395,9 @@ public class HarmonizeCompartments extends ViewPart {
 	// }
 
 	// private void confirmResource(Resource uri) {
-	// Model model = ActiveTDB.model;
-	// if (!model.containsResource(uri)) {
-	// model.createResource(uri);
+	// Model tdbModel = ActiveTDB.tdbModel;
+	// if (!tdbModel.containsResource(uri)) {
+	// tdbModel.createResource(uri);
 	// }
 	// }
 
@@ -675,8 +675,8 @@ public class HarmonizeCompartments extends ViewPart {
 			// AnonId uri = new AnonId(dataRow.get(1)); // MIGHT THIS WORK?
 			Resource queryCompartmentResource = null;
 			// Resource fred = (Resource)uri;
-			// thing = ActiveTDB.model.getResource(fred );
-			ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
+			// thing = ActiveTDB.tdbModel.getResource(fred );
+			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(
 					RDF.type, FASC.Compartment));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();

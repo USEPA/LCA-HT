@@ -17,17 +17,17 @@ public class Person {
 	private String phone;
 	private static final Resource rdfClass = ECO.Person;
 	private Resource tdbResource;
-	protected final static Model model = ActiveTDB.model;
+	protected final static Model model = ActiveTDB.tdbModel;
 
 	public Person() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			this.tdbResource = model.createResource();
-			this.tdbResource.addProperty(RDF.type, ECO.Person);
-			ActiveTDB.TDBDataset.commit();
+			this.tdbResource.addProperty(RDF.type, rdfClass);
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		PersonKeeper.add(this);
@@ -39,25 +39,6 @@ public class Person {
 		PersonKeeper.add(this);
 	}
 
-//	public Person(String name, String affiliation, String email, String phone) {
-////		super();
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-//		try {
-//			this.tdbResource = model.createResource();
-//			this.tdbResource.addProperty(RDF.type, ECO.Person);
-//			ActiveTDB.TDBDataset.commit();
-//		} finally {
-//			ActiveTDB.TDBDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
-//		setName(name);
-//		setAffiliation(affiliation);
-//		setEmail(email);
-//		setPhone(phone);
-//		PersonKeeper.add(this);
-//	}
-
 	public String getName() {
 		if (name == null) {
 			name = "";
@@ -67,19 +48,7 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(FEDLCA.personName);
-			tdbResource.addProperty(FEDLCA.personName, name);
-			ActiveTDB.TDBDataset.commit();
-		} finally {
-			ActiveTDB.TDBDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-
-		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName,
-		// XSDDatatype.XSDstring, name);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, name);
 	}
 
 	public String getAffiliation() {
@@ -91,18 +60,7 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(FEDLCA.affiliation);
-			tdbResource.addProperty(FEDLCA.affiliation, affiliation);
-			ActiveTDB.TDBDataset.commit();
-		} finally {
-			ActiveTDB.TDBDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation,
-		// XSDDatatype.XSDstring, affiliation);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, affiliation);
 	}
 
 	public String getEmail() {
@@ -114,18 +72,7 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(FEDLCA.email);
-			tdbResource.addProperty(FEDLCA.email, email);
-			ActiveTDB.TDBDataset.commit();
-		} finally {
-			ActiveTDB.TDBDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email,
-		// XSDDatatype.XSDstring, email);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, email);
 	}
 
 	public String getPhone() {
@@ -137,18 +84,7 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(FEDLCA.voicePhone);
-			tdbResource.addProperty(FEDLCA.voicePhone, phone);
-			ActiveTDB.TDBDataset.commit();
-		} finally {
-			ActiveTDB.TDBDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-		// ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone,
-		// XSDDatatype.XSDstring, phone);
+		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, phone);
 	}
 
 	public void syncDataFromTDB() {
@@ -173,16 +109,16 @@ public class Person {
 
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(FEDLCA.personName);
 			tdbResource.removeAll(FEDLCA.affiliation);
 			tdbResource.removeAll(FEDLCA.email);
 			tdbResource.removeAll(FEDLCA.voicePhone);
 
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}

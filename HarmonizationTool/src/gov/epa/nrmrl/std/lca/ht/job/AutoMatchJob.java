@@ -59,7 +59,7 @@ public class AutoMatchJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
 		Resource tableDataSource = tableProvider.getDataSourceProvider().getTdbResource();
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		// Table table = CSVTableView.getTable();
 		System.out.println("Table :" + tableProvider);
 
@@ -96,7 +96,7 @@ public class AutoMatchJob extends Job {
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
 			int rowNumberPlusOne = rowNumber + 1;
-			// Literal rowLiteral = ActiveTDB.model.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+			// Literal rowLiteral = ActiveTDB.tdbModel.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
 			Resource dataSource = tableProvider.getDataSourceProvider().getTdbResource();
 
 			// FIRST DO Flowable
@@ -106,14 +106,14 @@ public class AutoMatchJob extends Job {
 				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
 				Property property = csvColumnInfo.getTdbProperty();
 				String dataRowValue = dataRow.get(colNumber);
-				Literal dataRowLiteral = ActiveTDB.model.createTypedLiteral(dataRowValue,
+				Literal dataRowLiteral = ActiveTDB.tdbModel.createTypedLiteral(dataRowValue,
 						csvColumnInfo.getRdfDatatype());
-				ResIterator resIterator = ActiveTDB.model.listResourcesWithProperty(property, dataRowLiteral);
+				ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(property, dataRowLiteral);
 				Resource itemToMatchTDBResource = null;
 				while (resIterator.hasNext()) {
 					Resource candidateResource = resIterator.next();
-					if (ActiveTDB.model.containsLiteral(candidateResource, RDF.type, rdfClass)) {
-						if (ActiveTDB.model.containsLiteral(candidateResource, ECO.hasDataSource, dataSource.asNode())) {
+					if (ActiveTDB.tdbModel.containsLiteral(candidateResource, RDF.type, rdfClass)) {
+						if (ActiveTDB.tdbModel.containsLiteral(candidateResource, ECO.hasDataSource, dataSource.asNode())) {
 							itemToMatchTDBResource = candidateResource;
 						} else {
 							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource,
@@ -133,8 +133,8 @@ public class AutoMatchJob extends Job {
 			// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[flowableCol];
 			// // rdfClass = csvColumnInfo.getRDFClass();
 			// // String field = dataRow.get(flowableCol - 1);
-			// // RDFNode rdfNode = ActiveTDB.model.createLit
-			// // thing = ActiveTDB.model.listSubjectsWithProperty(arg0, arg1)
+			// // RDFNode rdfNode = ActiveTDB.tdbModel.createLit
+			// // thing = ActiveTDB.tdbModel.listSubjectsWithProperty(arg0, arg1)
 			//
 			// }
 			//
@@ -154,11 +154,11 @@ public class AutoMatchJob extends Job {
 		// List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		// DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
 		//
-		// Model model = ActiveTDB.model;
+		// Model tdbModel = ActiveTDB.tdbModel;
 		// Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// // ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// // ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// // dataSourceTDBResource.asNode());
-		// ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource,
+		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource);
 		// int count = 0;
 		// while (resourceIterator.hasNext()) {
@@ -181,7 +181,7 @@ public class AutoMatchJob extends Job {
 		// // NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 		//
 		// if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-		// ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty,
+		// ResIterator matchingResourcesIterator = tdbModel.listSubjectsWithProperty(dataItemProperty,
 		// dataItemRDFNode);
 		// while (matchingResourcesIterator.hasNext()) {
 		// System.out.println("Found a match for dataItemStatement: " + dataItemStatement);

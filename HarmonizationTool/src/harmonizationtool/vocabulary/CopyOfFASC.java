@@ -25,7 +25,7 @@ To the extent possible under law, New Earth  has waived all copyright and relate
  */
 
 public class CopyOfFASC {
-    /** <p>The RDF model that holds the vocabulary terms</p> */
+    /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
 
     /** <p>The namespace of the vocabulary as a string</p> */

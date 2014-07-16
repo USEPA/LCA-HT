@@ -311,7 +311,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = ActiveTDB.model;
+					Model model = ActiveTDB.tdbModel;
 					if (model == null) {
 						// String msg = "ERROR no TDB open";
 						// Util.findView(QueryView.ID).getViewSite()
@@ -338,16 +338,16 @@ public class View extends ViewPart {
 					// eco
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(fedlca_p
+					// Property HTCuratorName = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(fedlca_p
+					// tdbModel.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(fedlca_p
+					// Property HTCuratorPhone = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(fedlca_p
+					// Property HTCuratorEmail = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorEmail");
-					// Property dataParseTimeStamp = model
+					// Property dataParseTimeStamp = tdbModel
 					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
@@ -412,7 +412,7 @@ public class View extends ViewPart {
 						// continue;
 						// }
 						// // System.out.println("name=" + name);
-						// drNameLit = model.createTypedLiteral(name);
+						// drNameLit = tdbModel.createTypedLiteral(name);
 						// } else {
 						// // String msg = "Flowables must have a \"Name\" field!";
 						// // Util.findView(QueryView.ID).getViewSite()
@@ -434,7 +434,7 @@ public class View extends ViewPart {
 						// altName = Util.escape(unescAltName);
 						// // System.out.println("altName=" +
 						// // altName);
-						// drAltNameLit = model
+						// drAltNameLit = tdbModel
 						// .createTypedLiteral(altName);
 						// }
 						// } catch (Exception e) {
@@ -456,7 +456,7 @@ public class View extends ViewPart {
 						// // DASHES IF MISSING
 						// if (casrn
 						// .matches("^[1-9]\\d{1,6}\\-\\d\\d\\-\\d$")) {
-						// drCasLit = model.createTypedLiteral(casrn);
+						// drCasLit = tdbModel.createTypedLiteral(casrn);
 						// } else if (!casrn.matches("^\\s*$")) {
 						// System.out.println("casrn = " + casrn);
 						// }
@@ -557,7 +557,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = ActiveTDB.model;
+					Model model = ActiveTDB.tdbModel;
 					if (model == null) {
 						// String msg = "ERROR no TDB open";
 						// Util.findView(QueryView.ID).getViewSite()
@@ -585,16 +585,16 @@ public class View extends ViewPart {
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(fedlca_p
+					// Property HTCuratorName = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(fedlca_p
+					// tdbModel.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(fedlca_p
+					// Property HTCuratorPhone = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(fedlca_p
+					// Property HTCuratorEmail = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorEmail");
-					// Property dataParseTimeStamp = model
+					// Property dataParseTimeStamp = tdbModel
 					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
@@ -818,7 +818,7 @@ public class View extends ViewPart {
 					CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
 					System.out.println("key=" + key);
 
-					Model model = ActiveTDB.model;
+					Model model = ActiveTDB.tdbModel;
 					if (model == null) {
 						// String msg = "ERROR no TDB open";
 						// Util.findView(QueryView.ID).getViewSite()
@@ -846,16 +846,16 @@ public class View extends ViewPart {
 					// fasc
 
 					// Stuff we may want to add:
-					// Property HTCuratorName = model.getProperty(fedlca_p
+					// Property HTCuratorName = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorName");
 					// Property HTCuratorAffiliation =
-					// model.getProperty(fedlca_p
+					// tdbModel.getProperty(fedlca_p
 					// + "HTCuratorAffiliation");
-					// Property HTCuratorPhone = model.getProperty(fedlca_p
+					// Property HTCuratorPhone = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorPhone");
-					// Property HTCuratorEmail = model.getProperty(fedlca_p
+					// Property HTCuratorEmail = tdbModel.getProperty(fedlca_p
 					// + "HTCuratorEmail");
-					// Property dataParseTimeStamp = model
+					// Property dataParseTimeStamp = tdbModel
 					// .getProperty(fedlca_p + "dataParseTimeStamp");
 
 					DataRow columnHeaders = new DataRow();
@@ -944,7 +944,7 @@ public class View extends ViewPart {
 						// }
 						//
 						// else {
-						// // String msg = "An impact characterization model must be assigned";
+						// // String msg = "An impact characterization tdbModel must be assigned";
 						// // Util.findView(QueryView.ID).getViewSite()
 						// // .getActionBars().getStatusLineManager()
 						// // .setMessage(msg);
@@ -1052,16 +1052,16 @@ public class View extends ViewPart {
 						// }
 						//
 						// Literal drCatLit =
-						// model.createTypedLiteral(combined_str);
+						// tdbModel.createTypedLiteral(combined_str);
 						//
 						// combined_str.hashCode();
 						// if (str2res.containsKey(combined_str)) {
 						// catResourceHandle = str2res.get(combined_str);
 						// } else {
-						// Resource newCat = model.createResource();
-						// model.add(newCat, RDF.type, FASC.Compartment);
-						// model.addLiteral(newCat, RDFS.label, drCatLit);
-						// model.add(newCat, ECO.hasDataSource, tdbResource);
+						// Resource newCat = tdbModel.createResource();
+						// tdbModel.add(newCat, RDF.type, FASC.Compartment);
+						// tdbModel.addLiteral(newCat, RDFS.label, drCatLit);
+						// tdbModel.add(newCat, ECO.hasDataSource, tdbResource);
 						//
 						// catResourceHandle = newCat;
 						// str2res.put(combined_str, catResourceHandle);
@@ -1076,9 +1076,9 @@ public class View extends ViewPart {
 						// DataRow resDataRow2 = new DataRow();
 						// resultsViewModel.addDataRow(resDataRow2);
 						// resDataRow2.add("After Update");
-						// resDataRow2.add("" + model.size());
+						// resDataRow2.add("" + tdbModel.size());
 						//
-						// change = model.size() - change;
+						// change = tdbModel.size() - change;
 						// System.err.printf("Net Increase: %s\n", change);
 						// DataRow resDataRow3 = new DataRow();
 						// resultsViewModel.addDataRow(resDataRow3);
@@ -1100,7 +1100,7 @@ public class View extends ViewPart {
 						// System.out.println("Time elapsed: " +
 						// elapsedTimeSec);
 						// System.err.printf("After Update: %s\n",
-						// model.size());
+						// tdbModel.size());
 						// System.out.println("done");
 						// try {
 						// Util.showView(ResultsView.ID);

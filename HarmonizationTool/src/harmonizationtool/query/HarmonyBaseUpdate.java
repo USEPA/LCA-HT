@@ -41,7 +41,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 	private void executeQuery() {
 		// Query query = QueryFactory.create(queryStr);
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		if (model == null) {
 			// String msg = "ERROR no TDB open";
 			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
@@ -60,7 +60,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		System.err.printf("Before Update: %s\n", model.size());
 		// data.add("Before Update");
-		// data.add(""+model.size());
+		// data.add(""+tdbModel.size());
 
 		TableProvider tableProvider = new TableProvider();
 		queryResults.setTableProvider(tableProvider);
@@ -69,28 +69,28 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		dataRow.add("Before Update");
 		dataRow.add("" + model.size());
 
-		// Resource s = model.createResource("<http://I>");
-		// Property p = model.createProperty("<http://am>");
-		// Resource o = model.createResource("<http://I>");
-		// Statement statement = model.createStatement(s, p, o);
-		// model.add(statement);
-		// model.add(s, p, o);
-		// model.add(s,p,"hello");
+		// Resource s = tdbModel.createResource("<http://I>");
+		// Property p = tdbModel.createProperty("<http://am>");
+		// Resource o = tdbModel.createResource("<http://I>");
+		// Statement statement = tdbModel.createStatement(s, p, o);
+		// tdbModel.add(statement);
+		// tdbModel.add(s, p, o);
+		// tdbModel.add(s,p,"hello");
 
-		// model.getResource(arg0);
+		// tdbModel.getResource(arg0);
 		long startTime = System.currentTimeMillis();
 		String sparqlUpdateString = queryStr;
 		System.out.println("query = " + sparqlUpdateString.toString());
 
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			UpdateRequest request = UpdateFactory.create(sparqlUpdateString);
 			UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 			proc.execute();
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
@@ -98,7 +98,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		System.out.println("Time elapsed: " + elapsedTimeSec);
 		System.err.printf("After Update: %s\n", model.size());
 		// data.add("After Update");
-		// data.add("" + model.size());
+		// data.add("" + tdbModel.size());
 		DataRow dataRow2 = new DataRow();
 		tableProvider.addDataRow(dataRow2);
 		dataRow2.add("After Update");

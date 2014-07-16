@@ -77,7 +77,7 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		// create QueryResults to hold the query results
 		queryResults = new QueryResults();
 		data = null;
-		if (ActiveTDB.model == null) {
+		if (ActiveTDB.tdbModel == null) {
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars()
 //					.getStatusLineManager().setMessage(msg);
@@ -85,8 +85,8 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(query,
-				ActiveTDB.model);
-		// System.out.println("model.getNsPrefixMap()"+ActiveTDB.model.getNsPrefixMap().toString());
+				ActiveTDB.tdbModel);
+		// System.out.println("tdbModel.getNsPrefixMap()"+ActiveTDB.tdbModel.getNsPrefixMap().toString());
 
 		try {
 			long startTime = System.currentTimeMillis();

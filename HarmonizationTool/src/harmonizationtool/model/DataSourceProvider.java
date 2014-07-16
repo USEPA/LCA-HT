@@ -28,18 +28,18 @@ public class DataSourceProvider {
 	// private List<Annotation> annotationList = new ArrayList<Annotation>();
 
 	private Resource tdbResource;
-	protected final static Model model = ActiveTDB.model;
+	protected final static Model model = ActiveTDB.tdbModel;
 	private boolean isMaster = false;
 
 	public DataSourceProvider() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource = model.createResource();
 			model.add(tdbResource, RDF.type, ECO.DataSource);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -62,13 +62,13 @@ public class DataSourceProvider {
 			return;
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(FEDLCA.hasContactPerson);
 			tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -76,12 +76,12 @@ public class DataSourceProvider {
 	public Resource getTdbResource() {
 		if (tdbResource == null) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-			ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 			try {
-				tdbResource = ActiveTDB.model.createResource();
-				ActiveTDB.TDBDataset.commit();
+				tdbResource = ActiveTDB.tdbModel.createResource();
+				ActiveTDB.tdbDataset.commit();
 			} finally {
-				ActiveTDB.TDBDataset.end();
+				ActiveTDB.tdbDataset.end();
 			}
 			// ---- END SAFE -WRITE- TRANSACTION ---
 		}
@@ -103,22 +103,22 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 		System.out.println("got to line: 3");
 
-		if (!ActiveTDB.model.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
+		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
 			System.out.println("got to line: 4");
 
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-			ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 			try {
 				tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
 				System.out.println("got to line: 5");
 
-				ActiveTDB.TDBDataset.commit();
+				ActiveTDB.tdbDataset.commit();
 				System.out.println("got to line: 6");
 
 			} finally {
 				System.out.println("got to line: 7");
 
-				ActiveTDB.TDBDataset.end();
+				ActiveTDB.tdbDataset.end();
 				System.out.println("got to line: 8");
 
 			}
@@ -170,12 +170,12 @@ public class DataSourceProvider {
 		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			ActiveTDB.model.remove(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbModel.remove(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -191,16 +191,16 @@ public class DataSourceProvider {
 		removeFileMDList();
 		// contactPerson.remove();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(FEDLCA.hasContactPerson);
 			tdbResource.removeAll(RDFS.label);
 			tdbResource.removeAll(RDFS.comment);
 			tdbResource.removeAll(DCTerms.hasVersion);
 			model.remove(tdbResource, RDF.type, ECO.DataSource);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -220,14 +220,14 @@ public class DataSourceProvider {
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(RDFS.label);
 			tdbResource.addProperty(RDFS.label, dataSourceName);
 			// ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -239,14 +239,14 @@ public class DataSourceProvider {
 	public void setVersion(String version) {
 		this.version = version;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(DCTerms.hasVersion);
 			tdbResource.addProperty(DCTerms.hasVersion, version);
 			// ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -258,14 +258,14 @@ public class DataSourceProvider {
 	public void setComments(String comments) {
 		this.comments = comments;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(RDFS.comment);
 			tdbResource.addProperty(RDFS.comment, comments);
 			// ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}

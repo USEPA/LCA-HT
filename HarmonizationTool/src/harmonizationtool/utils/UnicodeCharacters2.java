@@ -1914,7 +1914,7 @@ public class UnicodeCharacters2 {
 		names115[2437]="mound, grave; ridge in field";
 		names115[2438]="black clods of earth; shop, hut";
 		names115[2440]="used in place names; Japanese -nuta; Korean -dae";
-		names115[2443]="pattern, model, type; law; mold";
+		names115[2443]="pattern, tdbModel, type; law; mold";
 		names115[2444]="a field; used in place names";
 		names115[2450]="rampart, military wall";
 		names115[2451]="border, boundary, frontier";
@@ -2033,8 +2033,8 @@ public class UnicodeCharacters2 {
 		names115[2636]="fall in ruins, collapse";
 		names115[2637]="a raised path between fields, a dike";
 		names115[2639]="high and dry place";
-		names115[2640]="model in clay, sculpt; plastics";
-		names115[2641]="model in clay, sculpt; plastics";
+		names115[2640]="tdbModel in clay, sculpt; plastics";
+		names115[2641]="tdbModel in clay, sculpt; plastics";
 		names115[2642]="roost";
 		names115[2643]="plaster";
 		names115[2644]="tower, spire, tall building";
@@ -3748,7 +3748,7 @@ public class UnicodeCharacters2 {
 		names115[5275]="throw (away)";
 		names115[5276]="uproot, pull out";
 		names115[5278]="select, choose, pick out";
-		names115[5279]="roll around with hand; model";
+		names115[5279]="roll around with hand; tdbModel";
 		names115[5280]="raise, lift up; tight-fisted";
 		names115[5281]="swing, brandish, flourish";
 		names115[5282]="plunder, rob, take by force";
@@ -4095,7 +4095,7 @@ public class UnicodeCharacters2 {
 		names115[5747]="raise, lift up; tight-fisted";
 		names115[5748]="to stretch out, to unroll; comfortable, easy (used for U+8212 [char: 33298]); [char: 25716][char: 33970] is the name of a traditional play";
 		names115[5749]="(Cant.) to pull, lift up";
-		names115[5750]="roll around with hand; model";
+		names115[5750]="roll around with hand; tdbModel";
 		names115[5751]="(Cant.) to search for, look for; to beat up";
 		names115[5752]="gently touch with hand; caress";
 		names115[5753]="trace, copy, duplicate; pattern";
@@ -4963,7 +4963,7 @@ public class UnicodeCharacters2 {
 		names115[7024]="tree";
 		names115[7027]="plums; prunes; surname";
 		names115[7029]="extreme, utmost, furthest, final";
-		names115[7031]="model style of Chinese writing";
+		names115[7031]="tdbModel style of Chinese writing";
 		names115[7032]="mallotus japonicus, deciduous tre";
 		names115[7033]="column, pillar; numerary adjunct";
 		names115[7036]="building of two or more stories";
@@ -5058,7 +5058,7 @@ public class UnicodeCharacters2 {
 		names115[7198]="door hinge; pivot; center of power";
 		names115[7199]="camphor tree";
 		names115[7200]="elm; gum";
-		names115[7201]="model, standard, pattern; copy";
+		names115[7201]="tdbModel, standard, pattern; copy";
 		names115[7203]="shape, form, pattern, style";
 		names115[7208]="scrambled eggs";
 		names115[7209]="power, right, authority";
@@ -7723,7 +7723,7 @@ public class UnicodeCharacters2 {
 		names115[11570]="basket";
 		names115[11571]="a reed leaf whistle";
 		names115[11572]="an arrow shaft";
-		names115[11573]="a bamboo form; a model";
+		names115[11573]="a bamboo form; a tdbModel";
 		names115[11576]="flat basket for grain";
 		names115[11577]="small bamboo";
 		names115[11578]="note, memo; stationery; comments";
@@ -7812,7 +7812,7 @@ public class UnicodeCharacters2 {
 		names115[11710]="musical instrument like pan-pipes, bamboo flute";
 		names115[11712]="knot, node, joint; section";
 		names115[11713]="bamboo grove; bamboo";
-		names115[11716]="pattern, model, rule, law";
+		names115[11716]="pattern, tdbModel, rule, law";
 		names115[11718]="seal script; seal, official stamp";
 		names115[11719]="chapter, section, essay, article";
 		names115[11721]="build, erect; building";

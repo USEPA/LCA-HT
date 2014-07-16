@@ -13071,7 +13071,7 @@ public class UnicodeCharacters1 {
 		names113[1291]="confusion; confused or disorderly; chaotic";
 		names113[1292]="(same as [char: 29976]) to have one's heart own; to submit, admire, etc. sincerely and willingly";
 		names113[1293]="never reveal one's feeling or emotion, (same as [char: 24039]) false, artificial, illegal, clever; artful, pretty cute";
-		names113[1294]="a model or typical example; technique of standard handwriting, knowledge, to know; to feel; to understand";
+		names113[1294]="a tdbModel or typical example; technique of standard handwriting, knowledge, to know; to feel; to understand";
 		names113[1295]="grievous; mournful; melancholy";
 		names113[1296]="(said of music) disharmony; discord, quiet, to yield; to concede";
 		names113[1297]="(non-classical [char: 24962]) palpitation or fluttering of the heart, to become interested in something (usually as a result of persuasion); to move the mind; to start thinking; agitated; nervous";
@@ -13360,7 +13360,7 @@ public class UnicodeCharacters1 {
 		names113[1595]="to cut; to kill; to behead, gradually; little by little; by degrees, to lift; to raise, to strike; to beat, to throw; to pitch; to deliver";
 		names113[1596]="(non-classical form of U+63A0 [char: 25504]) to take by force, to throw aside";
 		names113[1597]="to cut or rip open";
-		names113[1598]="a type; a model; a mode; a style";
+		names113[1598]="a type; a tdbModel; a mode; a style";
 		names113[1599]="(a variant of [char: 25818]) to receive, as communications from a subordinate, to rely on, to lean on, evidence; proof, according to; whereas";
 		names113[1600]="(a variant of [char: 25818]) to receive, as communications from a subordinate, to rely on, to lean on, evidence; proof, according to; whereas";
 		names113[1601]="to knock, to pick out, to ridicule, (a variant) monopoly, a footbridge. a toll levied at a bridge or a ferry";
@@ -15201,7 +15201,7 @@ public class UnicodeCharacters1 {
 		names113[3647]="belt of the canvas top on vehicles";
 		names113[3648]="rectangular chest or box woven from bamboo strips (or wicker)";
 		names113[3649]="name of a variety of bamboo, bamboo ware";
-		names113[3650]="a basket for earth or soil, regulations; law, model";
+		names113[3650]="a basket for earth or soil, regulations; law, tdbModel";
 		names113[3651]="sliped open bamboo with the joints used as an oar, a board made equipment with angles; children used to practice writing and taking notes in ancient times, mats, bamboo";
 		names113[3652]="name of a variety of bamboo";
 		names113[3653]="small bamboo whose joints are three feet apart, used for arrows, name of a variety of bamboo";
@@ -16754,7 +16754,7 @@ public class UnicodeCharacters1 {
 		names113[5282]="to pass; to pass through or by";
 		names113[5283]="(same as [char: 36953]) distant; far; remote";
 		names113[5285]="(corrupted form) (to walk) in harmony; in accord, to look after; to care for each other";
-		names113[5286]="(interchangeable [char: 29575] [char: 24101]) to lead the way; a guide; a forerunner; to head, model; a mentor; a teacher, to guide; to lead; to direct, to follow; to accord with; to obey";
+		names113[5286]="(interchangeable [char: 29575] [char: 24101]) to lead the way; a guide; a forerunner; to head, tdbModel; a mentor; a teacher, to guide; to lead; to direct, to follow; to accord with; to obey";
 		names113[5287]="to go forward; to depart";
 		names113[5288]="to walk slowly; to walk in a leisurely manner, (same as [char: 36452]) track; trace; vestige, to keep track; to follow up clues";
 		names113[5289]="(same as [char: 31142][char: 24481]) to forbid to prohibit; to ban, to resist; to sustain; to ward off";

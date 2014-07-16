@@ -14,7 +14,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class PersonKeeper {
 	private static List<Person> personList = new ArrayList<Person>();
 
-	// protected final static Model model = ActiveTDB.model;
+	// protected final static Model tdbModel = ActiveTDB.tdbModel;
 
 	private PersonKeeper() {
 	}
@@ -131,7 +131,7 @@ public class PersonKeeper {
 	}
 
 	public static void syncFromTDB() {
-		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.Person);
+		ResIterator iterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.Person);
 		while (iterator.hasNext()) {
 			Resource personRDFResource = iterator.next();
 			// NOW SEE IF THE Person IS IN THE PersonKeeper YET

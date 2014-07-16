@@ -21,7 +21,7 @@ import com.hp.hpl.jena.vocabulary.DC_11;
 public class FEDLCA {
 	/**
 	 * <p>
-	 * The RDF model that holds the vocabulary terms
+	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
 	private static Model m_model = ModelFactory.createDefaultModel();

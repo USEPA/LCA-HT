@@ -15,7 +15,7 @@ public class CuratorMD {
 	private String curatorEmail;
 	private String curatorPhone;
 	private Resource tdbResource;
-	private static final Model model = ActiveTDB.model;
+	private static final Model model = ActiveTDB.tdbModel;
 
 	public CuratorMD(Resource tdbResource) {
 		this.tdbResource = tdbResource;

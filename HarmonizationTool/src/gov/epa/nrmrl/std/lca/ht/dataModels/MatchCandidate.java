@@ -26,7 +26,7 @@ public class MatchCandidate {
 		StmtIterator itemStatementIterator = itemToMatchTDBResource.listProperties(RDF.type);
 		while (itemStatementIterator.hasNext()) {
 			RDFNode type = itemStatementIterator.next().getObject();
-			if (ActiveTDB.model.contains(matchCandidateTDBResource, RDF.type, type)) {
+			if (ActiveTDB.tdbModel.contains(matchCandidateTDBResource, RDF.type, type)) {
 				return true;
 			}
 		}

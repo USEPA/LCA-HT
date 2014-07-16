@@ -17,7 +17,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class DataSourceKeeper {
 	private static List<DataSourceProvider> dataSourceProviderList = new ArrayList<DataSourceProvider>();
 
-	// protected final static Model model = ActiveTDB.model;
+	// protected final static Model tdbModel = ActiveTDB.tdbModel;
 
 	private DataSourceKeeper() {
 	}
@@ -159,7 +159,7 @@ public class DataSourceKeeper {
 	}
 
 	public static void syncFromTDB() {
-		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+		ResIterator iterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		while (iterator.hasNext()) {
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);

@@ -24,16 +24,16 @@ public class FileMD {
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
-	private static final Model model = ActiveTDB.model;
+	private static final Model model = ActiveTDB.tdbModel;
 
 	public FileMD() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			this.tdbResource = model.createResource();
 			model.add(tdbResource, RDF.type, LCAHT.dataFile);
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		FileMDKeeper.add(this);
@@ -61,13 +61,13 @@ public class FileMD {
 
 	public void setFilename(String filename) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			this.filename = filename;
 			tdbResource.removeAll(LCAHT.fileName);
 			tdbResource.addProperty(LCAHT.fileName, filename);
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -79,13 +79,13 @@ public class FileMD {
 	public void setPath(String path) {
 		this.path = path;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.filePath);
 			tdbResource.addProperty(LCAHT.filePath, path);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -98,13 +98,13 @@ public class FileMD {
 		this.byteCount = size;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.byteCount);
 			tdbResource.addLiteral(LCAHT.byteCount, byteCount);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -116,13 +116,13 @@ public class FileMD {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
 			tdbResource.addLiteral(LCAHT.fileModifiedDate, modifiedDate);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -134,13 +134,13 @@ public class FileMD {
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.fileReadDate);
 			tdbResource.addLiteral(LCAHT.fileReadDate, readDate);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -155,12 +155,12 @@ public class FileMD {
 		}
 		this.encoding = encoding;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -178,12 +178,12 @@ public class FileMD {
 		assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			model.add(tdbResource, RDF.type, LCAHT.dataFile);
-			ActiveTDB.TDBDataset.commit();
+			ActiveTDB.tdbDataset.commit();
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -234,35 +234,35 @@ public class FileMD {
 
 	// public void syncDataToTDB() {
 	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-	// ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 	// try {
 	// if (tdbResource == null) {
-	// tdbResource = model.createResource();
+	// tdbResource = tdbModel.createResource();
 	// }
-	// model.add(tdbResource, RDF.type, LCAHT.dataFile);
-	// model.add(tdbResource, LCAHT.fileName, model.createTypedLiteral(filename));
-	// model.add(tdbResource, LCAHT.filePath, model.createTypedLiteral(path));
-	// // Literal byteCountLiteral = model.createTypedLiteral(byteCount);
-	// // model.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
+	// tdbModel.add(tdbResource, RDF.type, LCAHT.dataFile);
+	// tdbModel.add(tdbResource, LCAHT.fileName, tdbModel.createTypedLiteral(filename));
+	// tdbModel.add(tdbResource, LCAHT.filePath, tdbModel.createTypedLiteral(path));
+	// // Literal byteCountLiteral = tdbModel.createTypedLiteral(byteCount);
+	// // tdbModel.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
 	// // NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ.
 	// // OF
 	// // DIGITS)
 	// // NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO
 	// // -2147483648
 	// // TO 2147483647)
-	// model.add(tdbResource, LCAHT.byteCount, model.createTypedLiteral(byteCount));
-	// model.add(tdbResource, LCAHT.fileModifiedDate, model.createTypedLiteral(modifiedDate));
-	// model.add(tdbResource, LCAHT.fileReadDate, model.createTypedLiteral(readDate));
-	// ActiveTDB.TDBDataset.commit();
+	// tdbModel.add(tdbResource, LCAHT.byteCount, tdbModel.createTypedLiteral(byteCount));
+	// tdbModel.add(tdbResource, LCAHT.fileModifiedDate, tdbModel.createTypedLiteral(modifiedDate));
+	// tdbModel.add(tdbResource, LCAHT.fileReadDate, tdbModel.createTypedLiteral(readDate));
+	// ActiveTDB.tdbDataset.commit();
 	// } finally {
-	// ActiveTDB.TDBDataset.end();
+	// ActiveTDB.tdbDataset.end();
 	// }
 	// // ---- END SAFE -WRITE- TRANSACTION ---
 	// }
 
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.TDBDataset.begin(ReadWrite.WRITE);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			tdbResource.removeAll(LCAHT.fileName);
 			tdbResource.removeAll(LCAHT.filePath);
@@ -271,7 +271,7 @@ public class FileMD {
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
 			tdbResource.removeAll(LCAHT.fileReadDate);
 		} finally {
-			ActiveTDB.TDBDataset.end();
+			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}

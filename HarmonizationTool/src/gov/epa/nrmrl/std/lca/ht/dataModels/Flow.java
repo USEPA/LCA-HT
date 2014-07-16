@@ -14,19 +14,18 @@ public class Flow {
 	private Resource tdbResource;
 
 	public Flow() {
-		this.tdbResource = ActiveTDB.model.createResource();
-		this.tdbResource.addProperty(RDF.type, FASC.FlowAggregationCategory);
+		this.tdbResource = ActiveTDB.createResource(FASC.FlowAggregationCategory);
 	}
 
-	public Flow(Flowable flowable, FlowContext flowContext) {
-		this.flowable = flowable;
-		this.flowContext = flowContext;
-		this.tdbResource = ActiveTDB.model.createResource();
-		this.tdbResource.addProperty(RDF.type, FASC.FlowAggregationCategory);
-		this.tdbResource.addProperty(ECO.hasFlowable, this.flowable.getTdbResource());
-		this.tdbResource.addProperty(FEDLCA.hasFlowContext, this.flowContext.getTdbResource());
-		this.tdbResource.addProperty(FASC.hasCompartment, this.flowContext.getTdbResource());
-	}
+//	public Flow(Flowable flowable, FlowContext flowContext) {
+//		this.flowable = flowable;
+//		this.flowContext = flowContext;
+//		this.tdbResource = ActiveTDB.tdbModel.createResource();
+//		this.tdbResource.addProperty(RDF.type, FASC.FlowAggregationCategory);
+//		this.tdbResource.addProperty(ECO.hasFlowable, this.flowable.getTdbResource());
+//		this.tdbResource.addProperty(FEDLCA.hasFlowContext, this.flowContext.getTdbResource());
+//		this.tdbResource.addProperty(FASC.hasCompartment, this.flowContext.getTdbResource());
+//	}
 
 	public Flowable getFlowable() {
 		return flowable;
@@ -34,8 +33,7 @@ public class Flow {
 
 	public void setFlowable(Flowable flowable) {
 		this.flowable = flowable;
-		tdbResource.removeAll(ECO.hasFlowable);
-		tdbResource.addProperty(ECO.hasFlowable, flowable.getTdbResource());
+		ActiveTDB.replaceResource(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
 	}
 
 	public FlowContext getFlowContext() {
@@ -44,10 +42,7 @@ public class Flow {
 
 	public void setFlowContext(FlowContext flowContext) {
 		this.flowContext = flowContext;
-		tdbResource.removeAll(FASC.hasCompartment);
-		tdbResource.removeAll(FEDLCA.hasFlowContext);
-		tdbResource.addProperty(ECO.hasFlowable, flowContext.getTdbResource());
-		tdbResource.addProperty(FEDLCA.hasFlowContext, flowContext.getTdbResource());
+		ActiveTDB.replaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
 	}
 
 	public Resource getTdbResource() {

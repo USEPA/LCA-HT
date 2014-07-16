@@ -218,7 +218,7 @@ public class QueryView extends ViewPart {
 
 //		ActiveTDB.getInstance().addSelectedTDBListener(this);
 //		ActiveTDB().addSelectedTDBListener(this);
-		if (ActiveTDB.model == null){
+		if (ActiveTDB.tdbModel == null){
 			
 		}
 

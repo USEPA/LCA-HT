@@ -52,12 +52,12 @@ public class ExportTriplesHandler implements IHandler {
 //	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 				System.out.println("executing Export Triples");
-				if(ActiveTDB.model== null){
+				if(ActiveTDB.tdbModel== null){
 //					String msg = "ERROR no TDB open";
 //					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 					return null;
 				}
-				Model model = ActiveTDB.model;
+				Model model = ActiveTDB.tdbModel;
 //				ModelProvider modelProvider = new ModelProvider();
 				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
 				fileDialog.setFilterExtensions(new String[] { "*.ttl", "*.n3" });
@@ -75,8 +75,8 @@ public class ExportTriplesHandler implements IHandler {
 
 						System.out.println(path.toString());
 						FileOutputStream fout = new FileOutputStream(path);
-//						model.write(fout,"TURTLE");
-//						model.write(fout, "TURTLE", null);
+//						tdbModel.write(fout,"TURTLE");
+//						tdbModel.write(fout, "TURTLE", null);
 						model.write(fout, "N3", null);
 //						The built-in languages are "RDF/XML"
 //						"RDF/XML-ABBREV"

@@ -16,6 +16,7 @@ import harmonizationtool.model.FileMDKeeper;
 import harmonizationtool.model.PersonKeeper;
 import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
+import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -48,10 +49,11 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
-	public static Model model = null;
-	public static Dataset TDBDataset = null;
+	public static Model tdbModel = null;
+	public static Dataset tdbDataset = null;
 	public static String tdbDir = null;
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
@@ -69,51 +71,84 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// }
 
 	public void finalize() {
-		System.out.println("closing TDBDataset and model");
+		System.out.println("closing tdbDataset and tdbModel");
 		cleanUp();
 	}
-	
+
 	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-		TDBDataset.begin(ReadWrite.WRITE);
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Literal newRDFNode = model.createTypedLiteral(thingLiteral, rdfDatatype);
-			NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
+			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
 				RDFNode rdfNode = nodeIterator.next();
 				if (rdfNode.isLiteral()) {
 					if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
-						model.removeAll(subject, predicate, rdfNode);
+						tdbModel.removeAll(subject, predicate, rdfNode);
 					}
 				}
 			}
-			model.add(subject, predicate, newRDFNode);
-			TDBDataset.commit();
+			tdbModel.add(subject, predicate, newRDFNode);
+			tdbDataset.commit();
 		} finally {
-			TDBDataset.end();
+			tdbDataset.end();
 		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
-		TDBDataset.begin(ReadWrite.WRITE);
-		try {
-			Literal newRDFNode = model.createTypedLiteral(thingLiteral, rdfDatatype);
-			NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
-			while (nodeIterator.hasNext()) {
-				RDFNode rdfNode = nodeIterator.next();
-				if (rdfNode.isLiteral()) {
-					if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
-						model.removeAll(subject, predicate, rdfNode);
-					}
-				}
-			}
-			model.add(subject, predicate, newRDFNode);
-			TDBDataset.commit();
-		} finally {
-			TDBDataset.end();
-		}
+		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
+	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+			tdbModel.add(subject, predicate, newRDFNode);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
+	}
+
+
+	public static Literal createTypedLiteral(Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+	}
+	
+	public static void removeAllObjects(Resource subject, Property predicate) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			subject.removeAll(predicate);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void removeStatement(Resource subject, Property predicate, RDFNode object) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbModel.remove(subject, predicate, object);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
 	public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
 		if (object instanceof Float) {
 			return XSDDatatype.XSDfloat;
@@ -151,7 +186,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-		@SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
 	public static Class getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
 		if (rdfDatatype.equals(XSDDatatype.XSDfloat)) {
 			try {
@@ -233,78 +268,79 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-//	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-//		Literal newRDFNode = model.createTypedLiteral(thingLiteral, rdfDatatype);
-//		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
-//		while (nodeIterator.hasNext()) {
-//			RDFNode rdfNode = nodeIterator.next();
-//			if (rdfNode.isLiteral()) {
-//				if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)){
-//				model.removeAll(subject, predicate, rdfNode);
-//				}
-//			}
-//		}
-//		model.add(subject, predicate, newRDFNode);
-//	}
+	// public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object
+	// thingLiteral) {
+	// Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+	// while (nodeIterator.hasNext()) {
+	// RDFNode rdfNode = nodeIterator.next();
+	// if (rdfNode.isLiteral()) {
+	// if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)){
+	// tdbModel.removeAll(subject, predicate, rdfNode);
+	// }
+	// }
+	// }
+	// tdbModel.add(subject, predicate, newRDFNode);
+	// }
 
-	public static void replaceLiteral(Resource subject, Property predicate, String stringLiteral) {
-		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
-		while (nodeIterator.hasNext()) {
-			RDFNode rdfNode = nodeIterator.next();
-			if (rdfNode.isLiteral()) {
-				model.removeAll(subject, predicate, rdfNode);
-			}
-		}
-//		System.out.println("Filename: " + stringLiteral + " added to TDB");
-		model.add(subject, predicate, model.createTypedLiteral(stringLiteral));
-	}
-
-	public static void replaceLiteral(Resource subject, Property predicate, Long longLiteral) {
-		NodeIterator nodeIterator = model.listObjectsOfProperty(subject, predicate);
-		while (nodeIterator.hasNext()) {
-			RDFNode rdfNode = nodeIterator.next();
-			if (rdfNode.isLiteral()) {
-				model.removeAll(subject, predicate, rdfNode);
-			}
-		}
-		// NOTE A JAVA long BECOMES AN xsd:integer
-		model.add(subject, predicate, model.createTypedLiteral(longLiteral));
-	}
-
-	public static void replaceLiteral(Resource subject, Property predicate, Date dateObject) {
-
-		NodeIterator nodeIterator;
-		try {
-			nodeIterator = model.listObjectsOfProperty(subject, predicate);
-
-			while (nodeIterator.hasNext()) {
-				RDFNode rdfNode = nodeIterator.next();
-				if (rdfNode.isLiteral()) {
-					model.removeAll(subject, predicate, rdfNode);
-				}
-			}
-			Literal dateLiteral = model.createTypedLiteral(dateObject);
-			model.add(subject, predicate, model.createTypedLiteral(dateLiteral));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("subject: " + subject);
-			System.out.println("predicate: " + predicate);
-
-			e.printStackTrace();
-		}
-	}
+	// public static void replaceLiteral(Resource subject, Property predicate, String stringLiteral) {
+	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+	// while (nodeIterator.hasNext()) {
+	// RDFNode rdfNode = nodeIterator.next();
+	// if (rdfNode.isLiteral()) {
+	// tdbModel.removeAll(subject, predicate, rdfNode);
+	// }
+	// }
+	// // System.out.println("Filename: " + stringLiteral + " added to TDB");
+	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(stringLiteral));
+	// }
+	//
+	// public static void replaceLiteral(Resource subject, Property predicate, Long longLiteral) {
+	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+	// while (nodeIterator.hasNext()) {
+	// RDFNode rdfNode = nodeIterator.next();
+	// if (rdfNode.isLiteral()) {
+	// tdbModel.removeAll(subject, predicate, rdfNode);
+	// }
+	// }
+	// // NOTE A JAVA long BECOMES AN xsd:integer
+	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(longLiteral));
+	// }
+	//
+	// public static void replaceLiteral(Resource subject, Property predicate, Date dateObject) {
+	//
+	// NodeIterator nodeIterator;
+	// try {
+	// nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+	//
+	// while (nodeIterator.hasNext()) {
+	// RDFNode rdfNode = nodeIterator.next();
+	// if (rdfNode.isLiteral()) {
+	// tdbModel.removeAll(subject, predicate, rdfNode);
+	// }
+	// }
+	// Literal dateLiteral = tdbModel.createTypedLiteral(dateObject);
+	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(dateLiteral));
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// System.out.println("subject: " + subject);
+	// System.out.println("predicate: " + predicate);
+	//
+	// e.printStackTrace();
+	// }
+	// }
 
 	public static void cleanUp() {
 		try {
-			TDBDataset.close();
+			tdbDataset.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		try {
-//			model.close();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		// try {
+		// tdbModel.close();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 		try {
 			graphStore.close();
 		} catch (Exception e) {
@@ -325,11 +361,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		System.out.println("about to open TDB = "+model);
+		System.out.println("about to open TDB = " + tdbModel);
 		openTDB();
-		System.out.println("model = "+model);
+		System.out.println("tdbModel = " + tdbModel);
 
-		updateStatusLine();
+		// updateStatusLine();
 		try {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
@@ -341,19 +377,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-	public static void syncTDBtoLCAHT(){
+	public static void syncTDBtoLCAHT() {
 		PersonKeeper.syncFromTDB();
 		FileMDKeeper.syncFromTDB();
 		DataSourceKeeper.syncFromTDB();
 	}
-	
-	private void updateStatusLine() {
 
-	}
+	// private void updateStatusLine() {
+	//
+	// }
 
 	private static void openTDB() {
-		while (model == null) {
-			if ((Util.getPreferenceStore().getString("defaultTDB") == null) || (Util.getPreferenceStore().getString("defaultTDB") == "")) {
+		while (tdbModel == null) {
+			if ((Util.getPreferenceStore().getString("defaultTDB") == null)
+					|| (Util.getPreferenceStore().getString("defaultTDB") == "")) {
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
 				b.append("The Harmonization Tool (HT) requires the user to specify a directory for the Triplestore DataBase (TDB). ");
@@ -377,10 +414,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			} else {
 				System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 				try {
-					TDBDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
-					assert TDBDataset != null : "TDBDataset cannot be null";
-					model = TDBDataset.getDefaultModel();
-					graphStore = GraphStoreFactory.create(TDBDataset);
+					tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
+					assert tdbDataset != null : "tdbDataset cannot be null";
+					tdbModel = tdbDataset.getDefaultModel();
+					graphStore = GraphStoreFactory.create(tdbDataset);
 					System.out.println("TDB Successfully initiated!");
 				} catch (Exception e1) {
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -412,101 +449,101 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-	public static String getStringFromLiteral(RDFNode rdfNode){
-		if (!rdfNode.isLiteral()){
+	public static String getStringFromLiteral(RDFNode rdfNode) {
+		if (!rdfNode.isLiteral()) {
 			return null;
 		}
 		Literal literal = rdfNode.asLiteral();
 		Object value = literal.getValue();
-		if (value instanceof String){
+		if (value instanceof String) {
 			return (String) value;
 		}
 		return null;
 	}
-	
-	public static Long getLongFromLiteral(RDFNode rdfNode){
-		if (!rdfNode.isLiteral()){
+
+	public static Long getLongFromLiteral(RDFNode rdfNode) {
+		if (!rdfNode.isLiteral()) {
 			return null;
 		}
 		Literal literal = rdfNode.asLiteral();
 		Object value = literal.getValue();
-		if (value instanceof Long){
+		if (value instanceof Long) {
 			return (Long) value;
 		}
 		return null;
 	}
-	
-	public static Integer getIntegerFromLiteral(RDFNode rdfNode){
-		if (!rdfNode.isLiteral()){
+
+	public static Integer getIntegerFromLiteral(RDFNode rdfNode) {
+		if (!rdfNode.isLiteral()) {
 			return null;
 		}
 		Literal literal = rdfNode.asLiteral();
 		Object value = literal.getValue();
-		if (value instanceof Integer){
+		if (value instanceof Integer) {
 			return (Integer) value;
 		}
 		return null;
 	}
 
-	public static int removeAllWithSubject(Resource subject) {
-		int count = 0;
-		StmtIterator stmtIterator = subject.listProperties();
-		Set<Statement> statementSet = stmtIterator.toSet();
-		// System.out.println("statementSet.size(): " + statementSet.size());
-		for (Statement statement : statementSet) {
-			// System.out.println("Statement: " + statement);
-			statement.remove();
-			count++;
-		}
-		count++;
-		return count;
-	}
+	// public static int removeAllWithSubject(Resource subject) {
+	// int count = 0;
+	// StmtIterator stmtIterator = subject.listProperties();
+	// Set<Statement> statementSet = stmtIterator.toSet();
+	// // System.out.println("statementSet.size(): " + statementSet.size());
+	// for (Statement statement : statementSet) {
+	// // System.out.println("Statement: " + statement);
+	// statement.remove();
+	// count++;
+	// }
+	// count++;
+	// return count;
+	// }
 
-	public static int removeAllWithObject(RDFNode object) {
-		int count = 0;
-		List<Property> properties = getAllProperties();
-		for (Property predicate : properties) {
-			count += removeAllWithPredicateObject(predicate, object);
-		}
-		return count;
-	}
+	// public static int removeAllWithObject(RDFNode object) {
+	// int count = 0;
+	// List<Property> properties = getAllProperties();
+	// for (Property predicate : properties) {
+	// count += removeAllWithPredicateObject(predicate, object);
+	// }
+	// return count;
+	// }
 
-	public static int removeAllWithSubjectPredicate(Resource subject, Property predicate) {
-		int count = 0;
-		List<Statement> statements = subject.listProperties(predicate).toList();
-		for (Statement statement : statements) {
-			statement.remove();
-			count++;
-		}
-		return count;
-	}
+	// public static int removeAllWithSubjectPredicate(Resource subject, Property predicate) {
+	// int count = 0;
+	// List<Statement> statements = subject.listProperties(predicate).toList();
+	// for (Statement statement : statements) {
+	// statement.remove();
+	// count++;
+	// }
+	// return count;
+	// }
 
-	public static int removeAllWithPredicateObject(Property predicate, RDFNode object) {
-		int count = 0;
-		ResIterator resIterator = model.listSubjectsWithProperty(predicate, object);
-		while (resIterator.hasNext()) {
-			Resource subject = resIterator.next();
-			model.remove(subject, predicate, object);
-			count++;
-		}
-		return count;
-	}
+	// public static int removeAllWithPredicateObject(Property predicate, RDFNode object) {
+	// int count = 0;
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(predicate, object);
+	// while (resIterator.hasNext()) {
+	// Resource subject = resIterator.next();
+	// tdbModel.remove(subject, predicate, object);
+	// count++;
+	// }
+	// return count;
+	// }
 
-	public static List<Property> getAllProperties() {
-		List<Property> results = new ArrayList<Property>();
-		QGetAllProperties qGetAllProperties = new QGetAllProperties();
-		ResultSet resultSet = qGetAllProperties.getResultSet();
-		List<String> resultVars = resultSet.getResultVars();
-		String p = resultVars.get(0);
-		while (resultSet.hasNext()) {
-			QuerySolution querySolution = resultSet.nextSolution();
-			Resource predAsResource = querySolution.getResource(p);
-			String predAsString = predAsResource.getURI();
-			Property predicate = model.createProperty(predAsString);
-			results.add(predicate);
-		}
-		return results;
-	}
+	// public static List<Property> getAllProperties() {
+	// List<Property> results = new ArrayList<Property>();
+	// QGetAllProperties qGetAllProperties = new QGetAllProperties();
+	// ResultSet resultSet = qGetAllProperties.getResultSet();
+	// List<String> resultVars = resultSet.getResultVars();
+	// String p = resultVars.get(0);
+	// while (resultSet.hasNext()) {
+	// QuerySolution querySolution = resultSet.nextSolution();
+	// Resource predAsResource = querySolution.getResource(p);
+	// String predAsString = predAsResource.getURI();
+	// Property predicate = tdbModel.createProperty(predAsString);
+	// results.add(predicate);
+	// }
+	// return results;
+	// }
 
 	@Override
 	public boolean isEnabled() {
@@ -545,25 +582,51 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		ActiveTDB.instance = instance;
 	}
 
-	public static Date getDateFromLiteral(Literal typedLiteralDate) {
-		Date resultingDate = null;
-		if (!typedLiteralDate.isLiteral()) {
-			return null;
-		}
-
-		Literal literalDate = typedLiteralDate.asLiteral();
-		String formattedDate = literalDate.getString();
-		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
-
+	public static Resource createResource(Resource rdfclass) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		Resource result = null;
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			result = tdbModel.createResource(rdfclass);
+			ActiveTDB.tdbDataset.commit();
+		} finally {
+			ActiveTDB.tdbDataset.end();
 		}
-
-		return resultingDate;
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		return result;
 	}
+
+	public static void replaceResource(Resource subject, Property predicate, Resource object) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			subject.removeAll(predicate);
+			subject.addProperty(predicate, object);
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	// public static Date getDateFromLiteral(Literal typedLiteralDate) {
+	// Date resultingDate = null;
+	// if (!typedLiteralDate.isLiteral()) {
+	// return null;
+	// }
+	//
+	// Literal literalDate = typedLiteralDate.asLiteral();
+	// String formattedDate = literalDate.getString();
+	// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+	//
+	// try {
+	// resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+	// } catch (ParseException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// return null;
+	// }
+	//
+	// return resultingDate;
+	// }
 
 }

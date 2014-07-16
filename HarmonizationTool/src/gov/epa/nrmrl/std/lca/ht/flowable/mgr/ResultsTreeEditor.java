@@ -626,11 +626,11 @@ public class ResultsTreeEditor extends ViewPart {
 
 	//
 	// private Resource resolveUriFromString(String uriString) {
-	// Resource uri = ActiveTDB.model.createResource();
+	// Resource uri = ActiveTDB.tdbModel.createResource();
 	// if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-	// uri = ActiveTDB.model.getResource(uriString);
+	// uri = ActiveTDB.tdbModel.getResource(uriString);
 	// } else {
-	// ResIterator iterator = (ActiveTDB.model.listSubjectsWithProperty(
+	// ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(
 	// RDF.type, ECO.Substance));
 	// while (iterator.hasNext()) {
 	// Resource resource = iterator.next();
@@ -888,7 +888,7 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	public void commitMatches() {
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		Resource annotationResource = model.createResource();
 		model.add(annotationResource, RDF.type, FEDLCA.Annotation);
 		// 2) Assign to it a date and creator
@@ -931,7 +931,7 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;

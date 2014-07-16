@@ -17,7 +17,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class ECO {
 	/**
 	 * <p>
-	 * The RDF model that holds the vocabulary terms
+	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
 	private static Model m_model = ModelFactory.createDefaultModel();
@@ -49,7 +49,7 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * A data source is a source of data used in a model.
+	 * A data source is a source of data used in a tdbModel.
 	 * </p>
 	 */
 	public static final Resource DataSource = m_model.createResource("http://ontology.earthster.org/eco/core#DataSource");
@@ -133,14 +133,14 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * compliesWith may be used to relate a model to a compliance requirement that it complies with.
+	 * compliesWith may be used to relate a tdbModel to a compliance requirement that it complies with.
 	 * </p>
 	 */
 	public static final Property compliesWith = m_model.createProperty("http://ontology.earthster.org/eco/core#compliesWith");
 
 	/**
 	 * <p>
-	 * computedFrom relates an impact assessment to the LCA model from which it was computed.
+	 * computedFrom relates an impact assessment to the LCA tdbModel from which it was computed.
 	 * </p>
 	 */
 	public static final Property computedFrom = m_model.createProperty("http://ontology.earthster.org/eco/core#computedFrom");
@@ -347,7 +347,7 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * relates an impact assessment method category description to an impact characterization model.
+	 * relates an impact assessment method category description to an impact characterization tdbModel.
 	 * </p>
 	 */
 	public static final Property hasImpactCharacterizationModel = m_model.createProperty("http://ontology.earthster.org/eco/core#hasImpactCharacterizationModel");
@@ -368,22 +368,22 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * hasModel relates an entity to a model of that entity.
+	 * hasModel relates an entity to a tdbModel of that entity.
 	 * </p>
 	 */
 	public static final Property hasModel = m_model.createProperty("http://ontology.earthster.org/eco/core#hasModel");
 
 	/**
 	 * <p>
-	 * hasQuantifiedEffect relates an LCA model to a quantified effect of the entity being modelled.
+	 * hasQuantifiedEffect relates an LCA tdbModel to a quantified effect of the entity being modelled.
 	 * </p>
 	 */
 	public static final Property hasQuantifiedEffect = m_model.createProperty("http://ontology.earthster.org/eco/core#hasQuantifiedEffect");
 
 	/**
 	 * <p>
-	 * hasQuantifiedEffect list relates an LCA model to a complete list of the quantified effects in
-	 * the model. This can be used to avoid making a closed world assumption using only the property
+	 * hasQuantifiedEffect list relates an LCA tdbModel to a complete list of the quantified effects in
+	 * the tdbModel. This can be used to avoid making a closed world assumption using only the property
 	 * hasQuantifiedEffect.
 	 * </p>
 	 */
@@ -405,14 +405,14 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * hasReferenceExchange is used to relate a model to its reference exchange.
+	 * hasReferenceExchange is used to relate a tdbModel to its reference exchange.
 	 * </p>
 	 */
 	public static final Property hasReferenceExchange = m_model.createProperty("http://ontology.earthster.org/eco/core#hasReferenceExchange");
 
 	/**
 	 * <p>
-	 * hasRelated version may be used to relate a model to a different version of that model.
+	 * hasRelated version may be used to relate a tdbModel to a different version of that tdbModel.
 	 * </p>
 	 */
 	public static final Property hasRelatedVersion = m_model.createProperty("http://ontology.earthster.org/eco/core#hasRelatedVersion");
@@ -478,7 +478,7 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * hasValidationResult relates a model to a result from a process of validating that model.
+	 * hasValidationResult relates a tdbModel to a result from a process of validating that tdbModel.
 	 * </p>
 	 */
 	public static final Property hasValidationResult = m_model.createProperty("http://ontology.earthster.org/eco/core#hasValidationResult");
@@ -493,7 +493,7 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * models relates a model to an entity it is a model of.
+	 * models relates a tdbModel to an entity it is a tdbModel of.
 	 * </p>
 	 */
 	public static final Property models = m_model.createProperty("http://ontology.earthster.org/eco/core#models");
@@ -575,7 +575,7 @@ public class ECO {
 	/**
 	 * <p>
 	 * validInterval relates an entity to a time interval for which it is valid. validInterval may
-	 * be used to annotate a model.
+	 * be used to annotate a tdbModel.
 	 * </p>
 	 */
 	public static final Property validInterval = m_model.createProperty("http://ontology.earthster.org/eco/core#validInterval");

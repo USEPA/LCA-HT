@@ -126,7 +126,7 @@ public class FileMDKeeper {
 		FileMDKeeper.fileMDList = fileMDList;
 	}
 	public static void syncFromTDB() {
-		ResIterator iterator = ActiveTDB.model.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
+		ResIterator iterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
 		while (iterator.hasNext()) {
 			Resource fileMDRDFResource = iterator.next();
 			// NOW SEE IF THE FileMD IS IN THE FileMDKeeper YET

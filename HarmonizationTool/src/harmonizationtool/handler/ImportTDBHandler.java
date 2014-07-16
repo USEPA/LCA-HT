@@ -54,13 +54,13 @@ public class ImportTDBHandler implements IHandler {
 
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
-		if(ActiveTDB.model== null){
+		if(ActiveTDB.tdbModel== null){
 //			String msg = "ERROR no TDB open";
 //			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
-		Model model = ActiveTDB.model;
+		Model model = ActiveTDB.tdbModel;
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
@@ -73,11 +73,11 @@ public class ImportTDBHandler implements IHandler {
 			fileDialog.setFilterPath(homeDir);
 		}
 
-//		Class dataSource = model.getClass();
-//		Resource dsIRI = model.createResource();
-//		Property hasDataSource = model.getProperty(RDF.type);
+//		Class dataSource = tdbModel.getClass();
+//		Resource dsIRI = tdbModel.createResource();
+//		Property hasDataSource = tdbModel.getProperty(RDF.type);
 		
-//		ResIterator dataSetResources = model
+//		ResIterator dataSetResources = tdbModel
 //				.listResourcesWithProperty(RDF.type,
 //						ds.asNode());
 		
@@ -157,7 +157,7 @@ public class ImportTDBHandler implements IHandler {
 							
 							ActiveTDB.syncTDBtoLCAHT();
 
-							// jenaReader.read(model, zipStream, null);
+							// jenaReader.read(tdbModel, zipStream, null);
 						}
 					}
 
