@@ -3,6 +3,7 @@ package harmonizationtool.model;
 //import java.util.Calendar;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.utils.FileEncodingUtil;
+import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.LCAHT;
 
@@ -24,19 +25,12 @@ public class FileMD {
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
-	private static final Model model = ActiveTDB.tdbModel;
+	private static final Resource rdfClass = ECO.DataSource;
+
+//	private static final Model model = ActiveTDB.tdbModel;
 
 	public FileMD() {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			this.tdbResource = model.createResource();
-			model.add(tdbResource, RDF.type, LCAHT.dataFile);
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-		FileMDKeeper.add(this);
+		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
 
 	public FileMD(Resource tdbResource) {
@@ -175,17 +169,17 @@ public class FileMD {
 	}
 
 	public void setTdbResource(Resource tdbResource) {
-		assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
+//		assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			model.add(tdbResource, RDF.type, LCAHT.dataFile);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		try {
+//			model.add(tdbResource, RDF.type, LCAHT.dataFile);
+//			ActiveTDB.tdbDataset.commit();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void syncDataFromTDB() {

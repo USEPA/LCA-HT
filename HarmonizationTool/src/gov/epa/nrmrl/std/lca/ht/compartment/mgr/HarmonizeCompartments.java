@@ -144,6 +144,7 @@ public class HarmonizeCompartments extends ViewPart {
 				// Resource equivalent = FEDLCA.equivalent;
 
 				Model model = ActiveTDB.tdbModel;
+				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING WITH TDB) FIXME
 				// NEED TO DO THE FOLLOWING
 				// 1) Create a new Annotation (assigning it to the class
 				// Annotation)

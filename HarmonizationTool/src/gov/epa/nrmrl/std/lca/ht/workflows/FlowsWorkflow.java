@@ -520,15 +520,15 @@ public class FlowsWorkflow extends ViewPart {
 		// THE SAFE PART MEANS
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
-		Model model = ActiveTDB.tdbModel;
+//		Model model = ActiveTDB.tdbModel;
 
-		long triples = model.size();
+		long triples = ActiveTDB.tdbModel.size();
 		Table table = CSVTableView.getTable();
 
 		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
 			int rowNumberPlusOne = rowNumber + 1;
-			Literal rowLiteral = ActiveTDB.tdbModel.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
+			Literal rowLiteral = ActiveTDB.createTypedLiteral(rowNumberPlusOne);
 
 			Item item = table.getItem(rowNumber);
 			DataRow dataRow = (DataRow) item.getData();
@@ -578,7 +578,7 @@ public class FlowsWorkflow extends ViewPart {
 				}
 			}
 		}
-		long newTriples = model.size() - triples;
+		long newTriples = ActiveTDB.tdbModel.size() - triples;
 		return (int) newTriples;
 	}
 
@@ -587,11 +587,11 @@ public class FlowsWorkflow extends ViewPart {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
-		Model model = ActiveTDB.tdbModel;
+//		Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
 		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
-		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
 		int count = 0;
 		while (resourceIterator.hasNext()) {
 			count++;
@@ -613,7 +613,7 @@ public class FlowsWorkflow extends ViewPart {
 						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
 								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
@@ -660,11 +660,11 @@ public class FlowsWorkflow extends ViewPart {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
 
-		Model model = ActiveTDB.tdbModel;
+//		Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
 		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
-		ResIterator resourceIterator = model.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
 		int count = 0;
 		while (resourceIterator.hasNext()) {
 			count++;
@@ -686,7 +686,7 @@ public class FlowsWorkflow extends ViewPart {
 						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-							ResIterator matchingResourcesIterator = model.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
 								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();

@@ -59,7 +59,7 @@ public class AutoMatchJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
 		Resource tableDataSource = tableProvider.getDataSourceProvider().getTdbResource();
-		Model model = ActiveTDB.tdbModel;
+//		Model model = ActiveTDB.tdbModel;
 		// Table table = CSVTableView.getTable();
 		System.out.println("Table :" + tableProvider);
 
@@ -106,14 +106,13 @@ public class AutoMatchJob extends Job {
 				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
 				Property property = csvColumnInfo.getTdbProperty();
 				String dataRowValue = dataRow.get(colNumber);
-				Literal dataRowLiteral = ActiveTDB.tdbModel.createTypedLiteral(dataRowValue,
-						csvColumnInfo.getRdfDatatype());
+				Literal dataRowLiteral = ActiveTDB.createTypedLiteral(dataRowValue);
 				ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(property, dataRowLiteral);
 				Resource itemToMatchTDBResource = null;
 				while (resIterator.hasNext()) {
 					Resource candidateResource = resIterator.next();
-					if (ActiveTDB.tdbModel.containsLiteral(candidateResource, RDF.type, rdfClass)) {
-						if (ActiveTDB.tdbModel.containsLiteral(candidateResource, ECO.hasDataSource, dataSource.asNode())) {
+					if (ActiveTDB.tdbModel.contains(candidateResource, RDF.type, rdfClass)) {
+						if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource, dataSource)) {
 							itemToMatchTDBResource = candidateResource;
 						} else {
 							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource,

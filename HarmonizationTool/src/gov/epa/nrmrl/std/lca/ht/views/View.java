@@ -391,7 +391,7 @@ public class View extends ViewPart {
 							continue;
 						}
 
-						Literal drRowLit = model.createTypedLiteral(csvRow);
+						Literal drRowLit = ActiveTDB.createTypedLiteral(csvRow);
 
 						String name = null; // REQUIRED
 						String altName = null; // OPTIONAL
@@ -477,6 +477,7 @@ public class View extends ViewPart {
 						if (str2res.containsKey(combined_str)) {
 							subResourceHandle = str2res.get(combined_str);
 						} else {
+							// FIXME - MAKE THIS TRANSACTION SAFE
 							Resource newSub = model.createResource();
 							if (drCasLit == null) {
 								model.add(newSub, RDF.type, ECO.Flowable);

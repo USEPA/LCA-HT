@@ -61,7 +61,7 @@ public class ExportTDBHandler implements IHandler {
 		}
 
 		System.out.println("executing TDB Dump");
-		Model model = ActiveTDB.tdbModel;
+//		Model model = ActiveTDB.tdbModel;
 		// ModelProvider modelProvider = new ModelProvider();
 		FileDialog fileDialog = new FileDialog(HandlerUtil
 				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
@@ -91,7 +91,7 @@ public class ExportTDBHandler implements IHandler {
 //				RDFWriter rdfWriter = tdbModel.getWriter(outType); // WORKED
 //				rdfWriter.write(tdbModel, fout, null);             // WORKED
 //				tdbModel.write(fout, path, outType);               // BAD
-				model.write(fout, outType); // TESTING
+				ActiveTDB.tdbModel.write(fout, outType); // TESTING
 				fout.close();
 				//
 

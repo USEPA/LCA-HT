@@ -890,6 +890,7 @@ public class ResultsTreeEditor extends ViewPart {
 	public void commitMatches() {
 		Model model = ActiveTDB.tdbModel;
 		Resource annotationResource = model.createResource();
+		// USE Annotation CLASS FIXME
 		model.add(annotationResource, RDF.type, FEDLCA.Annotation);
 		// 2) Assign to it a date and creator
 		Date calendar = new Date();

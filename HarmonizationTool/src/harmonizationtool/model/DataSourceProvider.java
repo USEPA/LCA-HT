@@ -26,22 +26,13 @@ public class DataSourceProvider {
 	private Person contactPerson = null;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	// private List<Annotation> annotationList = new ArrayList<Annotation>();
-
 	private Resource tdbResource;
-	protected final static Model model = ActiveTDB.tdbModel;
+	private static final Resource rdfClass = ECO.DataSource;
+
 	private boolean isMaster = false;
 
 	public DataSourceProvider() {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource = model.createResource();
-			model.add(tdbResource, RDF.type, ECO.DataSource);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
 
 	public DataSourceProvider(Resource tdbResource) {
@@ -74,17 +65,17 @@ public class DataSourceProvider {
 	}
 
 	public Resource getTdbResource() {
-		if (tdbResource == null) {
-			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			try {
-				tdbResource = ActiveTDB.tdbModel.createResource();
-				ActiveTDB.tdbDataset.commit();
-			} finally {
-				ActiveTDB.tdbDataset.end();
-			}
-			// ---- END SAFE -WRITE- TRANSACTION ---
-		}
+//		if (tdbResource == null) {
+//			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//			try {
+//				tdbResource = ActiveTDB.tdbModel.createResource();
+//				ActiveTDB.tdbDataset.commit();
+//			} finally {
+//				ActiveTDB.tdbDataset.end();
+//			}
+//			// ---- END SAFE -WRITE- TRANSACTION ---
+//		}
 		assert tdbResource != null : "tdbResource cannot be null";
 		return tdbResource;
 	}
@@ -197,7 +188,7 @@ public class DataSourceProvider {
 			tdbResource.removeAll(RDFS.label);
 			tdbResource.removeAll(RDFS.comment);
 			tdbResource.removeAll(DCTerms.hasVersion);
-			model.remove(tdbResource, RDF.type, ECO.DataSource);
+			ActiveTDB.tdbModel.remove(tdbResource, RDF.type, ECO.DataSource);
 			ActiveTDB.tdbDataset.commit();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -314,5 +305,9 @@ public class DataSourceProvider {
 				addFileMD(fileMD);
 			}
 		}
+	}
+
+	public static Resource getRdfclass() {
+		return rdfClass;
 	}
 }

@@ -124,7 +124,7 @@ public class QueryView extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
@@ -159,7 +159,7 @@ public class QueryView extends ViewPart {
 				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
 
 				// addFilename(path);
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
@@ -176,7 +176,8 @@ public class QueryView extends ViewPart {
 			}
 		});
 
-		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL
+				| SWT.MULTI);
 		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 		// txtTextArea.setBounds(297, 0, 148, 469);
 		windowQueryUpdate.setBounds(150, 0, 600, 500);
@@ -215,13 +216,6 @@ public class QueryView extends ViewPart {
 		}
 
 		addUpdate(uDelDataSource);
-
-//		ActiveTDB.getInstance().addSelectedTDBListener(this);
-//		ActiveTDB().addSelectedTDBListener(this);
-		if (ActiveTDB.tdbModel == null){
-			
-		}
-
 	}
 
 	@Override
@@ -230,11 +224,9 @@ public class QueryView extends ViewPart {
 	}
 
 	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
+	 * The content provider class is responsible for providing objects to the view. It can wrap existing objects in
+	 * adapters or simply return objects as-is. These objects may be sensitive to the current input of the view, or
+	 * ignore it and always show the same content (like Task List, for example).
 	 */
 	public class QueryViewContentProvider implements IStructuredContentProvider {
 		Viewer v;
@@ -322,7 +314,7 @@ public class QueryView extends ViewPart {
 					return;
 				}
 
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
 				String key = (String) selection.toList().get(0);
 				System.out.println("key=" + key);
@@ -340,7 +332,8 @@ public class QueryView extends ViewPart {
 						((HarmonyQuery2Impl) labeledQuery).getParamaterFromUser();
 						harmonyQuery2ImplJob.setPriority(Job.SHORT);
 						harmonyQuery2ImplJob.setSystem(false);
-						harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util.findView(QueryView.ID), key));
+						harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util
+								.findView(QueryView.ID), key));
 						harmonyQuery2ImplJob.schedule();
 
 					}
@@ -430,8 +423,7 @@ public class QueryView extends ViewPart {
 	}
 
 	/**
-	 * this is method is called by QueryViewJobChangeListener once the QueryView
-	 * Job is complete
+	 * this is method is called by QueryViewJobChangeListener once the QueryView Job is complete
 	 * 
 	 * @param resultSet
 	 *            results of query
@@ -439,7 +431,7 @@ public class QueryView extends ViewPart {
 	 *            type of query requested
 	 */
 	public void queryCallback(ResultSet resultSet, String key) {
-//		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		LabeledQuery labeledQuery = queryFromKey(key);
 		String showResultsInWindow = ResultsView.ID;
 
@@ -458,7 +450,7 @@ public class QueryView extends ViewPart {
 			// BUT CHOSEN BY THE CALLER
 			showResultsInWindow = ResultsTreeEditor.ID;
 
-//			TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+			// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
 			// THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 
@@ -472,7 +464,8 @@ public class QueryView extends ViewPart {
 
 			// resultsView.formatForTransform0();
 		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util.findView(HarmonizeCompartments.ID);
+			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util
+					.findView(HarmonizeCompartments.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
@@ -525,24 +518,24 @@ public class QueryView extends ViewPart {
 		return;
 	}
 
-//	@Override
-//	public void TDBchanged(String tdb) {
-//		// System.out.println("new TDB = " + tdb);
-//		// String key = (String) selection.toList().get(0);
-//		// String key = "Show Data Sources";
-//		// System.out.println("key=" + key);
-//		// HarmonyQuery q = queryMap.get(key);
-//		// System.out.println(q.getQuery());
-//
-//		// IWorkbenchPage page = PlatformUI.getWorkbench()
-//		// .getActiveWorkbenchWindow().getActivePage();
-//		// ResultsView resultsView = (ResultsView)
-//		// page.findView(ResultsView.ID);
-//		// resultsView.update(q);
-//
-//		// resultsView.update(q.getData());
-//		// resultsView.update(q.getQueryResults());
-//		// System.out.println("done");
-//
-//	}
+	// @Override
+	// public void TDBchanged(String tdb) {
+	// // System.out.println("new TDB = " + tdb);
+	// // String key = (String) selection.toList().get(0);
+	// // String key = "Show Data Sources";
+	// // System.out.println("key=" + key);
+	// // HarmonyQuery q = queryMap.get(key);
+	// // System.out.println(q.getQuery());
+	//
+	// // IWorkbenchPage page = PlatformUI.getWorkbench()
+	// // .getActiveWorkbenchWindow().getActivePage();
+	// // ResultsView resultsView = (ResultsView)
+	// // page.findView(ResultsView.ID);
+	// // resultsView.update(q);
+	//
+	// // resultsView.update(q.getData());
+	// // resultsView.update(q.getQueryResults());
+	// // System.out.println("done");
+	//
+	// }
 }
