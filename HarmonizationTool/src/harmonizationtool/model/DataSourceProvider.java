@@ -65,18 +65,7 @@ public class DataSourceProvider {
 	}
 
 	public Resource getTdbResource() {
-//		if (tdbResource == null) {
-//			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//			try {
-//				tdbResource = ActiveTDB.tdbModel.createResource();
-//				ActiveTDB.tdbDataset.commit();
-//			} finally {
-//				ActiveTDB.tdbDataset.end();
-//			}
-//			// ---- END SAFE -WRITE- TRANSACTION ---
-//		}
-		assert tdbResource != null : "tdbResource cannot be null";
+
 		return tdbResource;
 	}
 
@@ -94,7 +83,10 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 		System.out.println("got to line: 3");
 
-		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
+		if (!(ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource()))) {
+			// ActiveTDB.addAnything(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+			// THE ABOVE SHOULD BE ADDED: TO SAFELY ADD A TRIPLE WHETHER THE OBJECT IS AN RDFNode, A Literal, OR AN
+			// OBJECT (TO BE TYPED)
 			System.out.println("got to line: 4");
 
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
@@ -116,6 +108,7 @@ public class DataSourceProvider {
 			System.out.println("got to line: 9");
 
 			// ---- END SAFE -WRITE- TRANSACTION ---
+
 		}
 	}
 
@@ -160,15 +153,7 @@ public class DataSourceProvider {
 	public void remove(FileMD fileMD) {
 		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			ActiveTDB.tdbModel.remove(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.removeStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 	}
 
 	public void removeFileMDList() {
@@ -180,20 +165,12 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
-		// contactPerson.remove();
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(FEDLCA.hasContactPerson);
-			tdbResource.removeAll(RDFS.label);
-			tdbResource.removeAll(RDFS.comment);
-			tdbResource.removeAll(DCTerms.hasVersion);
-			ActiveTDB.tdbModel.remove(tdbResource, RDF.type, ECO.DataSource);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.removeAllObjects(tdbResource, RDF.type);
+		ActiveTDB.removeAllObjects(tdbResource, RDFS.label);
+		ActiveTDB.removeAllObjects(tdbResource, DCTerms.hasVersion);
+		ActiveTDB.removeAllObjects(tdbResource, RDFS.comment);
+		ActiveTDB.removeAllObjects(tdbResource, FEDLCA.hasContactPerson);
+		ActiveTDB.removeAllObjects(tdbResource, LCAHT.containsFile);
 	}
 
 	public boolean isMaster() {
@@ -210,17 +187,7 @@ public class DataSourceProvider {
 
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(RDFS.label);
-			tdbResource.addProperty(RDFS.label, dataSourceName);
-			// ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
 	}
 
 	public String getVersion() {
@@ -229,17 +196,7 @@ public class DataSourceProvider {
 
 	public void setVersion(String version) {
 		this.version = version;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(DCTerms.hasVersion);
-			tdbResource.addProperty(DCTerms.hasVersion, version);
-			// ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
 	}
 
 	public String getComments() {
@@ -248,17 +205,7 @@ public class DataSourceProvider {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			tdbResource.removeAll(RDFS.comment);
-			tdbResource.addProperty(RDFS.comment, comments);
-			// ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
 	}
 
 	public void syncFromTDB() {

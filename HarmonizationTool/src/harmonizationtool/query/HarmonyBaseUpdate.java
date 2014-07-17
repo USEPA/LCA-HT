@@ -43,22 +43,19 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		// Query query = QueryFactory.create(queryStr);
 		Model model = ActiveTDB.tdbModel;
 		if (model == null) {
-			// String msg = "ERROR no TDB open";
-			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return;
 		}
+		long startModelSize = model.size();
 
 		queryResults = new QueryResults();
 		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
 		queryResults.setColumnHeaders(columnHeaders);
 
-		long change = model.size();
-
 		columnHeaders.add("Model");
 		columnHeaders.add("Size");
 
-		System.err.printf("Before Update: %s\n", model.size());
+		System.err.printf("Before Update: %s\n", startModelSize);
 		// data.add("Before Update");
 		// data.add(""+tdbModel.size());
 
@@ -67,7 +64,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		DataRow dataRow = new DataRow();
 		tableProvider.addDataRow(dataRow);
 		dataRow.add("Before Update");
-		dataRow.add("" + model.size());
+		dataRow.add("" + startModelSize);
 
 		// Resource s = tdbModel.createResource("<http://I>");
 		// Property p = tdbModel.createProperty("<http://am>");
@@ -96,29 +93,30 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		System.out.println("Time elapsed: " + elapsedTimeSec);
-		System.err.printf("After Update: %s\n", model.size());
+		long endModelSize = model.size();
+		System.err.printf("After Update: %s\n", endModelSize);
 		// data.add("After Update");
 		// data.add("" + tdbModel.size());
 		DataRow dataRow2 = new DataRow();
 		tableProvider.addDataRow(dataRow2);
 		dataRow2.add("After Update");
-		dataRow2.add("" + model.size());
-
-		change = model.size() - change;
-		System.err.printf("Net Increase: %s\n", change);
+		dataRow2.add("" + endModelSize);
+		
 		DataRow dataRow3 = new DataRow();
 		tableProvider.addDataRow(dataRow3);
+		
+		long modelSizeChange = endModelSize - startModelSize;
+		String message = "New Triples:";
 
-		String increase = "New Triples:";
-
-		if (change < 0) {
-			increase = "Triples removed:";
-			change = 0 - change;
+		if (modelSizeChange > 0) {
+			System.err.printf("Net Increase: %s\n", modelSizeChange);
+		} else {
+			message = "Triples removed:";
+			modelSizeChange = 0 - modelSizeChange;
 		}
-		// data.add(increase);
-		// data.add("" + change);
-		dataRow3.add(increase);
-		dataRow3.add("" + change);
+
+		dataRow3.add(message);
+		dataRow3.add("" + modelSizeChange);
 
 		System.out.println("done");
 	}
