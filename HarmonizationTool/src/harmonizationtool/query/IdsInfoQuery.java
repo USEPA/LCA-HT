@@ -1,7 +1,5 @@
 package harmonizationtool.query;
 
-import com.sun.jmx.snmp.Timestamp;
-
 public class IdsInfoQuery extends HarmonyBaseUpdate {
 	private final String dataSourceLid;
 	private final String dataSourceName;
