@@ -50,7 +50,7 @@ public class DataSourceKeeper {
 		return ids;
 	}
 
-	public static List<String> getNames() {
+	public static List<String> getAlphabetizedNameList() {
 		List<String> results = new ArrayList<String>();
 		Iterator<DataSourceProvider> iterator = dataSourceProviderList.iterator();
 		while (iterator.hasNext()) {
@@ -60,9 +60,17 @@ public class DataSourceKeeper {
 		return results;
 	}
 
+	public static String[] getAlphabetizedNames() {
+		String[] results = new String[dataSourceProviderList.size()];
+		List<String> nameList = getAlphabetizedNameList();
+		for (int i = 0; i < dataSourceProviderList.size(); i++) {
+			results[i] = nameList.get(i);
+		}
+		return results;
+	}
+
 	/**
-	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE
-	 * TDB
+	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE TDB
 	 * 
 	 * @param proposedNewDataSourceName
 	 * @return

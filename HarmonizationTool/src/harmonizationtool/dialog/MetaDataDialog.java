@@ -33,7 +33,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private DataSourceProvider newDataSourceProvider = null;
 	private FileMD callingFileMD = null;
 	private Combo comboSelectorDataSource;
-	private Button dataSourceRename;
+//	private Button dataSourceRename;
 	private Combo comboSelectorFileMD;
 	// private List<Text> dialogValues = new ArrayList<Text>();
 	private Text[] dialogValues = new Text[9];
@@ -93,23 +93,17 @@ public class MetaDataDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		System.out.println("createDialogArea called");
-//		setTitle("CSV file Meta Data");
 
-		layoutDialog(parent);
+		layoutDialog(parent); // BUILD "BASIC STRUCTURE"
 
-		comboSelectorDataSource.setItems(getDataSourceInfo());
-		comboSelectorDataSource.select(0);
+		comboSelectorDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
+		int index = DataSourceKeeper.indexOf(newDataSourceProvider);
+		if (index >= 0) {
+			comboSelectorDataSource.select(index);
+		} else {
+			comboSelectorDataSource.select(comboSelectorDataSource.indexOf(curDataSourceProvider.getDataSourceName()));
+		}
 		comboSelectorDataSource.addSelectionListener(new ComboSelectorDataSourceListener());
-
-//		dataSourceRename.addListener(SWT.Selection, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-////				renameDataSource();
-//			}
-//		});
-
-//		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
-
 		comboSelectorFileMD.setToolTipText("Files associated with this data set." + comboSelectorDataSource.getText());
 		comboSelectorFileMD.addModifyListener(new ComboFileSelectorListener());
 		redrawDialogRows();
@@ -258,33 +252,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues[8] = textFileReadTime; // ------- 08 File Read Time
 	}
 
-	// COLLECT INFO ABOUT DATA SETS FROM THE TDB
-	private String[] getDataSourceInfo() {
-		List<String> sortedNames = DataSourceKeeper.getNames();
-		String[] results = new String[sortedNames.size()];
-		// CASE 1 (NO NEW DataSourceProvider)
-		if (newDataSourceProvider == null) {
-			for (int i = 0; i < sortedNames.size(); i++) {
-				results[i] = sortedNames.get(i);
-			}
-			curDataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.indexOfDataSourceName(results[0]));
-		} else {
-			results[0] = newDataSourceProvider.getDataSourceName();
-			boolean seen = false;
-			for (int i = 0; i < sortedNames.size(); i++) {
-				if (sortedNames.get(i).equals(results[0])) {
-					seen = true;
-				} else if (seen) {
-					results[i] = sortedNames.get(i);
-				} else {
-					results[i + 1] = sortedNames.get(i);
-				}
-			}
-			curDataSourceProvider = newDataSourceProvider;
-		}
-		return results;
-	}
-
 	protected void redrawDialogRows() {
 		clearDialogRows();
 		redrawDialogDataSourceMD();
@@ -342,7 +309,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void redrawDialogFileMD() {
 		FileMD curFileMD = curDataSourceProvider.getFileMDListNewestFirst()
 				.get(comboSelectorFileMD.getSelectionIndex());
-		dialogValues[6].setText(""+curFileMD.getByteCount());
+		dialogValues[6].setText("" + curFileMD.getByteCount());
 		dialogValues[7].setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
 		dialogValues[8].setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
 	}
