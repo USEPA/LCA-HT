@@ -19,6 +19,9 @@ public class FileMDKeeper {
 	}
 
 	public static boolean add(FileMD fileMD) {
+		if (fileMDList.contains(fileMD)){
+			return false;
+		}
 		return fileMDList.add(fileMD);
 	}
 

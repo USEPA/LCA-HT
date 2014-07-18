@@ -23,6 +23,9 @@ public class DataSourceKeeper {
 	}
 
 	public static boolean add(DataSourceProvider dataSourceProvider) {
+		if (dataSourceProviderList.contains(dataSourceProvider)){
+			return false;
+		}
 		return dataSourceProviderList.add(dataSourceProvider);
 	}
 

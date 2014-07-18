@@ -7,6 +7,7 @@ import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.LCAHT;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import com.hp.hpl.jena.query.ReadWrite;
@@ -27,7 +28,7 @@ public class FileMD {
 	private Resource tdbResource;
 	private static final Resource rdfClass = LCAHT.dataFile;
 
-//	private static final Model model = ActiveTDB.tdbModel;
+	// private static final Model model = ActiveTDB.tdbModel;
 
 	public FileMD() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
@@ -40,15 +41,15 @@ public class FileMD {
 		syncDataFromTDB();
 	}
 
-//	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
-//		super();
-//		setFilename(filename);
-//		setPath(path);
-//		setByteCount(size);
-//		setModifiedDate(modifiedDate);
-//		setReadDate(readDate);
-//		FileMDKeeper.add(this);
-//	}
+	// public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
+	// super();
+	// setFilename(filename);
+	// setPath(path);
+	// setByteCount(size);
+	// setModifiedDate(modifiedDate);
+	// setReadDate(readDate);
+	// FileMDKeeper.add(this);
+	// }
 
 	public String getFilename() {
 		return filename;
@@ -170,90 +171,51 @@ public class FileMD {
 	}
 
 	public void setTdbResource(Resource tdbResource) {
-//		assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
+		// assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			model.add(tdbResource, RDF.type, LCAHT.dataFile);
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
+		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		// try {
+		// model.add(tdbResource, RDF.type, LCAHT.dataFile);
+		// ActiveTDB.tdbDataset.commit();
+		// } finally {
+		// ActiveTDB.tdbDataset.end();
+		// }
+		// // ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void syncDataFromTDB() {
-		// NodeIterator nodeIterator;
-		System.out.println("sync line: 1");
-
 		RDFNode rdfNode;
 		if (tdbResource == null) {
 			return;
 		}
-		System.out.println("sync line: 2");
-
 		rdfNode = tdbResource.getProperty(LCAHT.fileName).getObject();
 		if (rdfNode != null) {
 			filename = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
-		System.out.println("sync line: 3");
 
 		rdfNode = tdbResource.getProperty(LCAHT.filePath).getObject();
 		if (rdfNode != null) {
 			path = ActiveTDB.getStringFromLiteral(rdfNode);
 		}
-		System.out.println("sync line: 4");
 
-//		rdfNode = tdbResource.getProperty(LCAHT.fileEncoding).getObject();
-//		if (rdfNode != null) {
-//			encoding = ActiveTDB.getStringFromLiteral(rdfNode);
-//		}
-//		System.out.println("sync line: 5");
+		// rdfNode = tdbResource.getProperty(LCAHT.fileEncoding).getObject();
+		// if (rdfNode != null) {
+		// encoding = ActiveTDB.getStringFromLiteral(rdfNode);
+		// }
+		// System.out.println("sync line: 5");
 
-		byteCount = 123; // TEMP HACK FIXME
-		// rdfNode = tdbResource.getProperty(LCAHT.byteCount).getObject();
-		// byteCount = rdfNode.asLiteral().getLong();
-		System.out.println("sync line: 6");
+		rdfNode = tdbResource.getProperty(LCAHT.byteCount).getObject();
+		byteCount = rdfNode.asLiteral().getLong();
 
-		// rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
-		// modifiedDate = new Date(rdfNode.asLiteral().getLong());
-		modifiedDate = new Date(); // TEMP HACK FIXME
-		System.out.println("sync line: 7");
+		rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
+		modifiedDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
 
-		// rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
-		// readDate = new Date(rdfNode.asLiteral().getLong());
-		readDate = new Date(); // TEMP HACK FIXME
+		rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
+		readDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+
 		System.out.println("sync line: 8");
 	}
-
-	// public void syncDataToTDB() {
-	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// try {
-	// if (tdbResource == null) {
-	// tdbResource = tdbModel.createResource();
-	// }
-	// tdbModel.add(tdbResource, RDF.type, LCAHT.dataFile);
-	// tdbModel.add(tdbResource, LCAHT.fileName, tdbModel.createTypedLiteral(filename));
-	// tdbModel.add(tdbResource, LCAHT.filePath, tdbModel.createTypedLiteral(path));
-	// // Literal byteCountLiteral = tdbModel.createTypedLiteral(byteCount);
-	// // tdbModel.add(tdbResource, LCAHT.byteCount, byteCountLiteral);
-	// // NOTE xsd:long ==> xsd:integer WHICH IS ARBITRARY LENGTH (ANY SEQ.
-	// // OF
-	// // DIGITS)
-	// // NOTE ALSO: xsd:int IS LIKE java.lang.Integer (LIMITED TO
-	// // -2147483648
-	// // TO 2147483647)
-	// tdbModel.add(tdbResource, LCAHT.byteCount, tdbModel.createTypedLiteral(byteCount));
-	// tdbModel.add(tdbResource, LCAHT.fileModifiedDate, tdbModel.createTypedLiteral(modifiedDate));
-	// tdbModel.add(tdbResource, LCAHT.fileReadDate, tdbModel.createTypedLiteral(readDate));
-	// ActiveTDB.tdbDataset.commit();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// // ---- END SAFE -WRITE- TRANSACTION ---
-	// }
 
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---

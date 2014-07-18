@@ -20,11 +20,10 @@ public class PersonKeeper {
 	}
 
 	public static boolean add(Person person) {
-		if (!personList.contains(person)){
-			personList.add(person);
-			return true;
+		if (personList.contains(person)) {
+			return false;
 		}
-		return false;
+		return personList.add(person);
 	}
 
 	public static boolean remove(Person person) {

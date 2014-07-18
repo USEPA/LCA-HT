@@ -70,10 +70,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// return instance;
 	// }
 
-	
-
-	
-
 	// public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object
 	// thingLiteral) {
 	// Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
@@ -136,11 +132,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// }
 	// }
 
-
-
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (tdbModel != null){
+		if (tdbModel != null) {
 			System.out.println("tdb seems to be open already!");
 			return null;
 		}
@@ -236,6 +230,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// TODO Auto-generated method stub
 
 	}
+
 	public static void cleanUp() {
 		try {
 			tdbDataset.close();
@@ -380,6 +375,32 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
+	}
+
+	public static void replaceResource(Resource subject, Property predicate, Resource object) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			subject.removeAll(predicate);
+			subject.addProperty(predicate, object);
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static Resource createResource(Resource rdfclass) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		Resource result = null;
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			result = tdbModel.createResource(rdfclass);
+			ActiveTDB.tdbDataset.commit();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		return result;
 	}
 
 	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
@@ -585,51 +606,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		ActiveTDB.instance = instance;
 	}
 
-	public static Resource createResource(Resource rdfclass) {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		Resource result = null;
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			result = tdbModel.createResource(rdfclass);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
+	public static Date getDateFromLiteral(Literal typedLiteralDate) {
+		Date resultingDate = null;
+		if (!typedLiteralDate.isLiteral()) {
+			return null;
 		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-		return result;
-	}
+		Literal literalDate = typedLiteralDate.asLiteral();
+		String formattedDate = literalDate.getString();
+		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
 
-	public static void replaceResource(Resource subject, Property predicate, Resource object) {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			subject.removeAll(predicate);
-			subject.addProperty(predicate, object);
-		} finally {
-			ActiveTDB.tdbDataset.end();
+			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
 		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		return resultingDate;
 	}
-
-	// public static Date getDateFromLiteral(Literal typedLiteralDate) {
-	// Date resultingDate = null;
-	// if (!typedLiteralDate.isLiteral()) {
-	// return null;
-	// }
-	//
-	// Literal literalDate = typedLiteralDate.asLiteral();
-	// String formattedDate = literalDate.getString();
-	// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
-	//
-	// try {
-	// resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
-	// } catch (ParseException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// return null;
-	// }
-	//
-	// return resultingDate;
-	// }
 
 }
