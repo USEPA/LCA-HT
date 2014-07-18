@@ -62,6 +62,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
 		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
 		if (DataSourceKeeper.size() == 0) {
+			// THIS IS A PROBLEM. FIXME - HOW TO EXIT GRACEFULLY?
 			new GenericMessageBox(parentShell, "No Data Sets",
 					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			cancelPressed();

@@ -110,8 +110,11 @@ public class ImportCSV implements IHandler {
 
 		System.out.println("All's fine before opening dialog");
 		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
+		System.out.println("meta initialized");
 		dialog.create();
+		System.out.println("meta created");
 		if (dialog.open() == MetaDataDialog.CANCEL) { // FIXME
+			System.out.println("cancel!");
 			fileMD.remove();
 			return null;
 		}

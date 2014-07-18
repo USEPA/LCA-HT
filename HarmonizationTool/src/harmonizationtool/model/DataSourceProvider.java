@@ -36,9 +36,9 @@ public class DataSourceProvider {
 	}
 
 	public DataSourceProvider(Resource tdbResource) {
-		this.tdbResource = tdbResource;
-		syncFromTDB();
 		if (DataSourceKeeper.getByTdbResource(tdbResource) < 0) {
+			this.tdbResource = tdbResource;
+			syncFromTDB();
 			DataSourceKeeper.add(this);
 		}
 	}
@@ -74,41 +74,26 @@ public class DataSourceProvider {
 	}
 
 	public void addFileMD(FileMD fileMD) {
-		System.out.println("got to line: 1");
 		if (fileMD == null) {
 			return;
 		}
-		System.out.println("got to line: 2");
 
 		fileMDList.add(fileMD);
-		System.out.println("got to line: 3");
 
-		if (!(ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource()))) {
+		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
 			// ActiveTDB.addAnything(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 			// THE ABOVE SHOULD BE ADDED: TO SAFELY ADD A TRIPLE WHETHER THE OBJECT IS AN RDFNode, A Literal, OR AN
 			// OBJECT (TO BE TYPED)
-			System.out.println("got to line: 4");
 
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 			try {
 				tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
-				System.out.println("got to line: 5");
-
 				ActiveTDB.tdbDataset.commit();
-				System.out.println("got to line: 6");
-
 			} finally {
-				System.out.println("got to line: 7");
-
 				ActiveTDB.tdbDataset.end();
-				System.out.println("got to line: 8");
-
 			}
-			System.out.println("got to line: 9");
-
 			// ---- END SAFE -WRITE- TRANSACTION ---
-
 		}
 	}
 
@@ -245,12 +230,13 @@ public class DataSourceProvider {
 			rdfNode = statement.getObject();
 			int fileMDIndex = FileMDKeeper.getIndexByTdbResource(rdfNode.asResource());
 			System.out.println("file Index: " + fileMDIndex);
+			FileMD fileMD;
 			if (fileMDIndex > -1) {
-				addFileMD(FileMDKeeper.get(fileMDIndex));
+				fileMD = FileMDKeeper.get(fileMDIndex);
 			} else {
-				FileMD fileMD = new FileMD(rdfNode.asResource());
-				addFileMD(fileMD);
+				fileMD = new FileMD(rdfNode.asResource());
 			}
+			addFileMD(fileMD);
 		}
 	}
 

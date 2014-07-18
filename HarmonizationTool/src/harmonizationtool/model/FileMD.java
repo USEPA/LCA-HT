@@ -39,15 +39,15 @@ public class FileMD {
 		syncDataFromTDB();
 	}
 
-	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
-		super();
-		setFilename(filename);
-		setPath(path);
-		setByteCount(size);
-		setModifiedDate(modifiedDate);
-		setReadDate(readDate);
-		FileMDKeeper.add(this);
-	}
+//	public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
+//		super();
+//		setFilename(filename);
+//		setPath(path);
+//		setByteCount(size);
+//		setModifiedDate(modifiedDate);
+//		setReadDate(readDate);
+//		FileMDKeeper.add(this);
+//	}
 
 	public String getFilename() {
 		return filename;
