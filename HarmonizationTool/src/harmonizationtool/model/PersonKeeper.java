@@ -136,7 +136,9 @@ public class PersonKeeper {
 			Resource personRDFResource = iterator.next();
 			// NOW SEE IF THE Person IS IN THE PersonKeeper YET
 			int personIndex = getByTdbResource(personRDFResource);
+			System.out.println("another person found in TDB");
 			if (personIndex < 0) {
+				System.out.println("... new one");
 				new Person(personRDFResource);
 			}
 		}

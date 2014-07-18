@@ -172,7 +172,9 @@ public class DataSourceKeeper {
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
+			System.out.println("another DataSource found in TDB");
 			if (dataSourceIndex < 0) {
+				System.out.println("... new one");
 				new DataSourceProvider(dataSourceRDFResource);
 			}
 		}

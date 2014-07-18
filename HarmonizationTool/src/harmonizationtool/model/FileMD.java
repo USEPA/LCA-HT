@@ -25,12 +25,13 @@ public class FileMD {
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
-	private static final Resource rdfClass = ECO.DataSource;
+	private static final Resource rdfClass = LCAHT.dataFile;
 
 //	private static final Model model = ActiveTDB.tdbModel;
 
 	public FileMD() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		FileMDKeeper.add(this);
 	}
 
 	public FileMD(Resource tdbResource) {

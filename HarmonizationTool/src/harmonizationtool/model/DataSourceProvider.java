@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -33,6 +32,9 @@ public class DataSourceProvider {
 
 	public DataSourceProvider() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		boolean success = DataSourceKeeper.add(this);
+		System.out.println("Success: "+success+" with this.dataSourceName");
+		DataSourceKeeper.add(this);
 	}
 
 	public DataSourceProvider(Resource tdbResource) {
@@ -167,6 +169,9 @@ public class DataSourceProvider {
 	}
 
 	public String getDataSourceName() {
+		if (dataSourceName == null){
+			return "<NO ASSIGNED NAME>";
+		}
 		return dataSourceName;
 	}
 

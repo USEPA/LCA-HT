@@ -20,16 +20,7 @@ public class Person {
 	protected final static Model model = ActiveTDB.tdbModel;
 
 	public Person() {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			this.tdbResource = model.createResource();
-			this.tdbResource.addProperty(RDF.type, rdfClass);
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		this.tdbResource = ActiveTDB.createResource(rdfClass);
 		PersonKeeper.add(this);
 	}
 

@@ -86,7 +86,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				fileMD.getFilename().length() - 4)));
 		this.newDataSourceProvider.addFileMD(callingFileMD);
 		this.curDataSourceProvider = this.newDataSourceProvider;
-		DataSourceKeeper.add(newDataSourceProvider);
+//		DataSourceKeeper.add(newDataSourceProvider);
 		runLogger.info("SET META start - new file");
 	}
 

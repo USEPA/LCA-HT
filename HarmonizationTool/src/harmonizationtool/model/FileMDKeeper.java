@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -131,7 +132,9 @@ public class FileMDKeeper {
 			Resource fileMDRDFResource = iterator.next();
 			// NOW SEE IF THE FileMD IS IN THE FileMDKeeper YET
 			int fileMDIndex = getIndexByTdbResource(fileMDRDFResource);
+			System.out.println("another file found in TDB");
 			if (fileMDIndex < 0) {
+				System.out.println("... new one");
 				new FileMD(fileMDRDFResource);
 			}
 		}

@@ -140,12 +140,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		System.out.println("about to open TDB = " + tdbModel);
-		openTDB();
 		if (tdbModel != null){
+			System.out.println("tdb seems to be open already!");
 			return null;
 		}
-		System.out.println("tdbModel = " + tdbModel);
+		System.out.println("about to open TDB. Model right now is: " + tdbModel);
+		openTDB();
+		System.out.println("Now Model is: " + tdbModel);
 		try {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
