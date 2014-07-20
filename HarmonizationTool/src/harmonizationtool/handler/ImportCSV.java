@@ -141,22 +141,22 @@ public class ImportCSV implements IHandler {
 			}
 		}
 		// FIXME - THE USE OF CSVTableView MUST BE SET PROPERLY, AS STATIC INSTEAD OF THIS HACK
-		CSVTableView csvTableView = null;
+//		CSVTableView csvTableView = null;
 		try {
 			Util.showView(CSVTableView.ID);
-			csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
+			Util.findView(CSVTableView.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
 
-		if (csvTableView == null) {
-			return "Could not open CSVTableView!";
-		}
-		assert csvTableView != null : "cSVTableView cannot be null";
+//		if (csvTableView == null) {
+//			return "Could not open CSVTableView!";
+//		}
+//		assert csvTableView != null : "cSVTableView cannot be null";
 
 //		CSVTableView.setDataSourceProvider(dialog.getCurDataSourceProvider());
 //		CSVTableView.setFileMD(fileMD);
-		csvTableView.update(path);
+		CSVTableView.update(path);
 
 		// BRING UP THE DATA FILE VIEW
 		// try {

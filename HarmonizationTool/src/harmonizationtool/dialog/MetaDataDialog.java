@@ -98,15 +98,12 @@ public class MetaDataDialog extends TitleAreaDialog {
 		layoutDialog(parent); // BUILD "BASIC STRUCTURE"
 
 		comboSelectorDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
-		int index = DataSourceKeeper.indexOf(newDataSourceProvider);
-		if (index >= 0) {
-			comboSelectorDataSource.select(index);
-		} else {
-			comboSelectorDataSource.select(comboSelectorDataSource.indexOf(curDataSourceProvider.getDataSourceName()));
-		}
+		String curDataSourceProviderName = curDataSourceProvider.getDataSourceName();
+		int index = comboSelectorDataSource.indexOf(curDataSourceProviderName);
+		comboSelectorDataSource.select(index);
 		comboSelectorDataSource.addSelectionListener(new ComboSelectorDataSourceListener());
-		comboSelectorFileMD.setToolTipText("Files associated with this data set." + comboSelectorDataSource.getText());
-		comboSelectorFileMD.addModifyListener(new ComboFileSelectorListener());
+		comboSelectorFileMD.setToolTipText("Files associated with this data set.");
+		comboSelectorFileMD.addModifyListener(new ComboSelectorFileMDListener());
 		redrawDialogRows();
 
 		Control control = super.createDialogArea(parent);
@@ -256,7 +253,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void redrawDialogRows() {
 		clearDialogRows();
 		redrawDialogDataSourceMD();
-
 		createComboSelectorFileMD();
 	}
 
@@ -288,6 +284,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	protected void createComboSelectorFileMD() {
 		comboSelectorFileMD.removeAll();
+
 		List<FileMD> fileMDList = curDataSourceProvider.getFileMDListNewestFirst();
 		if (fileMDList.size() == 0) {
 			dialogValues[6].setText("");
@@ -295,21 +292,24 @@ public class MetaDataDialog extends TitleAreaDialog {
 			dialogValues[8].setText("");
 			return;
 		}
-		int selectionIndex = 0;
 		for (int i = 0; i < fileMDList.size(); i++) {
 			FileMD fileMD = fileMDList.get(i);
 			comboSelectorFileMD.add(fileMD.getFilename());
-			if (callingFileMD == fileMD) {
-				selectionIndex = i;
-			}
 		}
-		comboSelectorFileMD.select(selectionIndex);
+		comboSelectorFileMD.select(0);
 		redrawDialogFileMD();
 	}
 
 	protected void redrawDialogFileMD() {
-		FileMD curFileMD = curDataSourceProvider.getFileMDListNewestFirst()
-				.get(comboSelectorFileMD.getSelectionIndex());
+		List<FileMD> fileMDs = curDataSourceProvider.getFileMDListNewestFirst();
+		if (fileMDs.size() == 0){
+			dialogValues[6].setText("");
+			dialogValues[7].setText("");
+			dialogValues[8].setText("");
+			comboSelectorFileMD.select(0);
+			return;
+		}
+		FileMD curFileMD = fileMDs.get(comboSelectorFileMD.getSelectionIndex());
 		dialogValues[6].setText("" + curFileMD.getByteCount());
 		dialogValues[7].setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
 		dialogValues[8].setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
@@ -362,11 +362,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	private final class ComboSelectorDataSourceListener implements SelectionListener {
 		private void doit(SelectionEvent e) {
-			System.out.println("combo.addSelectionListener.widgetSelectedr=" + e.toString());
-			comboSelectionIndex = comboSelectorDataSource.getSelectionIndex();
 			curDataSourceProvider = DataSourceKeeper.getByName(comboSelectorDataSource.getText());
 			redrawDialogRows();
-			// populateDataSourceMD();
 			runLogger.info("  DATASOURCE SELECTED: " + comboSelectorDataSource.getText());
 		}
 
@@ -419,15 +416,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
-	public class ComboFileSelectorListener implements ModifyListener {
+	public class ComboSelectorFileMDListener implements ModifyListener {
 
 		@Override
 		public void modifyText(ModifyEvent e) {
-			System.out.println("ModifyEvent=" + e.toString());
-			System.out.println("fileMDCombo index " + comboSelectorFileMD.getSelectionIndex());
 			redrawDialogFileMD();
-			System.out.println("choice is " + comboSelectorFileMD.getSelectionIndex() + " with value: "
-					+ comboSelectorFileMD.getText());
 		}
 	}
 }

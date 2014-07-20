@@ -1,6 +1,8 @@
 package harmonizationtool.model;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +22,10 @@ public class TableProvider {
 
 	private CSVColumnInfo[] assignedCSVColumnInfo = null;
 
+//	public TableProvider() {
+//		// PSSH (PUT SOMETHING SMART HERE)
+//	}
+	
 	public CSVColumnInfo[] getAssignedCSVColumnInfo() {
 		return assignedCSVColumnInfo;
 	}

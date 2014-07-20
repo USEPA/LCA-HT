@@ -121,6 +121,9 @@ public class DataSourceKeeper {
 	}
 
 	public static Integer indexOf(DataSourceProvider dataSourceProvider) {
+		if (dataSourceProvider == null){
+			return -1;
+		}
 		return dataSourceProviderList.indexOf(dataSourceProvider);
 	}
 
