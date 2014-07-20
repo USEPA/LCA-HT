@@ -3,7 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.views;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
-import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.DataSourceKeeper;
 import harmonizationtool.model.DataSourceProvider;
@@ -41,7 +40,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -274,10 +272,13 @@ public class View extends ViewPart {
 					dataSourceProvider.remove(fileMD);
 				}
 
-				// clear data from data view
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				CSVTableView csvTableView = (CSVTableView) page.findView(CSVTableView.ID);
-				csvTableView.clearView(fileMD.getPath());
+				try {
+					Util.showView(CSVTableView.ID);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				CSVTableView.reset();
 			}
 		};
 		actionClose.setText("Close");

@@ -92,7 +92,6 @@ public class Util {
 				Util.showView(viewID);
 				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
 			} catch (PartInitException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				view = null;
 			}
@@ -101,7 +100,6 @@ public class Util {
 	}
 
 	public static void showView(String viewID) throws PartInitException {
-		System.out.println("viewID = " + viewID);
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
 	}
 

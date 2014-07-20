@@ -22,16 +22,23 @@ public class TableProvider {
 
 	private CSVColumnInfo[] assignedCSVColumnInfo = null;
 
-//	public TableProvider() {
-//		// PSSH (PUT SOMETHING SMART HERE)
-//	}
-	
+	// public TableProvider() {
+	// // PSSH (PUT SOMETHING SMART HERE)
+	// }
+
 	public CSVColumnInfo[] getAssignedCSVColumnInfo() {
 		return assignedCSVColumnInfo;
 	}
 
 	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {
 		this.assignedCSVColumnInfo = assignedCSVColumnInfo;
+	}
+
+	public void resetAssignedCSVColumnInfo() {
+		int columnCount = headerRow.getSize();
+		if (columnCount > 0) {
+			this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
+		}
 	}
 
 	public void addDataRow(DataRow dataRow) {
@@ -61,10 +68,12 @@ public class TableProvider {
 			}
 		}
 		if (shorterRows > 0) {
-			issues += "Found " + shorterRows + "rows shorter than the first row.\\n";
+			issues += "Found " + shorterRows
+					+ "rows shorter than the first row.\\n";
 		}
 		if (longerRows > 0) {
-			issues += "Found " + longerRows + "rows longer than the first row.\\n";
+			issues += "Found " + longerRows
+					+ "rows longer than the first row.\\n";
 		}
 		if (issues.equals("")) {
 			return null;
@@ -79,7 +88,7 @@ public class TableProvider {
 	public int getIndex(DataRow dataRow) {
 		return data.indexOf(dataRow);
 	}
-	
+
 	public DataRow getHeaderRow() {
 		return headerRow;
 	}
@@ -118,7 +127,8 @@ public class TableProvider {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
 			tableProvider.addDataRow(dataRow);
-			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
+			Iterator<String> iterator = tableProvider.getHeaderRow()
+					.getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
 				try {
@@ -129,8 +139,10 @@ public class TableProvider {
 
 					} else {
 						dataRow.add(rdfNode.toString());
-						System.out.println("Resource string is " + rdfNode.toString());
-						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+						System.out.println("Resource string is "
+								+ rdfNode.toString());
+						System.out.println("Type of RDFNode = "
+								+ RDFNode.class.getName());
 						// System.out.println("  soln.getResource(header) =" +
 						// soln.getResource(header));
 						System.out.println("  soln.get(header)  = " + rdfNode);
@@ -175,14 +187,14 @@ public class TableProvider {
 		this.fileMD = fileMD;
 	}
 
-//	private class TransformCell {
-//		public final int rowNum;
-//		public final String newHeader;
-//
-//		public TransformCell(int rowNum, String newHeader) {
-//			this.rowNum = rowNum;
-//			this.newHeader = newHeader;
-//		}
-//	}
+	// private class TransformCell {
+	// public final int rowNum;
+	// public final String newHeader;
+	//
+	// public TransformCell(int rowNum, String newHeader) {
+	// this.rowNum = rowNum;
+	// this.newHeader = newHeader;
+	// }
+	// }
 
 }

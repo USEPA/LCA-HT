@@ -297,7 +297,8 @@ public class FlowsWorkflow extends ViewPart {
 	// return textAssociatedDataSource.getText();
 	// }
 	//
-	// public static void setTextAssociatedDataSource(String associatedDataSource) {
+	// public static void setTextAssociatedDataSource(String
+	// associatedDataSource) {
 	// textAssociatedDataSource.setText(associatedDataSource);
 	// }
 
@@ -354,26 +355,24 @@ public class FlowsWorkflow extends ViewPart {
 	// setFileMD(dataSourceProvider.getFileMDList().get(0));
 	// // HACK: CHOOSE FIRST FILE
 	// } else {
-	// setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size() -
+	// setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size()
+	// -
 	// 1));
 	// }
 	// setHeaderInfo();
 	// }
 
 	private static void setHeaderInfo() {
-		CSVTableView csvTableView;
 		if (Util.findView(CSVTableView.ID) == null) {
 			try {
 				Util.showView(CSVTableView.ID);
 			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		csvTableView = (CSVTableView) Util.findView(CSVTableView.ID);
-		// csvTableView.appendHeaderMenuDiv();
-		csvTableView.appendToAvailableCSVColumnInfo("Assign Flowable Fields", Flowable.getHeaderMenuObjects());
-		csvTableView.appendToAvailableCSVColumnInfo("Assign Flow Context Fields", FlowContext.getHeaderMenuObjects());
+
+		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flowable Fields", Flowable.getHeaderMenuObjects());
+		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flow Context Fields", FlowContext.getHeaderMenuObjects());
 	}
 
 	SelectionListener loadCSVListener = new SelectionListener() {
@@ -389,14 +388,16 @@ public class FlowsWorkflow extends ViewPart {
 				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
 			String key = CSVTableView.getTableProviderKey();
-			if (key == null){
+			if (key == null) {
 				System.out.println("The CSVTableView does not have a table!");
 			} else {
-				textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
-				textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+				textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
+						.getFilename());
+				textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+						.getFileMD().getPath());
 			}
-//			textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
-//			textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+			// textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+			// textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
 
 			setHeaderInfo();
 			btnCheckData.setEnabled(true);
@@ -491,7 +492,8 @@ public class FlowsWorkflow extends ViewPart {
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", CSVTableView.getTableProviderKey());
 			autoMatchJob.setPriority(Job.SHORT);
 			autoMatchJob.setSystem(false);
-			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util.findView(FlowsWorkflow.ID), jobKey));
+			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
+					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
 
 			// autoMatch();
@@ -520,12 +522,13 @@ public class FlowsWorkflow extends ViewPart {
 		// THE SAFE PART MEANS
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
-//		Model model = ActiveTDB.tdbModel;
+		// Model model = ActiveTDB.tdbModel;
 
 		long triples = ActiveTDB.tdbModel.size();
 		Table table = CSVTableView.getTable();
 
-		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getAssignedCSVColumnInfo();
+		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				.getAssignedCSVColumnInfo();
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
 			int rowNumberPlusOne = rowNumber + 1;
 			Literal rowLiteral = ActiveTDB.createTypedLiteral(rowNumberPlusOne);
@@ -537,7 +540,7 @@ public class FlowsWorkflow extends ViewPart {
 			for (int colNumber = 1; colNumber < assignedCSVColumns.length; colNumber++) {
 				CSVColumnInfo csvColumnnInfo = assignedCSVColumns[colNumber];
 				if (csvColumnnInfo != null) {
-					
+
 					String headerName = csvColumnnInfo.getHeaderString();
 					if (headerName.equals("Flowable Name")) {
 						if (flowable.getName() != null) {
@@ -560,8 +563,10 @@ public class FlowsWorkflow extends ViewPart {
 				}
 			}
 			Flow flow = new Flow();
-			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
-//			dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow, flow.getTdbResource());
+			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+					.getDataSourceProvider();
+			// dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow,
+			// flow.getTdbResource());
 			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
@@ -585,13 +590,16 @@ public class FlowsWorkflow extends ViewPart {
 	public static Integer[] autoMatch() {
 		Integer[] results = new Integer[3];
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				.getDataSourceProvider();
 
-//		Model model = ActiveTDB.tdbModel;
+		// Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
+		// ResIterator resourceIterator =
+		// tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
-		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource,
+				dataSourceTDBResource);
 		int count = 0;
 		while (resourceIterator.hasNext()) {
 			count++;
@@ -610,15 +618,18 @@ public class FlowsWorkflow extends ViewPart {
 						RDFNode dataItemRDFNode = dataItemStatement.getObject();
 						// System.out.println("dataItemStatement: "+dataItemStatement);
 
-						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
+						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND
+						// RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(
+									dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
 								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
 								if (!matchingResource.equals(dataItem)) {
-									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
+									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem,
+											matchingResource);
 									if (matchCandidate.confirmRDFtypeMatch()) {
 										matchCandidates.add(matchCandidate);
 									}
@@ -644,7 +655,8 @@ public class FlowsWorkflow extends ViewPart {
 		// if (!matchThing.equals(flowContextStatement.getResource())) {
 		// Statement rowNumberStatement =
 		// flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-		// int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+		// int row =
+		// ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
 		// CSVTableView.getTable().getItem(row - 1).setBackground(0,
 		// SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		// }
@@ -658,13 +670,16 @@ public class FlowsWorkflow extends ViewPart {
 
 	private void autoMatch_01() {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getDataSourceProvider();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				.getDataSourceProvider();
 
-//		Model model = ActiveTDB.tdbModel;
+		// Model model = ActiveTDB.tdbModel;
 		Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
+		// ResIterator resourceIterator =
+		// tdbModel.listResourcesWithProperty(ECO.hasDataSource,
 		// dataSourceTDBResource.asNode());
-		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource, dataSourceTDBResource);
+		ResIterator resourceIterator = ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource,
+				dataSourceTDBResource);
 		int count = 0;
 		while (resourceIterator.hasNext()) {
 			count++;
@@ -683,15 +698,18 @@ public class FlowsWorkflow extends ViewPart {
 						RDFNode dataItemRDFNode = dataItemStatement.getObject();
 						// System.out.println("dataItemStatement: "+dataItemStatement);
 
-						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
+						// NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND
+						// RDFNode
 
 						if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(dataItemProperty, dataItemRDFNode);
+							ResIterator matchingResourcesIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(
+									dataItemProperty, dataItemRDFNode);
 							while (matchingResourcesIterator.hasNext()) {
 								System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
 								Resource matchingResource = matchingResourcesIterator.next();
 								if (!matchingResource.equals(dataItem)) {
-									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem, matchingResource);
+									MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem,
+											matchingResource);
 									if (matchCandidate.confirmRDFtypeMatch()) {
 										matchCandidates.add(matchCandidate);
 									}
@@ -713,7 +731,8 @@ public class FlowsWorkflow extends ViewPart {
 		// if (!matchThing.equals(flowContextStatement.getResource())) {
 		// Statement rowNumberStatement =
 		// flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-		// int row = ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
+		// int row =
+		// ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
 		// CSVTableView.getTable().getItem(row - 1).setBackground(0,
 		// SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		// }
@@ -762,7 +781,8 @@ public class FlowsWorkflow extends ViewPart {
 		// // BUT CHOSEN BY THE CALLER
 		// showResultsInWindow = ResultsTreeEditor.ID;
 		//
-		// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable)
+		// TableProvider tableProvider =
+		// TableProvider.createTransform0((ResultSetRewindable)
 		// resultSet);
 		// // resultsView.update(tableProvider);
 		// try {
@@ -784,7 +804,8 @@ public class FlowsWorkflow extends ViewPart {
 		// // BUT CHOSEN BY THE CALLER
 		// showResultsInWindow = HarmonizeCompartments.ID;
 		//
-		// TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		// TableProvider tableProvider =
+		// TableProvider.create((ResultSetRewindable) resultSet);
 		// // resultsView.update(tableProvider);
 		// try {
 		// harmonizeCompartments.update(tableProvider);
@@ -795,8 +816,10 @@ public class FlowsWorkflow extends ViewPart {
 		//
 		// // resultsView.formatForTransform0();
 		// } else {
-		// ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-		// TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		// ResultsView resultsView = (ResultsView)
+		// Util.findView(ResultsView.ID);
+		// TableProvider tableProvider =
+		// TableProvider.create((ResultSetRewindable) resultSet);
 		// resultsView.update(tableProvider);
 		// }
 

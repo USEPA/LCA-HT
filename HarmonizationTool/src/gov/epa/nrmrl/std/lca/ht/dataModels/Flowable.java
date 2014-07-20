@@ -39,7 +39,7 @@ public class Flowable {
 
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>
 	// checkLists)
-	public static CSVColumnInfo[] getHeaderMenuObjects() {
+	public static final CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
 
 		results[0] = new CSVColumnInfo("Flowable Name");

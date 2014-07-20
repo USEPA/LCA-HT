@@ -36,7 +36,7 @@ public class FlowContext {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
 
-	public static CSVColumnInfo[] getHeaderMenuObjects() {
+	public static final CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[2];
 
 		results[0] = new CSVColumnInfo("Context (primary)");
