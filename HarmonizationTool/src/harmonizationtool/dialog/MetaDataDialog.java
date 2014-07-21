@@ -30,7 +30,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class MetaDataDialog extends TitleAreaDialog {
 
 	private DataSourceProvider curDataSourceProvider = null;
-	private DataSourceProvider newDataSourceProvider = null;
+//	private DataSourceProvider newDataSourceProvider = null;
 	private FileMD callingFileMD = null;
 	private Combo comboSelectorDataSource;
 //	private Button dataSourceRename;
@@ -81,12 +81,17 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		this.newDataSourceProvider = new DataSourceProvider();
-		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
+//		this.newDataSourceProvider = new DataSourceProvider();
+//		this.newDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
+//				fileMD.getFilename().length() - 4)));
+//
+//		this.curDataSourceProvider = this.newDataSourceProvider;
+////		DataSourceKeeper.add(newDataSourceProvider);
+//		
+		this.curDataSourceProvider = new DataSourceProvider();
+		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
 				fileMD.getFilename().length() - 4)));
-		this.newDataSourceProvider.addFileMD(callingFileMD);
-		this.curDataSourceProvider = this.newDataSourceProvider;
-//		DataSourceKeeper.add(newDataSourceProvider);
+		this.curDataSourceProvider.addFileMD(callingFileMD);
 		runLogger.info("SET META start - new file");
 	}
 
@@ -317,8 +322,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void cancelPressed() {
-
 		super.cancelPressed();
+		// NEED TO REMOVE THE NEW DATASOURCE
 		runLogger.info("SET META cancel");
 	}
 
@@ -346,14 +351,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: contactEmail = " + contactPerson.getEmail());
 		runLogger.info("  SET META: contactPhone = " + contactPerson.getPhone());
 
-		if (newDataSourceProvider != null) {
-			if (comboSelectionIndex > 0) {
-				DataSourceKeeper.remove(newDataSourceProvider);
-				curDataSourceProvider.addFileMD(callingFileMD);
-				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
-						+ callingFileMD.getFilename());
-			}
-		}
+//		if (callingFileMD != null) {
+//			if (comboSelectionIndex > 0) {
+////				DataSourceKeeper.remove(curDataSourceProvider);
+//				curDataSourceProvider.addFileMD(callingFileMD);
+//				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
+//						+ callingFileMD.getFilename());
+//			}
+//		}
 
 		runLogger.info("SET META complete");
 
