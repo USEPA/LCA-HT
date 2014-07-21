@@ -416,6 +416,9 @@ public class MetaDataDialog extends TitleAreaDialog {
 		@Override
 		public void modifyText(ModifyEvent e) {
 			int newIndex = comboSelectorFileMD.getSelectionIndex();
+			if (newIndex < 0){
+				newIndex = 0;
+			}
 			redrawDialogFileMD(newIndex);
 		}
 	}
