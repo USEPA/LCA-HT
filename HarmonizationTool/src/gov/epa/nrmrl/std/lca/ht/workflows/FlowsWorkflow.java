@@ -38,31 +38,23 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 //import org.eclipse.swt.widgets.Canvas;
 
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	// private List<LCADataType> lcaDataTypes;
-
-	// private Flowable flowable = null;
 	private static Text textFileInfo;
 	private static Text textIssues;
 	private static Text textCommitToDB;
 	private static Text textAutoMatched;
-	// private static Text textSemiAutoMatched;
 	private static Text textManualMatched;
 
 	private Label label_01;
@@ -71,8 +63,8 @@ public class FlowsWorkflow extends ViewPart {
 	private Label label_04;
 	private Label label_05;
 	private Label label_06;
-	private Label label_07;
 
+	private static Button btnLoadCSV;
 	private static Button btnCheckData;
 	private static Button btnAutoMatch;
 	private static Button btnCSV2TDB;
@@ -116,7 +108,7 @@ public class FlowsWorkflow extends ViewPart {
 		label_01.setText("1");
 		// lblNewLabel.setSize(100, 30);
 
-		Button btnLoadCSV = new Button(composite, SWT.NONE);
+		btnLoadCSV = new Button(composite, SWT.NONE);
 		GridData gd_btnLoadCSV = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnLoadCSV.widthHint = 100;
 		btnLoadCSV.setLayoutData(gd_btnLoadCSV);
@@ -197,37 +189,6 @@ public class FlowsWorkflow extends ViewPart {
 		gd_textAutoMatched.widthHint = 150;
 		textAutoMatched.setLayoutData(gd_textAutoMatched);
 
-		// ======== ROW 5 =======================
-
-		// label_05 = new Label(composite, SWT.NONE);
-		// GridData gd_label_05 = new GridData(SWT.RIGHT, SWT.CENTER, false,
-		// false, 1, 1);
-		// gd_label_05.widthHint = 20;
-		// label_05.setLayoutData(gd_label_05);
-		// label_05.setText("5");
-		//
-		// Button btnSemiautoMatch = new Button(composite, SWT.NONE);
-		// btnSemiautoMatch.addSelectionListener(new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// }
-		// });
-		// GridData gd_btnSemiautoMatch = new GridData(SWT.CENTER, SWT.CENTER,
-		// false, false, 1, 1);
-		// gd_btnSemiautoMatch.widthHint = 100;
-		// btnSemiautoMatch.setLayoutData(gd_btnSemiautoMatch);
-		// btnSemiautoMatch.setText("Semi-auto match");
-		// // btnSemiautoMatch.setEnabled(false);
-		//
-		// textSemiAutoMatched = new Text(composite, SWT.BORDER |
-		// SWT.READ_ONLY);
-		// textSemiAutoMatched.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		// // textSemiAutoMatched.setText("(100 of 170 rows confirmed)");
-		// GridData gd_textSemiAutoMatched = new GridData(SWT.FILL, SWT.CENTER,
-		// true, false, 1, 1);
-		// gd_textSemiAutoMatched.widthHint = 150;
-		// textSemiAutoMatched.setLayoutData(gd_textSemiAutoMatched);
-
 		label_05 = new Label(composite, SWT.NONE);
 		GridData gd_label_05 = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_label_05.widthHint = 20;
@@ -260,22 +221,10 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnConcludeFile.widthHint = 100;
 		btnConcludeFile.setLayoutData(gd_btnConcludeFile);
 		btnConcludeFile.setText("Cancel CSV");
-		btnConcludeFile.setEnabled(true);
+		btnConcludeFile.setEnabled(false);
 		new Label(composite, SWT.NONE);
 		btnConcludeFile.addSelectionListener(concludeFileListener);
-
-		// textManualMatched = new Text(composite, SWT.BORDER);
-		// // textManualMatched.setText("(0 of 30");
-		// GridData gd_textManualMatched = new GridData(SWT.FILL, SWT.CENTER,
-		// true, false, 1, 1);
-		// gd_textManualMatched.widthHint = 150;
-		// textManualMatched.setLayoutData(gd_textManualMatched);
-		// TODO Auto-generated method stub
 	}
-
-	// public FlowableHeaderObj[] getHeaderObjects(){
-	//
-	// }
 
 	public static String getTextMetaFileInfo() {
 		return textFileInfo.getToolTipText();
@@ -293,23 +242,6 @@ public class FlowsWorkflow extends ViewPart {
 		textFileInfo.setText(fileInfo);
 	}
 
-	// public static String getTextAssociatedDataSource() {
-	// return textAssociatedDataSource.getText();
-	// }
-	//
-	// public static void setTextAssociatedDataSource(String
-	// associatedDataSource) {
-	// textAssociatedDataSource.setText(associatedDataSource);
-	// }
-
-	// public static String getTextColumnsAssigned() {
-	// return textColumnsAssigned.getText();
-	// }
-	//
-	// public static void setTextColumnsAssigned(String columnsAssigned) {
-	// textColumnsAssigned.setText(columnsAssigned);
-	// }
-
 	public static String getTextIssues() {
 		return textIssues.getText();
 	}
@@ -326,14 +258,6 @@ public class FlowsWorkflow extends ViewPart {
 		textAutoMatched.setText(autoMatched);
 	}
 
-	// public static String getTextSemiAutoMatched() {
-	// return textSemiAutoMatched.getText();
-	// }
-	//
-	// public static void setTextSemiAutoMatched(String semiAutoMatched) {
-	// textSemiAutoMatched.setText(semiAutoMatched);
-	// }
-
 	public static String getTextManualMatched() {
 		return textManualMatched.getText();
 	}
@@ -342,26 +266,6 @@ public class FlowsWorkflow extends ViewPart {
 		textManualMatched.setText(manualMatched);
 	}
 
-	// public static void setFileMD(FileMD newFileMD) {
-	// fileMD = newFileMD;
-	// setTextFileInfo("Filename: " + fileMD.getFilename());
-	// setTextMetaFileInfo(fileMD.getPath());
-	// }
-
-	// public static void setDataSourceProvider(DataSourceProvider dsProvider) {
-	// dataSourceProvider = dsProvider;
-	// // setDataSource(dataSourceProvider.getDataSourceMD().getName());
-	// if (getTextFileInfo().length() < 1) {
-	// setFileMD(dataSourceProvider.getFileMDList().get(0));
-	// // HACK: CHOOSE FIRST FILE
-	// } else {
-	// setFileMD(dataSourceProvider.getFileMDList().get(dataSourceProvider.getFileMDList().size()
-	// -
-	// 1));
-	// }
-	// setHeaderInfo();
-	// }
-
 	private static void setHeaderInfo() {
 		if (Util.findView(CSVTableView.ID) == null) {
 			try {
@@ -369,6 +273,9 @@ public class FlowsWorkflow extends ViewPart {
 			} catch (PartInitException e) {
 				e.printStackTrace();
 			}
+		}
+		if (CSVTableView.getTableProviderKey() == null) {
+			return;
 		}
 
 		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flowable Fields", Flowable.getHeaderMenuObjects());
@@ -384,23 +291,20 @@ public class FlowsWorkflow extends ViewPart {
 				handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				// throw new
-				// RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
 			}
 			String key = CSVTableView.getTableProviderKey();
 			if (key == null) {
 				System.out.println("The CSVTableView does not have a table!");
 			} else {
+				btnLoadCSV.setEnabled(false);
+				btnConcludeFile.setEnabled(true);
 				textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
 						.getFilename());
 				textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 						.getFileMD().getPath());
+				setHeaderInfo();
+				btnCheckData.setEnabled(true);
 			}
-			// textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
-			// textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
-
-			setHeaderInfo();
-			btnCheckData.setEnabled(true);
 		}
 
 		@Override

@@ -30,15 +30,14 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class MetaDataDialog extends TitleAreaDialog {
 
 	private DataSourceProvider curDataSourceProvider = null;
+	private DataSourceProvider newDataSourceProvider = null;
 	private FileMD callingFileMD = null;
 	private Combo comboSelectorDataSource;
-//	private Button dataSourceRename;
 	private Combo comboSelectorFileMD;
 	private Text[] dialogValues = new Text[9];
 
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
-	private Color defaultBG = null;
-
+	private Color defaultBG = SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND);
 	private Logger runLogger = Logger.getLogger("run");
 
 //	protected String combDataSourceSelectorSavedText = "";
@@ -81,6 +80,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
 				fileMD.getFilename().length() - 4)));
 		this.curDataSourceProvider.addFileMD(this.callingFileMD);
+		this.newDataSourceProvider = curDataSourceProvider;
 		runLogger.info("SET META start - new file");
 	}
 
@@ -279,7 +279,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	protected void createComboSelectorFileMD() {
 		comboSelectorFileMD.removeAll();
-//		comboSelectorFileMD.select(0);
 
 		List<FileMD> fileMDList = curDataSourceProvider.getFileMDListNewestFirst();
 		if (fileMDList.size() == 0) {
@@ -296,21 +295,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		redrawDialogFileMD(0);
 	}
 
-//	protected void redrawDialogFileMD() {
-//		List<FileMD> fileMDs = curDataSourceProvider.getFileMDListNewestFirst();
-//		if (fileMDs.size() == 0){
-//			dialogValues[6].setText("");
-//			dialogValues[7].setText("");
-//			dialogValues[8].setText("");
-//			comboSelectorFileMD.select(0);
-//			return;
-//		}
-//		FileMD curFileMD = fileMDs.get(comboSelectorFileMD.getSelectionIndex());
-//		dialogValues[6].setText("" + curFileMD.getByteCount());
-//		dialogValues[7].setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
-//		dialogValues[8].setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
-//	}
-	
 	protected void redrawDialogFileMD(int index) {
 		List<FileMD> fileMDs = curDataSourceProvider.getFileMDListNewestFirst();
 		if (fileMDs.size() == 0){
@@ -328,9 +312,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void cancelPressed() {
-		super.cancelPressed();
-		// NEED TO REMOVE THE NEW DATASOURCE
+//		super.cancelPressed();
+		if (callingFileMD != null){
+			// NEED TO REMOVE THE NEW DATASOURCE
+			newDataSourceProvider.remove();
+//			curDataSourceProvider = null;
+		}
 		runLogger.info("SET META cancel");
+		super.cancelPressed();
 	}
 
 	@Override
@@ -356,16 +345,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("  SET META: contactAffiliation = " + contactPerson.getAffiliation());
 		runLogger.info("  SET META: contactEmail = " + contactPerson.getEmail());
 		runLogger.info("  SET META: contactPhone = " + contactPerson.getPhone());
-
-//		if (callingFileMD != null) {
-//			if (comboSelectionIndex > 0) {
-////				DataSourceKeeper.remove(curDataSourceProvider);
-//				curDataSourceProvider.addFileMD(callingFileMD);
-//				runLogger.info("  SET META: associated file = " + callingFileMD.getPath() + "/"
-//						+ callingFileMD.getFilename());
-//			}
-//		}
-
 		runLogger.info("SET META complete");
 
 		super.okPressed();
