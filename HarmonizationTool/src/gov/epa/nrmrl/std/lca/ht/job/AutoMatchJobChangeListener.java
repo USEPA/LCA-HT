@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.Date;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.utils.Util;
 
@@ -30,6 +31,11 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 		Date startDate = new Date();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		// String message = "Job: =>" + key + "<= started: " + startDate;
+//		Display.getDefault().asyncExec(new Runnable() {
+//			public void run() {
+				FlowsWorkflow.setTextAutoMatched("Started...");
+//			}
+//		});
 	}
 
 	@Override
@@ -57,6 +63,12 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 				}
 			});
 		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextAutoMatched("Done");
+			}
+		});
+
 //		if (job instanceof AutoMatchJob) {
 //			Display.getDefault().asyncExec(new Runnable() {
 //				public void run() {

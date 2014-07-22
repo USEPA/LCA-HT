@@ -9,14 +9,18 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.vocabulary.ECO;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.widgets.Display;
+
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -89,7 +93,7 @@ public class AutoMatchJob extends Job {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		// NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
 		for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-			System.out.println("About to check row: "+rowNumber);
+//			System.out.println("About to check row: "+rowNumber);
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
 			int rowNumberPlusOne = rowNumber + 1;
@@ -135,12 +139,12 @@ public class AutoMatchJob extends Job {
 			// for (int colNumber = 0; colNumber < dataRow.getSize(); colNumber++) {
 			// if (assignedCSVColumnInfo[colNumber + 1] != null) {
 			// System.out.println("Row: " + rowNumber + ". Col: " + colNumber);
-			// Display.getDefault().asyncExec(new Runnable() {
-			// public void run() {
-			// CSVTableView.updateCheckedData();
-			// FlowsWorkflow.setTextFileInfo("Going...");
-			// }
-			// });
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					CSVTableView.updateCheckedData();
+					FlowsWorkflow.setTextFileInfo("Going...");
+				}
+			});
 			// }
 			// }
 			tableProvider.setLastChecked(rowNumber);
