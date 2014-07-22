@@ -12,6 +12,7 @@ public class MatchCandidate {
 	private int itemToMatchRow;
 	private Resource itemToMatchTDBResource;
 	private Resource matchCandidateTDBResource;
+	private int matchedFeatureCount = 0;
 	private boolean confirmed;
 
 	public MatchCandidate(int itemToMatchRow, Resource itemToMatchTDBResource, Resource matchCandidateTDBResource) {
@@ -69,5 +70,17 @@ public class MatchCandidate {
 
 	public void setConfirmed(boolean confirmed) {
 		this.confirmed = confirmed;
+	}
+
+	public int getMatchedFeatureCount() {
+		return matchedFeatureCount;
+	}
+
+	public void setMatchedFeatureCount(int matchedFeatureCount) {
+		this.matchedFeatureCount = matchedFeatureCount;
+	}
+
+	public void incrementMatchFeatureCount() {
+		this.matchedFeatureCount++;
 	}
 }

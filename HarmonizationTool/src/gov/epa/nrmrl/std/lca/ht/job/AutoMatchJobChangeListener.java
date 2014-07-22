@@ -30,12 +30,11 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	public void aboutToRun(IJobChangeEvent event) {
 		Date startDate = new Date();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
-		// String message = "Job: =>" + key + "<= started: " + startDate;
-//		Display.getDefault().asyncExec(new Runnable() {
-//			public void run() {
-				FlowsWorkflow.setTextAutoMatched("Started...");
-//			}
-//		});
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextAutoMatched("Starting...");
+			}
+		});
 	}
 
 	@Override

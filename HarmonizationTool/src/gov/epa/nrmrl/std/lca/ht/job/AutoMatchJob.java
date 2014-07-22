@@ -46,7 +46,7 @@ public class AutoMatchJob extends Job {
 		this.tableKey = CSVTableView.getTableProviderKey();
 		// this.harmonyQuery2Impl = harmonyQuery2Impl;
 	}
-	
+
 	// public AutoMatchJob(String name, String tableKey) {
 	// super(name);
 	// this.tableKey = tableKey;
@@ -93,7 +93,9 @@ public class AutoMatchJob extends Job {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		// NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
 		for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-//			System.out.println("About to check row: "+rowNumber);
+			List<MatchCandidate> rowMatchCandidates = new ArrayList<MatchCandidate>();
+
+			// System.out.println("About to check row: "+rowNumber);
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
 			int rowNumberPlusOne = rowNumber + 1;
@@ -102,9 +104,10 @@ public class AutoMatchJob extends Job {
 			Resource rdfClass = Flowable.getRdfclass();
 
 			for (int colNumber : flowableColumnNumbers) {
+				int dataColNumber = colNumber - 1;
 				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
 				Property property = csvColumnInfo.getTdbProperty();
-				String dataRowValue = dataRow.get(colNumber);
+				String dataRowValue = dataRow.get(dataColNumber);
 				Literal dataRowLiteral = ActiveTDB.createTypedLiteral(dataRowValue);
 				ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(property, dataRowLiteral);
 				Resource itemToMatchTDBResource = null;
@@ -114,89 +117,41 @@ public class AutoMatchJob extends Job {
 						if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource, tableDataSource)) {
 							itemToMatchTDBResource = candidateResource;
 						} else {
-							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource,
-									candidateResource);
-							if (matchCandidate.confirmRDFtypeMatch()) {
-								matchCandidates.add(matchCandidate);
-								System.out
-										.println("Got a candidate for row: " + rowNumberPlusOne + "col: " + colNumber);
+
+							boolean isNew = true;
+							for (MatchCandidate matchCandidate : rowMatchCandidates) {
+								if (matchCandidate.getItemToMatchTDBResource().equals(itemToMatchTDBResource)
+										&& matchCandidate.getMatchCandidateTDBResource().equals(candidateResource)) {
+									matchCandidate.incrementMatchFeatureCount();
+									isNew = false;
+								}
+							}
+							if (isNew) {
+								MatchCandidate matchCandidate = new MatchCandidate(dataColNumber,
+										itemToMatchTDBResource, candidateResource);
+								if (matchCandidate.confirmRDFtypeMatch()) {
+									matchCandidate.setMatchedFeatureCount(1);
+									rowMatchCandidates.add(matchCandidate);
+								}
 							}
 						}
 					}
 				}
 			}
-			// FIND MATCHING Flowables FOR THIS ROW
-
-			// for (int flowableCol : flowableColumnNumbers) {
-			// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[flowableCol];
-			// // rdfClass = csvColumnInfo.getRDFClass();
-			// // String field = dataRow.get(flowableCol - 1);
-			// // RDFNode rdfNode = ActiveTDB.tdbModel.createLit
-			// // thing = ActiveTDB.tdbModel.listSubjectsWithProperty(arg0, arg1)
-			//
-			// }
-			//
-			// for (int colNumber = 0; colNumber < dataRow.getSize(); colNumber++) {
-			// if (assignedCSVColumnInfo[colNumber + 1] != null) {
-			// System.out.println("Row: " + rowNumber + ". Col: " + colNumber);
+			for (MatchCandidate matchCandidate : rowMatchCandidates) {
+				matchCandidates.add(matchCandidate);
+				System.out.println("Num: " + matchCandidate.getMatchedFeatureCount() + ". type: "
+						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) + ".");
+			}
+			tableProvider.setLastChecked(rowNumber);
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					CSVTableView.updateCheckedData();
 					FlowsWorkflow.setTextFileInfo("Going...");
 				}
 			});
-			// }
-			// }
-			tableProvider.setLastChecked(rowNumber);
+
 		}
-		// List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-		// DataSourceProvider dataSourceProvider = CSVTableView.getDataSourceProvider();
-		//
-		// Model tdbModel = ActiveTDB.tdbModel;
-		// Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-		// // ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
-		// // dataSourceTDBResource.asNode());
-		// ResIterator resourceIterator = tdbModel.listResourcesWithProperty(ECO.hasDataSource,
-		// dataSourceTDBResource);
-		// int count = 0;
-		// while (resourceIterator.hasNext()) {
-		// count++;
-		// System.out.println("count: " + count);
-		// Resource dataItem = resourceIterator.next();
-		// int rowNumber = -1;
-		// Statement rowNumberStatement = dataItem.getProperty(FEDLCA.sourceTableRowNumber);
-		// if (rowNumberStatement != null) {
-		// if (rowNumberStatement.getObject().isLiteral()) {
-		// rowNumber = rowNumberStatement.getObject().asLiteral().getInt();
-		// // System.out.println("rowNumber = " + rowNumber);
-		// StmtIterator dataItemProperties = dataItem.listProperties();
-		// while (dataItemProperties.hasNext()) {
-		// Statement dataItemStatement = dataItemProperties.next();
-		// Property dataItemProperty = dataItemStatement.getPredicate();
-		// RDFNode dataItemRDFNode = dataItemStatement.getObject();
-		// // System.out.println("dataItemStatement: "+dataItemStatement);
-		//
-		// // NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND RDFNode
-		//
-		// if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-		// ResIterator matchingResourcesIterator = tdbModel.listSubjectsWithProperty(dataItemProperty,
-		// dataItemRDFNode);
-		// while (matchingResourcesIterator.hasNext()) {
-		// System.out.println("Found a match for dataItemStatement: " + dataItemStatement);
-		// Resource matchingResource = matchingResourcesIterator.next();
-		// if (!matchingResource.equals(dataItem)) {
-		// MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem,
-		// matchingResource);
-		// if (matchCandidate.confirmRDFtypeMatch()) {
-		// matchCandidates.add(matchCandidate);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
 		// System.out.println("matchCandidates.size()=" + matchCandidates.size());
 
 		return Status.OK_STATUS;

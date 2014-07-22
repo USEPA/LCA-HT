@@ -304,12 +304,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void replaceResource(Resource subject, Property predicate, Resource object) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			subject.removeAll(predicate);
 			subject.addProperty(predicate, object);
 		} finally {
-			ActiveTDB.tdbDataset.end();
+			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
@@ -317,12 +317,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Resource createResource(Resource rdfclass) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		Resource result = null;
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			result = tdbModel.createResource(rdfclass);
-			ActiveTDB.tdbDataset.commit();
+			tdbDataset.commit();
 		} finally {
-			ActiveTDB.tdbDataset.end();
+			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		return result;

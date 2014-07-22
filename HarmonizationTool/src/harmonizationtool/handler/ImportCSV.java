@@ -45,9 +45,7 @@ public class ImportCSV implements IHandler {
 		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("executing Import CSV");
-		// ModelProvider modelProvider = new ModelProvider();
 		TableProvider tableProvider = new TableProvider();
-		// FileMD(String filename, String path, long size, Date modifiedDate, Date readDate)
 		FileMD fileMD = new FileMD();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
