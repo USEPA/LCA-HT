@@ -22,7 +22,13 @@ public class MatchCandidate {
 	}
 
 	public boolean confirmRDFtypeMatch() {
-		// SHOULD USE REASONER TO EXPLORE SUBCLASSES
+		// SHOULD USE REASONER TO EXPLORE SUBCLASSES - FIXME
+		if (itemToMatchTDBResource == null){
+			return false;
+		}
+		if (matchCandidateTDBResource == null){
+			return false;
+		}
 		StmtIterator itemStatementIterator = itemToMatchTDBResource.listProperties(RDF.type);
 		while (itemStatementIterator.hasNext()) {
 			RDFNode type = itemStatementIterator.next().getObject();

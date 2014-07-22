@@ -5,19 +5,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.model.DataSourceKeeper;
 import harmonizationtool.model.FileMDKeeper;
 import harmonizationtool.model.PersonKeeper;
-import harmonizationtool.query.QGetAllProperties;
 import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ECO;
-
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -34,22 +27,16 @@ import org.eclipse.ui.services.IServiceLocator;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model tdbModel = null;
@@ -68,68 +55,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	// public static ActiveTDB getInstance() {
 	// return instance;
-	// }
-
-	// public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object
-	// thingLiteral) {
-	// Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
-	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// if (rdfNode.isLiteral()) {
-	// if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)){
-	// tdbModel.removeAll(subject, predicate, rdfNode);
-	// }
-	// }
-	// }
-	// tdbModel.add(subject, predicate, newRDFNode);
-	// }
-
-	// public static void replaceLiteral(Resource subject, Property predicate, String stringLiteral) {
-	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// if (rdfNode.isLiteral()) {
-	// tdbModel.removeAll(subject, predicate, rdfNode);
-	// }
-	// }
-	// // System.out.println("Filename: " + stringLiteral + " added to TDB");
-	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(stringLiteral));
-	// }
-	//
-	// public static void replaceLiteral(Resource subject, Property predicate, Long longLiteral) {
-	// NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// if (rdfNode.isLiteral()) {
-	// tdbModel.removeAll(subject, predicate, rdfNode);
-	// }
-	// }
-	// // NOTE A JAVA long BECOMES AN xsd:integer
-	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(longLiteral));
-	// }
-	//
-	// public static void replaceLiteral(Resource subject, Property predicate, Date dateObject) {
-	//
-	// NodeIterator nodeIterator;
-	// try {
-	// nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
-	//
-	// while (nodeIterator.hasNext()) {
-	// RDFNode rdfNode = nodeIterator.next();
-	// if (rdfNode.isLiteral()) {
-	// tdbModel.removeAll(subject, predicate, rdfNode);
-	// }
-	// }
-	// Literal dateLiteral = tdbModel.createTypedLiteral(dateObject);
-	// tdbModel.add(subject, predicate, tdbModel.createTypedLiteral(dateLiteral));
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// System.out.println("subject: " + subject);
-	// System.out.println("predicate: " + predicate);
-	//
-	// e.printStackTrace();
-	// }
 	// }
 
 	@Override

@@ -390,17 +390,13 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener autoMatchListener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			// CSVTableView.matchFlowables();
 			String jobKey = "autoMatch_01";
-			// Table table = CSVTableView.getTable();
-			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job", CSVTableView.getTableProviderKey());
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
 			autoMatchJob.setPriority(Job.SHORT);
 			autoMatchJob.setSystem(false);
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-
-			// autoMatch();
 		}
 
 		@Override

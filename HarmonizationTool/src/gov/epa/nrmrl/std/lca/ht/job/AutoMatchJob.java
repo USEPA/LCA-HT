@@ -9,30 +9,19 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import harmonizationtool.model.DataRow;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.LCAHT;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.widgets.Display;
-
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -48,19 +37,22 @@ public class AutoMatchJob extends Job {
 	// 1: HIGH EVIDENCE HITS
 	// 2: LOWER EVIDENCE HITS
 	// 3: NO EVIDENCE ITEMS (UNMATCHED)
-
-	public AutoMatchJob(String name, String tableKey) {
+	public AutoMatchJob(String name) {
 		super(name);
-		this.tableKey = tableKey;
+		this.tableKey = CSVTableView.getTableProviderKey();
 		// this.harmonyQuery2Impl = harmonyQuery2Impl;
 	}
+	
+	// public AutoMatchJob(String name, String tableKey) {
+	// super(name);
+	// this.tableKey = tableKey;
+	// // this.harmonyQuery2Impl = harmonyQuery2Impl;
+	// }
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
 		Resource tableDataSource = tableProvider.getDataSourceProvider().getTdbResource();
-//		Model model = ActiveTDB.tdbModel;
-		// Table table = CSVTableView.getTable();
 		System.out.println("Table :" + tableProvider);
 
 		int rowCount = tableProvider.getData().size();
@@ -76,14 +68,18 @@ public class AutoMatchJob extends Job {
 			if (csvColumnInfo != null) {
 				if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
 					if (csvColumnInfo.isRequired()) {
+						// PREPEND THE IMPORTANT ONES
 						flowableColumnNumbers.add(0, colNumber);
 					} else {
+						// APPEND THE OTHERS
 						flowableColumnNumbers.add(colNumber);
 					}
 				} else if (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
 					if (csvColumnInfo.isRequired()) {
+						// PREPEND THE IMPORTANT ONES
 						flowContextColumnNumbers.add(0, colNumber);
 					} else {
+						// APPEND THE OTHERS
 						flowContextColumnNumbers.add(colNumber);
 					}
 				}
@@ -93,11 +89,10 @@ public class AutoMatchJob extends Job {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		// NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
 		for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
+			System.out.println("About to check row: "+rowNumber);
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
 			int rowNumberPlusOne = rowNumber + 1;
-			// Literal rowLiteral = ActiveTDB.tdbModel.createTypedLiteral(rowNumberPlusOne, XSDDatatype.XSDinteger);
-			Resource dataSource = tableProvider.getDataSourceProvider().getTdbResource();
 
 			// FIRST DO Flowable
 			Resource rdfClass = Flowable.getRdfclass();
@@ -112,7 +107,7 @@ public class AutoMatchJob extends Job {
 				while (resIterator.hasNext()) {
 					Resource candidateResource = resIterator.next();
 					if (ActiveTDB.tdbModel.contains(candidateResource, RDF.type, rdfClass)) {
-						if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource, dataSource)) {
+						if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource, tableDataSource)) {
 							itemToMatchTDBResource = candidateResource;
 						} else {
 							MatchCandidate matchCandidate = new MatchCandidate(colNumber, itemToMatchTDBResource,
