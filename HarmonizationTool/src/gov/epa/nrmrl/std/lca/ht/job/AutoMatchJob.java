@@ -141,7 +141,7 @@ public class AutoMatchJob extends Job {
 			for (MatchCandidate matchCandidate : rowMatchCandidates) {
 				matchCandidates.add(matchCandidate);
 				System.out.println("Num: " + matchCandidate.getMatchedFeatureCount() + ". type: "
-						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type).getString() + ".");
+						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) + ".");
 			}
 			tableProvider.setLastChecked(rowNumber);
 			Display.getDefault().asyncExec(new Runnable() {

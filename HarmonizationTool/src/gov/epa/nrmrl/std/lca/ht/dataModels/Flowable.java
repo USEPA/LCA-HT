@@ -37,12 +37,12 @@ public class Flowable {
 	public Flowable() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
-	
+
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
-		syncDataFromTDB();
+		// syncDataFromTDB();
 	}
-	
+
 	public void syncDataFromTDB() {
 		RDFNode rdfNode;
 
@@ -52,7 +52,7 @@ public class Flowable {
 
 		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
 		name = ActiveTDB.getStringFromLiteral(rdfNode);
-		
+
 		StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.next();
@@ -63,51 +63,62 @@ public class Flowable {
 		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
 	}
 
-//	public void remove() {
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			tdbResource.removeAll(FEDLCA.personName);
-//			tdbResource.removeAll(FEDLCA.affiliation);
-//			tdbResource.removeAll(FEDLCA.email);
-//			tdbResource.removeAll(FEDLCA.voicePhone);
-//
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
-//	}
-	
-	public float compareFlowables(Resource dataFlowableResource, Resource referenceFlowableResource){
+	// public void remove() {
+	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// try {
+	// tdbResource.removeAll(FEDLCA.personName);
+	// tdbResource.removeAll(FEDLCA.affiliation);
+	// tdbResource.removeAll(FEDLCA.email);
+	// tdbResource.removeAll(FEDLCA.voicePhone);
+	//
+	// ActiveTDB.tdbDataset.commit();
+	// } finally {
+	// ActiveTDB.tdbDataset.end();
+	// }
+	// // ---- END SAFE -WRITE- TRANSACTION ---
+	// }
+
+	public float compareFlowables(Resource dataFlowableResource, Resource referenceFlowableResource) {
 		float score = 0;
 		Flowable dataFlowable = new Flowable(dataFlowableResource);
 		Flowable referenceFlowable = new Flowable(referenceFlowableResource);
-		if (dataFlowable.getCas().equals(referenceFlowable.getCas())){
-			score+=0.5;
+		if (dataFlowable.getCas().equals(referenceFlowable.getCas())) {
+			score += 0.5;
 		}
-		if (dataFlowable.getName().equals(referenceFlowable.getName())){
-			score+=0.3;
+		if (dataFlowable.getName().equals(referenceFlowable.getName())) {
+			score += 0.3;
 		}
-		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())){
-			score+=0.2;
+		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())) {
+			score += 0.2;
 		}
-		// 	FIXME - WORK WITH CHRIS GRULKE TO IMPROVE THIS SCORING
+		// FIXME - WORK WITH CHRIS GRULKE TO IMPROVE THIS SCORING
 		return score;
 	}
-	
-	public float compareFlowables(Flowable dataFlowable, Flowable referenceFlowable){
-		float score = 0;
-		if (dataFlowable.getCas().equals(referenceFlowable.getCas())){
-			score+=0.5;
+
+	public String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
+		String flag = "";
+		int casFlag = -1;
+		if (queryFlowable.getCas() == null || referenceFlowable.getCas() == null) {
+			casFlag = 0;
+		} else if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
+			casFlag = 1;
 		}
-		if (dataFlowable.getName().equals(referenceFlowable.getName())){
-			score+=0.3;
-		}
-		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())){
-			score+=0.2;
-		}
-		return score;
+
+//		if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
+//		}
+//		float score = 0;
+//
+//		if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
+//			score += 0.5;
+//		}
+//		if (queryFlowable.getName().equals(referenceFlowable.getName())) {
+//			score += 0.3;
+//		}
+//		if (queryFlowable.getFormula().equals(referenceFlowable.getFormula())) {
+//			score += 0.2;
+//		}
+		return flag;
 	}
 
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>
