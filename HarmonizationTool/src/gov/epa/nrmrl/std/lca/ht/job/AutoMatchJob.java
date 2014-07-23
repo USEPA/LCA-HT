@@ -98,7 +98,7 @@ public class AutoMatchJob extends Job {
 			// System.out.println("About to check row: "+rowNumber);
 			DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
 
-			int rowNumberPlusOne = rowNumber + 1;
+			final int rowNumberPlusOne = rowNumber + 1;
 
 			// FIRST DO Flowable
 			Resource rdfClass = Flowable.getRdfclass();
@@ -141,13 +141,13 @@ public class AutoMatchJob extends Job {
 			for (MatchCandidate matchCandidate : rowMatchCandidates) {
 				matchCandidates.add(matchCandidate);
 				System.out.println("Num: " + matchCandidate.getMatchedFeatureCount() + ". type: "
-						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) + ".");
+						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type).getString() + ".");
 			}
 			tableProvider.setLastChecked(rowNumber);
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					CSVTableView.updateCheckedData();
-					FlowsWorkflow.setTextFileInfo("Going...");
+					FlowsWorkflow.setTextAutoMatched("Row: " + rowNumberPlusOne);
 				}
 			});
 
