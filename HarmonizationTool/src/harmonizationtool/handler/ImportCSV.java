@@ -1,9 +1,9 @@
 package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import harmonizationtool.dialog.MetaDataDialog;
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.FileMD;
 import harmonizationtool.model.TableKeeper;
 import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
+
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.apache.log4j.Logger;

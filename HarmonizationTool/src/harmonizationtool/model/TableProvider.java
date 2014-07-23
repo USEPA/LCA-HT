@@ -1,6 +1,8 @@
 package harmonizationtool.model;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import java.util.ArrayList;

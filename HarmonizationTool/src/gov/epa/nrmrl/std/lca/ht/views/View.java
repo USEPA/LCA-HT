@@ -1,12 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-
 import harmonizationtool.model.DataRow;
-import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.DataSourceProvider;
-import harmonizationtool.model.FileMD;
 //import harmonizationtool.model.ModelKeeper;
 //import harmonizationtool.model.ModelProvider;
 import harmonizationtool.model.TableKeeper;
@@ -23,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;

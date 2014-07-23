@@ -1,8 +1,8 @@
 package harmonizationtool.handler;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.dialog.MetaDataDialog;
-import harmonizationtool.model.DataSourceKeeper;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

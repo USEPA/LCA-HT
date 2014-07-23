@@ -1,7 +1,7 @@
 package harmonizationtool.query;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import harmonizationtool.dialog.DialogQueryDataSource;
-import harmonizationtool.model.DataSourceKeeper;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;

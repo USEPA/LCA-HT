@@ -2,10 +2,10 @@ package harmonizationtool.dialog;
 
 import java.util.List;
 
-import harmonizationtool.model.DataSourceKeeper;
-import harmonizationtool.model.DataSourceProvider;
-import harmonizationtool.model.FileMD;
-import harmonizationtool.model.Person;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Person;
 import harmonizationtool.utils.Util;
 
 import org.apache.log4j.Logger;

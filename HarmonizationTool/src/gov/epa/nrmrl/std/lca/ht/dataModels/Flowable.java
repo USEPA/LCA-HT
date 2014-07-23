@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -35,6 +36,78 @@ public class Flowable {
 
 	public Flowable() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
+	}
+	
+	public Flowable(Resource tdbResource) {
+		this.tdbResource = tdbResource;
+		syncDataFromTDB();
+	}
+	
+	public void syncDataFromTDB() {
+		RDFNode rdfNode;
+
+		if (tdbResource == null) {
+			return;
+		}
+
+		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+		name = ActiveTDB.getStringFromLiteral(rdfNode);
+		
+		StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			rdfNode = statement.getObject();
+			String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
+			addSynonym(synonym);
+		}
+		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
+	}
+
+//	public void remove() {
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		try {
+//			tdbResource.removeAll(FEDLCA.personName);
+//			tdbResource.removeAll(FEDLCA.affiliation);
+//			tdbResource.removeAll(FEDLCA.email);
+//			tdbResource.removeAll(FEDLCA.voicePhone);
+//
+//			ActiveTDB.tdbDataset.commit();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
+//	}
+	
+	public float compareFlowables(Resource dataFlowableResource, Resource referenceFlowableResource){
+		float score = 0;
+		Flowable dataFlowable = new Flowable(dataFlowableResource);
+		Flowable referenceFlowable = new Flowable(referenceFlowableResource);
+		if (dataFlowable.getCas().equals(referenceFlowable.getCas())){
+			score+=0.5;
+		}
+		if (dataFlowable.getName().equals(referenceFlowable.getName())){
+			score+=0.3;
+		}
+		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())){
+			score+=0.2;
+		}
+		// 	FIXME - WORK WITH CHRIS GRULKE TO IMPROVE THIS SCORING
+		return score;
+	}
+	
+	public float compareFlowables(Flowable dataFlowable, Flowable referenceFlowable){
+		float score = 0;
+		if (dataFlowable.getCas().equals(referenceFlowable.getCas())){
+			score+=0.5;
+		}
+		if (dataFlowable.getName().equals(referenceFlowable.getName())){
+			score+=0.3;
+		}
+		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())){
+			score+=0.2;
+		}
+		return score;
 	}
 
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>
