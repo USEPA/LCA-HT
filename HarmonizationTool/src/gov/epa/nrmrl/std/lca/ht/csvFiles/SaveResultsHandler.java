@@ -1,11 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewLabelProvider;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.QueryResults;
 import harmonizationtool.utils.Util;

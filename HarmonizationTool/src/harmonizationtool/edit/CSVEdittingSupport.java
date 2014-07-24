@@ -2,7 +2,7 @@ package harmonizationtool.edit;
 
 import java.util.List;
 
-import harmonizationtool.model.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 
 import org.eclipse.jface.viewers.CellEditor;
 //import org.eclipse.jface.viewers.ColumnViewer;

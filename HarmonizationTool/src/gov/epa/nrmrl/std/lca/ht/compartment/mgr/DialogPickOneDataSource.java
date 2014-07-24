@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import harmonizationtool.model.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QListDataSources;
 import harmonizationtool.query.QueryResults;

@@ -1,9 +1,10 @@
 package harmonizationtool.dialog;
 
-import harmonizationtool.model.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.QListDataSources;
 import harmonizationtool.query.QueryResults;
+
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;

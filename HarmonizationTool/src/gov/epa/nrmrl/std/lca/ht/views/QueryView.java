@@ -4,29 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
 //import gov.epa.nrmrl.std.lca.ht.tdb.IActiveTDBListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericUpdate;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.HarmonyUpdate;
 import harmonizationtool.query.LabeledQuery;
 import harmonizationtool.query.QDataSetContents;
-
 import harmonizationtool.query.QMatchCAS;
 import harmonizationtool.query.QMatchCASandName;
 import harmonizationtool.query.UDelDataSource;
-
 import harmonizationtool.query.QCountMatches;
 import harmonizationtool.query.QDataSources;
-
 import harmonizationtool.utils.Util;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -59,6 +57,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;

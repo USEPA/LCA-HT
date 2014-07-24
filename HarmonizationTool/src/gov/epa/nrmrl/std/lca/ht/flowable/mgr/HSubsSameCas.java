@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import harmonizationtool.dialog.DialogQueryDataSource;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.query.LabeledQuery;
 

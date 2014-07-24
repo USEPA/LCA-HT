@@ -53,13 +53,13 @@ public class Flowable {
 		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
 		name = ActiveTDB.getStringFromLiteral(rdfNode);
 
-		StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
-			rdfNode = statement.getObject();
-			String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
-			addSynonym(synonym);
-		}
+//		StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
+//		while (stmtIterator.hasNext()) {
+//			Statement statement = stmtIterator.next();
+//			rdfNode = statement.getObject();
+//			String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
+//			addSynonym(synonym);
+//		}
 		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
 	}
 
@@ -79,7 +79,7 @@ public class Flowable {
 	// // ---- END SAFE -WRITE- TRANSACTION ---
 	// }
 
-	public String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
+	public static String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
 		Flowable queryFlowable = new Flowable(queryFlowableResource);
 		queryFlowable.syncDataFromTDB();
 		Flowable referenceFlowable = new Flowable(referenceFlowableResource);
@@ -92,7 +92,7 @@ public class Flowable {
 		return hits;
 	}
 
-	public String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
+	public static String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
 		// INFO TO SHARE FOR JUST NAME AND CAS:
 		// ++ (BOTH MATCH, BEST)
 		// -+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
@@ -356,7 +356,7 @@ public class Flowable {
 
 	public void setCas(String cas) {
 		this.cas = cas;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, cas);
+		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
 	}
 
 	public boolean isEmission() {

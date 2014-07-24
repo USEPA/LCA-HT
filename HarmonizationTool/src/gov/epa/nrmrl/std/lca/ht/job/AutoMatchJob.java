@@ -5,14 +5,14 @@ import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableKeeper;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -104,10 +104,10 @@ public class AutoMatchJob extends Job {
 			Resource rdfClass = Flowable.getRdfclass();
 
 			for (int colNumber : flowableColumnNumbers) {
-				int dataColNumber = colNumber - 1;
+//				int dataColNumber = colNumber - 1;
 				CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
 				Property property = csvColumnInfo.getTdbProperty();
-				String dataRowValue = dataRow.get(dataColNumber);
+				String dataRowValue = dataRow.get(colNumber);
 				Literal dataRowLiteral = ActiveTDB.createTypedLiteral(dataRowValue);
 				ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(property, dataRowLiteral);
 				Resource itemToMatchTDBResource = null;
@@ -138,6 +138,14 @@ public class AutoMatchJob extends Job {
 				}
 			}
 			for (MatchCandidate matchCandidate : rowMatchCandidates) {
+				Resource qResource = matchCandidate.getItemToMatchTDBResource();
+				Resource rResource = matchCandidate.getMatchCandidateTDBResource();
+				int rowMatch = matchCandidate.getItemToMatchRow();
+				String result = Flowable.compareFlowables(qResource, rResource);
+				if (result.equals("+0")){
+					System.out.println("Hit on row: "+rowMatch);
+				}
+//				System.out.println("On row: "+rowMatch+": "+Flowable.compareFlowables(qResource, rResource));
 				matchCandidates.add(matchCandidate);
 				System.out.println("Num: " + matchCandidate.getMatchedFeatureCount() + ". type: "
 						+ matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) + ".");

@@ -1,11 +1,11 @@
 package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import harmonizationtool.dialog.MetaDataDialog;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableKeeper;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 
 import java.io.File;

@@ -1,15 +1,15 @@
 package gov.epa.nrmrl.std.lca.ht.views;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
 //import harmonizationtool.model.ModelKeeper;
 //import harmonizationtool.model.ModelProvider;
-import harmonizationtool.model.TableKeeper;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;

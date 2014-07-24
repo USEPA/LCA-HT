@@ -18,18 +18,20 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.tree.Node;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.LCAHT;
+
 import com.hp.hpl.jena.vocabulary.OWL;
 
 //import harmonizationtool.vocabulary.;
+
 
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;

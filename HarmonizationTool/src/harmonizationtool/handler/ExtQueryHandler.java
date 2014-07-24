@@ -5,10 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import harmonizationtool.model.ModelProvider;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.GenericQuery;
 import harmonizationtool.query.HarmonyQuery2Impl;
 import harmonizationtool.utils.Util;

@@ -3,11 +3,12 @@ package gov.epa.nrmrl.std.lca.ht.views;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.MyColumnLabelProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.query.HarmonyQuery;
 import harmonizationtool.query.QueryResults;
 

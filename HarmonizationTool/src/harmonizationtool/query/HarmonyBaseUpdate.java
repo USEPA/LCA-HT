@@ -1,8 +1,8 @@
 package harmonizationtool.query;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
 import harmonizationtool.vocabulary.ECO;
 
 import java.util.ArrayList;

@@ -67,7 +67,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		System.out.println("about to open TDB. Model right now is: " + tdbModel);
 		openTDB();
-		System.out.println("Now Model is: " + tdbModel);
+//		System.out.println("Now Model is: " + tdbModel);
 		try {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {

@@ -1,7 +1,7 @@
 package harmonizationtool.query;
 
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 
 public class QueryResults {
 	private DataRow columnHeaders = null;

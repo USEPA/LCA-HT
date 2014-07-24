@@ -5,16 +5,16 @@ import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.DataRow;
-import harmonizationtool.model.TableKeeper;
 import harmonizationtool.utils.Util;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
@@ -442,7 +442,9 @@ public class FlowsWorkflow extends ViewPart {
 			Flowable flowable = new Flowable();
 			FlowContext flowContext = new FlowContext();
 			for (int colNumber = 1; colNumber < assignedCSVColumns.length; colNumber++) {
-				CSVColumnInfo csvColumnnInfo = assignedCSVColumns[colNumber];
+				int dataColNumber = colNumber - 1;
+				CSVColumnInfo csvColumnnInfo = assignedCSVColumns[dataColNumber];
+				String dataString = dataRow.get(dataColNumber);
 				if (csvColumnnInfo != null) {
 
 					String headerName = csvColumnnInfo.getHeaderString();
@@ -450,19 +452,19 @@ public class FlowsWorkflow extends ViewPart {
 						if (flowable.getName() != null) {
 							Logger.getLogger("run").warn("# Trying to add a second name to this flowable");
 						}
-						flowable.setName(dataRow.get(colNumber - 1));
+						flowable.setName(dataString);
 					} else if (headerName.equals("Flowable Synonym")) {
-						flowable.addSynonym(dataRow.get(colNumber - 1));
+						flowable.addSynonym(dataString);
 					} else if (headerName.equals("CAS")) {
-						flowable.setCas(dataRow.get(colNumber - 1));
+						flowable.setCas(dataString);
 					} else if (headerName.equals("Chemical formula")) {
-						flowable.setFormula(dataRow.get(colNumber - 1));
+						flowable.setFormula(dataString);
 					} else if (headerName.equals("SMILES")) {
-						flowable.setSmiles(dataRow.get(colNumber - 1));
+						flowable.setSmiles(dataString);
 					} else if (headerName.equals("Context (primary)")) {
-						flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
+						flowContext.setPrimaryFlowContext(dataString);
 					} else if (headerName.equals("Context (additional)")) {
-						flowContext.addSupplementaryFlowContext(dataRow.get(colNumber - 1));
+						flowContext.addSupplementaryFlowContext(dataString);
 					}
 				}
 			}
@@ -471,7 +473,8 @@ public class FlowsWorkflow extends ViewPart {
 					.getDataSourceProvider();
 			// dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow,
 			// flow.getTdbResource());
-			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+			ActiveTDB.replaceLiteral(flow.getTdbResource(), ECO.hasDataSource, dataSourceProvider.getTdbResource());
+//			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 			if (flowable.getName() != null) {
 				if (!flowable.getName().equals("")) {
 					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowLiteral);
