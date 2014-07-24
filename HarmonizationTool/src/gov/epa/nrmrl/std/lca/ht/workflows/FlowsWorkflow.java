@@ -357,8 +357,8 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	SelectionListener csv2TDBListener = new SelectionListener() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+
+		private void doit(SelectionEvent e) {
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
 				textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -374,16 +374,18 @@ public class FlowsWorkflow extends ViewPart {
 					textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 				}
 				btnAutoMatch.setEnabled(true);
+				btnConcludeFile.setText("Close CSV");
 			}
 		}
 
 		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			textIssues.setText(" ... checking data ...");
-			int issueCount = CSVTableView.checkCols();
-			textIssues.setText(issueCount + " issues found");
-			btnCSV2TDB.setEnabled(true);
-			btnAutoMatch.setEnabled(true);
+			doit(e);
 		}
 	};
 
@@ -407,6 +409,7 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	SelectionListener concludeFileListener = new SelectionListener() {
+		// TODO - GRACEFUL CLOSING OF CSV
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// CSVTableView.matchFlowables();
@@ -419,9 +422,10 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	private int safeCommitColumns2TDB() {
-		// THE SAFE PART MEANS
+		// TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
 		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-		// TRIPLES FROM THIS FILE SHOULD BE REMOVED
+		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
+		// BETTER YET, AN THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
 		// Model model = ActiveTDB.tdbModel;
 
 		long triples = ActiveTDB.tdbModel.size();
@@ -462,6 +466,77 @@ public class FlowsWorkflow extends ViewPart {
 					}
 				}
 			}
+			Flow flow = new Flow();
+			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+					.getDataSourceProvider();
+			// dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow,
+			// flow.getTdbResource());
+			flow.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+			if (flowable.getName() != null) {
+				if (!flowable.getName().equals("")) {
+					flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowLiteral);
+					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+					flow.getTdbResource().addProperty(ECO.hasFlowable, flowable.getTdbResource());
+				}
+			}
+			if (flowContext.getPrimaryFlowContext() != null) {
+				if (!flowContext.getPrimaryFlowContext().equals("")) {
+					flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber, rowLiteral);
+					flowContext.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+					flow.getTdbResource().addProperty(FASC.hasCompartment, flowContext.getTdbResource());
+				}
+			}
+		}
+		long newTriples = ActiveTDB.tdbModel.size() - triples;
+		return (int) newTriples;
+	}
+	
+	private int commitAndSearch() {
+		// COPIED FROM safeCommitColumns2TDB !! 
+		// TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
+		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
+		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
+		// BETTER YET, AN THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
+		// Model model = ActiveTDB.tdbModel;
+
+		long triples = ActiveTDB.tdbModel.size();
+		Table table = CSVTableView.getTable();
+
+		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				.getAssignedCSVColumnInfo();
+		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
+			int rowNumberPlusOne = rowNumber + 1;
+			Literal rowLiteral = ActiveTDB.createTypedLiteral(rowNumberPlusOne);
+
+			Item item = table.getItem(rowNumber);
+			DataRow dataRow = (DataRow) item.getData();
+			Flowable flowable = new Flowable();
+			FlowContext flowContext = new FlowContext();
+			for (int colNumber = 1; colNumber < assignedCSVColumns.length; colNumber++) {
+				CSVColumnInfo csvColumnnInfo = assignedCSVColumns[colNumber];
+				if (csvColumnnInfo != null) {
+					String headerName = csvColumnnInfo.getHeaderString();
+					if (headerName.equals("Flowable Name")) {
+						if (flowable.getName() != null) {
+							Logger.getLogger("run").warn("# Trying to add a second name to this flowable");
+						}
+						flowable.setName(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("Flowable Synonym")) {
+						flowable.addSynonym(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("CAS")) {
+						flowable.setCas(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("Chemical formula")) {
+						flowable.setFormula(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("SMILES")) {
+						flowable.setSmiles(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("Context (primary)")) {
+						flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
+					} else if (headerName.equals("Context (additional)")) {
+						flowContext.addSupplementaryFlowContext(dataRow.get(colNumber - 1));
+					}
+				}
+			}
+//			if (flowable.fidMatches > 0)
 			Flow flow = new Flow();
 			DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 					.getDataSourceProvider();

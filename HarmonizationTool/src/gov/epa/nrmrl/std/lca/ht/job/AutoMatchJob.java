@@ -120,14 +120,13 @@ public class AutoMatchJob extends Job {
 
 							boolean isNew = true;
 							for (MatchCandidate matchCandidate : rowMatchCandidates) {
-								if (matchCandidate.getItemToMatchTDBResource().equals(itemToMatchTDBResource)
-										&& matchCandidate.getMatchCandidateTDBResource().equals(candidateResource)) {
+								if (matchCandidate.getMatchCandidateTDBResource().equals(candidateResource)) {
 									matchCandidate.incrementMatchFeatureCount();
 									isNew = false;
 								}
 							}
 							if (isNew) {
-								MatchCandidate matchCandidate = new MatchCandidate(dataColNumber,
+								MatchCandidate matchCandidate = new MatchCandidate(rowNumber,
 										itemToMatchTDBResource, candidateResource);
 								if (matchCandidate.confirmRDFtypeMatch()) {
 									matchCandidate.setMatchedFeatureCount(1);

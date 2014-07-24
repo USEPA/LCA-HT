@@ -86,8 +86,18 @@ public class Flowable {
 		referenceFlowable.syncDataFromTDB();
 		return compareFlowables(queryFlowable, referenceFlowable);
 	}
+	
+	public List<Flowable> findMatchingFlowables(Flowable flowable){
+		List<Flowable> hits = new ArrayList<Flowable>();
+		return hits;
+	}
 
 	public String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
+		// INFO TO SHARE FOR JUST NAME AND CAS:
+		// ++ (BOTH MATCH, BEST)
+		// -+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
+		// +0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
+		// +- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
 		String flag = "?";
 		int casFlag = -1;
 		String qCas = queryFlowable.getCas();
@@ -111,16 +121,16 @@ public class Flowable {
 			nameFlag = 1;
 		}
 		if (casFlag == 1 && nameFlag == 1){
-			flag = "cas+name";
+			flag = "++";
 		}
 		else if (casFlag == 1 && nameFlag == -1){
-			flag = "cas-name";
+			flag = "-+";
 		}
 		else if (casFlag == 0 && nameFlag == 1){
-			flag = "name";
+			flag = "+0";
 		}
 		else if (casFlag == -1 && nameFlag == 1){
-			flag = "name-cas";
+			flag = "+-";
 		}
 		return flag;
 	}

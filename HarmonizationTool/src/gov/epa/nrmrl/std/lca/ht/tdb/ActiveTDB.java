@@ -80,9 +80,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void syncTDBtoLCAHT() {
+		System.out.println("Syncing people");
 		PersonKeeper.syncFromTDB();
+		System.out.println("Syncing files");
 		FileMDKeeper.syncFromTDB();
+		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
+		System.out.println("Done syncing");
 	}
 
 	private static void openTDB() {
