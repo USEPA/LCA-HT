@@ -79,49 +79,54 @@ public class Flowable {
 	// // ---- END SAFE -WRITE- TRANSACTION ---
 	// }
 
-	public float compareFlowables(Resource dataFlowableResource, Resource referenceFlowableResource) {
-		float score = 0;
-		Flowable dataFlowable = new Flowable(dataFlowableResource);
+	public String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
+		Flowable queryFlowable = new Flowable(queryFlowableResource);
+		queryFlowable.syncDataFromTDB();
 		Flowable referenceFlowable = new Flowable(referenceFlowableResource);
-		if (dataFlowable.getCas().equals(referenceFlowable.getCas())) {
-			score += 0.5;
-		}
-		if (dataFlowable.getName().equals(referenceFlowable.getName())) {
-			score += 0.3;
-		}
-		if (dataFlowable.getFormula().equals(referenceFlowable.getFormula())) {
-			score += 0.2;
-		}
-		// FIXME - WORK WITH CHRIS GRULKE TO IMPROVE THIS SCORING
-		return score;
+		referenceFlowable.syncDataFromTDB();
+		return compareFlowables(queryFlowable, referenceFlowable);
 	}
 
 	public String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
-		String flag = "";
+		String flag = "?";
 		int casFlag = -1;
-		if (queryFlowable.getCas() == null || referenceFlowable.getCas() == null) {
+		String qCas = queryFlowable.getCas();
+		String rCas = referenceFlowable.getCas();
+		if (qCas == null || rCas == null) {
 			casFlag = 0;
-		} else if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
+		} else 		if (qCas.equals("") || rCas.equals("")) {
+			casFlag = 0;
+		} else if (qCas.equals(rCas)) {
 			casFlag = 1;
 		}
 
-//		if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
-//		}
-//		float score = 0;
-//
-//		if (queryFlowable.getCas().equals(referenceFlowable.getCas())) {
-//			score += 0.5;
-//		}
-//		if (queryFlowable.getName().equals(referenceFlowable.getName())) {
-//			score += 0.3;
-//		}
-//		if (queryFlowable.getFormula().equals(referenceFlowable.getFormula())) {
-//			score += 0.2;
-//		}
+		int nameFlag = -1;
+		String qName = queryFlowable.getName();
+		String rName = referenceFlowable.getName();
+		if (qName == null || rName == null) {
+			nameFlag = 0;
+		} else 		if (qName.equals("") || rName.equals("")) {
+			nameFlag = 0;
+		} else if (qName.equals(rName)) {
+			nameFlag = 1;
+		}
+		if (casFlag == 1 && nameFlag == 1){
+			flag = "cas+name";
+		}
+		else if (casFlag == 1 && nameFlag == -1){
+			flag = "cas-name";
+		}
+		else if (casFlag == 0 && nameFlag == 1){
+			flag = "name";
+		}
+		else if (casFlag == -1 && nameFlag == 1){
+			flag = "name-cas";
+		}
 		return flag;
 	}
 
-	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck>
+	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique,
+	// List<QACheck>
 	// checkLists)
 	public static final CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
@@ -232,7 +237,8 @@ public class Flowable {
 	// private String headerString;
 	// private boolean isRequired;
 	// private boolean isUnique;
-	// public FlowableHeaderObj(String headerString, boolean isRequired, boolean isUnique){
+	// public FlowableHeaderObj(String headerString, boolean isRequired, boolean
+	// isUnique){
 	// this.headerString=headerString;
 	// this.isRequired = isRequired;
 	// this.isUnique = isUnique;
@@ -405,7 +411,8 @@ public class Flowable {
 	// Pattern p1 = acceptableCASFormat;
 	// Issue i1 = new Issue("Non-standard CAS format",
 	// "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
-	// "Parse digits.  To parse the numeric components, use the auto-clean function.", true);
+	// "Parse digits.  To parse the numeric components, use the auto-clean function.",
+	// true);
 	// allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
 	// return allChecks;
 	// }
@@ -427,7 +434,8 @@ public class Flowable {
 	// }
 	//
 	// private QACheck makeCASQACheck(){
-	// QACheck casQACheck = new QACheck("Full CAS check", "Includes format and checksum", null,
+	// QACheck casQACheck = new QACheck("Full CAS check",
+	// "Includes format and checksum", null,
 	// null, null, false);
 	// casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
 	// return casQACheck;
