@@ -67,7 +67,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		System.out.println("about to open TDB. Model right now is: " + tdbModel);
 		openTDB();
-//		System.out.println("Now Model is: " + tdbModel);
+		// System.out.println("Now Model is: " + tdbModel);
 		try {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
@@ -305,7 +305,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
-		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
+		if (rdfDatatype.equals(XSDDatatype.XSDstring) && thingLiteral.equals("")) {
+			removeAllObjects(subject, predicate);
+		} else {
+			replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
+		}
 	}
 
 	public static void replaceResource(Resource subject, Property predicate, Resource object) {
@@ -358,6 +362,19 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void removeAllObjects(Resource subject, Property predicate) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			subject.removeAll(predicate);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+	
+	public static void removeAllLikeObjects(Resource subject, Property predicate, RDFNode object) {
+		// FIXME
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
