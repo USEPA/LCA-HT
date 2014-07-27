@@ -1,8 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import harmonizationtool.tree.Node;

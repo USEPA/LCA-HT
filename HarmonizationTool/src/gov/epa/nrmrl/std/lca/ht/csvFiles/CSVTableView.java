@@ -1108,8 +1108,6 @@ public class CSVTableView extends ViewPart {
 
 	public static int countAssignedColumns() {
 		int colsAssigned = 0;
-		// for (int i =1;i<assignedCSVColumnInfo.length;i++) {
-		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[i];
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		CSVColumnInfo[] assignedCSVColumnInfo = tableProvider.getAssignedCSVColumnInfo();
 		for (CSVColumnInfo csvColumnInfo : assignedCSVColumnInfo) {

@@ -244,7 +244,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// return count;
 	// }
 
-	// public static int removeAllWithSubjectPredicate(Resource subject, Property predicate) {
+	// public static int removeAllWithSubjectPredicate(Resource subject,
+	// Property predicate) {
 	// int count = 0;
 	// List<Statement> statements = subject.listProperties(predicate).toList();
 	// for (Statement statement : statements) {
@@ -254,9 +255,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// return count;
 	// }
 
-	// public static int removeAllWithPredicateObject(Property predicate, RDFNode object) {
+	// public static int removeAllWithPredicateObject(Property predicate,
+	// RDFNode object) {
 	// int count = 0;
-	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(predicate, object);
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(predicate,
+	// object);
 	// while (resIterator.hasNext()) {
 	// Resource subject = resIterator.next();
 	// tdbModel.remove(subject, predicate, object);
@@ -304,12 +307,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
-		if (rdfDatatype.equals(XSDDatatype.XSDstring) && thingLiteral.equals("")) {
-			removeAllObjects(subject, predicate);
-		} else {
-			replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
+		removeAllObjects(subject, predicate);
+		if (thingLiteral == null) {
+			return;
 		}
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		System.out.println("rdfDatatype = "+rdfDatatype);
+		if (rdfDatatype.equals(XSDDatatype.XSDstring) && thingLiteral.equals("")) {
+			return;
+		}
+		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void replaceResource(Resource subject, Property predicate, Resource object) {
@@ -372,7 +379,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	public static void removeAllLikeObjects(Resource subject, Property predicate, RDFNode object) {
 		// FIXME
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---

@@ -3,7 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.SKOS;
 
@@ -15,16 +14,13 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Flowable {
 	private String name;
 	private String cas;
-	private boolean isEmission;
-	private boolean isResource;
+//	private boolean isEmission;
+//	private boolean isResource;
 	private List<String> synonyms = new ArrayList<String>();
 	private String formula;
 	private String smiles;
@@ -359,31 +355,31 @@ public class Flowable {
 		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
 	}
 
-	public boolean isEmission() {
-		return isEmission;
-	}
+//	public boolean isEmission() {
+//		return isEmission;
+//	}
+//
+//	public void setEmission(boolean isEmission) {
+//		this.isEmission = isEmission;
+//		if (isEmission) {
+//			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.EmissionCompartment);
+//		} else {
+//			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.EmissionCompartment);
+//		}
+//	}
 
-	public void setEmission(boolean isEmission) {
-		this.isEmission = isEmission;
-		if (isEmission) {
-			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.EmissionCompartment);
-		} else {
-			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.EmissionCompartment);
-		}
-	}
-
-	public boolean isResource() {
-		return isResource;
-	}
-
-	public void setResource(boolean isResource) {
-		this.isResource = isResource;
-		if (isResource) {
-			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-		} else {
-			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-		}
-	}
+//	public boolean isResource() {
+//		return isResource;
+//	}
+//
+//	public void setResource(boolean isResource) {
+//		this.isResource = isResource;
+//		if (isResource) {
+//			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+//		} else {
+//			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+//		}
+//	}
 
 	public String getFormula() {
 		return formula;

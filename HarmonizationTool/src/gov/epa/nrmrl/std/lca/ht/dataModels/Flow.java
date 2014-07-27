@@ -3,29 +3,19 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
-import harmonizationtool.vocabulary.FEDLCA;
 
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Flow {
 	private Flowable flowable;
 	private FlowContext flowContext;
 	private Resource tdbResource;
+	private static final Resource rdfClass = FASC.FlowAggregationCategory;
 
 	public Flow() {
-		this.tdbResource = ActiveTDB.createResource(FASC.FlowAggregationCategory);
+		this.tdbResource = ActiveTDB.createResource(rdfClass);
 	}
-
-//	public Flow(Flowable flowable, FlowContext flowContext) {
-//		this.flowable = flowable;
-//		this.flowContext = flowContext;
-//		this.tdbResource = ActiveTDB.tdbModel.createResource();
-//		this.tdbResource.addProperty(RDF.type, FASC.FlowAggregationCategory);
-//		this.tdbResource.addProperty(ECO.hasFlowable, this.flowable.getTdbResource());
-//		this.tdbResource.addProperty(FEDLCA.hasFlowContext, this.flowContext.getTdbResource());
-//		this.tdbResource.addProperty(FASC.hasCompartment, this.flowContext.getTdbResource());
-//	}
 
 	public Flowable getFlowable() {
 		return flowable;
@@ -51,5 +41,16 @@ public class Flow {
 
 	public void setTdbResource(Resource tdbResource) {
 		this.tdbResource = tdbResource;
+	}
+
+	public void remove() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			tdbResource.removeProperties();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 }

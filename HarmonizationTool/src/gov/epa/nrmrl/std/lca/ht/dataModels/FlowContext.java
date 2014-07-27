@@ -2,35 +2,21 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.SKOS;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
 
 	private String primaryFlowContext;
 	private List<String> supplementaryFlowContexts;
-	private Resource tdbResource;
-
 	private static final Resource rdfClass = FASC.Compartment;
-
-	// private static final Resource rdfClass = FEDLCA.FlowContext;
+	private Resource tdbResource;
 
 	public FlowContext() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
@@ -127,5 +113,4 @@ public class FlowContext {
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
-
 }

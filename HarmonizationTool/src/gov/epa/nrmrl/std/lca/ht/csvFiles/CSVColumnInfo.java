@@ -18,50 +18,59 @@ public class CSVColumnInfo {
 	private boolean leftJustified = true;
 	private List<QACheck> checkLists;
 	private List<Issue> issues = new ArrayList<Issue>();
-	private Resource rdfClass;
+	protected Resource rdfClass;
 	private Property tdbProperty;
 	private RDFDatatype rdfDatatype;
+	private int csvTableViewColumnNumber;
+
 	// THE ASSUMPTION HERE IS:
-	// 1) EACH CSVColumnInfo REPRESENTS AN ATTRIBUTE OF A THING WHOSE CLASS IS rdfClass;
+	// 1) EACH CSVColumnInfo REPRESENTS AN ATTRIBUTE OF A THING WHOSE CLASS IS
+	// rdfClass;
 	// 2) THAT THING HAS AN ATTRIBUTE DEFINED BY THE FIELD VALUE
 	// SO THE FOLLOW TWO TRIPES ARE TRUE:
-	// a)   ?thing a rdfClass .
-	// b)   ?thing tdbProperty [fieldValue (CONVERTED TO A TYPED LITERAL OF TYPE rdfDatatype)]
-	
+	// a) ?thing a rdfClass .
+	// b) ?thing tdbProperty [fieldValue (CONVERTED TO A TYPED LITERAL OF TYPE
+	// rdfDatatype)]
+
 	public CSVColumnInfo() {
 
 	}
 
-	// public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean
+	// public CSVColumnInfo(String headerString, boolean isRequired, boolean
+	// isUnique, boolean
 	// leftJustified,
-	// List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField) {
-//	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue> issues) {
-//		super();
-//		this.headerString = headerString;
-//		this.isRequired = isRequired;
-//		this.isUnique = isUnique;
-//		this.leftJustified = leftJustified;
-//		this.checkLists = checkLists;
-//		this.issues = issues;
-//		// this.setLcaDataField(lcaDataField);
-//	}
+	// List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField)
+	// {
+	// public CSVColumnInfo(String headerString, boolean isRequired, boolean
+	// isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue>
+	// issues) {
+	// super();
+	// this.headerString = headerString;
+	// this.isRequired = isRequired;
+	// this.isUnique = isUnique;
+	// this.leftJustified = leftJustified;
+	// this.checkLists = checkLists;
+	// this.issues = issues;
+	// // this.setLcaDataField(lcaDataField);
+	// }
 
 	public CSVColumnInfo(String headerString) {
 		this.headerString = headerString;
-//		this.isRequired = false;
-//		this.isUnique = false;
+		// this.isRequired = false;
+		// this.isUnique = false;
 		// this.checkLists = null;
 	}
 
-//	public CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique, List<QACheck> checkLists) {
-//		this.headerString = headerString;
-//		this.isRequired = isRequired;
-//		this.isUnique = isUnique;
-//		this.checkLists = checkLists;
-//	}
+	// public CSVColumnInfo(String headerString, boolean isRequired, boolean
+	// isUnique, List<QACheck> checkLists) {
+	// this.headerString = headerString;
+	// this.isRequired = isRequired;
+	// this.isUnique = isUnique;
+	// this.checkLists = checkLists;
+	// }
 
 	public CSVColumnInfo(CSVColumnInfo menuCSVColumnInfo) {
-//		CSVColumnInfo newCSVColumnInfo = new CSVColumnInfo();
+		// CSVColumnInfo newCSVColumnInfo = new CSVColumnInfo();
 		this.headerString = menuCSVColumnInfo.getHeaderString();
 		this.isRequired = menuCSVColumnInfo.isRequired();
 		this.isUnique = menuCSVColumnInfo.isUnique();
@@ -187,6 +196,34 @@ public class CSVColumnInfo {
 
 	public void setRdfDatatype(RDFDatatype rdfDatatype) {
 		this.rdfDatatype = rdfDatatype;
+	}
+
+	public int getCsvTableViewColumnNumber() {
+		return csvTableViewColumnNumber;
+	}
+
+	public void setCsvTableViewColumnNumber(int csvTableViewColumnNumber) {
+		this.csvTableViewColumnNumber = csvTableViewColumnNumber;
+	}
+
+	public boolean sameRDFClassAs(CSVColumnInfo toCompare) {
+		if (toCompare == null) {
+			return false;
+		}
+		if (toCompare.getRDFClass().equals(rdfClass)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean sameRDFClassAs(Resource rdfClass2) {
+		if (rdfClass2 == null) {
+			return false;
+		}
+		if (rdfClass2.equals(rdfClass)) {
+			return true;
+		}
+		return false;
 	}
 
 	// public LCADataField getLcaDataField() {

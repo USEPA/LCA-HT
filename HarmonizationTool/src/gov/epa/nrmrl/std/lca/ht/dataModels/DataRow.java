@@ -53,7 +53,17 @@ public class DataRow {
 	// }
 
 	public String get(int index) {
+		if (index < 0 || index >= columnValues.size()) {
+			return null;
+		}
 		return columnValues.get(index);
+	}
+
+	public String getCSVTableIndex(int i) {
+		if (i < 1 || i > columnValues.size()) {
+			return null;
+		}
+		return columnValues.get(i - 1);
 	}
 
 	// public String getToolTipValue(int index) {
@@ -108,4 +118,5 @@ public class DataRow {
 	public void setRowNumber(int rowNumber) {
 		this.rowNumber = rowNumber;
 	}
+
 }
