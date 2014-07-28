@@ -31,8 +31,12 @@ public class Person {
 	}
 
 	public String getName() {
+		return name;
+	}
+
+	public String getNameString() {
 		if (name == null) {
-			name = "";
+			return "";
 		}
 		return name;
 	}
@@ -43,8 +47,12 @@ public class Person {
 	}
 
 	public String getAffiliation() {
+		return affiliation;
+	}
+
+	public String getAffiliationString() {
 		if (affiliation == null) {
-			affiliation = "";
+			return "";
 		}
 		return affiliation;
 	}
@@ -55,8 +63,12 @@ public class Person {
 	}
 
 	public String getEmail() {
+		return email;
+	}
+
+	public String getEmailString() {
 		if (email == null) {
-			email = "";
+			return "";
 		}
 		return email;
 	}
@@ -67,8 +79,12 @@ public class Person {
 	}
 
 	public String getPhone() {
+		return phone;
+	}
+
+	public String getPhoneString() {
 		if (phone == null) {
-			phone = "";
+			return "";
 		}
 		return phone;
 	}
@@ -79,23 +95,39 @@ public class Person {
 	}
 
 	public void syncDataFromTDB() {
-		RDFNode resource;
+		RDFNode rdfNode;
 
 		if (tdbResource == null) {
 			return;
 		}
 
-		resource = tdbResource.getProperty(FEDLCA.personName).getObject();
-		name = ActiveTDB.getStringFromLiteral(resource);
+		if (tdbResource.hasProperty(FEDLCA.personName)) {
+			rdfNode = tdbResource.getProperty(FEDLCA.personName).getObject();
+			if (rdfNode != null) {
+				name = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
 
-		resource = tdbResource.getProperty(FEDLCA.affiliation).getObject();
-		affiliation = ActiveTDB.getStringFromLiteral(resource);
+		if (tdbResource.hasProperty(FEDLCA.affiliation)) {
+			rdfNode = tdbResource.getProperty(FEDLCA.affiliation).getObject();
+			if (rdfNode != null) {
+				affiliation = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
 
-		resource = tdbResource.getProperty(FEDLCA.email).getObject();
-		email = ActiveTDB.getStringFromLiteral(resource);
+		if (tdbResource.hasProperty(FEDLCA.email)) {
+			rdfNode = tdbResource.getProperty(FEDLCA.email).getObject();
+			if (rdfNode != null) {
+				email = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
 
-		resource = tdbResource.getProperty(FEDLCA.voicePhone).getObject();
-		phone = ActiveTDB.getStringFromLiteral(resource);
+		if (tdbResource.hasProperty(FEDLCA.voicePhone)) {
+			rdfNode = tdbResource.getProperty(FEDLCA.voicePhone).getObject();
+			if (rdfNode != null) {
+				phone = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
 	}
 
 	public void remove() {

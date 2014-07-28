@@ -474,15 +474,23 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	SelectionListener concludeFileListener = new SelectionListener() {
-		// TODO - GRACEFUL CLOSING OF CSV
+		private void doit(SelectionEvent e) {
+			CSVTableView.reset();
+			btnLoadCSV.setEnabled(true);
+			btnCheckData.setEnabled(false);
+			btnAutoMatch.setEnabled(false);
+			btnCSV2TDB.setEnabled(false);
+			btnConcludeFile.setEnabled(false);
+		}
+
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			// CSVTableView.matchFlowables();
+			doit(e);
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			// CSVTableView.matchFlowables();
+			doit(e);
 		}
 	};
 
@@ -646,7 +654,6 @@ public class FlowsWorkflow extends ViewPart {
 	// flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
 	// } else if (headerName.equals("Context (additional)")) {
 	// flowContext.addSupplementaryFlowContext(dataRow.get(colNumber - 1));
-	// }
 	// }
 	// }
 	// // if (flowable.fidMatches > 0)

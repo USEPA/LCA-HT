@@ -3,20 +3,13 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 //import java.util.Calendar;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.utils.FileEncodingUtil;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.LCAHT;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class FileMD {
 	private String filename;
@@ -41,7 +34,8 @@ public class FileMD {
 		syncDataFromTDB();
 	}
 
-	// public FileMD(String filename, String path, long size, Date modifiedDate, Date readDate) {
+	// public FileMD(String filename, String path, long size, Date modifiedDate,
+	// Date readDate) {
 	// super();
 	// setFilename(filename);
 	// setPath(path);
@@ -52,6 +46,13 @@ public class FileMD {
 	// }
 
 	public String getFilename() {
+		return filename;
+	}
+
+	public String getFilenameString() {
+		if (filename == null) {
+			return "";
+		}
 		return filename;
 	}
 
@@ -69,6 +70,13 @@ public class FileMD {
 	}
 
 	public String getPath() {
+		return path;
+	}
+
+	public String getPathString() {
+		if (path == null) {
+			return "";
+		}
 		return path;
 	}
 
@@ -171,7 +179,8 @@ public class FileMD {
 	}
 
 	public void setTdbResource(Resource tdbResource) {
-		// assert this.tdbResource == null : "Why and how would you change the tdbResource (blank node) for a file?";
+		// assert this.tdbResource == null :
+		// "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
 		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
 		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
@@ -189,30 +198,40 @@ public class FileMD {
 		if (tdbResource == null) {
 			return;
 		}
-		rdfNode = tdbResource.getProperty(LCAHT.fileName).getObject();
-		if (rdfNode != null) {
-			filename = ActiveTDB.getStringFromLiteral(rdfNode);
+
+		if (tdbResource.hasProperty(LCAHT.fileName)) {
+			rdfNode = tdbResource.getProperty(LCAHT.fileName).getObject();
+			if (rdfNode != null) {
+				filename = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
 		}
 
-		rdfNode = tdbResource.getProperty(LCAHT.filePath).getObject();
-		if (rdfNode != null) {
-			path = ActiveTDB.getStringFromLiteral(rdfNode);
+		if (tdbResource.hasProperty(LCAHT.filePath)) {
+			rdfNode = tdbResource.getProperty(LCAHT.filePath).getObject();
+			if (rdfNode != null) {
+				path = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
+		if (tdbResource.hasProperty(LCAHT.byteCount)) {
+			rdfNode = tdbResource.getProperty(LCAHT.byteCount).getObject();
+			if (rdfNode != null) {
+				byteCount = rdfNode.asLiteral().getLong();
+			}
 		}
 
-		// rdfNode = tdbResource.getProperty(LCAHT.fileEncoding).getObject();
-		// if (rdfNode != null) {
-		// encoding = ActiveTDB.getStringFromLiteral(rdfNode);
-		// }
-		// System.out.println("sync line: 5");
+		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
+			rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
+			if (rdfNode != null) {
+				modifiedDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+			}
+		}
 
-		rdfNode = tdbResource.getProperty(LCAHT.byteCount).getObject();
-		byteCount = rdfNode.asLiteral().getLong();
-
-		rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
-		modifiedDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
-
-		rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
-		readDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
+			rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
+			if (rdfNode != null) {
+				readDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+			}
+		}
 
 		System.out.println("sync line: 8");
 	}

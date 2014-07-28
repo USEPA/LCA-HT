@@ -131,7 +131,7 @@ public class DataSourceKeeper {
 		Iterator<DataSourceProvider> iterator = dataSourceProviderList.iterator();
 		while (iterator.hasNext()) {
 			DataSourceProvider dataSourceProvider = (DataSourceProvider) iterator.next();
-			if (dataSourceProvider.getDataSourceName().equals(name)) {
+			if (dataSourceProvider.getDataSourceNameString().equals(name)) {
 				return DataSourceKeeper.indexOf(dataSourceProvider);
 			}
 		}

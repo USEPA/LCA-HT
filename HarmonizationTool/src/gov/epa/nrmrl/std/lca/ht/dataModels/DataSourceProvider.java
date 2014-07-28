@@ -33,7 +33,7 @@ public class DataSourceProvider {
 	public DataSourceProvider() {
 		this.tdbResource = ActiveTDB.createResource(rdfClass);
 		boolean success = DataSourceKeeper.add(this);
-		System.out.println("Success: "+success+" with this.dataSourceName");
+		System.out.println("Success: " + success + " with this.dataSourceName");
 		DataSourceKeeper.add(this);
 	}
 
@@ -83,8 +83,10 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 
 		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-			// ActiveTDB.addAnything(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-			// THE ABOVE SHOULD BE ADDED: TO SAFELY ADD A TRIPLE WHETHER THE OBJECT IS AN RDFNode, A Literal, OR AN
+			// ActiveTDB.addAnything(tdbResource, LCAHT.containsFile,
+			// fileMD.getTdbResource());
+			// THE ABOVE SHOULD BE ADDED: TO SAFELY ADD A TRIPLE WHETHER THE
+			// OBJECT IS AN RDFNode, A Literal, OR AN
 			// OBJECT (TO BE TYPED)
 
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
@@ -138,13 +140,15 @@ public class DataSourceProvider {
 	}
 
 	public void remove(FileMD fileMD) {
-		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER DATASOURCE HAS THIS FILE
+		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER
+		// DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
 		ActiveTDB.removeStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 	}
 
 	public void removeFileMDList() {
-		// for (FileMD fileMD : fileMDList) { -- BETTER NOT REMOVE THIS IN CASE SOME OTHER DATASOURCE HAS THIS FILE
+		// for (FileMD fileMD : fileMDList) { -- BETTER NOT REMOVE THIS IN CASE
+		// SOME OTHER DATASOURCE HAS THIS FILE
 		// fileMD.remove();
 		// }
 		fileMDList = null;
@@ -169,7 +173,11 @@ public class DataSourceProvider {
 	}
 
 	public String getDataSourceName() {
-		if (dataSourceName == null){
+		return dataSourceName;
+	}
+	
+	public String getDataSourceNameString() {
+		if (dataSourceName == null) {
 			return "<NO ASSIGNED NAME>";
 		}
 		return dataSourceName;
@@ -183,6 +191,13 @@ public class DataSourceProvider {
 	public String getVersion() {
 		return version;
 	}
+	
+	public String getVersionString() {
+		if (version == null){
+			return "";
+		}
+		return version;
+	}
 
 	public void setVersion(String version) {
 		this.version = version;
@@ -190,6 +205,13 @@ public class DataSourceProvider {
 	}
 
 	public String getComments() {
+		return comments;
+	}
+	
+	public String getCommentsString() {
+		if (comments == null){
+			return "";
+		}
 		return comments;
 	}
 
@@ -200,33 +222,38 @@ public class DataSourceProvider {
 
 	public void syncFromTDB() {
 		RDFNode rdfNode;
-		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
 
-		if (rdfNode == null) {
+		if (tdbResource.hasProperty(RDFS.label)) {
+			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+			if (rdfNode == null) {
+				dataSourceName = DataSourceKeeper.uniquify("unkownName");
+			} else {
+				dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+
+		} else {
 			dataSourceName = DataSourceKeeper.uniquify("unkownName");
-		} else {
-			dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
+			ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
 		}
 
-		rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
-		if (rdfNode == null) {
-			version = "";
-		} else {
-			version = ActiveTDB.getStringFromLiteral(rdfNode);
+		if (tdbResource.hasProperty(DCTerms.hasVersion)) {
+			rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
+			if (rdfNode != null) {
+				version = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
 		}
 
-		rdfNode = tdbResource.getProperty(RDFS.comment).getObject();
-		if (rdfNode == null) {
-			comments = "";
-		} else {
-			comments = ActiveTDB.getStringFromLiteral(rdfNode);
+		if (tdbResource.hasProperty(RDFS.comment)) {
+			rdfNode = tdbResource.getProperty(RDFS.comment).getObject();
+			if (rdfNode != null) {
+				comments = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
 		}
-
-		rdfNode = tdbResource.getProperty(FEDLCA.hasContactPerson).getObject();
-		if (rdfNode == null) {
-			contactPerson = null;
-		} else {
-			contactPerson = new Person(rdfNode.asResource());
+		if (tdbResource.hasProperty(FEDLCA.hasContactPerson)) {
+			rdfNode = tdbResource.getProperty(FEDLCA.hasContactPerson).getObject();
+			if (rdfNode != null) {
+				contactPerson = new Person(rdfNode.asResource());
+			}
 		}
 
 		StmtIterator stmtIterator = tdbResource.listProperties(LCAHT.containsFile);

@@ -77,8 +77,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;	
 		this.curDataSourceProvider = new DataSourceProvider();
-		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilename().substring(0,
-				fileMD.getFilename().length() - 4)));
+		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilenameString().substring(0,
+				fileMD.getFilenameString().length() - 4)));
 		this.curDataSourceProvider.addFileMD(this.callingFileMD);
 		this.newDataSourceProvider = curDataSourceProvider;
 		runLogger.info("SET META start - new file");
@@ -258,8 +258,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	protected void redrawDialogDataSourceMD() {
-		dialogValues[0].setText(curDataSourceProvider.getVersion());
-		dialogValues[1].setText(curDataSourceProvider.getComments());
+		dialogValues[0].setText(curDataSourceProvider.getVersionString());
+		dialogValues[1].setText(curDataSourceProvider.getCommentsString());
 
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		if (contactPerson == null) {
@@ -270,10 +270,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 			dialogValues[4].setText("");
 			dialogValues[5].setText("");
 		} else {
-			dialogValues[2].setText(contactPerson.getName());
-			dialogValues[3].setText(contactPerson.getAffiliation());
-			dialogValues[4].setText(contactPerson.getEmail());
-			dialogValues[5].setText(contactPerson.getPhone());
+			dialogValues[2].setText(contactPerson.getNameString());
+			dialogValues[3].setText(contactPerson.getAffiliationString());
+			dialogValues[4].setText(contactPerson.getEmailString());
+			dialogValues[5].setText(contactPerson.getPhoneString());
 		}
 	}
 
@@ -339,12 +339,12 @@ public class MetaDataDialog extends TitleAreaDialog {
 		contactPerson.setEmail(dialogValues[4].getText());
 		contactPerson.setPhone(dialogValues[5].getText());
 		runLogger.info("  SET META: name = " + dataSourceName);
-		runLogger.info("  SET META: version = " + curDataSourceProvider.getVersion());
-		runLogger.info("  SET META: comments = \"" + Util.escape(curDataSourceProvider.getComments()) + "\"");
-		runLogger.info("  SET META: contactName = " + contactPerson.getName());
-		runLogger.info("  SET META: contactAffiliation = " + contactPerson.getAffiliation());
-		runLogger.info("  SET META: contactEmail = " + contactPerson.getEmail());
-		runLogger.info("  SET META: contactPhone = " + contactPerson.getPhone());
+		runLogger.info("  SET META: version = " + curDataSourceProvider.getVersionString());
+		runLogger.info("  SET META: comments = \"" + Util.escape(curDataSourceProvider.getCommentsString()) + "\"");
+		runLogger.info("  SET META: contactName = " + contactPerson.getNameString());
+		runLogger.info("  SET META: contactAffiliation = " + contactPerson.getAffiliationString());
+		runLogger.info("  SET META: contactEmail = " + contactPerson.getEmailString());
+		runLogger.info("  SET META: contactPhone = " + contactPerson.getPhoneString());
 		runLogger.info("SET META complete");
 
 		super.okPressed();
