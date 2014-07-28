@@ -394,7 +394,6 @@ public class FlowsWorkflow extends ViewPart {
 				textIssues.setText("Assign at least one column first)");
 				btnAutoMatch.setEnabled(false);
 				btnCSV2TDB.setEnabled(false);
-
 			} else {
 				int issueCount = CSVTableView.checkCols();
 				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
@@ -500,6 +499,8 @@ public class FlowsWorkflow extends ViewPart {
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
 		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
 		// Model model = ActiveTDB.tdbModel;
+		
+		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 				.getDataSourceProvider();
@@ -528,6 +529,9 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
+			if (rowsToIgnore.contains(rowNumber)){
+				continue;
+			}
 			Flowable flowable = null;
 			FlowContext flowContext = null;
 			int rowNumberPlusOne = rowNumber + 1;

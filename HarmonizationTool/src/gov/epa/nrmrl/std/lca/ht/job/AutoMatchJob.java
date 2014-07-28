@@ -93,6 +93,10 @@ public class AutoMatchJob extends Job {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
 		// NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
 		for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
+			List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
+			if (rowsToIgnore.contains(rowNumber)){
+				continue;
+			}
 			List<MatchCandidate> rowMatchCandidates = new ArrayList<MatchCandidate>();
 
 			// System.out.println("About to check row: "+rowNumber);

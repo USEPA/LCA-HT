@@ -387,7 +387,7 @@ public class View extends ViewPart {
 						if (csvRow % 10000 == 0) {
 							System.out.println("Finished reading data file row: " + csvRow);
 						}
-						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.getRowsToIgnore().contains(csvRow)) {
 							csvRow++;
 							continue;
 						}
@@ -634,7 +634,7 @@ public class View extends ViewPart {
 						if (csvRow % 10000 == 0) {
 							System.out.println("Finished reading data file row: " + csvRow);
 						}
-						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.getRowsToIgnore().contains(csvRow)) {
 							csvRow++;
 							continue;
 						}
@@ -895,7 +895,7 @@ public class View extends ViewPart {
 						if (csvRow % 10000 == 0) {
 							System.out.println("Finished reading data file row: " + csvRow);
 						}
-						if (CSVTableView.rowsToIgnore.contains(csvRow)) {
+						if (CSVTableView.getRowsToIgnore().contains(csvRow)) {
 							csvRow++;
 							continue;
 						}

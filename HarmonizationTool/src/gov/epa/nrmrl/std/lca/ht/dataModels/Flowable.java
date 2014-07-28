@@ -19,8 +19,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Flowable {
 	private String name;
 	private String cas;
-//	private boolean isEmission;
-//	private boolean isResource;
+	// private boolean isEmission;
+	// private boolean isResource;
 	private List<String> synonyms = new ArrayList<String>();
 	private String formula;
 	private String smiles;
@@ -45,17 +45,20 @@ public class Flowable {
 		if (tdbResource == null) {
 			return;
 		}
+		if (tdbResource.hasProperty(RDFS.label)) {
+			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+			if (rdfNode != null) {
+				name = ActiveTDB.getStringFromLiteral(rdfNode);
+			}
+		}
 
-		rdfNode = tdbResource.getProperty(RDFS.label).getObject();
-		name = ActiveTDB.getStringFromLiteral(rdfNode);
-
-//		StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
-//		while (stmtIterator.hasNext()) {
-//			Statement statement = stmtIterator.next();
-//			rdfNode = statement.getObject();
-//			String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
-//			addSynonym(synonym);
-//		}
+		// StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
+		// while (stmtIterator.hasNext()) {
+		// Statement statement = stmtIterator.next();
+		// rdfNode = statement.getObject();
+		// String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
+		// addSynonym(synonym);
+		// }
 		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
 	}
 
@@ -82,8 +85,8 @@ public class Flowable {
 		referenceFlowable.syncDataFromTDB();
 		return compareFlowables(queryFlowable, referenceFlowable);
 	}
-	
-	public List<Flowable> findMatchingFlowables(Flowable flowable){
+
+	public List<Flowable> findMatchingFlowables(Flowable flowable) {
 		List<Flowable> hits = new ArrayList<Flowable>();
 		return hits;
 	}
@@ -100,7 +103,7 @@ public class Flowable {
 		String rCas = referenceFlowable.getCas();
 		if (qCas == null || rCas == null) {
 			casFlag = 0;
-		} else 		if (qCas.equals("") || rCas.equals("")) {
+		} else if (qCas.equals("") || rCas.equals("")) {
 			casFlag = 0;
 		} else if (qCas.equals(rCas)) {
 			casFlag = 1;
@@ -111,21 +114,18 @@ public class Flowable {
 		String rName = referenceFlowable.getName();
 		if (qName == null || rName == null) {
 			nameFlag = 0;
-		} else 		if (qName.equals("") || rName.equals("")) {
+		} else if (qName.equals("") || rName.equals("")) {
 			nameFlag = 0;
 		} else if (qName.equals(rName)) {
 			nameFlag = 1;
 		}
-		if (casFlag == 1 && nameFlag == 1){
+		if (casFlag == 1 && nameFlag == 1) {
 			flag = "++";
-		}
-		else if (casFlag == 1 && nameFlag == -1){
+		} else if (casFlag == 1 && nameFlag == -1) {
 			flag = "-+";
-		}
-		else if (casFlag == 0 && nameFlag == 1){
+		} else if (casFlag == 0 && nameFlag == 1) {
 			flag = "+0";
-		}
-		else if (casFlag == -1 && nameFlag == 1){
+		} else if (casFlag == -1 && nameFlag == 1) {
 			flag = "+-";
 		}
 		return flag;
@@ -355,31 +355,31 @@ public class Flowable {
 		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
 	}
 
-//	public boolean isEmission() {
-//		return isEmission;
-//	}
-//
-//	public void setEmission(boolean isEmission) {
-//		this.isEmission = isEmission;
-//		if (isEmission) {
-//			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.EmissionCompartment);
-//		} else {
-//			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.EmissionCompartment);
-//		}
-//	}
+	// public boolean isEmission() {
+	// return isEmission;
+	// }
+	//
+	// public void setEmission(boolean isEmission) {
+	// this.isEmission = isEmission;
+	// if (isEmission) {
+	// ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.EmissionCompartment);
+	// } else {
+	// ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.EmissionCompartment);
+	// }
+	// }
 
-//	public boolean isResource() {
-//		return isResource;
-//	}
-//
-//	public void setResource(boolean isResource) {
-//		this.isResource = isResource;
-//		if (isResource) {
-//			ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-//		} else {
-//			ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-//		}
-//	}
+	// public boolean isResource() {
+	// return isResource;
+	// }
+	//
+	// public void setResource(boolean isResource) {
+	// this.isResource = isResource;
+	// if (isResource) {
+	// ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+	// } else {
+	// ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
+	// }
+	// }
 
 	public String getFormula() {
 		return formula;

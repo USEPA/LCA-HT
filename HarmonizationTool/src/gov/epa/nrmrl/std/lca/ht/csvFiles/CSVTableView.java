@@ -74,7 +74,11 @@ public class CSVTableView extends ViewPart {
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
 
-	public static List<Integer> rowsToIgnore = new ArrayList<Integer>();
+	private static List<Integer> rowsToIgnore = new ArrayList<Integer>();
+
+	public static List<Integer> getRowsToIgnore() {
+		return rowsToIgnore;
+	}
 
 	public CSVTableView() {
 	}
@@ -131,13 +135,13 @@ public class CSVTableView extends ViewPart {
 			hoverRow = table.indexOf(item);
 
 			hoverCol = getTableColumnNumFromPoint(hoverRow, ptClick);
-			int dataHoverCol = hoverCol - 1;
+//			int dataHoverCol = hoverCol - 1;
 			if (hoverCol < 0) {
 				return;
 			}
 			if (hoverCol > 0) {
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataHoverCol];
+				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[hoverCol];
 
 				if (csvColumnInfo == null) {
 					return;
@@ -226,7 +230,7 @@ public class CSVTableView extends ViewPart {
 			}
 			clickedRow = table.indexOf(item);
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			int dataClickedCol = clickedCol - 1;
+//			int dataClickedCol = clickedCol - 1;
 			if (clickedCol < 0) {
 				return;
 			}
@@ -240,10 +244,10 @@ public class CSVTableView extends ViewPart {
 				// CSVColumnInfo csvColumnInfo =
 				// tableProvider.getAssignedCSVColumnInfo()[clickedCol];
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataClickedCol];
+				CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[clickedCol];
 				Issue issueOfThisCell = null;
 				for (Issue issue : csvColumnInfo.getIssues()) {
-					if (issue.getRowNumber() == dataClickedCol) {
+					if (issue.getRowNumber() == clickedCol) {
 						issueOfThisCell = issue;
 						break;
 					}
@@ -332,12 +336,12 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void fixCurrentlySelectedCell() {
-		int dataColNumSelected = colNumSelected - 1;
+//		int dataColNumSelected = colNumSelected - 1;
 		if (colNumSelected == 0) {
 			return;
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected];
+		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
 		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumSelected];
 		if (csvColumnInfo == null) {
 			return;
@@ -353,7 +357,7 @@ public class CSVTableView extends ViewPart {
 					tableItem.setText(colNumSelected, fixedValue);
 					// TableProvider tableProvider =
 					// TableKeeper.getTableProvider(tableProviderKey);
-					tableProvider.getData().get(rowNumSelected).set(dataColNumSelected, fixedValue);
+					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
 				}
@@ -470,12 +474,12 @@ public class CSVTableView extends ViewPart {
 	private static class StandardizeAllCASListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-			int dataColNumSelected = colNumSelected - 1;
+//			int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				return;
 			}
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-			CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected];
+			CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
 			if (csvColumnInfo == null) {
 				return;
 			}
@@ -492,7 +496,7 @@ public class CSVTableView extends ViewPart {
 
 					List<DataRow> dataRowList = tableProvider.getData();
 					DataRow toFix = dataRowList.get(i);
-					toFix.set(dataColNumSelected, fixedValue);
+					toFix.set(colNumSelected, fixedValue);
 					item.setText(colNumSelected, fixedValue);
 				}
 			}
@@ -503,12 +507,12 @@ public class CSVTableView extends ViewPart {
 	private static class AutoResolveColumnListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-			int dataColNumSelected = colNumSelected - 1;
+//			int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				return;
 			}
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-			CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected];
+			CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
 			if (csvColumnInfo == null) {
 				return;
 			}
@@ -534,7 +538,7 @@ public class CSVTableView extends ViewPart {
 				System.out.println("What's going on here?");
 				return;
 			}
-			int dataColNumSelected = colNumSelected - 1;
+//			int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				// MAY HANDLE THIS AT SOME POINT
 				System.out.println("Clicked on col. zero.  How did this fire?");
@@ -544,7 +548,7 @@ public class CSVTableView extends ViewPart {
 			String menuItemText = menuItem.getText();
 			System.out.println("menu text = " + menuItemText);
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-			CSVColumnInfo selectedCSVColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected];
+			CSVColumnInfo selectedCSVColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
 			// CSVColumnInfo selectedCSVColumnInfo =
 			// assignedCSVColumnInfo[colNumSelected];
 			CSVColumnInfo menuCSVColumnInfo = getCSVColumnInfoByHeaderString(menuItemText);
@@ -562,7 +566,7 @@ public class CSVTableView extends ViewPart {
 				selectedCSVColumnInfo = null;
 				table.getColumn(colNumSelected).setText(csvColumnDefaultColumnHeader);
 				table.getColumn(colNumSelected).setToolTipText(csvColumnDefaultTooltip);
-				tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected] = null;
+				tableProvider.getAssignedCSVColumnInfo()[colNumSelected] = null;
 				selectedCSVColumnInfo = null;
 			} else {
 				// THIS IS A COLUMN ASSIGNMENT
@@ -586,7 +590,7 @@ public class CSVTableView extends ViewPart {
 					} else {
 						table.getColumn(colNumSelected).setAlignment(SWT.RIGHT);
 					}
-					tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected] = selectedCSVColumnInfo;
+					tableProvider.getAssignedCSVColumnInfo()[colNumSelected] = selectedCSVColumnInfo;
 					table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
 					table.getColumn(colNumSelected).setToolTipText("assigned");
 					return;
@@ -619,7 +623,7 @@ public class CSVTableView extends ViewPart {
 				}
 				table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
 				table.getColumn(colNumSelected).setToolTipText("assigned");
-				tableProvider.getAssignedCSVColumnInfo()[dataColNumSelected] = null;
+				tableProvider.getAssignedCSVColumnInfo()[colNumSelected] = null;
 			}
 		}
 	}
@@ -688,10 +692,10 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
-		private int myColNum;
+		private int dataColumnNumber;
 
 		public MyColumnLabelProvider(int colNum) {
-			this.myColNum = colNum;
+			this.dataColumnNumber = colNum - 1;
 		}
 
 		@Override
@@ -706,8 +710,8 @@ public class CSVTableView extends ViewPart {
 			String s = "";
 			try {
 				int size = dataRow.getColumnValues().size();
-				if (myColNum <= size) {
-					s = dataRow.getColumnValues().get(myColNum - 1);
+				if (dataColumnNumber < size) {
+					s = dataRow.getColumnValues().get(dataColumnNumber);
 				}
 			} catch (Exception e) {
 				System.out.println("dataRow=" + dataRow);
@@ -841,6 +845,11 @@ public class CSVTableView extends ViewPart {
 	public static void reset() {
 		tableViewer.setInput(null);
 		removeColumns();
+		// initializeTableViewer(composite);
+		initializeTable();
+		// initializePopup(composite);
+		initializeIgnoreRowMenu();
+		initializeFixRowMenu();
 	}
 
 	private static void removeColumns() {
@@ -891,8 +900,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void fixOneIssue(Issue issue) {
-		int dataColNumber = issue.getColNumber();
-		int colNumber = dataColNumber + 1;
+		int colNumber = issue.getColNumber();
+//		int colNumber = dataColNumber + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		String startingText = tableItem.getText(colNumber);
 		System.out.println("trying to fix: " + startingText);
@@ -944,13 +953,12 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static int checkOneColumn(int colIndex) {
-		int dataColIndex = colIndex - 1;
 		if (colIndex == 0) {
 			return 0;
 		}
 		int issueCount = 0;
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColIndex];
+		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colIndex];
 		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 		if (csvColumnInfo == null) {
 			table.getColumn(colIndex).setToolTipText(csvColumnDefaultTooltip);
@@ -969,20 +977,20 @@ public class CSVTableView extends ViewPart {
 
 				if (qaCheck.isPatternMustMatch()) {
 					if (!matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, dataColIndex, 0, Status.WARNING);
+						Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.WARNING);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
 						Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
-						Logger.getLogger("run").warn("  ->Column " + dataColIndex);
+						Logger.getLogger("run").warn("  ->Column " + colIndex);
 						Logger.getLogger("run").warn("  ->Required pattern not found");
 						assignIssue(issue);
 						csvColumnInfo.addIssue(issue);
 					}
 				} else {
 					while (matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, dataColIndex, matcher.end(), Status.WARNING);
+						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
 						Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
-						Logger.getLogger("run").warn("  ->Column" + dataColIndex);
+						Logger.getLogger("run").warn("  ->Column" + colIndex);
 						Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
 						assignIssue(issue);
 						csvColumnInfo.addIssue(issue);
@@ -998,19 +1006,19 @@ public class CSVTableView extends ViewPart {
 	public static int checkCols() {
 		int totalIssueCount = 0;
 		int colCount = TableKeeper.getTableProvider(tableProviderKey).getColumnCount();
-		for (int colIndex = 1; colIndex < colCount; colIndex++) {
+		for (int colIndex = 1; colIndex <= colCount; colIndex++) {
 			totalIssueCount += checkOneColumn(colIndex);
 		}
 		return totalIssueCount;
 	}
 
 	public static int autoFixColumn(int colIndex) {
-		int dataColIndex = colIndex - 1;
+//		int dataColIndex = colIndex - 1;
 		if (colIndex == 0) {
 			return 0;
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[dataColIndex];
+		CSVColumnInfo csvColumnInfo = tableProvider.getAssignedCSVColumnInfo()[colIndex];
 		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
 		if (csvColumnInfo == null) {
 			return 0;
@@ -1064,8 +1072,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void colorCell(Issue issue) {
-		int dataColIndex = issue.getColNumber();
-		int colIndex = dataColIndex + 1;
+		int colIndex = issue.getColNumber();
+//		int colIndex = dataColIndex + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		tableItem.setBackground(colIndex, issue.getStatus().getColor());
 	}
