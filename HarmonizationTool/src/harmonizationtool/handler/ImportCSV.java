@@ -147,6 +147,7 @@ public class ImportCSV implements IHandler {
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
+		System.out.println("About to update CSVTableView");
 		CSVTableView.update(path);
 
 		return null;

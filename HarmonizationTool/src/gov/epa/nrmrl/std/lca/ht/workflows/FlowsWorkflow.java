@@ -474,12 +474,24 @@ public class FlowsWorkflow extends ViewPart {
 
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			CSVTableView.reset();
-			btnLoadCSV.setEnabled(true);
-			btnCheckData.setEnabled(false);
-			btnAutoMatch.setEnabled(false);
-			btnCSV2TDB.setEnabled(false);
-			btnConcludeFile.setEnabled(false);
+			if (btnConcludeFile.getText().equals("Close CSV")) {
+				CSVTableView.reset();
+				CSVTableView.initialize();
+				btnLoadCSV.setEnabled(true);
+				btnCheckData.setEnabled(false);
+				btnAutoMatch.setEnabled(false);
+				btnCSV2TDB.setEnabled(false);
+				btnConcludeFile.setEnabled(false);
+			} else if (btnConcludeFile.getText().equals("Cancel CSV")) {
+				// TODO - REMOVE THE FileMD
+				CSVTableView.reset();
+				CSVTableView.initialize();
+				btnLoadCSV.setEnabled(true);
+				btnCheckData.setEnabled(false);
+				btnAutoMatch.setEnabled(false);
+				btnCSV2TDB.setEnabled(false);
+				btnConcludeFile.setEnabled(false);
+			}
 		}
 
 		@Override
@@ -499,7 +511,7 @@ public class FlowsWorkflow extends ViewPart {
 		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
 		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
 		// Model model = ActiveTDB.tdbModel;
-		
+
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
@@ -529,7 +541,7 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
-			if (rowsToIgnore.contains(rowNumber)){
+			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
 			}
 			Flowable flowable = null;

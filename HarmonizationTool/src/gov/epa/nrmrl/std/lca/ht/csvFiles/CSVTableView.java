@@ -62,8 +62,8 @@ public class CSVTableView extends ViewPart {
 	private static List<CSVColumnInfo> availableCSVColumnInfo = new ArrayList<CSVColumnInfo>();
 	// REMEMBER THE OFFSET:
 
-	private static String csvColumnDefaultColumnHeader = "   -   ";
-	private static String csvColumnDefaultTooltip = "Ignore Column";
+	private static final String csvColumnDefaultColumnHeader = "   -   ";
+	private static final String csvColumnDefaultTooltip = "Ignore Column";
 	private static Menu headerMenu;
 	private static Menu columnActionsMenu;
 	private static Menu ignoreRowMenu;
@@ -87,11 +87,10 @@ public class CSVTableView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
+		
 		initializeTableViewer(composite);
-		initializeTable();
 		initializePopup(composite);
-		initializeIgnoreRowMenu();
-		initializeFixRowMenu();
+		initialize();
 
 		parent.addListener(SWT.Resize, new Listener() {
 			@Override
@@ -107,6 +106,7 @@ public class CSVTableView extends ViewPart {
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
+		tableViewer.setContentProvider(new ArrayContentProvider());
 	}
 
 	private static void initializeTable() {
@@ -378,24 +378,20 @@ public class CSVTableView extends ViewPart {
 	// ===========================================
 	public static void update(String key) {
 		tableProviderKey = key;
-		tableViewer.setContentProvider(new ArrayContentProvider());
-		reset();
 		createColumns();
-		tableViewer.setContentProvider(new ArrayContentProvider());
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		tableViewer.setInput(tableProvider.getData());
-		TableKeeper.getTableProvider(key).resetAssignedCSVColumnInfo();
+		tableProvider.resetAssignedCSVColumnInfo();
 		colorRowNumberColumn();
-
 		table.setSize(table.getParent().getSize());
+		initializeHeaderMenu();
+		initializeColumnActionsMenu();
 	}
 
 	private static void createColumns() {
 		System.out.println("key=" + tableProviderKey);
 		if (tableProviderKey != null) {
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-			initializeHeaderMenu();
-			initializeColumnActionsMenu();
 			// String defaultHeader = headerMenu.getItem(0).getText();
 			DataRow headerRow = tableProvider.getHeaderRow();
 			System.out.println("Adding headers");
@@ -842,14 +838,22 @@ public class CSVTableView extends ViewPart {
 		tableViewer.getControl().setFocus();
 	}
 
-	public static void reset() {
+	public static void reset(){
 		tableViewer.setInput(null);
 		removeColumns();
-		// initializeTableViewer(composite);
+	}
+	public static void initialize() {
 		initializeTable();
-		// initializePopup(composite);
 		initializeIgnoreRowMenu();
 		initializeFixRowMenu();
+		// CONSIDER: headerMenu;
+		// CONSIDER: columnActionsMenu;
+		// CONSIDER: ignoreRowMenu;
+		// CONSIDER: fixCellMenu;
+		rowsToIgnore.clear();
+		rowNumSelected = -1;
+		colNumSelected = -1;
+
 	}
 
 	private static void removeColumns() {

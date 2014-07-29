@@ -65,7 +65,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			System.out.println("tdb seems to be open already!");
 			return null;
 		}
-		System.out.println("about to open TDB. Model right now is: " + tdbModel);
+//		System.out.println("about to open TDB. Model right now is: " + tdbModel);
+		// IT IS A BAD IDEA TO PRINT THE MODEL [ALL DATA!] TO System.out !!!
 		openTDB();
 		// System.out.println("Now Model is: " + tdbModel);
 		try {
