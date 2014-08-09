@@ -15,6 +15,12 @@ public class MatchCandidate {
 	private int matchedFeatureCount = 0;
 	private boolean confirmed;
 
+	public MatchCandidate(Resource  itemToMatchTDBResource, Resource matchCandidateTDBResource) {
+		super();
+		this.itemToMatchTDBResource = itemToMatchTDBResource;
+		this.matchCandidateTDBResource = matchCandidateTDBResource;
+
+	}
 	public MatchCandidate(int itemToMatchRow, Resource itemToMatchTDBResource, Resource matchCandidateTDBResource) {
 		super();
 		this.itemToMatchRow = itemToMatchRow;

@@ -151,84 +151,90 @@ public class AutoMatchJob extends Job {
 					}
 				}
 				// FIND MATCHES FOR THIS FLOWABLE
-				// FIND NAME / SYNONYM MATCHES:
+				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 				// Q-NAME = DB-NAME
-				RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
-				ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
-				while (resIterator.hasNext()) {
-					Resource flowableMatchCandidate = resIterator.next();
-					if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
-							dataSourceProvider.getTdbResource())) {
-						continue; // DON'T MATCH YOURSELF
-					}
-					if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
-						continue; // NOT A FLOWABLE
-					}
-					// THIS IS A name-name MATCH
-					System.out.println("name-name on line: "+rowNumberPlusOne);
-					MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-							flowableMatchCandidate);
-					matchCandidates.add(matchCandidate);
+				
+				List<MatchCandidate> matches = Flowable.findMatches(flowable);
+				for (MatchCandidate matchCandidate:matches){
+					System.out.println("Line "+rowNumberPlusOne+" - "+Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(), matchCandidate.getMatchCandidateTDBResource()));
 				}
-
-				// Q-NAME = DB-SYN
-				resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-				while (resIterator.hasNext()) {
-					Resource flowableMatchCandidate = resIterator.next();
-					if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
-							dataSourceProvider.getTdbResource())) {
-						continue; // DON'T MATCH YOURSELF
-					}
-					if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
-						continue; // NOT A FLOWABLE
-					}
-					System.out.println("name-synonym on line: "+rowNumberPlusOne);
-					// THIS IS A name-synonym MATCH
-					MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-							flowableMatchCandidate);
-					matchCandidates.add(matchCandidate);
-				}
-
-				//
-				StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
-				while (stmtIterator.hasNext()) {
-					RDFNode objectAltName = stmtIterator.next().getObject();
-					resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
-					// Q-SYN = DB-NAME
-					while (resIterator.hasNext()) {
-						Resource flowableMatchCandidate = resIterator.next();
-						if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
-								dataSourceProvider.getTdbResource())) {
-							continue; // DON'T MATCH YOURSELF
-						}
-						if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
-							continue; // NOT A FLOWABLE
-						}
-						System.out.println("synonym-name on line: "+rowNumberPlusOne);
-						// THIS IS A synonym-name MATCH
-						MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-								flowableMatchCandidate);
-						matchCandidates.add(matchCandidate);
-					}
-
-					// Q-SYN = DB-SYN
-					resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-					while (resIterator.hasNext()) {
-						Resource flowableMatchCandidate = resIterator.next();
-						if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
-								dataSourceProvider.getTdbResource())) {
-							continue; // DON'T MATCH YOURSELF
-						}
-						if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
-							continue; // NOT A FLOWABLE
-						}
-						System.out.println("synonym-synonym on line: "+rowNumberPlusOne);
-						// THIS IS A synonym-synonym MATCH
-						MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-								flowableMatchCandidate);
-						matchCandidates.add(matchCandidate);
-					}
-				}
+				
+//				RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
+//				ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
+//				while (resIterator.hasNext()) {
+//					Resource flowableMatchCandidate = resIterator.next();
+//					if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+//							dataSourceProvider.getTdbResource())) {
+//						continue; // DON'T MATCH YOURSELF
+//					}
+//					if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+//						continue; // NOT A FLOWABLE
+//					}
+//					// THIS IS A name-name MATCH
+//					System.out.println("name-name on line: "+rowNumberPlusOne);
+//					MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+//							flowableMatchCandidate);
+//					matchCandidates.add(matchCandidate);
+//				}
+//
+//				// Q-NAME = DB-SYN
+//				resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+//				while (resIterator.hasNext()) {
+//					Resource flowableMatchCandidate = resIterator.next();
+//					if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+//							dataSourceProvider.getTdbResource())) {
+//						continue; // DON'T MATCH YOURSELF
+//					}
+//					if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+//						continue; // NOT A FLOWABLE
+//					}
+//					System.out.println("name-synonym on line: "+rowNumberPlusOne);
+//					// THIS IS A name-synonym MATCH
+//					MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+//							flowableMatchCandidate);
+//					matchCandidates.add(matchCandidate);
+//				}
+//
+//				//
+//				StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
+//				while (stmtIterator.hasNext()) {
+//					RDFNode objectAltName = stmtIterator.next().getObject();
+//					resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
+//					// Q-SYN = DB-NAME
+//					while (resIterator.hasNext()) {
+//						Resource flowableMatchCandidate = resIterator.next();
+//						if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+//								dataSourceProvider.getTdbResource())) {
+//							continue; // DON'T MATCH YOURSELF
+//						}
+//						if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+//							continue; // NOT A FLOWABLE
+//						}
+//						System.out.println("synonym-name on line: "+rowNumberPlusOne);
+//						// THIS IS A synonym-name MATCH
+//						MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+//								flowableMatchCandidate);
+//						matchCandidates.add(matchCandidate);
+//					}
+//
+//					// Q-SYN = DB-SYN
+//					resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+//					while (resIterator.hasNext()) {
+//						Resource flowableMatchCandidate = resIterator.next();
+//						if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+//								dataSourceProvider.getTdbResource())) {
+//							continue; // DON'T MATCH YOURSELF
+//						}
+//						if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+//							continue; // NOT A FLOWABLE
+//						}
+//						System.out.println("synonym-synonym on line: "+rowNumberPlusOne);
+//						// THIS IS A synonym-synonym MATCH
+//						MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+//								flowableMatchCandidate);
+//						matchCandidates.add(matchCandidate);
+//					}
+//				}
 				ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
 
