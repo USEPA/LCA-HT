@@ -143,6 +143,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dataSourceRename.setToolTipText("Click to rename this data set.");
 		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80, 25);
 		dataSourceRename.setText("Rename");
+		
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
 
 		rowIndex++;

@@ -4,12 +4,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.Activator;
 import harmonizationtool.vocabulary.ECO;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -124,6 +128,12 @@ public class Util {
 			}
 		}
 		return uri;
+	}
+	
+	public static void setPerspective(String perspectiveID){
+		IWorkbench iWorkBench = PlatformUI.getWorkbench();
+		IPerspectiveRegistry perspectiveRegistry = iWorkBench.getPerspectiveRegistry();
+		iWorkBench.getActiveWorkbenchWindow().getActivePage().setPerspective(perspectiveRegistry.findPerspectiveWithId(perspectiveID));
 	}
 	// public static IStatusLineManager getStatusLine(){
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().

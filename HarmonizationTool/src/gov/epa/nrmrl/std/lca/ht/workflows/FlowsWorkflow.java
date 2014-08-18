@@ -16,6 +16,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowData;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.utils.Util;
@@ -26,7 +28,10 @@ import harmonizationtool.vocabulary.FEDLCA;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPerspectiveRegistry;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.SWT;
@@ -163,7 +168,7 @@ public class FlowsWorkflow extends ViewPart {
 		GridData gd_btnCSV2TDB = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnCSV2TDB.widthHint = 100;
 		btnCSV2TDB.setLayoutData(gd_btnCSV2TDB);
-		btnCSV2TDB.setText("Commit and Match");
+		btnCSV2TDB.setText("Commit");
 		btnCSV2TDB.addSelectionListener(csv2TDBListener);
 
 		textCommitToDB = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
@@ -427,7 +432,7 @@ public class FlowsWorkflow extends ViewPart {
 			if (colsChecked == 0) {
 				textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				textCommitToDB.setText("Assign and check columns first)");
-				btnCSV2TDB.setEnabled(false);
+				btnCSV2TDB.setEnabled(true);
 				btnAutoMatch.setEnabled(false);
 				return;
 			}
@@ -439,6 +444,10 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
+			
+			btnCSV2TDB.setEnabled(false);
+			btnAutoMatch.setEnabled(false);
+			Util.setPerspective(FlowDataWMatchFlowables.ID);
 
 			// return;
 
