@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 public class MetaDataDialog extends TitleAreaDialog {
 
 	private DataSourceProvider curDataSourceProvider = null;
@@ -40,7 +42,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private Color defaultBG = SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND);
 	private Logger runLogger = Logger.getLogger("run");
 
-//	protected String combDataSourceSelectorSavedText = "";
+	// protected String combDataSourceSelectorSavedText = "";
 
 	// CALL THIS:
 	// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
@@ -75,7 +77,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// 2b) ADD TO AN EXISTING DATA SOURCE
 
 		assert fileMD != null : "fileMD cannot be null";
-		this.callingFileMD = fileMD;	
+		this.callingFileMD = fileMD;
 		this.curDataSourceProvider = new DataSourceProvider();
 		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilenameString().substring(0,
 				fileMD.getFilenameString().length() - 4)));
@@ -132,6 +134,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		label_section1.setText("Data Set Information:");
 
 		rowIndex++;
+
 		Label labelSelectDataSource = new Label(composite, SWT.RIGHT);
 		labelSelectDataSource.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		labelSelectDataSource.setText("Select");
@@ -141,17 +144,17 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		Button dataSourceRename = new Button(composite, SWT.BORDER);
 		dataSourceRename.setToolTipText("Click to rename this data set.");
-		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 2, 80, 25);
+		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 2, 70, 25);
 		dataSourceRename.setText("Rename");
-		
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
-		
+
 		Button deleteDataSource = new Button(composite, SWT.NONE);
 		deleteDataSource.setToolTipText("Click to delete this data set.");
-		deleteDataSource.setBounds(60, rowIndex * disBtwnRows - 6, 32, 28);
+		deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
 		deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		deleteDataSource.setText("X");
-		
+		deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
+
 		rowIndex++;
 		Label labelVersion = new Label(composite, SWT.RIGHT);
 		labelVersion.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
@@ -256,7 +259,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void redrawDialogRows() {
 		clearDialogRows();
 		redrawDialogDataSourceMD();
-//		createComboSelectorFileMD();
+		// createComboSelectorFileMD();
 	}
 
 	protected void clearDialogRows() {
@@ -305,7 +308,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	protected void redrawDialogFileMD(int index) {
 		List<FileMD> fileMDs = curDataSourceProvider.getFileMDListNewestFirst();
-		if (fileMDs.size() == 0){
+		if (fileMDs.size() == 0) {
 			dialogValues[6].setText("");
 			dialogValues[7].setText("");
 			dialogValues[8].setText("");
@@ -320,11 +323,11 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	@Override
 	protected void cancelPressed() {
-//		super.cancelPressed();
-		if (callingFileMD != null){
+		// super.cancelPressed();
+		if (callingFileMD != null) {
 			// NEED TO REMOVE THE NEW DATASOURCE
 			newDataSourceProvider.remove();
-//			curDataSourceProvider = null;
+			// curDataSourceProvider = null;
 		}
 		runLogger.info("SET META cancel");
 		super.cancelPressed();
@@ -361,7 +364,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private final class ComboSelectorDataSourceListener implements SelectionListener {
 		private void doit(SelectionEvent e) {
 			String newSelectionName = comboSelectorDataSource.getText();
-			if (curDataSourceProvider.getDataSourceName().equals(newSelectionName)){
+			if (curDataSourceProvider.getDataSourceName().equals(newSelectionName)) {
 				return;
 			}
 			curDataSourceProvider = DataSourceKeeper.getByName(newSelectionName);
@@ -419,12 +422,39 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
+	private final class DeleteButtonClickListener implements Listener {
+		@Override
+		public void handleEvent(Event event) {
+			String dataSourceToDelete = comboSelectorDataSource.getText();
+			GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
+
+			genericStringBox.create("Delete Data Set", "Please type \"yes\" to confirm deletion of "
+					+ dataSourceToDelete);
+			genericStringBox.open();
+
+			String confirmDeletion = genericStringBox.getResultString();
+			if (!confirmDeletion.equals("yes")) {
+				// NOT CONFIRMED, SO QUIT
+				System.out.println("Not deleting");
+				return;
+			}
+			DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
+			System.out.println("Deleting " + dataSourceToDelete);
+			comboSelectorDataSource.remove(dataSourceToDelete);
+			if (comboSelectorDataSource.getItemCount() == 0) {
+				cancelPressed();
+				return;
+			}
+			comboSelectorDataSource.select(0);
+		}
+	}
+
 	public class ComboSelectorFileMDListener implements ModifyListener {
 
 		@Override
 		public void modifyText(ModifyEvent e) {
 			int newIndex = comboSelectorFileMD.getSelectionIndex();
-			if (newIndex < 0){
+			if (newIndex < 0) {
 				newIndex = 0;
 			}
 			redrawDialogFileMD(newIndex);

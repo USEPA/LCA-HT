@@ -60,9 +60,9 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	private static Text textFileInfo;
-	private static Text textIssues;
-	private static Text textCommitToDB;
+	private static Text textLoadCSV;
+	private static Text textCheckData;
+	private static Text textCommit;
 	private static Text textAutoMatched;
 	private static Text textManualMatched;
 
@@ -76,7 +76,7 @@ public class FlowsWorkflow extends ViewPart {
 	private static Button btnLoadCSV;
 	private static Button btnCheckData;
 	private static Button btnAutoMatch;
-	private static Button btnCSV2TDB;
+	private static Button btnCommit;
 	private static Button btnConcludeFile;
 
 	// private static FileMD fileMD;
@@ -125,12 +125,12 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnLoadCSV.addSelectionListener(loadCSVListener);
 
-		textFileInfo = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		textFileInfo.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textLoadCSV = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textLoadCSV.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
 		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textFileInfo.widthHint = 150;
-		textFileInfo.setLayoutData(gd_textFileInfo);
+		textLoadCSV.setLayoutData(gd_textFileInfo);
 
 		// ======== ROW 2 =======================
 
@@ -148,12 +148,12 @@ public class FlowsWorkflow extends ViewPart {
 		btnCheckData.setEnabled(false);
 		btnCheckData.addSelectionListener(checkDataListener);
 
-		textIssues = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		// textIssues.setText("0 issues");
+		textCheckData = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		// textCheckData.setText("0 issues");
 		GridData gd_textIssues = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textIssues.widthHint = 150;
-		textIssues.setLayoutData(gd_textIssues);
+		textCheckData.setLayoutData(gd_textIssues);
 
 		// ======== ROW 3 =======================
 
@@ -163,17 +163,17 @@ public class FlowsWorkflow extends ViewPart {
 		label_03.setLayoutData(gd_label_03);
 		label_03.setText("3");
 
-		btnCSV2TDB = new Button(composite, SWT.NONE);
-		btnCSV2TDB.setEnabled(false);
+		btnCommit = new Button(composite, SWT.NONE);
+		btnCommit.setEnabled(false);
 		GridData gd_btnCSV2TDB = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnCSV2TDB.widthHint = 100;
-		btnCSV2TDB.setLayoutData(gd_btnCSV2TDB);
-		btnCSV2TDB.setText("Commit");
-		btnCSV2TDB.addSelectionListener(csv2TDBListener);
+		btnCommit.setLayoutData(gd_btnCSV2TDB);
+		btnCommit.setText("Commit");
+		btnCommit.addSelectionListener(csv2TDBListener);
 
-		textCommitToDB = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		textCommitToDB.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		textCommit = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textCommit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		// ======== ROW 4 =======================
 
@@ -236,27 +236,35 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static String getTextMetaFileInfo() {
-		return textFileInfo.getToolTipText();
+		return textLoadCSV.getToolTipText();
 	}
 
 	public static void setTextMetaFileInfo(String metaFileInfo) {
-		textFileInfo.setToolTipText(metaFileInfo);
+		textLoadCSV.setToolTipText(metaFileInfo);
 	}
 
 	public static String getTextFileInfo() {
-		return textFileInfo.getText();
+		return textLoadCSV.getText();
 	}
 
 	public static void setTextFileInfo(String fileInfo) {
-		textFileInfo.setText(fileInfo);
+		textLoadCSV.setText(fileInfo);
 	}
 
 	public static String getTextIssues() {
-		return textIssues.getText();
+		return textCheckData.getText();
 	}
 
 	public static void setTextIssues(String issues) {
-		textIssues.setText(issues);
+		textCheckData.setText(issues);
+	}
+
+	public static String getTextCommit() {
+		return textCommit.getText();
+	}
+
+	public static void setTextCommit(String msg) {
+		textCommit.setText(msg);
 	}
 
 	public static String getTextAutoMatched() {
@@ -293,8 +301,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	SelectionListener loadCSVListener = new SelectionListener() {
 
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+		private void doit(SelectionEvent e) {
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
 				handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
@@ -307,9 +314,9 @@ public class FlowsWorkflow extends ViewPart {
 			} else {
 				btnLoadCSV.setEnabled(false);
 				btnConcludeFile.setEnabled(true);
-				textFileInfo.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
+				textLoadCSV.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
 						.getFilename());
-				textFileInfo.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				textLoadCSV.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 						.getFileMD().getPath());
 				setHeaderInfo();
 				btnCheckData.setEnabled(true);
@@ -317,21 +324,19 @@ public class FlowsWorkflow extends ViewPart {
 		}
 
 		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
-			try {
-				handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
-			} catch (Exception ex) {
-				throw new RuntimeException("command with id \"harmonizationtool.handler.ImportCSV\" not found");
-			}
-			setHeaderInfo();
-			btnCheckData.setEnabled(true);
+			doit(e);
 		}
 	};
 
 	SelectionListener checkDataListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			textIssues.setText(" ... checking data ...");
+			textCheckData.setText(" ... checking data ...");
 			CSVColumnInfo[] csvColumnInfos = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 					.getAssignedCSVColumnInfo();
 			List<CSVColumnInfo> requiredCSVColumnInfo = new ArrayList<CSVColumnInfo>();
@@ -395,21 +400,21 @@ public class FlowsWorkflow extends ViewPart {
 			// int colsChecked = 0;
 
 			if (countOfAssignedFields == 0) {
-				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-				textIssues.setText("Assign at least one column first)");
+				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				textCheckData.setText("Assign at least one column first)");
 				btnAutoMatch.setEnabled(false);
-				btnCSV2TDB.setEnabled(false);
+				btnCommit.setEnabled(false);
 			} else {
 				int issueCount = CSVTableView.checkCols();
-				textIssues.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
-				textIssues.setText(issueCount + " issues. " + countOfAssignedFields + " columns checked");
+				textCheckData.setText(issueCount + " issues. " + countOfAssignedFields + " columns checked");
 				if (issueCount == 0) {
 					// btnAutoMatch.setEnabled(true);
-					btnCSV2TDB.setEnabled(true);
+					btnCommit.setEnabled(true);
 				} else {
 					btnAutoMatch.setEnabled(false);
-					btnCSV2TDB.setEnabled(false);
+					btnCommit.setEnabled(false);
 				}
 			}
 		}
@@ -430,9 +435,10 @@ public class FlowsWorkflow extends ViewPart {
 		private void doit(SelectionEvent e) {
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
-				textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-				textCommitToDB.setText("Assign and check columns first)");
-				btnCSV2TDB.setEnabled(true);
+				textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				textCommit.setText("Assign and check columns first)");
+				btnCheckData.setEnabled(true);
+				btnCommit.setEnabled(false);
 				btnAutoMatch.setEnabled(false);
 				return;
 			}
@@ -444,9 +450,17 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-			
-			btnCSV2TDB.setEnabled(false);
+
+			btnCheckData.setEnabled(false);
+			btnCommit.setEnabled(false);
 			btnAutoMatch.setEnabled(false);
+			btnConcludeFile.setText("Close CSV");
+			try {
+				Util.showView(FlowDataWMatchFlowables.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			Util.setPerspective(FlowDataWMatchFlowables.ID);
 
 			// return;
@@ -455,11 +469,11 @@ public class FlowsWorkflow extends ViewPart {
 			// else {
 			// int triples = safeCommitColumns2TDB();
 			// // triples += safeCommitFlowContexts2TDB();
-			// textCommitToDB.setText(triples + " triples added");
+			// textCommit.setText(triples + " triples added");
 			// if (triples == 0) {
-			// textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			// textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			// } else {
-			// textCommitToDB.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+			// textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 			// }
 			// btnAutoMatch.setEnabled(true);
 			// btnConcludeFile.setText("Close CSV");
@@ -505,9 +519,17 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.reset();
 				CSVTableView.initialize();
 				btnLoadCSV.setEnabled(true);
+				textLoadCSV.setText("");
+
 				btnCheckData.setEnabled(false);
+				textCheckData.setText("");
+				
+				btnCommit.setEnabled(false);
+				textCommit.setText("");
+				
 				btnAutoMatch.setEnabled(false);
-				btnCSV2TDB.setEnabled(false);
+				
+				
 				btnConcludeFile.setEnabled(false);
 			} else if (btnConcludeFile.getText().equals("Cancel CSV")) {
 				// TODO - REMOVE THE FileMD
@@ -516,7 +538,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnLoadCSV.setEnabled(true);
 				btnCheckData.setEnabled(false);
 				btnAutoMatch.setEnabled(false);
-				btnCSV2TDB.setEnabled(false);
+				btnCommit.setEnabled(false);
 				btnConcludeFile.setEnabled(false);
 			}
 		}
