@@ -141,10 +141,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		Button dataSourceRename = new Button(composite, SWT.BORDER);
 		dataSourceRename.setToolTipText("Click to rename this data set.");
-		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 1, 80, 25);
+		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 2, 80, 25);
 		dataSourceRename.setText("Rename");
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
-
+		
+		Button deleteDataSource = new Button(composite, SWT.NONE);
+		deleteDataSource.setToolTipText("Click to delete this data set.");
+		deleteDataSource.setBounds(60, rowIndex * disBtwnRows - 6, 32, 28);
+		deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		deleteDataSource.setText("X");
+		
 		rowIndex++;
 		Label labelVersion = new Label(composite, SWT.RIGHT);
 		labelVersion.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
@@ -243,6 +249,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues[6] = textFileSize; // ----------- 06 File Size (bytes)
 		dialogValues[7] = textLastModified; // ------- 07 File Last Modified
 		dialogValues[8] = textFileReadTime; // ------- 08 File Read Time
+
 	}
 
 	protected void redrawDialogRows() {
