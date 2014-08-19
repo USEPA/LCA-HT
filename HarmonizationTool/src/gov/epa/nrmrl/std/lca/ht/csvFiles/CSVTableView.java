@@ -47,7 +47,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
  */
 public class CSVTableView extends ViewPart {
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView";
 
 	private static String tableProviderKey = null;
 

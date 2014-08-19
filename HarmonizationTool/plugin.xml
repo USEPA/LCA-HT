@@ -19,6 +19,11 @@
             name="Flow data">
       </perspective>
       <perspective
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables"
+            name="Flow data with MatchFlowable">
+      </perspective>
+      <perspective
             class="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
             id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
             name="Original Perspective">
@@ -27,21 +32,33 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="gov.epa.nrmrl.std.lca.ht.views.View"
-            id="HarmonizationTool.view"
-            name="Data File(s)"
+            class="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+            id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+            name="Flows Workflow"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
+            id="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
+            name="Logger"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
+            name="CSV Table"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            name="Match Flowable Tool"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.views.QueryView"
             id="HarmonizationTool.QueryViewID"
             name="Query"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
-            id="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView"
-            name="CSVTableView"
             restorable="true">
       </view>
       <view
@@ -75,21 +92,21 @@
             restorable="true">
       </view>
       <view
+            class="harmonizationtool.ViewPart1"
+            id="HarmonizationTool.view1"
+            name="name"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.views.View"
+            id="HarmonizationTool.view"
+            name="Data File(s)"
+            restorable="true">
+      </view>
+      <view
             class="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
             id="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
             name="Job Status View"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
-            id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
-            name="Flows Workflow"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
-            id="harmonizationtool.console.LoggerViewer"
-            name="Logger"
             restorable="true">
       </view>
    </extension>
@@ -100,6 +117,9 @@
       </perspectiveExtension>
       <perspectiveExtension
             targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData">
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables">
       </perspectiveExtension>
    </extension>
    <extension
@@ -165,13 +185,18 @@
                      style="push">
                </command>
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView"
-                     label="Show CSV Table"
+                     commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
+                     label="Show CSV Table View"
                      style="push">
                </command>
                <command
                      commandId="HarmonizationTool.ShowDataFilesView"
                      label="Show Data File(s)"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+                     label="Show Match Flowable Table View"
                      style="push">
                </command>
             </menu>
@@ -199,7 +224,7 @@
                </command>
             </menu>
             <command
-                  commandId="harmonizationtool.handler.ShowLoggerViewerHandler"
+                  commandId="harmonizationtool.handler.GenericShowViewHandler"
                   label="Show Logger"
                   style="push">
             </command>
@@ -335,8 +360,13 @@
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowCSVTableViewHandler"
-            id="gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView"
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
             name="Show CSV Table View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowMatchFlowableTableViewHandler"
+            id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            name="Show Match Flowable Table View">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowResultsViewHandler"
@@ -381,12 +411,25 @@
       <command
             defaultHandler="harmonizationtool.handler.ShowLoggerViewerHandler"
             id="harmonizationtool.handler.ShowLoggerViewerHandler"
-            name="Show Logger">
+            name="Show Logger old">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowPerspectiveHandler"
             id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
             name="Show Perspectives">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.GenericShowViewHandler"
+            id="harmonizationtool.handler.GenericShowViewHandler"
+            name="Show Logger">
+         <commandParameter
+               id="HarmonizationTool.commandParameter1"
+               name="Name"
+               optional="true">
+            <values
+                  class="harmonizationtool.ParameterValues1">
+            </values>
+         </commandParameter>
       </command>
    </extension>
    <extension

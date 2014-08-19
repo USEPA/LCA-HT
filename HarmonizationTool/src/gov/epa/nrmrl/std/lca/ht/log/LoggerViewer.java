@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class LoggerViewer extends ViewPart {
-	public static final String ID = "harmonizationtool.console.LoggerViewer";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.log.LoggerViewer";
 
 	LoggerWriter loggerWriter;
 	Text loggerArea;
