@@ -54,6 +54,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import org.eclipse.swt.events.SelectionAdapter;
 
 //import org.eclipse.swt.widgets.Canvas;
 
@@ -63,8 +64,9 @@ public class FlowsWorkflow extends ViewPart {
 	private static Text textLoadCSV;
 	private static Text textCheckData;
 	private static Text textCommit;
-	private static Text textAutoMatched;
-	private static Text textManualMatched;
+	private static Text textMatchFlowables;
+	private static Text textMatchFlowContexts;
+	private static Text textMatchFlowProperties;
 
 	private Label label_01;
 	private Label label_02;
@@ -72,11 +74,14 @@ public class FlowsWorkflow extends ViewPart {
 	private Label label_04;
 	private Label label_05;
 	private Label label_06;
+	private Label label_07;
 
 	private static Button btnLoadCSV;
 	private static Button btnCheckData;
-	private static Button btnAutoMatch;
 	private static Button btnCommit;
+	private static Button btnMatchFlowables;
+	private static Button btnMatchFlowContexts;
+	private static Button btnMatchFlowProperties;
 	private static Button btnConcludeFile;
 
 	// private static FileMD fileMD;
@@ -119,7 +124,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnLoadCSV = new Button(composite, SWT.NONE);
 		GridData gd_btnLoadCSV = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnLoadCSV.widthHint = 100;
+		gd_btnLoadCSV.widthHint = 120;
 		btnLoadCSV.setLayoutData(gd_btnLoadCSV);
 		btnLoadCSV.setText("Load CSV Data");
 
@@ -142,7 +147,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnCheckData = new Button(composite, SWT.NONE);
 		GridData gd_btnCheckData = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnCheckData.widthHint = 100;
+		gd_btnCheckData.widthHint = 120;
 		btnCheckData.setLayoutData(gd_btnCheckData);
 		btnCheckData.setText("Check Data");
 		btnCheckData.setEnabled(false);
@@ -166,10 +171,10 @@ public class FlowsWorkflow extends ViewPart {
 		btnCommit = new Button(composite, SWT.NONE);
 		btnCommit.setEnabled(false);
 		GridData gd_btnCSV2TDB = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnCSV2TDB.widthHint = 100;
+		gd_btnCSV2TDB.widthHint = 120;
 		btnCommit.setLayoutData(gd_btnCSV2TDB);
 		btnCommit.setText("Commit");
-		btnCommit.addSelectionListener(csv2TDBListener);
+		btnCommit.addSelectionListener(commitListener);
 
 		textCommit = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
 		textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
@@ -183,20 +188,30 @@ public class FlowsWorkflow extends ViewPart {
 		label_04.setLayoutData(gd_label_04);
 		label_04.setText("4");
 
-		btnAutoMatch = new Button(composite, SWT.NONE);
-		GridData gd_btnAutoMatch = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnAutoMatch.widthHint = 100;
-		btnAutoMatch.setLayoutData(gd_btnAutoMatch);
-		btnAutoMatch.setText("Auto match");
-		btnAutoMatch.setEnabled(false);
-		btnAutoMatch.addSelectionListener(autoMatchListener);
+		btnMatchFlowables = new Button(composite, SWT.NONE);
+		btnMatchFlowables.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		GridData gd_btnMatchFlowables = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_btnMatchFlowables.heightHint = 45;
+		gd_btnMatchFlowables.widthHint = 120;
+		btnMatchFlowables.setLayoutData(gd_btnMatchFlowables);
+		btnMatchFlowables.setText("Match\nFlowables");
+		btnMatchFlowables.setEnabled(false);
+		// btnMatchFlowables.addSelectionListener(matchFlowablesListener);
+		// TODO - implement above
 
-		textAutoMatched = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		textAutoMatched.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		// textAutoMatched.setText("(430 of 600 rows match)");
-		GridData gd_textAutoMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textAutoMatched.widthHint = 150;
-		textAutoMatched.setLayoutData(gd_textAutoMatched);
+		textMatchFlowables = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowables.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		// textMatchFlowables.setText("(430 of 600 rows match)");
+		GridData gd_textMatchFlowables = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_textMatchFlowables.heightHint = 45;
+		gd_textMatchFlowables.widthHint = 120;
+		textMatchFlowables.setLayoutData(gd_textMatchFlowables);
+
+		// ======== ROW 5 =======================
 
 		label_05 = new Label(composite, SWT.NONE);
 		GridData gd_label_05 = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
@@ -204,26 +219,57 @@ public class FlowsWorkflow extends ViewPart {
 		label_05.setLayoutData(gd_label_05);
 		label_05.setText("5");
 
-		Button btnManualMatch = new Button(composite, SWT.NONE);
-		GridData gd_btnManualMatch = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnManualMatch.widthHint = 100;
-		btnManualMatch.setLayoutData(gd_btnManualMatch);
-		btnManualMatch.setText("Manual match");
-		btnManualMatch.setEnabled(false);
+		btnMatchFlowContexts = new Button(composite, SWT.NONE);
+		GridData gd_btnMatchFlowContexts = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_btnMatchFlowContexts.heightHint = 45;
+		gd_btnMatchFlowContexts.widthHint = 120;
+		btnMatchFlowContexts.setLayoutData(gd_btnMatchFlowContexts);
+		btnMatchFlowContexts.setText("Match\nFlow Contexts");
+		btnMatchFlowContexts.setEnabled(false);
+		// btnMatchFlowContexts.addSelectionListener(matchFlowContextsListener);
+		// TODO - implement above
 
-		textManualMatched = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		textManualMatched.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		// textManualMatched.setText("(0 of 30");
-		GridData gd_textManualMatched = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textManualMatched.widthHint = 150;
-		textManualMatched.setLayoutData(gd_textManualMatched);
-		// TODO Auto-generated method stub
+		textMatchFlowContexts = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowContexts.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		// textMatchFlowContexts.setText("(0 of 30");
+		GridData gd_textMatchFlowContexts = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_textMatchFlowContexts.heightHint = 45;
+		gd_textMatchFlowContexts.widthHint = 150;
+		textMatchFlowContexts.setLayoutData(gd_textMatchFlowContexts);
+
+		// ======== ROW 6 =======================
 
 		label_06 = new Label(composite, SWT.NONE);
 		GridData gd_label_06 = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_label_06.widthHint = 20;
 		label_06.setLayoutData(gd_label_06);
 		label_06.setText("6");
+
+		btnMatchFlowProperties = new Button(composite, SWT.NONE);
+		GridData gd_btnMatchFlowProperties = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_btnMatchFlowProperties.heightHint = 45;
+		gd_btnMatchFlowProperties.widthHint = 120;
+		btnMatchFlowProperties.setLayoutData(gd_btnMatchFlowProperties);
+		btnMatchFlowProperties.setText("Match\nFlow Properties");
+		btnMatchFlowProperties.setEnabled(false);
+		// btnMatchFlowProperties.addSelectionListener(matchFlowPropertiesListener);
+		// TODO - implement above
+		
+		textMatchFlowProperties = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowProperties.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		// textMatchFlowContexts.setText("(0 of 30");
+		GridData gd_textMatchFlowProperties = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_textMatchFlowProperties.heightHint = 45;
+		gd_textMatchFlowProperties.widthHint = 150;
+		textMatchFlowProperties.setLayoutData(gd_textMatchFlowProperties);
+
+		// ======== ROW 7 =======================
+
+		label_07 = new Label(composite, SWT.NONE);
+		GridData gd_label_07 = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gd_label_07.widthHint = 20;
+		label_07.setLayoutData(gd_label_07);
+		label_07.setText("7");
 
 		btnConcludeFile = new Button(composite, SWT.NONE);
 		GridData gd_btnConcludeFile = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
@@ -267,20 +313,28 @@ public class FlowsWorkflow extends ViewPart {
 		textCommit.setText(msg);
 	}
 
-	public static String getTextAutoMatched() {
-		return textAutoMatched.getText();
+	public static String getTextMatchFlowables() {
+		return textMatchFlowables.getText();
 	}
 
-	public static void setTextAutoMatched(String autoMatched) {
-		textAutoMatched.setText(autoMatched);
+	public static void setTextMatchFlowables(String matchFlowables) {
+		textMatchFlowables.setText(matchFlowables);
 	}
 
-	public static String getTextManualMatched() {
-		return textManualMatched.getText();
+	public static String getTextFlowContexts() {
+		return textMatchFlowContexts.getText();
 	}
 
-	public static void setTextManualMatched(String manualMatched) {
-		textManualMatched.setText(manualMatched);
+	public static void setTextFlowContexts(String flowContexts) {
+		textMatchFlowContexts.setText(flowContexts);
+	}
+	
+	public static String getTextFlowProperties() {
+		return textMatchFlowProperties.getText();
+	}
+
+	public static void setTextFlowProperties(String flowProperties) {
+		textMatchFlowProperties.setText(flowProperties);
 	}
 
 	private static void setHeaderInfo() {
@@ -316,8 +370,8 @@ public class FlowsWorkflow extends ViewPart {
 				btnConcludeFile.setEnabled(true);
 				textLoadCSV.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
 						.getFilename());
-				textLoadCSV.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-						.getFileMD().getPath());
+				textLoadCSV.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
+						.getPath());
 				setHeaderInfo();
 				btnCheckData.setEnabled(true);
 			}
@@ -402,7 +456,7 @@ public class FlowsWorkflow extends ViewPart {
 			if (countOfAssignedFields == 0) {
 				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				textCheckData.setText("Assign at least one column first)");
-				btnAutoMatch.setEnabled(false);
+				btnMatchFlowables.setEnabled(false);
 				btnCommit.setEnabled(false);
 			} else {
 				int issueCount = CSVTableView.checkCols();
@@ -410,10 +464,10 @@ public class FlowsWorkflow extends ViewPart {
 
 				textCheckData.setText(issueCount + " issues. " + countOfAssignedFields + " columns checked");
 				if (issueCount == 0) {
-					// btnAutoMatch.setEnabled(true);
+					// btnMatchFlowables.setEnabled(true);
 					btnCommit.setEnabled(true);
 				} else {
-					btnAutoMatch.setEnabled(false);
+					btnMatchFlowables.setEnabled(false);
 					btnCommit.setEnabled(false);
 				}
 			}
@@ -430,18 +484,23 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	SelectionListener csv2TDBListener = new SelectionListener() {
+	SelectionListener commitListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
+			btnCommit.setEnabled(false);
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
 				textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				textCommit.setText("Assign and check columns first)");
 				btnCheckData.setEnabled(true);
-				btnCommit.setEnabled(false);
-				btnAutoMatch.setEnabled(false);
+				btnMatchFlowables.setEnabled(false);
 				return;
 			}
+			btnCheckData.setEnabled(false);
+			btnMatchFlowables.setEnabled(true);
+			btnMatchFlowContexts.setEnabled(true);
+			btnMatchFlowProperties.setEnabled(true);
+
 
 			String jobKey = "autoMatch_01";
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
@@ -451,16 +510,14 @@ public class FlowsWorkflow extends ViewPart {
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
 
-			btnCheckData.setEnabled(false);
-			btnCommit.setEnabled(false);
-			btnAutoMatch.setEnabled(false);
+
 			btnConcludeFile.setText("Close CSV");
-			try {
-				Util.showView(FlowDataWMatchFlowables.ID);
-			} catch (PartInitException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+//			try {
+//				Util.showView(FlowDataWMatchFlowables.ID);
+//			} catch (PartInitException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
 			Util.setPerspective(FlowDataWMatchFlowables.ID);
 
 			// return;
@@ -475,7 +532,7 @@ public class FlowsWorkflow extends ViewPart {
 			// } else {
 			// textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 			// }
-			// btnAutoMatch.setEnabled(true);
+			// btnMatchFlowables.setEnabled(true);
 			// btnConcludeFile.setText("Close CSV");
 			// }
 		}
@@ -523,13 +580,12 @@ public class FlowsWorkflow extends ViewPart {
 
 				btnCheckData.setEnabled(false);
 				textCheckData.setText("");
-				
+
 				btnCommit.setEnabled(false);
 				textCommit.setText("");
-				
-				btnAutoMatch.setEnabled(false);
-				
-				
+
+				btnMatchFlowables.setEnabled(false);
+
 				btnConcludeFile.setEnabled(false);
 			} else if (btnConcludeFile.getText().equals("Cancel CSV")) {
 				// TODO - REMOVE THE FileMD
@@ -537,7 +593,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.initialize();
 				btnLoadCSV.setEnabled(true);
 				btnCheckData.setEnabled(false);
-				btnAutoMatch.setEnabled(false);
+				btnMatchFlowables.setEnabled(false);
 				btnCommit.setEnabled(false);
 				btnConcludeFile.setEnabled(false);
 			}
