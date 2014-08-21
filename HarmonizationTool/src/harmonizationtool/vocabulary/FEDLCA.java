@@ -202,6 +202,10 @@ public class FEDLCA {
 	public static final Resource ContactPerson = m_model
 			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#ContactPerson");
 	
+	
+	public static final Resource FlowProperty = m_model
+			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#FlowProperty");
+	
 //	public static final Resource Curator = m_model
 //			.createResource("http://epa.gov/nrmrl/std/lca/fedlca/1.0#Curator");
 

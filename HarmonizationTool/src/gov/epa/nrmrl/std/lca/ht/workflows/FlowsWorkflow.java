@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -54,6 +55,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+
 import org.eclipse.swt.events.SelectionAdapter;
 
 //import org.eclipse.swt.widgets.Canvas;
@@ -198,7 +200,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnMatchFlowables.heightHint = 45;
 		gd_btnMatchFlowables.widthHint = 120;
 		btnMatchFlowables.setLayoutData(gd_btnMatchFlowables);
-		btnMatchFlowables.setText("Match\nFlowables");
+		btnMatchFlowables.setText("Match"+System.getProperty("line.separator")+"Flowables");
 		btnMatchFlowables.setEnabled(false);
 		// btnMatchFlowables.addSelectionListener(matchFlowablesListener);
 		// TODO - implement above
@@ -224,7 +226,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnMatchFlowContexts.heightHint = 45;
 		gd_btnMatchFlowContexts.widthHint = 120;
 		btnMatchFlowContexts.setLayoutData(gd_btnMatchFlowContexts);
-		btnMatchFlowContexts.setText("Match\nFlow Contexts");
+		btnMatchFlowContexts.setText("Match"+System.getProperty("line.separator")+"Flow Contexts");
 		btnMatchFlowContexts.setEnabled(false);
 		// btnMatchFlowContexts.addSelectionListener(matchFlowContextsListener);
 		// TODO - implement above
@@ -250,7 +252,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnMatchFlowProperties.heightHint = 45;
 		gd_btnMatchFlowProperties.widthHint = 120;
 		btnMatchFlowProperties.setLayoutData(gd_btnMatchFlowProperties);
-		btnMatchFlowProperties.setText("Match\nFlow Properties");
+		btnMatchFlowProperties.setText("Match"+System.getProperty("line.separator")+"Flow Properties");
 		btnMatchFlowProperties.setEnabled(false);
 		// btnMatchFlowProperties.addSelectionListener(matchFlowPropertiesListener);
 		// TODO - implement above
@@ -351,6 +353,8 @@ public class FlowsWorkflow extends ViewPart {
 
 		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flowable Fields", Flowable.getHeaderMenuObjects());
 		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flow Context Fields", FlowContext.getHeaderMenuObjects());
+		CSVTableView.appendToAvailableCSVColumnInfo("Assign Flow Property Fields", FlowProperty.getHeaderMenuObjects());
+
 	}
 
 	SelectionListener loadCSVListener = new SelectionListener() {

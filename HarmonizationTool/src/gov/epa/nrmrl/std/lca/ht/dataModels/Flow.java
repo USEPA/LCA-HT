@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FASC;
+import harmonizationtool.vocabulary.FEDLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -10,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class Flow {
 	private Flowable flowable;
 	private FlowContext flowContext;
+	private FlowProperty flowProperty;
 	private Resource tdbResource;
 	private static final Resource rdfClass = FASC.FlowAggregationCategory;
 
@@ -35,6 +37,15 @@ public class Flow {
 		ActiveTDB.replaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
 	}
 
+	public FlowProperty getFlowProperty() {
+		return flowProperty;
+	}
+
+	public void setFlowProperty(FlowProperty flowProperty) {
+		this.flowProperty = flowProperty;
+		ActiveTDB.replaceResource(tdbResource, FEDLCA.hasFlowProperty, flowProperty.getTdbResource());
+	}
+	
 	public Resource getTdbResource() {
 		return tdbResource;
 	}

@@ -2,7 +2,6 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.FASC;
 import harmonizationtool.vocabulary.FEDLCA;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class FlowProperty {
 
 	private String primaryFlowProperty;
 	private List<String> supplementaryFlowProperties;
-	private static final Resource rdfClass = FASC.Compartment;
+	private static final Resource rdfClass = FEDLCA.FlowProperty;
 	private Resource tdbResource;
 
 	public FlowProperty() {
@@ -31,7 +30,7 @@ public class FlowProperty {
 		results[0].setCheckLists(getPropertyNameCheckList());
 		results[0].setLeftJustified(true);
 		results[0].setRDFClass(rdfClass);
-		results[0].setTdbProperty(FASC.hasCompartment);
+		results[0].setTdbProperty(FEDLCA.flowPropertyPrimaryDescription);
 		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[1] = new CSVColumnInfo("Property (additional)");

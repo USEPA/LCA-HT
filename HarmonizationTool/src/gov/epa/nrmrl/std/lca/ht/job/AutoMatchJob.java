@@ -93,6 +93,11 @@ public class AutoMatchJob extends Job {
 			}
 		}
 
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextCommit("0%");
+			}
+		});
 		int percentComplete = 0;
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
