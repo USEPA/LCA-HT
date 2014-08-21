@@ -80,7 +80,8 @@ public class AutoMatchJob extends Job {
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
 
-		for (int i = 0; i < assignedCSVColumns.length; i++) {
+		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
+		for (int i = 1; i < assignedCSVColumns.length; i++) {
 			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 			if (csvColumnInfo == null) {
 				continue;

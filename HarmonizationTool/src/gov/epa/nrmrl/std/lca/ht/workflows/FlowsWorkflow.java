@@ -273,7 +273,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnConcludeFile = new Button(composite, SWT.NONE);
 		GridData gd_btnConcludeFile = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnConcludeFile.widthHint = 100;
+		gd_btnConcludeFile.widthHint = 120;
 		btnConcludeFile.setLayoutData(gd_btnConcludeFile);
 		btnConcludeFile.setText("Cancel CSV");
 		btnConcludeFile.setEnabled(false);

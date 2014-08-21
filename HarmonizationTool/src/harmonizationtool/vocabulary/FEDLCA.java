@@ -26,6 +26,7 @@ public class FEDLCA {
 	 */
 	private static Model m_model = ModelFactory.createDefaultModel();
 
+
 	/**
 	 * <p>
 	 * The namespace of the vocabulary as a string
@@ -122,6 +123,15 @@ public class FEDLCA {
 	public static final Property hasFlowContext = m_model
 			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasFlowContext");
 
+
+	public static final Property flowPropertyPrimaryDescription = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowPropertyPrimaryDescription");
+
+	public static final Property flowPropertySupplementalDescription = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowPropertySupplementalDescription");
+
+	public static final Property hasFlowProperty = m_model
+			.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasFlowProperty");
 	/**
 	 * <p>
 	 * </p>
