@@ -69,7 +69,7 @@ public class AutoMatchJob extends Job {
 
 		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
-		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+		List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
 
 		List<Flow> flows = new ArrayList<Flow>();
 
@@ -103,6 +103,8 @@ public class AutoMatchJob extends Job {
 			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
 			}
+			// List<MatchCandidate> matchCandidatesThisRow = new
+			// ArrayList<MatchCandidate>();
 			if (100 * rowNumber / tableProvider.getData().size() > percentComplete) {
 				final int state = percentComplete;
 				Display.getDefault().asyncExec(new Runnable() {
@@ -123,12 +125,12 @@ public class AutoMatchJob extends Job {
 
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
-				if (assignedCSVColumns[i].isRequired() && dataRow.get(i-1).equals("")) {
+				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
 					flowableConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
 				}
-				flowableConcatinated += dataRow.get(i-1) + "\t";
+				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
 			if (!flowableConcatinated.equals("")) {
 				if (flowableMap.containsKey(flowableConcatinated)) {
@@ -143,109 +145,142 @@ public class AutoMatchJob extends Job {
 						if (csvColumnInfo.isUnique()) {
 							ActiveTDB.replaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
 							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i-1));
+									dataRow.get(i - 1));
 
 						} else {
 							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
 							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i-1));
+									dataRow.get(i - 1));
 						}
 					}
 					final int flowableCount = flowableMap.size();
-					System.out.println("flowableCount ----> "+flowableCount + "after adding "+flowableConcatinated);
+					System.out.println("flowableCount ----> " + flowableCount + "after adding " + flowableConcatinated);
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextMatchFlowables("0 / " + flowableCount);
 						}
 					});
-
 				}
 				// FIND MATCHES FOR THIS FLOWABLE
 				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 				// Q-NAME = DB-NAME
 
 				List<MatchCandidate> matches = Flowable.findMatches(flowable);
-				for (MatchCandidate matchCandidate : matches) {
-					System.out.println("Line "
-							+ rowNumberPlusOne
-							+ " - "
-							+ Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(),
-									matchCandidate.getMatchCandidateTDBResource()));
+				final int numHits = matches.size();
+				MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+				for (int i = 0; i < matches.size(); i++) {
+					matchCandidatesThisRow[i] = matches.get(i);
 				}
+				matchRows.add(matchCandidatesThisRow);
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+//						CSVTableView.setTextFlowContexts("0 / " + numHits);
+						// HERE HERE HERE
+					}
+				});
+//				for (MatchCandidate matchCandidate : matches) {
+//					System.out.println("Line "
+//							+ rowNumberPlusOne
+//							+ " - "
+//							+ Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(),
+//									matchCandidate.getMatchCandidateTDBResource()));
+//				}
 
-				// RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
-				// ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
+				// RDFNode objectName =
+				// flowable.getTdbResource().getProperty(RDFS.label).getObject();
+				// ResIterator resIterator =
+				// ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label,
+				// objectName);
 				// while (resIterator.hasNext()) {
 				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
+				// ECO.hasDataSource,
 				// dataSourceProvider.getTdbResource())) {
 				// continue; // DON'T MATCH YOURSELF
 				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+				// if (!flowableMatchCandidate.hasProperty(RDF.type,
+				// ECO.Flowable)){
 				// continue; // NOT A FLOWABLE
 				// }
 				// // THIS IS A name-name MATCH
 				// System.out.println("name-name on line: "+rowNumberPlusOne);
-				// MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+				// MatchCandidate matchCandidate = new
+				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
 				// flowableMatchCandidate);
 				// matchCandidates.add(matchCandidate);
 				// }
 				//
 				// // Q-NAME = DB-SYN
-				// resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+				// resIterator =
+				// ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+				// objectName);
 				// while (resIterator.hasNext()) {
 				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
+				// ECO.hasDataSource,
 				// dataSourceProvider.getTdbResource())) {
 				// continue; // DON'T MATCH YOURSELF
 				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+				// if (!flowableMatchCandidate.hasProperty(RDF.type,
+				// ECO.Flowable)){
 				// continue; // NOT A FLOWABLE
 				// }
 				// System.out.println("name-synonym on line: "+rowNumberPlusOne);
 				// // THIS IS A name-synonym MATCH
-				// MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+				// MatchCandidate matchCandidate = new
+				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
 				// flowableMatchCandidate);
 				// matchCandidates.add(matchCandidate);
 				// }
 				//
 				// //
-				// StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
+				// StmtIterator stmtIterator =
+				// flowable.getTdbResource().listProperties(SKOS.altLabel);
 				// while (stmtIterator.hasNext()) {
 				// RDFNode objectAltName = stmtIterator.next().getObject();
-				// resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
+				// resIterator =
+				// ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label,
+				// objectAltName);
 				// // Q-SYN = DB-NAME
 				// while (resIterator.hasNext()) {
 				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
+				// ECO.hasDataSource,
 				// dataSourceProvider.getTdbResource())) {
 				// continue; // DON'T MATCH YOURSELF
 				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+				// if (!flowableMatchCandidate.hasProperty(RDF.type,
+				// ECO.Flowable)){
 				// continue; // NOT A FLOWABLE
 				// }
 				// System.out.println("synonym-name on line: "+rowNumberPlusOne);
 				// // THIS IS A synonym-name MATCH
-				// MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+				// MatchCandidate matchCandidate = new
+				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
 				// flowableMatchCandidate);
 				// matchCandidates.add(matchCandidate);
 				// }
 				//
 				// // Q-SYN = DB-SYN
-				// resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+				// resIterator =
+				// ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+				// objectName);
 				// while (resIterator.hasNext()) {
 				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource,
+				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
+				// ECO.hasDataSource,
 				// dataSourceProvider.getTdbResource())) {
 				// continue; // DON'T MATCH YOURSELF
 				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type, ECO.Flowable)){
+				// if (!flowableMatchCandidate.hasProperty(RDF.type,
+				// ECO.Flowable)){
 				// continue; // NOT A FLOWABLE
 				// }
 				// System.out.println("synonym-synonym on line: "+rowNumberPlusOne);
 				// // THIS IS A synonym-synonym MATCH
-				// MatchCandidate matchCandidate = new MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
+				// MatchCandidate matchCandidate = new
+				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
 				// flowableMatchCandidate);
 				// matchCandidates.add(matchCandidate);
 				// }
@@ -256,12 +291,12 @@ public class AutoMatchJob extends Job {
 			// NOW DO flowContext
 			String flowContextConcatinated = "";
 			for (int i : flowContextCSVColumnNumbers) {
-				if (assignedCSVColumns[i].isRequired() && dataRow.get(i-1).equals("")) {
+				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
 					flowContextConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
 				}
-				flowContextConcatinated += dataRow.get(i-1) + "\t";
+				flowContextConcatinated += dataRow.get(i - 1) + "\t";
 			}
 			if (!flowContextConcatinated.equals("")) {
 				if (flowContextMap.containsKey(flowContextConcatinated)) {
@@ -275,14 +310,15 @@ public class AutoMatchJob extends Job {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
 							ActiveTDB.replaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
-									dataRow.get(i-1));
+									dataRow.get(i - 1));
 						} else {
 							ActiveTDB.addLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
-									dataRow.get(i-1));
+									dataRow.get(i - 1));
 						}
 					}
 					final int flowContextCount = flowContextMap.size();
-					System.out.println("flowContextCount----> "+flowContextCount + "after adding "+flowContextConcatinated);
+					System.out.println("flowContextCount----> " + flowContextCount + "after adding "
+							+ flowContextConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextFlowContexts("0 / " + flowContextCount);
