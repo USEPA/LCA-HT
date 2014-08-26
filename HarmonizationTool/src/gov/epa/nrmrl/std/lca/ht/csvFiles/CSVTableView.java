@@ -66,7 +66,7 @@ public class CSVTableView extends ViewPart {
 	private static final String csvColumnDefaultTooltip = "Ignore Column";
 	private static Menu headerMenu;
 	private static Menu columnActionsMenu;
-	private static Menu ignoreRowMenu;
+	private static Menu rowMenu;
 	private static Menu fixCellMenu;
 	// private static Menu infoMenu;
 	private static Text popup;
@@ -87,7 +87,7 @@ public class CSVTableView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
-		
+
 		initializeTableViewer(composite);
 		initializePopup(composite);
 		initialize();
@@ -135,7 +135,7 @@ public class CSVTableView extends ViewPart {
 			hoverRow = table.indexOf(item);
 
 			hoverCol = getTableColumnNumFromPoint(hoverRow, ptClick);
-//			int dataHoverCol = hoverCol - 1;
+			// int dataHoverCol = hoverCol - 1;
 			if (hoverCol < 0) {
 				return;
 			}
@@ -160,7 +160,7 @@ public class CSVTableView extends ViewPart {
 
 				} else {
 					popup.setVisible(false);
-					ignoreRowMenu.setVisible(false);
+					rowMenu.setVisible(false);
 				}
 			}
 		}
@@ -215,7 +215,7 @@ public class CSVTableView extends ViewPart {
 			table.select(clickedRow);
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
-			ignoreRowMenu.setVisible(true);
+			rowMenu.setVisible(true);
 		}
 
 		private void rightClick(MouseEvent event) {
@@ -230,7 +230,7 @@ public class CSVTableView extends ViewPart {
 			}
 			clickedRow = table.indexOf(item);
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			int dataClickedCol = clickedCol - 1;
+			// int dataClickedCol = clickedCol - 1;
 			if (clickedCol < 0) {
 				return;
 			}
@@ -238,7 +238,7 @@ public class CSVTableView extends ViewPart {
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
 			if (colNumSelected == 0) {
-				ignoreRowMenu.setVisible(true);
+				rowMenu.setVisible(true);
 				// item.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 			} else {
 				// CSVColumnInfo csvColumnInfo =
@@ -255,7 +255,7 @@ public class CSVTableView extends ViewPart {
 				if (issueOfThisCell != null) {
 					fixCellMenu.setVisible(true);
 				} else {
-					ignoreRowMenu.setVisible(false);
+					rowMenu.setVisible(false);
 					fixCellMenu.setVisible(false);
 				}
 			}
@@ -273,19 +273,45 @@ public class CSVTableView extends ViewPart {
 		popup.setBounds(90, 90, 300, 60);
 	}
 
-	private static void initializeIgnoreRowMenu() {
-		ignoreRowMenu = new Menu(table);
+	private static void initializeRowMenu() {
+		rowMenu = new Menu(table);
 		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
 
 		MenuItem menuItem;
 
-		menuItem = new MenuItem(ignoreRowMenu, SWT.NORMAL);
+		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
 		menuItem.setText("ignore row");
 
-		menuItem = new MenuItem(ignoreRowMenu, SWT.NORMAL);
+		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 		menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
 		menuItem.setText("use row");
+
+	}
+
+	private static void initializeRowMenu(int phase) {
+		rowMenu = new Menu(table);
+		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
+
+		MenuItem menuItem;
+
+		if (phase == 1) {
+			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+			menuItem.setText("ignore row");
+
+			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+			menuItem.setText("use row");
+		} else if (phase == 2) {
+			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+			menuItem.setText("ignore row");
+
+			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+			menuItem.setText("use row");
+		}
 
 	}
 
@@ -336,7 +362,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void fixCurrentlySelectedCell() {
-//		int dataColNumSelected = colNumSelected - 1;
+		// int dataColNumSelected = colNumSelected - 1;
 		if (colNumSelected == 0) {
 			return;
 		}
@@ -470,7 +496,7 @@ public class CSVTableView extends ViewPart {
 	private static class StandardizeAllCASListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-//			int dataColNumSelected = colNumSelected - 1;
+			// int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				return;
 			}
@@ -503,7 +529,7 @@ public class CSVTableView extends ViewPart {
 	private static class AutoResolveColumnListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-//			int dataColNumSelected = colNumSelected - 1;
+			// int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				return;
 			}
@@ -534,7 +560,7 @@ public class CSVTableView extends ViewPart {
 				System.out.println("What's going on here?");
 				return;
 			}
-//			int dataColNumSelected = colNumSelected - 1;
+			// int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				// MAY HANDLE THIS AT SOME POINT
 				System.out.println("Clicked on col. zero.  How did this fire?");
@@ -746,7 +772,7 @@ public class CSVTableView extends ViewPart {
 
 	private static SelectionListener colSelectionListener = new SelectionListener() {
 
-		private void doit(SelectionEvent e){
+		private void doit(SelectionEvent e) {
 			System.out.println("SelectionListener event e= " + e);
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
@@ -756,7 +782,7 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 		}
-		
+
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			doit(e);
@@ -834,17 +860,18 @@ public class CSVTableView extends ViewPart {
 		tableViewer.getControl().setFocus();
 	}
 
-	public static void reset(){
+	public static void reset() {
 		tableViewer.setInput(null);
 		removeColumns();
 	}
+
 	public static void initialize() {
 		initializeTable();
-		initializeIgnoreRowMenu();
+		initializeRowMenu();
 		initializeFixRowMenu();
 		// CONSIDER: headerMenu;
 		// CONSIDER: columnActionsMenu;
-		// CONSIDER: ignoreRowMenu;
+		// CONSIDER: rowMenu;
 		// CONSIDER: fixCellMenu;
 		rowsToIgnore.clear();
 		rowNumSelected = -1;
@@ -901,7 +928,7 @@ public class CSVTableView extends ViewPart {
 
 	private static void fixOneIssue(Issue issue) {
 		int colNumber = issue.getColNumber();
-//		int colNumber = dataColNumber + 1;
+		// int colNumber = dataColNumber + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		String startingText = tableItem.getText(colNumber);
 		System.out.println("trying to fix: " + startingText);
@@ -1013,7 +1040,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static int autoFixColumn(int colIndex) {
-//		int dataColIndex = colIndex - 1;
+		// int dataColIndex = colIndex - 1;
 		if (colIndex == 0) {
 			return 0;
 		}
@@ -1073,7 +1100,7 @@ public class CSVTableView extends ViewPart {
 
 	private static void colorCell(Issue issue) {
 		int colIndex = issue.getColNumber();
-//		int colIndex = dataColIndex + 1;
+		// int colIndex = dataColIndex + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		tableItem.setBackground(colIndex, issue.getStatus().getColor());
 	}

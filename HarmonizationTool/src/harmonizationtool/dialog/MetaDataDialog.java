@@ -440,7 +440,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				return;
 			}
 			DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
-			// THE ABOVE NEEDS WORK
+			// THE ABOVE ROUTINE NEEDS WORK
 
 			System.out.println("Deleting " + dataSourceToDelete);
 			comboSelectorDataSource.remove(dataSourceToDelete);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Harmonization Tool" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0.20140723" useFeatures="false" includeLaunchers="true">
+<product name="Harmonization Tool" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0.20140826" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
