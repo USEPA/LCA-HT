@@ -31,6 +31,7 @@ public class DataSourceKeeper {
 
 	public static boolean remove(DataSourceProvider dataSourceProvider) {
 		dataSourceProvider.remove();
+		// TODO - NEEDS TO REMOVE ALL DATA
 		return dataSourceProviderList.remove(dataSourceProvider);
 	}
 

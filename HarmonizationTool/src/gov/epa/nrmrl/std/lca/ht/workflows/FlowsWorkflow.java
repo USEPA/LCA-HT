@@ -259,7 +259,7 @@ public class FlowsWorkflow extends ViewPart {
 		
 		textMatchFlowProperties = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
 		textMatchFlowProperties.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		// textMatchFlowContexts.setText("(0 of 30");
+		// textMatchFlowProperties.setText("(0 of 30");
 		GridData gd_textMatchFlowProperties = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textMatchFlowProperties.heightHint = 45;
 		gd_textMatchFlowProperties.widthHint = 150;
@@ -400,6 +400,8 @@ public class FlowsWorkflow extends ViewPart {
 			List<CSVColumnInfo> requiredCSVColumnInfo = new ArrayList<CSVColumnInfo>();
 			boolean checkForRequiredFlowableFields = false;
 			boolean checkForRequiredFlowContextFields = false;
+			boolean checkForRequiredFlowPropertyFields = false;
+
 			int countOfAssignedFields = 0;
 			for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
 				if (csvColumnInfo == null) {
@@ -411,6 +413,9 @@ public class FlowsWorkflow extends ViewPart {
 				}
 				if (csvColumnInfo.sameRDFClassAs(FlowContext.getRdfclass())) {
 					checkForRequiredFlowContextFields = true;
+				}
+				if (csvColumnInfo.sameRDFClassAs(FlowProperty.getRdfclass())) {
+					checkForRequiredFlowPropertyFields = true;
 				}
 				if (csvColumnInfo.isRequired()) {
 					requiredCSVColumnInfo.add(csvColumnInfo);
@@ -454,6 +459,26 @@ public class FlowsWorkflow extends ViewPart {
 					}
 				}
 			}
+			if (checkForRequiredFlowPropertyFields) {
+				for (CSVColumnInfo requiredFlowPropertyCSVColumnInfo : FlowProperty.getHeaderMenuObjects()) {
+					if (requiredFlowPropertyCSVColumnInfo.isRequired()) {
+						boolean found = false;
+						for (CSVColumnInfo gotIt : requiredCSVColumnInfo) {
+							if (gotIt != null) {
+								if (gotIt.sameRDFClassAs(requiredFlowPropertyCSVColumnInfo)) {
+									found = true;
+								}
+							}
+						}
+						if (found == false) {
+							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+									"For each flow property, the " + requiredFlowPropertyCSVColumnInfo.getHeaderString()
+											+ " is required");
+						}
+					}
+				}
+			}
+
 			// int colsChecked = CSVTableView.countAssignedColumns();
 			// int colsChecked = 0;
 
@@ -576,30 +601,35 @@ public class FlowsWorkflow extends ViewPart {
 
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
+			CSVTableView.reset();
+			CSVTableView.initialize();
+			btnLoadCSV.setEnabled(true);
+			textLoadCSV.setText("");
+
+			btnCheckData.setEnabled(false);
+			textCheckData.setText("");
+
+			btnCommit.setEnabled(false);
+			textCommit.setText("");
+
+			btnMatchFlowables.setEnabled(false);
+			textMatchFlowables.setText("");
+
+			btnMatchFlowContexts.setEnabled(false);
+			textMatchFlowContexts.setText("");
+
+			btnMatchFlowProperties.setEnabled(false);
+			textMatchFlowProperties.setText("");
+
+			btnConcludeFile.setEnabled(false);
+
 			if (btnConcludeFile.getText().equals("Close CSV")) {
-				CSVTableView.reset();
-				CSVTableView.initialize();
-				btnLoadCSV.setEnabled(true);
-				textLoadCSV.setText("");
-
-				btnCheckData.setEnabled(false);
-				textCheckData.setText("");
-
-				btnCommit.setEnabled(false);
-				textCommit.setText("");
-
-				btnMatchFlowables.setEnabled(false);
-
-				btnConcludeFile.setEnabled(false);
+				// TODO - CONFIRM WITH USER?
+				// TODO - INDICATE THAT FILE CONTENT WAS SAVED
 			} else if (btnConcludeFile.getText().equals("Cancel CSV")) {
+				// TODO - CONFIRM WITH USER
 				// TODO - REMOVE THE FileMD
-				CSVTableView.reset();
-				CSVTableView.initialize();
-				btnLoadCSV.setEnabled(true);
-				btnCheckData.setEnabled(false);
-				btnMatchFlowables.setEnabled(false);
-				btnCommit.setEnabled(false);
-				btnConcludeFile.setEnabled(false);
+				// TODO - INDICATE THAT FILE CONTENT WAS REMOVED
 			}
 		}
 
@@ -614,292 +644,126 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	private int safeCommitColumns2TDB() {
-		// TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
-		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
-		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
-		// Model model = ActiveTDB.tdbModel;
-
-		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
-
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-				.getDataSourceProvider();
-
-		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
-		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
-		List<Flow> flows = new ArrayList<Flow>();
-
-		long triples = ActiveTDB.tdbModel.size();
-		Table table = CSVTableView.getTable();
-
-		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-				.getAssignedCSVColumnInfo();
-		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
-		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
-
-		for (int i = 0; i < assignedCSVColumns.length; i++) {
-			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-			if (csvColumnInfo == null) {
-				continue;
-			}
-			if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
-				flowableCSVColumnNumbers.add(i);
-			} else if (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
-				flowContextCSVColumnNumbers.add(i);
-			}
-		}
-		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
-			if (rowsToIgnore.contains(rowNumber)) {
-				continue;
-			}
-			Flowable flowable = null;
-			FlowContext flowContext = null;
-			int rowNumberPlusOne = rowNumber + 1;
-			// Literal rowLiteral =
-			// ActiveTDB.createTypedLiteral(rowNumberPlusOne);
-
-			Item item = table.getItem(rowNumber);
-			DataRow dataRow = (DataRow) item.getData();
-
-			String flowableConcatinated = "";
-			for (int i : flowableCSVColumnNumbers) {
-				flowableConcatinated += dataRow.get(i) + "\t";
-			}
-			if (!flowableConcatinated.equals("")) {
-				if (flowableMap.containsKey(flowableConcatinated)) {
-					flowable = flowableMap.get(flowableConcatinated);
-				} else {
-					flowable = new Flowable();
-					flowableMap.put(flowableConcatinated, flowable);
-					ActiveTDB.replaceResource(flowable.getTdbResource(), ECO.hasDataSource,
-							dataSourceProvider.getTdbResource());
-					for (int i : flowableCSVColumnNumbers) {
-						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.replaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
-							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i));
-
-						} else {
-							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
-							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i));
-						}
-					}
-				}
-				ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
-			}
-
-			String flowContextConcatinated = "";
-			for (int i : flowContextCSVColumnNumbers) {
-				flowContextConcatinated += dataRow.get(i) + "\t";
-			}
-			if (!flowContextConcatinated.equals("")) {
-				if (flowContextMap.containsKey(flowContextConcatinated)) {
-					flowContext = flowContextMap.get(flowContextConcatinated);
-				} else {
-					flowContext = new FlowContext();
-					flowContextMap.put(flowContextConcatinated, flowContext);
-					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
-							dataSourceProvider.getTdbResource());
-					for (int i : flowContextCSVColumnNumbers) {
-						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.replaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
-									dataRow.get(i));
-						} else {
-							ActiveTDB.addLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
-									dataRow.get(i));
-						}
-					}
-				}
-				ActiveTDB.addLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
-
-			}
-			if (flowable != null && flowContext != null) {
-				Flow tempFlow = new Flow();
-				tempFlow.setFlowable(flowable);
-				tempFlow.setFlowContext(flowContext);
-				if (flows.contains(tempFlow)) {
-					tempFlow.remove();
-				} else {
-					ActiveTDB.replaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-							dataSourceProvider.getTdbResource());
-					ActiveTDB.addLiteral(tempFlow.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
-					flows.add(tempFlow);
-				}
-			}
-		}
-		long newTriples = ActiveTDB.tdbModel.size() - triples;
-		return (int) newTriples;
-	}
-
-	// private int commitAndSearch() {
-	// // COPIED FROM safeCommitColumns2TDB !!
-	// // TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
-	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-	// // TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
-	// // BETTER YET, AN THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
-	// // Model model = ActiveTDB.tdbModel;
-	//
-	// long triples = ActiveTDB.tdbModel.size();
-	// Table table = CSVTableView.getTable();
-	//
-	// CSVColumnInfo[] assignedCSVColumns =
-	// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-	// .getAssignedCSVColumnInfo();
-	// for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
-	// int rowNumberPlusOne = rowNumber + 1;
-	// Literal rowLiteral = ActiveTDB.createTypedLiteral(rowNumberPlusOne);
-	//
-	// Item item = table.getItem(rowNumber);
-	// DataRow dataRow = (DataRow) item.getData();
-	// Flowable flowable = new Flowable();
-	// FlowContext flowContext = new FlowContext();
-	// for (int colNumber = 1; colNumber < assignedCSVColumns.length;
-	// colNumber++) {
-	// CSVColumnInfo csvColumnnInfo = assignedCSVColumns[colNumber];
-	// if (csvColumnnInfo != null) {
-	// String headerName = csvColumnnInfo.getHeaderString();
-	// if (headerName.equals("Flowable Name")) {
-	// if (flowable.getName() != null) {
-	// Logger.getLogger("run").warn("# Trying to add a second name to this flowable");
-	// }
-	// flowable.setName(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("Flowable Synonym")) {
-	// flowable.addSynonym(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("CAS")) {
-	// flowable.setCas(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("Chemical formula")) {
-	// flowable.setFormula(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("SMILES")) {
-	// flowable.setSmiles(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("Context (primary)")) {
-	// flowContext.setPrimaryFlowContext(dataRow.get(colNumber - 1));
-	// } else if (headerName.equals("Context (additional)")) {
-	// flowContext.addSupplementaryFlowContext(dataRow.get(colNumber - 1));
-	// }
-	// }
-	// // if (flowable.fidMatches > 0)
-	// Flow flow = new Flow();
-	// DataSourceProvider dataSourceProvider =
-	// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-	// .getDataSourceProvider();
-	// // dataSourceProvider.getTdbResource().addProperty(ECO.hasFlow,
-	// // flow.getTdbResource());
-	// flow.getTdbResource().addProperty(ECO.hasDataSource,
-	// dataSourceProvider.getTdbResource());
-	// if (flowable.getName() != null) {
-	// if (!flowable.getName().equals("")) {
-	// flowable.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber,
-	// rowLiteral);
-	// flowable.getTdbResource().addProperty(ECO.hasDataSource,
-	// dataSourceProvider.getTdbResource());
-	// flow.getTdbResource().addProperty(ECO.hasFlowable,
-	// flowable.getTdbResource());
-	// }
-	// }
-	// if (flowContext.getPrimaryFlowContext() != null) {
-	// if (!flowContext.getPrimaryFlowContext().equals("")) {
-	// flowContext.getTdbResource().addLiteral(FEDLCA.sourceTableRowNumber,
-	// rowLiteral);
-	// flowContext.getTdbResource().addProperty(ECO.hasDataSource,
-	// dataSourceProvider.getTdbResource());
-	// flow.getTdbResource().addProperty(FASC.hasCompartment,
-	// flowContext.getTdbResource());
-	// }
-	// }
-	// }
-	// long newTriples = ActiveTDB.tdbModel.size() - triples;
-	// return (int) newTriples;
-	// }
-
-	// public static Integer[] autoMatch() {
-	// Integer[] results = new Integer[3];
-	// List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
-	// DataSourceProvider dataSourceProvider =
-	// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-	// .getDataSourceProvider();
-	//
-	// // Model model = ActiveTDB.tdbModel;
-	// Resource dataSourceTDBResource = dataSourceProvider.getTdbResource();
-	// // ResIterator resourceIterator =
-	// // tdbModel.listResourcesWithProperty(ECO.hasDataSource,
-	// // dataSourceTDBResource.asNode());
-	// ResIterator resourceIterator =
-	// ActiveTDB.tdbModel.listResourcesWithProperty(ECO.hasDataSource,
-	// dataSourceTDBResource);
-	// int count = 0;
-	// while (resourceIterator.hasNext()) {
-	// count++;
-	// System.out.println("count: " + count);
-	// Resource dataItem = resourceIterator.next();
-	// int rowNumber = -1;
-	// Statement rowNumberStatement =
-	// dataItem.getProperty(FEDLCA.sourceTableRowNumber);
-	// if (rowNumberStatement != null) {
-	// if (rowNumberStatement.getObject().isLiteral()) {
-	// rowNumber = rowNumberStatement.getObject().asLiteral().getInt();
-	// // System.out.println("rowNumber = " + rowNumber);
-	// StmtIterator dataItemProperties = dataItem.listProperties();
-	// while (dataItemProperties.hasNext()) {
-	// Statement dataItemStatement = dataItemProperties.next();
-	// Property dataItemProperty = dataItemStatement.getPredicate();
-	// RDFNode dataItemRDFNode = dataItemStatement.getObject();
-	// // System.out.println("dataItemStatement: "+dataItemStatement);
-	//
-	// // NOW FIND OTHER "dataItems" WITH THE SAME PROPERTY AND
-	// // RDFNode
-	//
-	// if (!dataItemProperty.equals(FEDLCA.sourceTableRowNumber)) {
-	// ResIterator matchingResourcesIterator =
-	// ActiveTDB.tdbModel.listSubjectsWithProperty(
-	// dataItemProperty, dataItemRDFNode);
-	// while (matchingResourcesIterator.hasNext()) {
-	// System.out.println("Found a match for dataItemStatement: " +
-	// dataItemStatement);
-	// Resource matchingResource = matchingResourcesIterator.next();
-	// if (!matchingResource.equals(dataItem)) {
-	// MatchCandidate matchCandidate = new MatchCandidate(rowNumber, dataItem,
-	// matchingResource);
-	// if (matchCandidate.confirmRDFtypeMatch()) {
-	// matchCandidates.add(matchCandidate);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// System.out.println("matchCandidates.size()=" + matchCandidates.size());
-	// results[0] = matchCandidates.size();
-	// results[1] = 0;
-	// results[2] = 0;
-	// return results;
-	// // while (flowablePropertyStatements.hasNext()) {
-	// // Statement flowContextStatement = flowablePropertyStatements.next();
-	// // ResIterator matchIterator =
-	// // tdbModel.listSubjectsWithProperty(flowContextStatement.getPredicate(),
-	// // flowContextStatement.getObject());
-	// // while (matchIterator.hasNext()) {
-	// // Resource matchThing = matchIterator.next();
-	// // if (!matchThing.equals(flowContextStatement.getResource())) {
-	// // Statement rowNumberStatement =
-	// // flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-	// // int row =
-	// // ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
-	// // CSVTableView.getTable().getItem(row - 1).setBackground(0,
-	// // SWTResourceManager.getColor(SWT.COLOR_GREEN));
-	// // }
-	// // }
-	// // }
-	// // thing = tdbModel.listSubjectsWithProperty(arg0, arg1)
-	// // }
-	//
-	// // thing = dataSourceTDBResource.getProperty(FASC.hasFl)
-	// }
+//	private int safeCommitColumns2TDB() {
+//		// TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
+//		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
+//		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
+//		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
+//		// Model model = ActiveTDB.tdbModel;
+//
+//		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
+//
+//		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+//				.getDataSourceProvider();
+//
+//		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
+//		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
+//		List<Flow> flows = new ArrayList<Flow>();
+//
+//		long triples = ActiveTDB.tdbModel.size();
+//		Table table = CSVTableView.getTable();
+//
+//		CSVColumnInfo[] assignedCSVColumns = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+//				.getAssignedCSVColumnInfo();
+//		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
+//		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
+//
+//		for (int i = 0; i < assignedCSVColumns.length; i++) {
+//			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+//			if (csvColumnInfo == null) {
+//				continue;
+//			}
+//			if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
+//				flowableCSVColumnNumbers.add(i);
+//			} else if (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
+//				flowContextCSVColumnNumbers.add(i);
+//			}
+//		}
+//		for (int rowNumber = 0; rowNumber < table.getItemCount(); rowNumber++) {
+//			if (rowsToIgnore.contains(rowNumber)) {
+//				continue;
+//			}
+//			Flowable flowable = null;
+//			FlowContext flowContext = null;
+//			int rowNumberPlusOne = rowNumber + 1;
+//			// Literal rowLiteral =
+//			// ActiveTDB.createTypedLiteral(rowNumberPlusOne);
+//
+//			Item item = table.getItem(rowNumber);
+//			DataRow dataRow = (DataRow) item.getData();
+//
+//			String flowableConcatinated = "";
+//			for (int i : flowableCSVColumnNumbers) {
+//				flowableConcatinated += dataRow.get(i) + "\t";
+//			}
+//			if (!flowableConcatinated.equals("")) {
+//				if (flowableMap.containsKey(flowableConcatinated)) {
+//					flowable = flowableMap.get(flowableConcatinated);
+//				} else {
+//					flowable = new Flowable();
+//					flowableMap.put(flowableConcatinated, flowable);
+//					ActiveTDB.replaceResource(flowable.getTdbResource(), ECO.hasDataSource,
+//							dataSourceProvider.getTdbResource());
+//					for (int i : flowableCSVColumnNumbers) {
+//						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+//						if (csvColumnInfo.isUnique()) {
+//							ActiveTDB.replaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
+//							// dataRow.getCSVTableIndex(i));
+//									dataRow.get(i));
+//
+//						} else {
+//							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
+//							// dataRow.getCSVTableIndex(i));
+//									dataRow.get(i));
+//						}
+//					}
+//				}
+//				ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+//			}
+//
+//			String flowContextConcatinated = "";
+//			for (int i : flowContextCSVColumnNumbers) {
+//				flowContextConcatinated += dataRow.get(i) + "\t";
+//			}
+//			if (!flowContextConcatinated.equals("")) {
+//				if (flowContextMap.containsKey(flowContextConcatinated)) {
+//					flowContext = flowContextMap.get(flowContextConcatinated);
+//				} else {
+//					flowContext = new FlowContext();
+//					flowContextMap.put(flowContextConcatinated, flowContext);
+//					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
+//							dataSourceProvider.getTdbResource());
+//					for (int i : flowContextCSVColumnNumbers) {
+//						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+//						if (csvColumnInfo.isUnique()) {
+//							ActiveTDB.replaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+//									dataRow.get(i));
+//						} else {
+//							ActiveTDB.addLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+//									dataRow.get(i));
+//						}
+//					}
+//				}
+//				ActiveTDB.addLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+//
+//			}
+//			if (flowable != null && flowContext != null) {
+//				Flow tempFlow = new Flow();
+//				tempFlow.setFlowable(flowable);
+//				tempFlow.setFlowContext(flowContext);
+//				if (flows.contains(tempFlow)) {
+//					tempFlow.remove();
+//				} else {
+//					ActiveTDB.replaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+//							dataSourceProvider.getTdbResource());
+//					ActiveTDB.addLiteral(tempFlow.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+//					flows.add(tempFlow);
+//				}
+//			}
+//		}
+//		long newTriples = ActiveTDB.tdbModel.size() - triples;
+//		return (int) newTriples;
+//	}
 
 	private void autoMatch_01() {
 		List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
@@ -954,42 +818,7 @@ public class FlowsWorkflow extends ViewPart {
 			}
 		}
 		System.out.println("matchCandidates.size()=" + matchCandidates.size());
-		// while (flowablePropertyStatements.hasNext()) {
-		// Statement flowContextStatement = flowablePropertyStatements.next();
-		// ResIterator matchIterator =
-		// tdbModel.listSubjectsWithProperty(flowContextStatement.getPredicate(),
-		// flowContextStatement.getObject());
-		// while (matchIterator.hasNext()) {
-		// Resource matchThing = matchIterator.next();
-		// if (!matchThing.equals(flowContextStatement.getResource())) {
-		// Statement rowNumberStatement =
-		// flowContextTdbResource.getProperty(FEDLCA.sourceTableRowNumber);
-		// int row =
-		// ActiveTDB.getIntegerFromLiteral(rowNumberStatement.getObject());
-		// CSVTableView.getTable().getItem(row - 1).setBackground(0,
-		// SWTResourceManager.getColor(SWT.COLOR_GREEN));
-		// }
-		// }
-		// }
-		// thing = tdbModel.listSubjectsWithProperty(arg0, arg1)
-		// }
-
-		// thing = dataSourceTDBResource.getProperty(FASC.hasFl)
 	}
-
-	// private int safeCommitFlowContexts2TDB() {
-	// // THE SAFE PART MEANS
-	// // PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-	// // TRIPLES FROM THIS FILE SHOULD BE REMOVED
-	// Model tdbModel = ActiveTDB.tdbModel;
-	//
-	// long triples = tdbModel.size();
-	// // CSVColumnInfo[] FlowableCSVColumnInfos =
-	// // CSVTableView.getFlowableCSVColumnInfos();
-	//
-	// long newTriples = tdbModel.size() - triples;
-	// return (int) newTriples;
-	// }
 
 	public void queryCallback(Integer[] results, String key) {
 		// IWorkbenchPage page =

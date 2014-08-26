@@ -746,8 +746,7 @@ public class CSVTableView extends ViewPart {
 
 	private static SelectionListener colSelectionListener = new SelectionListener() {
 
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+		private void doit(SelectionEvent e){
 			System.out.println("SelectionListener event e= " + e);
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
@@ -756,19 +755,16 @@ public class CSVTableView extends ViewPart {
 					headerMenu.setVisible(true);
 				}
 			}
+		}
+		
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
 		};
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			if (e.getSource() instanceof TableColumn) {
-				System.out.println("SelectionListener event e= " + e);
-				TableColumn col = (TableColumn) e.getSource();
-				System.out.println("(widgetDefaultSelected) colNumSelected set to " + colNumSelected);
-				colNumSelected = table.indexOf(col);
-				if (colNumSelected > 0) {
-					headerMenu.setVisible(true);
-				}
-			}
+			doit(e);
 		}
 
 	};
@@ -1068,7 +1064,7 @@ public class CSVTableView extends ViewPart {
 		return issuesRemaining;
 	}
 
-	private static void colorCell(int rowNumber, int colNumber, Color color) {
+	public static void colorCell(int rowNumber, int colNumber, Color color) {
 		if (rowNumber > -1 && rowNumber < table.getItemCount()) {
 			TableItem tableItem = table.getItem(rowNumber);
 			tableItem.setBackground(colNumber, color);

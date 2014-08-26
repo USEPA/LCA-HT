@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 
 public final class CsvTableViewerColumn extends ViewerColumn {
-	private CsvTableViewerColumnType type = null;
+//	private CsvTableViewerColumnType type = null;
 	private CSVColCheck csvColCheck = null;
 	private TableColumn column;
 	private int columnNumber;
@@ -39,9 +39,9 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 		this.csvColCheck = csvColCheck;
 	}
 
-	public void setType(CsvTableViewerColumnType type) {
-		this.type = type;
-	}
+//	public void setType(CsvTableViewerColumnType type) {
+//		this.type = type;
+//	}
 
 	public void setColumn(TableColumn column) {
 		this.column = column;
@@ -67,9 +67,9 @@ public final class CsvTableViewerColumn extends ViewerColumn {
 		return column;
 	}
 
-	public CsvTableViewerColumnType getType() {
-		return type;
-	}
+//	public CsvTableViewerColumnType getType() {
+//		return type;
+//	}
 
 	public void performStandaredChecks() {
 		if (csvColCheck == null){

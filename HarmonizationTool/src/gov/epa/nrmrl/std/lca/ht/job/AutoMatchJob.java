@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -24,7 +25,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -69,6 +72,8 @@ public class AutoMatchJob extends Job {
 
 		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
+		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
+
 		List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
 
 		List<Flow> flows = new ArrayList<Flow>();
@@ -79,6 +84,7 @@ public class AutoMatchJob extends Job {
 		CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
+		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
 
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < assignedCSVColumns.length; i++) {
@@ -90,6 +96,8 @@ public class AutoMatchJob extends Job {
 				flowableCSVColumnNumbers.add(i);
 			} else if (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
 				flowContextCSVColumnNumbers.add(i);
+			} else if (csvColumnInfo.getRDFClass().equals(FlowProperty.getRdfclass())) {
+				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}
 
@@ -116,7 +124,9 @@ public class AutoMatchJob extends Job {
 			}
 			Flowable flowable = null;
 			FlowContext flowContext = null;
-			int rowNumberPlusOne = rowNumber + 1;
+			FlowProperty flowProperty = null;
+
+			final int rowNumberPlusOne = rowNumber + 1;
 			// Literal rowLiteral =
 			// ActiveTDB.createTypedLiteral(rowNumberPlusOne);
 
@@ -154,7 +164,8 @@ public class AutoMatchJob extends Job {
 						}
 					}
 					final int flowableCount = flowableMap.size();
-					System.out.println("flowableCount ----> " + flowableCount + "after adding " + flowableConcatinated);
+					System.out
+							.println("flowableCount ----> " + flowableCount + " after adding " + flowableConcatinated);
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
@@ -175,17 +186,24 @@ public class AutoMatchJob extends Job {
 				matchRows.add(matchCandidatesThisRow);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-//						CSVTableView.setTextFlowContexts("0 / " + numHits);
-						// HERE HERE HERE
+						if (numHits == 0) {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+						} else if (numHits == 1) {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+									SWTResourceManager.getColor(SWT.COLOR_GREEN));
+						} else {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
+						}
 					}
 				});
-//				for (MatchCandidate matchCandidate : matches) {
-//					System.out.println("Line "
-//							+ rowNumberPlusOne
-//							+ " - "
-//							+ Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(),
-//									matchCandidate.getMatchCandidateTDBResource()));
-//				}
+				// for (MatchCandidate matchCandidate : matches) {
+				// System.out.println("Line "
+				// + rowNumberPlusOne
+				// + " - "
+				// + Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(),
+				// matchCandidate.getMatchCandidateTDBResource()));
+				// }
 
 				// RDFNode objectName =
 				// flowable.getTdbResource().getProperty(RDFS.label).getObject();
@@ -328,10 +346,54 @@ public class AutoMatchJob extends Job {
 				ActiveTDB.addLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
-			if (flowable != null && flowContext != null) {
+			
+			// NOW DO flowProperty
+			String flowPropertyConcatinated = "";
+			for (int i : flowPropertyCSVColumnNumbers) {
+				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
+					flowPropertyConcatinated = "";
+					// REQUIRED FIELDS CAN NOT BE BLANK
+					break;
+				}
+				flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
+			}
+			if (!flowPropertyConcatinated.equals("")) {
+				if (flowPropertyMap.containsKey(flowPropertyConcatinated)) {
+					flowProperty = flowPropertyMap.get(flowPropertyConcatinated);
+				} else {
+					flowProperty = new FlowProperty();
+					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
+					ActiveTDB.replaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
+							dataSourceProvider.getTdbResource());
+					for (int i : flowPropertyCSVColumnNumbers) {
+						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+						if (csvColumnInfo.isUnique()) {
+							ActiveTDB.replaceLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+									dataRow.get(i - 1));
+						} else {
+							ActiveTDB.addLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+									dataRow.get(i - 1));
+						}
+					}
+					final int flowPropertyCount = flowPropertyMap.size();
+					System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
+							+ flowPropertyConcatinated);
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							FlowsWorkflow.setTextFlowProperties("0 / " + flowPropertyCount);
+						}
+					});
+				}
+				ActiveTDB.addLiteral(flowProperty.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+
+			}
+						
+			if (flowable != null && flowContext != null && flowProperty != null)  {
 				Flow tempFlow = new Flow();
 				tempFlow.setFlowable(flowable);
 				tempFlow.setFlowContext(flowContext);
+				tempFlow.setFlowProperty(flowProperty);
+
 				if (flows.contains(tempFlow)) {
 					tempFlow.remove();
 				} else {
