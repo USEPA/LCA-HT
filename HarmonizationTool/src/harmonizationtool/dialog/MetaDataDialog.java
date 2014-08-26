@@ -425,6 +425,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private final class DeleteButtonClickListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
+			// TODO THIS ROUTINE NEEDS WORK!  THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
 			String dataSourceToDelete = comboSelectorDataSource.getText();
 			GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
 
@@ -439,6 +440,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 				return;
 			}
 			DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
+			// THE ABOVE NEEDS WORK
+
 			System.out.println("Deleting " + dataSourceToDelete);
 			comboSelectorDataSource.remove(dataSourceToDelete);
 			if (comboSelectorDataSource.getItemCount() == 0) {
