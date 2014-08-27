@@ -98,6 +98,7 @@ public class FEDLCA {
 	 * </p>
 	 */
 	public static final Property hasCAS = m_model.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasCAS");
+	public static final Property hasFormattedCAS = m_model.createProperty("http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasFormattedCAS");
 
 	/**
 	 * <p>

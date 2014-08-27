@@ -273,23 +273,23 @@ public class CSVTableView extends ViewPart {
 		popup.setBounds(90, 90, 300, 60);
 	}
 
-	private static void initializeRowMenu() {
-		rowMenu = new Menu(table);
-		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
+	// private static void initializeRowMenu() {
+	// rowMenu = new Menu(table);
+	// RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
+	//
+	// MenuItem menuItem;
+	//
+	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+	// menuItem.setText("ignore row");
+	//
+	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+	// menuItem.setText("use row");
+	//
+	// }
 
-		MenuItem menuItem;
-
-		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-		menuItem.setText("ignore row");
-
-		menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-		menuItem.setText("use row");
-
-	}
-
-	private static void initializeRowMenu(int phase) {
+	public static void initializeRowMenu(int phase) {
 		rowMenu = new Menu(table);
 		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
 
@@ -306,11 +306,11 @@ public class CSVTableView extends ViewPart {
 		} else if (phase == 2) {
 			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-			menuItem.setText("ignore row");
+			menuItem.setText("match contents");
 
-			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-			menuItem.setText("use row");
+			// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+			// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+			// menuItem.setText("use row");
 		}
 
 	}
@@ -335,10 +335,15 @@ public class CSVTableView extends ViewPart {
 					if (rowsToIgnore.contains(rowNumSelected)) {
 						rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					}
+					// --------- OR TO MATCH THINGS
+				} else if (menuItemText.equals("match contents")) {
+//					tableViewer.getTable().getItem(rowNumSelected)
+//							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					// SEND DATA TO THE APPROPRIATE VIEW FOR MATCHING
 				}
+
 			}
 		}
-
 	}
 
 	private static void initializeFixRowMenu() {
@@ -518,7 +523,7 @@ public class CSVTableView extends ViewPart {
 
 					List<DataRow> dataRowList = tableProvider.getData();
 					DataRow toFix = dataRowList.get(i);
-					toFix.set(colNumSelected, fixedValue);
+					toFix.set(colNumSelected - 1, fixedValue);
 					item.setText(colNumSelected, fixedValue);
 				}
 			}
@@ -867,7 +872,7 @@ public class CSVTableView extends ViewPart {
 
 	public static void initialize() {
 		initializeTable();
-		initializeRowMenu();
+		initializeRowMenu(1);
 		initializeFixRowMenu();
 		// CONSIDER: headerMenu;
 		// CONSIDER: columnActionsMenu;
@@ -935,9 +940,11 @@ public class CSVTableView extends ViewPart {
 		QACheck qaCheck = issue.getQaCheck();
 		if (qaCheck.getReplacement() != null) {
 			Matcher matcher = qaCheck.getPattern().matcher(startingText);
-			String thing = matcher.replaceFirst(qaCheck.getReplacement());
-			System.out.println("The value is now ->" + thing + "<-");
-			tableItem.setText(colNumber, thing);
+			String fixedText = matcher.replaceFirst(qaCheck.getReplacement());
+			System.out.println("The value is now ->" + fixedText + "<-");
+			tableItem.setText(colNumber, fixedText);
+			TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber())
+					.set(issue.getColNumber() - 2, fixedText);
 			issue.setStatus(Status.RESOLVED);
 			colorCell(issue);
 		}

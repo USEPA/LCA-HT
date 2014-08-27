@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -162,6 +163,11 @@ public class AutoMatchJob extends Job {
 							// dataRow.getCSVTableIndex(i));
 									dataRow.get(i - 1));
 						}
+//						// FIXME - BELOW: A HACK TO ADD A FORMATTED VERSION OF THE CAS
+//						if (csvColumnInfo.getHeaderString().equals("CAS")) {
+//							ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.hasFormattedCAS,
+//									Flowable.standardizeCAS(dataRow.get(i - 1)));
+//						}
 					}
 					final int flowableCount = flowableMap.size();
 					System.out
@@ -177,11 +183,13 @@ public class AutoMatchJob extends Job {
 				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 				// Q-NAME = DB-NAME
 
-				List<MatchCandidate> matches = Flowable.findMatches(flowable);
+				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
 				final int numHits = matches.size();
 				MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-				for (int i = 0; i < matches.size(); i++) {
-					matchCandidatesThisRow[i] = matches.get(i);
+				int counter = 0;
+				for (MatchCandidate mc : matches) {
+					matchCandidatesThisRow[counter] = mc;
+					counter++;
 				}
 				matchRows.add(matchCandidatesThisRow);
 				Display.getDefault().asyncExec(new Runnable() {
@@ -197,112 +205,7 @@ public class AutoMatchJob extends Job {
 						}
 					}
 				});
-				// for (MatchCandidate matchCandidate : matches) {
-				// System.out.println("Line "
-				// + rowNumberPlusOne
-				// + " - "
-				// + Flowable.compareFlowables(matchCandidate.getItemToMatchTDBResource(),
-				// matchCandidate.getMatchCandidateTDBResource()));
-				// }
 
-				// RDFNode objectName =
-				// flowable.getTdbResource().getProperty(RDFS.label).getObject();
-				// ResIterator resIterator =
-				// ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label,
-				// objectName);
-				// while (resIterator.hasNext()) {
-				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
-				// ECO.hasDataSource,
-				// dataSourceProvider.getTdbResource())) {
-				// continue; // DON'T MATCH YOURSELF
-				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type,
-				// ECO.Flowable)){
-				// continue; // NOT A FLOWABLE
-				// }
-				// // THIS IS A name-name MATCH
-				// System.out.println("name-name on line: "+rowNumberPlusOne);
-				// MatchCandidate matchCandidate = new
-				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-				// flowableMatchCandidate);
-				// matchCandidates.add(matchCandidate);
-				// }
-				//
-				// // Q-NAME = DB-SYN
-				// resIterator =
-				// ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-				// objectName);
-				// while (resIterator.hasNext()) {
-				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
-				// ECO.hasDataSource,
-				// dataSourceProvider.getTdbResource())) {
-				// continue; // DON'T MATCH YOURSELF
-				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type,
-				// ECO.Flowable)){
-				// continue; // NOT A FLOWABLE
-				// }
-				// System.out.println("name-synonym on line: "+rowNumberPlusOne);
-				// // THIS IS A name-synonym MATCH
-				// MatchCandidate matchCandidate = new
-				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-				// flowableMatchCandidate);
-				// matchCandidates.add(matchCandidate);
-				// }
-				//
-				// //
-				// StmtIterator stmtIterator =
-				// flowable.getTdbResource().listProperties(SKOS.altLabel);
-				// while (stmtIterator.hasNext()) {
-				// RDFNode objectAltName = stmtIterator.next().getObject();
-				// resIterator =
-				// ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label,
-				// objectAltName);
-				// // Q-SYN = DB-NAME
-				// while (resIterator.hasNext()) {
-				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
-				// ECO.hasDataSource,
-				// dataSourceProvider.getTdbResource())) {
-				// continue; // DON'T MATCH YOURSELF
-				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type,
-				// ECO.Flowable)){
-				// continue; // NOT A FLOWABLE
-				// }
-				// System.out.println("synonym-name on line: "+rowNumberPlusOne);
-				// // THIS IS A synonym-name MATCH
-				// MatchCandidate matchCandidate = new
-				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-				// flowableMatchCandidate);
-				// matchCandidates.add(matchCandidate);
-				// }
-				//
-				// // Q-SYN = DB-SYN
-				// resIterator =
-				// ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-				// objectName);
-				// while (resIterator.hasNext()) {
-				// Resource flowableMatchCandidate = resIterator.next();
-				// if (ActiveTDB.tdbModel.contains(flowableMatchCandidate,
-				// ECO.hasDataSource,
-				// dataSourceProvider.getTdbResource())) {
-				// continue; // DON'T MATCH YOURSELF
-				// }
-				// if (!flowableMatchCandidate.hasProperty(RDF.type,
-				// ECO.Flowable)){
-				// continue; // NOT A FLOWABLE
-				// }
-				// System.out.println("synonym-synonym on line: "+rowNumberPlusOne);
-				// // THIS IS A synonym-synonym MATCH
-				// MatchCandidate matchCandidate = new
-				// MatchCandidate(rowNumberPlusOne, flowable.getTdbResource(),
-				// flowableMatchCandidate);
-				// matchCandidates.add(matchCandidate);
-				// }
-				// }
 				ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
 
@@ -346,7 +249,7 @@ public class AutoMatchJob extends Job {
 				ActiveTDB.addLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
-			
+
 			// NOW DO flowProperty
 			String flowPropertyConcatinated = "";
 			for (int i : flowPropertyCSVColumnNumbers) {
@@ -387,8 +290,8 @@ public class AutoMatchJob extends Job {
 				ActiveTDB.addLiteral(flowProperty.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
-						
-			if (flowable != null && flowContext != null && flowProperty != null)  {
+
+			if (flowable != null && flowContext != null && flowProperty != null) {
 				Flow tempFlow = new Flow();
 				tempFlow.setFlowable(flowable);
 				tempFlow.setFlowContext(flowContext);

@@ -530,7 +530,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setEnabled(true);
 			btnMatchFlowProperties.setEnabled(true);
 
-
+			CSVTableView.initializeRowMenu(2);
 			String jobKey = "autoMatch_01";
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
 			autoMatchJob.setPriority(Job.SHORT);
@@ -577,27 +577,27 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	SelectionListener autoMatchListener = new SelectionListener() {
-		private void doit(SelectionEvent e) {
-			String jobKey = "autoMatch_01";
-			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
-			autoMatchJob.setPriority(Job.SHORT);
-			autoMatchJob.setSystem(false);
-			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
-					.findView(FlowsWorkflow.ID), jobKey));
-			autoMatchJob.schedule();
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			doit(e);
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			doit(e);
-		}
-	};
+//	SelectionListener autoMatchListener = new SelectionListener() {
+//		private void doit(SelectionEvent e) {
+//			String jobKey = "autoMatch_01";
+//			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
+//			autoMatchJob.setPriority(Job.SHORT);
+//			autoMatchJob.setSystem(false);
+//			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
+//					.findView(FlowsWorkflow.ID), jobKey));
+//			autoMatchJob.schedule();
+//		}
+//
+//		@Override
+//		public void widgetSelected(SelectionEvent e) {
+//			doit(e);
+//		}
+//
+//		@Override
+//		public void widgetDefaultSelected(SelectionEvent e) {
+//			doit(e);
+//		}
+//	};
 
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
