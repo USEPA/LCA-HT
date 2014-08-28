@@ -417,7 +417,7 @@ public class MatchFlowableTableView extends ViewPart {
 			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
 			while (stmtIterator.hasNext()) {
 				String synonym = stmtIterator.next().getObject().asLiteral().getString();
-				syns += synonym + System.lineSeparator();
+				syns += synonym + System.getProperty("line.separator");
 			}
 			matchDataRow.set(2, syns);
 			
