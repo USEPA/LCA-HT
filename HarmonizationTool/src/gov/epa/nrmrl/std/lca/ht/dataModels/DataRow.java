@@ -7,6 +7,8 @@ import java.util.List;
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
 	// private List<String> toolTipValues = new ArrayList<String>();
+	private List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+
 	private int rowNumber;
 	private String rowToolTip;
 
@@ -117,6 +119,21 @@ public class DataRow {
 
 	public void setRowNumber(int rowNumber) {
 		this.rowNumber = rowNumber;
+	}
+	
+	public List<MatchCandidate> getMatchCandidates() {
+		return matchCandidates;
+	}
+
+	public void setMatchCandidates(List<MatchCandidate> matchCandidates) {
+		this.matchCandidates = matchCandidates;
+	}
+	
+	public int addMatchCandidate(MatchCandidate matchCandidate){
+		if (matchCandidate != null){
+			matchCandidates.add(matchCandidate);
+		}
+		return matchCandidates.size();		
 	}
 
 }

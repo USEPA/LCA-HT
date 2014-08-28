@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 import harmonizationtool.vocabulary.ECO;
@@ -61,29 +62,6 @@ public class MatchFlowableTableView extends ViewPart {
 	private static Table table;
 	//
 	private static TextCellEditor editor;
-
-	//
-	// // private static List<CSVColumnInfo> availableCSVColumnInfo = new
-	// ArrayList<CSVColumnInfo>();
-	// // REMEMBER THE OFFSET:
-	//
-	// private static final String csvColumnDefaultColumnHeader = "   -   ";
-	// private static final String csvColumnDefaultTooltip = "Ignore Column";
-	// private static Menu headerMenu;
-	// private static Menu columnActionsMenu;
-	// private static Menu ignoreRowMenu;
-	// private static Menu fixCellMenu;
-	// // private static Menu infoMenu;
-	// private static Text popup;
-	//
-	// private static int rowNumSelected = -1;
-	// private static int colNumSelected = -1;
-
-	// private static List<Integer> rowsToIgnore = new ArrayList<Integer>();
-	//
-	// public static List<Integer> getRowsToIgnore() {
-	// return rowsToIgnore;
-	// }
 
 	public MatchFlowableTableView() {
 	}
@@ -400,6 +378,19 @@ public class MatchFlowableTableView extends ViewPart {
 	// }
 	//
 	// // ===========================================
+	public static void update(int rowNumber) {
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		DataRow dataRow = tableProvider.getData().get(rowNumber);
+		table.clearAll();
+		table.setItemCount(dataRow.getMatchCandidates().size() + 1);
+		List<Resource> queryPlusCandidates = new ArrayList<Resource>();
+		queryPlusCandidates.add(dataRow.getMatchCandidates().get(0).getItemToMatchTDBResource());
+		for (MatchCandidate matchCandidate:dataRow.getMatchCandidates()){
+			queryPlusCandidates.add(matchCandidate.getMatchCandidateTDBResource());
+		}
+		update(queryPlusCandidates);
+	}
+
 	public static void update(List<Resource> flowableResources) {
 		table.clearAll();
 		table.setItemCount(flowableResources.size());
@@ -407,22 +398,30 @@ public class MatchFlowableTableView extends ViewPart {
 		for (int i = 0; i < flowableResources.size(); i++) {
 			Resource resource = flowableResources.get(i);
 			// TableItem tableItem = table.getItem(i);
-			DataRow dataRow = new DataRow();
-			String name = resource.getPropertyResourceValue(RDFS.label).getLocalName();
-			dataRow.set(0, name);
-			String casrn = resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
-			if (casrn == null) {
-				casrn = "";
+			DataRow matchDataRow = new DataRow();
+			
+			String name = "";
+			if (resource.hasProperty(RDFS.label)) {
+				name = resource.getPropertyResourceValue(RDFS.label).getLocalName();
 			}
-			dataRow.set(1, casrn);
+			matchDataRow.set(0, name);
+			
+			String casrn = "";
+			if (resource.hasProperty(ECO.casNumber)) {
+
+				casrn = resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
+			}
+			matchDataRow.set(1, casrn);
+			
 			String syns = "";
 			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
 			while (stmtIterator.hasNext()) {
 				String synonym = stmtIterator.next().getObject().asLiteral().getString();
-				syns += synonym + "\n";
+				syns += synonym + System.lineSeparator();
 			}
-			dataRow.set(2, syns);
-			table.getItem(i).setData(dataRow);
+			matchDataRow.set(2, syns);
+			
+			table.getItem(i).setData(matchDataRow);
 			tableViewer.refresh();
 		}
 		// tableProviderKey = key;

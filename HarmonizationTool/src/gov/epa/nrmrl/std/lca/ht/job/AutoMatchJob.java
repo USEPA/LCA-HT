@@ -75,7 +75,7 @@ public class AutoMatchJob extends Job {
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
 		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
 
-		List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
+//		List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
 
 		List<Flow> flows = new ArrayList<Flow>();
 
@@ -185,13 +185,14 @@ public class AutoMatchJob extends Job {
 
 				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
 				final int numHits = matches.size();
-				MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-				int counter = 0;
+//				MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+//				int counter = 0;
 				for (MatchCandidate mc : matches) {
-					matchCandidatesThisRow[counter] = mc;
-					counter++;
+					dataRow.addMatchCandidate(mc);
+//					matchCandidatesThisRow[counter] = mc;
+//					counter++;
 				}
-				matchRows.add(matchCandidatesThisRow);
+//				matchRows.add(matchCandidatesThisRow);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						if (numHits == 0) {
