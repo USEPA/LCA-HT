@@ -88,6 +88,7 @@ public class CSVTableView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
+		System.out.println("hello, from sunny CSVTableView!");
 
 		initializeTableViewer(composite);
 		initializePopup(composite);
