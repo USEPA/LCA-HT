@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>.org.eclipse.jdt.core.external.folders</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>.link0</name>
+			<type>2</type>
+			<location>/usr/lib64/eclipse/plugins/org.eclipse.swt.gtk.linux.x86_64_3.102.1.v20140324-2308</location>
+		</link>
+	</linkedResources>
+</projectDescription>
