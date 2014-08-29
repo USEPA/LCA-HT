@@ -1,7 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.vocabulary.ECO;
+import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.SKOS;
 
 import java.util.ArrayList;
@@ -26,9 +28,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -88,19 +92,86 @@ public class MatchFlowableTableView extends ViewPart {
 		table.setLinesVisible(true);
 	}
 
-	
-	
 	public static void update(int rowNumber) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
-//		table.clearAll();
-//		table.setItemCount(dataRow.getMatchCandidates().size() + 1);
+		Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Resource> queryPlusCandidates = new ArrayList<Resource>();
+		if (dataRow.getMatchCandidates().isEmpty()) {
+			// FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
+			// FOR THIS ROW, BUT WILL FIND BY RDF
+			Resource flowableResource = null;
+			ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FEDLCA.sourceTableRowNumber,
+					rowNumber);
+			while (resIterator.hasNext()) {
+				Resource flowableResourceCandidate = resIterator.next();
+				if (!flowableResourceCandidate.hasProperty(RDF.type, ECO.Flowable)) {
+					continue;
+				}
+				if (!flowableResourceCandidate.hasProperty(ECO.hasDataSource, curDataSet)) {
+					continue;
+				}
+				flowableResource = flowableResourceCandidate;
+			}
+			update(flowableResource);
+
+			// StringBuilder b = new StringBuilder("");
+			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+			// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+			// b.append("SELECT ?s \n");
+			// b.append("WHERE \n");
+			// b.append("?s fedlca:sourceTableRowNumber 2 . \n");
+			// b.append("?s a eco:Flowable . \n");
+			// b.append("?s eco:hasDataSource ?ds . \n");
+			// b.append("?ds rdfs:label ?label . \n");
+			// b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
+			// b.append("} \n");
+		}
 		queryPlusCandidates.add(dataRow.getMatchCandidates().get(0).getItemToMatchTDBResource());
-		for (MatchCandidate matchCandidate:dataRow.getMatchCandidates()){
+		for (MatchCandidate matchCandidate : dataRow.getMatchCandidates()) {
 			queryPlusCandidates.add(matchCandidate.getMatchCandidateTDBResource());
 		}
 		update(queryPlusCandidates);
+	}
+
+	private static void update(Resource flowableResource) {
+		TableProvider miniTableProvider = new TableProvider();
+		DataRow miniDataRow = new DataRow();
+
+		String name = "";
+		if (flowableResource.hasProperty(RDFS.label)) {
+			Statement statement = flowableResource.getProperty(RDFS.label);
+			name = statement.getObject().asLiteral().getString();
+			// name =
+			// resource.getPropertyResourceValue(RDFS.label).getLocalName();
+
+		}
+		miniDataRow.add(name);
+
+		String casrn = "";
+		if (flowableResource.hasProperty(ECO.casNumber)) {
+
+			Statement statement = flowableResource.getProperty(ECO.casNumber);
+			casrn = statement.getObject().asLiteral().getString();
+			// casrn =
+			// resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
+		}
+		miniDataRow.add(casrn);
+
+		String syns = "";
+		StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
+		while (stmtIterator.hasNext()) {
+			String synonym = stmtIterator.next().getObject().asLiteral().getString();
+			syns += synonym + System.getProperty("line.separator");
+		}
+		miniDataRow.add(syns);
+
+		miniDataRow.add("other: N/A");
+		miniTableProvider.addDataRow(miniDataRow);
+
+		update(miniTableProvider);
+		// TODO - NEED TO ARRANGE A BLANK ROW FOR SEARCH TOOL
 	}
 
 	private static void update(List<Resource> flowableResources) {
@@ -111,25 +182,27 @@ public class MatchFlowableTableView extends ViewPart {
 
 			Resource resource = flowableResources.get(i);
 			// TableItem tableItem = table.getItem(i);
-			
+
 			String name = "";
 			if (resource.hasProperty(RDFS.label)) {
 				Statement statement = resource.getProperty(RDFS.label);
-				name = statement.getObject().toString();
-//				name = resource.getPropertyResourceValue(RDFS.label).getLocalName();
-				
+				name = statement.getObject().asLiteral().getString();
+				// name =
+				// resource.getPropertyResourceValue(RDFS.label).getLocalName();
+
 			}
 			miniDataRow.add(name);
-			
+
 			String casrn = "";
 			if (resource.hasProperty(ECO.casNumber)) {
 
 				Statement statement = resource.getProperty(ECO.casNumber);
-				casrn = statement.getObject().toString();
-//				casrn = resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
+				casrn = statement.getObject().asLiteral().getString();
+				// casrn =
+				// resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
 			}
 			miniDataRow.add(casrn);
-			
+
 			String syns = "";
 			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
 			while (stmtIterator.hasNext()) {
@@ -137,46 +210,45 @@ public class MatchFlowableTableView extends ViewPart {
 				syns += synonym + System.getProperty("line.separator");
 			}
 			miniDataRow.add(syns);
-			
+
 			miniDataRow.add("other: N/A");
 			miniTableProvider.addDataRow(miniDataRow);
 		}
 		update(miniTableProvider);
 	}
-	
 
 	private static void update(TableProvider miniTableProvider) {
 		reset();
-//		createColumns();
-//		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		// createColumns();
+		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		tableViewer.setInput(miniTableProvider.getData());
 		miniTableProvider.resetAssignedCSVColumnInfo();
-//		colorRowNumberColumn();
+		// colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
-//		initializeHeaderMenu();
-//		initializeColumnActionsMenu();
+		// initializeHeaderMenu();
+		// initializeColumnActionsMenu();
 	}
 
 	//
 	public static void reset() {
 		tableViewer.setInput(null);
-//		removeColumns();
+		// removeColumns();
 	}
-	
-//	private static void removeColumns() {
-//		table.setRedraw(false);
-//		while (table.getColumnCount() > 0) {
-//			table.getColumns()[0].dispose();
-//		}
-//		table.setRedraw(true);
-//	}
-	
+
+	// private static void removeColumns() {
+	// table.setRedraw(false);
+	// while (table.getColumnCount() > 0) {
+	// table.getColumns()[0].dispose();
+	// }
+	// table.setRedraw(true);
+	// }
+
 	private static void createColumns() {
 		TableViewerColumn tableViewerColumn = createTableViewerColumn("Name", 300, 0);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
 
-		tableViewerColumn = createTableViewerColumn("CASRN", 70, 1);
+		tableViewerColumn = createTableViewerColumn("CASRN", 100, 1);
 		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
 
@@ -218,7 +290,7 @@ public class MatchFlowableTableView extends ViewPart {
 			return s;
 		}
 	}
-	
+
 	private static class RowIndexColumnLabelProvider extends ColumnLabelProvider {
 
 		public RowIndexColumnLabelProvider() {
@@ -281,7 +353,6 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	}
 
-	
 	private static TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 
 		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
@@ -325,7 +396,6 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
-
 
 	public static void initialize() {
 		initializeTable();
