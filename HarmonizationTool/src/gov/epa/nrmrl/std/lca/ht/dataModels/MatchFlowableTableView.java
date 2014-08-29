@@ -102,7 +102,7 @@ public class MatchFlowableTableView extends ViewPart {
 			// FOR THIS ROW, BUT WILL FIND BY RDF
 			Resource flowableResource = null;
 			ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FEDLCA.sourceTableRowNumber,
-					rowNumber);
+					rowNumber + 1);
 			while (resIterator.hasNext()) {
 				Resource flowableResourceCandidate = resIterator.next();
 				if (!flowableResourceCandidate.hasProperty(RDF.type, ECO.Flowable)) {
@@ -127,12 +127,13 @@ public class MatchFlowableTableView extends ViewPart {
 			// b.append("?ds rdfs:label ?label . \n");
 			// b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
 			// b.append("} \n");
+		} else {
+			queryPlusCandidates.add(dataRow.getMatchCandidates().get(0).getItemToMatchTDBResource());
+			for (MatchCandidate matchCandidate : dataRow.getMatchCandidates()) {
+				queryPlusCandidates.add(matchCandidate.getMatchCandidateTDBResource());
+			}
+			update(queryPlusCandidates);
 		}
-		queryPlusCandidates.add(dataRow.getMatchCandidates().get(0).getItemToMatchTDBResource());
-		for (MatchCandidate matchCandidate : dataRow.getMatchCandidates()) {
-			queryPlusCandidates.add(matchCandidate.getMatchCandidateTDBResource());
-		}
-		update(queryPlusCandidates);
 	}
 
 	private static void update(Resource flowableResource) {
