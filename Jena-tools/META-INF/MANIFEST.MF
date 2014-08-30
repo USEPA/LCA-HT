@@ -320,6 +320,5 @@ Export-Package: arq,
  tdb.cmdline,
  tdb.tools
 Require-Bundle: org.apache.xml.resolver,
- com.sun.mail.javax.mail,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
