@@ -1,6 +1,6 @@
 package harmonizationtool.handler;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 //import harmonizationtool.ResultsView;
 import harmonizationtool.utils.Util;
 
@@ -10,7 +10,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.ui.PartInitException;
 
-public class ShowHarmonizeCompartmentsHandler implements IHandler {
+public class ShowHarmonizeContextsHandler implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -25,7 +25,7 @@ public class ShowHarmonizeCompartmentsHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
-			Util.showView(HarmonizeCompartments.ID);
+			Util.showView(HarmonizeContexts.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

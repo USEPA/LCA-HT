@@ -17,8 +17,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowData;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.dialog.GenericMessageBox;
 import harmonizationtool.utils.Util;
@@ -542,12 +542,12 @@ public class FlowsWorkflow extends ViewPart {
 
 			btnConcludeFile.setText("Close CSV");
 //			try {
-//				Util.showView(FlowDataWMatchFlowables.ID);
+//				Util.showView(FlowDataV2.ID);
 //			} catch (PartInitException e1) {
 //				// TODO Auto-generated catch block
 //				e1.printStackTrace();
 //			}
-			Util.setPerspective(FlowDataWMatchFlowables.ID);
+			Util.setPerspective(FlowDataV2.ID);
 
 			// return;
 
@@ -856,15 +856,15 @@ public class FlowsWorkflow extends ViewPart {
 		//
 		// // resultsView.formatForTransform0();
 		// } else if (key.startsWith("Harmonize Compart")) { // HACK!!
-		// HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments)
-		// Util.findView(HarmonizeCompartments.ID);
+		// HarmonizeContexts harmonizeCompartments = (HarmonizeContexts)
+		// Util.findView(HarmonizeContexts.ID);
 		// // FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 		// // USE
 		// // WHICH createTransform
 		// // AND WHICH formatForTransfor()
 		// // SHOULD BE KNOWN BY THE LabledQuery
 		// // BUT CHOSEN BY THE CALLER
-		// showResultsInWindow = HarmonizeCompartments.ID;
+		// showResultsInWindow = HarmonizeContexts.ID;
 		//
 		// TableProvider tableProvider =
 		// TableProvider.create((ResultSetRewindable) resultSet);

@@ -31,6 +31,6 @@ public class OriginalPerspective implements IPerspectiveFactory {
 
 	private void addPerspectiveShortcuts(IPageLayout layout) {
 		layout.addPerspectiveShortcut(OriginalPerspective.ID);
-		layout.addPerspectiveShortcut(FlowData.ID);
+		layout.addPerspectiveShortcut(FlowDataV1.ID);
 	}
 }

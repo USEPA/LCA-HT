@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.Activator;
 import harmonizationtool.vocabulary.ECO;

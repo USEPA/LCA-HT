@@ -1,7 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import harmonizationtool.model.Issue;
 import harmonizationtool.vocabulary.ECO;
 import harmonizationtool.vocabulary.FEDLCA;
 import harmonizationtool.vocabulary.SKOS;
@@ -17,16 +19,21 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -45,7 +52,10 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static TableViewer tableViewer;
 	private static Table table;
-	//
+
+	private static int rowNumSelected = -1;
+	private static int colNumSelected = -1;
+
 	private static TextCellEditor editor;
 
 	public MatchFlowableTableView() {
@@ -70,6 +80,17 @@ public class MatchFlowableTableView extends ViewPart {
 			// THIS IS NOT PERFECT
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
+
+//		table.addListener(SWT.MeasureItem, new Listener() {
+//			public void handleEvent(Event event) {
+//				System.out.println("MeasureItem Event: " + event);
+//				TableItem item = (TableItem) event.item;
+//				String text = item.getText(event.index);
+//				Point size = event.gc.textExtent(text);
+//				event.height = Math.max(event.height, size.y);
+//			}
+//		});
+
 	}
 
 	@Override
@@ -79,7 +100,7 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	private static void initializeTableViewer(Composite composite) {
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
@@ -195,7 +216,7 @@ public class MatchFlowableTableView extends ViewPart {
 			} else {
 				miniDataRow.add(" " + i + " ");
 			}
-			
+
 			Resource dataSourceResource = resource.getProperty(ECO.hasDataSource).getObject().asResource();
 			String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
 			miniDataRow.add(dataSourceName);
@@ -235,22 +256,49 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	private static void update(TableProvider miniTableProvider) {
-		reset();
+		// reset();
 		// createColumns();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		tableViewer.setInput(null);
 		tableViewer.setInput(miniTableProvider.getData());
-		miniTableProvider.resetAssignedCSVColumnInfo();
+		table.getItem(0).setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+
+		int rowCount = table.getItemCount();
+		// ADD A ROW FOR SEARCHING
+		table.setItemCount(rowCount + 1);
+		TableItem queryRow = table.getItem(rowCount);
+		queryRow.addListener(SWT.Selection,  new Listener(){
+
+			@Override
+			public void handleEvent(Event event) {
+				System.out.println("Event ="+event);
+			}
+		});
+		
+//		table.addMouseListener(mouseListener);
+
+		// try{
+		// table.getItem(4).getData();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		//
+		System.out.println("table.getItemCount() " + table.getItemCount());
+		System.out.println("miniTableProvider.getColumnCount() " + miniTableProvider.getColumnCount());
+
+		// miniTableProvider.resetAssignedCSVColumnInfo();
 		// colorRowNumberColumn();
+		// table.setItem
 		table.setSize(table.getParent().getSize());
 		// initializeHeaderMenu();
 		// initializeColumnActionsMenu();
 	}
 
 	//
-	public static void reset() {
-		tableViewer.setInput(null);
-		// removeColumns();
-	}
+	// public static void reset() {
+	// tableViewer.setInput(null);
+	// // removeColumns();
+	// }
 
 	// private static void removeColumns() {
 	// table.setRedraw(false);
@@ -285,6 +333,85 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn = createTableViewerColumn("Other", 200, 5);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
+	}
+
+	
+	private static MouseListener mouseListener = new MouseListener() {
+	
+		@Override
+		public void mouseDoubleClick(MouseEvent e) {
+			System.out.println("double click event :e =" + e);
+		}
+
+		@Override
+		public void mouseDown(MouseEvent e) {
+			System.out.println("mouse down event :e =" + e);
+			if (e.button == 1) {
+				leftClick(e);
+			} else if (e.button == 3) {
+				table.deselectAll();
+				rightClick(e);
+			}
+		}
+
+		@Override
+		public void mouseUp(MouseEvent e) {
+			System.out.println("mouse up event :e =" + e);
+		}
+
+		private void leftClick(MouseEvent event) {
+			System.out.println("cellSelectionMouseDownListener event " + event);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int clickedRow = 0;
+			int clickedCol = 0;
+			TableItem item = table.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			clickedRow = table.indexOf(item);
+			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			if (clickedCol > 0) {
+				table.deselectAll();
+				return;
+			}
+			table.select(clickedRow);
+			rowNumSelected = clickedRow;
+			colNumSelected = clickedCol;
+			// rowMenu.setVisible(true);
+		}
+
+		private void rightClick(MouseEvent event) {
+			System.out.println("cellSelectionMouseDownListener event " + event);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int clickedRow = 0;
+			int clickedCol = 0;
+			TableItem item = table.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			clickedRow = table.indexOf(item);
+			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			// int dataClickedCol = clickedCol - 1;
+			if (clickedCol < 0) {
+				return;
+			}
+
+			rowNumSelected = clickedRow;
+			colNumSelected = clickedCol;
+		}
+	};
+
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = table.getItem(row);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {

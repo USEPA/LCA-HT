@@ -45,7 +45,7 @@ import harmonizationtool.ColumnLabelProvider;
 import harmonizationtool.tree.Node;
 
 public class CopyOfHarmonizeCompartments extends ViewPart {
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.CopyOfHarmonizeContexts";
 
 	public TreeNode masterCompartmentTree = new TreeNode(null);
 	private TreeViewer treeViewer;
@@ -308,7 +308,7 @@ public class CopyOfHarmonizeCompartments extends ViewPart {
 
 	}
 
-//	public HarmonizeCompartments(){
+//	public HarmonizeContexts(){
 //		TreeNode release = new TreeNode(masterCompartmentTree);
 //		release.nodeName = "Release";
 //

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments;
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
@@ -463,22 +463,22 @@ public class QueryView extends ViewPart {
 
 			// resultsView.formatForTransform0();
 		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			HarmonizeCompartments harmonizeCompartments = (HarmonizeCompartments) Util
-					.findView(HarmonizeCompartments.ID);
+			HarmonizeContexts harmonizeContexts = (HarmonizeContexts) Util
+					.findView(HarmonizeContexts.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
 			// AND WHICH formatForTransfor()
 			// SHOULD BE KNOWN BY THE LabledQuery
 			// BUT CHOSEN BY THE CALLER
-			showResultsInWindow = HarmonizeCompartments.ID;
+			showResultsInWindow = HarmonizeContexts.ID;
 
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			// resultsView.update(tableProvider);
 			try {
-				harmonizeCompartments.update(tableProvider);
+				harmonizeContexts.update(tableProvider);
 			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + harmonizeCompartments);
+				System.out.println("resultsTreeEditor=" + harmonizeContexts);
 				e.printStackTrace();
 			}
 

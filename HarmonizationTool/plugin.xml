@@ -14,13 +14,13 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData"
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
             name="Flow data">
       </perspective>
       <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables"
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2"
             name="Flow data with MatchFlowable">
       </perspective>
       <perspective
@@ -52,7 +52,13 @@
       <view
             class="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
             id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
-            name="Match Flowable Tool"
+            name="Match Flowables Tool"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            name="Match Contexts Tool"
             restorable="true">
       </view>
       <view
@@ -86,12 +92,6 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments"
-            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments"
-            name="Harmonize Compartments"
-            restorable="true">
-      </view>
-      <view
             class="harmonizationtool.ViewPart1"
             id="HarmonizationTool.view1"
             name="name"
@@ -116,10 +116,10 @@
             targetID="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective">
       </perspectiveExtension>
       <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowData">
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1">
       </perspectiveExtension>
       <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables">
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2">
       </perspectiveExtension>
    </extension>
    <extension
@@ -196,7 +196,12 @@
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
-                     label="Show Match Flowable Table View"
+                     label="Show Match Flowables Tool"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+                     label="Show Match Contexts"
                      style="push">
                </command>
             </menu>
@@ -208,18 +213,8 @@
                      style="push">
                </command>
                <command
-                     commandId="HarmonizationTool.ResultsTreeEditorID"
-                     label="Show Results Tree Editor"
-                     style="push">
-               </command>
-               <command
                      commandId="harmonizationtool.tree.viewer.ControlViewHandler"
                      label="Show Results Tree Control"
-                     style="push">
-               </command>
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments.ShowHarmonizeCompartmentsHandler"
-                     label="Show Harmonize Compartments"
                      style="push">
                </command>
             </menu>
@@ -367,6 +362,11 @@
             defaultHandler="harmonizationtool.handler.ShowMatchFlowableTableViewHandler"
             id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
             name="Show Match Flowable Table View">
+      </command>
+      <command
+            defaultHandler="harmonizationtool.handler.ShowHarmonizeContextsHandler"
+            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            name="Show Match Contexts View">
       </command>
       <command
             defaultHandler="harmonizationtool.handler.ShowResultsViewHandler"

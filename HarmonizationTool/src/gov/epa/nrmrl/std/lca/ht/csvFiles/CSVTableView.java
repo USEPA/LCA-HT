@@ -870,6 +870,7 @@ public class CSVTableView extends ViewPart {
 
 	public static void reset() {
 		tableViewer.setInput(null);
+		initializeRowMenu(1);
 		removeColumns();
 	}
 

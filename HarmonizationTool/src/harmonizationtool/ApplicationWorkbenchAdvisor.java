@@ -1,7 +1,7 @@
 package harmonizationtool;
 
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowData;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataWMatchFlowables;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
 
 import org.eclipse.ui.application.IWorkbenchConfigurer;
@@ -24,8 +24,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	}
 
 	public String getInitialWindowPerspectiveId() {
-		return FlowData.ID;
-//		return FlowDataWMatchFlowables.ID;
+//		return FlowDataV1.ID;
+		return FlowDataV2.ID;
 //		return OriginalPerspective.ID;
 	}
 

@@ -8,9 +8,9 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
 
-public class FlowData implements IPerspectiveFactory {
+public class FlowDataV1 implements IPerspectiveFactory {
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.perspectives.FlowData";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1";
 	public static final String PID = "<FlowData>";
 
 	public void createInitialLayout(IPageLayout layout) {
@@ -30,7 +30,7 @@ public class FlowData implements IPerspectiveFactory {
 	}
 
 	private void addPerspectiveShortcuts(IPageLayout layout) {
-		layout.addPerspectiveShortcut(FlowData.ID);
+		layout.addPerspectiveShortcut(FlowDataV1.ID);
 		layout.addPerspectiveShortcut(OriginalPerspective.ID);
 	}
 }

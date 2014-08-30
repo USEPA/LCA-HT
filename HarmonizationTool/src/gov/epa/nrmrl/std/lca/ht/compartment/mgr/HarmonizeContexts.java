@@ -60,7 +60,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
-public class HarmonizeCompartments extends ViewPart {
+public class HarmonizeContexts extends ViewPart {
 	private Button btnCommitMatches;
 
 	private static class ContentProvider implements IStructuredContentProvider {
@@ -75,10 +75,10 @@ public class HarmonizeCompartments extends ViewPart {
 		}
 	}
 
-	public HarmonizeCompartments() {
+	public HarmonizeContexts() {
 	}
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeCompartments";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts";
 	private Table queryTbl;
 	private TableViewer queryTblViewer;
 	private Table matchedTbl;
@@ -108,7 +108,7 @@ public class HarmonizeCompartments extends ViewPart {
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
-		queryLbl.setText("Query Compartments");
+		queryLbl.setText("Query Contexts");
 		// ============ NEW COL =========
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
@@ -255,7 +255,7 @@ public class HarmonizeCompartments extends ViewPart {
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
 		masterLbl = new Label(compositeMaster, SWT.NONE);
-		masterLbl.setText("Master Compartments");
+		masterLbl.setText("Master Contexts");
 
 		Button btnAutoAdvance = new Button(compositeMaster, SWT.CHECK);
 		btnAutoAdvance.setText("Auto Advance");
