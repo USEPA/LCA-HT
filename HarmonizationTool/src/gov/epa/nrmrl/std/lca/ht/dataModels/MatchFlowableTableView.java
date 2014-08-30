@@ -148,6 +148,12 @@ public class MatchFlowableTableView extends ViewPart {
 			// resource.getPropertyResourceValue(RDFS.label).getLocalName();
 
 		}
+		miniDataRow.add(" - ");
+
+		Resource dataSourceResource = flowableResource.getProperty(ECO.hasDataSource).getObject().asResource();
+		String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
+		miniDataRow.add(dataSourceName);
+
 		miniDataRow.add(name);
 
 		String casrn = "";
@@ -183,6 +189,16 @@ public class MatchFlowableTableView extends ViewPart {
 
 			Resource resource = flowableResources.get(i);
 			// TableItem tableItem = table.getItem(i);
+
+			if (i == 0) {
+				miniDataRow.add(" - ");
+			} else {
+				miniDataRow.add(" " + i + " ");
+			}
+			
+			Resource dataSourceResource = resource.getProperty(ECO.hasDataSource).getObject().asResource();
+			String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
+			miniDataRow.add(dataSourceName);
 
 			String name = "";
 			if (resource.hasProperty(RDFS.label)) {
@@ -245,21 +261,30 @@ public class MatchFlowableTableView extends ViewPart {
 	// }
 
 	private static void createColumns() {
-		TableViewerColumn tableViewerColumn = createTableViewerColumn("Name", 300, 0);
+
+		TableViewerColumn tableViewerColumn = createTableViewerColumn("Rank", 30, 0);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
 
-		tableViewerColumn = createTableViewerColumn("CASRN", 100, 1);
-		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
+		tableViewerColumn = createTableViewerColumn("Data Source", 200, 1);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
 
-		tableViewerColumn = createTableViewerColumn("Synonyms", 300, 2);
+		tableViewerColumn = createTableViewerColumn("Name", 300, 2);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
 
-		tableViewerColumn = createTableViewerColumn("Other", 200, 3);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn = createTableViewerColumn("CASRN", 100, 3);
+		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
+
+		tableViewerColumn = createTableViewerColumn("Synonyms", 300, 4);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(5));
+
+		tableViewerColumn = createTableViewerColumn("Other", 200, 5);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
 	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
