@@ -16,6 +16,9 @@ public class Initializer extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
+        String runPath = System.getProperty("user.dir");
+        System.out.println("Running from this path"+runPath);
+        
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
         store.setDefault("curatorName", "");
         store.setDefault("curatorAffiliation", "");

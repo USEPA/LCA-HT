@@ -8,27 +8,17 @@ import harmonizationtool.utils.Util;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.FileFieldEditor;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class DirectoryPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private Composite logFileComposite;
+	// private Composite logFileComposite;
 
 	// private StringFieldEditor logFileName;
 
@@ -47,17 +37,13 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 				+ Util.getPreferenceStore().getString("runfileRoot") + "_"
 				+ Util.getPreferenceStore().getString("startTimestamp") + ".txt";
 
-		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB:", getFieldEditorParent()));
-
-		addField(new DirectoryFieldEditor("workingDirectory", "Working Direcotry:", getFieldEditorParent()));
-
-		addField(new DirectoryFieldEditor("outputDirectory", "Output Direcotry:", getFieldEditorParent()));
-
-		// Composite composite = new Composite();
 		Composite composite = getFieldEditorParent();
 
-		StringFieldEditor runfileRootEditor = new StringFieldEditor("runfileRoot", "Runfile Root", composite);
+		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB:", composite));
+		addField(new DirectoryFieldEditor("workingDirectory", "Working Direcotry:", composite));
+		addField(new DirectoryFieldEditor("outputDirectory", "Output Direcotry:", composite));
 
+		StringFieldEditor runfileRootEditor = new StringFieldEditor("runfileRoot", "Runfile Root", composite);
 		Text runfileRoot = runfileRootEditor.getTextControl(composite);
 
 		final StringFieldEditor resultingRunfile = new StringFieldEditor("id", "Resulting Runfile", -1,
@@ -81,8 +67,5 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 		});
 
 		addField(runfileRootEditor);
-
-		// addField(resultingRunfile);
-
 	}
 }

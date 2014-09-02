@@ -75,7 +75,7 @@ public class AutoMatchJob extends Job {
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
 		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
 
-//		List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
+		// List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
 
 		List<Flow> flows = new ArrayList<Flow>();
 
@@ -152,22 +152,17 @@ public class AutoMatchJob extends Job {
 					ActiveTDB.replaceResource(flowable.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowableCSVColumnNumbers) {
+						String dataValue = dataRow.get(i - 1);
+						if (dataValue.equals("")) {
+							continue;
+						}
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
 							ActiveTDB.replaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
-							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i - 1));
-
+									dataValue);
 						} else {
-							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
-							// dataRow.getCSVTableIndex(i));
-									dataRow.get(i - 1));
+							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(), dataValue);
 						}
-//						// FIXME - BELOW: A HACK TO ADD A FORMATTED VERSION OF THE CAS
-//						if (csvColumnInfo.getHeaderString().equals("CAS")) {
-//							ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.hasFormattedCAS,
-//									Flowable.standardizeCAS(dataRow.get(i - 1)));
-//						}
 					}
 					final int flowableCount = flowableMap.size();
 					System.out
@@ -185,14 +180,14 @@ public class AutoMatchJob extends Job {
 
 				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
 				final int numHits = matches.size();
-//				MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-//				int counter = 0;
+				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+				// int counter = 0;
 				for (MatchCandidate mc : matches) {
 					dataRow.addMatchCandidate(mc);
-//					matchCandidatesThisRow[counter] = mc;
-//					counter++;
+					// matchCandidatesThisRow[counter] = mc;
+					// counter++;
 				}
-//				matchRows.add(matchCandidatesThisRow);
+				// matchRows.add(matchCandidatesThisRow);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						if (numHits == 0) {

@@ -418,7 +418,7 @@ public class CSVTableView extends ViewPart {
 		tableProvider.resetAssignedCSVColumnInfo();
 		colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
-		initializeHeaderMenu();
+//		initializeHeaderMenu();
 		initializeColumnActionsMenu();
 	}
 
@@ -472,6 +472,7 @@ public class CSVTableView extends ViewPart {
 		MenuItem menuItem;
 		menuItem = new MenuItem(headerMenu, SWT.CASCADE);
 		menuItem.setText("Column Actions");
+		initializeColumnActionsMenu();
 		menuItem.setMenu(columnActionsMenu);
 	}
 
@@ -878,7 +879,7 @@ public class CSVTableView extends ViewPart {
 		initializeTable();
 		initializeRowMenu(1);
 		initializeFixRowMenu();
-		// CONSIDER: headerMenu;
+		initializeHeaderMenu();
 		// CONSIDER: columnActionsMenu;
 		// CONSIDER: rowMenu;
 		// CONSIDER: fixCellMenu;

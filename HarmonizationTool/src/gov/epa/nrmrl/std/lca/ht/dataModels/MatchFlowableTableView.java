@@ -189,9 +189,11 @@ public class MatchFlowableTableView extends ViewPart {
 
 		String syns = "";
 		StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
+		System.out.println("syns stmtIterator = "+stmtIterator);
 		while (stmtIterator.hasNext()) {
 			String synonym = stmtIterator.next().getObject().asLiteral().getString();
 			syns += synonym + System.getProperty("line.separator");
+			System.out.println("syns = "+syns);
 		}
 		miniDataRow.add(syns);
 
@@ -225,27 +227,23 @@ public class MatchFlowableTableView extends ViewPart {
 			if (resource.hasProperty(RDFS.label)) {
 				Statement statement = resource.getProperty(RDFS.label);
 				name = statement.getObject().asLiteral().getString();
-				// name =
-				// resource.getPropertyResourceValue(RDFS.label).getLocalName();
-
 			}
 			miniDataRow.add(name);
 
 			String casrn = "";
 			if (resource.hasProperty(ECO.casNumber)) {
-
 				Statement statement = resource.getProperty(ECO.casNumber);
 				casrn = statement.getObject().asLiteral().getString();
-				// casrn =
-				// resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
 			}
 			miniDataRow.add(casrn);
 
 			String syns = "";
 			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
+			System.out.println("syns stmtIterator = "+stmtIterator);
 			while (stmtIterator.hasNext()) {
 				String synonym = stmtIterator.next().getObject().asLiteral().getString();
 				syns += synonym + System.getProperty("line.separator");
+				System.out.println("syns = "+syns);
 			}
 			miniDataRow.add(syns);
 
@@ -259,7 +257,9 @@ public class MatchFlowableTableView extends ViewPart {
 		// reset();
 		// createColumns();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		tableViewer.setInput(null);
+//		tableViewer.setInput(null);
+		table.removeAll();
+		tableViewer.refresh();
 		tableViewer.setInput(miniTableProvider.getData());
 		table.getItem(0).setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
