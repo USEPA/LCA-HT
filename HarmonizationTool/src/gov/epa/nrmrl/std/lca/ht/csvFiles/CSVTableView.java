@@ -948,8 +948,11 @@ public class CSVTableView extends ViewPart {
 			String fixedText = matcher.replaceFirst(qaCheck.getReplacement());
 			System.out.println("The value is now ->" + fixedText + "<-");
 			tableItem.setText(colNumber, fixedText);
-			TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber())
-					.set(issue.getColNumber() - 2, fixedText);
+			System.out.println("TableItem fixed, but not (source) TableProvider data");
+			DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber());
+			System.out.println("Underlying value is now: "+dataRow.get(issue.getColNumber() - 1));
+			dataRow.set(issue.getColNumber() - 1, fixedText);
+			System.out.println("Underlying value is now: "+dataRow.get(issue.getColNumber() - 1));
 			issue.setStatus(Status.RESOLVED);
 			colorCell(issue);
 		}
