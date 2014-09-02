@@ -8,9 +8,8 @@ Bundle-Vendor: EMVL
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  CSV-tools;bundle-version="1.0.0",
- Jena-tools;bundle-version="1.0.0";visibility:=reexport,
- org.apache.commons.httpclient;bundle-version="3.1.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ Jena-tools;bundle-version="1.0.0";visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  swt-grouplayout.jar,
