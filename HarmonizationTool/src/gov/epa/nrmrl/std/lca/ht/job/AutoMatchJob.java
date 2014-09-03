@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -108,6 +109,9 @@ public class AutoMatchJob extends Job {
 			}
 		});
 		int percentComplete = 0;
+		TableProvider flowContextTableProvider = new TableProvider();
+		TableProvider flowPropertyTableProvider = new TableProvider();
+
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
@@ -221,6 +225,9 @@ public class AutoMatchJob extends Job {
 				} else {
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
+					DataRow flowContextDataRow = new DataRow();
+					flowContextDataRow.add(flowContextConcatinated);
+					flowContextTableProvider.addDataRow(flowContextDataRow);
 					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
@@ -264,6 +271,9 @@ public class AutoMatchJob extends Job {
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
 					ActiveTDB.replaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
+					DataRow flowPropertyDataRow = new DataRow();
+					flowPropertyDataRow.add(flowPropertyConcatinated);
+					flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
 					for (int i : flowPropertyCSVColumnNumbers) {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
@@ -303,6 +313,10 @@ public class AutoMatchJob extends Job {
 				}
 			}
 		}
+//		HarmonizeContexts.update(flowContextTableProvider);
+//		HarmonizeFlowProperties.update(flowPropertyTableProvider);
+		// TODO - WORK OUT THE ABOVE METHODS IN THEIR CLASSES
+		
 		// long newTriples = ActiveTDB.tdbModel.size() - triples;
 		// return (int) newTriples;
 
