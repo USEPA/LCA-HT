@@ -127,16 +127,15 @@ public class ImportCSV implements IHandler {
 		TableKeeper.saveTableProvider(path, tableProvider);
 		System.out.println("Save tableProvider in TableKeeper");
 
-
 		// READ THE FILE NOW
-		while (values != null) {
-			DataRow dataRow = initDataRow(values);
-			tableProvider.addDataRow(dataRow);
-			try {
+		try {
+			while (values != null) {
+				DataRow dataRow = initDataRow(values);
+				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
 				values = parser.getLine();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);

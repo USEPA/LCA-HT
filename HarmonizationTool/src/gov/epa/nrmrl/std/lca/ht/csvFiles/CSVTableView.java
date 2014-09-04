@@ -10,6 +10,7 @@ import harmonizationtool.model.Issue;
 import harmonizationtool.model.Status;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -340,8 +341,8 @@ public class CSVTableView extends ViewPart {
 					// --------- OR TO MATCH THINGS
 				} else if (menuItemText.equals("match contents")) {
 					MatchFlowableTableView.update(rowNumSelected);
-//					tableViewer.getTable().getItem(rowNumSelected)
-//							.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					// tableViewer.getTable().getItem(rowNumSelected)
+					// .setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					// SEND DATA TO THE APPROPRIATE VIEW FOR MATCHING
 				}
 
@@ -414,11 +415,22 @@ public class CSVTableView extends ViewPart {
 		tableProviderKey = key;
 		createColumns();
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
+		Date loadStartDate = new Date();
+
 		tableViewer.setInput(tableProvider.getData());
+		Date loadEndDate = new Date();
+		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
+		System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
+
+		// TOM BELIEVES tableViewer.setInput COPIES tableProvider DATA INTO tableViewer
+		// CAN WE REFERENCE IT INSTEAD?
+		// IF tableViewer IS ALREADY REFERENCING IT, CAN WE LOAD IT FASTER?
+		// WHAT ABOUE PAGING, EITHER FAST DYNAMIC OR CLUNKY PAUSE WITH "Loading more data" MESSAGE
+		// JUNO FIXME
 		tableProvider.resetAssignedCSVColumnInfo();
 		colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
-//		initializeHeaderMenu();
+		// initializeHeaderMenu();
 		initializeColumnActionsMenu();
 	}
 
@@ -950,9 +962,9 @@ public class CSVTableView extends ViewPart {
 			tableItem.setText(colNumber, fixedText);
 			System.out.println("TableItem fixed, but not (source) TableProvider data");
 			DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber());
-			System.out.println("Underlying value is now: "+dataRow.get(issue.getColNumber() - 1));
+			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
 			dataRow.set(issue.getColNumber() - 1, fixedText);
-			System.out.println("Underlying value is now: "+dataRow.get(issue.getColNumber() - 1));
+			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
 			issue.setStatus(Status.RESOLVED);
 			colorCell(issue);
 		}
