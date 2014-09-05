@@ -187,7 +187,7 @@
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
                      label="Show CSV Table View"
-                     style="push">
+                     style="toggle">
                </command>
                <command
                      commandId="HarmonizationTool.ShowDataFilesView"

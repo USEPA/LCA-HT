@@ -26,6 +26,7 @@ public class ShowMatchFlowableTableViewHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
+			// TODO: MAKE THIS A TOGGLE FUNCTION (AND CONTROL THE CHECKBOX IN THE MENU)
 			Util.showView(MatchFlowableTableView.ID);
 		} catch (PartInitException e1) {
 			e1.printStackTrace();
