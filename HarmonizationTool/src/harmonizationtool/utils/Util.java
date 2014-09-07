@@ -10,12 +10,16 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.Activator;
 import harmonizationtool.vocabulary.ECO;
 
+import org.eclipse.core.runtime.IProduct;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
 
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -27,38 +31,48 @@ public class Util {
 	}
 
 	public static String getGMTDateFmt(Date date) {
-		if (date == null){
+		if (date == null) {
 			return null;
 		}
 		// SimpleDateFormat dateFormatGmt = new
 		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatGmt = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return dateFormatGmt.format(date);
 	}
 
 	public static String getLocalDateFmt(Date date) {
-		if (date == null){
+		if (date == null) {
 			return null;
 		}
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);
 	}
 
 	public static Date setDateFmt(String string) throws ParseException {
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.parse(string);
 	}
 
 	public static String splitCamelCase(String s) {
-		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
-				"(?<=[A-Za-z])(?=[^A-Za-z])");
+		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])",
+				"(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])");
 		String result = s.replaceAll(pattern, " ");
 		String s1 = result.substring(0, 1);
 		String s2 = result.substring(1);
 		return s1.toUpperCase() + s2;
+	}
+
+	public static String getProductVersion() {
+		final IProduct product = Platform.getProduct();
+		final Bundle bundle = product.getDefiningBundle();
+		final Version v = bundle.getVersion();
+		return v.toString();
 	}
 
 	public static String escape(String s) {
@@ -90,11 +104,13 @@ public class Util {
 		// IF YOU CAN'T, THEN SHOW IT AND FIND IT
 		IViewPart view;
 		try {
-			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
+			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().findView(viewID);
 		} catch (Exception e) {
 			try {
 				Util.showView(viewID);
-				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
+				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+						.getActivePage().findView(viewID);
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 				view = null;
@@ -104,7 +120,8 @@ public class Util {
 	}
 
 	public static void showView(String viewID) throws PartInitException {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+				.showView(viewID);
 	}
 
 	public static IPreferenceStore getPreferenceStore() {
@@ -116,7 +133,8 @@ public class Util {
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
 			uri = ActiveTDB.tdbModel.getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.Substance));
+			ResIterator iterator = (ActiveTDB.tdbModel
+					.listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
@@ -129,11 +147,17 @@ public class Util {
 		}
 		return uri;
 	}
-	
-	public static void setPerspective(String perspectiveID){
+
+	public static void setPerspective(String perspectiveID) {
 		IWorkbench iWorkBench = PlatformUI.getWorkbench();
-		IPerspectiveRegistry perspectiveRegistry = iWorkBench.getPerspectiveRegistry();
-		iWorkBench.getActiveWorkbenchWindow().getActivePage().setPerspective(perspectiveRegistry.findPerspectiveWithId(perspectiveID));
+		IPerspectiveRegistry perspectiveRegistry = iWorkBench
+				.getPerspectiveRegistry();
+		iWorkBench
+				.getActiveWorkbenchWindow()
+				.getActivePage()
+				.setPerspective(
+						perspectiveRegistry
+								.findPerspectiveWithId(perspectiveID));
 	}
 	// public static IStatusLineManager getStatusLine(){
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().

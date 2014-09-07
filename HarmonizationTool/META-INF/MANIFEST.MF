@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: HarmonizationTool
-Bundle-SymbolicName: HarmonizationTool; singleton:=true
-Bundle-Version: 1.0.0.20140506
+Bundle-Name: Harmonization Tool
+Bundle-SymbolicName: HarmonizationTool;singleton:=true
+Bundle-Version: 1.0.0.20140907
 Bundle-Activator: harmonizationtool.Activator
 Bundle-Vendor: EMVL
 Require-Bundle: org.eclipse.ui,
@@ -15,3 +15,5 @@ Bundle-ClassPath: .,
  swt-grouplayout.jar,
  swing2swt.jar
 Service-Component: log4j.properties.xml
+
+

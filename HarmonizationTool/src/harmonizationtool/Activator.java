@@ -1,7 +1,10 @@
 package harmonizationtool;
 
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
+
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -30,6 +33,10 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+//		new ProjectDirectoryManager();
+//		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+//		ProjectDirectoryManager.Init(shell);
+
 		new LoggerManager();
 		LoggerManager.Init();
 	}

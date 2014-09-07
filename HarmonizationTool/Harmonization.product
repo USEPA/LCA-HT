@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Harmonization Tool" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0.20140907" useFeatures="false" includeLaunchers="true">
+<product name="Harmonization Product" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
+
 
    <configIni use="default">
    </configIni>
@@ -13,6 +14,7 @@
 
    <windowImages i16="icons/alt_window_16.gif" i32="icons/alt_window_32.gif"/>
 
+
    <launcher name="HarmonizeLCA">
       <solaris/>
       <win useIco="false">
@@ -20,8 +22,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="CSV-tools"/>
@@ -101,6 +105,8 @@
       <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.intro"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.w3c.css.sac"/>
       <plugin id="org.w3c.dom.smil"/>
