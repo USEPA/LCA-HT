@@ -27,6 +27,7 @@ A3  ==> FIX DIR STRUCTURE ISSUES <==
 
 A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
   SOLN: Indicate version number (in Help -> About... pull down?!?)
+  STATUS: DONE
 
 A5  BUG: When "Saving Results" with no input, nothing happens
   SOLN: Just fix it.
@@ -44,6 +45,7 @@ A8  ISSUE (document):Can right click the Query window and import an .rq file
 A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
   seems bad
   SOLN: Remove unused Views (windows)
+  STATUS: Removed, but some tweaks likely needed soon.
 
 A10 BUG: 'File' -> 'Import CSV' does nothing
   SOLN: Remove from File menu

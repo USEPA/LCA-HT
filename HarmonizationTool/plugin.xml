@@ -168,26 +168,21 @@
                   label="Work Flows">
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
-                     label="Show Perspectives"
+                     label="[broken] Perspective switcher"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
+                     label="Show Flows Workflow"
                      style="push">
                </command>
             </menu>
             <menu
                   label="Data">
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
-                     label="Show Flows Workflow"
-                     style="push">
-               </command>
-               <command
                      commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
                      label="Show CSV Table View"
                      style="toggle">
-               </command>
-               <command
-                     commandId="HarmonizationTool.ShowDataFilesView"
-                     label="Show Data File(s)"
-                     style="push">
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
@@ -197,19 +192,6 @@
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
                      label="Show Match Contexts"
-                     style="push">
-               </command>
-            </menu>
-            <menu
-                  label="Results">
-               <command
-                     commandId="HarmonizationTool.ShowResultsView"
-                     label="Show Results View"
-                     style="push">
-               </command>
-               <command
-                     commandId="harmonizationtool.tree.viewer.ControlViewHandler"
-                     label="Show Results Tree Control"
                      style="push">
                </command>
             </menu>
@@ -224,6 +206,11 @@
             <command
                   commandId="HarmonizationTool.ShowQueryView"
                   label="Show Query View"
+                  style="push">
+            </command>
+            <command
+                  commandId="HarmonizationTool.ShowResultsView"
+                  label="Show Query Results"
                   style="push">
             </command>
             <command
