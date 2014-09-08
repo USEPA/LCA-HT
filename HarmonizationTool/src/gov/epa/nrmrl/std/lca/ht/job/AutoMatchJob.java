@@ -19,9 +19,9 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;

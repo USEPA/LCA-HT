@@ -10,8 +10,8 @@ import java.util.Date;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
-import harmonizationtool.dialog.GenericMessageBox;
-import harmonizationtool.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;

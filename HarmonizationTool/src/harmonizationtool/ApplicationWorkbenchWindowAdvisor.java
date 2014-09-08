@@ -65,7 +65,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		try {
 			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-			Command command = commandService.getCommand("harmonizationtool.handler.CloseTDB");
+			Command command = commandService.getCommand("gov.epa.nrmrl.std.lca.ht.handler.CloseTDB");
 			command.executeWithChecks(new ExecutionEvent());
 		} catch (ExecutionException e) {
 			e.printStackTrace();
@@ -86,7 +86,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 //		try {
 //			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 //			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-//			Command command = commandService.getCommand("harmonizationtool.handler.CloseTDB");
+//			Command command = commandService.getCommand("gov.epa.nrmrl.std.lca.ht.handler.CloseTDB");
 //			command.executeWithChecks(new ExecutionEvent());
 //		} catch (ExecutionException e) {
 //			e.printStackTrace();

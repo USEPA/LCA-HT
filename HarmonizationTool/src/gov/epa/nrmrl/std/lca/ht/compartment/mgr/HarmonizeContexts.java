@@ -21,16 +21,18 @@ import org.eclipse.ui.part.ViewPart;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import harmonizationtool.tree.Node;
-import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FASC;
-import harmonizationtool.vocabulary.LCAHT;
 
 import com.hp.hpl.jena.vocabulary.OWL;
 
-//import harmonizationtool.vocabulary.;
+//import gov.epa.nrmrl.std.lca.ht.vocabulary.;
+
+
 
 
 import org.eclipse.swt.events.SelectionEvent;

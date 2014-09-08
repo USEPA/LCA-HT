@@ -1,9 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
-import harmonizationtool.query.GenericQuery;
-import harmonizationtool.query.QListDataSources;
-import harmonizationtool.query.QueryResults;
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericQuery;
+import gov.epa.nrmrl.std.lca.ht.sparql.QListDataSources;
+import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;

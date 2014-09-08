@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColCheck;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.Issue;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;

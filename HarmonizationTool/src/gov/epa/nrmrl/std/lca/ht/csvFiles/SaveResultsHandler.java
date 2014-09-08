@@ -2,13 +2,13 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewContentProvider;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView.QueryViewLabelProvider;
-import harmonizationtool.query.GenericUpdate;
-import harmonizationtool.query.QueryResults;
-import harmonizationtool.utils.Util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

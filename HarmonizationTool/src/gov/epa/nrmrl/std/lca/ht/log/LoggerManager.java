@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.log;
 
-import harmonizationtool.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.File;
 import java.io.IOException;

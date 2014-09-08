@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery;
+import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.MyColumnLabelProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import harmonizationtool.edit.CSVEdittingSupport;
-import harmonizationtool.query.HarmonyQuery;
-import harmonizationtool.query.QueryResults;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;

@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import harmonizationtool.query.HarmonyBaseQuery;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseQuery;
 
 
 public class QDataSourcesWCompartments extends HarmonyBaseQuery {

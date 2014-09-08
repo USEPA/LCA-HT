@@ -6,8 +6,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import harmonizationtool.model.Issue;
-import harmonizationtool.model.Status;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -2,8 +2,8 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 //import java.util.Calendar;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.utils.FileEncodingUtil;
-import harmonizationtool.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
 

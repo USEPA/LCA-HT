@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
 import java.util.Collections;

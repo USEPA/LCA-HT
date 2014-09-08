@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import harmonizationtool.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

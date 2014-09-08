@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import harmonizationtool.model.Issue;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

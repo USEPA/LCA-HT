@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import harmonizationtool.model.Issue;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 
 import java.util.ArrayList;
 import java.util.List;

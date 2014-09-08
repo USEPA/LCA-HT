@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import harmonizationtool.query.HarmonyQuery2Impl;
-import harmonizationtool.query.LabeledQuery;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;

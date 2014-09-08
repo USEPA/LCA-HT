@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-import harmonizationtool.model.Issue;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 
 import java.util.ArrayList;
 import java.util.Date;

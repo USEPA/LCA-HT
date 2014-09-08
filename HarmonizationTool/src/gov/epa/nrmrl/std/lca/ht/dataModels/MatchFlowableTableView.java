@@ -2,11 +2,11 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.model.Issue;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.SKOS;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
 import java.util.List;

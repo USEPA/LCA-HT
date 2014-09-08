@@ -2,14 +2,14 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import harmonizationtool.ColumnLabelProvider;
-import harmonizationtool.query.QueryResults;
 import harmonizationtool.tree.Node;
-import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.LCAHT;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

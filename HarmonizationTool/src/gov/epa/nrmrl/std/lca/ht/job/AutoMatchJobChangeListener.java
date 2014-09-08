@@ -3,8 +3,8 @@ package gov.epa.nrmrl.std.lca.ht.job;
 import java.util.Date;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-import harmonizationtool.utils.Util;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;

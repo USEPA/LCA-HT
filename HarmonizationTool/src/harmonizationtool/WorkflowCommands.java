@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;
+import gov.epa.nrmrl.std.lca.ht.sparql.QCountMatches;
+import gov.epa.nrmrl.std.lca.ht.sparql.QDataSetContents;
+import gov.epa.nrmrl.std.lca.ht.sparql.QDataSources;
+import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCAS;
+import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCASandName;
+import gov.epa.nrmrl.std.lca.ht.sparql.UDelDataSource;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
-import harmonizationtool.query.HarmonyUpdate;
-import harmonizationtool.query.LabeledQuery;
-import harmonizationtool.query.QDataSetContents;
-
-import harmonizationtool.query.QMatchCAS;
-import harmonizationtool.query.QMatchCASandName;
-import harmonizationtool.query.UDelDataSource;
-
-import harmonizationtool.query.QCountMatches;
-import harmonizationtool.query.QDataSources;
-
-import harmonizationtool.utils.Util;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;

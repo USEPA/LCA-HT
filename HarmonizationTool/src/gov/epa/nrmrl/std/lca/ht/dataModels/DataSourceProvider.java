@@ -1,9 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
-import harmonizationtool.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
 import java.util.Date;

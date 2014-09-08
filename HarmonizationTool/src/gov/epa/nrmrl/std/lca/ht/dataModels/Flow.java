@@ -1,9 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FASC;
-import harmonizationtool.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;

@@ -2,9 +2,11 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;

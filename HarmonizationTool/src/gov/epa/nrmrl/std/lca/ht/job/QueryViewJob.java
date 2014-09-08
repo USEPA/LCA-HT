@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
-import harmonizationtool.query.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;

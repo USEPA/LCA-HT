@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
@@ -10,14 +11,14 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.dialog.GenericMessageBox;
-import harmonizationtool.utils.Util;
-import harmonizationtool.vocabulary.ECO;
-import harmonizationtool.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
@@ -345,7 +346,7 @@ public class FlowsWorkflow extends ViewPart {
 		private void doit(SelectionEvent e) {
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
-				handlerService.executeCommand("harmonizationtool.handler.ImportCSV", null);
+				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportCSV", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
