@@ -380,7 +380,7 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportCSV"
-            id="harmonizationtool.handler.ImportCSV"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportCSV"
             name="Import CSV">
       </command>
       <command

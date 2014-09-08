@@ -39,10 +39,14 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 
 		Composite composite = getFieldEditorParent();
 
-		addField(new DirectoryFieldEditor("defaultTDB", "Default TDB:", composite));
-		addField(new DirectoryFieldEditor("workingDirectory", "Working Direcotry:", composite));
+		addField(new DirectoryFieldEditor("defaultTDB", "Triples DB Directory:", composite));
+		addField(new DirectoryFieldEditor("workingDirectory", "Project Direcotry:", composite));
+		addField(new DirectoryFieldEditor("inputDirectory", "Input Direcotry:", composite));
 		addField(new DirectoryFieldEditor("outputDirectory", "Output Direcotry:", composite));
+		addField(new DirectoryFieldEditor("logDirectory", "Log Direcotry:", composite));
 
+		composite = getFieldEditorParent();
+		
 		StringFieldEditor runfileRootEditor = new StringFieldEditor("runfileRoot", "Runfile Root", composite);
 		Text runfileRoot = runfileRootEditor.getTextControl(composite);
 

@@ -21,8 +21,8 @@ A3  ==> FIX DIR STRUCTURE ISSUES <==
                  1) Folder: Input data
                  2) Folder: Output data
                  3) Folder: Log files
-              2) Eventually (after Oct. 1) user can create new projects 
-
+              2) Eventually (after Oct. 1) user can create new projects
+  STATUS: Setup, but will need tweaking
 
 
 A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
