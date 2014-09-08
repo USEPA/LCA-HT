@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,9 +44,9 @@ public class ImportTDBHandler implements IHandler {
 
 	}
 
-//	private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
-//	private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
-//	private XNumberDataSets xNumberDataSets = new XNumberDataSets();
+	// private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
+	// private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
+	// private XNumberDataSets xNumberDataSets = new XNumberDataSets();
 
 	// qGetNextDSIndex.
 
@@ -55,33 +56,31 @@ public class ImportTDBHandler implements IHandler {
 
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
-		if(ActiveTDB.tdbModel== null){
-//			String msg = "ERROR no TDB open";
-//			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		if (ActiveTDB.tdbModel == null) {
+			// String msg = "ERROR no TDB open";
+			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
 		Model model = ActiveTDB.tdbModel;
-		FileDialog fileDialog = new FileDialog(HandlerUtil
-				.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
+		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
 		String homeDir = System.getProperty("user.home");
-		String workingDirectory = Util.getPreferenceStore().getString(
-				"workingDirectory");
-		if (workingDirectory.length() > 0) {
-			fileDialog.setFilterPath(workingDirectory);
+		String inputDirectory = Util.getPreferenceStore().getString("iDirectory");
+		if (inputDirectory.length() > 0) {
+			fileDialog.setFilterPath(inputDirectory);
 		} else {
 			fileDialog.setFilterPath(homeDir);
 		}
 
-//		Class dataSource = tdbModel.getClass();
-//		Resource dsIRI = tdbModel.createResource();
-//		Property hasDataSource = tdbModel.getProperty(RDF.type);
-		
-//		ResIterator dataSetResources = tdbModel
-//				.listResourcesWithProperty(RDF.type,
-//						ds.asNode());
-		
+		// Class dataSource = tdbModel.getClass();
+		// Resource dsIRI = tdbModel.createResource();
+		// Property hasDataSource = tdbModel.getProperty(RDF.type);
+
+		// ResIterator dataSetResources = tdbModel
+		// .listResourcesWithProperty(RDF.type,
+		// ds.asNode());
+
 		// fileDialog
 		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
@@ -91,8 +90,8 @@ public class ImportTDBHandler implements IHandler {
 																				// ONE
 																				// WINDOW
 
-//		String homeDir = System.getProperty("user.home");
-//		fileDialog.setFilterPath(homeDir);
+		// String homeDir = System.getProperty("user.home");
+		// fileDialog.setFilterPath(homeDir);
 		System.out.println("Ready to open");
 		// ----------------- TOMMY HELP FIX THIS (BELOW) ----------------------
 		// String path = fileDialog.open(); // INPUT FROM USER
@@ -100,7 +99,9 @@ public class ImportTDBHandler implements IHandler {
 		String path = fileDialog.getFilterPath();
 		String[] fileList = fileDialog.getFileNames();
 
-		String sep = System.getProperty("file.separator");
+//		String sep = System.getProperty("file.separator");
+		String sep = File.separator;
+
 		System.out.println("path= " + path);
 		for (String fileName : fileList) {
 			System.out.println("fileName= " + fileName);
@@ -113,14 +114,14 @@ public class ImportTDBHandler implements IHandler {
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
-//					int next = 1;
+					// int next = 1;
 					String inputType = "RDF/XML";
 					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
-					runLogger.info("LOAD RDF "+fileName);
+					runLogger.info("LOAD RDF " + fileName);
 					ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
@@ -135,7 +136,7 @@ public class ImportTDBHandler implements IHandler {
 				// System.out.println("Got a zip file");
 				try {
 					ZipFile zf = new ZipFile(fileName);
-					runLogger.info("LOAD RDF (zip file)"+fileName);
+					runLogger.info("LOAD RDF (zip file)" + fileName);
 
 					Enumeration entries = zf.entries();
 					// JenaReader jenaReader = new JenaReader();
@@ -148,14 +149,12 @@ public class ImportTDBHandler implements IHandler {
 							inputType = "N3";
 						}
 						if (inputType != "SKIP") {
-							System.out.println("Adding data from " + inputType
-									+ " zipped file:" + ze.getName());
-							BufferedReader zipStream = new BufferedReader(
-									new InputStreamReader(zf.getInputStream(ze)));
-							runLogger.info("  # zip file contains: "+ze.getName());
+							System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
+							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
+							runLogger.info("  # zip file contains: " + ze.getName());
 
 							model.read(zipStream, null, inputType);
-							
+
 							ActiveTDB.syncTDBtoLCAHT();
 
 							// jenaReader.read(tdbModel, zipStream, null);
@@ -166,24 +165,22 @@ public class ImportTDBHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
-//			xNumberDataSets.execute();
+			// xNumberDataSets.execute();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 
 			long now = model.size();
 			long change = now - was;
-			System.out.println("Was:" + was + " Added:" + change + " Now:"
-					+ now);
-			runLogger.info("  # RDF triples before: "+NumberFormat.getIntegerInstance().format(was));
-			runLogger.info("  # RDF triples after:  "+NumberFormat.getIntegerInstance().format(now));
-			runLogger.info("  # RDF triples added:  "+NumberFormat.getIntegerInstance().format(change));
+			System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
+			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
+			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
+			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
 		// GenericUpdate iGenericInsert = new
 		// GenericUpdate(queryStr,"Ext. File Update");
 
 		// addFilename(fileName);
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		String title = resultsView.getTitle();
 		System.out.println("title= " + title);
@@ -202,10 +199,9 @@ public class ImportTDBHandler implements IHandler {
 		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		// System.out.println("qGetNextDSIndex = "+qGetNextDSIndex.toString());
 
-//		String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
-//		Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		// String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
+		// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 
-		
 		return null;
 	}
 

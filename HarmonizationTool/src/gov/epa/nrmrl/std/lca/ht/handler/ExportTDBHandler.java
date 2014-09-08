@@ -33,23 +33,20 @@ public class ExportTDBHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// public Object execute(ExecutionEvent event) throws ExecutionException
 		// {
-		if(ActiveTDB.tdbModel== null){
-//			String msg = "ERROR no TDB open";
-//			Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+		if (ActiveTDB.tdbModel == null) {
+			// String msg = "ERROR no TDB open";
+			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
 		System.out.println("executing TDB Dump");
-//		Model model = ActiveTDB.tdbModel;
+		// Model model = ActiveTDB.tdbModel;
 		// ModelProvider modelProvider = new ModelProvider();
-		FileDialog fileDialog = new FileDialog(HandlerUtil
-				.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] {"*.n3","*.rdf"});
-		String outputDirectory = Util.getPreferenceStore().getString(
-				"outputDirectory");
+		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
+		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf" });
+		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
-			outputDirectory = Util.getPreferenceStore().getString(
-					"workingDirectory");
+			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
 		}
 		if (outputDirectory.length() > 0) {
 			fileDialog.setFilterPath(outputDirectory);
@@ -63,13 +60,15 @@ public class ExportTDBHandler implements IHandler {
 
 			try {
 				String outType = "RDF/XML"; // DEFAULT
-				if (path.matches(".*\\.n3.*")){outType = "N3";}
+				if (path.matches(".*\\.n3.*")) {
+					outType = "N3";
+				}
 				System.out.println(path.toString());
 				FileOutputStream fout = new FileOutputStream(path);
-//				RDFWriter rdfWriter = tdbModel.getWriter("RDF/XML");
-//				RDFWriter rdfWriter = tdbModel.getWriter(outType); // WORKED
-//				rdfWriter.write(tdbModel, fout, null);             // WORKED
-//				tdbModel.write(fout, path, outType);               // BAD
+				// RDFWriter rdfWriter = tdbModel.getWriter("RDF/XML");
+				// RDFWriter rdfWriter = tdbModel.getWriter(outType); // WORKED
+				// rdfWriter.write(tdbModel, fout, null); // WORKED
+				// tdbModel.write(fout, path, outType); // BAD
 				ActiveTDB.tdbModel.write(fout, outType); // TESTING
 				fout.close();
 				//
@@ -88,10 +87,8 @@ public class ExportTDBHandler implements IHandler {
 			// GenericUpdate(queryStr,"Ext. File Update");
 
 			// addFilename(path);
-			IWorkbenchPage page = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage();
-			ResultsView resultsView = (ResultsView) page
-					.findView(ResultsView.ID);
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 			String title = resultsView.getTitle();
 			System.out.println("title= " + title);
 

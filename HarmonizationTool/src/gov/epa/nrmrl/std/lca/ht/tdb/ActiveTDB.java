@@ -92,7 +92,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void openTDB() {
-		while (tdbModel == null) {
+		if (tdbModel == null) {
 			if ((Util.getPreferenceStore().getString("defaultTDB") == null)
 					|| (Util.getPreferenceStore().getString("defaultTDB") == "")) {
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();

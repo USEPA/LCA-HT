@@ -73,10 +73,9 @@ public class View extends ViewPart {
 	// private ZGetNextDSIndex qGetNextDSIndex = new ZGetNextDSIndex();
 
 	/**
-	 * The content provider class is responsible for providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore it and always show the same content (like Task
-	 * List, for example).
+	 * The content provider class is responsible for providing objects to the view. It can wrap existing objects in
+	 * adapters or simply return objects as-is. These objects may be sensitive to the current input of the view, or
+	 * ignore it and always show the same content (like Task List, for example).
 	 */
 	class ViewContentProvider implements IStructuredContentProvider {
 		Viewer v;
@@ -197,14 +196,16 @@ public class View extends ViewPart {
 				// DataSourceProvider dataSourceProvider = DataSourceKeeper.get(0); //
 				// FIXME
 				// Map<String, String> metaData = csvFile.metaData;
-//				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD, dataSourceProvider);
-//				dialog.create();
-//				dialog.open();
+				// MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD,
+				// dataSourceProvider);
+				// dialog.create();
+				// dialog.open();
 			}
 		};
 		editMeta.setText("Edit Meta Data");
 		editMeta.setToolTipText("See / Change data for this file");
-		editMeta.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		editMeta.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		actionSave = new Action() {
 			public void run() {
 				System.out.println("executing actionSave");
@@ -224,9 +225,9 @@ public class View extends ViewPart {
 					filterPath = "c:\\";
 				}
 
-				String workingDirectory = Util.getPreferenceStore().getString("workingDirectory");
-				if (workingDirectory.length() > 0) {
-					dialog.setFilterPath(workingDirectory);
+				String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
+				if (inputDirectory.length() > 0) {
+					dialog.setFilterPath(inputDirectory);
 				} else {
 					dialog.setFilterPath(filterPath);
 				}
@@ -256,7 +257,8 @@ public class View extends ViewPart {
 		};
 		actionSave.setText("Save...");
 		actionSave.setToolTipText("Save CSV");
-		actionSave.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionSave.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		actionClose = new Action() {
 			public void run() {
@@ -283,7 +285,8 @@ public class View extends ViewPart {
 		};
 		actionClose.setText("Close");
 		actionClose.setToolTipText("Close CSV");
-		actionClose.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionClose.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		// NOTES:
 		// LCIA must have the following:
@@ -544,7 +547,8 @@ public class View extends ViewPart {
 		};
 		actionParseFlowablesToTDB.setText("Parse Flowables");
 		actionParseFlowablesToTDB.setToolTipText("Parse flowables to TDB");
-		actionParseFlowablesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionParseFlowablesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		actionParseCategoriesToTDB = new Action() {
 			public void run() {
@@ -764,7 +768,8 @@ public class View extends ViewPart {
 		};
 		actionParseCategoriesToTDB.setText("Parse Categories");
 		actionParseCategoriesToTDB.setToolTipText("Parse Categories to TDB");
-		actionParseCategoriesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionParseCategoriesToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		// viewer.addDoubleClickListener(new IDoubleClickListener() {
 		// // viewer.add
@@ -1117,8 +1122,10 @@ public class View extends ViewPart {
 
 		};
 		actionParseImpactAssessmentModelInfoToTDB.setText("Parse Other Model Info");
-		actionParseImpactAssessmentModelInfoToTDB.setToolTipText("Set Impact Characterization Model, Impact Category, Impact Category Indicator, and Flow Uni).");
-		actionParseImpactAssessmentModelInfoToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		actionParseImpactAssessmentModelInfoToTDB
+				.setToolTipText("Set Impact Characterization Model, Impact Category, Impact Category Indicator, and Flow Uni).");
+		actionParseImpactAssessmentModelInfoToTDB.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		// viewer.addDoubleClickListener(new IDoubleClickListener() {
 		// // viewer.add

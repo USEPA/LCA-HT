@@ -67,8 +67,7 @@ public class SaveResultsHandler implements IHandler {
 		// {
 		// -------------------------
 		System.out.println("Saving Results");
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		QueryResults queryResults = resultsView.getQueryResults();
 		DataRow headerRow = queryResults.getColumnHeaders();
@@ -83,26 +82,24 @@ public class SaveResultsHandler implements IHandler {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Text Files", "All Files (*)" };
 		String[] filterExtensions = new String[] { "*.txt", "*" };
-//		String filterPath = "/";
-//		String platform = SWT.getPlatform();
-//		if (platform.equals("win32") || platform.equals("wpf")) {
-//			filterNames = new String[] { "Text Files", "All Files (*.*)" };
-//			filterExtensions = new String[] {
-//					"*.txt", "*.*" };
-//			filterPath = "c:\\";
-//		}
-//		else if (platform.equals("macosx")) {
-//			filterNames = new String[] { "Text Files", "All Files (*.*)" };
-//			filterExtensions = new String[] {
-//					"*.txt", "*.*" };
-//			filterPath = "~/";
-//		}
-		
-		String outputDirectory = Util.getPreferenceStore().getString(
-				"outputDirectory");
+		// String filterPath = "/";
+		// String platform = SWT.getPlatform();
+		// if (platform.equals("win32") || platform.equals("wpf")) {
+		// filterNames = new String[] { "Text Files", "All Files (*.*)" };
+		// filterExtensions = new String[] {
+		// "*.txt", "*.*" };
+		// filterPath = "c:\\";
+		// }
+		// else if (platform.equals("macosx")) {
+		// filterNames = new String[] { "Text Files", "All Files (*.*)" };
+		// filterExtensions = new String[] {
+		// "*.txt", "*.*" };
+		// filterPath = "~/";
+		// }
+
+		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
-			outputDirectory = Util.getPreferenceStore().getString(
-					"workingDirectory");
+			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
 		}
 		if (outputDirectory.length() > 0) {
 			dialog.setFilterPath(outputDirectory);
@@ -110,11 +107,11 @@ public class SaveResultsHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			dialog.setFilterPath(homeDir);
 		}
-		
+
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFileName("query_results");
-		
+
 		String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
 
@@ -122,8 +119,8 @@ public class SaveResultsHandler implements IHandler {
 			CSVWriter csvWriter = new CSVWriter();
 			CSVConfig csvConfig = new CSVConfig();
 			csvConfig.setDelimiter('\t');
-//			csvConfig.setIgnoreValueDelimiter(true);
-//			csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
+			// csvConfig.setIgnoreValueDelimiter(true);
+			// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
 
 			// configure file for output
 			File file = new File(saveTo);

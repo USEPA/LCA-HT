@@ -38,14 +38,13 @@ public class ExtQueryHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		System.out.println("executing an external query");
-//		ModelProvider modelProvider = new ModelProvider();
+		// ModelProvider modelProvider = new ModelProvider();
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.rq" });
 		String homeDir = System.getProperty("user.home");
-		String workingDirectory = Util.getPreferenceStore().getString(
-				"workingDirectory");
-		if (workingDirectory.length() > 0) {
-			fileDialog.setFilterPath(workingDirectory);
+		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
+		if (inputDirectory.length() > 0) {
+			fileDialog.setFilterPath(inputDirectory);
 		} else {
 			fileDialog.setFilterPath(homeDir);
 		}
@@ -60,7 +59,7 @@ public class ExtQueryHandler implements IHandler {
 
 				while ((s = br.readLine()) != null) {
 					// System.out.println(s);
-					b.append(s+"\n");
+					b.append(s + "\n");
 				}
 				fileReader.close();
 			} catch (FileNotFoundException e1) {
@@ -71,41 +70,35 @@ public class ExtQueryHandler implements IHandler {
 				e.printStackTrace();
 			}
 
-			//--------------------------- NOW PUT QUERY INTO QUERY WINDOW ------
+			// --------------------------- NOW PUT QUERY INTO QUERY WINDOW ------
 			String queryStr = b.toString();
-//			{
-//			THIS IS NOW IN THE GenericQuery CLASS
-//				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//				QueryView queryView = (QueryView) page.findView(QueryView.ID);
-//				queryView.setTextAreaContent(queryStr);
-////				System.out.println("Contents of window: = "+ queryView.toString());
-//			}
-			
-			//--------------------------- NOW RUN THE THING ------
-			
-			
+			// {
+			// THIS IS NOW IN THE GenericQuery CLASS
+			// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			// QueryView queryView = (QueryView) page.findView(QueryView.ID);
+			// queryView.setTextAreaContent(queryStr);
+			// // System.out.println("Contents of window: = "+ queryView.toString());
+			// }
 
-			
-//            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			// --------------------------- NOW RUN THE THING ------
+
+			// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 			String title = resultsView.getTitle();
 			System.out.println("title= " + title);
 
 			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 			harmonyQuery2Impl.setQuery(queryStr);
-			ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl)
-					.getResultSet();
+			ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
-			TableProvider tableProvider = TableProvider
-					.create((ResultSetRewindable) resultSet);
+			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			resultsView.update(tableProvider);
-					}
-//		actionExtQuery.setText("Exec. Query...");
-//		actionExtQuery.setToolTipText("SPARQL Query in .ttl file");
-//		actionExtQuery.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		}
+		// actionExtQuery.setText("Exec. Query...");
+		// actionExtQuery.setToolTipText("SPARQL Query in .ttl file");
+		// actionExtQuery.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		return null;
 	}
-	
 
 	@Override
 	public boolean isEnabled() {

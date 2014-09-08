@@ -33,33 +33,32 @@ public class ImportTriplesHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-//	public Object execute(ExecutionEvent event) throws ExecutionException {
-				System.out.println("executing Import Triples");
-				if(ActiveTDB.tdbModel== null){
-//					String msg = "ERROR no TDB open";
-//					Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-					return null;
-				}
-				Model model = ActiveTDB.tdbModel;
-//				ModelProvider modelProvider = new ModelProvider();
-				FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-				fileDialog.setFilterExtensions(new String[] { "*.n3" });
-				String homeDir = System.getProperty("user.home");
-				String workingDirectory = Util.getPreferenceStore().getString(
-						"workingDirectory");
-				if (workingDirectory.length() > 0) {
-					fileDialog.setFilterPath(workingDirectory);
-				} else {
-					fileDialog.setFilterPath(homeDir);
-				}
-				
-				String path = fileDialog.open();
-//				JenaReader jenaReader = new JenaReader();// maybe here FIXME
-//				jenaReader.this;
-				if (path != null) {
-					StringBuilder b = new StringBuilder();
-//					FileReader fileReader = null;
-					try {
+		// public Object execute(ExecutionEvent event) throws ExecutionException {
+		System.out.println("executing Import Triples");
+		if (ActiveTDB.tdbModel == null) {
+			// String msg = "ERROR no TDB open";
+			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
+			return null;
+		}
+		Model model = ActiveTDB.tdbModel;
+		// ModelProvider modelProvider = new ModelProvider();
+		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
+		fileDialog.setFilterExtensions(new String[] { "*.n3" });
+		String homeDir = System.getProperty("user.home");
+		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
+		if (inputDirectory.length() > 0) {
+			fileDialog.setFilterPath(inputDirectory);
+		} else {
+			fileDialog.setFilterPath(homeDir);
+		}
+
+		String path = fileDialog.open();
+		// JenaReader jenaReader = new JenaReader();// maybe here FIXME
+		// jenaReader.this;
+		if (path != null) {
+			StringBuilder b = new StringBuilder();
+			// FileReader fileReader = null;
+			try {
 				// fileReader = new FileReader(path);
 				// BufferedReader br = new BufferedReader(fileReader);
 				// String s;
@@ -71,47 +70,47 @@ public class ImportTriplesHandler implements IHandler {
 				// b.append(s+"\n");
 				// }
 				// fileReader.close();
-							
-						InputStream inputStream = new FileInputStream(path);
-//							JenaReader jenaReader = new JenaReader();
-//							jenaReader.
-//							jenaReader.setProperty("n3", SA);
-							model.read(inputStream, "N3");
-//							OPTIONS: "RDF/XML" "N-TRIPLE" "TURTLE" = "TTL" "N3"
-//							jenaReader.read(tdbModel, inputStream, null); // DEFAULT IS RDF / XML
-						
-						} catch (FileNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (Exception e) {
 
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				InputStream inputStream = new FileInputStream(path);
+				// JenaReader jenaReader = new JenaReader();
+				// jenaReader.
+				// jenaReader.setProperty("n3", SA);
+				model.read(inputStream, "N3");
+				// OPTIONS: "RDF/XML" "N-TRIPLE" "TURTLE" = "TTL" "N3"
+				// jenaReader.read(tdbModel, inputStream, null); // DEFAULT IS RDF / XML
 
-					}
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e) {
 
-//					String queryStr = b.toString();
-//					GenericUpdate iGenericInsert = new GenericUpdate(queryStr,"Ext. File Update");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-//					addFilename(path);
-//					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-					String title = resultsView.getTitle();
-					System.out.println("title= " + title);
+		}
 
-//					resultsView.update(iGenericInsert.getData());
-//					resultsView.update(iGenericInsert.getQueryResults());
-					// CSVTableView.setKey(path);
-					// TableViewer tableViewer = csvTableView.getViewer();
-					// tableViewer.setInput(new Object[] {""});
-//					resultsView.update(path);
+		// String queryStr = b.toString();
+		// GenericUpdate iGenericInsert = new GenericUpdate(queryStr,"Ext. File Update");
 
-//				}
+		// addFilename(path);
+		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+		String title = resultsView.getTitle();
+		System.out.println("title= " + title);
 
-//		actionExtUpdate.setText("Exec. Update...");
-//		actionExtUpdate.setToolTipText("SPARQL Update in .ttl file");
-//		actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		// resultsView.update(iGenericInsert.getData());
+		// resultsView.update(iGenericInsert.getQueryResults());
+		// CSVTableView.setKey(path);
+		// TableViewer tableViewer = csvTableView.getViewer();
+		// tableViewer.setInput(new Object[] {""});
+		// resultsView.update(path);
+
+		// }
+
+		// actionExtUpdate.setText("Exec. Update...");
+		// actionExtUpdate.setToolTipText("SPARQL Update in .ttl file");
+		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 		return null;
 	}
 
