@@ -1,4 +1,4 @@
-package harmonizationtool.console;
+package gov.epa.nrmrl.std.lca.ht.log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 public class LightweightConsoleView extends ViewPart {
-	public static final String ID = "harmonizationtool.console.LightweightConsoleView";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.harmonizationtool.console.LightweightConsoleView";
 	private Text text;
 	
 	public LightweightConsoleView(){

@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
 import java.util.ArrayList;
 import java.util.HashMap;

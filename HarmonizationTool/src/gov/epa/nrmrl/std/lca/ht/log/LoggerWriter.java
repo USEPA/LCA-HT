@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Text;
 
 
 public class LoggerWriter extends StringWriter {
-	public static final String ID = "harmonizationtool.console.LoggerWriter";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.log.LoggerWriter";
 
 	private Text loggerArea;
 

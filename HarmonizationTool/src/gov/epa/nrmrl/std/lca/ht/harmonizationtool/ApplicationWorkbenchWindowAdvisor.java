@@ -1,4 +1,6 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
+
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -45,7 +47,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		try {
 			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-			Command command = commandService.getCommand("harmonizationtool.tdb.select.id");
+			Command command = commandService.getCommand(ActiveTDB.ID);
 			command.executeWithChecks(new ExecutionEvent());
 		} catch (ExecutionException e) {
 			e.printStackTrace();

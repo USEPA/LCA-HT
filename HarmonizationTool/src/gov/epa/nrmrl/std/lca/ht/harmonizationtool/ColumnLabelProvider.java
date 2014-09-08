@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellLabelProvider;

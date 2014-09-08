@@ -4,6 +4,8 @@ import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.ui.IPageLayout;
@@ -47,7 +49,7 @@ public class FlowDataV2 implements IPerspectiveFactory {
 	}
 
 	private void addFastViews(IPageLayout layout) {
-		layout.addFastView("HarmonizationTool.QueryViewID");
-		layout.addFastView("HarmonizationTool.ResultsViewID");
+		layout.addFastView(QueryView.ID);
+		layout.addFastView(ResultsView.ID);
 	}
 }

@@ -49,6 +49,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB";
 
 	public ActiveTDB() {
 		System.out.println("created ActiveTDB");

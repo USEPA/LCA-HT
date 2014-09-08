@@ -40,9 +40,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 
 
+
 //import gov.epa.nrmrl.std.lca.ht.flowable.mgr.TreeNode;
-import harmonizationtool.ColumnLabelProvider;
-import harmonizationtool.tree.Node;
+
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.ColumnLabelProvider;
 
 public class CopyOfHarmonizeCompartments extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.CopyOfHarmonizeContexts";

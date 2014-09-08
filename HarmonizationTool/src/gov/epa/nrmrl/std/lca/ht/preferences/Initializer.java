@@ -3,8 +3,8 @@ package gov.epa.nrmrl.std.lca.ht.preferences;
 import java.io.File;
 import java.util.Date;
 
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import harmonizationtool.Activator;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;

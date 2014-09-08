@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 
-import harmonizationtool.tree.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 

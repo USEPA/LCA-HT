@@ -1,5 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.perspectives;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
+import gov.epa.nrmrl.std.lca.ht.views.QueryView;
+import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.views.View;
+
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
@@ -16,14 +22,14 @@ public class OriginalPerspective implements IPerspectiveFactory {
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder1", IPageLayout.LEFT, 0.65f, editorArea);
 
-			folderLayout.addView("HarmonizationTool.view");
-			folderLayout.addView("HarmonizationTool.QueryViewID");
+			folderLayout.addView(View.ID);
+			folderLayout.addView(QueryView.ID);
 		}
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder3", IPageLayout.LEFT, 0.8f, editorArea);
-			folderLayout.addView("gov.epa.nrmrl.std.lca.ht.csvFiles.csvTableView");
-			folderLayout.addView("HarmonizationTool.ResultsViewID");
-			folderLayout.addView("HarmonizationTool.ResultsTreeEditorID");
+			folderLayout.addView(CSVTableView.ID);
+			folderLayout.addView(ResultsView.ID);
+			folderLayout.addView(ResultsTreeEditor.ID);
 //			folderLayout.addView("gov.epa.nrmrl.std.lca.ht.job.JobStatusView");
 
 		}

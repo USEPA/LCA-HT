@@ -2,9 +2,9 @@ package gov.epa.nrmrl.std.lca.ht.preferences;
 
 import java.io.File;
 
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import harmonizationtool.Activator;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;

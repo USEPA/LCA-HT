@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;

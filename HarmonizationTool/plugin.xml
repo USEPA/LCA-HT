@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="harmonizationtool.Application">
+               class="gov.epa.nrmrl.std.lca.ht.harmonizationtool.Application">
          </run>
       </application>
    </extension>
@@ -80,7 +80,7 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.console.LightweightConsoleView"
+            class="gov.epa.nrmrl.std.lca.ht.log.LightweightConsoleView"
             id="harmonizationtool.console.LightweightConsoleView"
             name="Light Weight Console"
             restorable="true">
@@ -92,7 +92,7 @@
             restorable="true">
       </view>
       <view
-            class="harmonizationtool.ViewPart1"
+            class="gov.epa.nrmrl.std.lca.ht.harmonizationtool.ViewPart1"
             id="HarmonizationTool.view1"
             name="name"
             restorable="true">
@@ -279,14 +279,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="HarmonizationTool.application"
-            name="Harmonization Tool">
+            name="Harmonization Product">
          <property
                name="windowImages"
                value="icons/alt_window_16.gif,icons/alt_window_32.gif">
          </property>
          <property
                name="appName"
-               value="Harmonization Tool">
+               value="Harmonization Product">
          </property>
       </product>
    </extension>
@@ -295,7 +295,7 @@
          point="org.eclipse.ui.commands">
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
-            id="harmonizationtool.tdb.select.id"
+            id="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
             name="SelectTDB">
       </command>
       <command
@@ -417,7 +417,7 @@
                name="Name"
                optional="true">
             <values
-                  class="harmonizationtool.ParameterValues1">
+                  class="gov.epa.nrmrl.std.lca.ht.harmonizationtool.ParameterValues1">
             </values>
          </commandParameter>
       </command>

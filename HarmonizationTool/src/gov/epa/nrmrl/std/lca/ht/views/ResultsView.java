@@ -5,13 +5,14 @@ import java.util.List;
 
 
 
+
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVEdittingSupport;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.MyColumnLabelProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import harmonizationtool.edit.CSVEdittingSupport;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -53,7 +54,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class ResultsView extends ViewPart {
-	public static final String ID = "HarmonizationTool.ResultsViewID";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.views.ResultsView";
 
 	private TableViewer viewer;
 	private static List<Object> columns = new ArrayList<Object>();

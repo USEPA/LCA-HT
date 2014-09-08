@@ -1,4 +1,4 @@
-package harmonizationtool;
+package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;

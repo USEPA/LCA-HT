@@ -19,8 +19,7 @@ package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
 //package org.eclipse.jface.snippets.viewers;
 
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.TreeNode;
-import harmonizationtool.ColumnLabelProvider;
-import harmonizationtool.tree.Node;
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.ColumnLabelProvider;
 
 import java.util.ArrayList;
 import java.util.Iterator;

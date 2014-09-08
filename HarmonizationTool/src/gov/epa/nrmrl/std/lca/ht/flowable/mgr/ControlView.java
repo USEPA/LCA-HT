@@ -14,7 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 
 public class ControlView extends ViewPart {
-	public static final String ID = "harmonizationtool.tree.viewer.ControlView";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.harmonizationtool.tree.viewer.ControlView";
 	private Text textMatched;
 	private Text textUnmatched;
 	private Text textTotal;

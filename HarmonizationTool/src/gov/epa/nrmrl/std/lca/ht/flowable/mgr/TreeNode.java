@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import harmonizationtool.tree.Node;
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.Node;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -57,7 +57,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class View extends ViewPart {
-	public static final String ID = "HarmonizationTool.view";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.views.view";
 
 	private TableViewer viewer;
 	// private Action actionImport;

@@ -66,7 +66,7 @@ import org.eclipse.swt.widgets.Table;
 //public class QueryView extends ViewPart implements IActiveTDBListener {
 public class QueryView extends ViewPart {
 
-	public static final String ID = "HarmonizationTool.QueryViewID";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.views.QueryView";
 
 	private List<LabeledQuery> labeledQueries = new ArrayList<LabeledQuery>();
 

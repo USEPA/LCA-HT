@@ -49,9 +49,7 @@ public class LoggerManager {
 		try {
 			// Define file appender with layout and output log file name
 			RollingFileAppender fileAppender = new RollingFileAppender(layout, Util.getPreferenceStore().getString(
-					"outputDirectory")
-					+ File.separator
-					+ "runfiles"
+					"logDirectory")
 					+ File.separator
 					+ Util.getPreferenceStore().getString("runfileRoot")
 					+ "_" + timestampValidFmt + ".txt");

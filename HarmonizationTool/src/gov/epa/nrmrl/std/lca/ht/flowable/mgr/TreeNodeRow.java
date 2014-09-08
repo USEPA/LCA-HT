@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import harmonizationtool.tree.Node;
+import gov.epa.nrmrl.std.lca.ht.compartment.mgr.Node;
 
 /**
  * @author tec

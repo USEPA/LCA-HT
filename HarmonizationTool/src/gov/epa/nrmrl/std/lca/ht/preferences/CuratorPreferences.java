@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.preferences;
 
-import harmonizationtool.Activator;
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferencePageContainer;

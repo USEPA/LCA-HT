@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.log.LightweightConsoleView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import harmonizationtool.console.LightweightConsoleView;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
