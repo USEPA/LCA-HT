@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+package gov.epa.nrmrl.std.lca.ht.flowProperty.mgr;
 
 import java.util.ArrayList;
 import java.util.Iterator;

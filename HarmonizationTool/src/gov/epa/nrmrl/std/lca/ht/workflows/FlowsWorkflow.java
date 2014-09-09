@@ -840,15 +840,15 @@ public class FlowsWorkflow extends ViewPart {
 		//
 		// // resultsView.formatForTransform0();
 		// } else if (key.startsWith("Harmonize Compart")) { // HACK!!
-		// HarmonizeContexts harmonizeCompartments = (HarmonizeContexts)
-		// Util.findView(HarmonizeContexts.ID);
+		// MatchContexts harmonizeCompartments = (MatchContexts)
+		// Util.findView(MatchContexts.ID);
 		// // FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 		// // USE
 		// // WHICH createTransform
 		// // AND WHICH formatForTransfor()
 		// // SHOULD BE KNOWN BY THE LabledQuery
 		// // BUT CHOSEN BY THE CALLER
-		// showResultsInWindow = HarmonizeContexts.ID;
+		// showResultsInWindow = MatchContexts.ID;
 		//
 		// TableProvider tableProvider =
 		// TableProvider.create((ResultSetRewindable) resultSet);

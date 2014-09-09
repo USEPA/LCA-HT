@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -17,6 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
@@ -313,7 +313,7 @@ public class AutoMatchJob extends Job {
 				}
 			}
 		}
-//		HarmonizeContexts.update(flowContextTableProvider);
+//		MatchContexts.update(flowContextTableProvider);
 //		HarmonizeFlowProperties.update(flowPropertyTableProvider);
 		// TODO - WORK OUT THE ABOVE METHODS IN THEIR CLASSES
 		

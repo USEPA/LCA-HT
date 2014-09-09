@@ -1,8 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.ColumnLabelProvider;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;

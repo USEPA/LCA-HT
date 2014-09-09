@@ -56,7 +56,7 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            class="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
             id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
             name="Match Contexts Tool"
             restorable="true">

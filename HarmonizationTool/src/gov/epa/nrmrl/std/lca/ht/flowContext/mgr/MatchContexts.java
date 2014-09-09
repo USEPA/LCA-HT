@@ -1,7 +1,6 @@
-package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -22,18 +21,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
-
-import com.hp.hpl.jena.vocabulary.OWL;
-
-//import gov.epa.nrmrl.std.lca.ht.vocabulary.;
-
-
-
-
 
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -49,20 +38,14 @@ import org.eclipse.jface.viewers.TableViewer;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
-public class HarmonizeContexts extends ViewPart {
+public class MatchContexts extends ViewPart {
 	private Button btnCommitMatches;
 
 	private static class ContentProvider implements IStructuredContentProvider {
@@ -77,10 +60,10 @@ public class HarmonizeContexts extends ViewPart {
 		}
 	}
 
-	public HarmonizeContexts() {
+	public MatchContexts() {
 	}
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
 	private Table queryTbl;
 	private TableViewer queryTblViewer;
 	private Table matchedTbl;
@@ -415,153 +398,153 @@ public class HarmonizeContexts extends ViewPart {
 
 		TreeNode air = new TreeNode(release);
 		air.nodeName = "air";
-		air.uri = LCAHT.airUnspecified;
-		// confirmUri(LCAHT.release);
+		air.uri = FEDLCA.airUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode airLowPop = new TreeNode(air);
 		airLowPop.nodeName = "low population density";
-		airLowPop.uri = LCAHT.airLow_population_density;
-		// confirmUri(LCAHT.release);
+		airLowPop.uri = FEDLCA.airLow_population_density;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode airUnspec = new TreeNode(air);
 		airUnspec.nodeName = "unspecified";
-		airUnspec.uri = LCAHT.airUnspecified;
-		// confirmUri(LCAHT.release);
+		airUnspec.uri = FEDLCA.airUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode airHighPop = new TreeNode(air);
 		airHighPop.nodeName = "high population density";
-		airHighPop.uri = LCAHT.airHigh_population_density;
-		// confirmUri(LCAHT.release);
+		airHighPop.uri = FEDLCA.airHigh_population_density;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode airLowPopLongTerm = new TreeNode(air);
 		airLowPopLongTerm.nodeName = "low population density, long-term";
-		airLowPopLongTerm.uri = LCAHT.airLow_population_densityLong_term;
-		// confirmUri(LCAHT.release);
+		airLowPopLongTerm.uri = FEDLCA.airLow_population_densityLong_term;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
 		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
-		airLowerStratPlusUpperTrop.uri = LCAHT.airLower_stratosphere_upper_troposphere;
-		// confirmUri(LCAHT.release);
+		airLowerStratPlusUpperTrop.uri = FEDLCA.airLower_stratosphere_upper_troposphere;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode water = new TreeNode(release);
 		water.nodeName = "water";
-		water.uri = LCAHT.waterUnspecified;
-		// confirmUri(LCAHT.release);
+		water.uri = FEDLCA.waterUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterFossil = new TreeNode(water);
 		waterFossil.nodeName = "fossil-";
-		waterFossil.uri = LCAHT.waterFossil;
-		// confirmUri(LCAHT.release);
+		waterFossil.uri = FEDLCA.waterFossil;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterFresh = new TreeNode(water);
 		waterFresh.nodeName = "fresh-";
-		waterFresh.uri = LCAHT.waterFresh;
-		// confirmUri(LCAHT.release);
+		waterFresh.uri = FEDLCA.waterFresh;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterFreshLongTerm = new TreeNode(water);
 		waterFreshLongTerm.nodeName = "fresh-, long-term";
-		waterFreshLongTerm.uri = LCAHT.waterFreshLong_term;
-		// confirmUri(LCAHT.release);
+		waterFreshLongTerm.uri = FEDLCA.waterFreshLong_term;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterGround = new TreeNode(water);
 		waterGround.nodeName = "ground-";
-		waterGround.uri = LCAHT.waterGround;
-		// confirmUri(LCAHT.release);
+		waterGround.uri = FEDLCA.waterGround;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterGroundLongTerm = new TreeNode(water);
 		waterGroundLongTerm.nodeName = "ground-, long-term";
-		waterGroundLongTerm.uri = LCAHT.waterGroundLong_term;
-		// confirmUri(LCAHT.release);
+		waterGroundLongTerm.uri = FEDLCA.waterGroundLong_term;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterLake = new TreeNode(water);
 		waterLake.nodeName = "lake";
-		waterLake.uri = LCAHT.waterLake;
-		// confirmUri(LCAHT.release);
+		waterLake.uri = FEDLCA.waterLake;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterOcean = new TreeNode(water);
 		waterOcean.nodeName = "ocean";
-		waterOcean.uri = LCAHT.waterOcean;
-		// confirmUri(LCAHT.release);
+		waterOcean.uri = FEDLCA.waterOcean;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterRiver = new TreeNode(water);
 		waterRiver.nodeName = "river";
-		waterRiver.uri = LCAHT.waterRiver;
-		// confirmUri(LCAHT.release);
+		waterRiver.uri = FEDLCA.waterRiver;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterRiverLongTerm = new TreeNode(water);
 		waterRiverLongTerm.nodeName = "river, long-term";
-		waterRiverLongTerm.uri = LCAHT.waterRiverLong_term;
-		// confirmUri(LCAHT.release);
+		waterRiverLongTerm.uri = FEDLCA.waterRiverLong_term;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterSurface = new TreeNode(water);
 		waterSurface.nodeName = "surface water";
-		waterSurface.uri = LCAHT.waterSurface;
-		// confirmUri(LCAHT.release);
+		waterSurface.uri = FEDLCA.waterSurface;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode waterUnspec = new TreeNode(water);
 		waterUnspec.nodeName = "unspecified";
-		waterUnspec.uri = LCAHT.waterUnspecified;
-		// confirmUri(LCAHT.release);
+		waterUnspec.uri = FEDLCA.waterUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode soil = new TreeNode(release);
 		soil.nodeName = "soil";
-		soil.uri = LCAHT.soilUnspecified;
-		// confirmUri(LCAHT.release);
+		soil.uri = FEDLCA.soilUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode soilAgricultural = new TreeNode(soil);
 		soilAgricultural.nodeName = "agricultural";
-		soilAgricultural.uri = LCAHT.soilAgricultural;
-		// confirmUri(LCAHT.release);
+		soilAgricultural.uri = FEDLCA.soilAgricultural;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode soilForestry = new TreeNode(soil);
 		soilForestry.nodeName = "forestry";
-		soilForestry.uri = LCAHT.soilForestry;
-		// confirmUri(LCAHT.release);
+		soilForestry.uri = FEDLCA.soilForestry;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode soilIndustrial = new TreeNode(soil);
 		soilIndustrial.nodeName = "industrial";
-		soilIndustrial.uri = LCAHT.soilIndustrial;
-		// confirmUri(LCAHT.release);
+		soilIndustrial.uri = FEDLCA.soilIndustrial;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode soilUnspec = new TreeNode(soil);
 		soilUnspec.nodeName = "unspecified";
-		soilUnspec.uri = LCAHT.soilUnspecified;
-		// confirmUri(LCAHT.release);
+		soilUnspec.uri = FEDLCA.soilUnspecified;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resource = new TreeNode(masterCompartmentTree);
 		resource.nodeName = "Resource";
-		resource.uri = LCAHT.resource;
-		// confirmUri(LCAHT.release);
+		resource.uri = FEDLCA.resource;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);
 		resourceBiotic.nodeName = "biotic";
-		resourceBiotic.uri = LCAHT.resourceBiotic;
-		// confirmUri(LCAHT.release);
+		resourceBiotic.uri = FEDLCA.resourceBiotic;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceInAir = new TreeNode(resource);
 		resourceInAir.nodeName = "in air";
-		resourceInAir.uri = LCAHT.resourceIn_air;
-		// confirmUri(LCAHT.release);
+		resourceInAir.uri = FEDLCA.resourceIn_air;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceInGround = new TreeNode(resource);
 		resourceInGround.nodeName = "in ground";
-		resourceInGround.uri = LCAHT.resourceIn_ground;
-		// confirmUri(LCAHT.release);
+		resourceInGround.uri = FEDLCA.resourceIn_ground;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceInLand = new TreeNode(resource);
 		resourceInLand.nodeName = "in land";
-		resourceInLand.uri = LCAHT.resourceIn_land;
-		// confirmUri(LCAHT.release);
+		resourceInLand.uri = FEDLCA.resourceIn_land;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceInWater = new TreeNode(resource);
 		resourceInWater.nodeName = "in water";
-		resourceInWater.uri = LCAHT.resourceIn_water;
-		// confirmUri(LCAHT.release);
+		resourceInWater.uri = FEDLCA.resourceIn_water;
+		// confirmUri(FEDLCA.release);
 
 		TreeNode resourceUnspec = new TreeNode(resource);
 		resourceUnspec.nodeName = "unspecified";
-		resourceUnspec.uri = LCAHT.resourceUnspecified;
-		// confirmUri(LCAHT.resourceUnspecified);
+		resourceUnspec.uri = FEDLCA.resourceUnspecified;
+		// confirmUri(FEDLCA.resourceUnspecified);
 
 		// confirmModelContanisCompartments(masterCompartmentTree);
 		return masterCompartmentTree;

@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.perspectives;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
@@ -30,7 +30,7 @@ public class FlowDataV2 implements IPerspectiveFactory {
 			// FLOAT AFTER IPageLayout.BOTTOM ABOVE IS HEIGHT OF CSVTableView WINDOW (RELATIVE TO MatchTool WINDOWS)
 
 			matchToolLayout.addView(MatchFlowableTableView.ID);
-			matchToolLayout.addView(HarmonizeContexts.ID);
+			matchToolLayout.addView(MatchContexts.ID);
 		}
 
 		IFolderLayout dataLayout = layout.createFolder("Data", IPageLayout.RIGHT, 0.25f, "Workflow");

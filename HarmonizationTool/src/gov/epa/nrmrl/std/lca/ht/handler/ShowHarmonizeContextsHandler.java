@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 //import gov.epa.nrmrl.std.lca.ht.harmonizationtool.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -25,7 +25,7 @@ public class ShowHarmonizeContextsHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
-			Util.showView(HarmonizeContexts.ID);
+			Util.showView(MatchContexts.ID);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

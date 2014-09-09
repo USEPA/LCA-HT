@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,7 +46,7 @@ import org.eclipse.ui.part.ViewPart;
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.ColumnLabelProvider;
 
 public class CopyOfHarmonizeCompartments extends ViewPart {
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.compartment.mgr.CopyOfHarmonizeContexts";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.CopyOfHarmonizeContexts";
 
 	public TreeNode masterCompartmentTree = new TreeNode(null);
 	private TreeViewer treeViewer;
@@ -309,7 +309,7 @@ public class CopyOfHarmonizeCompartments extends ViewPart {
 
 	}
 
-//	public HarmonizeContexts(){
+//	public MatchContexts(){
 //		TreeNode release = new TreeNode(masterCompartmentTree);
 //		release.nodeName = "Release";
 //

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;

@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HMatchCategories;
-import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.HMatchCategories;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
@@ -463,22 +463,22 @@ public class QueryView extends ViewPart {
 
 			// resultsView.formatForTransform0();
 		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			HarmonizeContexts harmonizeContexts = (HarmonizeContexts) Util
-					.findView(HarmonizeContexts.ID);
+			MatchContexts matchContexts = (MatchContexts) Util
+					.findView(MatchContexts.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
 			// AND WHICH formatForTransfor()
 			// SHOULD BE KNOWN BY THE LabledQuery
 			// BUT CHOSEN BY THE CALLER
-			showResultsInWindow = HarmonizeContexts.ID;
+			showResultsInWindow = MatchContexts.ID;
 
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			// resultsView.update(tableProvider);
 			try {
-				harmonizeContexts.update(tableProvider);
+				matchContexts.update(tableProvider);
 			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + harmonizeContexts);
+				System.out.println("resultsTreeEditor=" + matchContexts);
 				e.printStackTrace();
 			}
 

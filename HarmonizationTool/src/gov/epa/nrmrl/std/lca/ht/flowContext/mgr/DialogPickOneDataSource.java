@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.compartment.mgr;
+package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericQuery;
