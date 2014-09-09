@@ -36,6 +36,8 @@ A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keep
 
 A15 BUG:  Can't stop a commit part of the way through it
   SOLN: Make it possible to "Cancel" the commit.
+  
+
 
  #====================
 A16 CHANGE UI:
@@ -88,6 +90,9 @@ A21 FEATURE REQUEST: Need to be able to match Flow Properties
   
 A22 BUG: File read and data process speeds must be faster
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
+  
+A23 BUG: Match flowables doesn't work (no commit / assign)
+  SOLN:  complete match flowable functionality  
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
 #==========================================================================
