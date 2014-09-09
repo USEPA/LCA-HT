@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -68,8 +69,28 @@ public class SaveResultsHandler implements IHandler {
 		// -------------------------
 		System.out.println("Saving Results");
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
+
+		ResultsView resultsView;
+		try {
+			resultsView = (ResultsView) page.findView(ResultsView.ID);
+		} catch (Exception e1) {
+			resultsView = null;
+		}
+
+		if (resultsView == null) {
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			new GenericMessageBox(shell, "Nothing to Save",
+					"The SPARQL Results View is closed, so there are no SPARQL results to save.");
+			return null;
+		}
+
 		QueryResults queryResults = resultsView.getQueryResults();
+		if (queryResults == null){
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			new GenericMessageBox(shell, "Nothing to Save",
+					"The SPARQL Results View is empty.  Run a SPARQL query first, then use this command to save the results.");
+			return null;
+		}
 		DataRow headerRow = queryResults.getColumnHeaders();
 		List<DataRow> dataRows = queryResults.getTableProvider().getData();
 		System.out.println(dataRows.get(0).toString());
@@ -107,18 +128,23 @@ public class SaveResultsHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			dialog.setFilterPath(homeDir);
 		}
-
+		
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFileName("query_results");
 
 		String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
+		if (saveTo == null){
+			// "dialog was cancelled or an error occurred"
+			return null;
+		}
 
 		try {
 			CSVWriter csvWriter = new CSVWriter();
 			CSVConfig csvConfig = new CSVConfig();
 			csvConfig.setDelimiter('\t');
+			// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
 			// csvConfig.setIgnoreValueDelimiter(true);
 			// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
 

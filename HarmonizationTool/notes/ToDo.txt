@@ -3,35 +3,10 @@
 #==========================================================================
 
   ==> OPENING SEQUENCE ISSUES <==
-A1  BUG: Can't get out of selecting a TDB on install.  An infinite loop of dialogue boxes occurs
-  SOLN:  Just fix it.
 
 A2  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
   out of it is to go to Task Manager and manually close the application
   SOLN:  You can't open two at the same time?!?
-
-A3  ==> FIX DIR STRUCTURE ISSUES <==
-  FEATURE REQUEST:  One directory 
-  SOLN: Directory struc:
-        unzip to "LCAHT" folder containing:
-           0) The code and executable
-           1) Folder: TDB
-           2) Folder: Workspace containing:
-              1) Folder: Project1 containing:
-                 1) Folder: Input data
-                 2) Folder: Output data
-                 3) Folder: Log files
-              2) Eventually (after Oct. 1) user can create new projects
-    Create a preferences window that contains working directory, TDB directory, etc
-
-	On first startup:
-		Have user select a working directory
-		checkbox: use as default working directory and do not show this dialogue box again
-              
-  STATUS: Directories setup, but select and checkbox not done yet
-
-A5  BUG: When "Saving Results" with no input, nothing happens
-  SOLN: Just fix it.
 
 A6  FEATURE REQUEST: Set some standard perspectives for people to choose from 
   SOLN: Make the menu item do SOMETHING.
@@ -196,6 +171,11 @@ B20 SOLN: Change menu options to include only possible ones
 B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
   SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
 
+B22 (copied from A3)
+  FEATURE REQUEST:  Startup allows user to choose project directory
+  SOLN: Have user select a working directory
+		include a checkbox: use as default working directory and do not show this dialogue box again
+
 #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
 #==========================================================================
@@ -273,11 +253,18 @@ C14 Need a save button - need something to keep these preferences... Is the log 
 
 #==========================================================================
 #====  DONE   =============================================================
-#==========================================================================       
+#==========================================================================
+A1  BUG: Can't get out of selecting a TDB on install.  An infinite loop of dialogue boxes occurs
+  SOLN:  Just fix it.
+  STATUS: Done? Now that a default TDB exists on startup, the only option is to change it in preferences, but there *seems* to be no infinite loop
+    
 A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
   SOLN: Indicate version number (in Help -> About... pull down?!?)
   STATUS: DONE
   
+A5  BUG: When "Saving Results" with no input, nothing happens
+  SOLN: Just fix it.
+  STATUS: Done.  Message appears if the SPARQL Results window is not open or does not contain results.  If cancel pressed, tool behaves.
 
 A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
   seems bad

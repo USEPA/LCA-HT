@@ -63,14 +63,14 @@
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.views.QueryView"
-            id="HarmonizationTool.QueryViewID"
-            name="Query"
+            id="gov.epa.nrmrl.std.lca.ht.views.QueryView"
+            name="SPARQL Query"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
-            id="HarmonizationTool.ResultsViewID"
-            name="Results"
+            id="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
+            name="SPARQL Results"
             restorable="true">
       </view>
       <view
@@ -134,9 +134,8 @@
                   style="push">
             </command>
             <command
-                  commandId="HarmonizationTool.SaveResults"
-                  id="HarmonizationTool.SaveResults"
-                  label="Save Results"
+                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
+                  label="Save SPARQL Results"
                   style="push">
             </command>
             <command
@@ -317,8 +316,8 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
-            id="HarmonizationTool.SaveResults"
-            name="Save Results">
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
+            name="Save SPARQL Results">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowDataFilesView"
