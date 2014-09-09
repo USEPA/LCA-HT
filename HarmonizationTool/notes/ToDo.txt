@@ -22,12 +22,13 @@ A3  ==> FIX DIR STRUCTURE ISSUES <==
                  2) Folder: Output data
                  3) Folder: Log files
               2) Eventually (after Oct. 1) user can create new projects
-  STATUS: Setup, but will need tweaking
+    Create a preferences window that contains working directory, TDB directory, etc
 
-
-A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
-  SOLN: Indicate version number (in Help -> About... pull down?!?)
-  STATUS: DONE
+	On first startup:
+		Have user select a working directory
+		checkbox: use as default working directory and do not show this dialogue box again
+              
+  STATUS: Directories setup, but select and checkbox not done yet
 
 A5  BUG: When "Saving Results" with no input, nothing happens
   SOLN: Just fix it.
@@ -41,18 +42,6 @@ A7  BUG: When selecing 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' w
 
 A8  ISSUE (document):Can right click the Query window and import an .rq file
   SOLN: Document this
-
-A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
-  seems bad
-  SOLN: Remove unused Views (windows)
-  STATUS: Removed, but some tweaks likely needed soon.
-
-A10 BUG: 'File' -> 'Import CSV' does nothing
-  SOLN: Remove from File menu
-
-A11 BUG: 'Advanged' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
-  is doing something?
-  SOLN: Remove from menu
 
 A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
   size of the window
@@ -156,6 +145,7 @@ B7 BUG: 'SPARQL' -> 'Show Query View' -> dbl 'Harmonize Compartments' if I hit t
 
 B8 FEATURE REQUEST: Unique icons for different functionality in the tool
   SOLN: Figure out how to get built-in (eclipse or RCP) icons and use them.  Try to match with OpenLCA icons
+  NOTE: harmonization.product in the Branding tab
 
 B9 BUG: No check mark or any indication that a window is shown under 'Window Manager'
   SOLN: Change menu in Harmoniation Tool (Manifest) extensions and make the handler toggle
@@ -279,3 +269,26 @@ C14 Need a save button - need something to keep these preferences... Is the log 
                                                                  100%: 10:20
   
          dear god...
+         
+
+#==========================================================================
+#====  DONE   =============================================================
+#==========================================================================       
+A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
+  SOLN: Indicate version number (in Help -> About... pull down?!?)
+  STATUS: DONE
+  
+
+A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
+  seems bad
+  SOLN: Remove unused Views (windows)
+  STATUS: Removed anyway
+  
+  
+A10 BUG: 'File' -> 'Import CSV' does nothing
+  SOLN: Remove from File menu
+
+A11 BUG: 'Advanged' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
+  is doing something?
+  SOLN: Remove from menu
+  
