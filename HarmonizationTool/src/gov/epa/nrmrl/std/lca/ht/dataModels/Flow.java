@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;

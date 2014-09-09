@@ -1,11 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.Flowable;
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
 

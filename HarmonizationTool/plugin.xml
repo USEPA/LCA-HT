@@ -50,7 +50,7 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView"
             id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
             name="Match Flowables Tool"
             restorable="true">
@@ -75,7 +75,7 @@
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor"
-            id="HarmonizationTool.ResultsTreeEditorID"
+            id="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor"
             name="Results Tree Editor"
             restorable="true">
       </view>
@@ -164,20 +164,25 @@
          <menu
                label="Window Manager">
             <menu
-                  label="Work Flows">
+                  label="Perspectives">
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
-                     label="[broken] Perspective switcher"
-                     style="push">
-               </command>
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
-                     label="Show Flows Workflow"
+                     label="Perspective switcher"
                      style="push">
                </command>
             </menu>
             <menu
-                  label="Data">
+                  label="Views">
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+                     label="Show Flows Workflow"
+                     style="push">
+               </command>
+               <command
+                     commandId="harmonizationtool.handler.GenericShowViewHandler"
+                     label="Show Logger"
+                     style="push">
+               </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
                      label="Show CSV Table View"
@@ -194,32 +199,27 @@
                      style="push">
                </command>
             </menu>
-            <command
-                  commandId="harmonizationtool.handler.GenericShowViewHandler"
-                  label="Show Logger"
-                  style="push">
-            </command>
          </menu>
          <menu
                label="SPARQL">
             <command
-                  commandId="HarmonizationTool.ShowQueryView"
+                  commandId="gov.epa.nrmrl.std.lca.ht.QueryView"
                   label="Show Query View"
                   style="push">
             </command>
             <command
-                  commandId="HarmonizationTool.ShowResultsView"
+                  commandId="gov.epa.nrmrl.std.lca.ht.ResultsView"
                   label="Show Query Results"
                   style="push">
             </command>
             <command
-                  commandId="HarmonizationTool.extQueryID"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ExtQueryHandler"
                   label="Query From File"
                   style="push"
                   tooltip="Run a (read-only) query from a file">
             </command>
             <command
-                  commandId="HarmonizationTool.extUpdateID"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ExtUpdateHandler"
                   label="Update From File"
                   style="push"
                   tooltip="Run a (delete or insert) update from a file">
@@ -280,29 +280,24 @@
          id="HarmonizationTool.importTriplesID"
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
-            id="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
-            name="SelectTDB">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ExtQueryHandler"
-            id="HarmonizationTool.extQueryID"
-            name="ExtQuery">
+            id="gov.epa.nrmrl.std.lca.ht.handler.ExtQueryHandler"
+            name="Ext Query Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ExtUpdateHandler"
-            id="HarmonizationTool.extUpdateID"
-            name="Ext Update">
+            id="gov.epa.nrmrl.std.lca.ht.handler.ExtUpdateHandler"
+            name="Ext Update Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportTriplesHandler"
             id="HarmonizationTool.importTriplesID"
-            name="Import Triples">
+            name="Import Triples Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ExportTriplesHandler"
             id="HarmonizationTool.exportTriplesID"
-            name="Export Triples">
+            name="Export Triples Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
@@ -326,7 +321,7 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowQueryViewHandler"
-            id="HarmonizationTool.ShowQueryView"
+            id="gov.epa.nrmrl.std.lca.ht.QueryView"
             name="Show Query View">
       </command>
       <command
@@ -346,23 +341,18 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"
-            id="HarmonizationTool.ShowResultsView"
+            id="gov.epa.nrmrl.std.lca.ht.ResultsView"
             name="Show Results View">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
-            id="HarmonizationTool.ResultsTreeEditorID"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
             name="Show Results Tree Editor">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowHandler"
-            id="gov.epa.nrmrl.std.lca.ht.ShowFlowsWorkflowHandler"
-            name="Show FlowsWorkflow Compartments">
-      </command>
-      <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.CloseTDB"
-            id="harmonizationtool.handler.CloseTDB"
-            name="Close TDB">
+            id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
+            name="Show Flows Workflow Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportCSV"
@@ -415,6 +405,16 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.AboutHandler"
             id="harmonizationtool.handler.AboutHandler"
             name="HelpAbout">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.CloseTDB"
+            id="gov.epa.nrmrl.std.lca.ht.handler.CloseTDB"
+            name="Close TDB">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
+            id="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
+            name="SelectTDB">
       </command>
    </extension>
    <extension

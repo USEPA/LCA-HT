@@ -2,21 +2,24 @@
 #====  ITEMS WITH "A" - DO BELOW BEFORE 2014-10-01   ======================
 #==========================================================================
 
-  ==> OPENING SEQUENCE ISSUES <==
-
 A2  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
   out of it is to go to Task Manager and manually close the application
   SOLN:  You can't open two at the same time?!?
+  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
 
 A6  FEATURE REQUEST: Set some standard perspectives for people to choose from 
   SOLN: Make the menu item do SOMETHING.
+  STATUS: "Perspective switcher" cycles through three "sample" perspectives
+  NEXT: Decide what perspectives the user might want.  Also restore views necessary to perspectives.
  
-A7  BUG: When selecing 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
+A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
   loaded, nothing happens
   SOLN: Critical: allow restore original perspective.  Desired (later): save your favorite perspective(s)
+  STATUS: See A6
 
 A8  ISSUE (document):Can right click the Query window and import an .rq file
   SOLN: Document this
+  STATUS: I think this is gone... confirm, please.  Determine if it is desired....
 
 A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
   size of the window

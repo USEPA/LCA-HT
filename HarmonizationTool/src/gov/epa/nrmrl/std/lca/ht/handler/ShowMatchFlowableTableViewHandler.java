@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;

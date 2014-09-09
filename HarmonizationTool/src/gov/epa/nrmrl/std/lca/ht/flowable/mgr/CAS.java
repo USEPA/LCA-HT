@@ -1,5 +1,6 @@
-package gov.epa.nrmrl.std.lca.ht.dataModels;
+package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataType;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 
 import java.util.ArrayList;

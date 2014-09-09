@@ -1,15 +1,13 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
@@ -39,12 +37,15 @@ public class ShowPerspectiveHandler implements IHandler {
 
 		System.out.println("id " + id);
 		if (id.equals(FlowDataV1.ID)) {
-			System.out.println("Matched FlowData!");
+			System.out.println("Matched FlowDataV1!");
 			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
+		} else if (id.equals(FlowDataV2.ID)) {
+			System.out.println("Matched FlowDataV2!");
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV1.ID));
 		} else if (id.equals(OriginalPerspective.ID)) {
 			System.out.println("Matched Original Perspective!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV1.ID));
-		} else {
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV2.ID));
+		}  else {
 			System.out.println("No match, dude.  Sorry!");
 		}
 

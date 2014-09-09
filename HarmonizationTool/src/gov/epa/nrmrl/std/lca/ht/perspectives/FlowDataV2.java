@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.perspectives;
 
 import gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
 import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 import gov.epa.nrmrl.std.lca.ht.views.ResultsView;

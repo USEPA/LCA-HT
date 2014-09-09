@@ -63,7 +63,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class ResultsTreeEditor extends ViewPart {
 //	public ResultsTreeEditor() {
 //	}
-	public static final String ID = "HarmonizationTool.ResultsTreeEditorID";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor";
 	private TreeViewer treeViewer;
 
 	// private static List<Object> columns = new ArrayList<Object>();
