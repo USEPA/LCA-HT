@@ -80,6 +80,14 @@ A19 BUG: Allow for deletion of data set... can make infinitely many
         2) Delete the data
         3) When you read a new file and assign to existing data set, don't create new data set!
 
+A20 FEATURE REQUEST: Need to be able to match Flow Contexts
+  SOLN: Finish reconnecting old interface to new data structure
+  
+A21 FEATURE REQUEST: Need to be able to match Flow Properties
+  SOLN: Copy components and processes for Flow Contexts
+  
+A22 BUG: File read and data process speeds must be faster
+  SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
 #==========================================================================
@@ -169,7 +177,7 @@ B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't ev
   CAS shouldn't show up if that field has not been assigned a CAS.  Also, auto-resolve field shouldn't
   be possible if the data hasn't been checked via the Check Data button (2).
 
-B20 SOLN: Change menu options to include only possible ones
+ SOLN: Change menu options to include only possible ones
 
 B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
   SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
