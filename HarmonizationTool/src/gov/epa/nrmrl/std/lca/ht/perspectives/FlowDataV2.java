@@ -31,13 +31,14 @@ public class FlowDataV2 implements IPerspectiveFactory {
 			// FLOAT AFTER IPageLayout.BOTTOM ABOVE IS HEIGHT OF CSVTableView WINDOW (RELATIVE TO MatchTool WINDOWS)
 
 			matchToolLayout.addView(MatchFlowableTableView.ID);
-			matchToolLayout.addView(MatchContexts.ID);
-			matchToolLayout.addView(MatchProperties.ID);
+
 		}
 
 		IFolderLayout dataLayout = layout.createFolder("Data", IPageLayout.RIGHT, 0.25f, "Workflow");
 		// FLOAT AFTER IPageLayout.RIGHT ABOVE IS THE WIDTH OF THE FIRST Workflow and Logger WINDOWS
 		dataLayout.addView(CSVTableView.ID);
+		dataLayout.addView(MatchContexts.ID);
+		dataLayout.addView(MatchProperties.ID);
 
 		addPerspectiveShortcuts(layout);
 		layout.addView(LoggerViewer.ID, IPageLayout.BOTTOM, 0.7f, "Workflow");

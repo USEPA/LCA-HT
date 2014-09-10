@@ -362,27 +362,27 @@ public class MatchProperties extends ViewPart {
 		volumeTime.nodeName = "Volume*time";
 		volumeTime.uri = FEDLCA.VolumeTime;
 		
-		TreeNode massTime = new TreeNode(physicalIndividual);
+		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FEDLCA.MassTime;
 
-		TreeNode volumeLength = new TreeNode(physicalIndividual);
+		TreeNode volumeLength = new TreeNode(physicalCombined);
 		volumeLength.nodeName = "Volume*Length";
 		volumeLength.uri = FEDLCA.VolumeLength;
 
-		TreeNode areaTime = new TreeNode(physicalIndividual);
+		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
 		areaTime.uri = FEDLCA.AreaTime;
 
-		TreeNode lengthTime = new TreeNode(physicalIndividual);
+		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";
 		lengthTime.uri = FEDLCA.LengthTime;
 
-		TreeNode energyPerMassTime = new TreeNode(physicalIndividual);
+		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
 		energyPerMassTime.nodeName = "Energy/mass*time";
 		energyPerMassTime.uri = FEDLCA.EnergyPerMassTime;
 
-		TreeNode energyPerAreaTime = new TreeNode(physicalIndividual);
+		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
 		energyPerAreaTime.nodeName = "Energy/area*time";
 		energyPerAreaTime.uri = FEDLCA.EnergyPerAreaTime;
 		
