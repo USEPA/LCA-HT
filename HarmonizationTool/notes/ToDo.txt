@@ -11,6 +11,7 @@ A6  FEATURE REQUEST: Set some standard perspectives for people to choose from
   SOLN: Make the menu item do SOMETHING.
   STATUS: "Perspective switcher" cycles through three "sample" perspectives
   NEXT: Decide what perspectives the user might want.  Also restore views necessary to perspectives.
+  NOTE: Look in gov.epa.nrmrl.std.lca.ht.harmonizationtool -> ApplicationWorkbenchWindowAdvisor line 33 for startup size
  
 A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
   loaded, nothing happens
@@ -36,8 +37,6 @@ A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keep
 
 A15 BUG:  Can't stop a commit part of the way through it
   SOLN: Make it possible to "Cancel" the commit.
-  
-
 
  #====================
 A16 CHANGE UI:
@@ -93,6 +92,7 @@ A22 BUG: File read and data process speeds must be faster
   
 A23 BUG: Match flowables doesn't work (no commit / assign)
   SOLN:  complete match flowable functionality  
+  
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
 #==========================================================================

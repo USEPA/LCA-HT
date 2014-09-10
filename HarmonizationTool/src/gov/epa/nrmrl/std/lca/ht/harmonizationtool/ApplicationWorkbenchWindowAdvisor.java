@@ -30,7 +30,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setInitialSize(new Point(1200, 650));
+		configurer.setInitialSize(new Point(1400, 850));
+		// SIZE OF START SCREEN
 		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(true);
 	}

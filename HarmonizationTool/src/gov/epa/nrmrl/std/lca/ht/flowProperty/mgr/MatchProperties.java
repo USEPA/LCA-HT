@@ -23,7 +23,6 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 
 import org.eclipse.swt.events.SelectionEvent;
@@ -65,7 +64,7 @@ public class MatchProperties extends ViewPart {
 	public MatchProperties() {
 	}
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperty";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
 	private Table queryTbl;
 	private TableViewer queryTblViewer;
 	private Table matchedTbl;
@@ -90,8 +89,7 @@ public class MatchProperties extends ViewPart {
 		Composite compositeQuery = new Composite(parent, SWT.NONE);
 		compositeQuery.setLayout(new FillLayout(SWT.HORIZONTAL));
 		compositeQuery.setSize(300, 30);
-		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
@@ -100,8 +98,7 @@ public class MatchProperties extends ViewPart {
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
 		// gd_compositeMatches.minimumWidth = 300;
-		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		matchedLbl = new Label(compositeMatches, SWT.NONE);
 		matchedLbl.setText("Matched");
@@ -114,8 +111,7 @@ public class MatchProperties extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				QueryModel[] queryModel = (QueryModel[]) queryTblViewer
-						.getInput();
+				QueryModel[] queryModel = (QueryModel[]) queryTblViewer.getInput();
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
@@ -148,36 +144,32 @@ public class MatchProperties extends ViewPart {
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
-					model.add(annotationResource, DCTerms.dateSubmitted,
-							dateLiteral);
+					model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
 					if (Util.getPreferenceStore().getString("userName") != null) {
 						Literal userName = model.createLiteral(Util.getPreferenceStore().getString("userName"));
 						model.add(annotationResource, DCTerms.creator, userName);
 					}
 				}
 				// 3) Loop through each match
-				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer
-						.getInput();
+				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
 				System.out.println("matchModel.length= " + matchModel.length);
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
 					// String qString = qModel.label;
 					MatchModel matchRow = matchModel[i];
 					if (matchRow != null) {
-						System.out.println("matchRow[" + i + "].label = "
-								+ matchRow.label);
-						System.out.println("matchRow.getResource() = "
-								+ matchRow.getResource());
+						System.out.println("matchRow[" + i + "].label = " + matchRow.label);
+						System.out.println("matchRow.getResource() = " + matchRow.getResource());
 						// System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
 						// System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
 						// A) Find the Source URI
 						// B) Find the Master URI
-						Resource queryCompartmentResource = qModel.getUri();
-						Resource masterCompartmentResource = matchRow.resource;
-						// confirmResource(queryCompartmentResource);
-						// confirmResource(masterCompartmentResource);
+						Resource queryPropertyResource = qModel.getUri();
+						Resource masterPropertyResource = matchRow.resource;
+						// confirmResource(queryPropertyResource);
+						// confirmResource(masterPropertyResource);
 
-						if (masterCompartmentResource == null) {
+						if (masterPropertyResource == null) {
 							continue;
 						}
 						System.out.println("index i =  " + i);
@@ -188,38 +180,12 @@ public class MatchProperties extends ViewPart {
 						// Master, Equivalence
 
 						Resource comparisonResource = model.createResource();
-						model.add(comparisonResource, RDF.type,
-								FEDLCA.Comparison);
-						model.add(annotationResource, FEDLCA.hasComparison,
-								comparisonResource);
-						model.add(comparisonResource, FEDLCA.comparedSource,
-								queryCompartmentResource);
-						model.add(comparisonResource, FEDLCA.comparedMaster,
-								masterCompartmentResource);
-						model.add(comparisonResource,
-								FEDLCA.comparedEquivalence, FEDLCA.equivalent);
+						model.add(comparisonResource, RDF.type, FEDLCA.Comparison);
+						model.add(annotationResource, FEDLCA.hasComparison, comparisonResource);
+						model.add(comparisonResource, FEDLCA.comparedSource, queryPropertyResource);
+						model.add(comparisonResource, FEDLCA.comparedMaster, masterPropertyResource);
+						model.add(comparisonResource, FEDLCA.comparedEquivalence, FEDLCA.equivalent);
 
-						// Literal compartmentName =
-						// tdbModel.createLiteral(qString);
-						// ResIterator resIterator =
-						// tdbModel.listResourcesWithProperty(RDFS.label,
-						// compartmentName);
-						// while (resIterator.hasNext()) {
-						// Resource candidateCompartment = resIterator.next();
-						// if (!tdbModel.contains(candidateCompartment, RDF.type,
-						// FASC.Compartment)) {
-						// continue;
-						// }
-						// if (tdbModel.contains(candidateCompartment,
-						// ECO.hasDataSource)) {
-						// NodeIterator nodeIterator =
-						// tdbModel.listObjectsOfProperty(candidateCompartment,
-						// ECO.hasDataSource);
-						//
-						// }
-						// }
-						// Statement statement = tdbModel.createStatement(arg0,
-						// arg1, arg2);
 					} else {
 						System.out.println("matchModel[" + i + "] is null!");
 					}
@@ -236,13 +202,12 @@ public class MatchProperties extends ViewPart {
 		// ============ NEW COL =========
 		Composite compositeMaster = new Composite(parent, SWT.NONE);
 		compositeMaster.setLayout(new GridLayout(1, false));
-		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1);
+		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_compositeMaster.minimumWidth = 300;
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
 		masterLbl = new Label(compositeMaster, SWT.NONE);
-		masterLbl.setText("Master Contexts");
+		masterLbl.setText("Master Flow Properties");
 
 		Button btnAutoAdvance = new Button(compositeMaster, SWT.CHECK);
 		btnAutoAdvance.setText("Auto Advance");
@@ -250,16 +215,13 @@ public class MatchProperties extends ViewPart {
 		// ============ NEW COL =========
 		new Label(parent, SWT.NONE);
 		// ============ NEW COL =========
-		queryTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		queryTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		queryTbl = queryTblViewer.getTable();
-		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
-				1);
+		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_queryTbl.widthHint = 300;
 		queryTbl.setLayoutData(gd_queryTbl);
 		queryTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer,
-				SWT.NONE);
+		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer, SWT.NONE);
 		TableColumn qColumn = queryColumn.getColumn();
 		qColumn.setMoveable(true);
 		qColumn.setAlignment(SWT.RIGHT);
@@ -271,16 +233,13 @@ public class MatchProperties extends ViewPart {
 			// }
 		});
 		// ============ NEW COL =========
-		matchedTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		matchedTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		matchedTbl = matchedTblViewer.getTable();
-		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_matchedTbl.widthHint = 300;
 		matchedTbl.setLayoutData(gd_matchedTbl);
 		matchedTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer,
-				SWT.NONE);
+		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer, SWT.NONE);
 		TableColumn mColumn = matchColumn.getColumn();
 		mColumn.setMoveable(true);
 		mColumn.setAlignment(SWT.RIGHT);
@@ -295,8 +254,7 @@ public class MatchProperties extends ViewPart {
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
-		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_masterTree.widthHint = 300;
 		masterTree.setLayoutData(gd_masterTree);
 		masterTree.setLinesVisible(true);
@@ -309,8 +267,7 @@ public class MatchProperties extends ViewPart {
 				return ((TreeNode) treeNode).nodeName;
 			}
 		});
-		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(
-				masterTreeViewer, SWT.NONE);
+		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -320,40 +277,36 @@ public class MatchProperties extends ViewPart {
 		});
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
-		masterTreeViewer.setInput(createHarmonizeCompartments());
-		masterTreeViewer.getTree().addSelectionListener(
-				new SelectionListener() {
+		masterTreeViewer.setInput(createHarmonizeProperties());
+		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						TreeNode treeNode = (TreeNode) (e.item.getData());
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TreeNode treeNode = (TreeNode) (e.item.getData());
 
-						if (!treeNode.hasChildern()) {
-							String masterLabel = treeNode.getLabel();
-							Resource masterResource = treeNode.getUri();
-							if (queryTblViewer.getTable().getItemCount() > 0) {
-								int row = queryTblViewer.getTable()
-										.getSelectionIndex();
-								if (row > -1) {
-									// String queryLabel =
-									// queryTblViewer.getTable().getSelection()[0].getText(0);
-									MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer
-											.getInput());
-									matchedModel[row].setLabel(masterLabel);
-									matchedModel[row]
-											.setResource(masterResource);
-									matchedTblViewer.refresh();
-								}
-							}
+				if (!treeNode.hasChildern()) {
+					String masterLabel = treeNode.getLabel();
+					Resource masterResource = treeNode.getUri();
+					if (queryTblViewer.getTable().getItemCount() > 0) {
+						int row = queryTblViewer.getTable().getSelectionIndex();
+						if (row > -1) {
+							// String queryLabel =
+							// queryTblViewer.getTable().getSelection()[0].getText(0);
+							MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer.getInput());
+							matchedModel[row].setLabel(masterLabel);
+							matchedModel[row].setResource(masterResource);
+							matchedTblViewer.refresh();
 						}
 					}
+				}
+			}
 
-					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {
-						// TODO Auto-generated method stub
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
 
-					}
-				});
+			}
+		});
 		masterTreeViewer.refresh();
 
 		for (TreeItem item : masterTree.getItems()) {
@@ -370,186 +323,106 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-	// private void confirmModelContanisCompartments(TreeNode treeNode){
-	// Model tdbModel = ActiveTDB.tdbModel;
-	// if (treeNode.uri != null){
-	// if (!tdbModel.containsResource(treeNode.uri)){
-	// tdbModel.createResource(treeNode.uri);
-	// }
-	// }
-	// Iterator<Node> iterator = treeNode.getChildIterator();
-	// while(iterator.hasNext()){
-	// Node child = iterator.next();
-	// confirmModelContanisCompartments((TreeNode)child);
-	// }
-	// }
+	private TreeNode createHarmonizeProperties() {
+		TreeNode masterPropertyTree = new TreeNode(null);
 
-	// private void confirmResource(Resource uri) {
-	// Model tdbModel = ActiveTDB.tdbModel;
-	// if (!tdbModel.containsResource(uri)) {
-	// tdbModel.createResource(uri);
-	// }
-	// }
+		//-------- PHYSICAL COMBINED
+		TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
+		physicalIndividual.nodeName = "Physical individual";
 
-	private TreeNode createHarmonizeCompartments() {
-		TreeNode masterCompartmentTree = new TreeNode(null);
+		TreeNode mass = new TreeNode(physicalIndividual);
+		mass.nodeName = "Mass";
+		mass.uri = FEDLCA.Mass;
 
-		TreeNode release = new TreeNode(masterCompartmentTree);
-		release.nodeName = "Release";
-		// confirmUri(FEDLCA.release);
+		TreeNode area = new TreeNode(physicalIndividual);
+		area.nodeName = "Area";
+		area.uri = FEDLCA.Area;
 
-		TreeNode air = new TreeNode(release);
-		air.nodeName = "air";
-		air.uri = FEDLCA.airUnspecified;
-		// confirmUri(FEDLCA.release);
+		TreeNode volume = new TreeNode(physicalIndividual);
+		volume.nodeName = "Volume";
+		volume.uri = FEDLCA.Volume;
 
-		TreeNode airLowPop = new TreeNode(air);
-		airLowPop.nodeName = "low population density";
-		airLowPop.uri = FEDLCA.airLow_population_density;
-		// confirmUri(FEDLCA.release);
+		TreeNode duration = new TreeNode(physicalIndividual);
+		duration.nodeName = "Duration";
+		duration.uri = FEDLCA.Duration;
 
-		TreeNode airUnspec = new TreeNode(air);
-		airUnspec.nodeName = "unspecified";
-		airUnspec.uri = FEDLCA.airUnspecified;
-		// confirmUri(FEDLCA.release);
+		TreeNode energy = new TreeNode(physicalIndividual);
+		energy.nodeName = "Energy";
+		energy.uri = FEDLCA.Energy;
 
-		TreeNode airHighPop = new TreeNode(air);
-		airHighPop.nodeName = "high population density";
-		airHighPop.uri = FEDLCA.airHigh_population_density;
-		// confirmUri(FEDLCA.release);
+		TreeNode radioactivity = new TreeNode(physicalIndividual);
+		radioactivity.nodeName = "Radioactivity";
+		radioactivity.uri = FEDLCA.Radioactivity;
+		
+		//-------- PHYSICAL COMBINED
+		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
+		physicalCombined.nodeName = "Physical combined";
+		
+		TreeNode volumeTime = new TreeNode(physicalCombined);
+		volumeTime.nodeName = "Volume*time";
+		volumeTime.uri = FEDLCA.VolumeTime;
+		
+		TreeNode massTime = new TreeNode(physicalIndividual);
+		massTime.nodeName = "Mass*time";
+		massTime.uri = FEDLCA.MassTime;
 
-		TreeNode airLowPopLongTerm = new TreeNode(air);
-		airLowPopLongTerm.nodeName = "low population density, long-term";
-		airLowPopLongTerm.uri = FEDLCA.airLow_population_densityLong_term;
-		// confirmUri(FEDLCA.release);
+		TreeNode volumeLength = new TreeNode(physicalIndividual);
+		volumeLength.nodeName = "Volume*Length";
+		volumeLength.uri = FEDLCA.VolumeLength;
 
-		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
-		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
-		airLowerStratPlusUpperTrop.uri = FEDLCA.airLower_stratosphere_upper_troposphere;
-		// confirmUri(FEDLCA.release);
+		TreeNode areaTime = new TreeNode(physicalIndividual);
+		areaTime.nodeName = "Area*time";
+		areaTime.uri = FEDLCA.AreaTime;
 
-		TreeNode water = new TreeNode(release);
-		water.nodeName = "water";
-		water.uri = FEDLCA.waterUnspecified;
-		// confirmUri(FEDLCA.release);
+		TreeNode lengthTime = new TreeNode(physicalIndividual);
+		lengthTime.nodeName = "Length*time";
+		lengthTime.uri = FEDLCA.LengthTime;
 
-		TreeNode waterFossil = new TreeNode(water);
-		waterFossil.nodeName = "fossil-";
-		waterFossil.uri = FEDLCA.waterFossil;
-		// confirmUri(FEDLCA.release);
+		TreeNode energyPerMassTime = new TreeNode(physicalIndividual);
+		energyPerMassTime.nodeName = "Energy/mass*time";
+		energyPerMassTime.uri = FEDLCA.EnergyPerMassTime;
 
-		TreeNode waterFresh = new TreeNode(water);
-		waterFresh.nodeName = "fresh-";
-		waterFresh.uri = FEDLCA.waterFresh;
-		// confirmUri(FEDLCA.release);
+		TreeNode energyPerAreaTime = new TreeNode(physicalIndividual);
+		energyPerAreaTime.nodeName = "Energy/area*time";
+		energyPerAreaTime.uri = FEDLCA.EnergyPerAreaTime;
+		
+		//-------- OTHER
+		TreeNode other = new TreeNode(masterPropertyTree);
+		other.nodeName = "Other";
+		
+		TreeNode itemCount = new TreeNode(other);
+		itemCount.nodeName = "Number of Items";
+		itemCount.uri = FEDLCA.ItemCount;
 
-		TreeNode waterFreshLongTerm = new TreeNode(water);
-		waterFreshLongTerm.nodeName = "fresh-, long-term";
-		waterFreshLongTerm.uri = FEDLCA.waterFreshLong_term;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterGround = new TreeNode(water);
-		waterGround.nodeName = "ground-";
-		waterGround.uri = FEDLCA.waterGround;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterGroundLongTerm = new TreeNode(water);
-		waterGroundLongTerm.nodeName = "ground-, long-term";
-		waterGroundLongTerm.uri = FEDLCA.waterGroundLong_term;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterLake = new TreeNode(water);
-		waterLake.nodeName = "lake";
-		waterLake.uri = FEDLCA.waterLake;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterOcean = new TreeNode(water);
-		waterOcean.nodeName = "ocean";
-		waterOcean.uri = FEDLCA.waterOcean;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterRiver = new TreeNode(water);
-		waterRiver.nodeName = "river";
-		waterRiver.uri = FEDLCA.waterRiver;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterRiverLongTerm = new TreeNode(water);
-		waterRiverLongTerm.nodeName = "river, long-term";
-		waterRiverLongTerm.uri = FEDLCA.waterRiverLong_term;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterSurface = new TreeNode(water);
-		waterSurface.nodeName = "surface water";
-		waterSurface.uri = FEDLCA.waterSurface;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode waterUnspec = new TreeNode(water);
-		waterUnspec.nodeName = "unspecified";
-		waterUnspec.uri = FEDLCA.waterUnspecified;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode soil = new TreeNode(release);
-		soil.nodeName = "soil";
-		soil.uri = FEDLCA.soilUnspecified;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode soilAgricultural = new TreeNode(soil);
-		soilAgricultural.nodeName = "agricultural";
-		soilAgricultural.uri = FEDLCA.soilAgricultural;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode soilForestry = new TreeNode(soil);
-		soilForestry.nodeName = "forestry";
-		soilForestry.uri = FEDLCA.soilForestry;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode soilIndustrial = new TreeNode(soil);
-		soilIndustrial.nodeName = "industrial";
-		soilIndustrial.uri = FEDLCA.soilIndustrial;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode soilUnspec = new TreeNode(soil);
-		soilUnspec.nodeName = "unspecified";
-		soilUnspec.uri = FEDLCA.soilUnspecified;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resource = new TreeNode(masterCompartmentTree);
-		resource.nodeName = "Resource";
-		resource.uri = FEDLCA.resource;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceBiotic = new TreeNode(resource);
-		resourceBiotic.nodeName = "biotic";
-		resourceBiotic.uri = FEDLCA.resourceBiotic;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceInAir = new TreeNode(resource);
-		resourceInAir.nodeName = "in air";
-		resourceInAir.uri = FEDLCA.resourceIn_air;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceInGround = new TreeNode(resource);
-		resourceInGround.nodeName = "in ground";
-		resourceInGround.uri = FEDLCA.resourceIn_ground;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceInLand = new TreeNode(resource);
-		resourceInLand.nodeName = "in land";
-		resourceInLand.uri = FEDLCA.resourceIn_land;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceInWater = new TreeNode(resource);
-		resourceInWater.nodeName = "in water";
-		resourceInWater.uri = FEDLCA.resourceIn_water;
-		// confirmUri(FEDLCA.release);
-
-		TreeNode resourceUnspec = new TreeNode(resource);
-		resourceUnspec.nodeName = "unspecified";
-		resourceUnspec.uri = FEDLCA.resourceUnspecified;
-		// confirmUri(FEDLCA.resourceUnspecified);
-
-		// confirmModelContanisCompartments(masterCompartmentTree);
-		return masterCompartmentTree;
+		TreeNode itemsLength = new TreeNode(other);
+		itemsLength.nodeName = "Items*Length";
+		itemsLength.uri = FEDLCA.ItemsLength;
+		
+		TreeNode goodsTransportMassDistance = new TreeNode(other);
+		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
+		goodsTransportMassDistance.uri = FEDLCA.GoodsTransportMassDistance;
+		
+		TreeNode personTransport = new TreeNode(other);
+		personTransport.nodeName = "Person transport";
+		personTransport.uri = FEDLCA.PersonTransport;
+		
+		TreeNode vehicleTransport = new TreeNode(other);
+		vehicleTransport.nodeName = "Vehicle transport";
+		vehicleTransport.uri = FEDLCA.VehicleTransport;
+		
+		TreeNode netCalorificValue = new TreeNode(other);
+		netCalorificValue.nodeName = "Net calorific value";
+		netCalorificValue.uri = FEDLCA.NetCalorificValue;
+		
+		TreeNode grossCalorificValue = new TreeNode(other);
+		grossCalorificValue.nodeName = "Gross calorific value";
+		grossCalorificValue.uri = FEDLCA.GrossCalorificValue;
+		
+		TreeNode normalVolume = new TreeNode(other);
+		normalVolume.nodeName = "Normal Volume";
+		normalVolume.uri = FEDLCA.NormalVolume;
+		
+		return masterPropertyTree;
 	}
 
 	private class MyContentProvider implements ITreeContentProvider {
@@ -598,8 +471,7 @@ public class MatchProperties extends ViewPart {
 		queryTblViewer.setInput(queryModel);
 		queryTblViewer.getTable().setLinesVisible(true);
 		MatchModel[] matchModel = createMatchModel(queryModel);
-		System.out.println("Created matchModel matchModel.length= "
-				+ matchModel.length);
+		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
 		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
 		matchedTblViewer.setContentProvider(new MatchContentProvider());
 		matchedTblViewer.setInput(matchModel);
@@ -608,8 +480,7 @@ public class MatchProperties extends ViewPart {
 				+ masterTreeViewer.getTree().getColumnCount());
 		System.out.println("masterTreeViewer.getTree().getItems().length= "
 				+ masterTreeViewer.getTree().getItems().length);
-		System.out.println("masterTreeViewer.getTree().getItemCount()= "
-				+ masterTreeViewer.getTree().getItemCount());
+		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
 	}
 
 	private class MatchLabelProvider extends LabelProvider {
@@ -663,28 +534,24 @@ public class MatchProperties extends ViewPart {
 			String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);
 			// AnonId uri = new AnonId(dataRow.get(1)); // MIGHT THIS WORK?
-			Resource queryCompartmentResource = null;
+			Resource queryPropertyResource = null;
 			// Resource fred = (Resource)uri;
 			// thing = ActiveTDB.tdbModel.getResource(fred );
-			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(
-					RDF.type, FASC.Compartment));
+			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, FEDLCA.FlowProperty));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
 					AnonId anonId = (AnonId) resource.getId();
 					if (dataRow.get(1).equals(anonId.toString())) {
-						queryCompartmentResource = resource;
+						queryPropertyResource = resource;
 						System.out.println("index = " + index);
-						System.out.println("anonId.toString() ="
-								+ anonId.toString());
-						System.out.println("anonId.getLabelString() ="
-								+ anonId.getLabelString());
-						System.out
-								.println("dataRow.get(1) = " + dataRow.get(1));
+						System.out.println("anonId.toString() =" + anonId.toString());
+						System.out.println("anonId.getLabelString() =" + anonId.getLabelString());
+						System.out.println("dataRow.get(1) = " + dataRow.get(1));
 					}
 				}
 			}
-			queryModel.setUri(queryCompartmentResource);
+			queryModel.setUri(queryPropertyResource);
 			elements[index++] = queryModel;
 		}
 		return elements;

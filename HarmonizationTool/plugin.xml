@@ -51,14 +51,20 @@
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView"
-            id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            id="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
             name="Match Flowables Tool"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
-            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            id="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
             name="Match Contexts Tool"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
+            id="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
+            name="Match Properties Tool"
             restorable="true">
       </view>
       <view
@@ -189,13 +195,18 @@
                      style="toggle">
                </command>
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+                     commandId="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
                      label="Show Match Flowables Tool"
                      style="push">
                </command>
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
-                     label="Show Match Contexts"
+                     commandId="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
+                     label="Show Match Contexts Tool"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
+                     label="Show Match Properties Tool"
                      style="push">
                </command>
             </menu>
@@ -331,13 +342,18 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowMatchFlowableTableViewHandler"
-            id="gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView"
+            id="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
             name="Show Match Flowable Table View">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizeContextsHandler"
-            id="gov.epa.nrmrl.std.lca.ht.compartment.mgr.HarmonizeContexts"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowMatchContextsHandler"
+            id="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
             name="Show Match Contexts View">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowMatchPropertiesHandler"
+            id="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
+            name="Show Match Properties View">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"

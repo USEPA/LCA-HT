@@ -10,7 +10,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.ui.PartInitException;
 
-public class ShowHarmonizeContextsHandler implements IHandler {
+public class ShowMatchContextsHandler implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {

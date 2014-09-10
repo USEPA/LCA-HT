@@ -240,7 +240,7 @@ public class MatchContexts extends ViewPart {
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
 		masterLbl = new Label(compositeMaster, SWT.NONE);
-		masterLbl.setText("Master Contexts");
+		masterLbl.setText("Master Flow Contexts");
 
 		Button btnAutoAdvance = new Button(compositeMaster, SWT.CHECK);
 		btnAutoAdvance.setText("Auto Advance");

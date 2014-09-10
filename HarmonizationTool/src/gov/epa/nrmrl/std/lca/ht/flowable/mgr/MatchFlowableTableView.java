@@ -52,7 +52,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class MatchFlowableTableView extends ViewPart {
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.dataModels.MatchFlowableTableView";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView";
 
 	private static TableViewer tableViewer;
 	private static Table table;
