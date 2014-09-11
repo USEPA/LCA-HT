@@ -325,8 +325,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			subject.removeAll(predicate);
-			subject.addProperty(predicate, object);
+			Model tdbModel = tdbDataset.getDefaultModel();
+			String uri = subject.getURI();
+			Resource tr_subject = tdbModel.createResource(uri);
+			// FIXME: Resource subject not valid within a transaction, will the above code work??
+			tr_subject.removeAll(predicate);
+			tr_subject.addProperty(predicate, object);
 		} finally {
 			tdbDataset.end();
 		}
@@ -334,10 +338,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Resource createResource(Resource rdfclass) {
+		// FIXME: resources only valid within a transaction??
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		Resource result = null;
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
 		} finally {
@@ -351,6 +357,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
@@ -374,6 +381,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
+			String uri = subject.getURI();
+			Resource tr_subject = tdbModel.createResource(uri);
+			// FIXME: Resource subject not valid within a transaction, will the above code work??
 			subject.removeAll(predicate);
 			tdbDataset.commit();
 		} finally {
@@ -387,6 +398,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
+			String uri = subject.getURI();
+			Resource tr_subject = tdbModel.createResource(uri);
+			// FIXME: Resource subject not valid within a transaction, will the above code work??
 			subject.removeAll(predicate);
 			tdbDataset.commit();
 		} finally {
@@ -399,6 +414,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.remove(subject, predicate, object);
 			tdbDataset.commit();
 		} finally {

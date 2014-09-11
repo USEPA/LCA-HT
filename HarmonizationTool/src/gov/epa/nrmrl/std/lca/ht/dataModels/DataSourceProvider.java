@@ -57,6 +57,7 @@ public class DataSourceProvider {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(FEDLCA.hasContactPerson);
 			tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
 			ActiveTDB.tdbDataset.commit();
@@ -92,6 +93,7 @@ public class DataSourceProvider {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 			try {
+				Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 				tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
 				ActiveTDB.tdbDataset.commit();
 			} finally {

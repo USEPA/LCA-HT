@@ -7,6 +7,8 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -60,9 +62,14 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			this.filename = filename;
 			tdbResource.removeAll(LCAHT.fileName);
 			tdbResource.addProperty(LCAHT.fileName, filename);
+			ActiveTDB.tdbDataset.commit();
+		}
+	    catch (RuntimeException ex) {
+		 	ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -85,6 +92,7 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.filePath);
 			tdbResource.addProperty(LCAHT.filePath, path);
 			ActiveTDB.tdbDataset.commit();
@@ -104,6 +112,7 @@ public class FileMD {
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.byteCount);
 			tdbResource.addLiteral(LCAHT.byteCount, byteCount);
 			ActiveTDB.tdbDataset.commit();
@@ -122,9 +131,14 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			// FIXME: modified data unknown here!
+			//Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
 			tdbResource.addLiteral(LCAHT.fileModifiedDate, modifiedDate);
 			ActiveTDB.tdbDataset.commit();
+		} catch (RuntimeException ex) {
+			Logger.getLogger("run").warn("setModifiedDate() failed!");
+			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -140,6 +154,7 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			//FIXME: Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.fileReadDate);
 			tdbResource.addLiteral(LCAHT.fileReadDate, readDate);
 			ActiveTDB.tdbDataset.commit();
@@ -161,6 +176,7 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
 			ActiveTDB.tdbDataset.commit();
 		} finally {
@@ -240,12 +256,14 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.fileName);
 			tdbResource.removeAll(LCAHT.filePath);
 			tdbResource.removeAll(LCAHT.fileEncoding);
 			tdbResource.removeAll(LCAHT.byteCount);
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
 			tdbResource.removeAll(LCAHT.fileReadDate);
+			ActiveTDB.tdbDataset.commit();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
