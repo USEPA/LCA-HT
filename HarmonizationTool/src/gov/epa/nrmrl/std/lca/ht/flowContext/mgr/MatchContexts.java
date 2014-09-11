@@ -55,14 +55,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class MatchContexts extends ViewPart {
-	public static final MatchContexts INSTANCE = new MatchContexts();
 
-	private MatchContexts() {
-	}
-	
-	private Button btnCommitMatches;
+	private static Button btnCommitMatches;
 	private static List<String> contextsToMatch;
-	private static class ContentProvider implements IStructuredContentProvider {
+
+	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
 			return new Object[0];
 		}
@@ -74,8 +71,15 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-
+	public MatchContexts(){
+//		MatchContexts = this;
+	}
+	
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
+	// public static String getId() {
+	// return ID;
+	// }
+
 	private static Table queryTbl;
 	private static TableViewer queryTblViewer;
 	private static Table matchedTbl;
@@ -102,8 +106,7 @@ public class MatchContexts extends ViewPart {
 		Composite compositeQuery = new Composite(parent, SWT.NONE);
 		compositeQuery.setLayout(new FillLayout(SWT.HORIZONTAL));
 		compositeQuery.setSize(300, 30);
-		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeQuery.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
@@ -112,8 +115,7 @@ public class MatchContexts extends ViewPart {
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
 		// gd_compositeMatches.minimumWidth = 300;
-		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		compositeMatches.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		matchedLbl = new Label(compositeMatches, SWT.NONE);
 		matchedLbl.setText("Matched");
@@ -126,8 +128,7 @@ public class MatchContexts extends ViewPart {
 
 			// @Override
 			public void widgetSelected(SelectionEvent e) {
-				QueryModel[] queryModel = (QueryModel[]) queryTblViewer
-						.getInput();
+				QueryModel[] queryModel = (QueryModel[]) queryTblViewer.getInput();
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
@@ -160,26 +161,22 @@ public class MatchContexts extends ViewPart {
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
-					model.add(annotationResource, DCTerms.dateSubmitted,
-							dateLiteral);
+					model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
 					if (Util.getPreferenceStore().getString("userName") != null) {
 						Literal userName = model.createLiteral(Util.getPreferenceStore().getString("userName"));
 						model.add(annotationResource, DCTerms.creator, userName);
 					}
 				}
 				// 3) Loop through each match
-				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer
-						.getInput();
+				MatchModel[] matchModel = (MatchModel[]) matchedTblViewer.getInput();
 				System.out.println("matchModel.length= " + matchModel.length);
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
 					// String qString = qModel.label;
 					MatchModel matchRow = matchModel[i];
 					if (matchRow != null) {
-						System.out.println("matchRow[" + i + "].label = "
-								+ matchRow.label);
-						System.out.println("matchRow.getResource() = "
-								+ matchRow.getResource());
+						System.out.println("matchRow[" + i + "].label = " + matchRow.label);
+						System.out.println("matchRow.getResource() = " + matchRow.getResource());
 						// System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
 						// System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
 						// A) Find the Source URI
@@ -200,16 +197,11 @@ public class MatchContexts extends ViewPart {
 						// Master, Equivalence
 
 						Resource comparisonResource = model.createResource();
-						model.add(comparisonResource, RDF.type,
-								FEDLCA.Comparison);
-						model.add(annotationResource, FEDLCA.hasComparison,
-								comparisonResource);
-						model.add(comparisonResource, FEDLCA.comparedSource,
-								queryCompartmentResource);
-						model.add(comparisonResource, FEDLCA.comparedMaster,
-								masterCompartmentResource);
-						model.add(comparisonResource,
-								FEDLCA.comparedEquivalence, FEDLCA.equivalent);
+						model.add(comparisonResource, RDF.type, FEDLCA.Comparison);
+						model.add(annotationResource, FEDLCA.hasComparison, comparisonResource);
+						model.add(comparisonResource, FEDLCA.comparedSource, queryCompartmentResource);
+						model.add(comparisonResource, FEDLCA.comparedMaster, masterCompartmentResource);
+						model.add(comparisonResource, FEDLCA.comparedEquivalence, FEDLCA.equivalent);
 
 						// Literal compartmentName =
 						// tdbModel.createLiteral(qString);
@@ -248,8 +240,7 @@ public class MatchContexts extends ViewPart {
 		// ============ NEW COL =========
 		Composite compositeMaster = new Composite(parent, SWT.NONE);
 		compositeMaster.setLayout(new GridLayout(1, false));
-		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1);
+		GridData gd_compositeMaster = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_compositeMaster.minimumWidth = 300;
 		compositeMaster.setLayoutData(gd_compositeMaster);
 
@@ -262,17 +253,17 @@ public class MatchContexts extends ViewPart {
 		// ============ NEW COL =========
 		new Label(parent, SWT.NONE);
 		// ============ NEW COL =========
-		queryTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		queryTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		queryTbl = queryTblViewer.getTable();
-		queryTbl.addMouseListener(columnMouseListener);
-		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
-				1);
+		System.out.println("queryTblViewer now = " + queryTblViewer);
+		System.out.println("queryTbl now = " + queryTbl);
+
+		// queryTbl.addMouseListener(columnMouseListener);
+		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_queryTbl.widthHint = 300;
 		queryTbl.setLayoutData(gd_queryTbl);
 		queryTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer,
-				SWT.NONE);
+		TableViewerColumn queryColumn = new TableViewerColumn(queryTblViewer, SWT.NONE);
 		TableColumn qColumn = queryColumn.getColumn();
 		qColumn.setMoveable(true);
 		qColumn.setAlignment(SWT.RIGHT);
@@ -284,16 +275,13 @@ public class MatchContexts extends ViewPart {
 			// }
 		});
 		// ============ NEW COL =========
-		matchedTblViewer = new TableViewer(parent, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		matchedTblViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		matchedTbl = matchedTblViewer.getTable();
-		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_matchedTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_matchedTbl.widthHint = 300;
 		matchedTbl.setLayoutData(gd_matchedTbl);
 		matchedTblViewer.setContentProvider(new ContentProvider());
-		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer,
-				SWT.NONE);
+		TableViewerColumn matchColumn = new TableViewerColumn(matchedTblViewer, SWT.NONE);
 		TableColumn mColumn = matchColumn.getColumn();
 		mColumn.setMoveable(true);
 		mColumn.setAlignment(SWT.RIGHT);
@@ -308,8 +296,7 @@ public class MatchContexts extends ViewPart {
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
-		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		GridData gd_masterTree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_masterTree.widthHint = 300;
 		masterTree.setLayoutData(gd_masterTree);
 		masterTree.setLinesVisible(true);
@@ -322,8 +309,7 @@ public class MatchContexts extends ViewPart {
 				return ((TreeNode) treeNode).nodeName;
 			}
 		});
-		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(
-				masterTreeViewer, SWT.NONE);
+		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -334,39 +320,35 @@ public class MatchContexts extends ViewPart {
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
 		masterTreeViewer.setInput(createHarmonizeCompartments());
-		masterTreeViewer.getTree().addSelectionListener(
-				new SelectionListener() {
+		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						TreeNode treeNode = (TreeNode) (e.item.getData());
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TreeNode treeNode = (TreeNode) (e.item.getData());
 
-						if (!treeNode.hasChildern()) {
-							String masterLabel = treeNode.getLabel();
-							Resource masterResource = treeNode.getUri();
-							if (queryTblViewer.getTable().getItemCount() > 0) {
-								int row = queryTblViewer.getTable()
-										.getSelectionIndex();
-								if (row > -1) {
-									// String queryLabel =
-									// queryTblViewer.getTable().getSelection()[0].getText(0);
-									MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer
-											.getInput());
-									matchedModel[row].setLabel(masterLabel);
-									matchedModel[row]
-											.setResource(masterResource);
-									matchedTblViewer.refresh();
-								}
-							}
+				if (!treeNode.hasChildern()) {
+					String masterLabel = treeNode.getLabel();
+					Resource masterResource = treeNode.getUri();
+					if (queryTblViewer.getTable().getItemCount() > 0) {
+						int row = queryTblViewer.getTable().getSelectionIndex();
+						if (row > -1) {
+							// String queryLabel =
+							// queryTblViewer.getTable().getSelection()[0].getText(0);
+							MatchModel[] matchedModel = (MatchModel[]) (matchedTblViewer.getInput());
+							matchedModel[row].setLabel(masterLabel);
+							matchedModel[row].setResource(masterResource);
+							matchedTblViewer.refresh();
 						}
 					}
+				}
+			}
 
-					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {
-						// TODO Auto-generated method stub
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
 
-					}
-				});
+			}
+		});
 		masterTreeViewer.refresh();
 
 		for (TreeItem item : masterTree.getItems()) {
@@ -603,16 +585,21 @@ public class MatchContexts extends ViewPart {
 		queryTblViewer.getControl().setFocus();
 
 	}
-	
+
 	public void update() {
-		queryTblViewer.setLabelProvider(new LabelProvider());
+		LabelProvider labelProvider = new LabelProvider();
+		if (queryTblViewer == null) {
+			System.out.println("Why is this null, now?");
+		} else {
+			System.out.println("queryTblViewer = " + queryTblViewer);
+		}
+		queryTblViewer.setLabelProvider(labelProvider);
 		queryTblViewer.setContentProvider(new QueryContentProvider());
 		QueryModel[] queryModel = createQueryModel();
 		queryTblViewer.setInput(queryModel);
 		queryTblViewer.getTable().setLinesVisible(true);
 		MatchModel[] matchModel = createMatchModel(queryModel);
-		System.out.println("Created matchModel matchModel.length= "
-				+ matchModel.length);
+		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
 		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
 		matchedTblViewer.setContentProvider(new MatchContentProvider());
 		matchedTblViewer.setInput(matchModel);
@@ -621,8 +608,7 @@ public class MatchContexts extends ViewPart {
 				+ masterTreeViewer.getTree().getColumnCount());
 		System.out.println("masterTreeViewer.getTree().getItems().length= "
 				+ masterTreeViewer.getTree().getItems().length);
-		System.out.println("masterTreeViewer.getTree().getItemCount()= "
-				+ masterTreeViewer.getTree().getItemCount());
+		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
 	}
 
 	public void update(TableProvider tableProvider) {
@@ -632,8 +618,7 @@ public class MatchContexts extends ViewPart {
 		queryTblViewer.setInput(queryModel);
 		queryTblViewer.getTable().setLinesVisible(true);
 		MatchModel[] matchModel = createMatchModel(queryModel);
-		System.out.println("Created matchModel matchModel.length= "
-				+ matchModel.length);
+		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
 		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
 		matchedTblViewer.setContentProvider(new MatchContentProvider());
 		matchedTblViewer.setInput(matchModel);
@@ -642,8 +627,7 @@ public class MatchContexts extends ViewPart {
 				+ masterTreeViewer.getTree().getColumnCount());
 		System.out.println("masterTreeViewer.getTree().getItems().length= "
 				+ masterTreeViewer.getTree().getItems().length);
-		System.out.println("masterTreeViewer.getTree().getItemCount()= "
-				+ masterTreeViewer.getTree().getItemCount());
+		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
 	}
 
 	private class MatchLabelProvider extends LabelProvider {
@@ -688,17 +672,17 @@ public class MatchContexts extends ViewPart {
 		}
 
 	}
-	
+
 	private QueryModel[] createQueryModel() {
 		int rows = contextsToMatch.size();
 		QueryModel[] elements = new QueryModel[rows];
 		int index = 0;
 		for (String contextConcat : contextsToMatch) {
 			String value = contextConcat;
-//			String value = dataRow.get(0);
+			// String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);
 			elements[index++] = queryModel;
-			index++;
+			// index++;
 		}
 		return elements;
 	}
@@ -714,8 +698,7 @@ public class MatchContexts extends ViewPart {
 			Resource queryCompartmentResource = null;
 			// Resource fred = (Resource)uri;
 			// thing = ActiveTDB.tdbModel.getResource(fred );
-			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(
-					RDF.type, FASC.Compartment));
+			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, FASC.Compartment));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
@@ -723,12 +706,9 @@ public class MatchContexts extends ViewPart {
 					if (dataRow.get(1).equals(anonId.toString())) {
 						queryCompartmentResource = resource;
 						System.out.println("index = " + index);
-						System.out.println("anonId.toString() ="
-								+ anonId.toString());
-						System.out.println("anonId.getLabelString() ="
-								+ anonId.getLabelString());
-						System.out
-								.println("dataRow.get(1) = " + dataRow.get(1));
+						System.out.println("anonId.toString() =" + anonId.toString());
+						System.out.println("anonId.getLabelString() =" + anonId.getLabelString());
+						System.out.println("dataRow.get(1) = " + dataRow.get(1));
 					}
 				}
 			}
@@ -771,13 +751,13 @@ public class MatchContexts extends ViewPart {
 		return matchModel;
 	}
 
-	public static List<String> getContextsToMatch() {
+	public List<String> getContextsToMatch() {
 		return contextsToMatch;
 	}
 
 	public static void setContextsToMatch(List<String> contexts) {
 		contextsToMatch = contexts;
-//		update();
+		// update();
 	}
 
 	public class MatchModel {
@@ -800,9 +780,8 @@ public class MatchContexts extends ViewPart {
 			this.label = label;
 		}
 	}
-	
-	private static MouseListener columnMouseListener = new MouseListener() {
 
+	private MouseListener columnMouseListener = new MouseListener() {
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
@@ -844,9 +823,9 @@ public class MatchContexts extends ViewPart {
 			queryTbl.select(clickedRow);
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = "+rowNumSelected);
-			System.out.println("colNumSelected = "+colNumSelected);
-//			rowMenu.setVisible(true);
+			System.out.println("rowNumSelected = " + rowNumSelected);
+			System.out.println("colNumSelected = " + colNumSelected);
+			// rowMenu.setVisible(true);
 		}
 
 		private void rightClick(MouseEvent event) {
@@ -868,12 +847,12 @@ public class MatchContexts extends ViewPart {
 
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = "+rowNumSelected);
-			System.out.println("colNumSelected = "+colNumSelected);
+			System.out.println("rowNumSelected = " + rowNumSelected);
+			System.out.println("colNumSelected = " + colNumSelected);
 		}
 	};
-	
-	private static int getTableColumnNumFromPoint(int row, Point pt) {
+
+	private int getTableColumnNumFromPoint(int row, Point pt) {
 		TableItem item = queryTbl.getItem(row);
 		for (int i = 0; i < queryTbl.getColumnCount(); i++) {
 			Rectangle rect = item.getBounds(i);

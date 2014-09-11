@@ -20,6 +20,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -110,8 +111,8 @@ public class AutoMatchJob extends Job {
 			}
 		});
 		int percentComplete = 0;
-//		TableProvider flowContextTableProvider = new TableProvider();
-//		TableProvider flowPropertyTableProvider = new TableProvider();
+		// TableProvider flowContextTableProvider = new TableProvider();
+		// TableProvider flowPropertyTableProvider = new TableProvider();
 
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
@@ -228,7 +229,7 @@ public class AutoMatchJob extends Job {
 					flowContextMap.put(flowContextConcatinated, flowContext);
 					DataRow flowContextDataRow = new DataRow();
 					flowContextDataRow.add(flowContextConcatinated);
-//					flowContextTableProvider.addDataRow(flowContextDataRow);
+					// flowContextTableProvider.addDataRow(flowContextDataRow);
 					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
@@ -274,7 +275,7 @@ public class AutoMatchJob extends Job {
 							dataSourceProvider.getTdbResource());
 					DataRow flowPropertyDataRow = new DataRow();
 					flowPropertyDataRow.add(flowPropertyConcatinated);
-//					flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
+					// flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
 					for (int i : flowPropertyCSVColumnNumbers) {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
@@ -314,21 +315,23 @@ public class AutoMatchJob extends Job {
 				}
 			}
 		}
-		List<String> contexts = new ArrayList<String>();
-		for (String flowContextConcat:flowContextMap.keySet()){
+		final List<String> contexts = new ArrayList<String>();
+		for (String flowContextConcat : flowContextMap.keySet()) {
 			contexts.add(flowContextConcat);
 		}
 		Collections.sort(contexts);
-		MatchContexts matchContexts = MatchContexts.INSTANCE;
-		matchContexts.setContextsToMatch(contexts);
-		matchContexts.update();
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MatchContexts.setContextsToMatch(contexts);
+				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
+				matchContexts.update();
+			}
+		});
 
-
-		
-//		MatchContexts.update(flowContextTableProvider);
-//		HarmonizeFlowProperties.update(flowPropertyTableProvider);
+		// MatchContexts.update(flowContextTableProvider);
+		// HarmonizeFlowProperties.update(flowPropertyTableProvider);
 		// TODO - WORK OUT THE ABOVE METHODS IN THEIR CLASSES
-		
+
 		// long newTriples = ActiveTDB.tdbModel.size() - triples;
 		// return (int) newTriples;
 
