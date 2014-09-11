@@ -18,6 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -327,148 +328,19 @@ public class AutoMatchJob extends Job {
 				matchContexts.update();
 			}
 		});
-
-		// MatchContexts.update(flowContextTableProvider);
-		// HarmonizeFlowProperties.update(flowPropertyTableProvider);
-		// TODO - WORK OUT THE ABOVE METHODS IN THEIR CLASSES
-
-		// long newTriples = ActiveTDB.tdbModel.size() - triples;
-		// return (int) newTriples;
-
-		//
-		// TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
-		// Resource tableDataSource =
-		// tableProvider.getDataSourceProvider().getTdbResource();
-		// System.out.println("Table :" + tableProvider);
-		//
-		// int rowCount = tableProvider.getData().size();
-		// System.out.println("Need to process this many rows: " + rowCount);
-		// CSVColumnInfo[] assignedCSVColumnInfo =
-		// tableProvider.getAssignedCSVColumnInfo();
-		//
-		// // CHECK WHICH Flowable and FlowContext COLUMNS ARE ASSIGNED
-		// List<Integer> flowableColumnNumbers = new ArrayList<Integer>();
-		// List<Integer> flowContextColumnNumbers = new ArrayList<Integer>();
-		//
-		// for (int colNumber = 0; colNumber < assignedCSVColumnInfo.length;
-		// colNumber++) {
-		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
-		// if (csvColumnInfo != null) {
-		// if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
-		// if (csvColumnInfo.isRequired()) {
-		// // PREPEND THE IMPORTANT ONES
-		// flowableColumnNumbers.add(0, colNumber);
-		// } else {
-		// // APPEND THE OTHERS
-		// flowableColumnNumbers.add(colNumber);
-		// }
-		// } else if
-		// (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
-		// if (csvColumnInfo.isRequired()) {
-		// // PREPEND THE IMPORTANT ONES
-		// flowContextColumnNumbers.add(0, colNumber);
-		// } else {
-		// // APPEND THE OTHERS
-		// flowContextColumnNumbers.add(colNumber);
-		// }
-		// }
-		// }
-		// }
-		//
-		// List<MatchCandidate> matchCandidates = new
-		// ArrayList<MatchCandidate>();
-		// // NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
-		// for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-		// List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
-		// if (rowsToIgnore.contains(rowNumber)){
-		// continue;
-		// }
-		// List<MatchCandidate> rowMatchCandidates = new
-		// ArrayList<MatchCandidate>();
-		//
-		// // System.out.println("About to check row: "+rowNumber);
-		// DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
-		//
-		// final int rowNumberPlusOne = rowNumber + 1;
-		//
-		// // FIRST DO Flowable
-		// // FIND NAME MATCH:
-		// // Q-NAME = DB-NAME
-		// // Q-SYN = DB-NAME
-		// // Q-NAME = DB-SYN
-		// // Q-SYN = DB-SYN
-		// //------
-		// // Q-OTHER = DB-OTHER
-		// Resource rdfClass = Flowable.getRdfclass();
-		//
-		// for (int colNumber : flowableColumnNumbers) {
-		// // int dataColNumber = colNumber - 1;
-		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
-		// Property property = csvColumnInfo.getTdbProperty();
-		// String dataRowValue = dataRow.get(colNumber);
-		// Literal dataRowLiteral = ActiveTDB.createTypedLiteral(dataRowValue);
-		// ResIterator resIterator =
-		// ActiveTDB.tdbModel.listResourcesWithProperty(property,
-		// dataRowLiteral);
-		// Resource itemToMatchTDBResource = null;
-		// while (resIterator.hasNext()) {
-		// Resource candidateResource = resIterator.next();
-		// if (ActiveTDB.tdbModel.contains(candidateResource, RDF.type,
-		// rdfClass)) {
-		// if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource,
-		// tableDataSource)) {
-		// itemToMatchTDBResource = candidateResource;
-		// } else {
-		//
-		// boolean isNew = true;
-		// for (MatchCandidate matchCandidate : rowMatchCandidates) {
-		// if
-		// (matchCandidate.getMatchCandidateTDBResource().equals(candidateResource))
-		// {
-		// matchCandidate.incrementMatchFeatureCount();
-		// isNew = false;
-		// }
-		// }
-		// if (isNew) {
-		// MatchCandidate matchCandidate = new MatchCandidate(rowNumber,
-		// itemToMatchTDBResource, candidateResource);
-		// if (matchCandidate.confirmRDFtypeMatch()) {
-		// matchCandidate.setMatchedFeatureCount(1);
-		// rowMatchCandidates.add(matchCandidate);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// for (MatchCandidate matchCandidate : rowMatchCandidates) {
-		// Resource qResource = matchCandidate.getItemToMatchTDBResource();
-		// Resource rResource = matchCandidate.getMatchCandidateTDBResource();
-		// int rowMatch = matchCandidate.getItemToMatchRow();
-		// String result = Flowable.compareFlowables(qResource, rResource);
-		// if (result.equals("+0")){
-		// System.out.println("Hit on row: "+rowMatch);
-		// }
-		// //
-		// System.out.println("On row: "+rowMatch+": "+Flowable.compareFlowables(qResource,
-		// rResource));
-		// matchCandidates.add(matchCandidate);
-		// System.out.println("Num: " + matchCandidate.getMatchedFeatureCount()
-		// + ". type: "
-		// + matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) +
-		// ".");
-		// }
-		// tableProvider.setLastChecked(rowNumber);
-		// Display.getDefault().asyncExec(new Runnable() {
-		// public void run() {
-		// CSVTableView.updateCheckedData();
-		// FlowsWorkflow.setTextAutoMatched("Row: " + rowNumberPlusOne);
-		// }
-		// });
-		//
-		// }
-		// // System.out.println("matchCandidates.size()=" +
-		// matchCandidates.size());
+		
+		final List<String> properties = new ArrayList<String>();
+		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
+			properties.add(flowPropertyConcat);
+		}
+		Collections.sort(properties);
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MatchProperties.setPropertiesToMatch(properties);
+				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
+				matchProperties.update();
+			}
+		});
 
 		return Status.OK_STATUS;
 	}

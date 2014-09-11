@@ -43,11 +43,13 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class MatchProperties extends ViewPart {
 	private Button btnCommitMatches;
+	private static List<String> propertiesToMatch;
 
 	private static class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -463,6 +465,32 @@ public class MatchProperties extends ViewPart {
 		queryTblViewer.getControl().setFocus();
 
 	}
+	
+	public void update() {
+		LabelProvider labelProvider = new LabelProvider();
+		if (queryTblViewer == null) {
+			System.out.println("Why is this null, now?");
+		} else {
+			System.out.println("queryTblViewer = " + queryTblViewer);
+		}
+		queryTblViewer.setLabelProvider(labelProvider);
+		queryTblViewer.setContentProvider(new QueryContentProvider());
+		QueryModel[] queryModel = createQueryModel();
+		queryTblViewer.setInput(queryModel);
+		queryTblViewer.getTable().setLinesVisible(true);
+		MatchModel[] matchModel = createMatchModel(queryModel);
+		System.out.println("Created matchModel matchModel.length= " + matchModel.length);
+		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
+		matchedTblViewer.setContentProvider(new MatchContentProvider());
+		matchedTblViewer.setInput(matchModel);
+		matchedTblViewer.getTable().setLinesVisible(true);
+		System.out.println("masterTreeViewer.getTree().getColumnCount()= "
+				+ masterTreeViewer.getTree().getColumnCount());
+		System.out.println("masterTreeViewer.getTree().getItems().length= "
+				+ masterTreeViewer.getTree().getItems().length);
+		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
+	}
+
 
 	public void update(TableProvider tableProvider) {
 		queryTblViewer.setLabelProvider(new LabelProvider());
@@ -526,6 +554,20 @@ public class MatchProperties extends ViewPart {
 
 	}
 
+	private QueryModel[] createQueryModel() {
+		int rows = propertiesToMatch.size();
+		QueryModel[] elements = new QueryModel[rows];
+		int index = 0;
+		for (String contextConcat : propertiesToMatch) {
+			String value = contextConcat;
+			// String value = dataRow.get(0);
+			QueryModel queryModel = new QueryModel(value);
+			elements[index++] = queryModel;
+			// index++;
+		}
+		return elements;
+	}
+	
 	private QueryModel[] createQueryModel(TableProvider tableProvider) {
 		int rows = tableProvider.getData().size();
 		QueryModel[] elements = new QueryModel[rows];
@@ -610,4 +652,15 @@ public class MatchProperties extends ViewPart {
 			this.label = label;
 		}
 	}
+	
+	public List<String> getPropertiesToMatch() {
+		return propertiesToMatch;
+	}
+
+	public static void setPropertiesToMatch(List<String> properties) {
+		propertiesToMatch = properties;
+		// update();
+	}
+	
+	
 }
