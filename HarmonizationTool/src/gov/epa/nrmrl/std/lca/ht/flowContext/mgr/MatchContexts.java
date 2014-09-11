@@ -17,19 +17,27 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
@@ -42,12 +50,18 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class MatchContexts extends ViewPart {
-	private Button btnCommitMatches;
+	public static final MatchContexts INSTANCE = new MatchContexts();
 
+	private MatchContexts() {
+	}
+	
+	private Button btnCommitMatches;
+	private static List<String> contextsToMatch;
 	private static class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
 			return new Object[0];
@@ -60,19 +74,19 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-	public MatchContexts() {
-	}
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
-	private Table queryTbl;
-	private TableViewer queryTblViewer;
-	private Table matchedTbl;
-	private TableViewer matchedTblViewer;
-	private Tree masterTree;
-	private TreeViewer masterTreeViewer;
-	private Label queryLbl;
-	private Label matchedLbl;
-	private Label masterLbl;
+	private static Table queryTbl;
+	private static TableViewer queryTblViewer;
+	private static Table matchedTbl;
+	private static TableViewer matchedTblViewer;
+	private static Tree masterTree;
+	private static TreeViewer masterTreeViewer;
+	private static Label queryLbl;
+	private static Label matchedLbl;
+	private static Label masterLbl;
+	private static int rowNumSelected;
+	private static int colNumSelected;
 
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
@@ -251,6 +265,7 @@ public class MatchContexts extends ViewPart {
 		queryTblViewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		queryTbl = queryTblViewer.getTable();
+		queryTbl.addMouseListener(columnMouseListener);
 		GridData gd_queryTbl = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
 				1);
 		gd_queryTbl.widthHint = 300;
@@ -588,6 +603,27 @@ public class MatchContexts extends ViewPart {
 		queryTblViewer.getControl().setFocus();
 
 	}
+	
+	public void update() {
+		queryTblViewer.setLabelProvider(new LabelProvider());
+		queryTblViewer.setContentProvider(new QueryContentProvider());
+		QueryModel[] queryModel = createQueryModel();
+		queryTblViewer.setInput(queryModel);
+		queryTblViewer.getTable().setLinesVisible(true);
+		MatchModel[] matchModel = createMatchModel(queryModel);
+		System.out.println("Created matchModel matchModel.length= "
+				+ matchModel.length);
+		matchedTblViewer.setLabelProvider(new MatchLabelProvider());
+		matchedTblViewer.setContentProvider(new MatchContentProvider());
+		matchedTblViewer.setInput(matchModel);
+		matchedTblViewer.getTable().setLinesVisible(true);
+		System.out.println("masterTreeViewer.getTree().getColumnCount()= "
+				+ masterTreeViewer.getTree().getColumnCount());
+		System.out.println("masterTreeViewer.getTree().getItems().length= "
+				+ masterTreeViewer.getTree().getItems().length);
+		System.out.println("masterTreeViewer.getTree().getItemCount()= "
+				+ masterTreeViewer.getTree().getItemCount());
+	}
 
 	public void update(TableProvider tableProvider) {
 		queryTblViewer.setLabelProvider(new LabelProvider());
@@ -651,6 +687,20 @@ public class MatchContexts extends ViewPart {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 
+	}
+	
+	private QueryModel[] createQueryModel() {
+		int rows = contextsToMatch.size();
+		QueryModel[] elements = new QueryModel[rows];
+		int index = 0;
+		for (String contextConcat : contextsToMatch) {
+			String value = contextConcat;
+//			String value = dataRow.get(0);
+			QueryModel queryModel = new QueryModel(value);
+			elements[index++] = queryModel;
+			index++;
+		}
+		return elements;
 	}
 
 	private QueryModel[] createQueryModel(TableProvider tableProvider) {
@@ -721,6 +771,15 @@ public class MatchContexts extends ViewPart {
 		return matchModel;
 	}
 
+	public static List<String> getContextsToMatch() {
+		return contextsToMatch;
+	}
+
+	public static void setContextsToMatch(List<String> contexts) {
+		contextsToMatch = contexts;
+//		update();
+	}
+
 	public class MatchModel {
 		private Resource resource = null;
 		private String label = "";
@@ -740,5 +799,88 @@ public class MatchContexts extends ViewPart {
 		public void setLabel(String label) {
 			this.label = label;
 		}
+	}
+	
+	private static MouseListener columnMouseListener = new MouseListener() {
+
+
+		@Override
+		public void mouseDoubleClick(MouseEvent e) {
+			System.out.println("double click event :e =" + e);
+		}
+
+		@Override
+		public void mouseDown(MouseEvent e) {
+			System.out.println("mouse down event :e =" + e);
+			if (e.button == 1) {
+				leftClick(e);
+			} else if (e.button == 3) {
+				queryTbl.deselectAll();
+				rightClick(e);
+			}
+		}
+
+		@Override
+		public void mouseUp(MouseEvent e) {
+			System.out.println("mouse up event :e =" + e);
+		}
+
+		private void leftClick(MouseEvent event) {
+			System.out.println("cellSelectionMouseDownListener event " + event);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int clickedRow = 0;
+			int clickedCol = 0;
+			TableItem item = queryTbl.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			clickedRow = queryTbl.indexOf(item);
+			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			if (clickedCol > 0) {
+				queryTbl.deselectAll();
+				return;
+			}
+			queryTbl.select(clickedRow);
+			rowNumSelected = clickedRow;
+			colNumSelected = clickedCol;
+			System.out.println("rowNumSelected = "+rowNumSelected);
+			System.out.println("colNumSelected = "+colNumSelected);
+//			rowMenu.setVisible(true);
+		}
+
+		private void rightClick(MouseEvent event) {
+			System.out.println("cellSelectionMouseDownListener event " + event);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int clickedRow = 0;
+			int clickedCol = 0;
+			TableItem item = queryTbl.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			clickedRow = queryTbl.indexOf(item);
+			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			// int dataClickedCol = clickedCol - 1;
+			if (clickedCol < 0) {
+				return;
+			}
+
+			rowNumSelected = clickedRow;
+			colNumSelected = clickedCol;
+			System.out.println("rowNumSelected = "+rowNumSelected);
+			System.out.println("colNumSelected = "+colNumSelected);
+		}
+	};
+	
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = queryTbl.getItem(row);
+		for (int i = 0; i < queryTbl.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
