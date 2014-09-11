@@ -158,16 +158,16 @@ public class MatchProperties extends ViewPart {
 				for (int i = 0; i < queryModel.length; i++) {
 					QueryModel qModel = queryModel[i];
 					// String qString = qModel.label;
-					MatchModel matchRow = matchModel[i];
-					if (matchRow != null) {
-						System.out.println("matchRow[" + i + "].label = " + matchRow.label);
-						System.out.println("matchRow.getResource() = " + matchRow.getResource());
+					MatchModel mModel = matchModel[i];
+					if (mModel != null) {
+						System.out.println("matchRow[" + i + "].label = " + mModel.label);
+						System.out.println("matchRow.getResource() = " + mModel.getResource());
 						// System.out.println("matchRow.getResource().getLocalName() = "+matchRow.getResource().getLocalName());
 						// System.out.println("matchRow["+i+"].resource.getLocalName() = "+matchRow.resource.getLocalName());
 						// A) Find the Source URI
 						// B) Find the Master URI
 						Resource queryPropertyResource = qModel.getUri();
-						Resource masterPropertyResource = matchRow.resource;
+						Resource masterPropertyResource = mModel.resource;
 						// confirmResource(queryPropertyResource);
 						// confirmResource(masterPropertyResource);
 

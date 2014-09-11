@@ -17,7 +17,8 @@ public class FlowContext {
 
 	private String primaryFlowContext;
 	private List<String> supplementaryFlowContexts;
-	private static final Resource rdfClass = FASC.Compartment;
+	private static Resource rdfClass = FASC.Compartment;
+	// TODO ADD A GETTER AND SETTER FOR THE rdfClass
 	private Resource tdbResource;
 
 	public FlowContext() {

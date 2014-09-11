@@ -83,10 +83,13 @@ A19 BUG: Allow for deletion of data set... can make infinitely many
 
 A20 FEATURE REQUEST: Need to be able to match Flow Contexts
   SOLN: Finish reconnecting old interface to new data structure
+  STATUS: Matching is functional
+  NEXT: Improve data model so that the Commit Matches uses the FlowContext.setRDFClass (a setter to build) to update
   
 A21 FEATURE REQUEST: Need to be able to match Flow Properties
   SOLN: Connecting to new data structure
-  STATUS: Built and populated with Properties from openLCA.  Made up categories: "Physical Individual", "Physcial Combined", and "Other" 
+  STATUS: Matching is functional
+  NEXT: Improve data model so that the Commit Matches uses the FlowProperty.setRDFClass (a setter to build) to update
   
 A22 BUG: File read and data process speeds must be faster
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
