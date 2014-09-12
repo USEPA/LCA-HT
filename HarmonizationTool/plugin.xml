@@ -68,13 +68,13 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.views.QueryView"
-            id="gov.epa.nrmrl.std.lca.ht.views.QueryView"
+            class="gov.epa.nrmrl.std.lca.ht.sparql.QueryView"
+            id="gov.epa.nrmrl.std.lca.ht.sparql.QueryView"
             name="SPARQL Query"
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
+            class="gov.epa.nrmrl.std.lca.ht.sparql.ResultsView"
             id="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
             name="SPARQL Results"
             restorable="true">
@@ -276,14 +276,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="HarmonizationTool.application"
-            name="Harmonization Product">
+            name="LCA Harmonization Tool">
          <property
                name="windowImages"
                value="icons/alt_window_16.gif,icons/alt_window_32.gif">
          </property>
          <property
                name="appName"
-               value="Harmonization Product">
+               value="LCA Harmonization Tool">
          </property>
       </product>
    </extension>

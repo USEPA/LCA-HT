@@ -7,24 +7,15 @@ A2  BUG: If you try to open two instances of the application, the issue of selec
   SOLN:  You can't open two at the same time?!?
   STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
 
-A6  FEATURE REQUEST: Set some standard perspectives for people to choose from 
-  SOLN: Make the menu item do SOMETHING.
-  STATUS: "Perspective switcher" cycles through three "sample" perspectives
-  NEXT: Decide what perspectives the user might want.  Also restore views necessary to perspectives.
-  NOTE: Look in gov.epa.nrmrl.std.lca.ht.harmonizationtool -> ApplicationWorkbenchWindowAdvisor line 33 for startup size
- 
-A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
-  loaded, nothing happens
-  SOLN: Critical: allow restore original perspective.  Desired (later): save your favorite perspective(s)
-  STATUS: See A6
-
 A8  ISSUE (document):Can right click the Query window and import an .rq file
   SOLN: Document this
-  STATUS: I think this is gone... confirm, please.  Determine if it is desired....
+  STATUS: I think this is gone
+  NEXT: Confirm current status, please.  Determine if it is desired....
 
 A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
   size of the window
-  SOLN: Chris document which.  For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  NEXT: Chris document which others.
 
 A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
   form some sort of structure by which to search through?  I don't know what it even means
@@ -36,7 +27,7 @@ A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keep
   SOLN: Make "Cancel" quit the other thread.
 
 A15 BUG:  Can't stop a commit part of the way through it
-  SOLN: Make it possible to "Cancel" the commit.
+  SOLN: Make it possible to "Cancel" the commit (see A14)
 
  #====================
 A16 CHANGE UI:
@@ -69,10 +60,6 @@ A16 CHANGE UI:
 A17 FEATURE REQUEST:  What are "issues"  - designate them
   SOLN: Document this.  Eventually add new issues with or without auto-resolve.
 
-A18 BUG:  CASRN should be CAS, Name should be Flowable name in results
-  Synonyms should be Flowable Synonyms 
-  SOLN: Standardize words, names, etc.  Some of this should be on the object level: avoid duplicating strings in the code.
-
 A19 BUG: Allow for deletion of data set... can make infinitely many 
   ... and ISSUE:  Every time a particular data set is loaded (for example: test.csv) the tool will
   load test_1 then test_2 then test_3 etc etc... It's not really clear why this happens.
@@ -80,14 +67,7 @@ A19 BUG: Allow for deletion of data set... can make infinitely many
   SOLN: 1) Make delete easier (confirm)
         2) Delete the data
         3) When you read a new file and assign to existing data set, don't create new data set!
-
-A20 FEATURE REQUEST: Need to be able to match Flow Contexts
-  SOLN: Finish reconnecting old interface to new data structure
-  
-A21 FEATURE REQUEST: Need to be able to match Flow Properties
-  SOLN: Connecting to new data structure
-  STATUS: Built and populated with Properties from openLCA.  Made up categories: "Physical Individual", "Physcial Combined", and "Other" 
-  
+    
 A22 BUG: File read and data process speeds must be faster
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
   
@@ -193,6 +173,12 @@ B22 (copied from A3)
   SOLN: Have user select a working directory
 		include a checkbox: use as default working directory and do not show this dialogue box again
 
+
+B23 (was A18) BUG:  CASRN should be CAS, Name should be Flowable name in results
+  Synonyms should be Flowable Synonyms 
+  SOLN: Standardize words, names, etc.  Some of this should be on the object level: avoid duplicating strings in the code.
+  STATUS: Used a hack to standardize.  Works for now.
+  NEXT: Carefully develop the CSVColumnInfo model so that properties of objects can be defined generally
 #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
 #==========================================================================
@@ -262,10 +248,17 @@ C14 Need a save button - need something to keep these preferences... Is the log 
  								crosswalk.csv
    								start: 9:06 end: 
 								  10%: 9:14
-  							          20%: 9:22
-                                                                 100%: 10:20
+  							      20%: 9:22
+                                 100%: 10:20
   
          dear god...
+         
+         but, wait!
+      on Mac OSX (dogwood, and granted, pretty powerful machine):
+      
+       								crosswalk.csv
+   								start: 11:09:48
+   								 100%: 11:10:33
          
 
 #==========================================================================
@@ -283,6 +276,17 @@ A5  BUG: When "Saving Results" with no input, nothing happens
   SOLN: Just fix it.
   STATUS: Done.  Message appears if the SPARQL Results window is not open or does not contain results.  If cancel pressed, tool behaves.
 
+A6  FEATURE REQUEST: Set some standard perspectives for people to choose from 
+  SOLN: Make the menu item do SOMETHING.
+  STATUS: "Perspective switcher" cycles through three "sample" perspectives
+  NEXT: Decide what perspectives the user might want.  Also restore views necessary to perspectives.
+  NOTE: Look in gov.epa.nrmrl.std.lca.ht.harmonizationtool -> ApplicationWorkbenchWindowAdvisor line 33 for startup size
+ 
+A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
+  loaded, nothing happens
+  SOLN: Critical: allow restore original perspective.  Desired (later): save your favorite perspective(s)
+  STATUS: Done for now.  See A6
+  
 A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
   seems bad
   SOLN: Remove unused Views (windows)
@@ -295,4 +299,13 @@ A10 BUG: 'File' -> 'Import CSV' does nothing
 A11 BUG: 'Advanged' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
   is doing something?
   SOLN: Remove from menu
+
+A20 FEATURE REQUEST: Need to be able to match Flow Contexts
+  SOLN: Finish reconnecting old interface to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome.
   
+A21 FEATURE REQUEST: Need to be able to match Flow Properties
+  SOLN: Connecting to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome.

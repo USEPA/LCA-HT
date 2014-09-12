@@ -1,9 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
+import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 
 import java.io.BufferedReader;
 import java.io.File;

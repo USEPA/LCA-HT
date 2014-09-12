@@ -4,7 +4,6 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
 
 import java.util.ArrayList;
 import java.util.List;

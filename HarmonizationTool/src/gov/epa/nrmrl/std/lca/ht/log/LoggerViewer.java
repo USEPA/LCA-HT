@@ -31,7 +31,7 @@ public class LoggerViewer extends ViewPart {
 
 	public void createPartControl(Composite parent) {
 
-		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
+//		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
 		parent.setLayout(new GridLayout(1, false));
 
 		Button btnClear = new Button(parent, SWT.NONE);

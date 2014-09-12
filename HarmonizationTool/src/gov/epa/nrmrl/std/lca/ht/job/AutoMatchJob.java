@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,10 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -30,6 +33,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -109,8 +114,8 @@ public class AutoMatchJob extends Job {
 			}
 		});
 		int percentComplete = 0;
-		TableProvider flowContextTableProvider = new TableProvider();
-		TableProvider flowPropertyTableProvider = new TableProvider();
+		// TableProvider flowContextTableProvider = new TableProvider();
+		// TableProvider flowPropertyTableProvider = new TableProvider();
 
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
@@ -227,7 +232,7 @@ public class AutoMatchJob extends Job {
 					flowContextMap.put(flowContextConcatinated, flowContext);
 					DataRow flowContextDataRow = new DataRow();
 					flowContextDataRow.add(flowContextConcatinated);
-					flowContextTableProvider.addDataRow(flowContextDataRow);
+					// flowContextTableProvider.addDataRow(flowContextDataRow);
 					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
@@ -273,7 +278,7 @@ public class AutoMatchJob extends Job {
 							dataSourceProvider.getTdbResource());
 					DataRow flowPropertyDataRow = new DataRow();
 					flowPropertyDataRow.add(flowPropertyConcatinated);
-					flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
+					// flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
 					for (int i : flowPropertyCSVColumnNumbers) {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
@@ -313,147 +318,42 @@ public class AutoMatchJob extends Job {
 				}
 			}
 		}
-//		MatchContexts.update(flowContextTableProvider);
-//		HarmonizeFlowProperties.update(flowPropertyTableProvider);
-		// TODO - WORK OUT THE ABOVE METHODS IN THEIR CLASSES
+		final List<String> contexts = new ArrayList<String>();
+		final List<Resource> contextResources = new ArrayList<Resource>();
+		for (String flowContextConcat : flowContextMap.keySet()) {
+			contexts.add(flowContextConcat);
+		}
+		Collections.sort(contexts);
+		for (String flowContextConcat : contexts) {
+			contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
+				matchContexts.setContextsToMatch(contexts);
+				matchContexts.setContextResourcesToMatch(contextResources);
+				matchContexts.update();
+			}
+		});
 		
-		// long newTriples = ActiveTDB.tdbModel.size() - triples;
-		// return (int) newTriples;
+		final List<String> properties = new ArrayList<String>();
+		final List<Resource> propertyResources = new ArrayList<Resource>();
+		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
+			properties.add(flowPropertyConcat);
+		}
+		Collections.sort(properties);
+		for (String flowPropertyConcat : properties) {
+			propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
+				matchProperties.setPropertiesToMatch(properties);
+				matchProperties.setPropertyResourcesToMatch(propertyResources);
 
-		//
-		// TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
-		// Resource tableDataSource =
-		// tableProvider.getDataSourceProvider().getTdbResource();
-		// System.out.println("Table :" + tableProvider);
-		//
-		// int rowCount = tableProvider.getData().size();
-		// System.out.println("Need to process this many rows: " + rowCount);
-		// CSVColumnInfo[] assignedCSVColumnInfo =
-		// tableProvider.getAssignedCSVColumnInfo();
-		//
-		// // CHECK WHICH Flowable and FlowContext COLUMNS ARE ASSIGNED
-		// List<Integer> flowableColumnNumbers = new ArrayList<Integer>();
-		// List<Integer> flowContextColumnNumbers = new ArrayList<Integer>();
-		//
-		// for (int colNumber = 0; colNumber < assignedCSVColumnInfo.length;
-		// colNumber++) {
-		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
-		// if (csvColumnInfo != null) {
-		// if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
-		// if (csvColumnInfo.isRequired()) {
-		// // PREPEND THE IMPORTANT ONES
-		// flowableColumnNumbers.add(0, colNumber);
-		// } else {
-		// // APPEND THE OTHERS
-		// flowableColumnNumbers.add(colNumber);
-		// }
-		// } else if
-		// (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
-		// if (csvColumnInfo.isRequired()) {
-		// // PREPEND THE IMPORTANT ONES
-		// flowContextColumnNumbers.add(0, colNumber);
-		// } else {
-		// // APPEND THE OTHERS
-		// flowContextColumnNumbers.add(colNumber);
-		// }
-		// }
-		// }
-		// }
-		//
-		// List<MatchCandidate> matchCandidates = new
-		// ArrayList<MatchCandidate>();
-		// // NOW ITERATE THROUGH EACH ROW, LOOKING FOR MATCHES
-		// for (int rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-		// List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
-		// if (rowsToIgnore.contains(rowNumber)){
-		// continue;
-		// }
-		// List<MatchCandidate> rowMatchCandidates = new
-		// ArrayList<MatchCandidate>();
-		//
-		// // System.out.println("About to check row: "+rowNumber);
-		// DataRow dataRow = (DataRow) tableProvider.getData().get(rowNumber);
-		//
-		// final int rowNumberPlusOne = rowNumber + 1;
-		//
-		// // FIRST DO Flowable
-		// // FIND NAME MATCH:
-		// // Q-NAME = DB-NAME
-		// // Q-SYN = DB-NAME
-		// // Q-NAME = DB-SYN
-		// // Q-SYN = DB-SYN
-		// //------
-		// // Q-OTHER = DB-OTHER
-		// Resource rdfClass = Flowable.getRdfclass();
-		//
-		// for (int colNumber : flowableColumnNumbers) {
-		// // int dataColNumber = colNumber - 1;
-		// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumber];
-		// Property property = csvColumnInfo.getTdbProperty();
-		// String dataRowValue = dataRow.get(colNumber);
-		// Literal dataRowLiteral = ActiveTDB.createTypedLiteral(dataRowValue);
-		// ResIterator resIterator =
-		// ActiveTDB.tdbModel.listResourcesWithProperty(property,
-		// dataRowLiteral);
-		// Resource itemToMatchTDBResource = null;
-		// while (resIterator.hasNext()) {
-		// Resource candidateResource = resIterator.next();
-		// if (ActiveTDB.tdbModel.contains(candidateResource, RDF.type,
-		// rdfClass)) {
-		// if (ActiveTDB.tdbModel.contains(candidateResource, ECO.hasDataSource,
-		// tableDataSource)) {
-		// itemToMatchTDBResource = candidateResource;
-		// } else {
-		//
-		// boolean isNew = true;
-		// for (MatchCandidate matchCandidate : rowMatchCandidates) {
-		// if
-		// (matchCandidate.getMatchCandidateTDBResource().equals(candidateResource))
-		// {
-		// matchCandidate.incrementMatchFeatureCount();
-		// isNew = false;
-		// }
-		// }
-		// if (isNew) {
-		// MatchCandidate matchCandidate = new MatchCandidate(rowNumber,
-		// itemToMatchTDBResource, candidateResource);
-		// if (matchCandidate.confirmRDFtypeMatch()) {
-		// matchCandidate.setMatchedFeatureCount(1);
-		// rowMatchCandidates.add(matchCandidate);
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// for (MatchCandidate matchCandidate : rowMatchCandidates) {
-		// Resource qResource = matchCandidate.getItemToMatchTDBResource();
-		// Resource rResource = matchCandidate.getMatchCandidateTDBResource();
-		// int rowMatch = matchCandidate.getItemToMatchRow();
-		// String result = Flowable.compareFlowables(qResource, rResource);
-		// if (result.equals("+0")){
-		// System.out.println("Hit on row: "+rowMatch);
-		// }
-		// //
-		// System.out.println("On row: "+rowMatch+": "+Flowable.compareFlowables(qResource,
-		// rResource));
-		// matchCandidates.add(matchCandidate);
-		// System.out.println("Num: " + matchCandidate.getMatchedFeatureCount()
-		// + ". type: "
-		// + matchCandidate.getItemToMatchTDBResource().getProperty(RDF.type) +
-		// ".");
-		// }
-		// tableProvider.setLastChecked(rowNumber);
-		// Display.getDefault().asyncExec(new Runnable() {
-		// public void run() {
-		// CSVTableView.updateCheckedData();
-		// FlowsWorkflow.setTextAutoMatched("Row: " + rowNumberPlusOne);
-		// }
-		// });
-		//
-		// }
-		// // System.out.println("matchCandidates.size()=" +
-		// matchCandidates.size());
+				matchProperties.update();
+			}
+		});
 
 		return Status.OK_STATUS;
 	}

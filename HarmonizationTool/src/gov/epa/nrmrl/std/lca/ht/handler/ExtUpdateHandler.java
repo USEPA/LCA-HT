@@ -1,8 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

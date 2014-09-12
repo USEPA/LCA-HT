@@ -268,10 +268,17 @@ public class Flowable {
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique,
 	// List<QACheck>
 	// checkLists)
+	// 	FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
+	private static final String flowableNameString = "Flowable Name";
+	private static final String flowableSynonymString = "Flowable Synonym";
+	private static final String casString = "CAS";
+	private static final String chemicalFormulaString = "Chemical formula";
+	private static final String smilesString = "SMILES";
+
 	public static final CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
 
-		results[0] = new CSVColumnInfo("Flowable Name");
+		results[0] = new CSVColumnInfo(flowableNameString);
 		results[0].setRequired(true);
 		results[0].setUnique(true);
 		results[0].setCheckLists(getFlowablesNameCheckList());
@@ -279,7 +286,7 @@ public class Flowable {
 		results[0].setTdbProperty(RDFS.label);
 		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
-		results[1] = new CSVColumnInfo("Flowable Synonym");
+		results[1] = new CSVColumnInfo(flowableSynonymString);
 		results[1].setRequired(false);
 		results[1].setUnique(false);
 		results[1].setCheckLists(getFlowablesNameCheckList());
@@ -287,7 +294,7 @@ public class Flowable {
 		results[1].setTdbProperty(SKOS.altLabel);
 		results[1].setRdfDatatype(XSDDatatype.XSDstring);
 
-		results[2] = new CSVColumnInfo("CAS");
+		results[2] = new CSVColumnInfo(casString);
 		results[2].setRequired(false);
 		results[2].setUnique(true);
 		results[2].setCheckLists(getCASCheckList());
@@ -296,7 +303,7 @@ public class Flowable {
 		results[2].setTdbProperty(ECO.casNumber);
 		results[2].setRdfDatatype(XSDDatatype.XSDstring);
 
-		results[3] = new CSVColumnInfo("Chemical formula");
+		results[3] = new CSVColumnInfo(chemicalFormulaString);
 		results[3].setRequired(false);
 		results[3].setUnique(false);
 		results[3].setCheckLists(getFormulaCheckList());
@@ -305,7 +312,7 @@ public class Flowable {
 		results[3].setTdbProperty(ECO.chemicalFormula);
 		results[3].setRdfDatatype(XSDDatatype.XSDstring);
 
-		results[4] = new CSVColumnInfo("SMILES");
+		results[4] = new CSVColumnInfo(smilesString);
 		results[4].setRequired(false);
 		results[4].setUnique(false);
 		results[4].setCheckLists(getSmilesCheckList());
@@ -582,5 +589,24 @@ public class Flowable {
 	// }
 	public static Resource getRdfclass() {
 		return rdfClass;
+	}
+	public static String getFlowableNameString() {
+		return flowableNameString;
+	}
+
+	public static String getFlowableSynonymString() {
+		return flowableSynonymString;
+	}
+
+	public static String getCASString() {
+		return casString;
+	}
+
+	public static String getChemicalformulastring() {
+		return chemicalFormulaString;
+	}
+
+	public static String getSMILESString() {
+		return smilesString;
 	}
 }
