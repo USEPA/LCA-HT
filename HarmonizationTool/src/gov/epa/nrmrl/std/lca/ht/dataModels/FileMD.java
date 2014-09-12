@@ -131,10 +131,10 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			// FIXME: modified data unknown here!
-			//Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
+			// FIXME: modified date unknown here!
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.fileModifiedDate);
-			tdbResource.addLiteral(LCAHT.fileModifiedDate, modifiedDate);
+			/* tdbResource. */ ActiveTDB.addLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
 			ActiveTDB.tdbDataset.commit();
 		} catch (RuntimeException ex) {
 			Logger.getLogger("run").warn("setModifiedDate() failed!");
@@ -154,9 +154,10 @@ public class FileMD {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			//FIXME: Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
+			// FIXME: Data unknown here
+			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 			tdbResource.removeAll(LCAHT.fileReadDate);
-			tdbResource.addLiteral(LCAHT.fileReadDate, readDate);
+			/*tdbResource.*/ ActiveTDB.addLiteral(tdbResource, LCAHT.fileReadDate, readDate);
 			ActiveTDB.tdbDataset.commit();
 		} finally {
 			ActiveTDB.tdbDataset.end();

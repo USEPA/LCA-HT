@@ -12,6 +12,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -290,6 +291,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
@@ -354,17 +356,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
-			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
-			tdbModel.add(subject, predicate, newRDFNode);
-			tdbDataset.commit();
-		} finally {
-			tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		// XXX Only called from within a transaction; transaction encapsulation removed.
+		Model tdbModel = tdbDataset.getDefaultModel();
+		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+		tdbModel.add(subject, predicate, newRDFNode);
 	}
 
 	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
@@ -377,11 +372,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
 
-	public static void removeAllObjects(Resource subject, Property predicate) {
+	public static void removeAllObjects(Resource subject_, Property predicate) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
+			/* HACK */ Resource subject = tdbModel.createResource(LCAHT.dataFile /* rdfClass */);
 			String uri = subject.getURI();
 			Resource tr_subject = tdbModel.createResource(uri);
 			// FIXME: Resource subject not valid within a transaction, will the above code work??
