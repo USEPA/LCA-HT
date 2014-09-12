@@ -48,8 +48,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class MatchProperties extends ViewPart {
-	private Button btnCommitMatches;
-	private static List<String> propertiesToMatch;
+	private static Button btnCommitMatches;
+	private List<String> propertiesToMatch;
+	private List<Resource> propertyResourcesToMatch;
 
 	private static class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -131,7 +132,8 @@ public class MatchProperties extends ViewPart {
 				// Resource equivalent = FEDLCA.equivalent;
 
 				Model model = ActiveTDB.tdbModel;
-				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING WITH TDB) FIXME
+				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING
+				// WITH TDB) FIXME
 				// NEED TO DO THE FOLLOWING
 				// 1) Create a new Annotation (assigning it to the class
 				// Annotation)
@@ -328,7 +330,7 @@ public class MatchProperties extends ViewPart {
 	private TreeNode createHarmonizeProperties() {
 		TreeNode masterPropertyTree = new TreeNode(null);
 
-		//-------- PHYSICAL COMBINED
+		// -------- PHYSICAL COMBINED
 		TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
 		physicalIndividual.nodeName = "Physical individual";
 
@@ -355,15 +357,15 @@ public class MatchProperties extends ViewPart {
 		TreeNode radioactivity = new TreeNode(physicalIndividual);
 		radioactivity.nodeName = "Radioactivity";
 		radioactivity.uri = FEDLCA.Radioactivity;
-		
-		//-------- PHYSICAL COMBINED
+
+		// -------- PHYSICAL COMBINED
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
 		physicalCombined.nodeName = "Physical combined";
-		
+
 		TreeNode volumeTime = new TreeNode(physicalCombined);
 		volumeTime.nodeName = "Volume*time";
 		volumeTime.uri = FEDLCA.VolumeTime;
-		
+
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FEDLCA.MassTime;
@@ -387,11 +389,11 @@ public class MatchProperties extends ViewPart {
 		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
 		energyPerAreaTime.nodeName = "Energy/area*time";
 		energyPerAreaTime.uri = FEDLCA.EnergyPerAreaTime;
-		
-		//-------- OTHER
+
+		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
 		other.nodeName = "Other";
-		
+
 		TreeNode itemCount = new TreeNode(other);
 		itemCount.nodeName = "Number of Items";
 		itemCount.uri = FEDLCA.ItemCount;
@@ -399,31 +401,31 @@ public class MatchProperties extends ViewPart {
 		TreeNode itemsLength = new TreeNode(other);
 		itemsLength.nodeName = "Items*Length";
 		itemsLength.uri = FEDLCA.ItemsLength;
-		
+
 		TreeNode goodsTransportMassDistance = new TreeNode(other);
 		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
 		goodsTransportMassDistance.uri = FEDLCA.GoodsTransportMassDistance;
-		
+
 		TreeNode personTransport = new TreeNode(other);
 		personTransport.nodeName = "Person transport";
 		personTransport.uri = FEDLCA.PersonTransport;
-		
+
 		TreeNode vehicleTransport = new TreeNode(other);
 		vehicleTransport.nodeName = "Vehicle transport";
 		vehicleTransport.uri = FEDLCA.VehicleTransport;
-		
+
 		TreeNode netCalorificValue = new TreeNode(other);
 		netCalorificValue.nodeName = "Net calorific value";
 		netCalorificValue.uri = FEDLCA.NetCalorificValue;
-		
+
 		TreeNode grossCalorificValue = new TreeNode(other);
 		grossCalorificValue.nodeName = "Gross calorific value";
 		grossCalorificValue.uri = FEDLCA.GrossCalorificValue;
-		
+
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
 		normalVolume.uri = FEDLCA.NormalVolume;
-		
+
 		return masterPropertyTree;
 	}
 
@@ -465,7 +467,7 @@ public class MatchProperties extends ViewPart {
 		queryTblViewer.getControl().setFocus();
 
 	}
-	
+
 	public void update() {
 		LabelProvider labelProvider = new LabelProvider();
 		if (queryTblViewer == null) {
@@ -490,7 +492,6 @@ public class MatchProperties extends ViewPart {
 				+ masterTreeViewer.getTree().getItems().length);
 		System.out.println("masterTreeViewer.getTree().getItemCount()= " + masterTreeViewer.getTree().getItemCount());
 	}
-
 
 	public void update(TableProvider tableProvider) {
 		queryTblViewer.setLabelProvider(new LabelProvider());
@@ -560,14 +561,16 @@ public class MatchProperties extends ViewPart {
 		int index = 0;
 		for (String contextConcat : propertiesToMatch) {
 			String value = contextConcat;
+			Resource resource = propertyResourcesToMatch.get(index);
 			// String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);
+			queryModel.uri = resource;
 			elements[index++] = queryModel;
 			// index++;
 		}
 		return elements;
 	}
-	
+
 	private QueryModel[] createQueryModel(TableProvider tableProvider) {
 		int rows = tableProvider.getData().size();
 		QueryModel[] elements = new QueryModel[rows];
@@ -652,15 +655,22 @@ public class MatchProperties extends ViewPart {
 			this.label = label;
 		}
 	}
-	
+
 	public List<String> getPropertiesToMatch() {
 		return propertiesToMatch;
 	}
 
-	public static void setPropertiesToMatch(List<String> properties) {
+	public void setPropertiesToMatch(List<String> properties) {
 		propertiesToMatch = properties;
 		// update();
 	}
-	
-	
+
+	public List<Resource> getPropertyResourcesToMatch() {
+		return propertyResourcesToMatch;
+	}
+
+	public void setPropertyResourcesToMatch(List<Resource> propertyResourcesToMatch) {
+		this.propertyResourcesToMatch = propertyResourcesToMatch;
+	}
+
 }

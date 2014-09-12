@@ -57,7 +57,8 @@ import org.eclipse.swt.widgets.TableColumn;
 public class MatchContexts extends ViewPart {
 
 	private static Button btnCommitMatches;
-	private static List<String> contextsToMatch;
+	private List<String> contextsToMatch;
+	private List<Resource> contextResourcesToMatch;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -71,26 +72,26 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-	public MatchContexts(){
-//		MatchContexts = this;
+	public MatchContexts() {
+		// MatchContexts = this;
 	}
-	
+
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
 	// public static String getId() {
 	// return ID;
 	// }
 
-	private static Table queryTbl;
-	private static TableViewer queryTblViewer;
-	private static Table matchedTbl;
-	private static TableViewer matchedTblViewer;
-	private static Tree masterTree;
-	private static TreeViewer masterTreeViewer;
-	private static Label queryLbl;
-	private static Label matchedLbl;
-	private static Label masterLbl;
-	private static int rowNumSelected;
-	private static int colNumSelected;
+	private Table queryTbl;
+	private TableViewer queryTblViewer;
+	private Table matchedTbl;
+	private TableViewer matchedTblViewer;
+	private Tree masterTree;
+	private TreeViewer masterTreeViewer;
+	private Label queryLbl;
+	private Label matchedLbl;
+	private Label masterLbl;
+	private int rowNumSelected;
+	private int colNumSelected;
 
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
@@ -146,7 +147,8 @@ public class MatchContexts extends ViewPart {
 				// Resource equivalent = FEDLCA.equivalent;
 
 				Model model = ActiveTDB.tdbModel;
-				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING WITH TDB) FIXME
+				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING
+				// WITH TDB) FIXME
 				// NEED TO DO THE FOLLOWING
 				// 1) Create a new Annotation (assigning it to the class
 				// Annotation)
@@ -210,7 +212,8 @@ public class MatchContexts extends ViewPart {
 						// compartmentName);
 						// while (resIterator.hasNext()) {
 						// Resource candidateCompartment = resIterator.next();
-						// if (!tdbModel.contains(candidateCompartment, RDF.type,
+						// if (!tdbModel.contains(candidateCompartment,
+						// RDF.type,
 						// FASC.Compartment)) {
 						// continue;
 						// }
@@ -679,8 +682,10 @@ public class MatchContexts extends ViewPart {
 		int index = 0;
 		for (String contextConcat : contextsToMatch) {
 			String value = contextConcat;
+			Resource resource = contextResourcesToMatch.get(index);
 			// String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);
+			queryModel.uri = resource;
 			elements[index++] = queryModel;
 			// index++;
 		}
@@ -755,7 +760,7 @@ public class MatchContexts extends ViewPart {
 		return contextsToMatch;
 	}
 
-	public static void setContextsToMatch(List<String> contexts) {
+	public void setContextsToMatch(List<String> contexts) {
 		contextsToMatch = contexts;
 		// update();
 	}
@@ -861,5 +866,13 @@ public class MatchContexts extends ViewPart {
 			}
 		}
 		return -1;
+	}
+
+	public List<Resource> getContextResourcesToMatch() {
+		return contextResourcesToMatch;
+	}
+
+	public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
+		this.contextResourcesToMatch = contextResourcesToMatch;
 	}
 }

@@ -34,6 +34,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * @author tsb Tommy Cathey 919-541-1500
  * @author Tom Transue 919-541-0494
@@ -317,27 +319,38 @@ public class AutoMatchJob extends Job {
 			}
 		}
 		final List<String> contexts = new ArrayList<String>();
+		final List<Resource> contextResources = new ArrayList<Resource>();
 		for (String flowContextConcat : flowContextMap.keySet()) {
 			contexts.add(flowContextConcat);
 		}
 		Collections.sort(contexts);
+		for (String flowContextConcat : contexts) {
+			contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MatchContexts.setContextsToMatch(contexts);
 				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
+				matchContexts.setContextsToMatch(contexts);
+				matchContexts.setContextResourcesToMatch(contextResources);
 				matchContexts.update();
 			}
 		});
 		
 		final List<String> properties = new ArrayList<String>();
+		final List<Resource> propertyResources = new ArrayList<Resource>();
 		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
 			properties.add(flowPropertyConcat);
 		}
 		Collections.sort(properties);
+		for (String flowPropertyConcat : properties) {
+			propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MatchProperties.setPropertiesToMatch(properties);
 				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
+				matchProperties.setPropertiesToMatch(properties);
+				matchProperties.setPropertyResourcesToMatch(propertyResources);
+
 				matchProperties.update();
 			}
 		});
