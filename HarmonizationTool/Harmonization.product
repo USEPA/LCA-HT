@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Harmonization Product" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
-
+<product name="LCA Harmonization Tool" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -14,14 +13,12 @@
 
    <windowImages i16="icons/alt_window_16.gif" i32="icons/alt_window_32.gif"/>
 
-
    <launcher name="HarmonizeLCA">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>

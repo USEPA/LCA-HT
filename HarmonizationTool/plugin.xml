@@ -276,14 +276,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="HarmonizationTool.application"
-            name="Harmonization Product">
+            name="LCA Harmonization Tool">
          <property
                name="windowImages"
                value="icons/alt_window_16.gif,icons/alt_window_32.gif">
          </property>
          <property
                name="appName"
-               value="Harmonization Product">
+               value="LCA Harmonization Tool">
          </property>
       </product>
    </extension>
