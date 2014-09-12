@@ -248,10 +248,17 @@ C14 Need a save button - need something to keep these preferences... Is the log 
  								crosswalk.csv
    								start: 9:06 end: 
 								  10%: 9:14
-  							          20%: 9:22
-                                                                 100%: 10:20
+  							      20%: 9:22
+                                 100%: 10:20
   
          dear god...
+         
+         but, wait!
+      on Mac OSX (dogwood, and granted, pretty powerful machine):
+      
+       								crosswalk.csv
+   								start: 11:09:48
+   								 100%: 11:10:33
          
 
 #==========================================================================

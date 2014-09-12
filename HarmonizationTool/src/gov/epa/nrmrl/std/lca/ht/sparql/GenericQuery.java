@@ -1,7 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.sparql;
 
-import gov.epa.nrmrl.std.lca.ht.views.QueryView;
-
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 

@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.views;
+package gov.epa.nrmrl.std.lca.ht.sparql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,16 +13,6 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
-import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
-import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyUpdate;
-import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;
-import gov.epa.nrmrl.std.lca.ht.sparql.QCountMatches;
-import gov.epa.nrmrl.std.lca.ht.sparql.QDataSetContents;
-import gov.epa.nrmrl.std.lca.ht.sparql.QDataSources;
-import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCAS;
-import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCASandName;
-import gov.epa.nrmrl.std.lca.ht.sparql.UDelDataSource;
 //import gov.epa.nrmrl.std.lca.ht.tdb.IActiveTDBListener;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -66,7 +56,7 @@ import org.eclipse.swt.widgets.Table;
 //public class QueryView extends ViewPart implements IActiveTDBListener {
 public class QueryView extends ViewPart {
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.views.QueryView";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.sparql.QueryView";
 
 	private List<LabeledQuery> labeledQueries = new ArrayList<LabeledQuery>();
 

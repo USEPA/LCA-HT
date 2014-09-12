@@ -14,9 +14,9 @@ import gov.epa.nrmrl.std.lca.ht.sparql.QDataSetContents;
 import gov.epa.nrmrl.std.lca.ht.sparql.QDataSources;
 import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCAS;
 import gov.epa.nrmrl.std.lca.ht.sparql.QMatchCASandName;
+import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.sparql.UDelDataSource;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;

@@ -1,8 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.views.ResultsView;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
+
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportTriplesHandler implements IHandler {
