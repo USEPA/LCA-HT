@@ -20,7 +20,7 @@ public class FlowProperty {
 	private Resource tdbResource;
 
 	public FlowProperty() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 	}
 
 	public static final CSVColumnInfo[] getHeaderMenuObjects() {
@@ -67,7 +67,7 @@ public class FlowProperty {
 	public void setPrimaryFlowProperty(String primaryFlowProperty) {
 		this.primaryFlowProperty = primaryFlowProperty;
 		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
 	}
 
 	public List<String> getsupplementaryFlowProperties() {
@@ -75,10 +75,10 @@ public class FlowProperty {
 	}
 
 	public void setSupplementaryFlowProperties(List<String> supplementaryFlowProperties) {
-		ActiveTDB.removeAllObjects(tdbResource, FEDLCA.flowPropertySupplementalDescription);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.flowPropertySupplementalDescription);
 		this.supplementaryFlowProperties = supplementaryFlowProperties;
 		for (String supplementaryFlowProperty : supplementaryFlowProperties) {
-			ActiveTDB.addLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+			ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 		}
 	}
 
@@ -87,13 +87,13 @@ public class FlowProperty {
 			supplementaryFlowProperties = new ArrayList<String>();
 		}
 		supplementaryFlowProperties.add(supplementaryFlowProperty);
-		ActiveTDB.addLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+		ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 	}
 
 	public void removeSupplementaryFlowProperty(String supplementaryFlowProperty) {
 		this.supplementaryFlowProperties.remove(supplementaryFlowProperty);
-		Literal literalToRemove = ActiveTDB.createTypedLiteral(supplementaryFlowProperty);
-		ActiveTDB.removeStatement(tdbResource, FEDLCA.flowPropertySupplementalDescription, literalToRemove);
+		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
+		ActiveTDB.tsRemoveStatement(tdbResource, FEDLCA.flowPropertySupplementalDescription, literalToRemove);
 	}
 
 	public Resource getTdbResource() {

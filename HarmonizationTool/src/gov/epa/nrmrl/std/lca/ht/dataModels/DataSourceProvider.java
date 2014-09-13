@@ -31,7 +31,7 @@ public class DataSourceProvider {
 	private boolean isMaster = false;
 
 	public DataSourceProvider() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		boolean success = DataSourceKeeper.add(this);
 		System.out.println("Success: " + success + " with this.dataSourceName");
 		DataSourceKeeper.add(this);
@@ -145,7 +145,7 @@ public class DataSourceProvider {
 		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER
 		// DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
-		ActiveTDB.removeStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		ActiveTDB.tsRemoveStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 	}
 
 	public void removeFileMDList() {
@@ -158,12 +158,12 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
-		ActiveTDB.removeAllObjects(tdbResource, RDF.type);
-		ActiveTDB.removeAllObjects(tdbResource, RDFS.label);
-		ActiveTDB.removeAllObjects(tdbResource, DCTerms.hasVersion);
-		ActiveTDB.removeAllObjects(tdbResource, RDFS.comment);
-		ActiveTDB.removeAllObjects(tdbResource, FEDLCA.hasContactPerson);
-		ActiveTDB.removeAllObjects(tdbResource, LCAHT.containsFile);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, RDF.type);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.label);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, DCTerms.hasVersion);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.comment);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.hasContactPerson);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, LCAHT.containsFile);
 	}
 
 	public boolean isMaster() {
@@ -187,7 +187,7 @@ public class DataSourceProvider {
 
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
+		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 	}
 
 	public String getVersion() {
@@ -203,7 +203,7 @@ public class DataSourceProvider {
 
 	public void setVersion(String version) {
 		this.version = version;
-		ActiveTDB.replaceLiteral(tdbResource, DCTerms.hasVersion, version);
+		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.hasVersion, version);
 	}
 
 	public String getComments() {
@@ -219,7 +219,7 @@ public class DataSourceProvider {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.comment, comments);
+		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.comment, comments);
 	}
 
 	public void syncFromTDB() {
@@ -235,7 +235,7 @@ public class DataSourceProvider {
 
 		} else {
 			dataSourceName = DataSourceKeeper.uniquify("unkownName");
-			ActiveTDB.replaceLiteral(tdbResource, RDFS.label, dataSourceName);
+			ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 		}
 
 		if (tdbResource.hasProperty(DCTerms.hasVersion)) {

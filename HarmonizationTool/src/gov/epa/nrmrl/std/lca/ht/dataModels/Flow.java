@@ -17,7 +17,7 @@ public class Flow {
 	private static final Resource rdfClass = FASC.FlowAggregationCategory;
 
 	public Flow() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 	}
 
 	public Flowable getFlowable() {
@@ -26,7 +26,7 @@ public class Flow {
 
 	public void setFlowable(Flowable flowable) {
 		this.flowable = flowable;
-		ActiveTDB.replaceResource(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
+		ActiveTDB.tsReplaceResource(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
 	}
 
 	public FlowContext getFlowContext() {
@@ -35,7 +35,7 @@ public class Flow {
 
 	public void setFlowContext(FlowContext flowContext) {
 		this.flowContext = flowContext;
-		ActiveTDB.replaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
+		ActiveTDB.tsReplaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
 	}
 
 	public FlowProperty getFlowProperty() {
@@ -44,7 +44,7 @@ public class Flow {
 
 	public void setFlowProperty(FlowProperty flowProperty) {
 		this.flowProperty = flowProperty;
-		ActiveTDB.replaceResource(tdbResource, FEDLCA.hasFlowProperty, flowProperty.getTdbResource());
+		ActiveTDB.tsReplaceResource(tdbResource, FEDLCA.hasFlowProperty, flowProperty.getTdbResource());
 	}
 	
 	public Resource getTdbResource() {

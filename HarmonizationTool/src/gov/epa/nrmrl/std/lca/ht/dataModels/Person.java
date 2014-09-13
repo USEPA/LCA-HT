@@ -20,7 +20,7 @@ public class Person {
 	protected final static Model model = ActiveTDB.tdbModel;
 
 	public Person() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		PersonKeeper.add(this);
 	}
 
@@ -43,7 +43,7 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.personName, name);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.personName, name);
 	}
 
 	public String getAffiliation() {
@@ -59,7 +59,7 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.affiliation, affiliation);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.affiliation, affiliation);
 	}
 
 	public String getEmail() {
@@ -75,7 +75,7 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.email, email);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.email, email);
 	}
 
 	public String getPhone() {
@@ -91,7 +91,7 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.voicePhone, phone);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.voicePhone, phone);
 	}
 
 	public void syncDataFromTDB() {

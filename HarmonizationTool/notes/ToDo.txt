@@ -15,6 +15,8 @@ A8  ISSUE (document):Can right click the Query window and import an .rq file
 A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
   size of the window
   SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
+  NEXT: Try again to get this right.
   NEXT: Chris document which others.
 
 A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
@@ -74,6 +76,12 @@ A22 BUG: File read and data process speeds must be faster
 A23 BUG: Match flowables doesn't work (no commit / assign)
   SOLN:  complete match flowable functionality  
   
+A24 BUG: Transaction work not complete.
+    SOLN:  Fix them, but ideally create larger, more efficient transactions
+  	STATUS: Added to ActiveTDB two versions of each routine that writes to the TDB:
+  	        Regular and transaction safe (ts)
+  	        Changed all calls to use the transaction safe ones.  There seem to be a glitch in AutoMatch so that
+  	        Flowable name does not get assigned...  fix this, then move ahead 
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
 #==========================================================================
@@ -222,10 +230,10 @@ C9 FEATURE REQUEST:  Automatically detect row 1 for column headers
 C10 FEATURE REQUEST:  A dialogue box or something that explains how a search is run and what is required
   SOLN: Document and eventually allow user input for criteria for match
 
-C11 FEATURE REQUEST: Instatiate:  Flowable Resource Object With Name / Synonym (FROWNS) :-(
+C11 FEATURE REQUEST: Instantiate:  Flowable Resource Object With Name / Synonym (FROWNS) :-(
   SOLN: The world is ready for FROWNS
  
-C12 FEATURE REQUEST: Instatiate:  Data unique meta-block system (DUMBS) %^{
+C12 FEATURE REQUEST: Instantiate:  Data Unique meta-block system (DUMBS) %^{
   SOLN: The world is ready for DUMBS
   
 C13 FEATURE REQUEST:  Minimize std.err std.out output file 
@@ -296,7 +304,7 @@ A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of
 A10 BUG: 'File' -> 'Import CSV' does nothing
   SOLN: Remove from File menu
 
-A11 BUG: 'Advanged' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
+A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
   is doing something?
   SOLN: Remove from menu
 

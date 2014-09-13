@@ -17,6 +17,8 @@ public class TableProvider {
 
 	private DataRow headerRow = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
+	// TODO: JUNO CHECK ABOVE TO CONSIDER A BETTER WAY TO STORE -ALL- CSV DATA
+	// CONFIRM COMPATIBILITY WITH TableViewer.setInput
 	private int lastChecked;
 	private int lastUpdated;
 

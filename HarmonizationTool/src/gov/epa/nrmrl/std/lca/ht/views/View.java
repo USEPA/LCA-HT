@@ -397,7 +397,7 @@ public class View extends ViewPart {
 							continue;
 						}
 
-						Literal drRowLit = ActiveTDB.createTypedLiteral(csvRow);
+						Literal drRowLit = ActiveTDB.tsCreateTypedLiteral(csvRow);
 
 						String name = null; // REQUIRED
 						String altName = null; // OPTIONAL

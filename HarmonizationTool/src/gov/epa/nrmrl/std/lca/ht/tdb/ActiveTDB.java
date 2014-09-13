@@ -14,6 +14,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -67,7 +68,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			System.out.println("tdb seems to be open already!");
 			return null;
 		}
-//		System.out.println("about to open TDB. Model right now is: " + tdbModel);
+		// System.out.println("about to open TDB. Model right now is: " +
+		// tdbModel);
 		// IT IS A BAD IDEA TO PRINT THE MODEL [ALL DATA!] TO System.out !!!
 		openTDB();
 		// System.out.println("Now Model is: " + tdbModel);
@@ -224,70 +226,14 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-	// public static int removeAllWithSubject(Resource subject) {
-	// int count = 0;
-	// StmtIterator stmtIterator = subject.listProperties();
-	// Set<Statement> statementSet = stmtIterator.toSet();
-	// // System.out.println("statementSet.size(): " + statementSet.size());
-	// for (Statement statement : statementSet) {
-	// // System.out.println("Statement: " + statement);
-	// statement.remove();
-	// count++;
-	// }
-	// count++;
-	// return count;
-	// }
+	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+		removeAllLikeLiterals(subject,predicate,thingLiteral);
+		tdbModel.add(subject, predicate, newRDFNode);
+	}
 
-	// public static int removeAllWithObject(RDFNode object) {
-	// int count = 0;
-	// List<Property> properties = getAllProperties();
-	// for (Property predicate : properties) {
-	// count += removeAllWithPredicateObject(predicate, object);
-	// }
-	// return count;
-	// }
-
-	// public static int removeAllWithSubjectPredicate(Resource subject,
-	// Property predicate) {
-	// int count = 0;
-	// List<Statement> statements = subject.listProperties(predicate).toList();
-	// for (Statement statement : statements) {
-	// statement.remove();
-	// count++;
-	// }
-	// return count;
-	// }
-
-	// public static int removeAllWithPredicateObject(Property predicate,
-	// RDFNode object) {
-	// int count = 0;
-	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(predicate,
-	// object);
-	// while (resIterator.hasNext()) {
-	// Resource subject = resIterator.next();
-	// tdbModel.remove(subject, predicate, object);
-	// count++;
-	// }
-	// return count;
-	// }
-
-	// public static List<Property> getAllProperties() {
-	// List<Property> results = new ArrayList<Property>();
-	// QGetAllProperties qGetAllProperties = new QGetAllProperties();
-	// ResultSet resultSet = qGetAllProperties.getResultSet();
-	// List<String> resultVars = resultSet.getResultVars();
-	// String p = resultVars.get(0);
-	// while (resultSet.hasNext()) {
-	// QuerySolution querySolution = resultSet.nextSolution();
-	// Resource predAsResource = querySolution.getResource(p);
-	// String predAsString = predAsResource.getURI();
-	// Property predicate = tdbModel.createProperty(predAsString);
-	// results.add(predicate);
-	// }
-	// return results;
-	// }
-
-	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+	public static void tsReplaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
+			Object thingLiteral) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -298,6 +244,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				RDFNode rdfNode = nodeIterator.next();
 				if (rdfNode.isLiteral()) {
 					if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
+						// ONLY REMOVING SAME TYPE
 						tdbModel.removeAll(subject, predicate, rdfNode);
 					}
 				}
@@ -310,36 +257,48 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		removeAllObjects(subject, predicate);
-		if (thingLiteral == null) {
-			return;
-		}
+	private static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
-		System.out.println("rdfDatatype = "+rdfDatatype);
-		if (rdfDatatype.equals(XSDDatatype.XSDstring) && thingLiteral.equals("")) {
-			return;
-		}
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
-	public static void replaceResource(Resource subject, Property predicate, Resource object) {
+	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
+	}
+
+	private static void replaceResource(Resource subject, Property predicate, Resource object) {
+		subject.removeAll(predicate);
+		subject.addProperty(predicate, object);
+	}
+
+	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			String uri = subject.getURI();
-			Resource tr_subject = tdbModel.createResource(uri);
-			// FIXME: Resource subject not valid within a transaction, will the above code work??
-			tr_subject.removeAll(predicate);
-			tr_subject.addProperty(predicate, object);
+			Resource tr_subject = tdbModel.getResource(uri);
+			// Resource tr_subject = tdbModel.createResource(uri);
+			// NOTE: Resource subject not valid for changing within a
+			// transaction
+			subject.removeAll(predicate);
+			subject.addProperty(predicate, object);
+//			tr_subject.removeAll(predicate);
+//			tr_subject.addProperty(predicate, object);
+
 		} finally {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	public static Resource createResource(Resource rdfclass) {
+	private static Resource createResource(Resource rdfclass) {
+		Resource result = tdbModel.createResource(rdfclass);
+		return result;
+	}
+
+	public static Resource tsCreateResource(Resource rdfclass) {
 		// FIXME: resources only valid within a transaction??
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		Resource result = null;
@@ -355,33 +314,71 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return result;
 	}
 
-	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-		// XXX Only called from within a transaction; transaction encapsulation removed.
-		Model tdbModel = tdbDataset.getDefaultModel();
+	private static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
 
-	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
+	public static void tsAddLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
+			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+			tdbModel.add(subject, predicate, newRDFNode);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	private static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
 		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
-	public static Literal createTypedLiteral(Object thingLiteral) {
+	public static void tsAddLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		tsAddLiteral(subject, predicate, rdfDatatype, thingLiteral);
+	}
+
+	private static Literal createTypedLiteral(Object thingLiteral) {
 		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
 
-	public static void removeAllObjects(Resource subject_, Property predicate) {
+	public static Literal tsCreateTypedLiteral(Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		Literal literal = null;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
-			/* HACK */ Resource subject = tdbModel.createResource(LCAHT.dataFile /* rdfClass */);
+			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+			tdbDataset.commit();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		return literal;
+	}
+
+
+	private static void removeAllObjects(Resource subject, Property predicate) {
+		subject.removeAll(predicate);
+	}
+	
+	public static void tsRemoveAllObjects(Resource subject, Property predicate) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
 			String uri = subject.getURI();
-			Resource tr_subject = tdbModel.createResource(uri);
-			// FIXME: Resource subject not valid within a transaction, will the above code work??
+			Resource tr_subject = tdbModel.getResource(uri);
 			subject.removeAll(predicate);
+//			tr_subject.removeAll(predicate);
+
 			tdbDataset.commit();
 		} finally {
 			tdbDataset.end();
@@ -389,24 +386,49 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	public static void removeAllLikeObjects(Resource subject, Property predicate, RDFNode object) {
-		// FIXME
+	private static void removeAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+		while (nodeIterator.hasNext()) {
+			RDFNode rdfNode = nodeIterator.next();
+			if (rdfNode.isLiteral()) {
+				if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
+					// ONLY REMOVING SAME TYPE
+					tdbModel.removeAll(subject, predicate, rdfNode);
+				}
+			}
+		}
+	}
+
+	public static void tsRemoveAllLikeLiterals(Resource subject, Property predicate, Object object) {
+		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(object);
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
-			String uri = subject.getURI();
-			Resource tr_subject = tdbModel.createResource(uri);
-			// FIXME: Resource subject not valid within a transaction, will the above code work??
-			subject.removeAll(predicate);
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+			while (nodeIterator.hasNext()) {
+				RDFNode rdfNode = nodeIterator.next();
+				if (rdfNode.isLiteral()) {
+					if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
+						// ONLY REMOVING SAME TYPE
+						tdbModel.removeAll(subject, predicate, rdfNode);
+					}
+				}
+			}
 			tdbDataset.commit();
 		} finally {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
+	
+	private static void removeStatement(Resource subject, Property predicate, RDFNode object) {
+		tdbModel.remove(subject, predicate, object);
+	}
 
-	public static void removeStatement(Resource subject, Property predicate, RDFNode object) {
+	
+	public static void tsRemoveStatement(Resource subject, Property predicate, RDFNode object) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -418,7 +440,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-
+	
 	public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
 		if (object instanceof Float) {
 			return XSDDatatype.XSDfloat;

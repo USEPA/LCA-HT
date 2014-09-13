@@ -22,7 +22,7 @@ public class FlowContext {
 	private Resource tdbResource;
 
 	public FlowContext() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 	}
 
 	public static final CSVColumnInfo[] getHeaderMenuObjects() {
@@ -69,7 +69,7 @@ public class FlowContext {
 	public void setPrimaryFlowContext(String primaryFlowContext) {
 		this.primaryFlowContext = primaryFlowContext;
 		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
 	}
 
 	public List<String> getsupplementaryFlowContexts() {
@@ -77,10 +77,10 @@ public class FlowContext {
 	}
 
 	public void setSupplementaryFlowContexts(List<String> supplementaryFlowContexts) {
-		ActiveTDB.removeAllObjects(tdbResource, FEDLCA.flowContextSupplementalDescription);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.flowContextSupplementalDescription);
 		this.supplementaryFlowContexts = supplementaryFlowContexts;
 		for (String supplementaryFlowContext : supplementaryFlowContexts) {
-			ActiveTDB.addLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
+			ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 		}
 	}
 
@@ -89,13 +89,13 @@ public class FlowContext {
 			supplementaryFlowContexts = new ArrayList<String>();
 		}
 		supplementaryFlowContexts.add(supplementaryFlowContext);
-		ActiveTDB.addLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
+		ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 	}
 
 	public void removeSupplementaryFlowContext(String supplementaryFlowContext) {
 		this.supplementaryFlowContexts.remove(supplementaryFlowContext);
-		Literal literalToRemove = ActiveTDB.createTypedLiteral(supplementaryFlowContext);
-		ActiveTDB.removeStatement(tdbResource, FEDLCA.flowContextSupplementalDescription, literalToRemove);
+		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowContext);
+		ActiveTDB.tsRemoveStatement(tdbResource, FEDLCA.flowContextSupplementalDescription, literalToRemove);
 	}
 
 	public Resource getTdbResource() {

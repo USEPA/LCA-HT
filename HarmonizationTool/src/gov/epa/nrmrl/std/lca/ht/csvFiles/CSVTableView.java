@@ -110,6 +110,7 @@ public class CSVTableView extends ViewPart {
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
+		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: ArrayContentProvider
 	}
 
 	private static void initializeTable() {
@@ -418,6 +419,7 @@ public class CSVTableView extends ViewPart {
 		Date loadStartDate = new Date();
 
 		tableViewer.setInput(tableProvider.getData());
+		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: setInput
 		Date loadEndDate = new Date();
 		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
 		System.out.println("# CSVTableView load time (in seconds): " + secondsRead);

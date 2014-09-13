@@ -158,7 +158,7 @@ public class AutoMatchJob extends Job {
 				} else {
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
-					ActiveTDB.replaceResource(flowable.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowableCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);
@@ -167,10 +167,10 @@ public class AutoMatchJob extends Job {
 						}
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.replaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsReplaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataValue);
 						} else {
-							ActiveTDB.addLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(), dataValue);
+							ActiveTDB.tsAddLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(), dataValue);
 						}
 					}
 					final int flowableCount = flowableMap.size();
@@ -211,7 +211,7 @@ public class AutoMatchJob extends Job {
 					}
 				});
 
-				ActiveTDB.addLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
 
 			// NOW DO flowContext
@@ -233,15 +233,15 @@ public class AutoMatchJob extends Job {
 					DataRow flowContextDataRow = new DataRow();
 					flowContextDataRow.add(flowContextConcatinated);
 					// flowContextTableProvider.addDataRow(flowContextDataRow);
-					ActiveTDB.replaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.replaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.addLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataRow.get(i - 1));
 						}
 					}
@@ -254,7 +254,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				ActiveTDB.addLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
@@ -274,7 +274,7 @@ public class AutoMatchJob extends Job {
 				} else {
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
-					ActiveTDB.replaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					DataRow flowPropertyDataRow = new DataRow();
 					flowPropertyDataRow.add(flowPropertyConcatinated);
@@ -282,10 +282,10 @@ public class AutoMatchJob extends Job {
 					for (int i : flowPropertyCSVColumnNumbers) {
 						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.replaceLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.addLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataRow.get(i - 1));
 						}
 					}
@@ -298,7 +298,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				ActiveTDB.addLiteral(flowProperty.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
@@ -311,9 +311,9 @@ public class AutoMatchJob extends Job {
 				if (flows.contains(tempFlow)) {
 					tempFlow.remove();
 				} else {
-					ActiveTDB.replaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
-					ActiveTDB.addLiteral(tempFlow.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+					ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
 					flows.add(tempFlow);
 				}
 			}

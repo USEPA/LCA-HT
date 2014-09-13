@@ -38,7 +38,7 @@ public class Flowable {
 	// private static final Model tdbModel = ActiveTDB.tdbModel;
 
 	public Flowable() {
-		this.tdbResource = ActiveTDB.createResource(rdfClass);
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 	}
 
 	public Flowable(Resource tdbResource) {
@@ -458,7 +458,7 @@ public class Flowable {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.replaceLiteral(tdbResource, RDFS.label, name);
+		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, name);
 	}
 
 	public List<String> getSynonyms() {
@@ -466,10 +466,10 @@ public class Flowable {
 	}
 
 	public void setSynonyms(List<String> synonyms) {
-		ActiveTDB.removeAllObjects(tdbResource, SKOS.altLabel);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, SKOS.altLabel);
 		this.synonyms = synonyms;
 		for (String synonym : synonyms) {
-			ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, synonym);
+			ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
 		}
 	}
 
@@ -478,13 +478,13 @@ public class Flowable {
 			synonyms = new ArrayList<String>();
 		}
 		synonyms.add(synonym);
-		ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, synonym);
+		ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
 	}
 
 	public void removeSynonym(String synonym) {
 		this.synonyms.remove(synonym);
-		Literal literalToRemove = ActiveTDB.createTypedLiteral(synonym);
-		ActiveTDB.removeStatement(tdbResource, SKOS.altLabel, literalToRemove);
+		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(synonym);
+		ActiveTDB.tsRemoveStatement(tdbResource, SKOS.altLabel, literalToRemove);
 	}
 
 	public String getCas() {
@@ -493,7 +493,7 @@ public class Flowable {
 
 	public void setCas(String cas) {
 		this.cas = cas;
-		ActiveTDB.replaceLiteral(tdbResource, ECO.casNumber, cas);
+		ActiveTDB.tsReplaceLiteral(tdbResource, ECO.casNumber, cas);
 	}
 
 	// public boolean isEmission() {
@@ -528,7 +528,7 @@ public class Flowable {
 
 	public void setFormula(String formula) {
 		this.formula = formula;
-		ActiveTDB.replaceLiteral(tdbResource, ECO.chemicalFormula, formula);
+		ActiveTDB.tsReplaceLiteral(tdbResource, ECO.chemicalFormula, formula);
 	}
 
 	public String getSmiles() {
@@ -537,7 +537,7 @@ public class Flowable {
 
 	public void setSmiles(String smiles) {
 		this.smiles = smiles;
-		ActiveTDB.replaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
 
 	}
 
