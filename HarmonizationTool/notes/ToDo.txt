@@ -74,7 +74,20 @@ A22 BUG: File read and data process speeds must be faster
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
   
 A23 BUG: Match flowables doesn't work (no commit / assign)
-  SOLN:  complete match flowable functionality  
+  SOLN:  complete match flowable functionality including the following: CHRIS work here vvv
+         1) UI design features that allow the user to annotate each of the match candidates as
+            a) same (=)
+            b) subset (subset symbol)
+            c) superset (superset symbol)
+            d) proxy (~, or double squiggle equal sign)
+            e) explicit non-equal (not equal symbol)
+         2) NEW window allowing user to search (or perhaps a blank row with text entry fields
+            for searching
+         3) If time, a way to establish the criteria under which a candidate should be accepted
+            as same (e.g. If name and cas match, but name does not match other flowables)
+         4) UI feature that tells user the status of each row / flowable
+         5) UI design so that user can change assignments
+         
   
 A24 BUG: Transaction work not complete.
     SOLN:  Fix them, but ideally create larger, more efficient transactions
@@ -181,13 +194,25 @@ B22 (copied from A3)
   SOLN: Have user select a working directory
 		include a checkbox: use as default working directory and do not show this dialogue box again
 
-
 B23 (was A18) BUG:  CASRN should be CAS, Name should be Flowable name in results
   Synonyms should be Flowable Synonyms 
   SOLN: Standardize words, names, etc.  Some of this should be on the object level: avoid duplicating strings in the code.
   STATUS: Used a hack to standardize.  Works for now.
   NEXT: Carefully develop the CSVColumnInfo model so that properties of objects can be defined generally
-#==========================================================================
+
+B24 (was A20) FEATURE REQUEST: Need to be able to match Flow Contexts
+  SOLN: Finish reconnecting old interface to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome. CHRIS consider simplest UI changes, then consider separating pop. density
+        Also, consider UI design so that user can change assignments
+  
+B25 (was A21) FEATURE REQUEST: Need to be able to match Flow Properties
+  SOLN: Connecting to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome.  CHRIS consider simplest UI changes and perhaps grouping of units
+        Also, consider UI design so that user can change assignments
+
+  #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
 #==========================================================================
 
@@ -307,13 +332,3 @@ A10 BUG: 'File' -> 'Import CSV' does nothing
 A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
   is doing something?
   SOLN: Remove from menu
-
-A20 FEATURE REQUEST: Need to be able to match Flow Contexts
-  SOLN: Finish reconnecting old interface to new data structure
-  STATUS: Done.
-  NEXT: New suggestions welcome.
-  
-A21 FEATURE REQUEST: Need to be able to match Flow Properties
-  SOLN: Connecting to new data structure
-  STATUS: Done.
-  NEXT: New suggestions welcome.

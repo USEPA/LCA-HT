@@ -308,6 +308,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
 		} finally {
+			System.out.println("Really, failed to create an object with a classs? Aww!");
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---

@@ -269,7 +269,7 @@ public class Flowable {
 	// List<QACheck>
 	// checkLists)
 	// 	FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
-	private static final String flowableNameString = "Flowable Name";
+	private static final String flowableNameString = "Flowable name";
 	private static final String flowableSynonymString = "Flowable Synonym";
 	private static final String casString = "CAS";
 	private static final String chemicalFormulaString = "Chemical formula";
