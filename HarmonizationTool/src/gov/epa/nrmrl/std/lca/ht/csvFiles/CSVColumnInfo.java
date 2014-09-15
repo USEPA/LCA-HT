@@ -21,7 +21,7 @@ public class CSVColumnInfo {
 	protected Resource rdfClass;
 	private Property tdbProperty;
 	private RDFDatatype rdfDatatype;
-	private int csvTableViewColumnNumber;
+//	private int csvTableViewColumnNumber;
 
 	// THE ASSUMPTION HERE IS:
 	// 1) EACH CSVColumnInfo REPRESENTS AN ATTRIBUTE OF A THING WHOSE CLASS IS
@@ -198,13 +198,13 @@ public class CSVColumnInfo {
 		this.rdfDatatype = rdfDatatype;
 	}
 
-	public int getCsvTableViewColumnNumber() {
-		return csvTableViewColumnNumber;
-	}
-
-	public void setCsvTableViewColumnNumber(int csvTableViewColumnNumber) {
-		this.csvTableViewColumnNumber = csvTableViewColumnNumber;
-	}
+//	public int getCsvTableViewColumnNumber() {
+//		return csvTableViewColumnNumber;
+//	}
+//
+//	public void setCsvTableViewColumnNumber(int csvTableViewColumnNumber) {
+//		this.csvTableViewColumnNumber = csvTableViewColumnNumber;
+//	}
 
 	public boolean sameRDFClassAs(CSVColumnInfo toCompare) {
 		if (toCompare == null) {

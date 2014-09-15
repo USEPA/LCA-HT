@@ -4,7 +4,6 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
-import gov.epa.nrmrl.std.lca.ht.views.View;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -21,8 +20,6 @@ public class OriginalPerspective implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(false);
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder1", IPageLayout.LEFT, 0.65f, editorArea);
-
-			folderLayout.addView(View.ID);
 			folderLayout.addView(QueryView.ID);
 		}
 		{

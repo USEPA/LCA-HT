@@ -18,7 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;

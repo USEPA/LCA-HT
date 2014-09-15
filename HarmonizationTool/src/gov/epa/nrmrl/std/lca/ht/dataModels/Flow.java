@@ -4,7 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -44,7 +44,7 @@ public class Flow {
 
 	public void setFlowProperty(FlowProperty flowProperty) {
 		this.flowProperty = flowProperty;
-		ActiveTDB.tsReplaceResource(tdbResource, FEDLCA.hasFlowProperty, flowProperty.getTdbResource());
+		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasFlowProperty, flowProperty.getTdbResource());
 	}
 	
 	public Resource getTdbResource() {

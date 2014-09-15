@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class FlowProperty {
 
 	private String primaryFlowProperty;
 	private List<String> supplementaryFlowProperties;
-	private static final Resource rdfClass = FEDLCA.FlowProperty;
+	private static final Resource rdfClass = FedLCA.FlowProperty;
 	private Resource tdbResource;
 
 	public FlowProperty() {
@@ -32,7 +32,7 @@ public class FlowProperty {
 		results[0].setCheckLists(getPropertyNameCheckList());
 		results[0].setLeftJustified(true);
 		results[0].setRDFClass(rdfClass);
-		results[0].setTdbProperty(FEDLCA.flowPropertyPrimaryDescription);
+		results[0].setTdbProperty(FedLCA.flowPropertyPrimaryDescription);
 		results[0].setRdfDatatype(XSDDatatype.XSDstring);
 
 		results[1] = new CSVColumnInfo("Property (additional)");
@@ -41,7 +41,7 @@ public class FlowProperty {
 		results[1].setCheckLists(getPropertyNameCheckList());
 		results[1].setLeftJustified(true);
 		results[1].setRDFClass(rdfClass);
-		results[1].setTdbProperty(FEDLCA.flowPropertySupplementalDescription);
+		results[1].setTdbProperty(FedLCA.flowPropertySupplementalDescription);
 		results[1].setRdfDatatype(XSDDatatype.XSDstring);
 		return results;
 	}
@@ -67,7 +67,7 @@ public class FlowProperty {
 	public void setPrimaryFlowProperty(String primaryFlowProperty) {
 		this.primaryFlowProperty = primaryFlowProperty;
 		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
 	}
 
 	public List<String> getsupplementaryFlowProperties() {
@@ -75,10 +75,10 @@ public class FlowProperty {
 	}
 
 	public void setSupplementaryFlowProperties(List<String> supplementaryFlowProperties) {
-		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.flowPropertySupplementalDescription);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowPropertySupplementalDescription);
 		this.supplementaryFlowProperties = supplementaryFlowProperties;
 		for (String supplementaryFlowProperty : supplementaryFlowProperties) {
-			ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+			ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 		}
 	}
 
@@ -87,13 +87,13 @@ public class FlowProperty {
 			supplementaryFlowProperties = new ArrayList<String>();
 		}
 		supplementaryFlowProperties.add(supplementaryFlowProperty);
-		ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 	}
 
 	public void removeSupplementaryFlowProperty(String supplementaryFlowProperty) {
 		this.supplementaryFlowProperties.remove(supplementaryFlowProperty);
 		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
-		ActiveTDB.tsRemoveStatement(tdbResource, FEDLCA.flowPropertySupplementalDescription, literalToRemove);
+		ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowPropertySupplementalDescription, literalToRemove);
 	}
 
 	public Resource getTdbResource() {

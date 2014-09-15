@@ -17,7 +17,7 @@ import com.hp.hpl.jena.vocabulary.DC_11;
  * @author Tom Transue 03 Jan 2014 09:46
  */
 
-public class FEDLCA {
+public class FedLCA {
 	/**
 	 * <p>
 	 * The RDF tdbModel that holds the vocabulary terms

@@ -25,7 +25,7 @@ import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -133,18 +133,18 @@ public class MatchContexts extends ViewPart {
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
-				// Resource annotation = FEDLCA.Annotation;
+				// Resource annotation = FedLCA.Annotation;
 				// Property isA = RDF.type;
 				// Resource Class = OWL.Class;
 				// Property creator = DCTerms.creator;
 				// Property dateSubmitted = DCTerms.dateSubmitted;
-				// Property hasComparison = FEDLCA.hasComparison;
+				// Property hasComparison = FedLCA.hasComparison;
 				//
-				// Resource comparison = FEDLCA.Comparison;
-				// Property comparedSource = FEDLCA.comparedSource;
-				// Property comparedMaster = FEDLCA.comparedMaster;
-				// Property comparedEquivalence = FEDLCA.comparedEquivalence;
-				// Resource equivalent = FEDLCA.equivalent;
+				// Resource comparison = FedLCA.Comparison;
+				// Property comparedSource = FedLCA.comparedSource;
+				// Property comparedMaster = FedLCA.comparedMaster;
+				// Property comparedEquivalence = FedLCA.comparedEquivalence;
+				// Resource equivalent = FedLCA.equivalent;
 
 				Model model = ActiveTDB.tdbModel;
 				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING
@@ -159,7 +159,7 @@ public class MatchContexts extends ViewPart {
 					// 1) Create a new Annotation (assigning it to the class
 					// Annotation)
 					annotationResource = model.createResource();
-					model.add(annotationResource, RDF.type, FEDLCA.Annotation);
+					model.add(annotationResource, RDF.type, FedLCA.Annotation);
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -199,11 +199,11 @@ public class MatchContexts extends ViewPart {
 						// Master, Equivalence
 
 						Resource comparisonResource = model.createResource();
-						model.add(comparisonResource, RDF.type, FEDLCA.Comparison);
-						model.add(annotationResource, FEDLCA.hasComparison, comparisonResource);
-						model.add(comparisonResource, FEDLCA.comparedSource, queryCompartmentResource);
-						model.add(comparisonResource, FEDLCA.comparedMaster, masterCompartmentResource);
-						model.add(comparisonResource, FEDLCA.comparedEquivalence, FEDLCA.equivalent);
+						model.add(comparisonResource, RDF.type, FedLCA.Comparison);
+						model.add(annotationResource, FedLCA.hasComparison, comparisonResource);
+						model.add(comparisonResource, FedLCA.comparedSource, queryCompartmentResource);
+						model.add(comparisonResource, FedLCA.comparedMaster, masterCompartmentResource);
+						model.add(comparisonResource, FedLCA.comparedEquivalence, FedLCA.equivalent);
 
 						// Literal compartmentName =
 						// tdbModel.createLiteral(qString);
@@ -398,153 +398,153 @@ public class MatchContexts extends ViewPart {
 
 		TreeNode air = new TreeNode(release);
 		air.nodeName = "air";
-		air.uri = FEDLCA.airUnspecified;
-		// confirmUri(FEDLCA.release);
+		air.uri = FedLCA.airUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode airLowPop = new TreeNode(air);
 		airLowPop.nodeName = "low population density";
-		airLowPop.uri = FEDLCA.airLow_population_density;
-		// confirmUri(FEDLCA.release);
+		airLowPop.uri = FedLCA.airLow_population_density;
+		// confirmUri(FedLCA.release);
 
 		TreeNode airUnspec = new TreeNode(air);
 		airUnspec.nodeName = "unspecified";
-		airUnspec.uri = FEDLCA.airUnspecified;
-		// confirmUri(FEDLCA.release);
+		airUnspec.uri = FedLCA.airUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode airHighPop = new TreeNode(air);
 		airHighPop.nodeName = "high population density";
-		airHighPop.uri = FEDLCA.airHigh_population_density;
-		// confirmUri(FEDLCA.release);
+		airHighPop.uri = FedLCA.airHigh_population_density;
+		// confirmUri(FedLCA.release);
 
 		TreeNode airLowPopLongTerm = new TreeNode(air);
 		airLowPopLongTerm.nodeName = "low population density, long-term";
-		airLowPopLongTerm.uri = FEDLCA.airLow_population_densityLong_term;
-		// confirmUri(FEDLCA.release);
+		airLowPopLongTerm.uri = FedLCA.airLow_population_densityLong_term;
+		// confirmUri(FedLCA.release);
 
 		TreeNode airLowerStratPlusUpperTrop = new TreeNode(air);
 		airLowerStratPlusUpperTrop.nodeName = "lower stratosphere + upper troposphere";
-		airLowerStratPlusUpperTrop.uri = FEDLCA.airLower_stratosphere_upper_troposphere;
-		// confirmUri(FEDLCA.release);
+		airLowerStratPlusUpperTrop.uri = FedLCA.airLower_stratosphere_upper_troposphere;
+		// confirmUri(FedLCA.release);
 
 		TreeNode water = new TreeNode(release);
 		water.nodeName = "water";
-		water.uri = FEDLCA.waterUnspecified;
-		// confirmUri(FEDLCA.release);
+		water.uri = FedLCA.waterUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterFossil = new TreeNode(water);
 		waterFossil.nodeName = "fossil-";
-		waterFossil.uri = FEDLCA.waterFossil;
-		// confirmUri(FEDLCA.release);
+		waterFossil.uri = FedLCA.waterFossil;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterFresh = new TreeNode(water);
 		waterFresh.nodeName = "fresh-";
-		waterFresh.uri = FEDLCA.waterFresh;
-		// confirmUri(FEDLCA.release);
+		waterFresh.uri = FedLCA.waterFresh;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterFreshLongTerm = new TreeNode(water);
 		waterFreshLongTerm.nodeName = "fresh-, long-term";
-		waterFreshLongTerm.uri = FEDLCA.waterFreshLong_term;
-		// confirmUri(FEDLCA.release);
+		waterFreshLongTerm.uri = FedLCA.waterFreshLong_term;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterGround = new TreeNode(water);
 		waterGround.nodeName = "ground-";
-		waterGround.uri = FEDLCA.waterGround;
-		// confirmUri(FEDLCA.release);
+		waterGround.uri = FedLCA.waterGround;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterGroundLongTerm = new TreeNode(water);
 		waterGroundLongTerm.nodeName = "ground-, long-term";
-		waterGroundLongTerm.uri = FEDLCA.waterGroundLong_term;
-		// confirmUri(FEDLCA.release);
+		waterGroundLongTerm.uri = FedLCA.waterGroundLong_term;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterLake = new TreeNode(water);
 		waterLake.nodeName = "lake";
-		waterLake.uri = FEDLCA.waterLake;
-		// confirmUri(FEDLCA.release);
+		waterLake.uri = FedLCA.waterLake;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterOcean = new TreeNode(water);
 		waterOcean.nodeName = "ocean";
-		waterOcean.uri = FEDLCA.waterOcean;
-		// confirmUri(FEDLCA.release);
+		waterOcean.uri = FedLCA.waterOcean;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterRiver = new TreeNode(water);
 		waterRiver.nodeName = "river";
-		waterRiver.uri = FEDLCA.waterRiver;
-		// confirmUri(FEDLCA.release);
+		waterRiver.uri = FedLCA.waterRiver;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterRiverLongTerm = new TreeNode(water);
 		waterRiverLongTerm.nodeName = "river, long-term";
-		waterRiverLongTerm.uri = FEDLCA.waterRiverLong_term;
-		// confirmUri(FEDLCA.release);
+		waterRiverLongTerm.uri = FedLCA.waterRiverLong_term;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterSurface = new TreeNode(water);
 		waterSurface.nodeName = "surface water";
-		waterSurface.uri = FEDLCA.waterSurface;
-		// confirmUri(FEDLCA.release);
+		waterSurface.uri = FedLCA.waterSurface;
+		// confirmUri(FedLCA.release);
 
 		TreeNode waterUnspec = new TreeNode(water);
 		waterUnspec.nodeName = "unspecified";
-		waterUnspec.uri = FEDLCA.waterUnspecified;
-		// confirmUri(FEDLCA.release);
+		waterUnspec.uri = FedLCA.waterUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode soil = new TreeNode(release);
 		soil.nodeName = "soil";
-		soil.uri = FEDLCA.soilUnspecified;
-		// confirmUri(FEDLCA.release);
+		soil.uri = FedLCA.soilUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode soilAgricultural = new TreeNode(soil);
 		soilAgricultural.nodeName = "agricultural";
-		soilAgricultural.uri = FEDLCA.soilAgricultural;
-		// confirmUri(FEDLCA.release);
+		soilAgricultural.uri = FedLCA.soilAgricultural;
+		// confirmUri(FedLCA.release);
 
 		TreeNode soilForestry = new TreeNode(soil);
 		soilForestry.nodeName = "forestry";
-		soilForestry.uri = FEDLCA.soilForestry;
-		// confirmUri(FEDLCA.release);
+		soilForestry.uri = FedLCA.soilForestry;
+		// confirmUri(FedLCA.release);
 
 		TreeNode soilIndustrial = new TreeNode(soil);
 		soilIndustrial.nodeName = "industrial";
-		soilIndustrial.uri = FEDLCA.soilIndustrial;
-		// confirmUri(FEDLCA.release);
+		soilIndustrial.uri = FedLCA.soilIndustrial;
+		// confirmUri(FedLCA.release);
 
 		TreeNode soilUnspec = new TreeNode(soil);
 		soilUnspec.nodeName = "unspecified";
-		soilUnspec.uri = FEDLCA.soilUnspecified;
-		// confirmUri(FEDLCA.release);
+		soilUnspec.uri = FedLCA.soilUnspecified;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resource = new TreeNode(masterCompartmentTree);
 		resource.nodeName = "Resource";
-		resource.uri = FEDLCA.resource;
-		// confirmUri(FEDLCA.release);
+		resource.uri = FedLCA.resource;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);
 		resourceBiotic.nodeName = "biotic";
-		resourceBiotic.uri = FEDLCA.resourceBiotic;
-		// confirmUri(FEDLCA.release);
+		resourceBiotic.uri = FedLCA.resourceBiotic;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceInAir = new TreeNode(resource);
 		resourceInAir.nodeName = "in air";
-		resourceInAir.uri = FEDLCA.resourceIn_air;
-		// confirmUri(FEDLCA.release);
+		resourceInAir.uri = FedLCA.resourceIn_air;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceInGround = new TreeNode(resource);
 		resourceInGround.nodeName = "in ground";
-		resourceInGround.uri = FEDLCA.resourceIn_ground;
-		// confirmUri(FEDLCA.release);
+		resourceInGround.uri = FedLCA.resourceIn_ground;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceInLand = new TreeNode(resource);
 		resourceInLand.nodeName = "in land";
-		resourceInLand.uri = FEDLCA.resourceIn_land;
-		// confirmUri(FEDLCA.release);
+		resourceInLand.uri = FedLCA.resourceIn_land;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceInWater = new TreeNode(resource);
 		resourceInWater.nodeName = "in water";
-		resourceInWater.uri = FEDLCA.resourceIn_water;
-		// confirmUri(FEDLCA.release);
+		resourceInWater.uri = FedLCA.resourceIn_water;
+		// confirmUri(FedLCA.release);
 
 		TreeNode resourceUnspec = new TreeNode(resource);
 		resourceUnspec.nodeName = "unspecified";
-		resourceUnspec.uri = FEDLCA.resourceUnspecified;
-		// confirmUri(FEDLCA.resourceUnspecified);
+		resourceUnspec.uri = FedLCA.resourceUnspecified;
+		// confirmUri(FedLCA.resourceUnspecified);
 
 		// confirmModelContanisCompartments(masterCompartmentTree);
 		return masterCompartmentTree;

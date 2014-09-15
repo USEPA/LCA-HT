@@ -1,16 +1,19 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -24,13 +27,92 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Flowable {
-	private String name;
-	private String cas;
-	// private boolean isEmission;
-	// private boolean isResource;
-	private List<String> synonyms = new ArrayList<String>();
-	private String formula;
-	private String smiles;
+
+	private static final String flowableNameString = "Flowable name";
+	private static final String flowableSynonymString = "Flowable Synonym";
+	private static final String casString = "CAS";
+	private static final String chemicalFormulaString = "Chemical formula";
+	private static final String smilesString = "SMILES";
+	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
+
+	static {
+		dataPropertyMap = new HashMap<String, LCADataPropertyProvider>();
+		LCADataPropertyProvider lcaDataPropertyProvider;
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableNameString);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(true);
+		lcaDataPropertyProvider.setUnique(true);
+		lcaDataPropertyProvider.setLeftJustified(true);
+		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
+		lcaDataPropertyProvider.setTDBProperty(RDFS.label);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableSynonymString);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(false);
+		lcaDataPropertyProvider.setUnique(false);
+		lcaDataPropertyProvider.setLeftJustified(true);
+		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
+		lcaDataPropertyProvider.setTDBProperty(SKOS.altLabel);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(casString);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(false);
+		lcaDataPropertyProvider.setUnique(true);
+		lcaDataPropertyProvider.setLeftJustified(false);
+		lcaDataPropertyProvider.setCheckLists(getCASCheckList());
+		lcaDataPropertyProvider.setTDBProperty(ECO.casNumber);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(chemicalFormulaString);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(false);
+		lcaDataPropertyProvider.setUnique(false);
+		lcaDataPropertyProvider.setLeftJustified(true);
+		lcaDataPropertyProvider.setCheckLists(getFormulaCheckList());
+		lcaDataPropertyProvider.setTDBProperty(ECO.chemicalFormula);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(false);
+		lcaDataPropertyProvider.setUnique(false);
+		lcaDataPropertyProvider.setLeftJustified(true);
+		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+	}
+
+	// (flowableNameString, lcaDataPropertyProvider);
+
+	Map<String, Object> properties = new HashMap<String, Object>();
+
+	public Object getProperty(String key) {
+		if (dataPropertyMap.containsKey(key)) {
+			return properties.get(key);
+		} else {
+			return null;
+		}
+	}
+	
+	public void setProperty(String key, Object object){
+		
+	}
+
+	public String getName() {
+		return (String) getProperty(flowableNameString);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> getSynonyms() {
+		return (List<String>) getProperty(flowableSynonymString);
+	}
+
+	public String getCas() {
+		return (String) getProperty(casString);
+	}
 
 	private static final Resource rdfClass = ECO.Flowable;
 	private Resource tdbResource;
@@ -55,7 +137,7 @@ public class Flowable {
 		if (tdbResource.hasProperty(RDFS.label)) {
 			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
 			if (rdfNode != null) {
-				name = ActiveTDB.getStringFromLiteral(rdfNode);
+				// name = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
 		}
 
@@ -73,10 +155,10 @@ public class Flowable {
 	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
 	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 	// try {
-	// tdbResource.removeAll(FEDLCA.personName);
-	// tdbResource.removeAll(FEDLCA.affiliation);
-	// tdbResource.removeAll(FEDLCA.email);
-	// tdbResource.removeAll(FEDLCA.voicePhone);
+	// tdbResource.removeAll(FedLCA.personName);
+	// tdbResource.removeAll(FedLCA.affiliation);
+	// tdbResource.removeAll(FedLCA.email);
+	// tdbResource.removeAll(FedLCA.voicePhone);
 	//
 	// ActiveTDB.tdbDataset.commit();
 	// } finally {
@@ -158,9 +240,9 @@ public class Flowable {
 		}
 
 		// CAS MATCHING
-		if (flowable.getTdbResource().hasProperty(FEDLCA.hasFormattedCAS)) {
-			objectName = flowable.getTdbResource().getProperty(FEDLCA.hasFormattedCAS).getObject();
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FEDLCA.hasFormattedCAS, objectName);
+		if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
+			objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
@@ -268,12 +350,7 @@ public class Flowable {
 	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique,
 	// List<QACheck>
 	// checkLists)
-	// 	FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
-	private static final String flowableNameString = "Flowable name";
-	private static final String flowableSynonymString = "Flowable Synonym";
-	private static final String casString = "CAS";
-	private static final String chemicalFormulaString = "Chemical formula";
-	private static final String smilesString = "SMILES";
+	// FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
 
 	public static final CSVColumnInfo[] getHeaderMenuObjects() {
 		CSVColumnInfo[] results = new CSVColumnInfo[5];
@@ -318,7 +395,7 @@ public class Flowable {
 		results[4].setCheckLists(getSmilesCheckList());
 		results[4].setLeftJustified(false);
 		results[4].setRDFClass(rdfClass);
-		results[4].setTdbProperty(FEDLCA.hasSmilesString);
+		results[4].setTdbProperty(FedLCA.hasSmilesString);
 		results[4].setRdfDatatype(XSDDatatype.XSDstring);
 
 		return results;
@@ -452,49 +529,46 @@ public class Flowable {
 		return false;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, name);
-	}
-
-	public List<String> getSynonyms() {
-		return synonyms;
-	}
-
-	public void setSynonyms(List<String> synonyms) {
-		ActiveTDB.tsRemoveAllObjects(tdbResource, SKOS.altLabel);
-		this.synonyms = synonyms;
-		for (String synonym : synonyms) {
-			ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
-		}
-	}
-
-	public void addSynonym(String synonym) {
-		if (synonyms == null) {
-			synonyms = new ArrayList<String>();
-		}
-		synonyms.add(synonym);
-		ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
-	}
-
-	public void removeSynonym(String synonym) {
-		this.synonyms.remove(synonym);
-		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(synonym);
-		ActiveTDB.tsRemoveStatement(tdbResource, SKOS.altLabel, literalToRemove);
-	}
-
-	public String getCas() {
-		return cas;
-	}
-
-	public void setCas(String cas) {
-		this.cas = cas;
-		ActiveTDB.tsReplaceLiteral(tdbResource, ECO.casNumber, cas);
-	}
+	//
+	// public void setName(String name) {
+	// this.name = name;
+	// ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, name);
+	// }
+	//
+	// public List<String> getSynonyms() {
+	// return synonyms;
+	// }
+	//
+	// public void setSynonyms(List<String> synonyms) {
+	// ActiveTDB.tsRemoveAllObjects(tdbResource, SKOS.altLabel);
+	// this.synonyms = synonyms;
+	// for (String synonym : synonyms) {
+	// ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
+	// }
+	// }
+	//
+	// public void addSynonym(String synonym) {
+	// if (synonyms == null) {
+	// synonyms = new ArrayList<String>();
+	// }
+	// synonyms.add(synonym);
+	// ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
+	// }
+	//
+	// public void removeSynonym(String synonym) {
+	// this.synonyms.remove(synonym);
+	// Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(synonym);
+	// ActiveTDB.tsRemoveStatement(tdbResource, SKOS.altLabel, literalToRemove);
+	// }
+	//
+	// public String getCas() {
+	// return cas;
+	// }
+	//
+	// public void setCas(String cas) {
+	// this.cas = cas;
+	// ActiveTDB.tsReplaceLiteral(tdbResource, ECO.casNumber, cas);
+	// }
 
 	// public boolean isEmission() {
 	// return isEmission;
@@ -522,24 +596,24 @@ public class Flowable {
 	// }
 	// }
 
-	public String getFormula() {
-		return formula;
-	}
-
-	public void setFormula(String formula) {
-		this.formula = formula;
-		ActiveTDB.tsReplaceLiteral(tdbResource, ECO.chemicalFormula, formula);
-	}
-
-	public String getSmiles() {
-		return smiles;
-	}
-
-	public void setSmiles(String smiles) {
-		this.smiles = smiles;
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.hasSmilesString, smiles);
-
-	}
+	// public String getFormula() {
+	// return formula;
+	// }
+	//
+	// public void setFormula(String formula) {
+	// this.formula = formula;
+	// ActiveTDB.tsReplaceLiteral(tdbResource, ECO.chemicalFormula, formula);
+	// }
+	//
+	// public String getSmiles() {
+	// return smiles;
+	// }
+	//
+	// public void setSmiles(String smiles) {
+	// this.smiles = smiles;
+	// ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.hasSmilesString, smiles);
+	//
+	// }
 
 	public Resource getTdbResource() {
 		return tdbResource;
@@ -590,6 +664,7 @@ public class Flowable {
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
+
 	public static String getFlowableNameString() {
 		return flowableNameString;
 	}

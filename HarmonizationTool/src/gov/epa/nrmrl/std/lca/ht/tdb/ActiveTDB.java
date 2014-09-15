@@ -1,8 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.tdb;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,10 +9,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.utils.RDF;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
-
-import org.apache.log4j.Logger;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -29,7 +25,6 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IServiceLocator;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -251,6 +246,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -258,12 +256,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
@@ -286,7 +284,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			subject.addProperty(predicate, object);
 //			tr_subject.removeAll(predicate);
 //			tr_subject.addProperty(predicate, object);
-
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -307,8 +308,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
-			System.out.println("Really, failed to create an object with a classs? Aww!");
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
@@ -328,6 +331,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -335,22 +341,38 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsAddLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsAddLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
+	public static void tsAddTriple(Resource subject, Property predicate, Resource object) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		try {
+			Model tdbModel = tdbDataset.getDefaultModel();
+			tdbModel.add(subject, predicate, object);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+	
 	private static Literal createTypedLiteral(Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
 
 	public static Literal tsCreateTypedLiteral(Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		Literal literal = null;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
@@ -358,6 +380,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -381,6 +406,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 //			tr_subject.removeAll(predicate);
 
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -388,7 +416,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(thingLiteral);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(thingLiteral);
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
@@ -402,7 +430,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsRemoveAllLikeLiterals(Resource subject, Property predicate, Object object) {
-		RDFDatatype rdfDatatype = getRDFDatatypeFromJavaClass(object);
+		RDFDatatype rdfDatatype = RDF.getRDFDatatypeFromJavaClass(object);
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -418,6 +446,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -436,130 +467,133 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.remove(subject, predicate, object);
 			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 	
-	public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
-		if (object instanceof Float) {
-			return XSDDatatype.XSDfloat;
-		}
-		if (object instanceof Double) {
-			return XSDDatatype.XSDdouble;
-		}
-		if (object instanceof Integer) {
-			return XSDDatatype.XSDint;
-		}
-		if (object instanceof Long) {
-			return XSDDatatype.XSDlong;
-		}
-		if (object instanceof Short) {
-			return XSDDatatype.XSDshort;
-		}
-		if (object instanceof Byte) {
-			return XSDDatatype.XSDbyte;
-		}
-		if (object instanceof BigInteger) {
-			return XSDDatatype.XSDinteger;
-		}
-		if (object instanceof BigDecimal) {
-			return XSDDatatype.XSDdecimal;
-		}
-		if (object instanceof Boolean) {
-			return XSDDatatype.XSDboolean;
-		}
-		if (object instanceof String) {
-			return XSDDatatype.XSDstring;
-		}
-		if (object instanceof Date) {
-			return XSDDatatype.XSDdateTime;
-		}
-		return null;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Class getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
-		if (rdfDatatype.equals(XSDDatatype.XSDfloat)) {
-			try {
-				return Class.forName("Float");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDdouble)) {
-			try {
-				return Class.forName("Double");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDint)) {
-			try {
-				return Class.forName("Integer");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDlong)) {
-			try {
-				return Class.forName("Long");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDshort)) {
-			try {
-				return Class.forName("Short");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDbyte)) {
-			try {
-				return Class.forName("Byte");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDinteger)) {
-			try {
-				return Class.forName("BigInteger");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDdecimal)) {
-			try {
-				return Class.forName("BigDecimal");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDboolean)) {
-			try {
-				return Class.forName("Boolean");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDstring)) {
-			try {
-				return Class.forName("String");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		if (rdfDatatype.equals(XSDDatatype.XSDdateTime)) {
-			try {
-				return Class.forName("Date");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
+//	public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
+//		if (object instanceof Float) {
+//			return XSDDatatype.XSDfloat;
+//		}
+//		if (object instanceof Double) {
+//			return XSDDatatype.XSDdouble;
+//		}
+//		if (object instanceof Integer) {
+//			return XSDDatatype.XSDint;
+//		}
+//		if (object instanceof Long) {
+//			return XSDDatatype.XSDlong;
+//		}
+//		if (object instanceof Short) {
+//			return XSDDatatype.XSDshort;
+//		}
+//		if (object instanceof Byte) {
+//			return XSDDatatype.XSDbyte;
+//		}
+//		if (object instanceof BigInteger) {
+//			return XSDDatatype.XSDinteger;
+//		}
+//		if (object instanceof BigDecimal) {
+//			return XSDDatatype.XSDdecimal;
+//		}
+//		if (object instanceof Boolean) {
+//			return XSDDatatype.XSDboolean;
+//		}
+//		if (object instanceof String) {
+//			return XSDDatatype.XSDstring;
+//		}
+//		if (object instanceof Date) {
+//			return XSDDatatype.XSDdateTime;
+//		}
+//		return null;
+//	}
+//
+//	@SuppressWarnings("rawtypes")
+//	public static Class getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
+//		if (rdfDatatype.equals(XSDDatatype.XSDfloat)) {
+//			try {
+//				return Class.forName("Float");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDdouble)) {
+//			try {
+//				return Class.forName("Double");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDint)) {
+//			try {
+//				return Class.forName("Integer");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDlong)) {
+//			try {
+//				return Class.forName("Long");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDshort)) {
+//			try {
+//				return Class.forName("Short");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDbyte)) {
+//			try {
+//				return Class.forName("Byte");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDinteger)) {
+//			try {
+//				return Class.forName("BigInteger");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDdecimal)) {
+//			try {
+//				return Class.forName("BigDecimal");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDboolean)) {
+//			try {
+//				return Class.forName("Boolean");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDstring)) {
+//			try {
+//				return Class.forName("String");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (rdfDatatype.equals(XSDDatatype.XSDdateTime)) {
+//			try {
+//				return Class.forName("Date");
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return null;
+//	}
 
 	@Override
 	public boolean isEnabled() {

@@ -8,7 +8,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.lang.reflect.InvocationTargetException;
@@ -892,7 +892,7 @@ public class ResultsTreeEditor extends ViewPart {
 		Model model = ActiveTDB.tdbModel;
 		Resource annotationResource = model.createResource();
 		// USE Annotation CLASS FIXME
-		model.add(annotationResource, RDF.type, FEDLCA.Annotation);
+		model.add(annotationResource, RDF.type, FedLCA.Annotation);
 		// 2) Assign to it a date and creator
 		Date calendar = new Date();
 		Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -913,18 +913,18 @@ public class ResultsTreeEditor extends ViewPart {
 				Resource comparison = null;
 				System.out.println("got here");
 				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FEDLCA.equivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.equivalent);
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 					// System.out.println("  eq");
 
 				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FEDLCA.nonEquivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.nonEquivalent);
 					// System.out.println("  non-eq");
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 
 				}
 				if (comparison != null) {
-					model.add(annotationResource, FEDLCA.hasComparison, comparison);
+					model.add(annotationResource, FedLCA.hasComparison, comparison);
 					System.out.println("  Annotation adding a Comparison");
 
 				}
@@ -939,10 +939,10 @@ public class ResultsTreeEditor extends ViewPart {
 			return null;
 		}
 		Resource comparisonResource = model.createResource();
-		model.add(comparisonResource, RDF.type, FEDLCA.Comparison);
-		model.add(comparisonResource, FEDLCA.comparedSource, querySource);
-		model.add(comparisonResource, FEDLCA.comparedMaster, master);
-		model.add(comparisonResource, FEDLCA.comparedEquivalence, equivalence);
+		model.add(comparisonResource, RDF.type, FedLCA.Comparison);
+		model.add(comparisonResource, FedLCA.comparedSource, querySource);
+		model.add(comparisonResource, FedLCA.comparedMaster, master);
+		model.add(comparisonResource, FedLCA.comparedEquivalence, equivalence);
 		return comparisonResource;
 	}
 

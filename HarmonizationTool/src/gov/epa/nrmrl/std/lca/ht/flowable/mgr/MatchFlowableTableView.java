@@ -9,7 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
@@ -126,7 +126,7 @@ public class MatchFlowableTableView extends ViewPart {
 			// FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
 			// FOR THIS ROW, BUT WILL FIND BY RDF
 			Resource flowableResource = null;
-			ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FEDLCA.sourceTableRowNumber,
+			ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FedLCA.sourceTableRowNumber,
 					rowNumber + 1);
 			while (resIterator.hasNext()) {
 				Resource flowableResourceCandidate = resIterator.next();

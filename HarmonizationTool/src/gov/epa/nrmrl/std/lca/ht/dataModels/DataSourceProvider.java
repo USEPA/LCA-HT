@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
@@ -54,17 +54,7 @@ public class DataSourceProvider {
 		if (contactPerson == null) {
 			return;
 		}
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		try {
-			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-			tdbResource.removeAll(FEDLCA.hasContactPerson);
-			tdbResource.addProperty(FEDLCA.hasContactPerson, contactPerson.getTdbResource());
-			ActiveTDB.tdbDataset.commit();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.hasContactPerson, contactPerson);
 	}
 
 	public Resource getTdbResource() {
@@ -82,25 +72,7 @@ public class DataSourceProvider {
 		}
 
 		fileMDList.add(fileMD);
-
-		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-			// ActiveTDB.addAnything(tdbResource, LCAHT.containsFile,
-			// fileMD.getTdbResource());
-			// THE ABOVE SHOULD BE ADDED: TO SAFELY ADD A TRIPLE WHETHER THE
-			// OBJECT IS AN RDFNode, A Literal, OR AN
-			// OBJECT (TO BE TYPED)
-
-			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			try {
-				Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-				tdbResource.addProperty(LCAHT.containsFile, fileMD.getTdbResource());
-				ActiveTDB.tdbDataset.commit();
-			} finally {
-				ActiveTDB.tdbDataset.end();
-			}
-			// ---- END SAFE -WRITE- TRANSACTION ---
-		}
+		ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 	}
 
 	public List<FileMD> getFileMDList() {
@@ -162,7 +134,7 @@ public class DataSourceProvider {
 		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.label);
 		ActiveTDB.tsRemoveAllObjects(tdbResource, DCTerms.hasVersion);
 		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.comment);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.hasContactPerson);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.hasContactPerson);
 		ActiveTDB.tsRemoveAllObjects(tdbResource, LCAHT.containsFile);
 	}
 
@@ -251,8 +223,8 @@ public class DataSourceProvider {
 				comments = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
 		}
-		if (tdbResource.hasProperty(FEDLCA.hasContactPerson)) {
-			rdfNode = tdbResource.getProperty(FEDLCA.hasContactPerson).getObject();
+		if (tdbResource.hasProperty(FedLCA.hasContactPerson)) {
+			rdfNode = tdbResource.getProperty(FedLCA.hasContactPerson).getObject();
 			if (rdfNode != null) {
 				contactPerson = new Person(rdfNode.asResource());
 			}

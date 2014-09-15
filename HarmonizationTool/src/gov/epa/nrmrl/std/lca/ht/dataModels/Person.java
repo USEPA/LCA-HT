@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -43,7 +43,7 @@ public class Person {
 
 	public void setName(String name) {
 		this.name = name;
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.personName, name);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.personName, name);
 	}
 
 	public String getAffiliation() {
@@ -59,7 +59,7 @@ public class Person {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.affiliation, affiliation);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.affiliation, affiliation);
 	}
 
 	public String getEmail() {
@@ -75,7 +75,7 @@ public class Person {
 
 	public void setEmail(String email) {
 		this.email = email;
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.email, email);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.email, email);
 	}
 
 	public String getPhone() {
@@ -91,7 +91,7 @@ public class Person {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.voicePhone, phone);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.voicePhone, phone);
 	}
 
 	public void syncDataFromTDB() {
@@ -101,29 +101,29 @@ public class Person {
 			return;
 		}
 
-		if (tdbResource.hasProperty(FEDLCA.personName)) {
-			rdfNode = tdbResource.getProperty(FEDLCA.personName).getObject();
+		if (tdbResource.hasProperty(FedLCA.personName)) {
+			rdfNode = tdbResource.getProperty(FedLCA.personName).getObject();
 			if (rdfNode != null) {
 				name = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
 		}
 
-		if (tdbResource.hasProperty(FEDLCA.affiliation)) {
-			rdfNode = tdbResource.getProperty(FEDLCA.affiliation).getObject();
+		if (tdbResource.hasProperty(FedLCA.affiliation)) {
+			rdfNode = tdbResource.getProperty(FedLCA.affiliation).getObject();
 			if (rdfNode != null) {
 				affiliation = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
 		}
 
-		if (tdbResource.hasProperty(FEDLCA.email)) {
-			rdfNode = tdbResource.getProperty(FEDLCA.email).getObject();
+		if (tdbResource.hasProperty(FedLCA.email)) {
+			rdfNode = tdbResource.getProperty(FedLCA.email).getObject();
 			if (rdfNode != null) {
 				email = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
 		}
 
-		if (tdbResource.hasProperty(FEDLCA.voicePhone)) {
-			rdfNode = tdbResource.getProperty(FEDLCA.voicePhone).getObject();
+		if (tdbResource.hasProperty(FedLCA.voicePhone)) {
+			rdfNode = tdbResource.getProperty(FedLCA.voicePhone).getObject();
 			if (rdfNode != null) {
 				phone = ActiveTDB.getStringFromLiteral(rdfNode);
 			}
@@ -134,10 +134,10 @@ public class Person {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			tdbResource.removeAll(FEDLCA.personName);
-			tdbResource.removeAll(FEDLCA.affiliation);
-			tdbResource.removeAll(FEDLCA.email);
-			tdbResource.removeAll(FEDLCA.voicePhone);
+			tdbResource.removeAll(FedLCA.personName);
+			tdbResource.removeAll(FedLCA.affiliation);
+			tdbResource.removeAll(FedLCA.email);
+			tdbResource.removeAll(FedLCA.voicePhone);
 
 			ActiveTDB.tdbDataset.commit();
 		} finally {

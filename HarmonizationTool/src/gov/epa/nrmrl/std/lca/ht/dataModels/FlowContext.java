@@ -3,7 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class FlowContext {
 		results[1].setCheckLists(getContextNameCheckList());
 		results[1].setLeftJustified(true);
 		results[1].setRDFClass(rdfClass);
-		results[1].setTdbProperty(FEDLCA.flowContextSupplementalDescription);
+		results[1].setTdbProperty(FedLCA.flowContextSupplementalDescription);
 		results[1].setRdfDatatype(XSDDatatype.XSDstring);
 		return results;
 	}
@@ -69,7 +69,7 @@ public class FlowContext {
 	public void setPrimaryFlowContext(String primaryFlowContext) {
 		this.primaryFlowContext = primaryFlowContext;
 		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-		ActiveTDB.tsReplaceLiteral(tdbResource, FEDLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
+		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
 	}
 
 	public List<String> getsupplementaryFlowContexts() {
@@ -77,10 +77,10 @@ public class FlowContext {
 	}
 
 	public void setSupplementaryFlowContexts(List<String> supplementaryFlowContexts) {
-		ActiveTDB.tsRemoveAllObjects(tdbResource, FEDLCA.flowContextSupplementalDescription);
+		ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowContextSupplementalDescription);
 		this.supplementaryFlowContexts = supplementaryFlowContexts;
 		for (String supplementaryFlowContext : supplementaryFlowContexts) {
-			ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
+			ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 		}
 	}
 
@@ -89,13 +89,13 @@ public class FlowContext {
 			supplementaryFlowContexts = new ArrayList<String>();
 		}
 		supplementaryFlowContexts.add(supplementaryFlowContext);
-		ActiveTDB.tsAddLiteral(tdbResource, FEDLCA.flowContextSupplementalDescription, supplementaryFlowContext);
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, supplementaryFlowContext);
 	}
 
 	public void removeSupplementaryFlowContext(String supplementaryFlowContext) {
 		this.supplementaryFlowContexts.remove(supplementaryFlowContext);
 		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowContext);
-		ActiveTDB.tsRemoveStatement(tdbResource, FEDLCA.flowContextSupplementalDescription, literalToRemove);
+		ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowContextSupplementalDescription, literalToRemove);
 	}
 
 	public Resource getTdbResource() {

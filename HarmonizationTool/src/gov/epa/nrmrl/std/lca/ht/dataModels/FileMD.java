@@ -1,13 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-//import java.util.Calendar;
+
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
-
-import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -23,8 +21,6 @@ public class FileMD {
 	private Resource tdbResource;
 	private static final Resource rdfClass = LCAHT.dataFile;
 
-	// private static final Model model = ActiveTDB.tdbModel;
-
 	public FileMD() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		FileMDKeeper.add(this);
@@ -35,17 +31,6 @@ public class FileMD {
 		FileMDKeeper.add(this);
 		syncDataFromTDB();
 	}
-
-	// public FileMD(String filename, String path, long size, Date modifiedDate,
-	// Date readDate) {
-	// super();
-	// setFilename(filename);
-	// setPath(path);
-	// setByteCount(size);
-	// setModifiedDate(modifiedDate);
-	// setReadDate(readDate);
-	// FileMDKeeper.add(this);
-	// }
 
 	public String getFilename() {
 		return filename;
@@ -61,22 +46,6 @@ public class FileMD {
 	public void setFilename(String filename) {
 		this.filename = filename;
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileName, filename);
-
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			this.filename = filename;
-//			tdbResource.removeAll(LCAHT.fileName);
-//			tdbResource.addProperty(LCAHT.fileName, filename);
-//			ActiveTDB.tdbDataset.commit();
-//		}
-//	    catch (RuntimeException ex) {
-//		 	ActiveTDB.tdbDataset.abort();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getPath() {
@@ -93,17 +62,6 @@ public class FileMD {
 	public void setPath(String path) {
 		this.path = path;
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.filePath, path);
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			tdbResource.removeAll(LCAHT.filePath);
-//			tdbResource.addProperty(LCAHT.filePath, path);
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public long getByteCount() {
@@ -113,18 +71,6 @@ public class FileMD {
 	public void setByteCount(long size) {
 		this.byteCount = size;
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.byteCount, size);
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			tdbResource.removeAll(LCAHT.byteCount);
-//			tdbResource.addLiteral(LCAHT.byteCount, byteCount);
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public Date getModifiedDate() {
@@ -133,26 +79,7 @@ public class FileMD {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
-		
-//		tdbResource.removeAll(LCAHT.fileModifiedDate);
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
-
-		
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			// FIXME: modified date unknown here!
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			tdbResource.removeAll(LCAHT.fileModifiedDate);
-//			/* tdbResource. */ ActiveTDB.addLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
-//			ActiveTDB.tdbDataset.commit();
-//		} catch (RuntimeException ex) {
-//			Logger.getLogger("run").warn("setModifiedDate() failed!");
-//			ActiveTDB.tdbDataset.abort();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public Date getReadDate() {
@@ -161,21 +88,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-//		Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
 		ActiveTDB.tsAddLiteral(tdbResource, LCAHT.fileReadDate, readDate);
-//
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			// FIXME: Data unknown here
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			tdbResource.removeAll(LCAHT.fileReadDate);
-//			/*tdbResource.*/ ActiveTDB.addLiteral(tdbResource, LCAHT.fileReadDate, readDate);
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getEncoding() {
@@ -188,16 +101,6 @@ public class FileMD {
 		}
 		this.encoding = encoding;
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		try {
-//			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-//			ActiveTDB.replaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
-//			ActiveTDB.tdbDataset.commit();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	@Override
@@ -213,15 +116,6 @@ public class FileMD {
 		// assert this.tdbResource == null :
 		// "Why and how would you change the tdbResource (blank node) for a file?";
 		this.tdbResource = tdbResource;
-		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		// try {
-		// model.add(tdbResource, RDF.type, LCAHT.dataFile);
-		// ActiveTDB.tdbDataset.commit();
-		// } finally {
-		// ActiveTDB.tdbDataset.end();
-		// }
-		// // ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public void syncDataFromTDB() {

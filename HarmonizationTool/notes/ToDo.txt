@@ -6,13 +6,9 @@ A2  BUG: If you try to open two instances of the application, the issue of selec
   out of it is to go to Task Manager and manually close the application
   SOLN:  You can't open two at the same time?!?
   STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
-  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created   which is okay.  The next thing to do is to allow the creation of new project files and TDB files so that a second instance can be opened if desired.  In short the dialogue box for all of the paths needs to allow files to be created.
-
-A8  ISSUE (document):Can right click the Query window and import an .rq file
-  SOLN: Document this
-  STATUS: I think this is gone
-  NEXT: Confirm current status, please.  Determine if it is desired....
-  UPDATE (from Chris):  I think you're right.  We should be good to move this to 'done'
+  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.  The next thing to do is to allow the
+         creation of new project files and TDB files so that a second instance can be opened if desired.  In short the dialogue box for all of the paths needs
+         to allow files to be created.
 
 A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
   size of the window
@@ -20,7 +16,9 @@ A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful de
   STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
   NEXT: Try again to get this right.
   NEXT: Chris document which others.
-   UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
+  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
+         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
+         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
 
 A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
   form some sort of structure by which to search through?  I don't know what it even means to commit.
@@ -32,7 +30,6 @@ A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keep
 
 A15 BUG:  Can't stop a commit part of the way through it
   SOLN: Make it possible to "Cancel" the commit (see A14)
-
   
 A17 FEATURE REQUEST:  What are "issues"  - designate them
   SOLN: Document this.  Eventually add new issues with or without auto-resolve.
@@ -76,9 +73,10 @@ A26 BUG: Two De-assign columns showing up still...
 
 A27 BUG: Remove the Logger WARN, INFO, etc..
 
-A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated. 
-A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
+A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated.
+    SOLN: Add methods to reset these, then call it when a CSV file is closed
 
+A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
 
 
 #=========================================================================
@@ -360,6 +358,12 @@ A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' 
   loaded, nothing happens
   SOLN: Critical: allow restore original perspective.  Desired (later): save your favorite perspective(s)
   STATUS: Done for now.  See A6
+
+A8  ISSUE (document):Can right click the Query window and import an .rq file
+  SOLN: Document this
+  STATUS: I think this is gone
+  NEXT: Confirm current status, please.  Determine if it is desired....
+  UPDATE (from Chris):  I think you're right.  We should be good to move this to 'done'
   
 A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
   seems bad

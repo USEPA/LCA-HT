@@ -23,7 +23,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -169,6 +169,8 @@ public class AutoMatchJob extends Job {
 						if (csvColumnInfo.isUnique()) {
 							ActiveTDB.tsReplaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
 									dataValue);
+//							flowable.setProperty(csvColumnInfo.getLCADataPropertyProvider.setPropertyName(dataValue));
+//							flowable.setName(dataValue);
 						} else {
 							ActiveTDB.tsAddLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(), dataValue);
 						}
@@ -211,7 +213,7 @@ public class AutoMatchJob extends Job {
 					}
 				});
 
-				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
 
 			// NOW DO flowContext
@@ -254,7 +256,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
@@ -298,7 +300,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+				ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
@@ -313,7 +315,7 @@ public class AutoMatchJob extends Job {
 				} else {
 					ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
-					ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FEDLCA.sourceTableRowNumber, rowNumberPlusOne);
+					ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 					flows.add(tempFlow);
 				}
 			}

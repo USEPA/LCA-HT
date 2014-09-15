@@ -23,7 +23,7 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FEDLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -118,18 +118,18 @@ public class MatchProperties extends ViewPart {
 				System.out.println("queryModel.length = " + queryModel.length);
 				System.out.println("queryModel[0] = " + queryModel[0]);
 
-				// Resource annotation = FEDLCA.Annotation;
+				// Resource annotation = FedLCA.Annotation;
 				// Property isA = RDF.type;
 				// Resource Class = OWL.Class;
 				// Property creator = DCTerms.creator;
 				// Property dateSubmitted = DCTerms.dateSubmitted;
-				// Property hasComparison = FEDLCA.hasComparison;
+				// Property hasComparison = FedLCA.hasComparison;
 				//
-				// Resource comparison = FEDLCA.Comparison;
-				// Property comparedSource = FEDLCA.comparedSource;
-				// Property comparedMaster = FEDLCA.comparedMaster;
-				// Property comparedEquivalence = FEDLCA.comparedEquivalence;
-				// Resource equivalent = FEDLCA.equivalent;
+				// Resource comparison = FedLCA.Comparison;
+				// Property comparedSource = FedLCA.comparedSource;
+				// Property comparedMaster = FedLCA.comparedMaster;
+				// Property comparedEquivalence = FedLCA.comparedEquivalence;
+				// Resource equivalent = FedLCA.equivalent;
 
 				Model model = ActiveTDB.tdbModel;
 				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING
@@ -144,7 +144,7 @@ public class MatchProperties extends ViewPart {
 					// 1) Create a new Annotation (assigning it to the class
 					// Annotation)
 					annotationResource = model.createResource();
-					model.add(annotationResource, RDF.type, FEDLCA.Annotation);
+					model.add(annotationResource, RDF.type, FedLCA.Annotation);
 					// 2) Assign to it a date and creator
 					Date calendar = new Date();
 					Literal dateLiteral = model.createTypedLiteral(calendar);
@@ -184,11 +184,11 @@ public class MatchProperties extends ViewPart {
 						// Master, Equivalence
 
 						Resource comparisonResource = model.createResource();
-						model.add(comparisonResource, RDF.type, FEDLCA.Comparison);
-						model.add(annotationResource, FEDLCA.hasComparison, comparisonResource);
-						model.add(comparisonResource, FEDLCA.comparedSource, queryPropertyResource);
-						model.add(comparisonResource, FEDLCA.comparedMaster, masterPropertyResource);
-						model.add(comparisonResource, FEDLCA.comparedEquivalence, FEDLCA.equivalent);
+						model.add(comparisonResource, RDF.type, FedLCA.Comparison);
+						model.add(annotationResource, FedLCA.hasComparison, comparisonResource);
+						model.add(comparisonResource, FedLCA.comparedSource, queryPropertyResource);
+						model.add(comparisonResource, FedLCA.comparedMaster, masterPropertyResource);
+						model.add(comparisonResource, FedLCA.comparedEquivalence, FedLCA.equivalent);
 
 					} else {
 						System.out.println("matchModel[" + i + "] is null!");
@@ -336,27 +336,27 @@ public class MatchProperties extends ViewPart {
 
 		TreeNode mass = new TreeNode(physicalIndividual);
 		mass.nodeName = "Mass";
-		mass.uri = FEDLCA.Mass;
+		mass.uri = FedLCA.Mass;
 
 		TreeNode area = new TreeNode(physicalIndividual);
 		area.nodeName = "Area";
-		area.uri = FEDLCA.Area;
+		area.uri = FedLCA.Area;
 
 		TreeNode volume = new TreeNode(physicalIndividual);
 		volume.nodeName = "Volume";
-		volume.uri = FEDLCA.Volume;
+		volume.uri = FedLCA.Volume;
 
 		TreeNode duration = new TreeNode(physicalIndividual);
 		duration.nodeName = "Duration";
-		duration.uri = FEDLCA.Duration;
+		duration.uri = FedLCA.Duration;
 
 		TreeNode energy = new TreeNode(physicalIndividual);
 		energy.nodeName = "Energy";
-		energy.uri = FEDLCA.Energy;
+		energy.uri = FedLCA.Energy;
 
 		TreeNode radioactivity = new TreeNode(physicalIndividual);
 		radioactivity.nodeName = "Radioactivity";
-		radioactivity.uri = FEDLCA.Radioactivity;
+		radioactivity.uri = FedLCA.Radioactivity;
 
 		// -------- PHYSICAL COMBINED
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
@@ -364,31 +364,31 @@ public class MatchProperties extends ViewPart {
 
 		TreeNode volumeTime = new TreeNode(physicalCombined);
 		volumeTime.nodeName = "Volume*time";
-		volumeTime.uri = FEDLCA.VolumeTime;
+		volumeTime.uri = FedLCA.VolumeTime;
 
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
-		massTime.uri = FEDLCA.MassTime;
+		massTime.uri = FedLCA.MassTime;
 
 		TreeNode volumeLength = new TreeNode(physicalCombined);
 		volumeLength.nodeName = "Volume*Length";
-		volumeLength.uri = FEDLCA.VolumeLength;
+		volumeLength.uri = FedLCA.VolumeLength;
 
 		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
-		areaTime.uri = FEDLCA.AreaTime;
+		areaTime.uri = FedLCA.AreaTime;
 
 		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";
-		lengthTime.uri = FEDLCA.LengthTime;
+		lengthTime.uri = FedLCA.LengthTime;
 
 		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
 		energyPerMassTime.nodeName = "Energy/mass*time";
-		energyPerMassTime.uri = FEDLCA.EnergyPerMassTime;
+		energyPerMassTime.uri = FedLCA.EnergyPerMassTime;
 
 		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
 		energyPerAreaTime.nodeName = "Energy/area*time";
-		energyPerAreaTime.uri = FEDLCA.EnergyPerAreaTime;
+		energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
 
 		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
@@ -396,35 +396,35 @@ public class MatchProperties extends ViewPart {
 
 		TreeNode itemCount = new TreeNode(other);
 		itemCount.nodeName = "Number of Items";
-		itemCount.uri = FEDLCA.ItemCount;
+		itemCount.uri = FedLCA.ItemCount;
 
 		TreeNode itemsLength = new TreeNode(other);
 		itemsLength.nodeName = "Items*Length";
-		itemsLength.uri = FEDLCA.ItemsLength;
+		itemsLength.uri = FedLCA.ItemsLength;
 
 		TreeNode goodsTransportMassDistance = new TreeNode(other);
 		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
-		goodsTransportMassDistance.uri = FEDLCA.GoodsTransportMassDistance;
+		goodsTransportMassDistance.uri = FedLCA.GoodsTransportMassDistance;
 
 		TreeNode personTransport = new TreeNode(other);
 		personTransport.nodeName = "Person transport";
-		personTransport.uri = FEDLCA.PersonTransport;
+		personTransport.uri = FedLCA.PersonTransport;
 
 		TreeNode vehicleTransport = new TreeNode(other);
 		vehicleTransport.nodeName = "Vehicle transport";
-		vehicleTransport.uri = FEDLCA.VehicleTransport;
+		vehicleTransport.uri = FedLCA.VehicleTransport;
 
 		TreeNode netCalorificValue = new TreeNode(other);
 		netCalorificValue.nodeName = "Net calorific value";
-		netCalorificValue.uri = FEDLCA.NetCalorificValue;
+		netCalorificValue.uri = FedLCA.NetCalorificValue;
 
 		TreeNode grossCalorificValue = new TreeNode(other);
 		grossCalorificValue.nodeName = "Gross calorific value";
-		grossCalorificValue.uri = FEDLCA.GrossCalorificValue;
+		grossCalorificValue.uri = FedLCA.GrossCalorificValue;
 
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
-		normalVolume.uri = FEDLCA.NormalVolume;
+		normalVolume.uri = FedLCA.NormalVolume;
 
 		return masterPropertyTree;
 	}
@@ -582,7 +582,7 @@ public class MatchProperties extends ViewPart {
 			Resource queryPropertyResource = null;
 			// Resource fred = (Resource)uri;
 			// thing = ActiveTDB.tdbModel.getResource(fred );
-			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, FEDLCA.FlowProperty));
+			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, FedLCA.FlowProperty));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {

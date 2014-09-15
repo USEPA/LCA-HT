@@ -326,11 +326,6 @@
             name="Save SPARQL Results">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowDataFilesView"
-            id="HarmonizationTool.ShowDataFilesView"
-            name="Show Data File(s) View">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowQueryViewHandler"
             id="gov.epa.nrmrl.std.lca.ht.QueryView"
             name="Show Query View">
