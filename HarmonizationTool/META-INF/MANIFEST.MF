@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Harmonization Tool
 Bundle-SymbolicName: HarmonizationTool;singleton:=true
-Bundle-Version: 1.0.0.20140914
+Bundle-Version: 1.0.0.20140915
 Bundle-Activator: gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator
 Bundle-Vendor: EMVL
 Require-Bundle: org.eclipse.ui,
