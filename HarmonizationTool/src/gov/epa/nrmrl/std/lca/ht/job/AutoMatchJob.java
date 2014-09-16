@@ -14,6 +14,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
@@ -88,22 +89,27 @@ public class AutoMatchJob extends Job {
 		// long triples = ActiveTDB.tdbModel.size();
 		// Table table = CSVTableView.getTable();
 
-		CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
+//		CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
+		CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
+
+		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
+		
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
 
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
-		for (int i = 1; i < assignedCSVColumns.length; i++) {
+		for (int i = 1; i < lcaDataProperties.length; i++) {
 			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-			if (csvColumnInfo == null) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider == null) {
 				continue;
 			}
-			if (csvColumnInfo.getRDFClass().equals(Flowable.getRdfclass())) {
+			if (lcaDataPropertyProvider.getRDFClass().equals(Flowable.getRdfclass())) {
 				flowableCSVColumnNumbers.add(i);
-			} else if (csvColumnInfo.getRDFClass().equals(FlowContext.getRdfclass())) {
+			} else if (lcaDataPropertyProvider.getRDFClass().equals(FlowContext.getRdfclass())) {
 				flowContextCSVColumnNumbers.add(i);
-			} else if (csvColumnInfo.getRDFClass().equals(FlowProperty.getRdfclass())) {
+			} else if (lcaDataPropertyProvider.getRDFClass().equals(FlowProperty.getRdfclass())) {
 				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}

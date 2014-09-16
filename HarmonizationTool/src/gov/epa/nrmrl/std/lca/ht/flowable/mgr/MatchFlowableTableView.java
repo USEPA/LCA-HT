@@ -322,16 +322,16 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
 
-		tableViewerColumn = createTableViewerColumn(Flowable.getFlowableNameString(), 300, 2);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 2);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
 
 //		String casString = Flowable;
-		tableViewerColumn = createTableViewerColumn(Flowable.getCASString(), 100, 3);
+		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 3);
 		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
 
-		tableViewerColumn = createTableViewerColumn(Flowable.getFlowableSynonymString(), 300, 4);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 4);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(5));
 

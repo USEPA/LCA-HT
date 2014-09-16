@@ -22,26 +22,36 @@ public class TableProvider {
 	private int lastChecked;
 	private int lastUpdated;
 
-	private CSVColumnInfo[] assignedCSVColumnInfo = null;
+	private CSVColumnInfo[] assignedCSVColumnInfo = null;  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+
+	private LCADataPropertyProvider[] lcaDataProperties = null;
 
 	// public TableProvider() {
 	// // PSSH (PUT SOMETHING SMART HERE)
 	// }
 
-	public CSVColumnInfo[] getAssignedCSVColumnInfo() {
+	public CSVColumnInfo[] getAssignedCSVColumnInfo() {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 		return assignedCSVColumnInfo;
 	}
 
-	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {
+	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 		this.assignedCSVColumnInfo = assignedCSVColumnInfo;
 	}
 
-	public void resetAssignedCSVColumnInfo() {
-		int columnCount = headerRow.getSize();
-		if (columnCount > 0) {
-			this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
-		}
+	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
+		return lcaDataProperties[colNumber];
 	}
+	
+	public void setLCADataPropertyProvider(int colNumber, LCADataPropertyProvider lcaDataPropertyProvider) {
+		lcaDataProperties[colNumber] = lcaDataPropertyProvider;
+	}
+	
+//	public void resetAssignedCSVColumnInfo() {
+//		int columnCount = headerRow.getSize();
+//		if (columnCount > 0) {
+//			this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
+//		}
+//	}
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
@@ -187,6 +197,14 @@ public class TableProvider {
 
 	public void setFileMD(FileMD fileMD) {
 		this.fileMD = fileMD;
+	}
+
+	public LCADataPropertyProvider[] getLcaDataProperties() {
+		return lcaDataProperties;
+	}
+
+	public void setLcaDataProperties(LCADataPropertyProvider[] lcaDataProperties) {
+		this.lcaDataProperties = lcaDataProperties;
 	}
 
 	// private class TransformCell {

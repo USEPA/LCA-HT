@@ -96,7 +96,7 @@ public class MatchProperties extends ViewPart {
 
 		queryLbl = new Label(compositeQuery, SWT.NONE);
 		queryLbl.setAlignment(SWT.CENTER);
-		queryLbl.setText("Query Contexts");
+		queryLbl.setText("Query Properties");
 		// ============ NEW COL =========
 		Composite compositeMatches = new Composite(parent, SWT.NONE);
 		compositeMatches.setLayout(new GridLayout(4, false));
@@ -559,8 +559,8 @@ public class MatchProperties extends ViewPart {
 		int rows = propertiesToMatch.size();
 		QueryModel[] elements = new QueryModel[rows];
 		int index = 0;
-		for (String contextConcat : propertiesToMatch) {
-			String value = contextConcat;
+		for (String propertyConcat : propertiesToMatch) {
+			String value = propertyConcat;
 			Resource resource = propertyResourcesToMatch.get(index);
 			// String value = dataRow.get(0);
 			QueryModel queryModel = new QueryModel(value);

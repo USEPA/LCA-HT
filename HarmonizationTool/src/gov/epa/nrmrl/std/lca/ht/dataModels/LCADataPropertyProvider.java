@@ -5,16 +5,19 @@ import java.util.List;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class LCADataPropertyProvider {
 	private String propertyName;               // e.g. "Flowable Name"
+	private Resource rdfClass;                 // e.g. ECO.Flowable;
 	private RDFDatatype rdfDatatype;           // e.g. XSDDatatype.XSDfloat
 	private boolean isRequired = false;        // e.g. true
 	private boolean isUnique = true;           // e.g. false
 	private boolean leftJustified = true;      // e.g. true
-	private List<QACheck> checkLists;          // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
-//	private List<Issue> issues = new ArrayList<Issue>();
+	private List<QACheck> qaChecks;            // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
 	private Property tdbProperty;
+	
+//	private List<Issue> issues = new ArrayList<Issue>();
 //	private List<String> values = new ArrayList<String>();
 
 	public LCADataPropertyProvider() {
@@ -34,8 +37,8 @@ public class LCADataPropertyProvider {
 		result.isRequired = lcaDataProperty.isRequired();
 		result.isUnique = lcaDataProperty.isUnique();
 		result.leftJustified = lcaDataProperty.isLeftJustified();
-		result.tdbProperty = lcaDataProperty.getTDBProperty();
-		result.checkLists = lcaDataProperty.copyCheckLists();
+//		result.tdbProperty = lcaDataProperty.getTDBProperty();
+		result.qaChecks = lcaDataProperty.copyCheckLists();
 		// BUT DON'T COPY ISSUES
 		// this.issues = menuCSVColumnInfo.copyIssues();
 		// INITIALIZE INSTEAD
@@ -76,6 +79,14 @@ public class LCADataPropertyProvider {
 //		this.propertyValueJavaType = propertyValueJavaType;
 //	}
 
+	public Resource getRDFClass() {
+		return rdfClass;
+	}
+
+	public void setRDFClass(Resource rdfClass) {
+		this.rdfClass = rdfClass;
+	}
+
 	public RDFDatatype getRdfDatatype() {
 		return rdfDatatype;
 	}
@@ -109,16 +120,16 @@ public class LCADataPropertyProvider {
 	}
 
 	public List<QACheck> getCheckLists() {
-		return checkLists;
+		return qaChecks;
 	}
 
 	public void setCheckLists(List<QACheck> checkLists) {
-		this.checkLists = checkLists;
+		this.qaChecks = checkLists;
 	}
 
 	public List<QACheck> copyCheckLists() {
 		List<QACheck> results = new ArrayList<QACheck>();
-		for (QACheck qaCheck : checkLists) {
+		for (QACheck qaCheck : qaChecks) {
 			QACheck newQACheck = new QACheck(qaCheck);
 			results.add(newQACheck);
 		}
@@ -126,7 +137,7 @@ public class LCADataPropertyProvider {
 	}
 
 	public void addQACheck(QACheck qaCheck) {
-		this.checkLists.add(qaCheck);
+		this.qaChecks.add(qaCheck);
 	}
 
 //	public List<Issue> getIssues() {

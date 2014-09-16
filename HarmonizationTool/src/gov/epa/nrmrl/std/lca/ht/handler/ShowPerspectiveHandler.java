@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3;
 import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -42,9 +43,12 @@ public class ShowPerspectiveHandler implements IHandler {
 		} else if (id.equals(FlowDataV2.ID)) {
 			System.out.println("Matched FlowDataV2!");
 			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV1.ID));
+		} else if (id.equals(FlowDataV3.ID)) {
+			System.out.println("Matched FlowDataV3!");
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV2.ID));
 		} else if (id.equals(OriginalPerspective.ID)) {
 			System.out.println("Matched Original Perspective!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV2.ID));
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV3.ID));
 		}  else {
 			System.out.println("No match, dude.  Sorry!");
 		}

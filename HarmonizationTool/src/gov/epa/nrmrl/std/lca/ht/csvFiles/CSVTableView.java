@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
@@ -62,6 +63,7 @@ public class CSVTableView extends ViewPart {
 	private static TextCellEditor editor;
 
 	private static List<CSVColumnInfo> availableCSVColumnInfo = new ArrayList<CSVColumnInfo>();
+	private static List<LCADataPropertyProvider> lcaDataPropertyProviders = new ArrayList<LCADataPropertyProvider>();
 	// REMEMBER THE OFFSET:
 
 	private static final String csvColumnDefaultColumnHeader = "   -   ";
@@ -106,7 +108,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void initializeTableViewer(Composite composite) {
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+//		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+		// TO SATISFY TODO B21, ADDED THE SWT.MULTI BELOW
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY | SWT.MULTI);		
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
@@ -429,7 +433,7 @@ public class CSVTableView extends ViewPart {
 		// IF tableViewer IS ALREADY REFERENCING IT, CAN WE LOAD IT FASTER?
 		// WHAT ABOUE PAGING, EITHER FAST DYNAMIC OR CLUNKY PAUSE WITH "Loading more data" MESSAGE
 		// JUNO FIXME
-		tableProvider.resetAssignedCSVColumnInfo();
+//		tableProvider.resetAssignedCSVColumnInfo();
 		colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
 		// initializeHeaderMenu();

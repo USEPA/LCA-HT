@@ -14,6 +14,11 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3"
+            name="Flow data v3">
+      </perspective>
+      <perspective
             class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
             id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
             name="Flow data">
@@ -172,8 +177,13 @@
             <menu
                   label="Perspectives">
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
-                     label="Perspective switcher"
+                     commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
+                     label="Restore FlowWorkflow Perspective"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowPerspectiveHandler"
+                     label="(deprecated) Perspective switcher"
                      style="push">
                </command>
             </menu>
@@ -392,7 +402,7 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowPerspectiveHandler"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspectiveHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ShowPerspectiveHandler"
             name="Show Perspectives">
       </command>
       <command
@@ -426,6 +436,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
             id="gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB"
             name="SelectTDB">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
+            name="Restore FlowsWorkflow Perspective">
       </command>
    </extension>
    <extension

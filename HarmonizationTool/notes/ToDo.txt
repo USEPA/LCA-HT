@@ -83,9 +83,6 @@ A30 BUG: Both primary and additional contexts don't show up, only primary contex
 #=========  USER INTERFACE CHANGE REQUESTS ===============================
 #=========================================================================
 
-U1: Under Window Manager the only "perspectives" option should be to restore the 
-Original perspective that the user sees on first startup.  For now, let's not deal with any other perspectives.
-
 U2: When clicking a row to ignore, the "yellow" of that column disappears temporarily 
 Which makes it confusing to see what row you are actually wanting to ignore.  It is as if when clicking the row you want to ignore the error disappears on you.
 
@@ -98,8 +95,6 @@ That the user to look at a column and know where he/she is positioned.
 U5: Add changes from flowWorkflowUI.png
 
 U6: Add changes from ToolUI.png
-
-U7: Change Query Context in Match Properties Tool to Query Properties
 
 U8: Under Query Properties/Context Tools, have primary in regular text and additional in parenthesis.
 
@@ -131,7 +126,7 @@ CHANGE CSVTable UI:
 Guide me!  :)
  #====================
 
-
+U15 FEATURE REQUEST - Remove Auto Advance button from MatchContext and MatchProperty tools and make that the default
 
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
@@ -226,6 +221,7 @@ B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't ev
 
 B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
   SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
+  STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
 
 B22 (copied from A3)
   FEATURE REQUEST:  Startup allows user to choose project directory
@@ -251,6 +247,23 @@ B25 (was A21) FEATURE REQUEST: Need to be able to match Flow Properties
         Also, consider UI design so that user can change assignments
 
 B26 FEATURE REQUEST: Middle mouse button scroll.
+
+B27 FEATURE REQUEST: Allow user to save columns which are not otherwise assigned:
+                     1) User selects a pull down: "user defined field"
+                     2) User chooses data type (string, float, int, etc.)
+                        a) Ideally the tool would parse the column looking for invalid data
+                        b) If not, the data could be stored as strings?!?
+                     3) User assigns field name
+                     4) HT adds triples like
+                     _:b0 a lcaht:UserDefinedDataField .
+                     _:b0 lcaht:validValueRange xsd:string .
+                     _:b0 eco:hasDataSource [the data source] .
+                     _:b1 a lcaht:UserDefinedEntry .
+                     _:b1 lcaht:hasUserDefinedName "Super important data that I don't want to lose" .
+                     _:b1 lcaht:hasUserDefinedValue "42 lbs." .
+                     _:b1 fedlca.sourceTableRowNumber 33^^xsd:integer .
+                     _:b1 lcaht:hasDataField _:b0 .
+                     
 
   #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
@@ -370,10 +383,16 @@ A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of
   SOLN: Remove unused Views (windows)
   STATUS: Removed anyway
   
-  
 A10 BUG: 'File' -> 'Import CSV' does nothing
   SOLN: Remove from File menu
 
 A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
   is doing something?
   SOLN: Remove from menu
+  
+U1: Under Window Manager the only "perspectives" option should be to restore the 
+Original perspective that the user sees on first startup.  For now, let's not deal with any other perspectives.
+STATUS: Done.
+
+U7: Change Query Context in Match Properties Tool to Query Properties
+    STATUS: Done
