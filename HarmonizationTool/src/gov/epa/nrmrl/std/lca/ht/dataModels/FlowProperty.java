@@ -1,8 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
+import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
@@ -12,22 +11,24 @@ import java.util.Map;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowProperty {
-
-	private String primaryFlowProperty;
-	private List<String> supplementaryFlowProperties;
+	// CLASS VARIABLES
+	public static final String flowPropertyPrimaryIdentifier = "Primary Info";
+	public static final String flowPropertyAdditionalIdentifier = "Additional Info";
 	private static final Resource rdfClass = FedLCA.FlowProperty;
-	private Resource tdbResource;
-	
-	public static final String flowPropertyPrimaryIdentifier = "Flow Property Primary Info";
-	public static final String flowPropertyAdditionalIdentifier = "Flow Property Additional Info";
+	public static final String label = "Flow Property";
+	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include volume, mass*time, and person transport.";
 
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
 	static {
+		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
+		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
@@ -50,43 +51,156 @@ public class FlowProperty {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}
 
+	private Resource tdbResource;
+	private List<LCADataValue> lcaDataValues;
 
 	public FlowProperty() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+		lcaDataValues = new ArrayList<LCADataValue>();
 	}
 
-	public Object getLCADataPropertyValue(String key){
-		// Put Something Smart Here
-		Object value = null;
-		return value;
+	public FlowProperty(Resource tdbResource) {
+		this.tdbResource = tdbResource;
+		lcaDataValues = new ArrayList<LCADataValue>();
+		clearSyncDataFromTDB();
 	}
-	
-	public void setLCADataPropertyValue(Object value){
-		// Put Something Smart Here
+
+	public Object getOneProperty(String key) {
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				return lcaDataValue.getValue();
+			}
+		}
+		return null;
 	}
-	
-//	public static final CSVColumnInfo[] getHeaderMenuObjects() {
-//		CSVColumnInfo[] results = new CSVColumnInfo[2];
-//
-//		results[0] = new CSVColumnInfo("Property (primary)");
-//		results[0].setRequired(true);
-//		results[0].setUnique(true);
-//		results[0].setCheckLists(getPropertyNameCheckList());
-//		results[0].setLeftJustified(true);
-//		results[0].setRDFClass(rdfClass);
-//		results[0].setTdbProperty(FedLCA.flowPropertyPrimaryDescription);
-//		results[0].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		results[1] = new CSVColumnInfo("Property (additional)");
-//		results[1].setRequired(false);
-//		results[1].setUnique(false);
-//		results[1].setCheckLists(getPropertyNameCheckList());
-//		results[1].setLeftJustified(true);
-//		results[1].setRDFClass(rdfClass);
-//		results[1].setTdbProperty(FedLCA.flowPropertySupplementalDescription);
-//		results[1].setRdfDatatype(XSDDatatype.XSDstring);
-//		return results;
-//	}
+
+	public Object[] getAllProperties(String key) {
+		List<Object> resultList = new ArrayList<Object>();
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				resultList.add(lcaDataValue.getValue());
+			}
+		}
+		Object[] results = new Object[resultList.size()];
+		if (resultList.size() == 0) {
+			return null;
+		}
+		for (int i = 0; i < resultList.size(); i++) {
+			results[i] = resultList.get(i);
+		}
+		return results;
+	}
+
+	public List<LCADataValue> getPropertyValuesInOrder() {
+		List<LCADataValue> results = new ArrayList<LCADataValue>();
+		for (String key : dataPropertyMap.keySet()) {
+			for (LCADataValue lcaDataValue : lcaDataValues) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+					results.add(lcaDataValue);
+				}
+			}
+		}
+		return results;
+	}
+
+	public void setProperty(String key, Object object) {
+		if (object == null) {
+			return;
+		}
+		if (!dataPropertyMap.containsKey(key)) {
+			return;
+		}
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
+		Class<?> objectClass = RDFUtil.getJavaClassFromRDFDatatype(rdfDatatype);
+		if (!objectClass.equals(object.getClass())) {
+			return;
+		}
+		LCADataValue newLCADataValue = new LCADataValue();
+		newLCADataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+		newLCADataValue.setValue(object);
+		// newLCADataValue.setValueAsString(object.toString()); // SHOULD WE DO THIS AT ALL?
+
+		if (lcaDataPropertyProvider.isUnique()) {
+			removeValues(lcaDataPropertyProvider.getPropertyName());
+			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+		} else {
+			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+		}
+		lcaDataValues.add(newLCADataValue);
+	}
+
+	private void removeValues(String key) {
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				lcaDataValues.remove(lcaDataValue);
+			}
+		}
+	}
+
+	public void updateSyncDataFromTDB() {
+		if (tdbResource == null) {
+			return;
+		}
+		// FIRST DO LCADataPropertyProvider LIST WHICH ARE ALL LITERALS
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
+				continue;
+			}
+			if (lcaDataPropertyProvider.isUnique()) {
+				removeValues(lcaDataPropertyProvider.getPropertyName());
+				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
+						.getValue();
+				if (value.getClass().equals(
+						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+					LCADataValue lcaDataValue = new LCADataValue();
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setValue(value);
+					lcaDataValues.add(lcaDataValue);
+				}
+			} else {
+				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
+				while (stmtIterator.hasNext()) {
+					Object value = stmtIterator.next().getLiteral().getValue();
+					if (value.getClass().equals(
+							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+						LCADataValue lcaDataValue = new LCADataValue();
+						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue.setValue(value);
+						lcaDataValues.add(lcaDataValue);
+					}
+				}
+			}
+		}
+	}
+
+	public void clearSyncDataFromTDB() {
+		lcaDataValues.clear();
+		updateSyncDataFromTDB();
+	}
+
+	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
+	// CSVColumnInfo[] results = new CSVColumnInfo[2];
+	//
+	// results[0] = new CSVColumnInfo("Property (primary)");
+	// results[0].setRequired(true);
+	// results[0].setUnique(true);
+	// results[0].setCheckLists(getPropertyNameCheckList());
+	// results[0].setLeftJustified(true);
+	// results[0].setRDFClass(rdfClass);
+	// results[0].setTdbProperty(FedLCA.flowPropertyPrimaryDescription);
+	// results[0].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// results[1] = new CSVColumnInfo("Property (additional)");
+	// results[1].setRequired(false);
+	// results[1].setUnique(false);
+	// results[1].setCheckLists(getPropertyNameCheckList());
+	// results[1].setLeftJustified(true);
+	// results[1].setRDFClass(rdfClass);
+	// results[1].setTdbProperty(FedLCA.flowPropertySupplementalDescription);
+	// results[1].setRdfDatatype(XSDDatatype.XSDstring);
+	// return results;
+	// }
 
 	private static List<QACheck> getPropertyNameCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
@@ -102,41 +216,41 @@ public class FlowProperty {
 		return qaChecks;
 	}
 
-//	public String getPrimaryFlowProperty() {
-//		return primaryFlowProperty;
-//	}
-//
-//	public void setPrimaryFlowProperty(String primaryFlowProperty) {
-//		this.primaryFlowProperty = primaryFlowProperty;
-//		RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-//		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
-//	}
-//
-//	public List<String> getsupplementaryFlowProperties() {
-//		return supplementaryFlowProperties;
-//	}
-//
-//	public void setSupplementaryFlowProperties(List<String> supplementaryFlowProperties) {
-//		ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowPropertySupplementalDescription);
-//		this.supplementaryFlowProperties = supplementaryFlowProperties;
-//		for (String supplementaryFlowProperty : supplementaryFlowProperties) {
-//			ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
-//		}
-//	}
+	// public String getPrimaryFlowProperty() {
+	// return primaryFlowProperty;
+	// }
+	//
+	// public void setPrimaryFlowProperty(String primaryFlowProperty) {
+	// this.primaryFlowProperty = primaryFlowProperty;
+	// RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
+	// ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
+	// }
+	//
+	// public List<String> getsupplementaryFlowProperties() {
+	// return supplementaryFlowProperties;
+	// }
+	//
+	// public void setSupplementaryFlowProperties(List<String> supplementaryFlowProperties) {
+	// ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowPropertySupplementalDescription);
+	// this.supplementaryFlowProperties = supplementaryFlowProperties;
+	// for (String supplementaryFlowProperty : supplementaryFlowProperties) {
+	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+	// }
+	// }
 
-//	public void addSupplementaryFlowProperty(String supplementaryFlowProperty) {
-//		if (supplementaryFlowProperties == null) {
-//			supplementaryFlowProperties = new ArrayList<String>();
-//		}
-//		supplementaryFlowProperties.add(supplementaryFlowProperty);
-//		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
-//	}
-//
-//	public void removeSupplementaryFlowProperty(String supplementaryFlowProperty) {
-//		this.supplementaryFlowProperties.remove(supplementaryFlowProperty);
-//		Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
-//		ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowPropertySupplementalDescription, literalToRemove);
-//	}
+	// public void addSupplementaryFlowProperty(String supplementaryFlowProperty) {
+	// if (supplementaryFlowProperties == null) {
+	// supplementaryFlowProperties = new ArrayList<String>();
+	// }
+	// supplementaryFlowProperties.add(supplementaryFlowProperty);
+	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+	// }
+	//
+	// public void removeSupplementaryFlowProperty(String supplementaryFlowProperty) {
+	// this.supplementaryFlowProperties.remove(supplementaryFlowProperty);
+	// Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
+	// ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowPropertySupplementalDescription, literalToRemove);
+	// }
 
 	public Resource getTdbResource() {
 		return tdbResource;
@@ -156,7 +270,7 @@ public class FlowProperty {
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
-	
+
 	public static Map<String, LCADataPropertyProvider> getDataPropertyMap() {
 		return dataPropertyMap;
 	}

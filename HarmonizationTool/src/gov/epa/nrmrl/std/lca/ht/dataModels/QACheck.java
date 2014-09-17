@@ -127,15 +127,4 @@ public class QACheck {
 	public void setHandlerMethod(Object handlerMethod) {
 		this.handlerMethod = handlerMethod;
 	}
-
-	// public static void checkColumn(TableColumn column) {
-	// Object data = column.getData();
-	// System.out.println("data: " + data);
-	// System.out.println("data.getClass(): " + data.getClass());
-	// }
-
-	// public static List<QACheck> getQAChecks(CsvTableViewerColumnType type) {
-	// return getGeneralQAChecks();
-	// }
-
 }

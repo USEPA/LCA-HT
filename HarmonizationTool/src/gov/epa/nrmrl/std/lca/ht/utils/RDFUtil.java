@@ -7,7 +7,7 @@ import java.util.Date;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
-public class RDF {
+public class RDFUtil {
 
 		public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
 		if (object instanceof Float) {
@@ -46,8 +46,7 @@ public class RDF {
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static Class getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
+	public static Class<?> getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
 		if (rdfDatatype.equals(XSDDatatype.XSDfloat)) {
 			try {
 				return Class.forName("Float");

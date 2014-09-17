@@ -1,10 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-public enum LCADataFamily {
+public enum LCADataObject {
   FLOWABLE,
-  CONTEXT,
+  FLOW_CONTEXT,
+  FLOW_PROPERTY,
   IMPACT_CHARACTERIZATION_MODEL,
   IMPACT_CATEGORY;
-  
-//  private LCADataFamily(List<String> descriptors)
 }

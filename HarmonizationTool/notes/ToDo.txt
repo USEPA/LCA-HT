@@ -2,23 +2,6 @@
 #====  ITEMS WITH "A" - DO BELOW BEFORE 2014-10-01   ======================
 #==========================================================================
 
-A2  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
-  out of it is to go to Task Manager and manually close the application
-  SOLN:  You can't open two at the same time?!?
-  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
-  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.  The next thing to do is to allow the
-         creation of new project files and TDB files so that a second instance can be opened if desired.  In short the dialogue box for all of the paths needs
-         to allow files to be created.
-
-A12 ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
-  size of the window
-  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
-  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
-  NEXT: Try again to get this right.
-  NEXT: Chris document which others.
-  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
-         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
-         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
 
 A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
   form some sort of structure by which to search through?  I don't know what it even means to commit.
@@ -263,9 +246,30 @@ B27 FEATURE REQUEST: Allow user to save columns which are not otherwise assigned
                      _:b1 lcaht:hasUserDefinedValue "42 lbs." .
                      _:b1 fedlca.sourceTableRowNumber 33^^xsd:integer .
                      _:b1 lcaht:hasDataField _:b0 .
-                     
 
-  #==========================================================================
+
+B28 (was A2)  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
+  out of it is to go to Task Manager and manually close the application
+  SOLN:  You can't open two at the same time?!?
+  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
+  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.  The next thing to do is to allow the
+         creation of new project files and TDB files so that a second instance can be opened if desired.  In short the dialogue box for all of the paths needs
+         to allow files to be created.                     
+
+
+B29 (was A12) ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
+  size of the window
+  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
+  NEXT: Try again to get this right.
+  NEXT: Chris document which others.
+  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
+         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
+         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
+         
+B30 FEATURE REQUEST - Make the default Data Source name increment as follows file.csv -> file ... then file.csv -> file(1) ... then file.csv -> file(2) ... and so on
+
+#==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
 #==========================================================================
 

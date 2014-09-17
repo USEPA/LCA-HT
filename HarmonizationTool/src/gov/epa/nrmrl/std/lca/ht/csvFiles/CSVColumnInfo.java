@@ -39,7 +39,7 @@ public class CSVColumnInfo {
 	// public CSVColumnInfo(String headerString, boolean isRequired, boolean
 	// isUnique, boolean
 	// leftJustified,
-	// List<QACheck> checkLists, List<Issue> issues, LCADataField lcaDataField)
+	// List<QACheck> checkLists, List<Issue> issues, LCADataField_DEPRECATED lcaDataField)
 	// {
 	// public CSVColumnInfo(String headerString, boolean isRequired, boolean
 	// isUnique, boolean leftJustified, List<QACheck> checkLists, List<Issue>
@@ -226,11 +226,11 @@ public class CSVColumnInfo {
 		return false;
 	}
 
-	// public LCADataField getLcaDataField() {
+	// public LCADataField_DEPRECATED getLcaDataField() {
 	// return lcaDataField;
 	// }
 	//
-	// public void setLcaDataField(LCADataField lcaDataField) {
+	// public void setLcaDataField(LCADataField_DEPRECATED lcaDataField) {
 	// this.lcaDataField = lcaDataField;
 	// }
 }

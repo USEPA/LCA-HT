@@ -1,17 +1,16 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-//import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -30,17 +29,20 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Flowable {
 	// CLASS VARIABLES
-	public static final String flowableNameString = "Flowable name";
-	public static final String flowableSynonymString = "Flowable Synonym";
+	public static final String flowableNameString = "Name";
+	public static final String flowableSynonymString = "Synonym";
 	public static final String casString = "CAS";
 	public static final String chemicalFormulaString = "Chemical formula";
 	public static final String smilesString = "SMILES";
 	private static final Resource rdfClass = ECO.Flowable;
-
+	public static final String label = "Flowable";
+	public static final String comment = "A flowable is  the entity that flows in an elementary flow.  It can be a substance or energy.  Examples of flowables include CO2 and waste heat. No identity conditions are specified for flowables.";
 	public static Map<String, LCADataPropertyProvider> dataPropertyMap;
-	
 
 	static {
+		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
+		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
@@ -100,7 +102,7 @@ public class Flowable {
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
 
-
+	// CONSTRUCTORS
 	public Flowable() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
@@ -109,90 +111,133 @@ public class Flowable {
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
-		// syncDataFromTDB();
+		clearSyncDataFromTDB();
 	}
-	
-//	Map<String, Object> properties = new HashMap<String, Object>();
 
-	public Object getProperty(String key) {
-		for (LCADataValue lcaDataValue:lcaDataValues){
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)){
+	public Object getOneProperty(String key) {
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				return lcaDataValue.getValue();
 			}
 		}
 		return null;
-//		if (dataPropertyMap.containsKey(key)) {
-//			return properties.get(key);
-//		} else {
-//			return null;
-//		}
 	}
-	
-	public List<LCADataValue> getPropertyValuesInOrder(){
+
+	public Object[] getAllProperties(String key) {
+		List<Object> resultList = new ArrayList<Object>();
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				resultList.add(lcaDataValue.getValue());
+			}
+		}
+		Object[] results = new Object[resultList.size()];
+		if (resultList.size() == 0) {
+			return null;
+		}
+		for (int i = 0; i < resultList.size(); i++) {
+			results[i] = resultList.get(i);
+		}
+		return results;
+	}
+
+	public List<LCADataValue> getPropertyValuesInOrder() {
 		List<LCADataValue> results = new ArrayList<LCADataValue>();
-		for(String key:dataPropertyMap.keySet()){
-			for(LCADataValue lcaDataValue: lcaDataValues){
-				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)){
+		for (String key : dataPropertyMap.keySet()) {
+			for (LCADataValue lcaDataValue : lcaDataValues) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 					results.add(lcaDataValue);
 				}
 			}
 		}
 		return results;
 	}
-	
-	public void setProperty(String key, Object object){
-		
+
+	public void setProperty(String key, Object object) {
+		if (object == null) {
+			return;
+		}
+		if (!dataPropertyMap.containsKey(key)) {
+			return;
+		}
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
+		Class<?> objectClass = RDFUtil.getJavaClassFromRDFDatatype(rdfDatatype);
+		if (!objectClass.equals(object.getClass())) {
+			return;
+		}
+		LCADataValue newLCADataValue = new LCADataValue();
+		newLCADataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+		newLCADataValue.setValue(object);
+		// newLCADataValue.setValueAsString(object.toString()); // SHOULD WE DO THIS AT ALL?
+
+		if (lcaDataPropertyProvider.isUnique()) {
+			removeValues(lcaDataPropertyProvider.getPropertyName());
+			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+		} else {
+			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+		}
+		lcaDataValues.add(newLCADataValue);
 	}
 
 	public String getName() {
-		return (String) getProperty(flowableNameString);
+		return (String) getOneProperty(flowableNameString);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<String> getSynonyms() {
-		return (List<String>) getProperty(flowableSynonymString);
+	public String[] getSynonyms() {
+		return (String[]) getAllProperties(flowableSynonymString);
 	}
 
 	public String getCas() {
-		return (String) getProperty(casString);
+		return (String) getOneProperty(casString);
 	}
 
-
-	// private static final Model tdbModel = ActiveTDB.tdbModel;
-
-
-	
-	public Object getLCADataPropertyValue(String key){
-		// Put Something Smart Here
-		Object value = null;
-		return value;
+	private void removeValues(String key) {
+		for (LCADataValue lcaDataValue : lcaDataValues) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				lcaDataValues.remove(lcaDataValue);
+			}
+		}
 	}
-	
-	public void setLCADataPropertyValue(Object value){
-		// Put Something Smart Here
-	}
-	
-	public void syncDataFromTDB() {
-		RDFNode rdfNode;
 
+	public void updateSyncDataFromTDB() {
 		if (tdbResource == null) {
 			return;
 		}
-		if (tdbResource.hasProperty(RDFS.label)) {
-			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
-			if (rdfNode != null) {
-				// name = ActiveTDB.getStringFromLiteral(rdfNode);
+		// FIRST DO LCADataPropertyProvider LIST WHICH ARE ALL LITERALS
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
+				continue;
+			}
+			if (lcaDataPropertyProvider.isUnique()) {
+				removeValues(lcaDataPropertyProvider.getPropertyName());
+				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
+						.getValue();
+				if (value.getClass().equals(
+						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+					LCADataValue lcaDataValue = new LCADataValue();
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setValue(value);
+					lcaDataValues.add(lcaDataValue);
+				}
+			} else {
+				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
+				while (stmtIterator.hasNext()) {
+					Object value = stmtIterator.next().getLiteral().getValue();
+					if (value.getClass().equals(
+							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+						LCADataValue lcaDataValue = new LCADataValue();
+						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue.setValue(value);
+						lcaDataValues.add(lcaDataValue);
+					}
+				}
 			}
 		}
+	}
 
-		// StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
-		// while (stmtIterator.hasNext()) {
-		// Statement statement = stmtIterator.next();
-		// rdfNode = statement.getObject();
-		// String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
-		// addSynonym(synonym);
-		// }
-		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
+	public void clearSyncDataFromTDB() {
+		lcaDataValues.clear();
+		updateSyncDataFromTDB();
 	}
 
 	// public void remove() {
@@ -306,13 +351,13 @@ public class Flowable {
 		return results;
 	}
 
-	public static String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
-		Flowable queryFlowable = new Flowable(queryFlowableResource); // TEMP
-		queryFlowable.syncDataFromTDB();
-		Flowable referenceFlowable = new Flowable(referenceFlowableResource);
-		referenceFlowable.syncDataFromTDB();
-		return compareFlowables(queryFlowable, referenceFlowable);
-	}
+	// public static String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
+	// Flowable queryFlowable = new Flowable(queryFlowableResource); // TEMP
+	// queryFlowable.syncDataFromTDB();
+	// Flowable referenceFlowable = new Flowable(referenceFlowableResource);
+	// referenceFlowable.syncDataFromTDB();
+	// return compareFlowables(queryFlowable, referenceFlowable);
+	// }
 
 	// public List<Flowable> findMatchingFlowables(Flowable flowable) {
 	// List<Flowable> hits = new ArrayList<Flowable>();
@@ -396,54 +441,54 @@ public class Flowable {
 	// checkLists)
 	// FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
 
-//	public static final CSVColumnInfo[] getHeaderMenuObjects() {
-//		CSVColumnInfo[] results = new CSVColumnInfo[5];
-//
-//		results[0] = new CSVColumnInfo(flowableNameString);
-//		results[0].setRequired(true);
-//		results[0].setUnique(true);
-//		results[0].setCheckLists(getFlowablesNameCheckList());
-//		results[0].setRDFClass(rdfClass);
-//		results[0].setTdbProperty(RDFS.label);
-//		results[0].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		results[1] = new CSVColumnInfo(flowableSynonymString);
-//		results[1].setRequired(false);
-//		results[1].setUnique(false);
-//		results[1].setCheckLists(getFlowablesNameCheckList());
-//		results[1].setRDFClass(rdfClass);
-//		results[1].setTdbProperty(SKOS.altLabel);
-//		results[1].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		results[2] = new CSVColumnInfo(casString);
-//		results[2].setRequired(false);
-//		results[2].setUnique(true);
-//		results[2].setCheckLists(getCASCheckList());
-//		results[2].setLeftJustified(false);
-//		results[2].setRDFClass(rdfClass);
-//		results[2].setTdbProperty(ECO.casNumber);
-//		results[2].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		results[3] = new CSVColumnInfo(chemicalFormulaString);
-//		results[3].setRequired(false);
-//		results[3].setUnique(false);
-//		results[3].setCheckLists(getFormulaCheckList());
-//		results[3].setLeftJustified(false);
-//		results[3].setRDFClass(rdfClass);
-//		results[3].setTdbProperty(ECO.chemicalFormula);
-//		results[3].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		results[4] = new CSVColumnInfo(smilesString);
-//		results[4].setRequired(false);
-//		results[4].setUnique(false);
-//		results[4].setCheckLists(getSmilesCheckList());
-//		results[4].setLeftJustified(false);
-//		results[4].setRDFClass(rdfClass);
-//		results[4].setTdbProperty(FedLCA.hasSmilesString);
-//		results[4].setRdfDatatype(XSDDatatype.XSDstring);
-//
-//		return results;
-//	}
+	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
+	// CSVColumnInfo[] results = new CSVColumnInfo[5];
+	//
+	// results[0] = new CSVColumnInfo(flowableNameString);
+	// results[0].setRequired(true);
+	// results[0].setUnique(true);
+	// results[0].setCheckLists(getFlowablesNameCheckList());
+	// results[0].setRDFClass(rdfClass);
+	// results[0].setTdbProperty(RDFS.label);
+	// results[0].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// results[1] = new CSVColumnInfo(flowableSynonymString);
+	// results[1].setRequired(false);
+	// results[1].setUnique(false);
+	// results[1].setCheckLists(getFlowablesNameCheckList());
+	// results[1].setRDFClass(rdfClass);
+	// results[1].setTdbProperty(SKOS.altLabel);
+	// results[1].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// results[2] = new CSVColumnInfo(casString);
+	// results[2].setRequired(false);
+	// results[2].setUnique(true);
+	// results[2].setCheckLists(getCASCheckList());
+	// results[2].setLeftJustified(false);
+	// results[2].setRDFClass(rdfClass);
+	// results[2].setTdbProperty(ECO.casNumber);
+	// results[2].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// results[3] = new CSVColumnInfo(chemicalFormulaString);
+	// results[3].setRequired(false);
+	// results[3].setUnique(false);
+	// results[3].setCheckLists(getFormulaCheckList());
+	// results[3].setLeftJustified(false);
+	// results[3].setRDFClass(rdfClass);
+	// results[3].setTdbProperty(ECO.chemicalFormula);
+	// results[3].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// results[4] = new CSVColumnInfo(smilesString);
+	// results[4].setRequired(false);
+	// results[4].setUnique(false);
+	// results[4].setCheckLists(getSmilesCheckList());
+	// results[4].setLeftJustified(false);
+	// results[4].setRDFClass(rdfClass);
+	// results[4].setTdbProperty(FedLCA.hasSmilesString);
+	// results[4].setRdfDatatype(XSDDatatype.XSDstring);
+	//
+	// return results;
+	// }
 
 	private static List<QACheck> getFormulaCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
@@ -666,7 +711,7 @@ public class Flowable {
 	public void setTdbResource(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 	}
-	
+
 	public List<LCADataValue> getLcaDataValues() {
 		return lcaDataValues;
 	}
@@ -716,28 +761,28 @@ public class Flowable {
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
-	
+
 	public static Map<String, LCADataPropertyProvider> getDataPropertyMap() {
 		return dataPropertyMap;
 	}
 
-//	public static String getFlowableNameString() {
-//		return flowableNameString;
-//	}
-//
-//	public static String getFlowableSynonymString() {
-//		return flowableSynonymString;
-//	}
-//
-//	public static String getCASString() {
-//		return casString;
-//	}
-//
-//	public static String getChemicalformulastring() {
-//		return chemicalFormulaString;
-//	}
-//
-//	public static String getSMILESString() {
-//		return smilesString;
-//	}
+	// public static String getFlowableNameString() {
+	// return flowableNameString;
+	// }
+	//
+	// public static String getFlowableSynonymString() {
+	// return flowableSynonymString;
+	// }
+	//
+	// public static String getCASString() {
+	// return casString;
+	// }
+	//
+	// public static String getChemicalformulastring() {
+	// return chemicalFormulaString;
+	// }
+	//
+	// public static String getSMILESString() {
+	// return smilesString;
+	// }
 }

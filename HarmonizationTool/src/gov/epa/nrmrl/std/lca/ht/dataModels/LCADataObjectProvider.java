@@ -24,47 +24,6 @@ public class LCADataObjectProvider {
 		// syncDataFromTDB();
 	}
 
-	// private static final Model tdbModel = ActiveTDB.tdbModel;
-	
-//	public void syncDataFromTDB() {
-//		if (tdbResource == null){
-//			return;
-//		}
-//		for (LCADataPropertyProvider lcaDataProperty:lcaDataProperties){
-//			Property property = lcaDataProperty.getTDBProperty();
-//			if (tdbResource.hasProperty(property)){
-//				if (lcaDataProperty.isUnique()){
-//					lcaDataProperty.setTdbResource(tdbResource.getPropertyResourceValue(property));
-//					ActiveTDB.tsReplaceResource(tdbResource, property, lcaDataProperty.getTdbResource());
-//				}
-//				else {
-//					StmtIterator stmtIterator = tdbResource.listProperties(property);
-//					// ... THIS IS HARD! FIXME (EVENTUALLY)
-//				}
-//			}
-//		}
-//		RDFNode rdfNode;
-//	
-//		if (tdbResource == null) {
-//			return;
-//		}
-//		if (tdbResource.hasProperty(RDFS.label)) {
-//			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
-//			if (rdfNode != null) {
-//				name = ActiveTDB.getStringFromLiteral(rdfNode);
-//			}
-//		}
-//	
-//		// StmtIterator stmtIterator = tdbResource.listProperties(SKOS.altLabel);
-//		// while (stmtIterator.hasNext()) {
-//		// Statement statement = stmtIterator.next();
-//		// rdfNode = statement.getObject();
-//		// String synonym = ActiveTDB.getStringFromLiteral(rdfNode);
-//		// addSynonym(synonym);
-//		// }
-//		// FIXME - FILL THIS IN OR DEAL WITH INCOMPLETE SYNCING
-//	}
-
 	public List<LCADataPropertyProvider> getLcaDataProperties() {
 		return lcaDataProperties;
 	}

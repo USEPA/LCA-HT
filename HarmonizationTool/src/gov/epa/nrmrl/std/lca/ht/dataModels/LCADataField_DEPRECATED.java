@@ -3,14 +3,14 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class LCADataField {
+public class LCADataField_DEPRECATED {
 	private Resource resourceSubject;
 	private Property propertyPredicate;
 	private String literalObjectType;
 	private boolean functional;
 	private boolean required;
 
-	public LCADataField(Resource resourceSubject, Property propertyPredicate, String literalObjectType,
+	public LCADataField_DEPRECATED(Resource resourceSubject, Property propertyPredicate, String literalObjectType,
 			boolean functional, boolean required) {
 		super();
 		this.resourceSubject = resourceSubject;
@@ -20,8 +20,8 @@ public class LCADataField {
 		this.required = required;
 	}
 
-	public LCADataField() {
-		// NEW BLANK LCADataField
+	public LCADataField_DEPRECATED() {
+		// NEW BLANK LCADataField_DEPRECATED
 	}
 
 	public Resource getResourceSubject() {
