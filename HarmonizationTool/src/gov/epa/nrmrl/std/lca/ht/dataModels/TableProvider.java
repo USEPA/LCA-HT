@@ -22,7 +22,7 @@ public class TableProvider {
 	private int lastChecked;
 	private int lastUpdated;
 
-	private CSVColumnInfo[] assignedCSVColumnInfo = null;  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+//	private CSVColumnInfo[] assignedCSVColumnInfo = null;  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 
 	private LCADataPropertyProvider[] lcaDataProperties = null;
 
@@ -30,13 +30,13 @@ public class TableProvider {
 	// // PSSH (PUT SOMETHING SMART HERE)
 	// }
 
-	public CSVColumnInfo[] getAssignedCSVColumnInfo() {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
-		return assignedCSVColumnInfo;
-	}
-
-	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
-		this.assignedCSVColumnInfo = assignedCSVColumnInfo;
-	}
+//	public CSVColumnInfo[] getAssignedCSVColumnInfo() {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+//		return assignedCSVColumnInfo;
+//	}
+//
+//	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+//		this.assignedCSVColumnInfo = assignedCSVColumnInfo;
+//	}
 
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
 		return lcaDataProperties[colNumber];

@@ -21,6 +21,7 @@ public class FlowContext {
 	public static final String flowContextPrimaryIdentifier = "Primary Info";
 	public static final String flowContextAdditionalIdentifier = "Additional Info";
 	private static final Resource rdfClass = FASC.Compartment;
+	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";
 	public static final String comment = "Compartments are used for classifying effects.  Effects have a hasCompartment property and the type of the value of that property may be used to classify the effect.  Examples of compartments include emissions to urban air and resource consumption from water.";
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
@@ -67,6 +68,7 @@ public class FlowContext {
 		clearSyncDataFromTDB();
 	}
 
+	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
 			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
@@ -144,7 +146,7 @@ public class FlowContext {
 		if (tdbResource == null) {
 			return;
 		}
-		// FIRST DO LCADataPropertyProvider LIST WHICH ARE ALL LITERALS
+		// LCADataPropertyProvider LIST IS ALL LITERALS
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
 			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
 				continue;
@@ -181,102 +183,13 @@ public class FlowContext {
 		updateSyncDataFromTDB();
 	}
 
-	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
-	// CSVColumnInfo[] results = new CSVColumnInfo[2];
-	//
-	// results[0] = new CSVColumnInfo("Context (primary)");
-	// results[0].setRequired(true);
-	// results[0].setUnique(true);
-	// results[0].setCheckLists(getContextNameCheckList());
-	// results[0].setLeftJustified(true);
-	// results[0].setRDFClass(rdfClass);
-	// results[0].setTdbProperty(FASC.hasCompartment);
-	// results[0].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// results[1] = new CSVColumnInfo("Context (additional)");
-	// results[1].setRequired(false);
-	// results[1].setUnique(false);
-	// results[1].setCheckLists(getContextNameCheckList());
-	// results[1].setLeftJustified(true);
-	// results[1].setRDFClass(rdfClass);
-	// results[1].setTdbProperty(FedLCA.flowContextSupplementalDescription);
-	// results[1].setRdfDatatype(XSDDatatype.XSDstring);
-	// return results;
-	// }
-
 	private static List<QACheck> getContextNameCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-
-		// String d1 = "Non-allowed characters";
-		// String e1 =
-		// "Various characters are not considered acceptible in standard chemical names.";
-		// String s1 = "Check your data";
-		// Pattern p1 = Pattern.compile("^([^\"]+)[\"]([^\"]+)$");
-		// String r1 = null;
-		//
-		// qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
 		return qaChecks;
 	}
 
-	// public String getPrimaryFlowContext() {
-	// return primaryFlowContext;
-	// }
-
-	public Object getLCADataPropertyValue(String key) {
-		// Put Something Smart Here
-		Object value = null;
-		return value;
-	}
-
-	public void setLCADataPropertyValue(Object value) {
-		// Put Something Smart Here
-	}
-
-	// public void setPrimaryFlowContext(String primaryFlowContext) {
-	// this.primaryFlowContext = primaryFlowContext;
-	// RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-	// ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowContextPrimaryDescription, rdfDatatype, primaryFlowContext);
-	// }
-
-	// public List<String> getsupplementaryFlowContexts() {
-	// return supplementaryFlowContexts;
-	// }
-
-	// public void setSupplementaryFlowContexts(List<String> supplementaryFlowContexts) {
-	// ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowContextSupplementalDescription);
-	// this.supplementaryFlowContexts = supplementaryFlowContexts;
-	// for (String supplementaryFlowContext : supplementaryFlowContexts) {
-	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, supplementaryFlowContext);
-	// }
-	// }
-
-	// public void addSupplementaryFlowContext(String supplementaryFlowContext) {
-	// if (supplementaryFlowContexts == null) {
-	// supplementaryFlowContexts = new ArrayList<String>();
-	// }
-	// supplementaryFlowContexts.add(supplementaryFlowContext);
-	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, supplementaryFlowContext);
-	// }
-
-	// public void removeSupplementaryFlowContext(String supplementaryFlowContext) {
-	// this.supplementaryFlowContexts.remove(supplementaryFlowContext);
-	// Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowContext);
-	// ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowContextSupplementalDescription, literalToRemove);
-	// }
-
 	public Resource getTdbResource() {
 		return tdbResource;
-	}
-
-	public void setTdbResource(Resource tdbResource) {
-		// StmtIterator stmtIterator = this.tdbResource.listProperties();
-		// while (stmtIterator.hasNext()){
-		// Statement statement = stmtIterator.next();
-		// ActiveTDB.tdbModel.remove(statement);
-		// }
-		// NEXT STATEMENT REPLACES ABOVE
-		this.tdbResource.removeProperties();
-		this.tdbResource = tdbResource;
 	}
 
 	public static Resource getRdfclass() {

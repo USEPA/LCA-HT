@@ -1,24 +1,29 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class LCADataPropertyProvider {
-	private String propertyName;               // e.g. "Flowable Name"
-	private Resource rdfClass;                 // e.g. ECO.Flowable;
-	private RDFDatatype rdfDatatype;           // e.g. XSDDatatype.XSDfloat
-	private boolean isRequired = false;        // e.g. true
-	private boolean isUnique = true;           // e.g. false
-	private boolean leftJustified = true;      // e.g. true
-	private List<QACheck> qaChecks;            // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
+	private String propertyName; // e.g. "Flowable Name"
+	private Resource rdfClass; // e.g. ECO.Flowable;
+	private RDFDatatype rdfDatatype; // e.g. XSDDatatype.XSDfloat
+	private boolean isRequired = false; // e.g. true
+	private boolean isUnique = true; // e.g. false
+	private boolean leftJustified = true; // e.g. true
+	private List<QACheck> qaChecks; // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
 	private Property tdbProperty;
-	
-//	private List<Issue> issues = new ArrayList<Issue>();
-//	private List<String> values = new ArrayList<String>();
+
+	// private List<Issue> issues = new ArrayList<Issue>();
+	// private List<String> values = new ArrayList<String>();
 
 	public LCADataPropertyProvider() {
 
@@ -37,14 +42,21 @@ public class LCADataPropertyProvider {
 		result.isRequired = lcaDataProperty.isRequired();
 		result.isUnique = lcaDataProperty.isUnique();
 		result.leftJustified = lcaDataProperty.isLeftJustified();
-//		result.tdbProperty = lcaDataProperty.getTDBProperty();
+		// result.tdbProperty = lcaDataProperty.getTDBProperty();
 		result.qaChecks = lcaDataProperty.copyCheckLists();
 		// BUT DON'T COPY ISSUES
 		// this.issues = menuCSVColumnInfo.copyIssues();
 		// INITIALIZE INSTEAD
-//		result.issues = new ArrayList<Issue>();
-//		propertyValueJavaClass = Integer.getClass();
+		// result.issues = new ArrayList<Issue>();
+		// propertyValueJavaClass = Integer.getClass();
 		return result;
+	}
+
+	public String getDataClassName() {
+		if (rdfClass.hasProperty(RDFS.label)) {
+			return rdfClass.getPropertyResourceValue(RDFS.label).asLiteral().getString();
+		}
+		return null;
 	}
 
 	// public LCADataPropertyProvider(LCADataPropertyProvider menuCSVColumnInfo) {
@@ -71,13 +83,13 @@ public class LCADataPropertyProvider {
 		this.propertyName = propertyName;
 	}
 
-//	public Object getPropertyValueJavaType() {
-//		return propertyValueJavaType;
-//	}
-//
-//	public void setPropertyValueJavaType(Object propertyValueJavaType) {
-//		this.propertyValueJavaType = propertyValueJavaType;
-//	}
+	// public Object getPropertyValueJavaType() {
+	// return propertyValueJavaType;
+	// }
+	//
+	// public void setPropertyValueJavaType(Object propertyValueJavaType) {
+	// this.propertyValueJavaType = propertyValueJavaType;
+	// }
 
 	public Resource getRDFClass() {
 		return rdfClass;
@@ -140,25 +152,25 @@ public class LCADataPropertyProvider {
 		this.qaChecks.add(qaCheck);
 	}
 
-//	public List<Issue> getIssues() {
-//		return issues;
-//	}
-//
-//	public void setIssues(List<Issue> issues) {
-//		this.issues = issues;
-//	}
-//
-//	public void addIssue(Issue issue) {
-//		this.issues.add(issue);
-//	}
-//
-//	public int getIssueCount() {
-//		return this.issues.size();
-//	}
-//
-//	public void clearIssues() {
-//		this.issues.clear();
-//	}
+	// public List<Issue> getIssues() {
+	// return issues;
+	// }
+	//
+	// public void setIssues(List<Issue> issues) {
+	// this.issues = issues;
+	// }
+	//
+	// public void addIssue(Issue issue) {
+	// this.issues.add(issue);
+	// }
+	//
+	// public int getIssueCount() {
+	// return this.issues.size();
+	// }
+	//
+	// public void clearIssues() {
+	// this.issues.clear();
+	// }
 
 	public Property getTDBProperty() {
 		return tdbProperty;

@@ -35,8 +35,9 @@ public class Flowable {
 	public static final String chemicalFormulaString = "Chemical formula";
 	public static final String smilesString = "SMILES";
 	private static final Resource rdfClass = ECO.Flowable;
+	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flowable";
-	public static final String comment = "A flowable is  the entity that flows in an elementary flow.  It can be a substance or energy.  Examples of flowables include CO2 and waste heat. No identity conditions are specified for flowables.";
+	public static final String comment = "A flowable is the entity that flows in an elementary flow.  It can be a substance or energy.  Examples of flowables include CO2 and waste heat. No identity conditions are specified for flowables.";
 	public static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
 	static {
@@ -114,6 +115,7 @@ public class Flowable {
 		clearSyncDataFromTDB();
 	}
 
+	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
 			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
@@ -203,7 +205,7 @@ public class Flowable {
 		if (tdbResource == null) {
 			return;
 		}
-		// FIRST DO LCADataPropertyProvider LIST WHICH ARE ALL LITERALS
+		// LCADataPropertyProvider LIST IS ALL LITERALS
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
 			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
 				continue;
