@@ -180,17 +180,20 @@ public class Flowable {
 		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
 		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
+		boolean found = false;
 		if (lcaDataPropertyProvider.isUnique()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
 				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
 					lcaDataValue.setValueAsString(valueAsString);
+					found = true;
 					Object object = lcaDataValue.getValue();
 					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
 							object);
 					continue;
 				}
 			}
-		} else {
+		}
+		if (!found) {
 			LCADataValue lcaDataValue = new LCADataValue();
 			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 			lcaDataValue.setValueAsString(valueAsString);
@@ -311,93 +314,93 @@ public class Flowable {
 		// FIND MATCHES FOR THIS FLOWABLE
 		// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 		// Q-NAME = DB-NAME
-		return results;
-//		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
-//		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//			if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//				continue; // DON'T MATCH YOURSELF
-//			}
-//			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				continue; // NOT A FLOWABLE
-//			}
-//			// THIS IS A name-name MATCH
-//			MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//			results.add(matchCandidate);
-//		}
-//
-//		// Q-NAME = DB-SYN
-//		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//			if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//				continue; // DON'T MATCH YOURSELF
-//			}
-//			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				continue; // NOT A FLOWABLE
-//			}
-//			// THIS IS A name-synonym MATCH
-//			MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//			results.add(matchCandidate);
-//		}
-//
-//		//
-//		StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
-//		while (stmtIterator.hasNext()) {
-//			RDFNode objectAltName = stmtIterator.next().getObject();
-//			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
-//			// Q-SYN = DB-NAME
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS A synonym-name MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//
-//			// Q-SYN = DB-SYN
-//			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS A synonym-synonym MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//		}
-//
-//		// CAS MATCHING
-//		if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
-//			objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
-//			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS AN fCAS-fCAS MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//		}
-//
-//		// OTHER MATCHES ?!?
-//
 //		return results;
+		 RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
+		 ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
+		 while (resIterator.hasNext()) {
+		 Resource flowableMatchCandidate = resIterator.next();
+		 if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+		 continue; // DON'T MATCH YOURSELF
+		 }
+		 if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+		 continue; // NOT A FLOWABLE
+		 }
+		 // THIS IS A name-name MATCH
+		 MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+		 results.add(matchCandidate);
+		 }
+		
+		 // Q-NAME = DB-SYN
+		 resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+		 while (resIterator.hasNext()) {
+		 Resource flowableMatchCandidate = resIterator.next();
+		 if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+		 continue; // DON'T MATCH YOURSELF
+		 }
+		 if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+		 continue; // NOT A FLOWABLE
+		 }
+		 // THIS IS A name-synonym MATCH
+		 MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+		 results.add(matchCandidate);
+		 }
+		
+		 //
+		 StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
+		 while (stmtIterator.hasNext()) {
+		 RDFNode objectAltName = stmtIterator.next().getObject();
+		 resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
+		 // Q-SYN = DB-NAME
+		 while (resIterator.hasNext()) {
+		 Resource flowableMatchCandidate = resIterator.next();
+		 if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+		 continue; // DON'T MATCH YOURSELF
+		 }
+		 if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+		 continue; // NOT A FLOWABLE
+		 }
+		 // THIS IS A synonym-name MATCH
+		 MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+		 results.add(matchCandidate);
+		 }
+		
+		 // Q-SYN = DB-SYN
+		 resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+		 while (resIterator.hasNext()) {
+		 Resource flowableMatchCandidate = resIterator.next();
+		 if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+		 continue; // DON'T MATCH YOURSELF
+		 }
+		 if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+		 continue; // NOT A FLOWABLE
+		 }
+		 // THIS IS A synonym-synonym MATCH
+		 MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+		 results.add(matchCandidate);
+		 }
+		 }
+		
+		 // CAS MATCHING
+		 if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
+		 objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
+		 resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
+		 while (resIterator.hasNext()) {
+		 Resource flowableMatchCandidate = resIterator.next();
+		 if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+		 continue; // DON'T MATCH YOURSELF
+		 }
+		 if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+		 continue; // NOT A FLOWABLE
+		 }
+		 // THIS IS AN fCAS-fCAS MATCH
+		 MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+		 results.add(matchCandidate);
+		 }
+		 }
+		
+		 // OTHER MATCHES ?!?
+		
+		 return results;
 	}
 
 	// public static String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
