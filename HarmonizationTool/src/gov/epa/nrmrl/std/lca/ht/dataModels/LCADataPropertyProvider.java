@@ -1,19 +1,15 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class LCADataPropertyProvider {
-	private String propertyName; // e.g. "Flowable Name"
+	private String propertyClass; // e.g. "Flowable"
+	private String propertyName; // e.g. "Name"
 	private Resource rdfClass; // e.g. ECO.Flowable;
 	private RDFDatatype rdfDatatype; // e.g. XSDDatatype.XSDfloat
 	private boolean isRequired = false; // e.g. true
@@ -52,12 +48,31 @@ public class LCADataPropertyProvider {
 		return result;
 	}
 
-	public String getDataClassName() {
-		if (rdfClass.hasProperty(RDFS.label)) {
-			return rdfClass.getPropertyResourceValue(RDFS.label).asLiteral().getString();
+	private static boolean compareLCADataPropertyProviders(LCADataPropertyProvider lcaDataProperty1, LCADataPropertyProvider lcaDataProperty2){
+		if (lcaDataProperty1 == null){
+			return false;
 		}
-		return null;
+		if (lcaDataProperty2 == null){
+			return false;
+		}
+		if (!lcaDataProperty1.getPropertyClass().equals(lcaDataProperty2.getPropertyClass())){
+			return false;
+		}
+		if (!lcaDataProperty1.getPropertyName().equals(lcaDataProperty2.getPropertyName())){
+			return false;
+		}
+		return true;
 	}
+	
+	public boolean sameAs(LCADataPropertyProvider lcaDataPropertyProvider){
+		return compareLCADataPropertyProviders(this, lcaDataPropertyProvider);
+	}
+//	public String getDataClassName() {
+//		if (rdfClass.hasProperty(RDFS.label)) {
+//			return rdfClass.getPropertyResourceValue(RDFS.label).asLiteral().getString();
+//		}
+//		return null;
+//	}
 
 	// public LCADataPropertyProvider(LCADataPropertyProvider menuCSVColumnInfo) {
 	// // CSVColumnInfo newCSVColumnInfo = new CSVColumnInfo();
@@ -74,6 +89,14 @@ public class LCADataPropertyProvider {
 	// // INITIALIZE INSTEAD
 	// this.issues = new ArrayList<Issue>();
 	// }
+
+	public String getPropertyClass() {
+		return propertyClass;
+	}
+
+	public void setPropertyClass(String propertyClass) {
+		this.propertyClass = propertyClass;
+	}
 
 	public String getPropertyName() {
 		return propertyName;

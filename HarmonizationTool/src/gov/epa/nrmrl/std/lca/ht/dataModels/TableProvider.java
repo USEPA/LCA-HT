@@ -1,8 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,10 +36,16 @@ public class TableProvider {
 //	}
 
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
+		if (lcaDataProperties == null){
+			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
+		}
 		return lcaDataProperties[colNumber];
 	}
 	
 	public void setLCADataPropertyProvider(int colNumber, LCADataPropertyProvider lcaDataPropertyProvider) {
+		if (lcaDataProperties == null){
+			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
+		}
 		lcaDataProperties[colNumber] = lcaDataPropertyProvider;
 	}
 	
@@ -200,6 +203,9 @@ public class TableProvider {
 	}
 
 	public LCADataPropertyProvider[] getLcaDataProperties() {
+		if (lcaDataProperties == null){
+			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
+		}
 		return lcaDataProperties;
 	}
 

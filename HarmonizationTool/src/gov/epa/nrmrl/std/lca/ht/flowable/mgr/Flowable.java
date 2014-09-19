@@ -41,13 +41,25 @@ public class Flowable {
 	public static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
 	static {
-		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
+		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		// JUNO: UNCOMMENTING THE LINES BELOW SUGGEST SOMETHING VERY ODD ABOUT THE TDB:
+		// 
+//		System.out.println("label assigned to Flowable");
+//		rdfClass.addProperty(RDFS.label, label);   // <-- THIS SUCCEEDS IN THE ASSIGNMENT
+//
+//		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+//			System.out.println(rdfClass.getProperty(RDFS.label).getString());
+//		} else {
+//			System.out.println("wtf");
+//		}
+//
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableNameString);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(true);
@@ -59,6 +71,7 @@ public class Flowable {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableSynonymString);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
@@ -69,6 +82,7 @@ public class Flowable {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(casString);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
@@ -79,6 +93,7 @@ public class Flowable {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(chemicalFormulaString);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
@@ -89,6 +104,7 @@ public class Flowable {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);

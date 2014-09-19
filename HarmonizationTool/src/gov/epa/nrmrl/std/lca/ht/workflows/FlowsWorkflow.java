@@ -325,25 +325,25 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowProperties.setText(flowProperties);
 	}
 
-	private static void setHeaderInfo() {
-		if (Util.findView(CSVTableView.ID) == null) {
-			try {
-				Util.showView(CSVTableView.ID);
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			}
-		}
-		if (CSVTableView.getTableProviderKey() == null) {
-			return;
-		}
-
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 1");
-//		CSVTableView.addFields(Flowable.getDataPropertyMap());
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
-//		CSVTableView.addFields(FlowContext.getDataPropertyMap());
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
-//		CSVTableView.addFields(FlowProperty.getDataPropertyMap());
-	}
+	// private static void setHeaderInfo() {
+	// if (Util.findView(CSVTableView.ID) == null) {
+	// try {
+	// Util.showView(CSVTableView.ID);
+	// } catch (PartInitException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// if (CSVTableView.getTableProviderKey() == null) {
+	// return;
+	// }
+	// // CSVTableView.
+	// // System.out.println("Workflow telling CSVTableView to add header menu stuff 1");
+	// // CSVTableView.addFields(Flowable.getDataPropertyMap());
+	// // System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
+	// // CSVTableView.addFields(FlowContext.getDataPropertyMap());
+	// // System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
+	// // CSVTableView.addFields(FlowProperty.getDataPropertyMap());
+	// }
 
 	SelectionListener loadCSVListener = new SelectionListener() {
 
@@ -368,7 +368,7 @@ public class FlowsWorkflow extends ViewPart {
 						.getPath());
 				btnCheckData.setEnabled(true);
 				System.out.println("About to do setHeaderInfo()");
-				setHeaderInfo();
+				// setHeaderInfo();
 			}
 		}
 
@@ -388,91 +388,91 @@ public class FlowsWorkflow extends ViewPart {
 			textCheckData.setText(" ... checking data ...");
 			// CSVColumnInfo[] csvColumnInfos = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 			// .getAssignedCSVColumnInfo();
-			CSVColumnInfo[] csvColumnInfos = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
-			List<CSVColumnInfo> requiredCSVColumnInfo = new ArrayList<CSVColumnInfo>();
+			// CSVColumnInfo[] csvColumnInfos = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
+			LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
+					CSVTableView.getTableProviderKey()).getLcaDataProperties();
+			// List<CSVColumnInfo> requiredCSVColumnInfo = new ArrayList<CSVColumnInfo>();
+			List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
 			boolean checkForRequiredFlowableFields = false;
 			boolean checkForRequiredFlowContextFields = false;
 			boolean checkForRequiredFlowPropertyFields = false;
 
 			int countOfAssignedFields = 0;
-			for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
-				if (csvColumnInfo == null) {
+			// for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
+			for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropreties) {
+				if (lcaDataPropertyProvider == null) {
 					continue;
 				}
 				countOfAssignedFields++;
-				if (csvColumnInfo.sameRDFClassAs(Flowable.getRdfclass())) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 					checkForRequiredFlowableFields = true;
 				}
-				if (csvColumnInfo.sameRDFClassAs(FlowContext.getRdfclass())) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 					checkForRequiredFlowContextFields = true;
 				}
-				if (csvColumnInfo.sameRDFClassAs(FlowProperty.getRdfclass())) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
 					checkForRequiredFlowPropertyFields = true;
 				}
-				if (csvColumnInfo.isRequired()) {
-					requiredCSVColumnInfo.add(csvColumnInfo);
+				if (lcaDataPropertyProvider.isRequired()) {
+					requiredLCADataPropertyProvider.add(lcaDataPropertyProvider);
 				}
 			}
 			// FIXME LINES BELOW COMMENTED OUT TO MAKE CODE COMPILE
 
-			// if (checkForRequiredFlowableFields) {
-			// for (CSVColumnInfo requiredFlowableCSVColumnInfo : Flowable.getHeaderMenuObjects()) {
-			// if (requiredFlowableCSVColumnInfo.isRequired()) {
-			// boolean found = false;
-			// for (CSVColumnInfo gotIt : requiredCSVColumnInfo) {
-			// if (gotIt != null) {
-			// if (gotIt.sameRDFClassAs(requiredFlowableCSVColumnInfo)) {
-			// found = true;
-			// }
-			// }
-			// }
-			// if (found == false) {
-			// new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-			// "For each flowable, the " + requiredFlowableCSVColumnInfo.getHeaderString()
-			// + " is required");
-			// }
-			// }
-			// }
-			// }
-			// if (checkForRequiredFlowContextFields) {
-			// for (CSVColumnInfo requiredFlowContextCSVColumnInfo : FlowContext.getHeaderMenuObjects()) {
-			// if (requiredFlowContextCSVColumnInfo.isRequired()) {
-			// boolean found = false;
-			// for (CSVColumnInfo gotIt : requiredCSVColumnInfo) {
-			// if (gotIt != null) {
-			// if (gotIt.sameRDFClassAs(requiredFlowContextCSVColumnInfo)) {
-			// found = true;
-			// }
-			// }
-			// }
-			// if (found == false) {
-			// new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-			// "For each flow context, the " + requiredFlowContextCSVColumnInfo.getHeaderString()
-			// + " is required");
-			// }
-			// }
-			// }
-			// }
-			// if (checkForRequiredFlowPropertyFields) {
-			// for (CSVColumnInfo requiredFlowPropertyCSVColumnInfo : FlowProperty.getHeaderMenuObjects()) {
-			// if (requiredFlowPropertyCSVColumnInfo.isRequired()) {
-			// boolean found = false;
-			// for (CSVColumnInfo gotIt : requiredCSVColumnInfo) {
-			// if (gotIt != null) {
-			// if (gotIt.sameRDFClassAs(requiredFlowPropertyCSVColumnInfo)) {
-			// found = true;
-			// }
-			// }
-			// }
-			// if (found == false) {
-			// new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-			// "For each flow property, the " + requiredFlowPropertyCSVColumnInfo.getHeaderString()
-			// + " is required");
-			// }
-			// }
-			// }
-			// }
-			// FIXME LINES BELOW COMMENTED OUT TO MAKE CODE COMPILE
+			if (checkForRequiredFlowableFields) {
+				for (LCADataPropertyProvider requiredLCADataProperty : Flowable.getDataPropertyMap().values()) {
+					if (requiredLCADataProperty.isRequired()) {
+						boolean found = false;
+						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+							if (gotIt.sameAs(requiredLCADataProperty)) {
+								found = true;
+								continue;
+							}
+						}
+						if (found == false) {
+							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+									"For each flowable, the " + requiredLCADataProperty.getPropertyName()
+											+ " is required");
+						}
+					}
+				}
+			}
+			if (checkForRequiredFlowContextFields) {
+				for (LCADataPropertyProvider requiredLCADataProperty : FlowContext.getDataPropertyMap().values()) {
+					if (requiredLCADataProperty.isRequired()) {
+						boolean found = false;
+						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+							if (gotIt.sameAs(requiredLCADataProperty)) {
+								found = true;
+								continue;
+							}
+						}
+						if (found == false) {
+							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+									"For each flow context, the " + requiredLCADataProperty.getPropertyName()
+											+ " is required");
+						}
+					}
+				}
+			}
+			if (checkForRequiredFlowPropertyFields) {
+				for (LCADataPropertyProvider requiredLCADataProperty : FlowProperty.getDataPropertyMap().values()) {
+					if (requiredLCADataProperty.isRequired()) {
+						boolean found = false;
+						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+							if (gotIt.sameAs(requiredLCADataProperty)) {
+								found = true;
+								continue;
+							}
+						}
+						if (found == false) {
+							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+									"For each flow property, the " + requiredLCADataProperty.getPropertyName()
+											+ " is required");
+						}
+					}
+				}
+			}
 
 			// int colsChecked = CSVTableView.countAssignedColumns();
 			// int colsChecked = 0;
@@ -483,8 +483,8 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setEnabled(false);
 				btnCommit.setEnabled(false);
 			} else {
-				// int issueCount = CSVTableView.checkCols();
-				int issueCount = 0;
+				int issueCount = CSVTableView.checkCols();
+//				int issueCount = 0;
 				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
 				textCheckData.setText(issueCount + " issues. " + countOfAssignedFields + " columns checked");

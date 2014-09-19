@@ -34,6 +34,7 @@ public class FlowContext {
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextPrimaryIdentifier);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(true);
 		lcaDataPropertyProvider.setUnique(true);
@@ -43,6 +44,7 @@ public class FlowContext {
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextAdditionalIdentifier);
+		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
 		lcaDataPropertyProvider.setUnique(false);
