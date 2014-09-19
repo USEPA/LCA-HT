@@ -52,8 +52,6 @@ A24 BUG: Transaction work not complete.
 
 A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.  
 
-A26 BUG: Two De-assign columns showing up still...
-
 A27 BUG: Remove the Logger WARN, INFO, etc..
 
 A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated.
@@ -71,9 +69,6 @@ Which makes it confusing to see what row you are actually wanting to ignore.  It
 
 U3: TAGGED concept: Allow the user to select a row and "tag it" and sort by
 All tagged rows.  
-
-U4: Instead of -'s in the csv table, label each column with a number (1...n) so
-That the user to look at a column and know where he/she is positioned.  
 
 U5: Add changes from flowWorkflowUI.png
 
@@ -201,10 +196,6 @@ B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't ev
   be possible if the data hasn't been checked via the Check Data button (2).
 
  SOLN: Change menu options to include only possible ones
-
-B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
-  SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
-  STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
 
 B22 (copied from A3)
   FEATURE REQUEST:  Startup allows user to choose project directory
@@ -394,9 +385,21 @@ A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded
   is doing something?
   SOLN: Remove from menu
   
+A26 BUG: Two De-assign columns showing up still...
+    STATUS: resolved
+  
 U1: Under Window Manager the only "perspectives" option should be to restore the 
 Original perspective that the user sees on first startup.  For now, let's not deal with any other perspectives.
 STATUS: Done.
 
+U4: Instead of -'s in the csv table, label each column with a number (1...n) so
+That the user to look at a column and know where he/she is positioned.  
+  STATUS: Done
+  
 U7: Change Query Context in Match Properties Tool to Query Properties
     STATUS: Done
+    
+B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
+  SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
+  STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
+  STATUS: Resolved.  Chris, check it, maybe?

@@ -46,7 +46,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.custom.StackLayout;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -92,12 +91,11 @@ public class CSVTableView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		composite_1 = new Composite(parent, SWT.NONE);
-		composite_1.setLayout(new StackLayout());
-
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(null);
 		System.out.println("hello, from sunny CSVTableView!");
 
-		initializeTableViewer(composite_1);
+		initializeTableViewer(composite);
 		initialize();
 
 		parent.addListener(SWT.Resize, new Listener() {
@@ -108,7 +106,7 @@ public class CSVTableView extends ViewPart {
 			// THIS IS NOT PERFECT
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
-		initializePopup(composite_1);
+		initializePopup(composite);
 	}
 
 	private static void initializeTableViewer(Composite composite) {
@@ -280,11 +278,13 @@ public class CSVTableView extends ViewPart {
 
 	private static void initializePopup(Composite composite) {
 		// popup.addListener(SWT.Modify, popupResizeListener);
-		popup = new Text(composite, SWT.BORDER | SWT.WRAP | SWT.ON_TOP);
+		popup = new Text(composite, SWT.BORDER | SWT.WRAP);
 		popup.setEditable(false);
 		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		popup.setText("");
 		popup.setVisible(false);
+		popup.setLocation(90, 90);
+		popup.setBounds(90, 90, 300, 60);
 	}
 
 	// private static void initializeRowMenu() {
@@ -508,10 +508,10 @@ public class CSVTableView extends ViewPart {
 		headerMenu = new Menu(table);
 
 		MenuItem menuItem;
-		menuItem = new MenuItem(headerMenu, SWT.CASCADE);
 		if (option == 1) { // NOT ASSIGNED YET
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
+			menuItem = new MenuItem(headerMenu, SWT.CASCADE);
 			menuItem.setText("Column Actions");
 			initializeColumnActionsMenu();
 			menuItem.setMenu(columnActionsMenu);
@@ -927,7 +927,6 @@ public class CSVTableView extends ViewPart {
 		}
 
 	};
-	private Composite composite_1;
 
 	public static void updateCheckedData() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);

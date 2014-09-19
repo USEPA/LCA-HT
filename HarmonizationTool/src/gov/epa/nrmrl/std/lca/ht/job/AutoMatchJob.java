@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
+//import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
@@ -90,7 +90,7 @@ public class AutoMatchJob extends Job {
 		// Table table = CSVTableView.getTable();
 
 //		CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
-		CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
+//		CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
 
 		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
 		
@@ -100,16 +100,16 @@ public class AutoMatchJob extends Job {
 
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
-			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+//			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider == null) {
 				continue;
 			}
-			if (lcaDataPropertyProvider.getRDFClass().equals(Flowable.getRdfclass())) {
+			if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 				flowableCSVColumnNumbers.add(i);
-			} else if (lcaDataPropertyProvider.getRDFClass().equals(FlowContext.getRdfclass())) {
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 				flowContextCSVColumnNumbers.add(i);
-			} else if (lcaDataPropertyProvider.getRDFClass().equals(FlowProperty.getRdfclass())) {
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
 				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}
@@ -151,7 +151,7 @@ public class AutoMatchJob extends Job {
 
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
-				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
 					flowableConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -171,15 +171,8 @@ public class AutoMatchJob extends Job {
 						if (dataValue.equals("")) {
 							continue;
 						}
-						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(),
-									dataValue);
-//							flowable.setProperty(csvColumnInfo.getLCADataPropertyProvider.setPropertyName(dataValue));
-//							flowable.setName(dataValue);
-						} else {
-							ActiveTDB.tsAddLiteral(flowable.getTdbResource(), csvColumnInfo.getTdbProperty(), dataValue);
-						}
+						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(),dataValue);
 					}
 					final int flowableCount = flowableMap.size();
 					System.out
@@ -225,7 +218,7 @@ public class AutoMatchJob extends Job {
 			// NOW DO flowContext
 			String flowContextConcatinated = "";
 			for (int i : flowContextCSVColumnNumbers) {
-				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
 					flowContextConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -244,12 +237,13 @@ public class AutoMatchJob extends Job {
 					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
-						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+						
+						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+						if (lcaDataPropertyProvider.isUnique()) {
+							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
 									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
 									dataRow.get(i - 1));
 						}
 					}
@@ -269,7 +263,7 @@ public class AutoMatchJob extends Job {
 			// NOW DO flowProperty
 			String flowPropertyConcatinated = "";
 			for (int i : flowPropertyCSVColumnNumbers) {
-				if (assignedCSVColumns[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
 					flowPropertyConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -288,12 +282,12 @@ public class AutoMatchJob extends Job {
 					flowPropertyDataRow.add(flowPropertyConcatinated);
 					// flowPropertyTableProvider.addDataRow(flowPropertyDataRow);
 					for (int i : flowPropertyCSVColumnNumbers) {
-						CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
-						if (csvColumnInfo.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+						if (lcaDataPropertyProvider.isUnique()) {
+							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
 									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), csvColumnInfo.getTdbProperty(),
+							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
 									dataRow.get(i - 1));
 						}
 					}
