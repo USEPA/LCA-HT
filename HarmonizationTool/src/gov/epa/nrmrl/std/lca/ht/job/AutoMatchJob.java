@@ -188,29 +188,29 @@ public class AutoMatchJob extends Job {
 				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 				// Q-NAME = DB-NAME
 
-				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
-				final int numHits = matches.size();
-				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-				// int counter = 0;
-				for (MatchCandidate mc : matches) {
-					dataRow.addMatchCandidate(mc);
-					// matchCandidatesThisRow[counter] = mc;
-					// counter++;
-				}
-				// matchRows.add(matchCandidatesThisRow);
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						if (numHits == 0) {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-						} else if (numHits == 1) {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-									SWTResourceManager.getColor(SWT.COLOR_GREEN));
-						} else {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
-						}
-					}
-				});
+//				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
+//				final int numHits = matches.size();
+//				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+//				// int counter = 0;
+//				for (MatchCandidate mc : matches) {
+//					dataRow.addMatchCandidate(mc);
+//					// matchCandidatesThisRow[counter] = mc;
+//					// counter++;
+//				}
+//				// matchRows.add(matchCandidatesThisRow);
+//				Display.getDefault().asyncExec(new Runnable() {
+//					public void run() {
+//						if (numHits == 0) {
+//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+//									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+//						} else if (numHits == 1) {
+//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+//									SWTResourceManager.getColor(SWT.COLOR_GREEN));
+//						} else {
+//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
+//						}
+//					}
+//				});
 
 				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}

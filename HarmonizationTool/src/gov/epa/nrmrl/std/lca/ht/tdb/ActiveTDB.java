@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -27,6 +28,7 @@ import org.eclipse.ui.services.IServiceLocator;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -221,9 +223,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
+			Object thingLiteral) {
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
-		removeAllLikeLiterals(subject,predicate,thingLiteral);
+		removeAllLikeLiterals(subject, predicate, thingLiteral);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
 
@@ -275,15 +278,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
-			String uri = subject.getURI();
-			Resource tr_subject = tdbModel.getResource(uri);
-			// Resource tr_subject = tdbModel.createResource(uri);
-			// NOTE: Resource subject not valid for changing within a
-			// transaction
-			subject.removeAll(predicate);
-			subject.addProperty(predicate, object);
-//			tr_subject.removeAll(predicate);
-//			tr_subject.addProperty(predicate, object);
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+			while (nodeIterator.hasNext()) {
+				RDFNode rdfNode = nodeIterator.next();
+				if (object.isLiteral() && rdfNode.isLiteral()) {
+					RDFDatatype rdfNodeType = rdfNode.asLiteral().getDatatype();
+					RDFDatatype objectType = object.asLiteral().getDatatype();
+					if (rdfNodeType.equals(objectType)) {
+						tdbModel.remove(subject, predicate, rdfNode);
+					}
+				}
+			}
+			tdbModel.add(subject, predicate, object);
+			// Resource tr_subject;
+			// if (subject.isAnon()){
+			// AnonId anonId = subject.getId();
+			// tr_subject = tdbModel.createResource(anonId);
+			// } else {
+			// String uri = subject.getURI();
+			// tr_subject = tdbModel.getResource(uri);
+			// }
+			// // Resource tr_subject = tdbModel.createResource(uri);
+			// // NOTE: Resource subject not valid for changing within a
+			// // transaction
+			// // subject.removeAll(predicate);
+			// // subject.addProperty(predicate, object);
+			// tr_subject.removeAll(predicate);
+			// tr_subject.addProperty(predicate, object);
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
@@ -310,7 +331,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
-			tdbDataset.abort();
+			tdbModel.abort();
 		} finally {
 			tdbDataset.end();
 		}
@@ -365,7 +386,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	private static Literal createTypedLiteral(Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
@@ -390,21 +411,30 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return literal;
 	}
 
-
 	private static void removeAllObjects(Resource subject, Property predicate) {
 		subject.removeAll(predicate);
 	}
-	
+
 	public static void tsRemoveAllObjects(Resource subject, Property predicate) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
 			Model tdbModel = tdbDataset.getDefaultModel();
-			String uri = subject.getURI();
-			Resource tr_subject = tdbModel.getResource(uri);
-			subject.removeAll(predicate);
-//			tr_subject.removeAll(predicate);
-
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+			while (nodeIterator.hasNext()) {
+				RDFNode rdfNode = nodeIterator.next();
+				tdbModel.remove(subject, predicate, rdfNode);
+			}
+			// Resource tr_subject;
+			// if (subject.isAnon()){
+			// AnonId anonId = subject.getId();
+			// tr_subject = tdbModel.createResource(anonId);
+			// } else {
+			// String uri = subject.getURI();
+			// tr_subject = tdbModel.getResource(uri);
+			// }
+			// // subject.removeAll(predicate);
+			// tr_subject.removeAll(predicate);
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
@@ -454,12 +484,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	private static void removeStatement(Resource subject, Property predicate, RDFNode object) {
 		tdbModel.remove(subject, predicate, object);
 	}
 
-	
 	public static void tsRemoveStatement(Resource subject, Property predicate, RDFNode object) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
@@ -475,7 +504,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	@Override
 	public boolean isEnabled() {
 		return true;
