@@ -52,18 +52,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.custom.StackLayout;
-import swing2swt.layout.FlowLayout;
-import swing2swt.layout.BoxLayout;
-import swing2swt.layout.BorderLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Label;
 
 //public class QueryView extends ViewPart implements IActiveTDBListener {
 public class QueryView extends ViewPart {
@@ -112,59 +100,45 @@ public class QueryView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		parent.setLayout(null);
 
 		Device device = Display.getCurrent();
-		parent.setLayout(new GridLayout(2, false));
 
-		Composite menuComposite = new Composite(parent, SWT.NONE);
-		GridData gdMenuComposite = new GridData(SWT.LEFT, SWT.TOP, false, true, 1, 1);
-		gdMenuComposite.widthHint = 180;
-		gdMenuComposite.heightHint = 400;
-		menuComposite.setLayoutData(gdMenuComposite);
-
-		Button queryButton = new Button(menuComposite, SWT.BORDER);
-		queryButton.setBounds(10, 200, 100, 40);
+		Button queryButton = new Button(parent, SWT.BORDER);
+		// btnNewButton.setBounds(149, 0, 148, 469);
+		queryButton.setBounds(20, 150, 100, 30);
 		queryButton.setAlignment(SWT.LEFT);
 		queryButton.setText("Run Query");
-		Button updateButton = new Button(menuComposite, SWT.BORDER);
-		updateButton.setBounds(10, 240, 100, 40);
+		queryButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+				String title = resultsView.getTitle();
+				System.out.println("title= " + title);
+
+				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
+
+				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+				resultsView.update(tableProvider);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		Button updateButton = new Button(parent, SWT.BORDER);
 		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+		updateButton.setBounds(20, 190, 100, 30);
 		updateButton.setAlignment(SWT.LEFT);
 		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
 		// NOT WORK IN WINDOWS
 		updateButton.setText("Run Update");
-		// parent.setLayout(null);
-		viewer = new TableViewer(menuComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		Table table = viewer.getTable();
-		table.setBounds(0, 0, 180, 400);
-		viewer.setContentProvider(new QueryViewContentProvider(viewer));
-		
-				windowQueryUpdate = new Text(parent, SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI
-						| SWT.FILL);
-				windowQueryUpdate.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-				
-						windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
-						
-								// Color queryWindowColor = new Color(device, 255, 255, 200);
-								windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
-								windowQueryUpdate.setText("(query / update editor)");
-								
-								//		Composite textComposite = new Composite(menuComposite, SWT.NONE);
-										// textComposite.setBounds(-35, 258, 500, 400);
-								//		textComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-										windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
-											@Override
-											public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-											}
-								
-											@Override
-											public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
-											}
-										});
-
-		// queryWindow.append("Query Window");
-		viewer.setLabelProvider(new QueryViewLabelProvider());
-		viewer.setInput(getViewSite());
 		updateButton.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -190,27 +164,33 @@ public class QueryView extends ViewPart {
 
 			}
 		});
-		queryButton.addSelectionListener(new SelectionListener() {
 
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL
+				| SWT.MULTI);
+		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+		// txtTextArea.setBounds(297, 0, 148, 469);
+		windowQueryUpdate.setBounds(150, 0, 600, 500);
+
+		// Color queryWindowColor = new Color(device, 255, 255, 200);
+		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
+		windowQueryUpdate.setText("(query / update editor)");
+		// parent.setLayout(null);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		Table table = viewer.getTable();
+		// table.setBounds(445, 0, 149, 469);
+		table.setBounds(0, 0, 150, 500);
+		viewer.setContentProvider(new QueryViewContentProvider(viewer));
+
+		// queryWindow.append("Query Window");
+		viewer.setLabelProvider(new QueryViewLabelProvider());
+		viewer.setInput(getViewSite());
+		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-				String title = resultsView.getTitle();
-				System.out.println("title= " + title);
-
-				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
-				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
-
-				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-				resultsView.update(tableProvider);
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
 			}
 		});
 
@@ -473,7 +453,8 @@ public class QueryView extends ViewPart {
 
 			// resultsView.formatForTransform0();
 		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
-			MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
+			MatchContexts matchContexts = (MatchContexts) Util
+					.findView(MatchContexts.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
@@ -525,4 +506,25 @@ public class QueryView extends ViewPart {
 		windowQueryUpdate.setText(s);
 		return;
 	}
+
+	// @Override
+	// public void TDBchanged(String tdb) {
+	// // System.out.println("new TDB = " + tdb);
+	// // String key = (String) selection.toList().get(0);
+	// // String key = "Show Data Sources";
+	// // System.out.println("key=" + key);
+	// // HarmonyQuery q = queryMap.get(key);
+	// // System.out.println(q.getQuery());
+	//
+	// // IWorkbenchPage page = PlatformUI.getWorkbench()
+	// // .getActiveWorkbenchWindow().getActivePage();
+	// // ResultsView resultsView = (ResultsView)
+	// // page.findView(ResultsView.ID);
+	// // resultsView.update(q);
+	//
+	// // resultsView.update(q.getData());
+	// // resultsView.update(q.getQueryResults());
+	// // System.out.println("done");
+	//
+	// }
 }
