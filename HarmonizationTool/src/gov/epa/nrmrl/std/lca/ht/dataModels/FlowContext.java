@@ -30,6 +30,14 @@ public class FlowContext {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
 
+		System.out.println("Flow Context has just assigned label and comment");
+		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+			System.out.println(rdfClass.getProperty(RDFS.label).getString());
+		} else {
+			System.out.println("wtf");
+		}
+		// JUNO: THE ABOVE GIVES THE "wtf" RESULT, BUT A QUERY SHOWS THE TRIPLES ARE ADDED. WTF?
+
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
