@@ -209,27 +209,28 @@ public class Flowable {
 		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
 		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
-		boolean found = false;
-		if (lcaDataPropertyProvider.isUnique()) {
-			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
-					lcaDataValue.setValueAsString(valueAsString);
-					found = true;
-					Object object = lcaDataValue.getValue();
-					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-							object);
-					continue;
-				}
-			}
-		}
-		if (!found) {
-			LCADataValue lcaDataValue = new LCADataValue();
-			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-			lcaDataValue.setValueAsString(valueAsString);
-			Object object = lcaDataValue.getValue();
-			lcaDataValues.add(lcaDataValue);
-			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-		}
+//		boolean found = false;
+//		if (lcaDataPropertyProvider.isUnique()) {
+//			for (LCADataValue lcaDataValue : lcaDataValues) {
+//				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
+//					lcaDataValue.setValueAsString(valueAsString);
+//					found = true;
+//					Object object = lcaDataValue.getValue();
+//					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+//							object);
+//					continue;
+//				}
+//			}
+//		}
+//		if (!found) {
+//			LCADataValue lcaDataValue = new LCADataValue();
+//			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+//			lcaDataValue.setValueAsString(valueAsString);
+//			Object object = lcaDataValue.getValue();
+//			lcaDataValues.add(lcaDataValue);
+//			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+//		}
+		ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
 
 	// public void setProperty(String key, Object object) {

@@ -19,7 +19,7 @@ public class FlowProperty {
 	// CLASS VARIABLES
 	public static final String flowPropertyPrimaryIdentifier = "Primary Info";
 	public static final String flowPropertyAdditionalIdentifier = "Additional Info";
-	private static final Resource rdfClass = FedLCA.FlowProperty;
+	public static final Resource rdfClass = FedLCA.FlowProperty;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Property";
 	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
