@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -42,22 +43,46 @@ public class Flowable {
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
 	static {
-//		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+
+		// ActiveTDB.replaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		// ActiveTDB.addLiteral(rdfClass, RDFS.comment, comment);
+
 		// JUNO: UNCOMMENTING THE LINES BELOW SUGGEST SOMETHING VERY ODD ABOUT THE TDB:
 		//
-		System.out.println("label assigned to Flowable");
-//		rdfClass.addProperty(RDFS.label, label); // <-- THIS SUCCEEDS IN THE ASSIGNMENT
-		Literal literal = ActiveTDB.tdbModel.createLiteral(label);
-		
-		ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
-		
+		// rdfClass.addProperty(RDFS.label, label); // <-- THIS SUCCEEDS IN THE ASSIGNMENT
+		// Literal literal = ActiveTDB.tdbModel.createLiteral(label);
+
+		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
+
+		StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
+		System.out.println("rdfClass = " + rdfClass);
+
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			if (!statement.getSubject().isAnon()) {
+				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
+					// Resource thing = statement.getSubject();
+					// Resource thing2 = statement.getResource();
+					// System.out.println("Flowable.getRdfclass() = " +Flowable.getRdfclass());
+					System.out.println("statement.getSubject().getLocalName() = "
+							+ statement.getSubject().getLocalName());
+
+					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+							+ " -- " + statement.getObject());
+				}
+			}
+		}
+
 		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
 			System.out.println(rdfClass.getProperty(RDFS.label).getString());
 		} else {
 			System.out.println("wtf");
 		}
 		//
-		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+
+		System.out.println("label assigned to Flowable");
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
@@ -319,6 +344,11 @@ public class Flowable {
 		// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 		// Q-NAME = DB-NAME
 		// return results;
+		Statement statement = flowable.getTdbResource().getProperty(RDFS.label);
+		if (statement == null) {
+			System.out.println("Nothing here");
+			return results;
+		}
 		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
 		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
 		while (resIterator.hasNext()) {

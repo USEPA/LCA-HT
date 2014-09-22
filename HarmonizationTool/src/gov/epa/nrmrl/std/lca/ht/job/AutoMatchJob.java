@@ -36,6 +36,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -73,6 +76,41 @@ public class AutoMatchJob extends Job {
 		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
 		// Model model = ActiveTDB.tdbModel;
 
+		// ===========================
+//		System.out.println("Flowable.getRdfclass() = " + Flowable.getRdfclass());
+//
+//		StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
+//		while (stmtIterator.hasNext()) {
+//			Statement statement = stmtIterator.next();
+//			if (!statement.getSubject().isAnon()) {
+//				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
+//					if (statement.getSubject().equals(Flowable.getRdfclass())) {
+//						System.out.println("! Equals operator works !");
+//					}
+//
+//					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+//							+ " -- " + statement.getObject());
+//
+//					StmtIterator stmtIterator2 = Flowable.getRdfclass().listProperties();
+//					while (stmtIterator2.hasNext()) {
+//						Statement statement2 = stmtIterator2.next();
+//						System.out.println("statement2.getPredicate() = " + statement2.getPredicate());
+//					}
+//				}
+//			}
+//		}
+//		if (Flowable.getRdfclass().hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+//			System.out.println("got it!" + Flowable.getRdfclass().getProperty(RDFS.label).getString());
+//		} else {
+//			stmtIterator = Flowable.getRdfclass().listProperties();
+//			while (stmtIterator.hasNext()) {
+//				Statement statement = stmtIterator.next();
+//				System.out.println("statement.getPredicate() = " + statement.getPredicate());
+//			}
+//			System.out.println("wtf");
+//		}
+		// ===========================
+
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
@@ -89,18 +127,18 @@ public class AutoMatchJob extends Job {
 		// long triples = ActiveTDB.tdbModel.size();
 		// Table table = CSVTableView.getTable();
 
-//		CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
-//		CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
+		// CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
+		// CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
 
 		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
-		
+
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
 
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
-//			CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
+			// CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider == null) {
 				continue;
@@ -172,7 +210,7 @@ public class AutoMatchJob extends Job {
 							continue;
 						}
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(),dataValue);
+						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
 					final int flowableCount = flowableMap.size();
 					System.out
@@ -188,29 +226,29 @@ public class AutoMatchJob extends Job {
 				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
 				// Q-NAME = DB-NAME
 
-//				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
-//				final int numHits = matches.size();
-//				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-//				// int counter = 0;
-//				for (MatchCandidate mc : matches) {
-//					dataRow.addMatchCandidate(mc);
-//					// matchCandidatesThisRow[counter] = mc;
-//					// counter++;
-//				}
-//				// matchRows.add(matchCandidatesThisRow);
-//				Display.getDefault().asyncExec(new Runnable() {
-//					public void run() {
-//						if (numHits == 0) {
-//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-//									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-//						} else if (numHits == 1) {
-//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-//									SWTResourceManager.getColor(SWT.COLOR_GREEN));
-//						} else {
-//							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
-//						}
-//					}
-//				});
+				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
+				final int numHits = matches.size();
+				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+				// int counter = 0;
+				for (MatchCandidate mc : matches) {
+					dataRow.addMatchCandidate(mc);
+					// matchCandidatesThisRow[counter] = mc;
+					// counter++;
+				}
+				// matchRows.add(matchCandidatesThisRow);
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						if (numHits == 0) {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+						} else if (numHits == 1) {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+									SWTResourceManager.getColor(SWT.COLOR_GREEN));
+						} else {
+							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
+						}
+					}
+				});
 
 				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
@@ -237,19 +275,19 @@ public class AutoMatchJob extends Job {
 					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
-						
+
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
-									dataRow.get(i - 1));
+							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
-									dataRow.get(i - 1));
+							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
 					final int flowContextCount = flowContextMap.size();
-					System.out.println("flowContextCount----> " + flowContextCount + "after adding "
-							+ flowContextConcatinated);
+//					System.out.println("flowContextCount----> " + flowContextCount + "after adding "
+//							+ flowContextConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextFlowContexts("0 / " + flowContextCount);
@@ -284,16 +322,16 @@ public class AutoMatchJob extends Job {
 					for (int i : flowPropertyCSVColumnNumbers) {
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
-									dataRow.get(i - 1));
+							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), lcaDataPropertyProvider.getTDBProperty(),
-									dataRow.get(i - 1));
+							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
 					final int flowPropertyCount = flowPropertyMap.size();
-					System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
-							+ flowPropertyConcatinated);
+//					System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
+//							+ flowPropertyConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextFlowProperties("0 / " + flowPropertyCount);
@@ -337,7 +375,7 @@ public class AutoMatchJob extends Job {
 				matchContexts.update();
 			}
 		});
-		
+
 		final List<String> properties = new ArrayList<String>();
 		final List<Resource> propertyResources = new ArrayList<Resource>();
 		for (String flowPropertyConcat : flowPropertyMap.keySet()) {

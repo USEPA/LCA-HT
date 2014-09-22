@@ -1,7 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.vocabulary;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -14,7 +15,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class SKOS {
     /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
-    private static Model m_model = ModelFactory.createDefaultModel();
+//    private static Model m_model = ModelFactory.createDefaultModel();
+//	private static Model m_model = ActiveTDB.tdbModel;
+	private static Model m_model = ActiveTDB.tdbModel;
 
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "http://www.w3.org/2004/02/skos/core#";

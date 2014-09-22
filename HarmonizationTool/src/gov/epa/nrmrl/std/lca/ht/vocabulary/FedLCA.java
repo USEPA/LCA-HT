@@ -1,20 +1,16 @@
 package gov.epa.nrmrl.std.lca.ht.vocabulary;
 
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.DB;
-import com.hp.hpl.jena.vocabulary.DC;
-import com.hp.hpl.jena.vocabulary.VCARD;
-import com.hp.hpl.jena.vocabulary.DC_11;
 
 /**
  * Vocabulary definitions from being developed by the Environmental Modeling and Visualization Lab (EMVL) Supporting
  * work for PIs Troy Hawkins and Wes Ingwersen, US EPA
  * 
- * @author Tom Transue 03 Jan 2014 09:46
+ * @author Tom Transue
  */
 
 public class FedLCA {
@@ -23,7 +19,9 @@ public class FedLCA {
 	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
-	private static Model m_model = ModelFactory.createDefaultModel();
+//	private static Model m_model = ModelFactory.createDefaultModel();
+	private static Model m_model = ActiveTDB.tdbModel;
+
 
 	/**
 	 * <p>

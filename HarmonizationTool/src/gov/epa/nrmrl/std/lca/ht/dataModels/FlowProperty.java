@@ -29,6 +29,7 @@ public class FlowProperty {
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+		System.out.println("label assigned to Flow Property");
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
@@ -53,7 +54,7 @@ public class FlowProperty {
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}
-	
+
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;

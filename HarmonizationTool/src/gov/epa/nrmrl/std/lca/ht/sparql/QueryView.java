@@ -173,7 +173,7 @@ public class QueryView extends ViewPart {
 
 		// Color queryWindowColor = new Color(device, 255, 255, 200);
 		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
-		windowQueryUpdate.setText("(query / update editor)");
+		windowQueryUpdate.setText("select * where {?s ?p ?o }");
 		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		Table table = viewer.getTable();

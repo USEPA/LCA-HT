@@ -258,7 +258,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
+	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
@@ -361,7 +361,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
+	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
