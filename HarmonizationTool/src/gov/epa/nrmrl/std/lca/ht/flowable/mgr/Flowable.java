@@ -347,7 +347,7 @@ public class Flowable {
 		// return results;
 		Statement statement = flowable.getTdbResource().getProperty(RDFS.label);
 		if (statement == null) {
-			System.out.println("Nothing here");
+//			System.out.println("Nothing here");
 			return results;
 		}
 		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();

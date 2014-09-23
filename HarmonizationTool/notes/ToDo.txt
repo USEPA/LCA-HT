@@ -59,6 +59,11 @@ A28 BUG: When closing a CSV file, the Match flowables tool as well as match cont
 
 A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
 
+A31 FEATURE REQUEST -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
+
+A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
+    SOLN: At least detect the issue and tell the user.  Better, read it anyway.
+
 
 #=========================================================================
 #=========  USER INTERFACE CHANGE REQUESTS ===============================

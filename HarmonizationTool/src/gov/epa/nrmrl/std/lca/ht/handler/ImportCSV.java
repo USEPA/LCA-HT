@@ -84,6 +84,7 @@ public class ImportCSV implements IHandler {
 		}
 
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
+		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
 		String[] values = null;
 		try {
 			values = parser.getLine();

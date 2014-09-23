@@ -49,6 +49,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// ArrayList<IActiveTDBListener>();
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB";
 
+	private static final boolean noReadWrite = false;
 	public ActiveTDB() {
 		System.out.println("created ActiveTDB");
 		setInstance(this);
@@ -225,6 +226,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
 			Object thingLiteral) {
+		if (noReadWrite) return;
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		removeAllLikeLiterals(subject, predicate, thingLiteral);
 		tdbModel.add(subject, predicate, newRDFNode);
@@ -232,6 +234,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
 			Object thingLiteral) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -259,21 +262,25 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	private static void replaceResource(Resource subject, Property predicate, Resource object) {
+		if (noReadWrite) return;
 		subject.removeAll(predicate);
 		subject.addProperty(predicate, object);
 	}
 
 	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -340,11 +347,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		if (noReadWrite) return;
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
 
 	public static void tsAddLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -362,16 +371,19 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsAddLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsAddLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsAddTriple(Resource subject, Property predicate, Resource object) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -412,10 +424,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeAllObjects(Resource subject, Property predicate) {
+		if (noReadWrite) return;
 		subject.removeAll(predicate);
 	}
 
 	public static void tsRemoveAllObjects(Resource subject, Property predicate) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -446,6 +460,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
@@ -460,6 +475,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsRemoveAllLikeLiterals(Resource subject, Property predicate, Object object) {
+		if (noReadWrite) return;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(object);
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
@@ -486,10 +502,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeStatement(Resource subject, Property predicate, RDFNode object) {
+		if (noReadWrite) return;
 		tdbModel.remove(subject, predicate, object);
 	}
 
 	public static void tsRemoveStatement(Resource subject, Property predicate, RDFNode object) {
+		if (noReadWrite) return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {

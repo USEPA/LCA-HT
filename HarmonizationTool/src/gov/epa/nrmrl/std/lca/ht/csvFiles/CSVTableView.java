@@ -115,7 +115,9 @@ public class CSVTableView extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 		// tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
 		// TO SATISFY TODO B21, ADDED THE SWT.MULTI BELOW
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY | SWT.MULTI);
+		// tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY | SWT.MULTI);
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
@@ -187,6 +189,24 @@ public class CSVTableView extends ViewPart {
 			popup.setVisible(false);
 		}
 
+	};
+
+	private static MouseListener columnMouseListener2 = new MouseListener() {
+		public void mouseDoubleClick(MouseEvent e) {
+			System.out.println("double click event :e =" + e);
+		}
+
+		@Override
+		public void mouseDown(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseUp(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
 	};
 
 	private static MouseListener columnMouseListener = new MouseListener() {
@@ -278,6 +298,14 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	};
+
+//	private static Listener columnMouseListener3 = new Listener() {
+//
+//		@Override
+//		public void handleEvent(Event event) {
+//			System.out.println("Double click on a column header with event: " + event);
+//		}
+//	};
 
 	private static void initializePopup(Composite composite) {
 		// popup.addListener(SWT.Modify, popupResizeListener);
@@ -537,7 +565,7 @@ public class CSVTableView extends ViewPart {
 				Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
 				Matcher matcher = pattern.matcher(toolTip);
 				if (matcher.find()) {
-//					System.out.println("We gots issues: " + toolTip);
+					// System.out.println("We gots issues: " + toolTip);
 					String count = matcher.group(1);
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
@@ -927,8 +955,9 @@ public class CSVTableView extends ViewPart {
 		tableColumn.setResizable(true);
 		tableColumn.setMoveable(false);
 		tableColumn.addSelectionListener(colSelectionListener);
-		// tableColumn.addListener(SWT.MouseDown, (Listener)
-		// columnMouseListener);
+//		if (colNumber > 0) {
+//			tableColumn.addListener(SWT.MouseDoubleClick, columnMouseListener3);
+//		}
 
 		if (colNumber > 0) {
 			tableColumn.setToolTipText(csvColumnDefaultTooltip);

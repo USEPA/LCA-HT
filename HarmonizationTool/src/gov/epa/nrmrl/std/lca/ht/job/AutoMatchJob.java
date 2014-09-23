@@ -77,38 +77,38 @@ public class AutoMatchJob extends Job {
 		// Model model = ActiveTDB.tdbModel;
 
 		// ===========================
-//		System.out.println("Flowable.getRdfclass() = " + Flowable.getRdfclass());
-//
-//		StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
-//		while (stmtIterator.hasNext()) {
-//			Statement statement = stmtIterator.next();
-//			if (!statement.getSubject().isAnon()) {
-//				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
-//					if (statement.getSubject().equals(Flowable.getRdfclass())) {
-//						System.out.println("! Equals operator works !");
-//					}
-//
-//					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
-//							+ " -- " + statement.getObject());
-//
-//					StmtIterator stmtIterator2 = Flowable.getRdfclass().listProperties();
-//					while (stmtIterator2.hasNext()) {
-//						Statement statement2 = stmtIterator2.next();
-//						System.out.println("statement2.getPredicate() = " + statement2.getPredicate());
-//					}
-//				}
-//			}
-//		}
-//		if (Flowable.getRdfclass().hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-//			System.out.println("got it!" + Flowable.getRdfclass().getProperty(RDFS.label).getString());
-//		} else {
-//			stmtIterator = Flowable.getRdfclass().listProperties();
-//			while (stmtIterator.hasNext()) {
-//				Statement statement = stmtIterator.next();
-//				System.out.println("statement.getPredicate() = " + statement.getPredicate());
-//			}
-//			System.out.println("wtf");
-//		}
+		// System.out.println("Flowable.getRdfclass() = " + Flowable.getRdfclass());
+		//
+		// StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
+		// while (stmtIterator.hasNext()) {
+		// Statement statement = stmtIterator.next();
+		// if (!statement.getSubject().isAnon()) {
+		// if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
+		// if (statement.getSubject().equals(Flowable.getRdfclass())) {
+		// System.out.println("! Equals operator works !");
+		// }
+		//
+		// System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+		// + " -- " + statement.getObject());
+		//
+		// StmtIterator stmtIterator2 = Flowable.getRdfclass().listProperties();
+		// while (stmtIterator2.hasNext()) {
+		// Statement statement2 = stmtIterator2.next();
+		// System.out.println("statement2.getPredicate() = " + statement2.getPredicate());
+		// }
+		// }
+		// }
+		// }
+		// if (Flowable.getRdfclass().hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+		// System.out.println("got it!" + Flowable.getRdfclass().getProperty(RDFS.label).getString());
+		// } else {
+		// stmtIterator = Flowable.getRdfclass().listProperties();
+		// while (stmtIterator.hasNext()) {
+		// Statement statement = stmtIterator.next();
+		// System.out.println("statement.getPredicate() = " + statement.getPredicate());
+		// }
+		// System.out.println("wtf");
+		// }
 		// ===========================
 
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
@@ -167,14 +167,15 @@ public class AutoMatchJob extends Job {
 			}
 			// List<MatchCandidate> matchCandidatesThisRow = new
 			// ArrayList<MatchCandidate>();
-			if (100 * rowNumber / tableProvider.getData().size() > percentComplete) {
-				final int state = percentComplete;
+			if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
+				final String state = percentComplete + "%";
+
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextCommit(state + "%");
+						FlowsWorkflow.setTextCommit(state);
 					}
 				});
-				percentComplete += 10;
+				percentComplete += 1;
 			}
 			Flowable flowable = null;
 			FlowContext flowContext = null;
@@ -196,7 +197,8 @@ public class AutoMatchJob extends Job {
 				}
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			if (!flowableConcatinated.equals("")) {
+			 if (!flowableConcatinated.equals("")) {
+//			if (false) {
 				if (flowableMap.containsKey(flowableConcatinated)) {
 					flowable = flowableMap.get(flowableConcatinated);
 				} else {
@@ -213,8 +215,8 @@ public class AutoMatchJob extends Job {
 						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
 					final int flowableCount = flowableMap.size();
-					System.out
-							.println("flowableCount ----> " + flowableCount + " after adding " + flowableConcatinated);
+					// System.out
+					// .println("flowableCount ----> " + flowableCount + " after adding " + flowableConcatinated);
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
@@ -250,7 +252,7 @@ public class AutoMatchJob extends Job {
 					}
 				});
 
-				ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				// ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			}
 
 			// NOW DO flowContext
@@ -286,15 +288,15 @@ public class AutoMatchJob extends Job {
 						}
 					}
 					final int flowContextCount = flowContextMap.size();
-//					System.out.println("flowContextCount----> " + flowContextCount + "after adding "
-//							+ flowContextConcatinated);
+					// System.out.println("flowContextCount----> " + flowContextCount + "after adding "
+					// + flowContextConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextFlowContexts("0 / " + flowContextCount);
 						}
 					});
 				}
-				ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				// ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
@@ -330,33 +332,33 @@ public class AutoMatchJob extends Job {
 						}
 					}
 					final int flowPropertyCount = flowPropertyMap.size();
-//					System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
-//							+ flowPropertyConcatinated);
+					// System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
+					// + flowPropertyConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setTextFlowProperties("0 / " + flowPropertyCount);
 						}
 					});
 				}
-				ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				// ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
-			if (flowable != null && flowContext != null && flowProperty != null) {
-				Flow tempFlow = new Flow();
-				tempFlow.setFlowable(flowable);
-				tempFlow.setFlowContext(flowContext);
-				tempFlow.setFlowProperty(flowProperty);
+			// if (flowable != null && flowContext != null && flowProperty != null) {
+			Flow tempFlow = new Flow();
+			tempFlow.setFlowable(flowable);
+			tempFlow.setFlowContext(flowContext);
+			tempFlow.setFlowProperty(flowProperty);
 
-				if (flows.contains(tempFlow)) {
-					tempFlow.remove();
-				} else {
-					ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-							dataSourceProvider.getTdbResource());
-					ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
-					flows.add(tempFlow);
-				}
-			}
+//			if (flows.contains(tempFlow)) {
+//				tempFlow.remove();
+//			} else {
+				ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+						dataSourceProvider.getTdbResource());
+				ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				flows.add(tempFlow);
+//			}
+			// }
 		}
 		final List<String> contexts = new ArrayList<String>();
 		final List<Resource> contextResources = new ArrayList<Resource>();

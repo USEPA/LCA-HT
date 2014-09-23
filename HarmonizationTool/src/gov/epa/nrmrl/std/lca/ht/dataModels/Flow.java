@@ -25,6 +25,9 @@ public class Flow {
 	}
 
 	public void setFlowable(Flowable flowable) {
+		if (flowable == null) {
+			return;
+		}
 		this.flowable = flowable;
 		ActiveTDB.tsReplaceResource(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
 	}
@@ -34,6 +37,9 @@ public class Flow {
 	}
 
 	public void setFlowContext(FlowContext flowContext) {
+		if (flowContext == null) {
+			return;
+		}
 		this.flowContext = flowContext;
 		ActiveTDB.tsReplaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
 	}
@@ -43,10 +49,13 @@ public class Flow {
 	}
 
 	public void setFlowProperty(FlowProperty flowProperty) {
+		if (flowProperty == null) {
+			return;
+		}
 		this.flowProperty = flowProperty;
 		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasFlowProperty, flowProperty.getTdbResource());
 	}
-	
+
 	public Resource getTdbResource() {
 		return tdbResource;
 	}
