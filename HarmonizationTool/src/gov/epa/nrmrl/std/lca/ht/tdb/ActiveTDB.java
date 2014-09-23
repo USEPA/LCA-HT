@@ -28,7 +28,6 @@ import org.eclipse.ui.services.IServiceLocator;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -176,7 +175,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// e.printStackTrace();
 		// }
 		try {
-			graphStore.close();
+//			graphStore.close();
+			 // TODO: FIGURE OUT WHY THE ABOVE CAUSES PROBLEMS OR IF IT WILL ALWAYS BE CLOSED (SO CAN LEAVE IT OUT)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
