@@ -54,7 +54,7 @@ public class DataSourceProvider {
 		if (contactPerson == null) {
 			return;
 		}
-		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.hasContactPerson, contactPerson);
+		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasContactPerson, contactPerson.getTdbResource());
 	}
 
 	public Resource getTdbResource() {
@@ -72,7 +72,9 @@ public class DataSourceProvider {
 		}
 
 		fileMDList.add(fileMD);
-		ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
+			ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		}
 	}
 
 	public List<FileMD> getFileMDList() {
@@ -149,7 +151,7 @@ public class DataSourceProvider {
 	public String getDataSourceName() {
 		return dataSourceName;
 	}
-	
+
 	public String getDataSourceNameString() {
 		if (dataSourceName == null) {
 			return "<NO ASSIGNED NAME>";
@@ -165,9 +167,9 @@ public class DataSourceProvider {
 	public String getVersion() {
 		return version;
 	}
-	
+
 	public String getVersionString() {
-		if (version == null){
+		if (version == null) {
 			return "";
 		}
 		return version;
@@ -181,9 +183,9 @@ public class DataSourceProvider {
 	public String getComments() {
 		return comments;
 	}
-	
+
 	public String getCommentsString() {
-		if (comments == null){
+		if (comments == null) {
 			return "";
 		}
 		return comments;
@@ -233,6 +235,7 @@ public class DataSourceProvider {
 		StmtIterator stmtIterator = tdbResource.listProperties(LCAHT.containsFile);
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.next();
+
 			rdfNode = statement.getObject();
 			int fileMDIndex = FileMDKeeper.getIndexByTdbResource(rdfNode.asResource());
 			System.out.println("file Index: " + fileMDIndex);
