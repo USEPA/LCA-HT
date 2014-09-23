@@ -1,5 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
@@ -511,10 +514,48 @@ public class CSVTableView extends ViewPart {
 		if (option == 1) { // NOT ASSIGNED YET
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
-			menuItem = new MenuItem(headerMenu, SWT.CASCADE);
-			menuItem.setText("Column Actions");
-			initializeColumnActionsMenu();
-			menuItem.setMenu(columnActionsMenu);
+			String colType = TableKeeper.getTableProvider(tableProviderKey).getLCADataPropertyProvider(colNumSelected)
+					.getPropertyName();
+			if (colType.equals(Flowable.casString)) {
+
+				// =========
+				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+				menuItem.setText("Standardize CAS");
+				menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
+
+				new MenuItem(headerMenu, SWT.SEPARATOR);
+
+				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+				menuItem.setText(deassignText);
+				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
+				// =========
+			} else {
+				// =========
+				TableColumn tableColumn = table.getColumn(colNumSelected);
+				String toolTip = tableColumn.getToolTipText();
+
+				Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
+				Matcher matcher = pattern.matcher(toolTip);
+				if (matcher.find()) {
+//					System.out.println("We gots issues: " + toolTip);
+					String count = matcher.group(1);
+
+					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+					menuItem.setText("Auto-resolve " + count + " Issues");
+					menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
+
+					new MenuItem(headerMenu, SWT.SEPARATOR);
+				}
+
+				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+				menuItem.setText(deassignText);
+				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
+				// =========
+			}
+			// menuItem = new MenuItem(headerMenu, SWT.CASCADE);
+			// menuItem.setText("Column Actions");
+			// initializeColumnActionsMenu();
+			// menuItem.setMenu(columnActionsMenu);
 		}
 	}
 
@@ -1162,7 +1203,7 @@ public class CSVTableView extends ViewPart {
 			if (issue.getColNumber() == colNumber) {
 				issue.setStatus(Status.NOISSUES);
 				colorCell(issue.getRowNumber(), colNumber, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-//				issueList.remove(issue);
+				// issueList.remove(issue);
 				// issue.dispose(); // <- OR JUST LET GARBAGE COLLECTOR GET IT
 			}
 		}

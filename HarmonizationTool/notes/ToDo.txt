@@ -189,14 +189,6 @@ B18 When I load in my data for the first time, assuming I don't know to assign a
   using dashes, have the steps triggered in the headers...
   SOLN: Disable "Check Data" until at least one column is assigned
 
-B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't even been assigned... 
-  What if I didn't even include CAS.  Remove functionalities that are impossible.  
-  ... and  Issue: Some functionalities shouldn't show up if they aren't possible.  For example, auto-resolve
-  CAS shouldn't show up if that field has not been assigned a CAS.  Also, auto-resolve field shouldn't
-  be possible if the data hasn't been checked via the Check Data button (2).
-
- SOLN: Change menu options to include only possible ones
-
 B22 (copied from A3)
   FEATURE REQUEST:  Startup allows user to choose project directory
   SOLN: Have user select a working directory
@@ -399,6 +391,14 @@ That the user to look at a column and know where he/she is positioned.
 U7: Change Query Context in Match Properties Tool to Query Properties
     STATUS: Done
     
+B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't even been assigned... 
+  What if I didn't even include CAS.  Remove functionalities that are impossible.  
+  ... and  Issue: Some functionalities shouldn't show up if they aren't possible.  For example, auto-resolve
+  CAS shouldn't show up if that field has not been assigned a CAS.  Also, auto-resolve field shouldn't
+  be possible if the data hasn't been checked via the Check Data button (2).
+  SOLN: Change menu options to include only possible ones
+  STATUS: Done, and much easier to customizee menus
+ 
 B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
   SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
   STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
