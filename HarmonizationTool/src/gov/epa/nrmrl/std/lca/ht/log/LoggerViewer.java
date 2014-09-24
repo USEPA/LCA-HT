@@ -15,15 +15,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class LoggerViewer extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.log.LoggerViewer";
 
-	LoggerWriter loggerWriter;
-	Text loggerArea;
-	private Text text;
+	private static LoggerWriter loggerWriter;
+	private static Text loggerArea;
+//	private static Text text;
 
 	public LoggerViewer() {
 		super();
@@ -45,8 +44,9 @@ public class LoggerViewer extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				loggerWriter.getBuffer().setLength(0);
-				loggerArea.setText("");
+				clear();
+				// loggerWriter.getBuffer().setLength(0);
+				// loggerArea.setText("");
 			}
 		});
 
@@ -65,7 +65,9 @@ public class LoggerViewer extends ViewPart {
 	private void setupLogger(Logger logger, String level) {
 		logger.setAdditivity(true);
 		logger.setLevel(Level.toLevel(level));
-		Appender appender = new WriterAppender(new PatternLayout("%p - %m%n"), loggerWriter);
+//		Appender appender = new WriterAppender(new PatternLayout("%p - %m%n"), loggerWriter);
+		Appender appender = new WriterAppender(new PatternLayout("%m%n"), loggerWriter);
+
 		LevelRangeFilter tempFilter = new LevelRangeFilter();
 		tempFilter.setLevelMin(Level.toLevel(level));
 		appender.addFilter(tempFilter);
@@ -76,5 +78,10 @@ public class LoggerViewer extends ViewPart {
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public static void clear() {
+		loggerWriter.getBuffer().setLength(0);
+		loggerArea.setText("");		
 	}
 }

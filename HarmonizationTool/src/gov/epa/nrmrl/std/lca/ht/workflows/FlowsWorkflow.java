@@ -2,16 +2,22 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
+import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -25,7 +31,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
-
 import org.eclipse.swt.events.SelectionAdapter;
 
 public class FlowsWorkflow extends ViewPart {
@@ -69,7 +74,8 @@ public class FlowsWorkflow extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-
+		Util.findView(LoggerViewer.ID);
+		LoggerViewer.clear(); // INITIALIZES SO THAT LOGGER RECEIVES INPUT
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		composite.setLayout(new GridLayout(3, false));
@@ -564,6 +570,11 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setEnabled(false);
 
 			if (btnConcludeFile.getText().equals("Close CSV")) {
+				MatchFlowableTableView.initialize();
+				MatchContexts.initialize();
+				MatchProperties.initialize();
+
+
 				// TODO - CONFIRM WITH USER?
 				// TODO - INDICATE THAT FILE CONTENT WAS SAVED
 			} else if (btnConcludeFile.getText().equals("Cancel CSV")) {

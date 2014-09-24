@@ -28,6 +28,7 @@ public class ShowMatchFlowableTableViewHandler implements IHandler {
 		try {
 			// TODO: MAKE THIS A TOGGLE FUNCTION (AND CONTROL THE CHECKBOX IN THE MENU)
 			Util.showView(MatchFlowableTableView.ID);
+			MatchFlowableTableView.initialize();
 		} catch (PartInitException e1) {
 			e1.printStackTrace();
 		}

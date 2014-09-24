@@ -68,15 +68,15 @@ public class MatchProperties extends ViewPart {
 	}
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
-	private Table queryTbl;
-	private TableViewer queryTblViewer;
-	private Table matchedTbl;
-	private TableViewer matchedTblViewer;
-	private Tree masterTree;
-	private TreeViewer masterTreeViewer;
-	private Label queryLbl;
-	private Label matchedLbl;
-	private Label masterLbl;
+	private static Table queryTbl;
+	private static TableViewer queryTblViewer;
+	private static Table matchedTbl;
+	private static TableViewer matchedTblViewer;
+	private static Tree masterTree;
+	private static TreeViewer masterTreeViewer;
+	private static Label queryLbl;
+	private static Label matchedLbl;
+	private static Label masterLbl;
 
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
@@ -318,6 +318,11 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
+	public static void initialize(){
+		queryTbl.clearAll();
+		matchedTbl.clearAll();
+	}
+	
 	private void expandItem(TreeItem item) {
 		System.out.println("Item expanded: item.getText() " + item.getText());
 		item.setExpanded(true);

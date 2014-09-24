@@ -2,33 +2,28 @@
 #====  ITEMS WITH "A" - DO BELOW BEFORE 2014-10-01   ======================
 #==========================================================================
 
+U11: Always have Flows Workflow, Match Flowables Tool, Match Properties Tool, and Match Context Tool on the LHS of the application screen.  Always have the CSVTable show up on the RHS of the application screen.
+ Status (chris): TOM: Did we decide to make this final or no?  When you read this, move this somewhere (either to complete or just delete it)
 
-A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
-  form some sort of structure by which to search through?  I don't know what it even means to commit.
-  SOLN: Document to the user that before "Commit" nothing in the TDB changes and if they quit and return, they will have to start over.
 
-A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keeps running 
+1 - A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keeps running 
    0/445  0/446  0/447...
   SOLN: Make "Cancel" quit the other thread.
+Status: Just do it.
 
-A15 BUG:  Can't stop a commit part of the way through it
+2 - A15 BUG:  Can't stop a commit part of the way through it
   SOLN: Make it possible to "Cancel" the commit (see A14)
+Status: Just do it.
   
-A17 FEATURE REQUEST:  What are "issues"  - designate them
+3 - A17 FEATURE REQUEST:  What are "issues"  - designate them
   SOLN: Document this.  Eventually add new issues with or without auto-resolve.
+Status (chris): Yes, we need to catalog all of these issues and write them down somewhere.
 
-A19 BUG: Allow for deletion of data set... can make infinitely many 
-  ... and ISSUE:  Every time a particular data set is loaded (for example: test.csv) the tool will
-  load test_1 then test_2 then test_3 etc etc... It's not really clear why this happens.
-
-  SOLN: 1) Make delete easier (confirm)
-        2) Delete the data
-        3) When you read a new file and assign to existing data set, don't create new data set!
-    
-A22 BUG: File read and data process speeds must be faster
+4 - Improve program performance. In general, we shouldn't ever stop improving performance but
+should reach a level of performance acceptable for Tuesday.
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
   
-A23 BUG: Match flowables doesn't work (no commit / assign)
+5 - A23 BUG: Match flowables doesn't work (no commit / assign)
   SOLN:  complete match flowable functionality including the following: CHRIS work here vvv
          1) UI design features that allow the user to annotate each of the match candidates as
             a) same (=)
@@ -41,75 +36,30 @@ A23 BUG: Match flowables doesn't work (no commit / assign)
          4) UI feature that tells user the status of each row / flowable
          5) UI design so that user can change assignments
  NOTE: Still working on this - stay tuned.  May come back with some questions tomorrow after work...
+ Status (chris):  I think if we apply the general idea of using the keyboard to all of these windows the user will feel less annoyed by all the clicking (or at least I will 
+be less annoyed and I'm special so you should cater to my needs). 
          
-  
-A24 BUG: Transaction work not complete.
+6 - A24 BUG: Transaction work not complete.
     SOLN:  Fix them, but ideally create larger, more efficient transactions
         STATUS: Added to ActiveTDB two versions of each routine that writes to the TDB:
         Regular and transaction safe (ts)
         Changed all calls to use the transaction safe ones.  There seem to be a glitch in AutoMatch so that
         Flowable name does not get assigned...  fix this, then move ahead 
 
-A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.  
+7 - A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.  
+    Status (chris): Instead of sorting - do filtering of issues, 'tagged rows', perhaps a filter that shows nothing in a row to clean things up...
 
-A27 BUG: Remove the Logger WARN, INFO, etc..
+10 - A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
+    Status (chris): If we can come up with an alternative to primary and additional I'll be really happy but that may be a bit extreme to do before Tuesday.
 
-A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated.
-    SOLN: Add methods to reset these, then call it when a CSV file is closed
+11 - A31 BUG (WINDOWS platform) -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
+    Status (chris): Super annoying in windows...must fix this.
+    Note: This does not appear to happen in Win7 (64-bit).
 
-A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
-
-A31 FEATURE REQUEST -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
-
-A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
+12 - A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
     SOLN: At least detect the issue and tell the user.  Better, read it anyway.
 
-
-#=========================================================================
-#=========  USER INTERFACE CHANGE REQUESTS ===============================
-#=========================================================================
-
-U2: When clicking a row to ignore, the "yellow" of that column disappears temporarily 
-Which makes it confusing to see what row you are actually wanting to ignore.  It is as if when clicking the row you want to ignore the error disappears on you.
-
-U3: TAGGED concept: Allow the user to select a row and "tag it" and sort by
-All tagged rows.  
-
-U5: Add changes from flowWorkflowUI.png
-
-U6: Add changes from ToolUI.png
-
-U8: Under Query Properties/Context Tools, have primary in regular text and additional in parenthesis.
-
-U9: Switch the second and third columns.
-
-U10: What does Auto Advance checkbox do??
-
-U11: Always have Flows Workflow, Match Flowables Tool, Match Properties Tool, and Match Context Tool on the LHS of the application screen.  Always have the CSVTable show up on the RHS of the application screen.
-
-U12: All other windows other than those mentioned in U11 should open at the bottom of the window (which I think primary is the SPARQL windows and logger).  
-
-U13: What does Commit Matches do?  Does it actually commit or are we already committing when the 'match' shows up in the matched window under the Match Properties and Match Contexts Tools?
-
-U14: Still not sure about what to do to navigate the use through the annotation windows other than to grey out impossible options.  This will require us to actually 
-Think about the logic but I think we need to start there... See below for ideas...
-
-#====================
-CHANGE CSVTable UI: 
-
-  1 | 2 | 3 | 4 | 5                 (grey out impossible options)
-                                                  
- 1 | 2 | 3 | Flowable Field | 5     (grey out impossible options)
-
- 1 | Context Field | 3 | Flowable Field | 5 (grey out impossible options)
-
- Whatever your rules are - indicate to the user the steps for assigning these
-  things.  
-
-Guide me!  :)
- #====================
-
-U15 FEATURE REQUEST - Remove Auto Advance button from MatchContext and MatchProperty tools and make that the default
+13 - A33: Document functionality of program before Tuesday in some succinct txt format ~ Readme.
 
 #==========================================================================
 #====  ITEMS WITH "A" - DO ABOVE BEFORE 2014-10-01   ======================
@@ -257,6 +207,19 @@ B29 (was A12) ISSUE: Some windows don't have vertical scrollbars which could be 
          
 B30 FEATURE REQUEST - Make the default Data Source name increment as follows file.csv -> file ... then file.csv -> file(1) ... then file.csv -> file(2) ... and so on
 
+B31 -> A19 BUG: Allow for deletion of data set... can make infinitely many 
+  ... and ISSUE:  Every time a particular data set is loaded (for example: test.csv) the tool will
+  load test_1 then test_2 then test_3 etc etc... It's not really clear why this happens.
+
+  SOLN: 1) Make delete easier (confirm)
+        2) Delete the data
+        3) When you read a new file and assign to existing data set, don't create new data set!
+Status (chris): Probably not super easy to do or high priority for Tuesday...moving to B
+
+U5: Add changes from flowWorkflowUI.png
+
+U6: Add changes from ToolUI.png?
+
 #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2014-10-01   ================
 #==========================================================================
@@ -317,26 +280,7 @@ C14 Need a save button - need something to keep these preferences... Is the log 
 #====  ITEMS WITH "C" - DO ABOVE AFTER 2014-10-01   =======================
 #==========================================================================
 
-#==========================================================================
-#====  BENCHMARKS ========================================================
-#==========================================================================
 
-  Running a commit on Chris's laptop is extremely slow!  
-      on Win8 with 6G RAM, solid state drive... why?!?
-               crosswalk.csv
-               start: 9:06
-                10%:  9:14
-                20%:  9:22
-               100%: 10:20
-  
-         dear god...
-         
-         but, wait!
-      on Mac OSX (dogwood, and granted, pretty powerful machine):
-      
-               crosswalk.csv
-               start: 11:09:48
-                100%: 11:10:33
                
 #==========================================================================
 #====  DONE   =============================================================
@@ -384,7 +328,7 @@ A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded
   
 A26 BUG: Two De-assign columns showing up still...
     STATUS: resolved
-  
+        
 U1: Under Window Manager the only "perspectives" option should be to restore the 
 Original perspective that the user sees on first startup.  For now, let's not deal with any other perspectives.
 STATUS: Done.
@@ -408,3 +352,52 @@ B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want t
   SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
   STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
   STATUS: Resolved.  Chris, check it, maybe?
+
+A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
+  form some sort of structure by which to search through?  I don't know what it even means to commit.
+  SOLN: Document to the user that before "Commit" nothing in the TDB changes and if they quit and return, they will have to start over.
+  STATUS (CHRIS): Not necessary... supremely nit-picky.
+
+U14: Still not sure about what to do to navigate the use through the annotation windows other than to grey out impossible options.  This will require us to actually 
+Think about the logic but I think we need to start there... See below for ideas...
+  Status (chris): I think Tom has cleaned this up enough....
+
+U9: Switch the second and third columns.
+   Status (chris): I think we decided not to do this...
+
+#====================
+CHANGE CSVTable UI: 
+
+  1 | 2 | 3 | 4 | 5                 (grey out impossible options)
+                                                  
+ 1 | 2 | 3 | Flowable Field | 5     (grey out impossible options)
+
+ 1 | Context Field | 3 | Flowable Field | 5 (grey out impossible options)
+
+ Whatever your rules are - indicate to the user the steps for assigning these
+  things.  
+
+Guide me!  :)
+ #====================
+
+Status (chris): I think we've essentially taken care of this with the 'numbers' and the annotation windows having only a few options at a time.
+
+U10: What does Auto Advance checkbox do??
+Status (chris): Got it.
+
+U8: Under Query Properties/Context Tools, have primary in regular text and additional in parenthesis.
+Status (chris): More or less took care of this.
+   
+8 - A27 BUG: Remove the Logger WARN, INFO, etc..
+    Status (chris): Just do it...
+    Status (Tom): Done.  I also modified the command line arguments to make the text appear on the logger (on Mac during run in Eclipse) from:
+       -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog
+           -- to --
+       -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}
+    Note: It appears that this change results in NOT seeing the Logger text in the console -- as the name implies?
+    
+9 - A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated.
+    SOLN: Add methods to reset these, then call it when a CSV file is closed
+    Status (chris): I'll check this tomorrow to see if it's fixed...
+    Status: (Tom): Done as of 9/24
+    
