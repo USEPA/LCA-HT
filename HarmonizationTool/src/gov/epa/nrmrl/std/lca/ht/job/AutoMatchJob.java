@@ -199,6 +199,8 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowableConcatinated.equals("")) {
 				if ((flowable = flowableMap.get(flowableConcatinated)) == null) {
+					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
 					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
@@ -264,6 +266,8 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowContextConcatinated.equals("")) {
 				if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
+					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
 					DataRow flowContextDataRow = new DataRow();
@@ -307,6 +311,8 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowPropertyConcatinated.equals("")) {
 				if ((flowProperty = flowPropertyMap.get(flowPropertyConcatinated)) == null) {
+					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
 					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
