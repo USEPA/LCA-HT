@@ -197,11 +197,8 @@ public class AutoMatchJob extends Job {
 				}
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			 if (!flowableConcatinated.equals("")) {
-//			if (false) {
-				if (flowableMap.containsKey(flowableConcatinated)) {
-					flowable = flowableMap.get(flowableConcatinated);
-				} else {
+			if (!flowableConcatinated.equals("")) {
+				if ((flowable = flowableMap.get(flowableConcatinated)) == null) {
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
 					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
@@ -266,9 +263,7 @@ public class AutoMatchJob extends Job {
 				flowContextConcatinated += dataRow.get(i - 1) + "\t";
 			}
 			if (!flowContextConcatinated.equals("")) {
-				if (flowContextMap.containsKey(flowContextConcatinated)) {
-					flowContext = flowContextMap.get(flowContextConcatinated);
-				} else {
+				if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
 					DataRow flowContextDataRow = new DataRow();
@@ -311,9 +306,7 @@ public class AutoMatchJob extends Job {
 				flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
 			}
 			if (!flowPropertyConcatinated.equals("")) {
-				if (flowPropertyMap.containsKey(flowPropertyConcatinated)) {
-					flowProperty = flowPropertyMap.get(flowPropertyConcatinated);
-				} else {
+				if ((flowProperty = flowPropertyMap.get(flowPropertyConcatinated)) == null) {
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
 					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
@@ -350,14 +343,14 @@ public class AutoMatchJob extends Job {
 			tempFlow.setFlowContext(flowContext);
 			tempFlow.setFlowProperty(flowProperty);
 
-//			if (flows.contains(tempFlow)) {
-//				tempFlow.remove();
-//			} else {
-				ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-						dataSourceProvider.getTdbResource());
-				ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
-				flows.add(tempFlow);
-//			}
+			// if (flows.contains(tempFlow)) {
+			// tempFlow.remove();
+			// } else {
+			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+					dataSourceProvider.getTdbResource());
+			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+			flows.add(tempFlow);
+			// }
 			// }
 		}
 		final List<String> contexts = new ArrayList<String>();

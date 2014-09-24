@@ -85,15 +85,15 @@ public class MatchFlowableTableView extends ViewPart {
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
 
-//		table.addListener(SWT.MeasureItem, new Listener() {
-//			public void handleEvent(Event event) {
-//				System.out.println("MeasureItem Event: " + event);
-//				TableItem item = (TableItem) event.item;
-//				String text = item.getText(event.index);
-//				Point size = event.gc.textExtent(text);
-//				event.height = Math.max(event.height, size.y);
-//			}
-//		});
+		// table.addListener(SWT.MeasureItem, new Listener() {
+		// public void handleEvent(Event event) {
+		// System.out.println("MeasureItem Event: " + event);
+		// TableItem item = (TableItem) event.item;
+		// String text = item.getText(event.index);
+		// Point size = event.gc.textExtent(text);
+		// event.height = Math.max(event.height, size.y);
+		// }
+		// });
 
 	}
 
@@ -113,6 +113,7 @@ public class MatchFlowableTableView extends ViewPart {
 	//
 	private static void initializeTable() {
 		table = tableViewer.getTable();
+		table.addListener(SWT.KeyDown, keyListener);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 	}
@@ -193,11 +194,11 @@ public class MatchFlowableTableView extends ViewPart {
 
 		String syns = "";
 		StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
-		System.out.println("syns stmtIterator = "+stmtIterator);
+		System.out.println("syns stmtIterator = " + stmtIterator);
 		while (stmtIterator.hasNext()) {
 			String synonym = stmtIterator.next().getObject().asLiteral().getString();
 			syns += synonym + System.getProperty("line.separator");
-			System.out.println("syns = "+syns);
+			System.out.println("syns = " + syns);
 		}
 		miniDataRow.add(syns);
 
@@ -243,11 +244,11 @@ public class MatchFlowableTableView extends ViewPart {
 
 			String syns = "";
 			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
-			System.out.println("syns stmtIterator = "+stmtIterator);
+			System.out.println("syns stmtIterator = " + stmtIterator);
 			while (stmtIterator.hasNext()) {
 				String synonym = stmtIterator.next().getObject().asLiteral().getString();
 				syns += synonym + System.getProperty("line.separator");
-				System.out.println("syns = "+syns);
+				System.out.println("syns = " + syns);
 			}
 			miniDataRow.add(syns);
 
@@ -261,7 +262,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// reset();
 		// createColumns();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
-//		tableViewer.setInput(null);
+		// tableViewer.setInput(null);
 		table.removeAll();
 		tableViewer.refresh();
 		tableViewer.setInput(miniTableProvider.getData());
@@ -271,15 +272,15 @@ public class MatchFlowableTableView extends ViewPart {
 		// ADD A ROW FOR SEARCHING
 		table.setItemCount(rowCount + 1);
 		TableItem queryRow = table.getItem(rowCount);
-		queryRow.addListener(SWT.Selection,  new Listener(){
+		queryRow.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
-				System.out.println("Event ="+event);
+				System.out.println("Event =" + event);
 			}
 		});
-		
-//		table.addMouseListener(mouseListener);
+
+		// table.addMouseListener(mouseListener);
 
 		// try{
 		// table.getItem(4).getData();
@@ -314,9 +315,11 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static void createColumns() {
 
-		TableViewerColumn tableViewerColumn = createTableViewerColumn("Rank", 30, 0);
+		TableViewerColumn tableViewerColumn = createTableViewerColumn("Assignment", 60, 0);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
+		tableViewerColumn.getColumn().addSelectionListener(colSelectionListener);
+//		tableViewerColumn.getColumn().addListener(SWT.KeyDown, keyListener);
 
 		tableViewerColumn = createTableViewerColumn("Data Source", 200, 1);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
@@ -326,7 +329,7 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
 
-//		String casString = Flowable;
+		// String casString = Flowable;
 		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 3);
 		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
@@ -340,9 +343,20 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
 	}
 
-	
+	private static Listener keyListener = new Listener() {
+
+		@Override
+		public void handleEvent(Event event) {
+			System.out.println("Column 1 received event: " + event);
+			System.out.println("event.keyCode: " + event.keyCode);
+			System.out.println("event.character: " + event.character);
+
+
+		}
+	};
+
 	private static MouseListener mouseListener = new MouseListener() {
-	
+
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			System.out.println("double click event :e =" + e);
@@ -519,7 +533,7 @@ public class MatchFlowableTableView extends ViewPart {
 		tableColumn.setWidth(bound);
 		tableColumn.setResizable(true);
 		tableColumn.setMoveable(false);
-		tableColumn.addSelectionListener(colSelectionListener);
+		// tableColumn.addSelectionListener(colSelectionListener);
 		// tableColumn.addListener(SWT.MouseDown, (Listener)
 		// columnMouseListener);
 

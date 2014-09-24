@@ -165,18 +165,20 @@ public class FlowsWorkflow extends ViewPart {
 		label_04.setText("4");
 
 		btnMatchFlowables = new Button(composite, SWT.NONE);
-		btnMatchFlowables.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
+//		btnMatchFlowables.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//			}
+//		});
 		GridData gd_btnMatchFlowables = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnMatchFlowables.heightHint = 45;
 		gd_btnMatchFlowables.widthHint = 120;
 		btnMatchFlowables.setLayoutData(gd_btnMatchFlowables);
-		btnMatchFlowables.setText("Match" + System.getProperty("line.separator") + "Flowables");
+//		btnMatchFlowables.setText("Unique" + System.getProperty("line.separator") + "Flowables");
+		btnMatchFlowables.setText("Unique " + System.getProperty("line.separator") + "Flowables");
+
 		btnMatchFlowables.setEnabled(false);
-		// btnMatchFlowables.addSelectionListener(matchFlowablesListener);
+		btnMatchFlowables.addSelectionListener(matchFlowablesListener);
 		// TODO - implement above
 
 		textMatchFlowables = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
@@ -200,7 +202,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnMatchFlowContexts.heightHint = 45;
 		gd_btnMatchFlowContexts.widthHint = 120;
 		btnMatchFlowContexts.setLayoutData(gd_btnMatchFlowContexts);
-		btnMatchFlowContexts.setText("Match" + System.getProperty("line.separator") + "Flow Contexts");
+		btnMatchFlowContexts.setText("Unique " + System.getProperty("line.separator") + "Flow Contexts");
 		btnMatchFlowContexts.setEnabled(false);
 		// btnMatchFlowContexts.addSelectionListener(matchFlowContextsListener);
 		// TODO - implement above
@@ -226,7 +228,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnMatchFlowProperties.heightHint = 45;
 		gd_btnMatchFlowProperties.widthHint = 120;
 		btnMatchFlowProperties.setLayoutData(gd_btnMatchFlowProperties);
-		btnMatchFlowProperties.setText("Match" + System.getProperty("line.separator") + "Flow Properties");
+		btnMatchFlowProperties.setText("Unique " + System.getProperty("line.separator") + "Flow Properties");
 		btnMatchFlowProperties.setEnabled(false);
 		// btnMatchFlowProperties.addSelectionListener(matchFlowPropertiesListener);
 		// TODO - implement above
@@ -544,6 +546,40 @@ public class FlowsWorkflow extends ViewPart {
 			doit(e);
 		}
 	};
+	
+	private SelectionListener matchFlowablesListener = new SelectionListener() {
+		private void doit(SelectionEvent e) {
+			btnCommit.setEnabled(false);
+			btnCheckData.setEnabled(false);
+			btnMatchFlowables.setEnabled(true);
+			btnMatchFlowContexts.setEnabled(true);
+			btnMatchFlowProperties.setEnabled(true);
+
+			CSVTableView.initializeRowMenu(2);
+			String jobKey = "autoMatch_01";
+			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
+			autoMatchJob.setPriority(Job.SHORT);
+			autoMatchJob.setSystem(false);
+			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
+					.findView(FlowsWorkflow.ID), jobKey));
+			autoMatchJob.schedule();
+
+			btnConcludeFile.setText("Close CSV");
+		}
+
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+	};
+
+	
 
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
@@ -594,6 +630,8 @@ public class FlowsWorkflow extends ViewPart {
 			doit(e);
 		}
 	};
+	
+
 
 	public void queryCallback(Integer[] results, String key) {
 

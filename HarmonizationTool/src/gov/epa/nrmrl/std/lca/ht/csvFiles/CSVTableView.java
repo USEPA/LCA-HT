@@ -124,6 +124,9 @@ public class CSVTableView extends ViewPart {
 		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: ArrayContentProvider
 	}
 
+	private static void hideRows(){
+		
+	}
 	private static void initializeTable() {
 		table = tableViewer.getTable();
 		table.setHeaderVisible(true);
