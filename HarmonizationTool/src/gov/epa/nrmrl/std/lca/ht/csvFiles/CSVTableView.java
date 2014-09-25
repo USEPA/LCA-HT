@@ -90,7 +90,7 @@ public class CSVTableView extends ViewPart {
 
 	private static ViewerSorter sorter;
 
-	private static ViewerFilter everyTenth = new TenthRowFilter();
+	private static TableRowFilter rowFilter = new TableRowFilter();
 
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
@@ -132,38 +132,47 @@ public class CSVTableView extends ViewPart {
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setSorter(sorter);
-
-		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: ArrayContentProvider
+		tableViewer.addFilter(rowFilter);
 	}
 
-	public static void hideNintyPercent() {
-		// JUNO -- WE MADE THIS STUFF
-
-		tableViewer.addFilter(everyTenth);
+	public List<Integer> getFilterRowNumbers() {
+		return rowFilter.getFilterRowNumbers();
 	}
 
-	public static void showNintyPercent() {
-		// JUNO -- WE MADE THIS STUFF
-
-		tableViewer.removeFilter(everyTenth);
+	public void setFilterRowNumbers(List<Integer> filterRowNumbers) {
+		rowFilter.setFilterRowNumbers(filterRowNumbers);
+	}
+	
+	public void clearFilterRowNumbers() {
+		rowFilter.clearFilterRowNumbers();
 	}
 
-	private static class TenthRowFilter extends ViewerFilter {
-// JUNO -- WE MADE THIS STUFF
+	private static class TableRowFilter extends ViewerFilter {
+		private List<Integer> filterRowNumbers = new ArrayList<Integer>();
+
+		public List<Integer> getFilterRowNumbers() {
+			return filterRowNumbers;
+		}
+
+		public void setFilterRowNumbers(List<Integer> filterRowNumbers) {
+			this.filterRowNumbers = filterRowNumbers;
+		}
+		
+		public void clearFilterRowNumbers() {
+			filterRowNumbers.clear();
+		}
+
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
+			TableViewer tableViewer = (TableViewer) viewer;
 			List<DataRow> data = (List<DataRow>) parentElement;
 			DataRow row = (DataRow) element;
 			int dataRowNum = row.getRowNumber();
 			// String first = row.get(0);
 			// Integer integer = Integer.valueOf(first);
 
-			if (dataRowNum % 10 == 0) {
-				return true;
-			}
-
-			return false;
+			return (filterRowNumbers.isEmpty() || filterRowNumbers.contains(dataRowNum));
 		}
 	}
 

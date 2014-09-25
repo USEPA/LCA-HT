@@ -18,11 +18,6 @@ public class TableProvider {
 	// CONFIRM COMPATIBILITY WITH TableViewer.setInput
 	private int lastChecked;
 	private int lastUpdated;
-	private List<Integer> uniqueFlowableRowNumbers = new ArrayList<Integer>();
-	private List<Integer> uniqueFlowContexRowNumbers  = new ArrayList<Integer>();
-	private List<Integer> uniqueFlowPropertyRowNumbers  = new ArrayList<Integer>();
-	// JUNO -- THE ABOVE ARE THE THREE THINGS YOU NEED TO POPULATE WITH THE (FIRST) ROW WITH A NEW THING
-
 
 //	private CSVColumnInfo[] assignedCSVColumnInfo = null;  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 
@@ -216,32 +211,6 @@ public class TableProvider {
 
 	public void setLcaDataProperties(LCADataPropertyProvider[] lcaDataProperties) {
 		this.lcaDataProperties = lcaDataProperties;
-	}
-
-	public List<Integer> getUniqueFlowableRowNumbers() {
-		return uniqueFlowableRowNumbers;
-	}
-
-	public void setUniqueFlowableRowNumbers(List<Integer> uniqueFlowableRowNumbers) {
-		this.uniqueFlowableRowNumbers = uniqueFlowableRowNumbers;
-	}
-
-	public List<Integer> getUniqueFlowContexRowNumbers() {
-		return uniqueFlowContexRowNumbers;
-	}
-
-	public void setUniqueFlowContexRowNumbers(
-			List<Integer> uniqueFlowContexRowNumbers) {
-		this.uniqueFlowContexRowNumbers = uniqueFlowContexRowNumbers;
-	}
-
-	public List<Integer> getUniqueFlowPropertyRowNumbers() {
-		return uniqueFlowPropertyRowNumbers;
-	}
-
-	public void setUniqueFlowPropertyRowNumbers(
-			List<Integer> uniqueFlowPropertyRowNumbers) {
-		this.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
 	}
 
 	// private class TransformCell {

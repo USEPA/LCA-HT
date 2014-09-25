@@ -135,7 +135,11 @@ public class AutoMatchJob extends Job {
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
-
+		
+		List<Integer> uniqueFlowableRowNumbers = new ArrayList<Integer>();
+		List<Integer> uniqueFlowContextRowNumbers  = new ArrayList<Integer>();
+		List<Integer> uniqueFlowPropertyRowNumbers  = new ArrayList<Integer>();
+		
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
 			// CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
@@ -199,7 +203,7 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowableConcatinated.equals("")) {
 				if ((flowable = flowableMap.get(flowableConcatinated)) == null) {
-					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+					uniqueFlowableRowNumbers.add(rowNumber);
 
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
@@ -266,7 +270,7 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowContextConcatinated.equals("")) {
 				if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
-					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+					uniqueFlowContextRowNumbers.add(rowNumber);
 
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
@@ -311,7 +315,7 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowPropertyConcatinated.equals("")) {
 				if ((flowProperty = flowPropertyMap.get(flowPropertyConcatinated)) == null) {
-					// JUNO -- PUT ROW NUMBERS INTO TableProvider
+					uniqueFlowPropertyRowNumbers.add(rowNumber);
 
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
@@ -359,6 +363,7 @@ public class AutoMatchJob extends Job {
 			// }
 			// }
 		}
+		
 		final List<String> contexts = new ArrayList<String>();
 		final List<Resource> contextResources = new ArrayList<Resource>();
 		for (String flowContextConcat : flowContextMap.keySet()) {
