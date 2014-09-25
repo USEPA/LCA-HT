@@ -223,7 +223,6 @@ public class CSVTableView extends ViewPart {
 				// for (Issue issue : lcaDataPropertyProvider.getIssues()) {
 				for (Issue issue : issueList) {
 					if (issue.getRowNumber() == hoverRow && issue.getColNumber() == hoverCol) {
-						issuesOfThisCell.add(issue);
 					}
 				}
 				if (issuesOfThisCell.size() > 0) {
@@ -248,28 +247,36 @@ public class CSVTableView extends ViewPart {
 
 	};
 
-	private static MouseListener columnMouseListener2 = new MouseListener() {
-		public void mouseDoubleClick(MouseEvent e) {
-			System.out.println("double click event :e =" + e);
-		}
-
-		@Override
-		public void mouseDown(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mouseUp(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-	};
+//	private static MouseListener columnMouseListener2 = new MouseListener() {
+//		public void mouseDoubleClick(MouseEvent e) {
+//			System.out.println("double click event :e =" + e);
+//		}
+//
+//		@Override
+//		public void mouseDown(MouseEvent e) {
+//			// TODO Auto-generated method stub
+//
+//		}
+//
+//		@Override
+//		public void mouseUp(MouseEvent e) {
+//			// TODO Auto-generated method stub
+//
+//		}
+//	};
 
 	private static MouseListener columnMouseListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			System.out.println("double click event :e =" + e);
+			Point ptClick = new Point(e.x, e.y);
+			TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
+			if (tableColumn.getWidth() > 30) {
+				tableColumn.setWidth(25);
+			} else {
+				tableColumn.setWidth(100);
+			}
+//			tableViewer.refresh();
 		}
 
 		@Override
@@ -357,6 +364,34 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	};
+
+	private static int getColumnNumSelected(Point point) {
+		int clickedRow = getRowNumSelected(point);
+		int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
+		if (clickedCol < 0) {
+			return -1;
+		}
+		return clickedCol;
+	}
+
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = table.getItem(row);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static int getRowNumSelected(Point point) {
+		TableItem item = table.getItem(point);
+		if (item == null) {
+			return -1;
+		}
+		return table.indexOf(item);
+	}
 
 	// private static Listener columnMouseListener3 = new Listener() {
 	//
@@ -1111,17 +1146,6 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 		return null;
-	}
-
-	private static int getTableColumnNumFromPoint(int row, Point pt) {
-		TableItem item = table.getItem(row);
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			Rectangle rect = item.getBounds(i);
-			if (rect.contains(pt)) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	private static void setPopup(List<Issue> issuesOfThisCell) {
