@@ -209,28 +209,28 @@ public class Flowable {
 		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
 		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
-//		boolean found = false;
-//		if (lcaDataPropertyProvider.isUnique()) {
-//			for (LCADataValue lcaDataValue : lcaDataValues) {
-//				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
-//					lcaDataValue.setValueAsString(valueAsString);
-//					found = true;
-//					Object object = lcaDataValue.getValue();
-//					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-//							object);
-//					continue;
-//				}
-//			}
-//		}
-//		if (!found) {
-//			LCADataValue lcaDataValue = new LCADataValue();
-//			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-//			lcaDataValue.setValueAsString(valueAsString);
-//			Object object = lcaDataValue.getValue();
-//			lcaDataValues.add(lcaDataValue);
-//			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-//		}
-		ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
+		boolean found = false;
+		if (lcaDataPropertyProvider.isUnique()) {
+			for (LCADataValue lcaDataValue : lcaDataValues) {
+				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
+					lcaDataValue.setValueAsString(valueAsString);
+					found = true;
+					Object object = lcaDataValue.getValue();
+					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+							object);
+					continue;
+				}
+			}
+		}
+		if (!found) {
+			LCADataValue lcaDataValue = new LCADataValue();
+			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+			lcaDataValue.setValueAsString(valueAsString);
+			Object object = lcaDataValue.getValue();
+			lcaDataValues.add(lcaDataValue);
+			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+		}
+		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
 
 	// public void setProperty(String key, Object object) {
@@ -265,7 +265,16 @@ public class Flowable {
 	}
 
 	public String[] getSynonyms() {
-		return (String[]) getAllProperties(flowableSynonymString);
+//		String[] results;
+		Object[] resultObjects = getAllProperties(flowableSynonymString);
+		if (resultObjects == null){
+			return new String[0];
+		}
+		String[] results = new String[resultObjects.length];
+		for (int i = 0; i<resultObjects.length;i++){
+			results[i]=(String) resultObjects[i];
+		}
+		return results;
 	}
 
 	public String getCas() {
@@ -337,6 +346,64 @@ public class Flowable {
 	// // ---- END SAFE -WRITE- TRANSACTION ---
 	// }
 
+	public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
+		Set<Resource> results = new HashSet<Resource>();
+		Resource qResource = flowable.getTdbResource();
+		String qName = flowable.getName();
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+		while (resIterator.hasNext()) {
+			Resource flowableMatchCandidate = resIterator.next();
+
+			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				results.add(flowableMatchCandidate);
+			}
+		}
+
+		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+		while (resIterator.hasNext()) {
+			Resource flowableMatchCandidate = resIterator.next();
+
+			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				results.add(flowableMatchCandidate);
+			}
+		}
+
+		for (String qSyn : flowable.getSynonyms()) {
+			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn);
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qSynLiteral);
+			while (resIterator.hasNext()) {
+				Resource flowableMatchCandidate = resIterator.next();
+				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					results.add(flowableMatchCandidate);
+				}
+			}
+
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qSynLiteral);
+			while (resIterator.hasNext()) {
+				Resource flowableMatchCandidate = resIterator.next();
+				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					results.add(flowableMatchCandidate);
+				}
+			}
+		}
+
+		// CAS MATCHING
+		if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
+			String cas = flowable.getCas();
+			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas);
+
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+			while (resIterator.hasNext()) {
+				Resource flowableMatchCandidate = resIterator.next();
+				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					results.add(flowableMatchCandidate);
+				}
+			}
+		}
+		return results;
+	}
+
 	public static Set<MatchCandidate> findMatches(Flowable flowable) {
 		Set<MatchCandidate> results = new HashSet<MatchCandidate>();
 		Resource qDataSource = flowable.getTdbResource().getPropertyResourceValue(ECO.hasDataSource);
@@ -347,7 +414,7 @@ public class Flowable {
 		// return results;
 		Statement statement = flowable.getTdbResource().getProperty(RDFS.label);
 		if (statement == null) {
-//			System.out.println("Nothing here");
+			// System.out.println("Nothing here");
 			return results;
 		}
 		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();

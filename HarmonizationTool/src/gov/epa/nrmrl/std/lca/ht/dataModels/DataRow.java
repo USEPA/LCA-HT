@@ -1,13 +1,20 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
 	// private List<String> toolTipValues = new ArrayList<String>();
 	private List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+	private Set<Resource> matchCandidateFlowables = new HashSet<Resource>();
+	private Set<Resource> matchCandidateFlowContexts = new HashSet<Resource>();
+	private Set<Resource> matchCandidateFlowProperties = new HashSet<Resource>();
 
 	private int rowNumber;
 	private String rowToolTip;
@@ -120,7 +127,7 @@ public class DataRow {
 	public void setRowNumber(int rowNumber) {
 		this.rowNumber = rowNumber;
 	}
-	
+
 	public List<MatchCandidate> getMatchCandidates() {
 		return matchCandidates;
 	}
@@ -128,12 +135,64 @@ public class DataRow {
 	public void setMatchCandidates(List<MatchCandidate> matchCandidates) {
 		this.matchCandidates = matchCandidates;
 	}
-	
-	public int addMatchCandidate(MatchCandidate matchCandidate){
-		if (matchCandidate != null){
+
+	public int addMatchCandidate(MatchCandidate matchCandidate) {
+		if (matchCandidate != null) {
 			matchCandidates.add(matchCandidate);
 		}
-		return matchCandidates.size();		
+		return matchCandidates.size();
+	}
+
+	public Set<Resource> getMatchCandidateFlowables() {
+		return matchCandidateFlowables;
+	}
+
+	public void setMatchCandidateFlowables(Set<Resource> matchCandidateFlowables) {
+		this.matchCandidateFlowables = matchCandidateFlowables;
+	}
+
+	public void addMatchCandidateFlowable(Resource resource) {
+		matchCandidateFlowables.add(resource);
+	}
+
+	public void removeMatchCandidateFlowable(Resource resource) {
+		matchCandidateFlowables.remove(resource);
+	}
+
+	// --
+
+	public Set<Resource> getMatchCandidateFlowContexts() {
+		return matchCandidateFlowContexts;
+	}
+
+	public void setMatchCandidateFlowContexts(Set<Resource> matchCandidateFlowContexts) {
+		this.matchCandidateFlowContexts = matchCandidateFlowContexts;
+	}
+
+	public void addMatchCandidateFlowContext(Resource resource) {
+		matchCandidateFlowContexts.add(resource);
+	}
+
+	public void removeMatchCandidateFlowContext(Resource resource) {
+		matchCandidateFlowContexts.remove(resource);
+	}
+
+	// --
+
+	public Set<Resource> getMatchCandidateFlowProperties() {
+		return matchCandidateFlowProperties;
+	}
+
+	public void setMatchCandidateFlowProperties(Set<Resource> matchCandidateFlowProperties) {
+		this.matchCandidateFlowProperties = matchCandidateFlowProperties;
+	}
+
+	public void addMatchCandidateFlowProperty(Resource resource) {
+		matchCandidateFlowProperties.add(resource);
+	}
+
+	public void removeMatchCandidateFlowProperty(Resource resource) {
+		matchCandidateFlowProperties.remove(resource);
 	}
 
 }

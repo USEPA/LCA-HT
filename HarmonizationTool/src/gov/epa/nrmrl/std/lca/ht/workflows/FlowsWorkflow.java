@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -737,6 +738,16 @@ public class FlowsWorkflow extends ViewPart {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
+		int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend).getMatchCandidateFlowables().size();
+		Color color;
+		if (count == 0){
+			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		} else if (count == 1){
+			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		} else {
+			color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+		}
+		CSVTableView.colorCell(rowNumToSend, 0, color);
 	}
 	
 	public static void addMatchContextRowNum(int rowNumToSend) {
