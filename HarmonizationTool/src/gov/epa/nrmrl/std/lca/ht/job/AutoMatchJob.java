@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.job;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,9 +117,9 @@ public class AutoMatchJob extends Job {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
 		DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
 
-		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
-		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
-		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
+		Map<String, Flowable> flowableMap = new LinkedHashMap<String, Flowable>();
+		Map<String, FlowContext> flowContextMap = new LinkedHashMap<String, FlowContext>();
+		Map<String, FlowProperty> flowPropertyMap = new LinkedHashMap<String, FlowProperty>();
 
 		// List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
 
@@ -135,11 +136,7 @@ public class AutoMatchJob extends Job {
 		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
 		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
-		
-		List<Integer> uniqueFlowableRowNumbers = new ArrayList<Integer>();
-		List<Integer> uniqueFlowContextRowNumbers  = new ArrayList<Integer>();
-		List<Integer> uniqueFlowPropertyRowNumbers  = new ArrayList<Integer>();
-		
+
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
 			// CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
@@ -155,6 +152,33 @@ public class AutoMatchJob extends Job {
 				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}
+		if (flowableCSVColumnNumbers.size() == 0) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					FlowsWorkflow.setTextMatchFlowables("N/A");
+					FlowsWorkflow.disableFlowableBtn();
+				}
+			});
+		}
+
+		if (flowContextCSVColumnNumbers.size() == 0) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					FlowsWorkflow.setTextFlowContexts("N/A");
+					FlowsWorkflow.disableContextBtn();
+
+				}
+			});
+		}
+
+		if (flowPropertyCSVColumnNumbers.size() == 0) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					FlowsWorkflow.setTextFlowProperties("N/A");
+					FlowsWorkflow.disablePropertyBtn();
+				}
+			});
+		}
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -165,12 +189,12 @@ public class AutoMatchJob extends Job {
 		// TableProvider flowContextTableProvider = new TableProvider();
 		// TableProvider flowPropertyTableProvider = new TableProvider();
 
+		// ========================== BEGIN ROW BY ROW ==========================
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
 			}
-			// List<MatchCandidate> matchCandidatesThisRow = new
-			// ArrayList<MatchCandidate>();
+
 			if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
 				final String state = percentComplete + "%";
 
@@ -186,12 +210,15 @@ public class AutoMatchJob extends Job {
 			FlowProperty flowProperty = null;
 
 			final int rowNumberPlusOne = rowNumber + 1;
+			final int rowNumToSend = rowNumber;
+
 			// Literal rowLiteral =
 			// ActiveTDB.createTypedLiteral(rowNumberPlusOne);
 
 			// Item item = tableProvider.getItem(rowNumber);
 			DataRow dataRow = tableProvider.getData().get(rowNumber);
 
+			// ========================== FLOWABLE ==========================
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
 				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
@@ -201,9 +228,10 @@ public class AutoMatchJob extends Job {
 				}
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			if (!flowableConcatinated.equals("")) {
-				if ((flowable = flowableMap.get(flowableConcatinated)) == null) {
-					uniqueFlowableRowNumbers.add(rowNumber);
+			if (!flowableConcatinated.matches("^\\s*$")){
+				flowable = flowableMap.get(flowableConcatinated);
+				if (flowable == null) {
+//					uniqueFlowableRowNumbers.add(rowNumber);
 
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
@@ -217,48 +245,47 @@ public class AutoMatchJob extends Job {
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
-					final int flowableCount = flowableMap.size();
+//					final int flowableCount = flowableMap.size();
 					// System.out
 					// .println("flowableCount ----> " + flowableCount + " after adding " + flowableConcatinated);
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setTextMatchFlowables("0 / " + flowableCount);
+							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+//							FlowsWorkflow.setTextMatchFlowables("0 / " + flowableCount);
 						}
 					});
-				}
-				// FIND MATCHES FOR THIS FLOWABLE
-				// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
-				// Q-NAME = DB-NAME
-
-				Set<MatchCandidate> matches = Flowable.findMatches(flowable);
-				final int numHits = matches.size();
-				// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
-				// int counter = 0;
-				for (MatchCandidate mc : matches) {
-					dataRow.addMatchCandidate(mc);
-					// matchCandidatesThisRow[counter] = mc;
-					// counter++;
-				}
-				// matchRows.add(matchCandidatesThisRow);
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						if (numHits == 0) {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-									SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-						} else if (numHits == 1) {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
-									SWTResourceManager.getColor(SWT.COLOR_GREEN));
-						} else {
-							CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
-						}
+					
+					// FIND MATCHES FOR THIS FLOWABLE
+					// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
+					// Q-NAME = DB-NAME
+					Set<MatchCandidate> matches = Flowable.findMatches(flowable);
+					final int numHits = matches.size();
+					// MatchCandidate[] matchCandidatesThisRow = new MatchCandidate[numHits];
+					// int counter = 0;
+					for (MatchCandidate mc : matches) {
+						dataRow.addMatchCandidate(mc);
+						// matchCandidatesThisRow[counter] = mc;
+						// counter++;
 					}
-				});
-
-				// ActiveTDB.tsAddLiteral(flowable.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+					// matchRows.add(matchCandidatesThisRow);
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							if (numHits == 0) {
+								CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+										SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+							} else if (numHits == 1) {
+								CSVTableView.colorCell(rowNumberPlusOne - 1, 0,
+										SWTResourceManager.getColor(SWT.COLOR_GREEN));
+							} else {
+								CSVTableView.colorCell(rowNumberPlusOne - 1, 0, SWTResourceManager.getColor(SWT.COLOR_CYAN));
+							}
+						}
+					});	
+				}
 			}
 
-			// NOW DO flowContext
+			// ========================== FLOW CONTEXT ==========================
 			String flowContextConcatinated = "";
 			for (int i : flowContextCSVColumnNumbers) {
 				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
@@ -268,9 +295,11 @@ public class AutoMatchJob extends Job {
 				}
 				flowContextConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			if (!flowContextConcatinated.equals("")) {
-				if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
-					uniqueFlowContextRowNumbers.add(rowNumber);
+			if (!flowContextConcatinated.matches("^\\s*$")){
+				flowContext = flowContextMap.get(flowContextConcatinated);
+//				if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
+				if (flowContext == null) {
+//					uniqueFlowContextRowNumbers.add(rowNumber);
 
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
@@ -290,12 +319,12 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
-					final int flowContextCount = flowContextMap.size();
+//					final int flowContextCount = flowContextMap.size();
 					// System.out.println("flowContextCount----> " + flowContextCount + "after adding "
 					// + flowContextConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setTextFlowContexts("0 / " + flowContextCount);
+							FlowsWorkflow.addContextRowNum(rowNumToSend);
 						}
 					});
 				}
@@ -303,7 +332,7 @@ public class AutoMatchJob extends Job {
 
 			}
 
-			// NOW DO flowProperty
+			// ========================== FLOW PROPERTY ==========================
 			String flowPropertyConcatinated = "";
 			for (int i : flowPropertyCSVColumnNumbers) {
 				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
@@ -313,9 +342,12 @@ public class AutoMatchJob extends Job {
 				}
 				flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			if (!flowPropertyConcatinated.equals("")) {
-				if ((flowProperty = flowPropertyMap.get(flowPropertyConcatinated)) == null) {
-					uniqueFlowPropertyRowNumbers.add(rowNumber);
+			if (!flowPropertyConcatinated.matches("^\\s*$")){
+
+//			if (!flowPropertyConcatinated.equals("")) {
+				flowProperty = flowPropertyMap.get(flowPropertyConcatinated);
+				if (flowProperty == null) {
+//					uniqueFlowPropertyRowNumbers.add(rowNumber);
 
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
@@ -334,20 +366,19 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
-					final int flowPropertyCount = flowPropertyMap.size();
+//					final int flowPropertyCount = flowPropertyMap.size();
 					// System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
 					// + flowPropertyConcatinated);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setTextFlowProperties("0 / " + flowPropertyCount);
+							FlowsWorkflow.addPropertyRowNum(rowNumToSend);
 						}
 					});
 				}
 				// ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
-
-			// if (flowable != null && flowContext != null && flowProperty != null) {
+			// ========================== FLOW ==========================
 			Flow tempFlow = new Flow();
 			tempFlow.setFlowable(flowable);
 			tempFlow.setFlowContext(flowContext);
@@ -360,10 +391,11 @@ public class AutoMatchJob extends Job {
 					dataSourceProvider.getTdbResource());
 			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			flows.add(tempFlow);
-			// }
-			// }
+
 		}
-		
+
+		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
+
 		final List<String> contexts = new ArrayList<String>();
 		final List<Resource> contextResources = new ArrayList<Resource>();
 		for (String flowContextConcat : flowContextMap.keySet()) {

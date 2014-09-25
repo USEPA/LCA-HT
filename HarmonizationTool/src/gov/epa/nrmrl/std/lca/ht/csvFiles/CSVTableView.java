@@ -10,15 +10,20 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
@@ -125,8 +130,7 @@ public class CSVTableView extends ViewPart {
 		// TO SATISFY TODO B21, ADDED THE SWT.MULTI BELOW
 		// tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL
 		// | SWT.READ_ONLY | SWT.MULTI);
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.MULTI);
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
 
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
@@ -135,43 +139,42 @@ public class CSVTableView extends ViewPart {
 		tableViewer.addFilter(rowFilter);
 	}
 
-	public List<Integer> getFilterRowNumbers() {
+	public static Set<Integer> getFilterRowNumbers() {
 		return rowFilter.getFilterRowNumbers();
 	}
 
-	public void setFilterRowNumbers(List<Integer> filterRowNumbers) {
+	public static void setFilterRowNumbers(Set<Integer> filterRowNumbers) {
 		rowFilter.setFilterRowNumbers(filterRowNumbers);
 	}
-	
-	public void clearFilterRowNumbers() {
+
+	public static void clearFilterRowNumbers() {
 		rowFilter.clearFilterRowNumbers();
 	}
 
 	private static class TableRowFilter extends ViewerFilter {
-		private List<Integer> filterRowNumbers = new ArrayList<Integer>();
+		// private List<Integer> filterRowNumbers = new ArrayList<Integer>();
+		private Set<Integer> filterRowNumbers = new HashSet<Integer>();
 
-		public List<Integer> getFilterRowNumbers() {
+		public Set<Integer> getFilterRowNumbers() {
 			return filterRowNumbers;
 		}
 
-		public void setFilterRowNumbers(List<Integer> filterRowNumbers) {
+		public void setFilterRowNumbers(Set<Integer> filterRowNumbers) {
 			this.filterRowNumbers = filterRowNumbers;
+			tableViewer.refresh();
 		}
-		
+
 		public void clearFilterRowNumbers() {
 			filterRowNumbers.clear();
+			tableViewer.refresh();
 		}
 
 		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			TableViewer tableViewer = (TableViewer) viewer;
-			List<DataRow> data = (List<DataRow>) parentElement;
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			// TableViewer tableViewer = (TableViewer) viewer;
+			// List<DataRow> data = (List<DataRow>) parentElement;
 			DataRow row = (DataRow) element;
 			int dataRowNum = row.getRowNumber();
-			// String first = row.get(0);
-			// Integer integer = Integer.valueOf(first);
-
 			return (filterRowNumbers.isEmpty() || filterRowNumbers.contains(dataRowNum));
 		}
 	}
@@ -208,10 +211,8 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			if (hoverCol > 0) {
-				TableProvider tableProvider = TableKeeper
-						.getTableProvider(tableProviderKey);
-				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider
-						.getLCADataPropertyProvider(hoverCol);
+				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(hoverCol);
 				// CSVColumnInfo csvColumnInfo =
 				// tableProvider.getAssignedCSVColumnInfo()[hoverCol];
 
@@ -221,8 +222,7 @@ public class CSVTableView extends ViewPart {
 				List<Issue> issuesOfThisCell = new ArrayList<Issue>();
 				// for (Issue issue : lcaDataPropertyProvider.getIssues()) {
 				for (Issue issue : issueList) {
-					if (issue.getRowNumber() == hoverRow
-							&& issue.getColNumber() == hoverCol) {
+					if (issue.getRowNumber() == hoverRow && issue.getColNumber() == hoverCol) {
 						issuesOfThisCell.add(issue);
 					}
 				}
@@ -371,8 +371,7 @@ public class CSVTableView extends ViewPart {
 		// popup.addListener(SWT.Modify, popupResizeListener);
 		popup = new Text(composite, SWT.BORDER | SWT.WRAP);
 		popup.setEditable(false);
-		popup.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_INFO_BACKGROUND));
+		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		popup.setText("");
 		popup.setVisible(false);
 		popup.setLocation(90, 90);
@@ -432,8 +431,7 @@ public class CSVTableView extends ViewPart {
 				String menuItemText = ((MenuItem) event.widget).getText();
 				if (menuItemText.equals("ignore row")) {
 					for (TableItem tableItem : table.getSelection()) {
-						tableItem.setForeground(SWTResourceManager
-								.getColor(SWT.COLOR_GRAY));
+						tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 						int rowNum = table.indexOf(tableItem);
 						if (!rowsToIgnore.contains(rowNum)) {
 							rowsToIgnore.add(rowNum);
@@ -441,8 +439,7 @@ public class CSVTableView extends ViewPart {
 					}
 				} else if (menuItemText.equals("use row")) {
 					for (TableItem tableItem : table.getSelection()) {
-						tableItem.setForeground(SWTResourceManager
-								.getColor(SWT.COLOR_BLACK));
+						tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 						int rowNum = table.indexOf(tableItem);
 						if (rowsToIgnore.contains(rowNum)) {
 							rowsToIgnore.remove(rowsToIgnore.indexOf(rowNum));
@@ -489,10 +486,8 @@ public class CSVTableView extends ViewPart {
 		if (colNumSelected == 0) {
 			return;
 		}
-		TableProvider tableProvider = TableKeeper
-				.getTableProvider(tableProviderKey);
-		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider
-				.getLCADataPropertyProvider(colNumSelected);
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(colNumSelected);
 
 		// CSVColumnInfo csvColumnInfo =
 		// tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
@@ -503,19 +498,15 @@ public class CSVTableView extends ViewPart {
 		TableItem tableItem = table.getItem(rowNumSelected);
 		String startingText = tableItem.getText(colNumSelected);
 		for (Issue issue : issueList) {
-			if ((issue.getRowNumber() == rowNumSelected)
-					&& (!issue.getStatus().equals(Status.RESOLVED))) {
+			if ((issue.getRowNumber() == rowNumSelected) && (!issue.getStatus().equals(Status.RESOLVED))) {
 				QACheck qaCheck = issue.getQaCheck();
 				if (qaCheck.getReplacement() != null) {
-					Matcher matcher = qaCheck.getPattern()
-							.matcher(startingText);
-					String fixedValue = matcher.replaceFirst(qaCheck
-							.getReplacement());
+					Matcher matcher = qaCheck.getPattern().matcher(startingText);
+					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
 					tableItem.setText(colNumSelected, fixedValue);
 					// TableProvider tableProvider =
 					// TableKeeper.getTableProvider(tableProviderKey);
-					tableProvider.getData().get(rowNumSelected)
-							.set(colNumSelected, fixedValue);
+					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
 				}
@@ -547,10 +538,8 @@ public class CSVTableView extends ViewPart {
 		tableViewer.setInput(tableProvider.getData());
 		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: setInput
 		Date loadEndDate = new Date();
-		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate
-				.getTime()) / 1000);
-		System.out.println("# CSVTableView load time (in seconds): "
-				+ secondsRead);
+		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
+		System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 
 		// TOM BELIEVES tableViewer.setInput COPIES tableProvider DATA INTO
 		// tableViewer
@@ -563,13 +552,13 @@ public class CSVTableView extends ViewPart {
 		colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
 		initializeColumnActionsMenu();
+		initializeOtherViews();
 	}
 
 	private static void createColumns() {
 		System.out.println("key=" + tableProviderKey);
 		if (tableProviderKey != null) {
-			TableProvider tableProvider = TableKeeper
-					.getTableProvider(tableProviderKey);
+			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 			// String defaultHeader = headerMenu.getItem(0).getText();
 			DataRow headerRow = tableProvider.getHeaderRow();
 			System.out.println("Adding headers");
@@ -586,26 +575,21 @@ public class CSVTableView extends ViewPart {
 			System.out.println("Adding columns");
 
 			// COLUMN ZERO
-			TableViewerColumn tableViewerColumn = createTableViewerColumn("",
-					50, 0);
+			TableViewerColumn tableViewerColumn = createTableViewerColumn("", 50, 0);
 			tableViewerColumn.getColumn().setAlignment(SWT.RIGHT); // DOESN'T
 																	// WORK ON
 																	// COL
 																	// ZERO?!?
-			tableViewerColumn
-					.setLabelProvider(new RowIndexColumnLabelProvider());
+			tableViewerColumn.setLabelProvider(new RowIndexColumnLabelProvider());
 
 			for (int i = 0; i < tableProvider.getColumnCount(); i++) {
 				int iplus1 = i + 1;
-				System.out.println("Populating column " + iplus1
-						+ " with data from tableProvider column " + i);
+				System.out.println("Populating column " + iplus1 + " with data from tableProvider column " + i);
 				// tableViewerColumn =
 				// createTableViewerColumn(csvColumnDefaultColumnHeader, 100,
 				// iplus1);
-				tableViewerColumn = createTableViewerColumn(
-						headerRow.get(iplus1), 100, iplus1);
-				tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(
-						iplus1));
+				tableViewerColumn = createTableViewerColumn(headerRow.get(iplus1), 100, iplus1);
+				tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(iplus1));
 			}
 		}
 	}
@@ -613,8 +597,7 @@ public class CSVTableView extends ViewPart {
 	private static void colorRowNumberColumn() {
 		for (int i = 0; i < table.getItemCount(); i++) {
 			TableItem item = table.getItem(i);
-			item.setBackground(0,
-					SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			item.setBackground(0, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		}
 	}
 
@@ -629,23 +612,20 @@ public class CSVTableView extends ViewPart {
 		if (option == 1) { // NOT ASSIGNED YET
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
-			String colType = TableKeeper.getTableProvider(tableProviderKey)
-					.getLCADataPropertyProvider(colNumSelected)
+			String colType = TableKeeper.getTableProvider(tableProviderKey).getLCADataPropertyProvider(colNumSelected)
 					.getPropertyName();
 			if (colType.equals(Flowable.casString)) {
 
 				// =========
 				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 				menuItem.setText("Standardize CAS");
-				menuItem.addListener(SWT.Selection,
-						new StandardizeAllCASListener());
+				menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
 
 				new MenuItem(headerMenu, SWT.SEPARATOR);
 
 				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 				menuItem.setText(deassignText);
-				menuItem.addListener(SWT.Selection,
-						new HeaderMenuColumnAssignmentListener());
+				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 				// =========
 			} else {
 				// =========
@@ -660,16 +640,14 @@ public class CSVTableView extends ViewPart {
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 					menuItem.setText("Auto-resolve " + count + " Issues");
-					menuItem.addListener(SWT.Selection,
-							new AutoResolveColumnListener());
+					menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
 
 					new MenuItem(headerMenu, SWT.SEPARATOR);
 				}
 
 				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 				menuItem.setText(deassignText);
-				menuItem.addListener(SWT.Selection,
-						new HeaderMenuColumnAssignmentListener());
+				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 				// =========
 			}
 			// menuItem = new MenuItem(headerMenu, SWT.CASCADE);
@@ -723,14 +701,12 @@ public class CSVTableView extends ViewPart {
 
 		menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 		menuItem.setText(deassignText);
-		menuItem.addListener(SWT.Selection,
-				new HeaderMenuColumnAssignmentListener());
+		menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 
 	}
 
 	private static void deAssignColumn() {
-		TableProvider tableProvider = TableKeeper
-				.getTableProvider(tableProviderKey);
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		tableProvider.setLCADataPropertyProvider(colNumSelected, null);
 		TableColumn tableColumn = table.getColumn(colNumSelected);
 		tableColumn.setText("- " + colNumSelected + " -");
@@ -744,18 +720,15 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
-			TableProvider tableProvider = TableKeeper
-					.getTableProvider(tableProviderKey);
-			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider
-					.getLCADataPropertyProvider(colNumSelected);
+			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(colNumSelected);
 
 			// CSVColumnInfo csvColumnInfo =
 			// tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
 			if (lcaDataPropertyProvider == null) {
 				return;
 			}
-			if (!lcaDataPropertyProvider.getPropertyClass().equals(
-					Flowable.label)) {
+			if (!lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 				return;
 			}
 			if (!lcaDataPropertyProvider.getPropertyName().equals("CAS")) {
@@ -812,9 +785,7 @@ public class CSVTableView extends ViewPart {
 			// ANOTHER)
 			// d) NO CHANGE
 
-			System.out
-					.println("HeaderMenuColumnAssignmentListener event.widget  = "
-							+ event.widget);
+			System.out.println("HeaderMenuColumnAssignmentListener event.widget  = " + event.widget);
 			if (!(event.widget instanceof MenuItem)) {
 				System.out.println("What's going on here?");
 				return;
@@ -832,36 +803,29 @@ public class CSVTableView extends ViewPart {
 				deAssignColumn();
 			} else {
 				// ASSIGNING A COLUMN
-				String menuItemClass = menuItem.getParent().getParentItem()
-						.getText(); // WOULD FAIL IF MENU DOESN'T
-									// HAVE PARENT
+				String menuItemClass = menuItem.getParent().getParentItem().getText(); // WOULD FAIL IF MENU DOESN'T
+																						// HAVE PARENT
 
 				LCADataPropertyProvider lcaDataPropertyProvider = null;
 				if (menuItemClass.equals(Flowable.label)) {
-					lcaDataPropertyProvider = Flowable.getDataPropertyMap()
-							.get(menuItemName);
+					lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(menuItemName);
 				} else if (menuItemClass.equals(FlowContext.label)) {
-					lcaDataPropertyProvider = FlowContext.getDataPropertyMap()
-							.get(menuItemName);
+					lcaDataPropertyProvider = FlowContext.getDataPropertyMap().get(menuItemName);
 				} else if (menuItemClass.equals(FlowProperty.label)) {
-					lcaDataPropertyProvider = FlowProperty.getDataPropertyMap()
-							.get(menuItemName);
+					lcaDataPropertyProvider = FlowProperty.getDataPropertyMap().get(menuItemName);
 				}
 
 				if (lcaDataPropertyProvider == null) {
 					System.out.println("Hmm, didn't find anything matching!");
 				}
 
-				TableProvider tableProvider = TableKeeper
-						.getTableProvider(tableProviderKey);
+				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 				LCADataPropertyProvider oldLCADataPropertyProvider = tableProvider
 						.getLCADataPropertyProvider(colNumSelected);
 				if (oldLCADataPropertyProvider != null) {
-					System.out
-							.println("No longer allowed to re-assign a column.  Must de-assign first!");
+					System.out.println("No longer allowed to re-assign a column.  Must de-assign first!");
 				}
-				tableProvider.setLCADataPropertyProvider(colNumSelected,
-						lcaDataPropertyProvider);
+				tableProvider.setLCADataPropertyProvider(colNumSelected, lcaDataPropertyProvider);
 				TableColumn tableColumn = table.getColumn(colNumSelected);
 				// tableColumn.setText(menuItemClass + ":" +
 				// System.getProperty("line.separator") + menuItemName); //
@@ -969,8 +933,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	// private class RowIndexColumnLabelProvider extends ColumnLabelProvider {
-	private static class RowIndexColumnLabelProvider extends
-			ColumnLabelProvider {
+	private static class RowIndexColumnLabelProvider extends ColumnLabelProvider {
 
 		public RowIndexColumnLabelProvider() {
 		}
@@ -1070,11 +1033,9 @@ public class CSVTableView extends ViewPart {
 	 * @param colNumber
 	 * @return
 	 */
-	private static TableViewerColumn createTableViewerColumn(String title,
-			int bound, final int colNumber) {
+	private static TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 
-		final TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				tableViewer, SWT.NONE, colNumber);
+		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = tableViewerColumn.getColumn();
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
@@ -1102,8 +1063,7 @@ public class CSVTableView extends ViewPart {
 				if (colNumSelected > 0) {
 					// FIRST CHECK TO SEE IF THIS COLUMN HAS BEEN ASSIGNED OR
 					// NOT
-					if (table.getColumn(colNumSelected).getText()
-							.equals("- " + colNumSelected + " -")) {
+					if (table.getColumn(colNumSelected).getText().equals("- " + colNumSelected + " -")) {
 						// initializeHeaderMenu();
 						setHeaderMenu(1);
 					} else {
@@ -1127,13 +1087,10 @@ public class CSVTableView extends ViewPart {
 	};
 
 	public static void updateCheckedData() {
-		TableProvider tableProvider = TableKeeper
-				.getTableProvider(tableProviderKey);
-		for (int rowNumber = tableProvider.getLastUpdated(); rowNumber <= tableProvider
-				.getLastChecked(); rowNumber++) {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		for (int rowNumber = tableProvider.getLastUpdated(); rowNumber <= tableProvider.getLastChecked(); rowNumber++) {
 			if (!rowsToIgnore.contains(rowNumber)) {
-				colorCell(rowNumber, 0,
-						SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				colorCell(rowNumber, 0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
 			}
 		}
 	}
@@ -1172,23 +1129,17 @@ public class CSVTableView extends ViewPart {
 			return; // THIS SHOULDN'T HAPPEN
 		}
 		if (issuesOfThisCell.size() == 1) {
-			String popupText = "- "
-					+ issuesOfThisCell.get(0).getQaCheck().getDescription();
-			popupText += "\n       - "
-					+ issuesOfThisCell.get(0).getQaCheck().getExplanation();
+			String popupText = "- " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
 			popup.setText(popupText);
 			return;
 		}
-		String popupText = "0 - "
-				+ issuesOfThisCell.get(0).getQaCheck().getDescription();
-		popupText += "\n       - "
-				+ issuesOfThisCell.get(0).getQaCheck().getExplanation();
+		String popupText = "0 - " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+		popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
 		for (int i = 1; i < issuesOfThisCell.size(); i++) {
 
-			popupText += "\n" + i + " - "
-					+ issuesOfThisCell.get(i).getQaCheck().getDescription();
-			popupText += "\n       - "
-					+ issuesOfThisCell.get(i).getQaCheck().getExplanation();
+			popupText += "\n" + i + " - " + issuesOfThisCell.get(i).getQaCheck().getDescription();
+			popupText += "\n       - " + issuesOfThisCell.get(i).getQaCheck().getExplanation();
 		}
 		popup.setText(popupText);
 	}
@@ -1221,19 +1172,27 @@ public class CSVTableView extends ViewPart {
 		colNumSelected = -1;
 	}
 
+	private static void initializeOtherViews() {
+
+		Util.findView(MatchFlowableTableView.ID);
+		MatchFlowableTableView.initialize();
+
+		Util.findView(MatchContexts.ID);
+		MatchContexts.initialize();
+
+		Util.findView(MatchProperties.ID);
+		MatchProperties.initialize();
+	}
+
 	private static void resetFields() {
 		lcaDataPropertyProviders.clear();
-		System.out
-				.println("Workflow telling CSVTableView to add header menu stuff 1");
+		System.out.println("Workflow telling CSVTableView to add header menu stuff 1");
 		addFields(Flowable.getDataPropertyMap());
-		System.out
-				.println("Workflow telling CSVTableView to add header menu stuff 2");
+		System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
 		addFields(FlowContext.getDataPropertyMap());
-		System.out
-				.println("Workflow telling CSVTableView to add header menu stuff 3");
+		System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
 		addFields(FlowProperty.getDataPropertyMap());
-		System.out.println("lcaDataPropertyProviders.size() = "
-				+ lcaDataPropertyProviders.size());
+		System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 	}
 
 	private static void removeColumns() {
@@ -1282,19 +1241,15 @@ public class CSVTableView extends ViewPart {
 			MenuItem menuItem = new MenuItem(curMenu, SWT.NORMAL);
 			clearMenuItemListeners(menuItem);
 			if (lcaDataPropertyProvider.isUnique()) {
-				TableProvider tableProvider = TableKeeper
-						.getTableProvider(tableProviderKey);
-				for (LCADataPropertyProvider checkLCADataPropertyProvider : tableProvider
-						.getLcaDataProperties()) {
-					if (lcaDataPropertyProvider
-							.sameAs(checkLCADataPropertyProvider)) {
+				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+				for (LCADataPropertyProvider checkLCADataPropertyProvider : tableProvider.getLcaDataProperties()) {
+					if (lcaDataPropertyProvider.sameAs(checkLCADataPropertyProvider)) {
 						menuItem.setEnabled(false);
 						continue;
 					}
 				}
 			}
-			menuItem.addListener(SWT.Selection,
-					new HeaderMenuColumnAssignmentListener());
+			menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 			menuItem.setText(lcaDataPropertyProvider.getPropertyName());
 			System.out.println("menuItem.getText() = " + menuItem.getText());
 
@@ -1337,15 +1292,11 @@ public class CSVTableView extends ViewPart {
 			String fixedText = matcher.replaceFirst(qaCheck.getReplacement());
 			System.out.println("The value is now ->" + fixedText + "<-");
 			tableItem.setText(colNumber, fixedText);
-			System.out
-					.println("TableItem fixed, but not (source) TableProvider data");
-			DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey)
-					.getData().get(issue.getRowNumber());
-			System.out.println("Underlying value is now: "
-					+ dataRow.get(issue.getColNumber() - 1));
+			System.out.println("TableItem fixed, but not (source) TableProvider data");
+			DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber());
+			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
 			dataRow.set(issue.getColNumber() - 1, fixedText);
-			System.out.println("Underlying value is now: "
-					+ dataRow.get(issue.getColNumber() - 1));
+			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
 			issue.setStatus(Status.RESOLVED);
 			colorCell(issue);
 		}
@@ -1386,9 +1337,7 @@ public class CSVTableView extends ViewPart {
 		for (Issue issue : issueList) {
 			if (issue.getColNumber() == colNumber) {
 				issue.setStatus(Status.NOISSUES);
-				colorCell(issue.getRowNumber(), colNumber,
-						SWTResourceManager
-								.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				colorCell(issue.getRowNumber(), colNumber, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 				// issueList.remove(issue);
 				// issue.dispose(); // <- OR JUST LET GARBAGE COLLECTOR GET IT
 			}
@@ -1421,10 +1370,8 @@ public class CSVTableView extends ViewPart {
 			return 0;
 		}
 		int issueCount = 0;
-		TableProvider tableProvider = TableKeeper
-				.getTableProvider(tableProviderKey);
-		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider
-				.getLCADataPropertyProvider(colIndex);
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(colIndex);
 
 		// CSVColumnInfo csvColumnInfo =
 		// tableProvider.getAssignedCSVColumnInfo()[colIndex];
@@ -1448,29 +1395,22 @@ public class CSVTableView extends ViewPart {
 
 				if (qaCheck.isPatternMustMatch()) {
 					if (!matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, colIndex, 0,
-								Status.WARNING);
+						Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.WARNING);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
-						Logger.getLogger("run").warn(
-								"  ->Row " + issue.getRowNumber());
+						Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
 						Logger.getLogger("run").warn("  ->Column " + colIndex);
-						Logger.getLogger("run").warn(
-								"  ->Required pattern not found");
+						Logger.getLogger("run").warn("  ->Required pattern not found");
 						assignIssue(issue);
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
 					}
 				} else {
 					while (matcher.find()) {
-						Issue issue = new Issue(qaCheck, i, colIndex,
-								matcher.end(), Status.WARNING);
+						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
 						Logger.getLogger("run").warn(qaCheck.getDescription());
-						Logger.getLogger("run").warn(
-								"  ->Row" + issue.getRowNumber());
+						Logger.getLogger("run").warn("  ->Row" + issue.getRowNumber());
 						Logger.getLogger("run").warn("  ->Column" + colIndex);
-						Logger.getLogger("run").warn(
-								"  ->Character position"
-										+ issue.getCharacterPosition());
+						Logger.getLogger("run").warn("  ->Character position" + issue.getCharacterPosition());
 						assignIssue(issue);
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
@@ -1484,8 +1424,7 @@ public class CSVTableView extends ViewPart {
 
 	public static int checkCols() {
 		int totalIssueCount = 0;
-		int colCount = TableKeeper.getTableProvider(tableProviderKey)
-				.getColumnCount();
+		int colCount = TableKeeper.getTableProvider(tableProviderKey).getColumnCount();
 		for (int colIndex = 1; colIndex <= colCount; colIndex++) {
 			totalIssueCount += checkOneColumn(colIndex);
 		}
@@ -1598,8 +1537,7 @@ public class CSVTableView extends ViewPart {
 	// return null;
 	// }
 
-	private static LCADataPropertyProvider getLCADataPropertyProviderByMenuString(
-			String classLabel, String propertyName) {
+	private static LCADataPropertyProvider getLCADataPropertyProviderByMenuString(String classLabel, String propertyName) {
 		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
 			if (!classLabel.equals(lcaDataPropertyProvider.getPropertyClass())) {
 				continue;
@@ -1613,8 +1551,7 @@ public class CSVTableView extends ViewPart {
 
 	public static int countAssignedColumns() {
 		int colsAssigned = 0;
-		TableProvider tableProvider = TableKeeper
-				.getTableProvider(tableProviderKey);
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		for (int i = 1; i < tableProvider.getColumnCount(); i++) {
 			if (tableProvider.getLCADataPropertyProvider(i) != null) {
 				colsAssigned++;
@@ -1635,16 +1572,12 @@ public class CSVTableView extends ViewPart {
 		CSVTableView.tableProviderKey = tableProviderKey;
 	}
 
-	public static void addFields(
-			Map<String, LCADataPropertyProvider> dataPropertyMap) {
-		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap
-				.values()) {
-			System.out
-					.println("Adding lcaDataPropertyProvider.getPropertyName(): "
-							+ lcaDataPropertyProvider.getPropertyName());
+	public static void addFields(Map<String, LCADataPropertyProvider> dataPropertyMap) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
+			System.out.println("Adding lcaDataPropertyProvider.getPropertyName(): "
+					+ lcaDataPropertyProvider.getPropertyName());
 			lcaDataPropertyProviders.add(lcaDataPropertyProvider);
-			System.out.println("lcaDataPropertyProviders.size() = "
-					+ lcaDataPropertyProviders.size());
+			System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 		}
 	}
 }
