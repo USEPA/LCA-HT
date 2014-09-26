@@ -293,9 +293,7 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
-					// final int flowContextCount = flowContextMap.size();
-					// System.out.println("flowContextCount----> " + flowContextCount + "after adding "
-					// + flowContextConcatinated);
+
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addContextRowNum(rowNumToSend);
@@ -340,9 +338,7 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
-					// final int flowPropertyCount = flowPropertyMap.size();
-					// System.out.println("flowPropertyCount----> " + flowPropertyCount + "after adding "
-					// + flowPropertyConcatinated);
+
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addPropertyRowNum(rowNumToSend);
@@ -358,9 +354,6 @@ public class AutoMatchJob extends Job {
 			tempFlow.setFlowContext(flowContext);
 			tempFlow.setFlowProperty(flowProperty);
 
-			// if (flows.contains(tempFlow)) {
-			// tempFlow.remove();
-			// } else {
 			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
 					dataSourceProvider.getTdbResource());
 			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
@@ -370,42 +363,42 @@ public class AutoMatchJob extends Job {
 
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 
-		final List<String> contexts = new ArrayList<String>();
-		final List<Resource> contextResources = new ArrayList<Resource>();
-		for (String flowContextConcat : flowContextMap.keySet()) {
-			contexts.add(flowContextConcat);
-		}
-		Collections.sort(contexts);
-		for (String flowContextConcat : contexts) {
-			contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
-				matchContexts.setContextsToMatch(contexts);
-				matchContexts.setContextResourcesToMatch(contextResources);
-				matchContexts.update();
-			}
-		});
-
-		final List<String> properties = new ArrayList<String>();
-		final List<Resource> propertyResources = new ArrayList<Resource>();
-		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
-			properties.add(flowPropertyConcat);
-		}
-		Collections.sort(properties);
-		for (String flowPropertyConcat : properties) {
-			propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
-				matchProperties.setPropertiesToMatch(properties);
-				matchProperties.setPropertyResourcesToMatch(propertyResources);
-
-				matchProperties.update();
-			}
-		});
+//		final List<String> contexts = new ArrayList<String>();
+//		final List<Resource> contextResources = new ArrayList<Resource>();
+//		for (String flowContextConcat : flowContextMap.keySet()) {
+//			contexts.add(flowContextConcat);
+//		}
+//		Collections.sort(contexts);
+//		for (String flowContextConcat : contexts) {
+//			contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
+//		}
+//		Display.getDefault().asyncExec(new Runnable() {
+//			public void run() {
+//				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
+//				matchContexts.setContextsToMatch(contexts);
+//				matchContexts.setContextResourcesToMatch(contextResources);
+//				matchContexts.update();
+//			}
+//		});
+//
+//		final List<String> properties = new ArrayList<String>();
+//		final List<Resource> propertyResources = new ArrayList<Resource>();
+//		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
+//			properties.add(flowPropertyConcat);
+//		}
+//		Collections.sort(properties);
+//		for (String flowPropertyConcat : properties) {
+//			propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
+//		}
+//		Display.getDefault().asyncExec(new Runnable() {
+//			public void run() {
+//				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
+//				matchProperties.setPropertiesToMatch(properties);
+//				matchProperties.setPropertyResourcesToMatch(propertyResources);
+//
+//				matchProperties.update();
+//			}
+//		});
 
 		return Status.OK_STATUS;
 	}

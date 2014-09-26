@@ -153,19 +153,21 @@ public class CSVTableView extends ViewPart {
 
 	private static class TableRowFilter extends ViewerFilter {
 		// private List<Integer> filterRowNumbers = new ArrayList<Integer>();
-		private Set<Integer> filterRowNumbers = new HashSet<Integer>();
+		private static Set<Integer> filterRowNumbers = new HashSet<Integer>();
 
 		public Set<Integer> getFilterRowNumbers() {
 			return filterRowNumbers;
 		}
 
-		public void setFilterRowNumbers(Set<Integer> filterRowNumbers) {
-			this.filterRowNumbers = filterRowNumbers;
+		public void setFilterRowNumbers(Set<Integer> newFilterRowNumbers) {
+			// System.out.println("newFilterRowNumbers.size()" + newFilterRowNumbers.size());
+			// System.out.println("filterRowNumbers.size()" + filterRowNumbers.size());
+			filterRowNumbers = newFilterRowNumbers;
 			tableViewer.refresh();
 		}
 
 		public void clearFilterRowNumbers() {
-			filterRowNumbers.clear();
+			filterRowNumbers = new HashSet<Integer>();
 			tableViewer.refresh();
 		}
 
@@ -175,6 +177,7 @@ public class CSVTableView extends ViewPart {
 			// List<DataRow> data = (List<DataRow>) parentElement;
 			DataRow row = (DataRow) element;
 			int dataRowNum = row.getRowNumber();
+			// System.out.println("filterRowNumbers" + filterRowNumbers);
 			return (filterRowNumbers.isEmpty() || filterRowNumbers.contains(dataRowNum));
 		}
 	}
@@ -247,23 +250,23 @@ public class CSVTableView extends ViewPart {
 
 	};
 
-//	private static MouseListener columnMouseListener2 = new MouseListener() {
-//		public void mouseDoubleClick(MouseEvent e) {
-//			System.out.println("double click event :e =" + e);
-//		}
-//
-//		@Override
-//		public void mouseDown(MouseEvent e) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		@Override
-//		public void mouseUp(MouseEvent e) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//	};
+	// private static MouseListener columnMouseListener2 = new MouseListener() {
+	// public void mouseDoubleClick(MouseEvent e) {
+	// System.out.println("double click event :e =" + e);
+	// }
+	//
+	// @Override
+	// public void mouseDown(MouseEvent e) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// @Override
+	// public void mouseUp(MouseEvent e) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	// };
 
 	private static MouseListener columnMouseListener = new MouseListener() {
 		@Override
@@ -276,7 +279,7 @@ public class CSVTableView extends ViewPart {
 			} else {
 				tableColumn.setWidth(100);
 			}
-//			tableViewer.refresh();
+			// tableViewer.refresh();
 		}
 
 		@Override
@@ -649,6 +652,48 @@ public class CSVTableView extends ViewPart {
 		} else if (option == 2) { // IS ASSIGNED
 			String colType = TableKeeper.getTableProvider(tableProviderKey).getLCADataPropertyProvider(colNumSelected)
 					.getPropertyName();
+
+			final TableColumn tableColumn = table.getColumn(colNumSelected);
+			String toolTip = tableColumn.getToolTipText();
+
+			Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
+			Matcher matcher = pattern.matcher(toolTip);
+			int issueCount = 0;
+			if (matcher.find()) {
+				// System.out.println("We gots issues: " + toolTip);
+				String count = matcher.group(1);
+
+				issueCount = Integer.parseInt(count);
+
+				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+				menuItem.setText("Show only " + count + " Issues");
+				menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
+
+				new MenuItem(headerMenu, SWT.SEPARATOR);
+			} else {
+				pattern = Pattern.compile("^Only showing (\\d+) issues");
+				matcher = pattern.matcher(toolTip);
+				issueCount = 0;
+				if (matcher.find()) {
+					// System.out.println("We gots issues: " + toolTip);
+					String count = matcher.group(1);
+
+					issueCount = Integer.parseInt(count);
+					final int newIssueCount = issueCount;
+
+					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+					menuItem.setText("Show all rows");
+					menuItem.addListener(SWT.Selection, new Listener() {
+						@Override
+						public void handleEvent(Event event) {
+							clearFilterRowNumbers();
+							tableColumn.setToolTipText(newIssueCount + " issues");
+						}
+					});
+					new MenuItem(headerMenu, SWT.SEPARATOR);
+				}
+			}
+
 			if (colType.equals(Flowable.casString)) {
 
 				// =========
@@ -664,12 +709,8 @@ public class CSVTableView extends ViewPart {
 				// =========
 			} else {
 				// =========
-				TableColumn tableColumn = table.getColumn(colNumSelected);
-				String toolTip = tableColumn.getToolTipText();
 
-				Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
-				Matcher matcher = pattern.matcher(toolTip);
-				if (matcher.find()) {
+				if (issueCount > 0) {
 					// System.out.println("We gots issues: " + toolTip);
 					String count = matcher.group(1);
 
@@ -790,22 +831,48 @@ public class CSVTableView extends ViewPart {
 	private static class AutoResolveColumnListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-			// int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				return;
 			}
-			// TableProvider tableProvider =
-			// TableKeeper.getTableProvider(tableProviderKey);
-			// CSVColumnInfo csvColumnInfo =
-			// tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
-			// if (csvColumnInfo == null) {
-			// return;
-			// }
+			int resolvedCount = 0;
 			for (Issue issue : issueList) {
 				if (issue.getColNumber() == colNumSelected) {
-					fixOneIssue(issue);
+					if (fixOneIssue(issue)) {
+						resolvedCount++;
+					}
 				}
 			}
+			TableColumn tableColumn = table.getColumn(colNumSelected);
+			String toolTip = tableColumn.getToolTipText();
+			Pattern pattern = Pattern.compile("^(.*?)(\\d+)(.*?)$");
+			Matcher matcher = pattern.matcher(toolTip);
+			if (matcher.find()) {
+				String preString = matcher.group(1);
+				String countString = matcher.group(2);
+				String postString = matcher.group(3);
+
+				Integer previousCount = Integer.parseInt(countString);
+				int newCount = previousCount - resolvedCount;
+				tableColumn.setToolTipText(preString + newCount + postString);
+			}
+		}
+	}
+
+	private static class FilterByIssuesListener implements Listener {
+		@Override
+		public void handleEvent(Event event) {
+			if (colNumSelected == 0) {
+				return;
+			}
+			Set<Integer> issueSet = new HashSet<Integer>();
+			for (Issue issue : issueList) {
+				if (issue.getColNumber() == colNumSelected) {
+					issueSet.add(issue.getRowNumber());
+				}
+			}
+			setFilterRowNumbers(issueSet);
+			TableColumn tableColumn = table.getColumn(colNumSelected);
+			tableColumn.setToolTipText("Only showing " + issueSet.size() + " issues");
 		}
 	}
 
@@ -1304,7 +1371,7 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private static void fixOneIssue(Issue issue) {
+	private static boolean fixOneIssue(Issue issue) {
 		int colNumber = issue.getColNumber();
 		// int colNumber = dataColNumber + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
@@ -1314,16 +1381,20 @@ public class CSVTableView extends ViewPart {
 		if (qaCheck.getReplacement() != null) {
 			Matcher matcher = qaCheck.getPattern().matcher(startingText);
 			String fixedText = matcher.replaceFirst(qaCheck.getReplacement());
-			System.out.println("The value is now ->" + fixedText + "<-");
-			tableItem.setText(colNumber, fixedText);
-			System.out.println("TableItem fixed, but not (source) TableProvider data");
-			DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber());
-			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
-			dataRow.set(issue.getColNumber() - 1, fixedText);
-			System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
-			issue.setStatus(Status.RESOLVED);
-			colorCell(issue);
+			if (!fixedText.equals(startingText)) {
+				// System.out.println("The value is now ->" + fixedText + "<-");
+				tableItem.setText(colNumber, fixedText);
+				// System.out.println("TableItem fixed, but not (source) TableProvider data");
+				DataRow dataRow = TableKeeper.getTableProvider(tableProviderKey).getData().get(issue.getRowNumber());
+				// System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
+				dataRow.set(issue.getColNumber() - 1, fixedText);
+				// System.out.println("Underlying value is now: " + dataRow.get(issue.getColNumber() - 1));
+				issue.setStatus(Status.RESOLVED);
+				colorCell(issue);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	// private void fixIssueInColumn() {

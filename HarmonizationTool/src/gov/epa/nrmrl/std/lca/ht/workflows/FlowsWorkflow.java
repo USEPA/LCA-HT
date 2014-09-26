@@ -335,6 +335,7 @@ public class FlowsWorkflow extends ViewPart {
 		LoggerViewer.clear(); // INITIALIZES SO THAT LOGGER RECEIVES INPUT
 	}
 
+	// ------------------- LOAD LISTENER -------------------
 	SelectionListener loadCSVListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -373,6 +374,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
+	// ------------------- CHECK LISTENER -------------------
 	SelectionListener checkDataListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			textCheckData.setText(" ... checking data ...");
@@ -502,6 +504,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
+	// ------------------- COMMIT LISTENER -------------------
 	SelectionListener commitListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -542,7 +545,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	// ------------- FLOW CONTEXT ----------------
+	// ------------- FLOW CONTEXT LISTENER ----------------
 	private SelectionListener matchFlowContextsListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			btnCommit.setEnabled(false);
@@ -572,7 +575,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	// ------------- FLOW PROPERTY ----------------
+	// ------------- FLOW PROPERTY LISTENER ----------------
 
 	private SelectionListener matchFlowPropertiesListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
@@ -603,7 +606,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
-	// ------------- FLOWABLE ----------------
+	// ------------- FLOWABLE LISTENER ----------------
 	private SelectionListener matchFlowablesListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			btnCommit.setEnabled(false);
@@ -619,7 +622,6 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowProperties.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			;
 		}
 
 		@Override
@@ -633,6 +635,7 @@ public class FlowsWorkflow extends ViewPart {
 		}
 	};
 
+	// ------------- CONCLUDE FILE LISTENER ----------------
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			CSVTableView.reset();
@@ -724,42 +727,43 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void addContextRowNum(int rowNumToSend) {
 		uniqueFlowContextRowNumbers.add(rowNumToSend);
-		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. " + uniqueFlowContextRowNumbers.size()
-				+ " found.");
+		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
+				+ uniqueFlowContextRowNumbers.size() + " found.");
 	}
 
 	public static void addPropertyRowNum(int rowNumToSend) {
 		uniqueFlowPropertyRowNumbers.add(rowNumToSend);
-		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. " + uniqueFlowPropertyRowNumbers.size()
-				+ " found.");
+		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 	}
 
 	public static void addFlowableRowNum(int rowNumToSend) {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend).getMatchCandidateFlowables().size();
+		int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend)
+				.getMatchCandidateFlowables().size();
 		Color color;
-		if (count == 0){
+		if (count == 0) {
 			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-		} else if (count == 1){
+		} else if (count == 1) {
 			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 		} else {
 			color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 		}
 		CSVTableView.colorCell(rowNumToSend, 0, color);
 	}
-	
+
 	public static void addMatchContextRowNum(int rowNumToSend) {
 		matchedFlowContextRowNumbers.add(rowNumToSend);
-		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. " + uniqueFlowContextRowNumbers.size()
-				+ " found.");
+		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
+				+ uniqueFlowContextRowNumbers.size() + " found.");
 	}
 
 	public static void addMatchPropertyRowNum(int rowNumToSend) {
 		uniqueFlowPropertyRowNumbers.add(rowNumToSend);
-		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. " + uniqueFlowPropertyRowNumbers.size()
-				+ " found.");
+		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 	}
 
 	public static void addMatchFlowableRowNum(int rowNumToSend) {
