@@ -530,7 +530,7 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-
+			CSVTableView.preCommit = false;
 			btnConcludeFile.setText("Close CSV");
 		}
 
@@ -742,7 +742,7 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 		int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend)
-				.getMatchCandidateFlowables().size();
+				.getFlowable().getMatchCandidates().size();
 		Color color;
 		if (count == 0) {
 			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);

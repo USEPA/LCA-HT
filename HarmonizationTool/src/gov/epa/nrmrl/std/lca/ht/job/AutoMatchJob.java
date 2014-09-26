@@ -3,10 +3,12 @@ package gov.epa.nrmrl.std.lca.ht.job;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -69,48 +71,7 @@ public class AutoMatchJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		//
-		// private int safeCommitColumns2TDB() {
-		// TODO - IMPLEMENT THE "SAFE" PART WHICH MEANS
-		// PRIOR TO ADDING TRIPLES, PREVIOUSLY ADDED
-		// TRIPLES FROM THIS FILE SHOULD BE REMOVED -- OR...
-		// BETTER YET, A THOUGHTFUL PROCESS AVOIDS DUPLICATE TRIPLES
-		// Model model = ActiveTDB.tdbModel;
 
-		// ===========================
-		// System.out.println("Flowable.getRdfclass() = " + Flowable.getRdfclass());
-		//
-		// StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
-		// while (stmtIterator.hasNext()) {
-		// Statement statement = stmtIterator.next();
-		// if (!statement.getSubject().isAnon()) {
-		// if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
-		// if (statement.getSubject().equals(Flowable.getRdfclass())) {
-		// System.out.println("! Equals operator works !");
-		// }
-		//
-		// System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
-		// + " -- " + statement.getObject());
-		//
-		// StmtIterator stmtIterator2 = Flowable.getRdfclass().listProperties();
-		// while (stmtIterator2.hasNext()) {
-		// Statement statement2 = stmtIterator2.next();
-		// System.out.println("statement2.getPredicate() = " + statement2.getPredicate());
-		// }
-		// }
-		// }
-		// }
-		// if (Flowable.getRdfclass().hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-		// System.out.println("got it!" + Flowable.getRdfclass().getProperty(RDFS.label).getString());
-		// } else {
-		// stmtIterator = Flowable.getRdfclass().listProperties();
-		// while (stmtIterator.hasNext()) {
-		// Statement statement = stmtIterator.next();
-		// System.out.println("statement.getPredicate() = " + statement.getPredicate());
-		// }
-		// System.out.println("wtf");
-		// }
-		// ===========================
 
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
@@ -133,9 +94,9 @@ public class AutoMatchJob extends Job {
 
 		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
 
-		List<Integer> flowableCSVColumnNumbers = new ArrayList<Integer>();
-		List<Integer> flowContextCSVColumnNumbers = new ArrayList<Integer>();
-		List<Integer> flowPropertyCSVColumnNumbers = new ArrayList<Integer>();
+		Set<Integer> flowableCSVColumnNumbers = new HashSet<Integer>();
+		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
+		Set<Integer> flowPropertyCSVColumnNumbers = new HashSet<Integer>();
 
 		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
@@ -246,10 +207,11 @@ public class AutoMatchJob extends Job {
 						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
 
-					Set<Resource> matches = Flowable.findMatchingFlowableResources(flowable);
-					for (Resource flowableResource : matches) {
-						dataRow.addMatchCandidateFlowable(flowableResource);
-					}
+//					Set<Resource> matches = Flowable.findMatchingFlowableResources(flowable);
+					flowable.setMatches();
+//					for (Resource flowableResource : matches) {
+//						dataRow.addMatchCandidateFlowable(flowableResource);
+//					}
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
@@ -257,6 +219,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
+				dataRow.setFlowable(flowable);
 			}
 
 			// ========================== FLOW CONTEXT ==========================

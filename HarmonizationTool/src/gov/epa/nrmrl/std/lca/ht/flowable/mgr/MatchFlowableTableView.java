@@ -123,7 +123,7 @@ public class MatchFlowableTableView extends ViewPart {
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Resource> queryPlusCandidates = new ArrayList<Resource>();
-		if (dataRow.getMatchCandidates().isEmpty()) {
+		if (dataRow.getFlowable().getMatchCandidates().isEmpty()) {
 			// FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
 			// FOR THIS ROW, BUT WILL FIND BY RDF
 			Resource flowableResource = null;
@@ -154,9 +154,8 @@ public class MatchFlowableTableView extends ViewPart {
 			// b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
 			// b.append("} \n");
 		} else {
-			queryPlusCandidates.add(dataRow.getMatchCandidates().get(0).getItemToMatchTDBResource());
-			for (MatchCandidate matchCandidate : dataRow.getMatchCandidates()) {
-				queryPlusCandidates.add(matchCandidate.getMatchCandidateTDBResource());
+			for (Resource resource : dataRow.getFlowable().getMatchCandidates()) {
+				queryPlusCandidates.add(resource);
 			}
 			update(queryPlusCandidates);
 		}

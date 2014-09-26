@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -58,6 +59,7 @@ public class FlowProperty {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
+	private Set<Resource> matchCandidates;
 
 	// CONSTRUCTORS
 	public FlowProperty() {
@@ -280,5 +282,22 @@ public class FlowProperty {
 
 	public static Map<String, LCADataPropertyProvider> getDataPropertyMap() {
 		return dataPropertyMap;
+	}
+	
+	
+	public Set<Resource> getMatchCandidates() {
+		return matchCandidates;
+	}
+
+	public void setMatchCandidates(Set<Resource> matchCandidates) {
+		this.matchCandidates = matchCandidates;
+	}
+
+	public void addMatchCandidate(Resource resource) {
+		matchCandidates.add(resource);
+	}
+
+	public void removeMatchCandidate(Resource resource) {
+		matchCandidates.remove(resource);
 	}
 }

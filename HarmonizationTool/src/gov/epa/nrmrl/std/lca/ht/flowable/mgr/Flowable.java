@@ -147,6 +147,7 @@ public class Flowable {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
+	private Set<Resource> matchCandidates = new HashSet<Resource>();
 
 	// CONSTRUCTORS
 	public Flowable() {
@@ -265,14 +266,14 @@ public class Flowable {
 	}
 
 	public String[] getSynonyms() {
-//		String[] results;
+		// String[] results;
 		Object[] resultObjects = getAllProperties(flowableSynonymString);
-		if (resultObjects == null){
+		if (resultObjects == null) {
 			return new String[0];
 		}
 		String[] results = new String[resultObjects.length];
-		for (int i = 0; i<resultObjects.length;i++){
-			results[i]=(String) resultObjects[i];
+		for (int i = 0; i < resultObjects.length; i++) {
+			results[i] = (String) resultObjects[i];
 		}
 		return results;
 	}
@@ -939,4 +940,81 @@ public class Flowable {
 	// public static String getSMILESString() {
 	// return smilesString;
 	// }
+	public Set<Resource> getMatchCandidates() {
+		return matchCandidates;
+	}
+
+	public void setMatchCandidates(Set<Resource> matchCandidates) {
+		this.matchCandidates = matchCandidates;
+	}
+
+	public void addMatchCandidate(Resource resource) {
+		matchCandidates.add(resource);
+	}
+
+	public void removeMatchCandidate(Resource resource) {
+		matchCandidates.remove(resource);
+	}
+
+	public void setMatches() {
+		String qName = getName();
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+		while (resIterator.hasNext()) {
+			Resource flowableMatchCandidate = resIterator.next();
+			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				matchCandidates.add(flowableMatchCandidate);
+				// THIS IS A name-name MATCH
+			}
+		}
+
+		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+		while (resIterator.hasNext()) {
+			Resource flowableMatchCandidate = resIterator.next();
+
+			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				matchCandidates.add(flowableMatchCandidate);
+				// THIS IS A name-synonym MATCH
+			}
+		}
+
+		for (String altName : getSynonyms()) {
+			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(altName);
+
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
+			// Q-SYN = DB-NAME
+			while (resIterator.hasNext()) {
+				Resource flowableMatchCandidate = resIterator.next();
+
+				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					matchCandidates.add(flowableMatchCandidate);
+					// THIS IS A synonym-name MATCH
+				}
+			}
+
+			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
+			while (resIterator.hasNext()) {
+				Resource flowableMatchCandidate = resIterator.next();
+				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					matchCandidates.add(flowableMatchCandidate);
+					// THIS IS A synonym-synonym MATCH
+
+				}
+			}
+		}
+
+		// CAS MATCHING
+		String qCAS = getCas();
+		Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
+		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+		while (resIterator.hasNext()) {
+			Resource flowableMatchCandidate = resIterator.next();
+			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				matchCandidates.add(flowableMatchCandidate);
+				// THIS IS AN fCAS-fCAS MATCH
+			}
+		}
+		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+	}
+
 }

@@ -97,6 +97,8 @@ public class CSVTableView extends ViewPart {
 
 	private static TableRowFilter rowFilter = new TableRowFilter();
 
+	public static boolean preCommit = true;
+
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
 	}
@@ -650,86 +652,77 @@ public class CSVTableView extends ViewPart {
 		if (option == 1) { // NOT ASSIGNED YET
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
-			String colType = TableKeeper.getTableProvider(tableProviderKey).getLCADataPropertyProvider(colNumSelected)
-					.getPropertyName();
+			if (preCommit) {
 
-			final TableColumn tableColumn = table.getColumn(colNumSelected);
-			String toolTip = tableColumn.getToolTipText();
+				String colType = TableKeeper.getTableProvider(tableProviderKey)
+						.getLCADataPropertyProvider(colNumSelected).getPropertyName();
 
-			Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
-			Matcher matcher = pattern.matcher(toolTip);
-			int issueCount = 0;
-			if (matcher.find()) {
-				// System.out.println("We gots issues: " + toolTip);
-				String count = matcher.group(1);
+				final TableColumn tableColumn = table.getColumn(colNumSelected);
+				String toolTip = tableColumn.getToolTipText();
 
-				issueCount = Integer.parseInt(count);
-
-				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-				menuItem.setText("Show only " + count + " Issues");
-				menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
-
-				new MenuItem(headerMenu, SWT.SEPARATOR);
-			} else {
-				pattern = Pattern.compile("^Only showing (\\d+) issues");
-				matcher = pattern.matcher(toolTip);
-				issueCount = 0;
+				Pattern pattern = Pattern.compile("^([1-9]\\d*) issues");
+				Matcher matcher = pattern.matcher(toolTip);
+				int issueCount = 0;
 				if (matcher.find()) {
-					// System.out.println("We gots issues: " + toolTip);
 					String count = matcher.group(1);
 
 					issueCount = Integer.parseInt(count);
-					final int newIssueCount = issueCount;
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-					menuItem.setText("Show all rows");
-					menuItem.addListener(SWT.Selection, new Listener() {
-						@Override
-						public void handleEvent(Event event) {
-							clearFilterRowNumbers();
-							tableColumn.setToolTipText(newIssueCount + " issues");
-						}
-					});
-					new MenuItem(headerMenu, SWT.SEPARATOR);
+					menuItem.setText("Show only " + count + " Issues");
+					menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
+
+				} else {
+					pattern = Pattern.compile("^Only showing (\\d+) issues");
+					matcher = pattern.matcher(toolTip);
+					issueCount = 0;
+					if (matcher.find()) {
+						// System.out.println("We gots issues: " + toolTip);
+						String count = matcher.group(1);
+
+						issueCount = Integer.parseInt(count);
+						final int newIssueCount = issueCount;
+
+						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						menuItem.setText("Show all rows");
+						menuItem.addListener(SWT.Selection, new Listener() {
+							@Override
+							public void handleEvent(Event event) {
+								clearFilterRowNumbers();
+								tableColumn.setToolTipText(newIssueCount + " issues");
+							}
+						});
+					}
 				}
-			}
 
-			if (colType.equals(Flowable.casString)) {
+				if (colType.equals(Flowable.casString)) {
 
-				// =========
-				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-				menuItem.setText("Standardize CAS");
-				menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
+					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+					menuItem.setText("Standardize CAS");
+					menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
+
+				} else {
+
+					if (issueCount > 0) {
+						// System.out.println("We gots issues: " + toolTip);
+						String count = matcher.group(1);
+
+						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						menuItem.setText("Auto-resolve " + count + " Issues");
+						menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
+					}
+				}
 
 				new MenuItem(headerMenu, SWT.SEPARATOR);
 
 				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 				menuItem.setText(deassignText);
 				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
-				// =========
 			} else {
-				// =========
+				// WHAT MENU OPTIONS MAKE SENSE ONCE COMMIT IS COMPLETE?
+				new MenuItem(headerMenu, SWT.SEPARATOR);
 
-				if (issueCount > 0) {
-					// System.out.println("We gots issues: " + toolTip);
-					String count = matcher.group(1);
-
-					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-					menuItem.setText("Auto-resolve " + count + " Issues");
-					menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
-
-					new MenuItem(headerMenu, SWT.SEPARATOR);
-				}
-
-				menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-				menuItem.setText(deassignText);
-				menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
-				// =========
 			}
-			// menuItem = new MenuItem(headerMenu, SWT.CASCADE);
-			// menuItem.setText("Column Actions");
-			// initializeColumnActionsMenu();
-			// menuItem.setMenu(columnActionsMenu);
 		}
 	}
 
@@ -1246,6 +1239,7 @@ public class CSVTableView extends ViewPart {
 		tableViewer.setInput(null);
 		initializeRowMenu(1);
 		removeColumns();
+		preCommit = true;
 	}
 
 	public static void initialize() {
