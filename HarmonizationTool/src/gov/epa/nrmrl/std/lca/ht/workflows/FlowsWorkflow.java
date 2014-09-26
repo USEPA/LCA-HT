@@ -532,6 +532,13 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.schedule();
 			CSVTableView.preCommit = false;
 			btnConcludeFile.setText("Close CSV");
+			// THIS IS AS GOOD A PLACE AS ANY TO SEND THESE 6 REFERENCES:
+			CSVTableView.setUniqueFlowableRowNumbers(uniqueFlowableRowNumbers);
+			CSVTableView.setUniqueFlowContextRowNumbers(uniqueFlowContextRowNumbers);
+			CSVTableView.setUniqueFlowPropertyRowNumbers(uniqueFlowPropertyRowNumbers);
+			CSVTableView.setMatchedFlowableRowNumbers(matchedFlowableRowNumbers);
+			CSVTableView.setMatchedFlowContextRowNumbers(matchedFlowContextRowNumbers);
+			CSVTableView.setMatchedFlowPropertyRowNumbers(matchedFlowPropertyRowNumbers);
 		}
 
 		@Override

@@ -103,6 +103,15 @@ public class CSVTableView extends ViewPart {
 		return rowsToIgnore;
 	}
 
+	// THESE 6 ARE MANAGED IN FlowsWorkflow, BUT BROUGHT OVER FOR CONVENIENCE
+	private static Set<Integer> uniqueFlowableRowNumbers;
+	private static Set<Integer> uniqueFlowContextRowNumbers;
+	private static Set<Integer> uniqueFlowPropertyRowNumbers;
+
+	private static Set<Integer> matchedFlowableRowNumbers;
+	private static Set<Integer> matchedFlowContextRowNumbers;
+	private static Set<Integer> matchedFlowPropertyRowNumbers;
+
 	public CSVTableView() {
 	}
 
@@ -166,11 +175,13 @@ public class CSVTableView extends ViewPart {
 			// System.out.println("filterRowNumbers.size()" + filterRowNumbers.size());
 			filterRowNumbers = newFilterRowNumbers;
 			tableViewer.refresh();
+			colorFlowableRows();
 		}
 
 		public void clearFilterRowNumbers() {
 			filterRowNumbers = new HashSet<Integer>();
 			tableViewer.refresh();
+			colorFlowableRows();
 		}
 
 		@Override
@@ -1668,5 +1679,93 @@ public class CSVTableView extends ViewPart {
 			lcaDataPropertyProviders.add(lcaDataPropertyProvider);
 			System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 		}
+	}
+
+	public static void colorFlowableRows() {
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+
+		if (filterRowNumbers.size() > 0) {
+			int visibleRowNum = 0;
+			for (int i : filterRowNumbers) {
+				if (uniqueFlowableRowNumbers.contains(i)) {
+					int count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+							.getMatchCandidates().size();
+					Color color;
+
+					if (count == 0) {
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+					} else if (count == 1) {
+						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+					} else {
+						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+					}
+					colorCell(visibleRowNum, 0, color);
+				}
+				visibleRowNum++;
+			}
+		} else {
+			for (int i : uniqueFlowableRowNumbers) {
+				int count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+						.getMatchCandidates().size();
+				Color color;
+
+				if (count == 0) {
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				} else if (count == 1) {
+					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				} else {
+					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+				}
+				colorCell(i, 0, color);
+			}
+		}
+	}
+
+	public static Set<Integer> getUniqueFlowableRowNumbers() {
+		return uniqueFlowableRowNumbers;
+	}
+
+	public static void setUniqueFlowableRowNumbers(Set<Integer> uniqueFlowableRowNumbers) {
+		CSVTableView.uniqueFlowableRowNumbers = uniqueFlowableRowNumbers;
+	}
+
+	public static Set<Integer> getUniqueFlowContextRowNumbers() {
+		return uniqueFlowContextRowNumbers;
+	}
+
+	public static void setUniqueFlowContextRowNumbers(Set<Integer> uniqueFlowContextRowNumbers) {
+		CSVTableView.uniqueFlowContextRowNumbers = uniqueFlowContextRowNumbers;
+	}
+
+	public static Set<Integer> getUniqueFlowPropertyRowNumbers() {
+		return uniqueFlowPropertyRowNumbers;
+	}
+
+	public static void setUniqueFlowPropertyRowNumbers(Set<Integer> uniqueFlowPropertyRowNumbers) {
+		CSVTableView.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
+	}
+
+	public static Set<Integer> getMatchedFlowableRowNumbers() {
+		return matchedFlowableRowNumbers;
+	}
+
+	public static void setMatchedFlowableRowNumbers(Set<Integer> matchedFlowableRowNumbers) {
+		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
+	}
+
+	public static Set<Integer> getMatchedFlowContextRowNumbers() {
+		return matchedFlowContextRowNumbers;
+	}
+
+	public static void setMatchedFlowContextRowNumbers(Set<Integer> matchedFlowContextRowNumbers) {
+		CSVTableView.matchedFlowContextRowNumbers = matchedFlowContextRowNumbers;
+	}
+
+	public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
+		return matchedFlowPropertyRowNumbers;
+	}
+
+	public static void setMatchedFlowPropertyRowNumbers(Set<Integer> matchedFlowPropertyRowNumbers) {
+		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;
 	}
 }
