@@ -14,24 +14,14 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3"
-            name="Flow data v3">
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4"
+            name="Context or Property Matching Perspective">
       </perspective>
       <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1"
-            name="Flow data">
-      </perspective>
-      <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2"
-            name="Flow data with MatchFlowable">
-      </perspective>
-      <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective"
-            name="Original Perspective">
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5"
+            name="Flowable Matching Perspective">
       </perspective>
    </extension>
    <extension
@@ -43,33 +33,33 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
-            id="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
-            name="Logger"
-            restorable="true">
-      </view>
-      <view
             class="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
             name="CSV Table"
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView"
-            id="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
-            name="Match Flowables Tool"
+            class="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
+            id="gov.epa.nrmrl.std.lca.ht.log.LoggerViewer"
+            name="Logger"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
             id="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
-            name="Match Contexts Tool"
+            name="Contexts"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
             id="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
-            name="Match Properties Tool"
+            name="Properties"
+            restorable="true">
+      </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView"
+            id="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
+            name="Flowables"
             restorable="true">
       </view>
       <view
@@ -82,42 +72,6 @@
             class="gov.epa.nrmrl.std.lca.ht.sparql.ResultsView"
             id="gov.epa.nrmrl.std.lca.ht.views.ResultsView"
             name="SPARQL Results"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor"
-            id="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor"
-            name="Results Tree Editor"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.log.LightweightConsoleView"
-            id="harmonizationtool.console.LightweightConsoleView"
-            name="Light Weight Console"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlView"
-            id="harmonizationtool.tree.viewer.ControlView"
-            name="Results Tree Control"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.harmonizationtool.ViewPart1"
-            id="HarmonizationTool.view1"
-            name="name"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.views.View"
-            id="HarmonizationTool.view"
-            name="Data File(s)"
-            restorable="true">
-      </view>
-      <view
-            class="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
-            id="gov.epa.nrmrl.std.lca.ht.job.JobStatusView"
-            name="Job Status View"
             restorable="true">
       </view>
    </extension>
@@ -175,48 +129,35 @@
          <menu
                label="Window Manager">
             <menu
-                  label="Perspectives">
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
-                     label="Restore FlowWorkflow Perspective"
-                     style="push">
-               </command>
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowPerspectiveHandler"
-                     label="(deprecated) Perspective switcher"
-                     style="push">
-               </command>
-            </menu>
-            <menu
                   label="Views">
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
-                     label="Show Flows Workflow"
-                     style="push">
-               </command>
-               <command
-                     commandId="harmonizationtool.handler.GenericShowViewHandler"
-                     label="Show Logger"
+                     label="Show Workflow"
                      style="push">
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
-                     label="Show CSV Table View"
+                     label="Show CSV Table"
                      style="toggle">
                </command>
                <command
+                     commandId="harmonizationtool.handler.GenericShowViewHandler"
+                     label="Show Logger Window"
+                     style="push">
+               </command>
+               <command
                      commandId="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
-                     label="Show Match Flowables Tool"
+                     label="Show Flowables Window"
                      style="push">
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts"
-                     label="Show Match Contexts Tool"
+                     label="Show Contexts Window"
                      style="push">
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
-                     label="Show Match Properties Tool"
+                     label="Show Properties Window"
                      style="push">
                </command>
             </menu>
@@ -225,12 +166,12 @@
                label="SPARQL">
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.QueryView"
-                  label="Show Query View"
+                  label="Show SPARQL Query Window"
                   style="push">
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.ResultsView"
-                  label="Show Query Results"
+                  label="Show SPARQL Results Window"
                   style="push">
             </command>
             <command

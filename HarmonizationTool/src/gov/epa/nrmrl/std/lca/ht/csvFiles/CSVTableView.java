@@ -10,6 +10,9 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -47,6 +50,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -55,6 +59,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -160,6 +165,9 @@ public class CSVTableView extends ViewPart {
 
 	public static void clearFilterRowNumbers() {
 		rowFilter.clearFilterRowNumbers();
+		colorFlowableRows();
+		colorFlowContextRows();
+		colorFlowPropertyRows();
 	}
 
 	private static class TableRowFilter extends ViewerFilter {
@@ -175,13 +183,11 @@ public class CSVTableView extends ViewPart {
 			// System.out.println("filterRowNumbers.size()" + filterRowNumbers.size());
 			filterRowNumbers = newFilterRowNumbers;
 			tableViewer.refresh();
-			colorFlowableRows();
 		}
 
 		public void clearFilterRowNumbers() {
 			filterRowNumbers = new HashSet<Integer>();
 			tableViewer.refresh();
-			colorFlowableRows();
 		}
 
 		@Override
@@ -664,7 +670,6 @@ public class CSVTableView extends ViewPart {
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
 			if (preCommit) {
-
 				String colType = TableKeeper.getTableProvider(tableProviderKey)
 						.getLCADataPropertyProvider(colNumSelected).getPropertyName();
 
@@ -680,7 +685,7 @@ public class CSVTableView extends ViewPart {
 					issueCount = Integer.parseInt(count);
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-					menuItem.setText("Show only " + count + " Issues");
+					menuItem.setText("Show only " + count + " issues");
 					menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
 
 				} else {
@@ -699,8 +704,8 @@ public class CSVTableView extends ViewPart {
 						menuItem.addListener(SWT.Selection, new Listener() {
 							@Override
 							public void handleEvent(Event event) {
-								clearFilterRowNumbers();
 								tableColumn.setToolTipText(newIssueCount + " issues");
+								clearFilterRowNumbers();
 							}
 						});
 					}
@@ -721,6 +726,10 @@ public class CSVTableView extends ViewPart {
 						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 						menuItem.setText("Auto-resolve " + count + " Issues");
 						menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
+
+						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						menuItem.setText("Change issue fields to blank");
+						menuItem.addListener(SWT.Selection, new BlankFieldsListener());
 					}
 				}
 
@@ -862,6 +871,41 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
+	private static class BlankFieldsListener implements Listener {
+		@Override
+		public void handleEvent(Event event) {
+			if (colNumSelected == 0) {
+				return;
+			}
+
+			 GenericStringBox confirmBox = new GenericStringBox(event.display.getActiveShell(), "Are you sure you wish to change identified fields in this column to blank?");
+
+//			GenericMessageBox dialog = new GenericMessageBox(event.display.getActiveShell(), "Confirm",
+//					"Are you sure you wish to change identified fields in this column to blank?");
+//
+//			System.out.println("dialog = " + dialog);
+
+			// MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
+			// System.out.println("meta initialized");
+			// dialog.create();
+
+			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+			for (Issue issue : issueList) {
+				if (issue.getColNumber() == colNumSelected) {
+					DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
+					dataRow.set(issue.getColNumber(), "");
+					table.getItem(issue.getRowNumber()).setText(issue.getColNumber(), "");
+
+					issue.setStatus(Status.RESOLVED);
+					colorCell(issue);
+				}
+			}
+			TableColumn tableColumn = table.getColumn(colNumSelected);
+			tableColumn.setToolTipText("0 issues");
+
+		}
+	}
+
 	private static class FilterByIssuesListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
@@ -874,9 +918,9 @@ public class CSVTableView extends ViewPart {
 					issueSet.add(issue.getRowNumber());
 				}
 			}
-			setFilterRowNumbers(issueSet);
 			TableColumn tableColumn = table.getColumn(colNumSelected);
 			tableColumn.setToolTipText("Only showing " + issueSet.size() + " issues");
+			setFilterRowNumbers(issueSet);
 		}
 	}
 
@@ -1682,6 +1726,18 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void colorFlowableRows() {
+		List<Integer> contextColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+					contextColumns.add(i);
+				}
+			}
+		}
+
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
 
 		if (filterRowNumbers.size() > 0) {
@@ -1699,7 +1755,10 @@ public class CSVTableView extends ViewPart {
 					} else {
 						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 					}
-					colorCell(visibleRowNum, 0, color);
+					for (int j : contextColumns) {
+						colorCell(visibleRowNum, j, color);
+					}
+					// colorCell(visibleRowNum, 0, color);
 				}
 				visibleRowNum++;
 			}
@@ -1716,7 +1775,102 @@ public class CSVTableView extends ViewPart {
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 				}
-				colorCell(i, 0, color);
+				for (int j : contextColumns) {
+					colorCell(i, j, color);
+				}
+				// colorCell(i, 0, color);
+			}
+		}
+	}
+
+	public static void colorFlowContextRows() {
+		List<Integer> contextColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+					contextColumns.add(i);
+				}
+			}
+		}
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+
+		if (filterRowNumbers.size() > 0) {
+			int visibleRowNum = 0;
+			for (int i : filterRowNumbers) {
+				if (uniqueFlowContextRowNumbers.contains(i)) {
+
+					Color color;
+					if (matchedFlowContextRowNumbers.contains(i)) {
+						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+					} else {
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+					}
+					for (int j : contextColumns) {
+						colorCell(visibleRowNum, j, color);
+					}
+				}
+				visibleRowNum++;
+			}
+		} else {
+			for (int i : uniqueFlowContextRowNumbers) {
+				Color color;
+				if (matchedFlowContextRowNumbers.contains(i)) {
+					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				} else {
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				}
+				for (int j : contextColumns) {
+					colorCell(i, j, color);
+				}
+			}
+		}
+	}
+
+	public static void colorFlowPropertyRows() {
+		List<Integer> contextColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+					contextColumns.add(i);
+				}
+			}
+		}
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+
+		if (filterRowNumbers.size() > 0) {
+			int visibleRowNum = 0;
+			for (int i : filterRowNumbers) {
+				if (uniqueFlowPropertyRowNumbers.contains(i)) {
+
+					Color color;
+					if (matchedFlowPropertyRowNumbers.contains(i)) {
+						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+					} else {
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+					}
+					for (int j : contextColumns) {
+						colorCell(visibleRowNum, j, color);
+					}
+				}
+				visibleRowNum++;
+			}
+		} else {
+			for (int i : uniqueFlowPropertyRowNumbers) {
+				Color color;
+				if (matchedFlowPropertyRowNumbers.contains(i)) {
+					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				} else {
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				}
+				for (int j : contextColumns) {
+					colorCell(i, j, color);
+				}
 			}
 		}
 	}

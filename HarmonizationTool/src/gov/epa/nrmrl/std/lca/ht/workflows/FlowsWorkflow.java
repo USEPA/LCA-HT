@@ -18,10 +18,13 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.SWT;
@@ -186,7 +189,7 @@ public class FlowsWorkflow extends ViewPart {
 		GridData gd_btnMatchFlowContexts = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		btnMatchFlowContexts.addSelectionListener(matchFlowContextsListener);
 
-		gd_btnMatchFlowContexts.heightHint = 45;
+		// gd_btnMatchFlowContexts.heightHint = 45;
 		gd_btnMatchFlowContexts.widthHint = 120;
 		btnMatchFlowContexts.setLayoutData(gd_btnMatchFlowContexts);
 		btnMatchFlowContexts.setText(matchContextsString);
@@ -198,7 +201,7 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowContexts.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		// textMatchFlowContexts.setText("(0 of 30");
 		GridData gd_textMatchFlowContexts = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textMatchFlowContexts.heightHint = 45;
+		// gd_textMatchFlowContexts.heightHint = 45;
 		gd_textMatchFlowContexts.widthHint = 150;
 		textMatchFlowContexts.setLayoutData(gd_textMatchFlowContexts);
 
@@ -214,7 +217,7 @@ public class FlowsWorkflow extends ViewPart {
 		GridData gd_btnMatchFlowProperties = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		btnMatchFlowProperties.addSelectionListener(matchFlowPropertiesListener);
 
-		gd_btnMatchFlowProperties.heightHint = 45;
+		// gd_btnMatchFlowProperties.heightHint = 45;
 		gd_btnMatchFlowProperties.widthHint = 120;
 		btnMatchFlowProperties.setLayoutData(gd_btnMatchFlowProperties);
 		btnMatchFlowProperties.setText(matchPropertiesString);
@@ -226,7 +229,7 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowProperties.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		// textMatchFlowProperties.setText("(0 of 30");
 		GridData gd_textMatchFlowProperties = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textMatchFlowProperties.heightHint = 45;
+		// gd_textMatchFlowProperties.heightHint = 45;
 		gd_textMatchFlowProperties.widthHint = 150;
 		textMatchFlowProperties.setLayoutData(gd_textMatchFlowProperties);
 
@@ -240,7 +243,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnMatchFlowables = new Button(composite, SWT.NONE);
 		GridData gd_btnMatchFlowables = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		gd_btnMatchFlowables.heightHint = 45;
+		// gd_btnMatchFlowables.heightHint = 45;
 		gd_btnMatchFlowables.widthHint = 120;
 		btnMatchFlowables.setLayoutData(gd_btnMatchFlowables);
 		btnMatchFlowables.setText(matchFlowablesString);
@@ -253,7 +256,7 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowables.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		// textMatchFlowables.setText("(430 of 600 rows match)");
 		GridData gd_textMatchFlowables = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textMatchFlowables.heightHint = 45;
+		// gd_textMatchFlowables.heightHint = 45;
 		gd_textMatchFlowables.widthHint = 120;
 		textMatchFlowables.setLayoutData(gd_textMatchFlowables);
 		// ======== ROW 7 =======================
@@ -562,13 +565,21 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowProperties.setEnabled(false);
 				btnMatchFlowables.setEnabled(false);
 				CSVTableView.setFilterRowNumbers(uniqueFlowContextRowNumbers);
+				CSVTableView.colorFlowContextRows();
 			} else {
 				btnMatchFlowContexts.setText(matchContextsString);
 				btnMatchFlowProperties.setEnabled(true);
 				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
+				// CSVTableView.colorFlowContextRows();
 			}
-			;
+			Util.setPerspective(FlowDataV4.ID);
+			try {
+				Util.showView(MatchContexts.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 		@Override
@@ -593,13 +604,21 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowContexts.setEnabled(false);
 				btnMatchFlowables.setEnabled(false);
 				CSVTableView.setFilterRowNumbers(uniqueFlowPropertyRowNumbers);
+				CSVTableView.colorFlowPropertyRows();
+
 			} else {
 				btnMatchFlowProperties.setText(matchPropertiesString);
 				btnMatchFlowContexts.setEnabled(true);
 				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			;
+			Util.setPerspective(FlowDataV4.ID);
+			try {
+				Util.showView(MatchProperties.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 		@Override
@@ -623,11 +642,21 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowContexts.setEnabled(false);
 				btnMatchFlowProperties.setEnabled(false);
 				CSVTableView.setFilterRowNumbers(uniqueFlowableRowNumbers);
+				CSVTableView.colorFlowableRows();
+
 			} else {
 				btnMatchFlowables.setText(matchFlowablesString);
 				btnMatchFlowContexts.setEnabled(true);
 				btnMatchFlowProperties.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
+				// CSVTableView.colorFlowableRows();
+			}
+			Util.setPerspective(FlowDataV5.ID);
+			try {
+				Util.showView(MatchFlowableTableView.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 
@@ -678,6 +707,13 @@ public class FlowsWorkflow extends ViewPart {
 				// TODO - CONFIRM WITH USER
 				// TODO - REMOVE THE FileMD
 				// TODO - INDICATE THAT FILE CONTENT WAS REMOVED
+			}
+			Util.setPerspective(FlowDataV4.ID);
+			try {
+				Util.showView(LoggerViewer.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 
@@ -736,29 +772,33 @@ public class FlowsWorkflow extends ViewPart {
 		uniqueFlowContextRowNumbers.add(rowNumToSend);
 		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
+		CSVTableView.colorFlowContextRows();
+
 	}
 
 	public static void addPropertyRowNum(int rowNumToSend) {
 		uniqueFlowPropertyRowNumbers.add(rowNumToSend);
 		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
+		CSVTableView.colorFlowPropertyRows();
 	}
 
 	public static void addFlowableRowNum(int rowNumToSend) {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend)
-				.getFlowable().getMatchCandidates().size();
-		Color color;
-		if (count == 0) {
-			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-		} else if (count == 1) {
-			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-		} else {
-			color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-		}
-		CSVTableView.colorCell(rowNumToSend, 0, color);
+		CSVTableView.colorFlowableRows();
+		// int count = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend)
+		// .getFlowable().getMatchCandidates().size();
+		// Color color;
+		// if (count == 0) {
+		// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		// } else if (count == 1) {
+		// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		// } else {
+		// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+		// }
+		// CSVTableView.colorCell(rowNumToSend, 0, color);
 	}
 
 	public static void addMatchContextRowNum(int rowNumToSend) {
