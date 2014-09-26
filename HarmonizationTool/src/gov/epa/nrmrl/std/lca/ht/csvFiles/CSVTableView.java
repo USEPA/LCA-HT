@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -877,32 +878,29 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
+			// String[] options = new String[2];
+			// options[0] = "Cancel";
+			// options[1] = "Confirm Deletion";
+			MessageDialog messageDialog = new MessageDialog(event.display.getActiveShell(), "Confirm", null,
+					"Are you sure you wish to change identified fields in this column to blank?",
+					MessageDialog.QUESTION, new String[] { "Cancel", "Confirm Deletion" }, 0);
+			// messageDialog.create();
+			if (messageDialog.open() == 1) {
 
-			 GenericStringBox confirmBox = new GenericStringBox(event.display.getActiveShell(), "Are you sure you wish to change identified fields in this column to blank?");
+				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+				for (Issue issue : issueList) {
+					if (issue.getColNumber() == colNumSelected) {
+						DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
+						dataRow.set(issue.getColNumber(), "");
+						table.getItem(issue.getRowNumber()).setText(issue.getColNumber(), "");
 
-//			GenericMessageBox dialog = new GenericMessageBox(event.display.getActiveShell(), "Confirm",
-//					"Are you sure you wish to change identified fields in this column to blank?");
-//
-//			System.out.println("dialog = " + dialog);
-
-			// MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
-			// System.out.println("meta initialized");
-			// dialog.create();
-
-			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-			for (Issue issue : issueList) {
-				if (issue.getColNumber() == colNumSelected) {
-					DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
-					dataRow.set(issue.getColNumber(), "");
-					table.getItem(issue.getRowNumber()).setText(issue.getColNumber(), "");
-
-					issue.setStatus(Status.RESOLVED);
-					colorCell(issue);
+						issue.setStatus(Status.RESOLVED);
+						colorCell(issue);
+					}
 				}
+				TableColumn tableColumn = table.getColumn(colNumSelected);
+				tableColumn.setToolTipText("0 issues");
 			}
-			TableColumn tableColumn = table.getColumn(colNumSelected);
-			tableColumn.setToolTipText("0 issues");
-
 		}
 	}
 

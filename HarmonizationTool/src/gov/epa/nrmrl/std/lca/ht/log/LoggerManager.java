@@ -61,6 +61,8 @@ public class LoggerManager {
 			System.out.println("e =" + e);
 		}
 		runLogger.setLevel(Level.INFO);
+		// JUNO : TODO: TRY TO SET UP THE Logger.getLogger("run") TO SEND MORE VERBOSE OUTPUT TO THE FILE
+//		runLogger.setLevel(Level.DEBUG);		
 		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 

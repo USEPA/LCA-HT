@@ -668,9 +668,13 @@ public class Flowable {
 		// qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
 
 		String d2 = "Non-standard CAS format";
-		String e2 = "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
-		String s2 = "Parse digits into a formatted CAS";
-		Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
+		String e2 = "CAS numbers must be either blank or formatted propertly";
+
+//		String e2 = "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
+		String s2 = "Standardize CAS";
+//		Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
+		Pattern acceptableCASFormat = Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
+		
 		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
 		return qaChecks;
