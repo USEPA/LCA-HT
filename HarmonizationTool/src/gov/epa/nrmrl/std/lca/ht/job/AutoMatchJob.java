@@ -219,6 +219,12 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+					}
+				});
+				// IS THREAD SYNCING AN ISSUE?  LINE BELOW DOES NOT "WORK"
 				dataRow.setFlowable(flowable);
 			}
 

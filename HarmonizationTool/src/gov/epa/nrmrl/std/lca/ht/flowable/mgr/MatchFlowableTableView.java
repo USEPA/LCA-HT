@@ -27,6 +27,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -108,6 +109,7 @@ public class MatchFlowableTableView extends ViewPart {
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
+		createColumns();
 	}
 
 	//
@@ -123,42 +125,59 @@ public class MatchFlowableTableView extends ViewPart {
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Resource> queryPlusCandidates = new ArrayList<Resource>();
-		if (dataRow.getFlowable().getMatchCandidates().isEmpty()) {
-			// FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
-			// FOR THIS ROW, BUT WILL FIND BY RDF
-			Resource flowableResource = null;
-			ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FedLCA.sourceTableRowNumber,
-					rowNumber + 1);
-			while (resIterator.hasNext()) {
-				Resource flowableResourceCandidate = resIterator.next();
-				if (!flowableResourceCandidate.hasProperty(RDF.type, ECO.Flowable)) {
-					continue;
-				}
-				if (!flowableResourceCandidate.hasProperty(ECO.hasDataSource, curDataSet)) {
-					continue;
-				}
-				flowableResource = flowableResourceCandidate;
-			}
-			update(flowableResource);
-
-			// StringBuilder b = new StringBuilder("");
-			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-			// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-			// b.append("SELECT ?s \n");
-			// b.append("WHERE \n");
-			// b.append("?s fedlca:sourceTableRowNumber 2 . \n");
-			// b.append("?s a eco:Flowable . \n");
-			// b.append("?s eco:hasDataSource ?ds . \n");
-			// b.append("?ds rdfs:label ?label . \n");
-			// b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
-			// b.append("} \n");
-		} else {
-			for (Resource resource : dataRow.getFlowable().getMatchCandidates()) {
-				queryPlusCandidates.add(resource);
-			}
-			update(queryPlusCandidates);
+		Flowable qFlowable = dataRow.getFlowable();
+		if (qFlowable == null) {
+			return;
 		}
+		qFlowable.clearSyncDataFromTDB();
+		table.clearAll();
+		int rowCount = qFlowable.getMatchCandidates().size() + 2;
+		table.setItemCount(rowCount);
+		TableItem qRow = table.getItem(0);
+		qRow.setText(7, qFlowable.getDataSource());
+		qRow.setText(8, qFlowable.getName());
+		String synConcat = "";
+		for (String synonym : qFlowable.getSynonyms()) {
+			synConcat += synonym + " -or- ";
+		}
+		qRow.setText(9, synConcat);
+
+		// if (qFlowable.getMatchCandidates().isEmpty()) {
+		// // FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
+		// // FOR THIS ROW, BUT WILL FIND BY RDF
+		// Resource flowableResource = null;
+		// ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FedLCA.sourceTableRowNumber,
+		// rowNumber + 1);
+		// while (resIterator.hasNext()) {
+		// Resource flowableResourceCandidate = resIterator.next();
+		// if (!flowableResourceCandidate.hasProperty(RDF.type, ECO.Flowable)) {
+		// continue;
+		// }
+		// if (!flowableResourceCandidate.hasProperty(ECO.hasDataSource, curDataSet)) {
+		// continue;
+		// }
+		// flowableResource = flowableResourceCandidate;
+		// }
+		// update(flowableResource);
+		//
+		// // StringBuilder b = new StringBuilder("");
+		// // b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// // b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// // b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// // b.append("SELECT ?s \n");
+		// // b.append("WHERE \n");
+		// // b.append("?s fedlca:sourceTableRowNumber 2 . \n");
+		// // b.append("?s a eco:Flowable . \n");
+		// // b.append("?s eco:hasDataSource ?ds . \n");
+		// // b.append("?ds rdfs:label ?label . \n");
+		// // b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
+		// // b.append("} \n");
+		// } else {
+		// for (Resource resource : dataRow.getFlowable().getMatchCandidates()) {
+		// queryPlusCandidates.add(resource);
+		// }
+		// update(queryPlusCandidates);
+		// }
 	}
 
 	private static void update(Resource flowableResource) {
@@ -314,32 +333,62 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static void createColumns() {
 
-		TableViewerColumn tableViewerColumn = createTableViewerColumn("Assignment", 60, 0);
+		TableViewerColumn tableViewerColumn = createTableViewerColumn("N/A", 20, 0);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(0));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+
+		tableViewerColumn = createTableViewerColumn("=", 20, 1);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
-		tableViewerColumn.getColumn().addSelectionListener(colSelectionListener);
-//		tableViewerColumn.getColumn().addListener(SWT.KeyDown, keyListener);
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn("Data Source", 200, 1);
+		tableViewerColumn = createTableViewerColumn("<", 20, 2);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 2);
+		tableViewerColumn = createTableViewerColumn(">", 20, 3);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		// String casString = Flowable;
-		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 3);
-		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
+		tableViewerColumn = createTableViewerColumn("~", 20, 4);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 4);
+		tableViewerColumn = createTableViewerColumn("X", 20, 5);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(5));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn("Other", 200, 5);
+		tableViewerColumn = createTableViewerColumn("+", 20, 6);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addListener(SWT.KeyDown, keyListener);
+
+		tableViewerColumn = createTableViewerColumn("Data Source", 200, 7);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(7));
+
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 8);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(8));
+
+		// String casString = Flowable;
+		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 9);
+		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(9));
+
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 10);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(10));
+
+		tableViewerColumn = createTableViewerColumn("Other", 200, 11);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(11));
 	}
 
 	private static Listener keyListener = new Listener() {
@@ -349,7 +398,6 @@ public class MatchFlowableTableView extends ViewPart {
 			System.out.println("Column 1 received event: " + event);
 			System.out.println("event.keyCode: " + event.keyCode);
 			System.out.println("event.character: " + event.character);
-
 
 		}
 	};
@@ -420,17 +468,6 @@ public class MatchFlowableTableView extends ViewPart {
 			colNumSelected = clickedCol;
 		}
 	};
-
-	private static int getTableColumnNumFromPoint(int row, Point pt) {
-		TableItem item = table.getItem(row);
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			Rectangle rect = item.getBounds(i);
-			if (rect.contains(pt)) {
-				return i;
-			}
-		}
-		return -1;
-	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
 		private int dataColumnNumber;
@@ -568,9 +605,42 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	};
 
+	private static SelectionListener assignSelectionListener = new SelectionListener() {
+
+		private void doit(SelectionEvent e) {
+			if (e.getSource() instanceof TableColumn) {
+				Point point = new Point(e.x, e.y);
+				colNumSelected = getColumnNumSelected(point);
+				rowNumSelected = getRowNumSelected(point);
+				if (rowNumSelected == 0) {
+					return;
+				}
+				for (int i = 0; i < 7; i++) {
+					colorCell(rowNumSelected, i, SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+				}
+				colorCell(rowNumSelected, colNumSelected, SWTResourceManager.getColor(SWT.COLOR_CYAN));
+
+				// TableColumn col = (TableColumn) e.getSource();
+				// colNumSelected = table.indexOf(col);
+				// if (colNumSelected > 0) {
+				// headerMenu.setVisible(true);
+				// }
+			}
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		};
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+	};
+
 	public static void initialize() {
 		initializeTable();
-		createColumns();
 		// initializeIgnoreRowMenu();
 		// initializeFixRowMenu();
 		// CONSIDER: headerMenu;
@@ -580,6 +650,46 @@ public class MatchFlowableTableView extends ViewPart {
 		// rowsToIgnore.clear();
 		// rowNumSelected = -1;
 		// colNumSelected = -1;
+
+	}
+
+	private static int getColumnNumSelected(Point point) {
+		int clickedRow = getRowNumSelected(point);
+		int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
+		if (clickedCol < 0) {
+			return -1;
+		}
+		return clickedCol;
+	}
+
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = table.getItem(row);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static int getRowNumSelected(Point point) {
+		TableItem item = table.getItem(point);
+		if (item == null) {
+			return -1;
+		}
+		return table.indexOf(item);
+	}
+
+	public static void colorCell(int rowNumber, int colNumber, Color color) {
+		if (rowNumber > -1 && rowNumber < table.getItemCount()) {
+			TableItem tableItem = table.getItem(rowNumber);
+			tableItem.setBackground(colNumber, color);
+		}
+	}
+
+	public static void setFlowable(Flowable flowable) {
+		// TODO Auto-generated method stub
 
 	}
 }

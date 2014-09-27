@@ -19,6 +19,8 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
+import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.util.ArrayList;
@@ -60,6 +62,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -331,13 +334,21 @@ public class CSVTableView extends ViewPart {
 			clickedRow = table.indexOf(item);
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
 			if (clickedCol > 0) {
-				table.deselectAll();
+				if (preCommit) {
+					table.deselectAll();
+					return;
+				}
+				matchRowContents();
 				return;
+
 			}
 			table.select(clickedRow);
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
-			rowMenu.setVisible(true);
+			if (preCommit) {
+				rowMenu.setVisible(true);
+			}
+
 		}
 
 		private void rightClick(MouseEvent event) {
@@ -395,6 +406,47 @@ public class CSVTableView extends ViewPart {
 			return -1;
 		}
 		return clickedCol;
+	}
+
+	protected static void matchRowContents() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
+		if (lcaDataPropertyProvider == null){
+			return;
+		}
+		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+			Util.setPerspective(FlowDataV5.ID);
+			try {
+				Util.showView(MatchFlowableTableView.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			// MatchFlowableTableView.setFlowable(tableProvider.getData().get(rowNumSelected).getFlowable());
+			MatchFlowableTableView.update(rowNumSelected);
+
+		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+			Util.setPerspective(FlowDataV4.ID);
+			try {
+				Util.showView(MatchContexts.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			// MatchContexts.setContext(tableProvider.getData().get(rowNumSelected).getFlowContext());
+
+		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+			Util.setPerspective(FlowDataV4.ID);
+			try {
+				Util.showView(MatchProperties.ID);
+			} catch (PartInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			// MatchProperties.setFlowable(tableProvider.getData().get(rowNumSelected).getFlowProperty());
+
+		}
+
 	}
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
@@ -1762,8 +1814,17 @@ public class CSVTableView extends ViewPart {
 			}
 		} else {
 			for (int i : uniqueFlowableRowNumbers) {
-				int count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-						.getMatchCandidates().size();
+				Flowable flowable = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable();
+				if (flowable == null){
+					System.out.println("Where did we go wrong?");
+					return;
+				}
+				int count = 0;
+				if (flowable.getMatchCandidates() != null) {
+					count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+							.getMatchCandidates().size();
+				}
+
 				Color color;
 
 				if (count == 0) {

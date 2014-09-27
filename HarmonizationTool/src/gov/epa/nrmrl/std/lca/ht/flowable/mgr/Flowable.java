@@ -147,17 +147,19 @@ public class Flowable {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Set<Resource> matchCandidates = new HashSet<Resource>();
+	private Set<Resource> matchCandidates;
 
 	// CONSTRUCTORS
 	public Flowable() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
+		matchCandidates = new HashSet<Resource>();
 	}
 
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
+		matchCandidates = new HashSet<Resource>();
 		clearSyncDataFromTDB();
 	}
 
@@ -670,11 +672,12 @@ public class Flowable {
 		String d2 = "Non-standard CAS format";
 		String e2 = "CAS numbers must be either blank or formatted propertly";
 
-//		String e2 = "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
+		// String e2 =
+		// "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
 		String s2 = "Standardize CAS";
-//		Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
+		// Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
 		Pattern acceptableCASFormat = Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
-		
+
 		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
 		return qaChecks;
@@ -1019,6 +1022,14 @@ public class Flowable {
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+	}
+
+	public String getDataSource() {
+		if (tdbResource.hasProperty(ECO.hasDataSource)) {
+			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
+			return qDataSource.getLocalName();
+		}
+		return null;
 	}
 
 }
