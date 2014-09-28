@@ -198,6 +198,7 @@ public class AutoMatchJob extends Job {
 					flowableMap.put(flowableConcatinated, flowable);
 					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
+//					flowable.set
 					for (int i : flowableCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);
 						if (dataValue.equals("")) {
@@ -219,11 +220,11 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-					}
-				});
+//				Display.getDefault().asyncExec(new Runnable() {
+//					public void run() {
+//						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+//					}
+//				});
 				// IS THREAD SYNCING AN ISSUE?  LINE BELOW DOES NOT "WORK"
 				dataRow.setFlowable(flowable);
 			}

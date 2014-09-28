@@ -112,7 +112,8 @@ public class RDFUtil {
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDstring)) {
 			try {
-				return Class.forName("String");
+				System.out.println("String.class.getName() "+ String.class.getName());
+				return Class.forName("java.lang.String");
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}

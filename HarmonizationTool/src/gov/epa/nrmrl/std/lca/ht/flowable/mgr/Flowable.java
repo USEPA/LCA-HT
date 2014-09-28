@@ -13,6 +13,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -147,19 +148,19 @@ public class Flowable {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Set<Resource> matchCandidates;
+	private LinkedHashSet<Resource> matchCandidates;
 
 	// CONSTRUCTORS
 	public Flowable() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new HashSet<Resource>();
+		matchCandidates = new LinkedHashSet<Resource>();
 	}
 
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new HashSet<Resource>();
+		matchCandidates = new LinkedHashSet<Resource>();
 		clearSyncDataFromTDB();
 	}
 
@@ -947,11 +948,11 @@ public class Flowable {
 	// public static String getSMILESString() {
 	// return smilesString;
 	// }
-	public Set<Resource> getMatchCandidates() {
+	public LinkedHashSet<Resource> getMatchCandidates() {
 		return matchCandidates;
 	}
 
-	public void setMatchCandidates(Set<Resource> matchCandidates) {
+	public void setMatchCandidates(LinkedHashSet<Resource> matchCandidates) {
 		this.matchCandidates = matchCandidates;
 	}
 
@@ -1027,7 +1028,8 @@ public class Flowable {
 	public String getDataSource() {
 		if (tdbResource.hasProperty(ECO.hasDataSource)) {
 			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
-			return qDataSource.getLocalName();
+			String value = qDataSource.getProperty(RDFS.label).getString();
+			return value;
 		}
 		return null;
 	}

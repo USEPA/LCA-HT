@@ -414,6 +414,9 @@ public class CSVTableView extends ViewPart {
 		if (lcaDataPropertyProvider == null){
 			return;
 		}
+		String dataRowNumString = table.getItem(rowNumSelected).getText(0);
+		Integer dataRowNum = Integer.parseInt(dataRowNumString);
+
 		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 			Util.setPerspective(FlowDataV5.ID);
 			try {
@@ -423,7 +426,7 @@ public class CSVTableView extends ViewPart {
 				e1.printStackTrace();
 			}
 			// MatchFlowableTableView.setFlowable(tableProvider.getData().get(rowNumSelected).getFlowable());
-			MatchFlowableTableView.update(rowNumSelected);
+			MatchFlowableTableView.update(dataRowNum);
 
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 			Util.setPerspective(FlowDataV4.ID);
@@ -433,7 +436,7 @@ public class CSVTableView extends ViewPart {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			// MatchContexts.setContext(tableProvider.getData().get(rowNumSelected).getFlowContext());
+			// MatchContexts.setContext(tableProvider.getData().get(dataRowNum).getFlowContext());
 
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
 			Util.setPerspective(FlowDataV4.ID);
@@ -443,7 +446,7 @@ public class CSVTableView extends ViewPart {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			// MatchProperties.setFlowable(tableProvider.getData().get(rowNumSelected).getFlowProperty());
+			// MatchProperties.setFlowable(tableProvider.getData().get(dataRowNum).getFlowProperty());
 
 		}
 

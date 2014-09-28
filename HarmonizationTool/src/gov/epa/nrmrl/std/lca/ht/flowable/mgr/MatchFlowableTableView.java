@@ -13,7 +13,10 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -123,8 +126,8 @@ public class MatchFlowableTableView extends ViewPart {
 	public static void update(int rowNumber) {
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
-		Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
-		List<Resource> queryPlusCandidates = new ArrayList<Resource>();
+		// Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
+		// List<Resource> queryPlusCandidates = new ArrayList<Resource>();
 		Flowable qFlowable = dataRow.getFlowable();
 		if (qFlowable == null) {
 			return;
@@ -133,51 +136,36 @@ public class MatchFlowableTableView extends ViewPart {
 		table.clearAll();
 		int rowCount = qFlowable.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
-		TableItem qRow = table.getItem(0);
-		qRow.setText(7, qFlowable.getDataSource());
-		qRow.setText(8, qFlowable.getName());
-		String synConcat = "";
-		for (String synonym : qFlowable.getSynonyms()) {
-			synConcat += synonym + " -or- ";
+		setResultRowData(0, qFlowable);
+		LinkedHashSet<Resource> matchCandidateResources = qFlowable.getMatchCandidates();
+		if (matchCandidateResources == null) {
+			return;
 		}
-		qRow.setText(9, synConcat);
+		int row = 1;
+		for (Object dFlowableResource : matchCandidateResources.toArray()) {
+			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
+			setResultRowData(row, dFlowable);
+			row++;
+		}
+	}
 
-		// if (qFlowable.getMatchCandidates().isEmpty()) {
-		// // FIXME - OUGHT TO HAVE A BETTER HANDLE ON THE FLOWABLE RESOURCE
-		// // FOR THIS ROW, BUT WILL FIND BY RDF
-		// Resource flowableResource = null;
-		// ResIterator resIterator = ActiveTDB.tdbModel.listResourcesWithProperty(FedLCA.sourceTableRowNumber,
-		// rowNumber + 1);
-		// while (resIterator.hasNext()) {
-		// Resource flowableResourceCandidate = resIterator.next();
-		// if (!flowableResourceCandidate.hasProperty(RDF.type, ECO.Flowable)) {
-		// continue;
-		// }
-		// if (!flowableResourceCandidate.hasProperty(ECO.hasDataSource, curDataSet)) {
-		// continue;
-		// }
-		// flowableResource = flowableResourceCandidate;
-		// }
-		// update(flowableResource);
-		//
-		// // StringBuilder b = new StringBuilder("");
-		// // b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		// // b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-		// // b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// // b.append("SELECT ?s \n");
-		// // b.append("WHERE \n");
-		// // b.append("?s fedlca:sourceTableRowNumber 2 . \n");
-		// // b.append("?s a eco:Flowable . \n");
-		// // b.append("?s eco:hasDataSource ?ds . \n");
-		// // b.append("?ds rdfs:label ?label . \n");
-		// // b.append("filter regex (str(?label), \"recipe108m_short\",\"i\") \n");
-		// // b.append("} \n");
-		// } else {
-		// for (Resource resource : dataRow.getFlowable().getMatchCandidates()) {
-		// queryPlusCandidates.add(resource);
-		// }
-		// update(queryPlusCandidates);
-		// }
+	private static void setResultRowData(int rowNum, Flowable flowable) {
+		TableItem qRow = table.getItem(rowNum);
+		if (flowable.getDataSource() != null) {
+			qRow.setText(7, flowable.getDataSource());
+		}
+		qRow.setText(8, flowable.getName());
+		qRow.setText(9, flowable.getCas());
+		String synConcat = "";
+		String[] synonyms = flowable.getSynonyms();
+		if (synonyms.length > 0) {
+			synConcat = synonyms[0];
+		}
+		for (int i = 0; i < synonyms.length; i++) {
+			String synonym = synonyms[i];
+			synConcat += " -or- " + synonym;
+		}
+		qRow.setText(10, synConcat);
 	}
 
 	private static void update(Resource flowableResource) {
