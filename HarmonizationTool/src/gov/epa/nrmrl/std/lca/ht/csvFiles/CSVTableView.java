@@ -325,15 +325,17 @@ public class CSVTableView extends ViewPart {
 			System.out.println("cellSelectionMouseDownListener event " + event);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
+
 			TableItem item = table.getItem(ptLeft);
 			if (item == null) {
 				return;
 			}
-			clickedRow = table.indexOf(item);
-			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			if (clickedCol > 0) {
+			rowNumSelected = table.indexOf(item);
+			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
+
+			table.select(rowNumSelected);
+
+			if (colNumSelected > 0) {
 				if (preCommit) {
 					table.deselectAll();
 					return;
@@ -342,9 +344,6 @@ public class CSVTableView extends ViewPart {
 				return;
 
 			}
-			table.select(clickedRow);
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
 			if (preCommit) {
 				rowMenu.setVisible(true);
 			}
@@ -408,10 +407,10 @@ public class CSVTableView extends ViewPart {
 		return clickedCol;
 	}
 
-	protected static void matchRowContents() {
+	private static void matchRowContents() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
-		if (lcaDataPropertyProvider == null){
+		if (lcaDataPropertyProvider == null) {
 			return;
 		}
 		String dataRowNumString = table.getItem(rowNumSelected).getText(0);
@@ -1818,7 +1817,7 @@ public class CSVTableView extends ViewPart {
 		} else {
 			for (int i : uniqueFlowableRowNumbers) {
 				Flowable flowable = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable();
-				if (flowable == null){
+				if (flowable == null) {
 					System.out.println("Where did we go wrong?");
 					return;
 				}

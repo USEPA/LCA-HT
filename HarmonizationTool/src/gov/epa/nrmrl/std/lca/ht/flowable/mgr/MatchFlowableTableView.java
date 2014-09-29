@@ -1,22 +1,13 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -43,12 +34,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -63,6 +49,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
+	private static Flowable flowableThing;
 
 	private static TextCellEditor editor;
 
@@ -124,6 +111,7 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
+		initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		// Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
@@ -137,14 +125,31 @@ public class MatchFlowableTableView extends ViewPart {
 		int rowCount = qFlowable.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
 		setResultRowData(0, qFlowable);
-		LinkedHashSet<Resource> matchCandidateResources = qFlowable.getMatchCandidates();
+		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		LinkedHashMap<Resource, String> matchCandidateResources = qFlowable.getMatchCandidates();
 		if (matchCandidateResources == null) {
 			return;
 		}
 		int row = 1;
-		for (Object dFlowableResource : matchCandidateResources.toArray()) {
+		for (Object dFlowableResource : matchCandidateResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
 			setResultRowData(row, dFlowable);
+			String matchStatus = matchCandidateResources.get(dFlowable);
+			if (matchStatus.equals("?")) {
+				table.getItem(row).setText(0, matchStatus);
+			} else if (matchStatus.equals("=")) {
+				table.getItem(row).setText(1, matchStatus);
+			} else if (matchStatus.equals("<")) {
+				table.getItem(row).setText(2, matchStatus);
+			} else if (matchStatus.equals(">")) {
+				table.getItem(row).setText(3, matchStatus);
+			} else if (matchStatus.equals("~")) {
+				table.getItem(row).setText(4, matchStatus);
+			} else if (matchStatus.equals("X")) {
+				table.getItem(row).setText(5, matchStatus);
+			} else if (matchStatus.equals("+")) {
+				table.getItem(row).setText(6, matchStatus);
+			}
 			row++;
 		}
 	}
@@ -168,142 +173,142 @@ public class MatchFlowableTableView extends ViewPart {
 		qRow.setText(10, synConcat);
 	}
 
-	private static void update(Resource flowableResource) {
-		TableProvider miniTableProvider = new TableProvider();
-		DataRow miniDataRow = new DataRow();
+	// private static void update(Resource flowableResource) {
+	// TableProvider miniTableProvider = new TableProvider();
+	// DataRow miniDataRow = new DataRow();
+	//
+	// String name = "";
+	// if (flowableResource.hasProperty(RDFS.label)) {
+	// Statement statement = flowableResource.getProperty(RDFS.label);
+	// name = statement.getObject().asLiteral().getString();
+	// // name =
+	// // resource.getPropertyResourceValue(RDFS.label).getLocalName();
+	//
+	// }
+	// miniDataRow.add(" - ");
+	//
+	// Resource dataSourceResource = flowableResource.getProperty(ECO.hasDataSource).getObject().asResource();
+	// String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
+	// miniDataRow.add(dataSourceName);
+	//
+	// miniDataRow.add(name);
+	//
+	// String casrn = "";
+	// if (flowableResource.hasProperty(ECO.casNumber)) {
+	//
+	// Statement statement = flowableResource.getProperty(ECO.casNumber);
+	// casrn = statement.getObject().asLiteral().getString();
+	// // casrn =
+	// // resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
+	// }
+	// miniDataRow.add(casrn);
+	//
+	// String syns = "";
+	// StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
+	// System.out.println("syns stmtIterator = " + stmtIterator);
+	// while (stmtIterator.hasNext()) {
+	// String synonym = stmtIterator.next().getObject().asLiteral().getString();
+	// syns += synonym + System.getProperty("line.separator");
+	// System.out.println("syns = " + syns);
+	// }
+	// miniDataRow.add(syns);
+	//
+	// miniDataRow.add("other: N/A");
+	// miniTableProvider.addDataRow(miniDataRow);
+	//
+	// update(miniTableProvider);
+	// // TODO - NEED TO ARRANGE A BLANK ROW FOR SEARCH TOOL
+	// }
+	//
+	// private static void update(List<Resource> flowableResources) {
+	// TableProvider miniTableProvider = new TableProvider();
+	//
+	// for (int i = 0; i < flowableResources.size(); i++) {
+	// DataRow miniDataRow = new DataRow();
+	//
+	// Resource resource = flowableResources.get(i);
+	// // TableItem tableItem = table.getItem(i);
+	//
+	// if (i == 0) {
+	// miniDataRow.add(" - ");
+	// } else {
+	// miniDataRow.add(" " + i + " ");
+	// }
+	//
+	// Resource dataSourceResource = resource.getProperty(ECO.hasDataSource).getObject().asResource();
+	// String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
+	// miniDataRow.add(dataSourceName);
+	//
+	// String name = "";
+	// if (resource.hasProperty(RDFS.label)) {
+	// Statement statement = resource.getProperty(RDFS.label);
+	// name = statement.getObject().asLiteral().getString();
+	// }
+	// miniDataRow.add(name);
+	//
+	// String casrn = "";
+	// if (resource.hasProperty(ECO.casNumber)) {
+	// Statement statement = resource.getProperty(ECO.casNumber);
+	// casrn = statement.getObject().asLiteral().getString();
+	// }
+	// miniDataRow.add(casrn);
+	//
+	// String syns = "";
+	// StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
+	// System.out.println("syns stmtIterator = " + stmtIterator);
+	// while (stmtIterator.hasNext()) {
+	// String synonym = stmtIterator.next().getObject().asLiteral().getString();
+	// syns += synonym + System.getProperty("line.separator");
+	// System.out.println("syns = " + syns);
+	// }
+	// miniDataRow.add(syns);
+	//
+	// miniDataRow.add("other: N/A");
+	// miniTableProvider.addDataRow(miniDataRow);
+	// }
+	// update(miniTableProvider);
+	// }
 
-		String name = "";
-		if (flowableResource.hasProperty(RDFS.label)) {
-			Statement statement = flowableResource.getProperty(RDFS.label);
-			name = statement.getObject().asLiteral().getString();
-			// name =
-			// resource.getPropertyResourceValue(RDFS.label).getLocalName();
-
-		}
-		miniDataRow.add(" - ");
-
-		Resource dataSourceResource = flowableResource.getProperty(ECO.hasDataSource).getObject().asResource();
-		String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
-		miniDataRow.add(dataSourceName);
-
-		miniDataRow.add(name);
-
-		String casrn = "";
-		if (flowableResource.hasProperty(ECO.casNumber)) {
-
-			Statement statement = flowableResource.getProperty(ECO.casNumber);
-			casrn = statement.getObject().asLiteral().getString();
-			// casrn =
-			// resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
-		}
-		miniDataRow.add(casrn);
-
-		String syns = "";
-		StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
-		System.out.println("syns stmtIterator = " + stmtIterator);
-		while (stmtIterator.hasNext()) {
-			String synonym = stmtIterator.next().getObject().asLiteral().getString();
-			syns += synonym + System.getProperty("line.separator");
-			System.out.println("syns = " + syns);
-		}
-		miniDataRow.add(syns);
-
-		miniDataRow.add("other: N/A");
-		miniTableProvider.addDataRow(miniDataRow);
-
-		update(miniTableProvider);
-		// TODO - NEED TO ARRANGE A BLANK ROW FOR SEARCH TOOL
-	}
-
-	private static void update(List<Resource> flowableResources) {
-		TableProvider miniTableProvider = new TableProvider();
-
-		for (int i = 0; i < flowableResources.size(); i++) {
-			DataRow miniDataRow = new DataRow();
-
-			Resource resource = flowableResources.get(i);
-			// TableItem tableItem = table.getItem(i);
-
-			if (i == 0) {
-				miniDataRow.add(" - ");
-			} else {
-				miniDataRow.add(" " + i + " ");
-			}
-
-			Resource dataSourceResource = resource.getProperty(ECO.hasDataSource).getObject().asResource();
-			String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
-			miniDataRow.add(dataSourceName);
-
-			String name = "";
-			if (resource.hasProperty(RDFS.label)) {
-				Statement statement = resource.getProperty(RDFS.label);
-				name = statement.getObject().asLiteral().getString();
-			}
-			miniDataRow.add(name);
-
-			String casrn = "";
-			if (resource.hasProperty(ECO.casNumber)) {
-				Statement statement = resource.getProperty(ECO.casNumber);
-				casrn = statement.getObject().asLiteral().getString();
-			}
-			miniDataRow.add(casrn);
-
-			String syns = "";
-			StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
-			System.out.println("syns stmtIterator = " + stmtIterator);
-			while (stmtIterator.hasNext()) {
-				String synonym = stmtIterator.next().getObject().asLiteral().getString();
-				syns += synonym + System.getProperty("line.separator");
-				System.out.println("syns = " + syns);
-			}
-			miniDataRow.add(syns);
-
-			miniDataRow.add("other: N/A");
-			miniTableProvider.addDataRow(miniDataRow);
-		}
-		update(miniTableProvider);
-	}
-
-	private static void update(TableProvider miniTableProvider) {
-		// reset();
-		// createColumns();
-		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		// tableViewer.setInput(null);
-		table.removeAll();
-		tableViewer.refresh();
-		tableViewer.setInput(miniTableProvider.getData());
-		table.getItem(0).setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-
-		int rowCount = table.getItemCount();
-		// ADD A ROW FOR SEARCHING
-		table.setItemCount(rowCount + 1);
-		TableItem queryRow = table.getItem(rowCount);
-		queryRow.addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				System.out.println("Event =" + event);
-			}
-		});
-
-		// table.addMouseListener(mouseListener);
-
-		// try{
-		// table.getItem(4).getData();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
-		System.out.println("table.getItemCount() " + table.getItemCount());
-		System.out.println("miniTableProvider.getColumnCount() " + miniTableProvider.getColumnCount());
-
-		// miniTableProvider.resetAssignedCSVColumnInfo();
-		// colorRowNumberColumn();
-		// table.setItem
-		table.setSize(table.getParent().getSize());
-		// initializeHeaderMenu();
-		// initializeColumnActionsMenu();
-	}
+	// private static void update(TableProvider miniTableProvider) {
+	// // reset();
+	// // createColumns();
+	// // TableProvider tableProvider = TableKeeper.getTableProvider(key);
+	// // tableViewer.setInput(null);
+	// table.removeAll();
+	// tableViewer.refresh();
+	// tableViewer.setInput(miniTableProvider.getData());
+	// table.getItem(0).setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+	//
+	// int rowCount = table.getItemCount();
+	// // ADD A ROW FOR SEARCHING
+	// table.setItemCount(rowCount + 1);
+	// TableItem queryRow = table.getItem(rowCount);
+	// queryRow.addListener(SWT.Selection, new Listener() {
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	// System.out.println("Event =" + event);
+	// }
+	// });
+	//
+	// // table.addMouseListener(mouseListener);
+	//
+	// // try{
+	// // table.getItem(4).getData();
+	// // } catch (Exception e) {
+	// // e.printStackTrace();
+	// // }
+	// //
+	// System.out.println("table.getItemCount() " + table.getItemCount());
+	// System.out.println("miniTableProvider.getColumnCount() " + miniTableProvider.getColumnCount());
+	//
+	// // miniTableProvider.resetAssignedCSVColumnInfo();
+	// // colorRowNumberColumn();
+	// // table.setItem
+	// table.setSize(table.getParent().getSize());
+	// // initializeHeaderMenu();
+	// // initializeColumnActionsMenu();
+	// }
 
 	//
 	// public static void reset() {
@@ -321,38 +326,66 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static void createColumns() {
 
-		TableViewerColumn tableViewerColumn = createTableViewerColumn("N/A", 20, 0);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		TableViewerColumn tableViewerColumn = createTableViewerColumn("?", 20, 0);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Not assigned.  A check in this column indicates that the Flowable in this row is not explicitly related to that in the top row.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(0));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn("=", 20, 1);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Equivalent.  A check in this column indicates that the Flowable in this row is the same as that in the top row.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn("<", 20, 2);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Subset.  A check in this column indicates that the Flowable in this row is a subset of that in the top row.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn(">", 20, 3);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Superset.  A check in this column indicates that the Flowable in this row is a superset of that in the top row.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn("~", 20, 4);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Proxy.  A check in this column indicates that the Flowable in this row is an imperfect match for that in the top row.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn("X", 20, 5);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Explicit difference.  A check in this column indicates that the Flowable in this row is not the same as that in the top row (despite some evidence to of a match).");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(5));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
 		tableViewerColumn = createTableViewerColumn("+", 20, 6);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(
+						"Suggested addition.  A check in this column indicates that the Flowable in this row is not available in the Master List, and should be considered a candidate new Flowable.");
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 		// tableViewerColumn.getColumn().addListener(SWT.KeyDown, keyListener);
@@ -603,6 +636,12 @@ public class MatchFlowableTableView extends ViewPart {
 				if (rowNumSelected == 0) {
 					return;
 				}
+				Util.findView(CSVTableView.ID);
+				DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData()
+						.get(rowNumSelected);
+				Flowable flowable = dataRow.getFlowable();
+				// Object[] thing = flowable.getMatchCandidates().keySet().toArray()[colNumSelected];
+
 				for (int i = 0; i < 7; i++) {
 					colorCell(rowNumSelected, i, SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 				}

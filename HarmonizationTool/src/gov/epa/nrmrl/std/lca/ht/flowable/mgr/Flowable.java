@@ -148,19 +148,19 @@ public class Flowable {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private LinkedHashSet<Resource> matchCandidates;
+	private LinkedHashMap<Resource, String> matchCandidates;
 
 	// CONSTRUCTORS
 	public Flowable() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new LinkedHashSet<Resource>();
+		matchCandidates = new LinkedHashMap<Resource, String>();
 	}
 
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new LinkedHashSet<Resource>();
+		matchCandidates = new LinkedHashMap<Resource, String>();
 		clearSyncDataFromTDB();
 	}
 
@@ -327,6 +327,7 @@ public class Flowable {
 				}
 			}
 		}
+		// Resource dataSourceResource = tdbResource.getProperty(ECO.hasDataSource).getResource();
 	}
 
 	public void clearSyncDataFromTDB() {
@@ -948,16 +949,16 @@ public class Flowable {
 	// public static String getSMILESString() {
 	// return smilesString;
 	// }
-	public LinkedHashSet<Resource> getMatchCandidates() {
+	public LinkedHashMap<Resource,String> getMatchCandidates() {
 		return matchCandidates;
 	}
 
-	public void setMatchCandidates(LinkedHashSet<Resource> matchCandidates) {
+	public void setMatchCandidates(LinkedHashMap<Resource, String> matchCandidates) {
 		this.matchCandidates = matchCandidates;
 	}
 
 	public void addMatchCandidate(Resource resource) {
-		matchCandidates.add(resource);
+		matchCandidates.put(resource, "?");
 	}
 
 	public void removeMatchCandidate(Resource resource) {
@@ -971,7 +972,7 @@ public class Flowable {
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.add(flowableMatchCandidate);
+				matchCandidates.put(flowableMatchCandidate, "?");
 				// THIS IS A name-name MATCH
 			}
 		}
@@ -981,7 +982,7 @@ public class Flowable {
 			Resource flowableMatchCandidate = resIterator.next();
 
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.add(flowableMatchCandidate);
+				matchCandidates.put(flowableMatchCandidate, "?");
 				// THIS IS A name-synonym MATCH
 			}
 		}
@@ -995,7 +996,7 @@ public class Flowable {
 				Resource flowableMatchCandidate = resIterator.next();
 
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					matchCandidates.add(flowableMatchCandidate);
+					matchCandidates.put(flowableMatchCandidate, "?");
 					// THIS IS A synonym-name MATCH
 				}
 			}
@@ -1004,7 +1005,7 @@ public class Flowable {
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					matchCandidates.add(flowableMatchCandidate);
+					matchCandidates.put(flowableMatchCandidate, "?");
 					// THIS IS A synonym-synonym MATCH
 
 				}
@@ -1018,7 +1019,7 @@ public class Flowable {
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.add(flowableMatchCandidate);
+				matchCandidates.put(flowableMatchCandidate, "?");
 				// THIS IS AN fCAS-fCAS MATCH
 			}
 		}
