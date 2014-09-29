@@ -49,7 +49,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
-	private static Flowable flowableThing;
+	private static Flowable flowableToMatch;
 
 	private static TextCellEditor editor;
 
@@ -114,45 +114,68 @@ public class MatchFlowableTableView extends ViewPart {
 		initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
+		flowableToMatch = dataRow.getFlowable();
 		// Resource curDataSet = tableProvider.getDataSourceProvider().getTdbResource();
 		// List<Resource> queryPlusCandidates = new ArrayList<Resource>();
-		Flowable qFlowable = dataRow.getFlowable();
-		if (qFlowable == null) {
+		// Flowable qFlowable = dataRow.getFlowable();
+		if (flowableToMatch == null) {
 			return;
 		}
-		qFlowable.clearSyncDataFromTDB();
+		flowableToMatch.clearSyncDataFromTDB();
 		table.clearAll();
-		int rowCount = qFlowable.getMatchCandidates().size() + 2;
+		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
-		setResultRowData(0, qFlowable);
+		setResultRowData(0, flowableToMatch);
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		LinkedHashMap<Resource, String> matchCandidateResources = qFlowable.getMatchCandidates();
+		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		if (matchCandidateResources == null) {
 			return;
 		}
 		int row = 1;
+		Integer[] matchSummary = new Integer[7];
 		for (Object dFlowableResource : matchCandidateResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
 			setResultRowData(row, dFlowable);
 			String matchStatus = matchCandidateResources.get(dFlowable);
+			TableItem tableItem = table.getItem(row);
+			for (int i = 0; i < 7; i++) {
+				tableItem.setText(i, "");
+			}
 			if (matchStatus.equals("?")) {
-				table.getItem(row).setText(0, matchStatus);
+				tableItem.setText(0, matchStatus);
+				matchSummary[0]++;
 			} else if (matchStatus.equals("=")) {
-				table.getItem(row).setText(1, matchStatus);
+				tableItem.setText(1, matchStatus);
+				matchSummary[1]++;
 			} else if (matchStatus.equals("<")) {
-				table.getItem(row).setText(2, matchStatus);
+				tableItem.setText(2, matchStatus);
+				matchSummary[2]++;
 			} else if (matchStatus.equals(">")) {
-				table.getItem(row).setText(3, matchStatus);
+				tableItem.setText(3, matchStatus);
+				matchSummary[3]++;
 			} else if (matchStatus.equals("~")) {
-				table.getItem(row).setText(4, matchStatus);
+				tableItem.setText(4, matchStatus);
+				matchSummary[4]++;
 			} else if (matchStatus.equals("X")) {
-				table.getItem(row).setText(5, matchStatus);
+				tableItem.setText(5, matchStatus);
+				matchSummary[5]++;
 			} else if (matchStatus.equals("+")) {
-				table.getItem(row).setText(6, matchStatus);
+				tableItem.setText(6, matchStatus);
+				matchSummary[6]++;
 			}
 			row++;
 		}
+		for (int i = 0; i < 7; i++) {
+			table.getItem(0).setText(i, matchSummary[i] + "");
+		}
 	}
+
+	// private static void updateMatchStatus(int rowNumber) {
+	// Integer[] matchSummary = new Integer[7];
+	// for (int i = 0; i < 7; i++) {
+	// table.getItem(0).setText(i, matchSummary[i] + "");
+	// }
+	// }
 
 	private static void setResultRowData(int rowNum, Flowable flowable) {
 		TableItem qRow = table.getItem(rowNum);
@@ -636,22 +659,11 @@ public class MatchFlowableTableView extends ViewPart {
 				if (rowNumSelected == 0) {
 					return;
 				}
-				Util.findView(CSVTableView.ID);
-				DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData()
-						.get(rowNumSelected);
-				Flowable flowable = dataRow.getFlowable();
-				// Object[] thing = flowable.getMatchCandidates().keySet().toArray()[colNumSelected];
-
-				for (int i = 0; i < 7; i++) {
-					colorCell(rowNumSelected, i, SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+				TableItem tableItem = table.getItem(rowNumSelected);
+				if (colNumSelected >= 0 && colNumSelected <= 6) {
+					flowableToMatch.setMatchCandidateStatus(rowNumSelected - 1, colNumSelected);
 				}
-				colorCell(rowNumSelected, colNumSelected, SWTResourceManager.getColor(SWT.COLOR_CYAN));
-
-				// TableColumn col = (TableColumn) e.getSource();
-				// colNumSelected = table.indexOf(col);
-				// if (colNumSelected > 0) {
-				// headerMenu.setVisible(true);
-				// }
+				updateRowZeroStatus();
 			}
 		}
 
@@ -665,6 +677,30 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
+
+	private static void updateRowZeroStatus() {
+//		Integer[] matchSummary = new Integer[7];
+//		if (colNumSelected == 0) {
+//			matchCandidates.put(dFlowableResource, "?");
+//		} else if (colNumSelected == 1) {
+//			matchCandidates.put(dFlowableResource, "=");
+//		} else if (colNumSelected == 2) {
+//			matchCandidates.put(dFlowableResource, "<");
+//		} else if (colNumSelected == 3) {
+//			matchCandidates.put(dFlowableResource, ">");
+//		} else if (colNumSelected == 4) {
+//			matchCandidates.put(dFlowableResource, "~");
+//		} else if (colNumSelected == 5) {
+//			matchCandidates.put(dFlowableResource, "X");
+//		} else if (colNumSelected == 6) {
+//			matchCandidates.put(dFlowableResource, "+");
+//		}
+//		if (colNumSelected == 0)
+//			for (int i = 0; i < 7; i++) {
+//				table.getItem(0).setText(i, matchSummary[i] + "");
+//			}
+//		//
+	}
 
 	public static void initialize() {
 		initializeTable();
@@ -718,5 +754,13 @@ public class MatchFlowableTableView extends ViewPart {
 	public static void setFlowable(Flowable flowable) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public static Flowable getFlowableToMatch() {
+		return flowableToMatch;
+	}
+
+	public static void setFlowableToMatch(Flowable flowableToMatch) {
+		MatchFlowableTableView.flowableToMatch = flowableToMatch;
 	}
 }

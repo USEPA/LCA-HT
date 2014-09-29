@@ -949,7 +949,7 @@ public class Flowable {
 	// public static String getSMILESString() {
 	// return smilesString;
 	// }
-	public LinkedHashMap<Resource,String> getMatchCandidates() {
+	public LinkedHashMap<Resource, String> getMatchCandidates() {
 		return matchCandidates;
 	}
 
@@ -963,6 +963,25 @@ public class Flowable {
 
 	public void removeMatchCandidate(Resource resource) {
 		matchCandidates.remove(resource);
+	}
+
+	public void setMatchCandidateStatus(int matchCandidateIndex, int statusCol) {
+		Resource dFlowableResource = (Resource) matchCandidates.keySet().toArray()[matchCandidateIndex];
+		if (statusCol == 0) {
+			matchCandidates.put(dFlowableResource, "?");
+		} else if (statusCol == 1) {
+			matchCandidates.put(dFlowableResource, "=");
+		} else if (statusCol == 2) {
+			matchCandidates.put(dFlowableResource, "<");
+		} else if (statusCol == 3) {
+			matchCandidates.put(dFlowableResource, ">");
+		} else if (statusCol == 4) {
+			matchCandidates.put(dFlowableResource, "~");
+		} else if (statusCol == 5) {
+			matchCandidates.put(dFlowableResource, "X");
+		} else if (statusCol == 6) {
+			matchCandidates.put(dFlowableResource, "+");
+		}
 	}
 
 	public void setMatches() {
