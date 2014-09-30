@@ -1945,49 +1945,49 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public static Set<Integer> getUniqueFlowableRowNumbers() {
-		return uniqueFlowableRowNumbers;
-	}
+//	public static Set<Integer> getUniqueFlowableRowNumbers() {
+//		return uniqueFlowableRowNumbers;
+//	}
 
 	public static void setUniqueFlowableRowNumbers(LinkedHashSet<Integer> uniqueFlowableRowNumbers) {
 		CSVTableView.uniqueFlowableRowNumbers = uniqueFlowableRowNumbers;
 	}
 
-	public static Set<Integer> getUniqueFlowContextRowNumbers() {
-		return uniqueFlowContextRowNumbers;
-	}
+//	public static Set<Integer> getUniqueFlowContextRowNumbers() {
+//		return uniqueFlowContextRowNumbers;
+//	}
 
 	public static void setUniqueFlowContextRowNumbers(LinkedHashSet<Integer> uniqueFlowContextRowNumbers) {
 		CSVTableView.uniqueFlowContextRowNumbers = uniqueFlowContextRowNumbers;
 	}
 
-	public static Set<Integer> getUniqueFlowPropertyRowNumbers() {
-		return uniqueFlowPropertyRowNumbers;
-	}
+//	public static Set<Integer> getUniqueFlowPropertyRowNumbers() {
+//		return uniqueFlowPropertyRowNumbers;
+//	}
 
 	public static void setUniqueFlowPropertyRowNumbers(LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers) {
 		CSVTableView.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
 	}
 
-	public static Set<Integer> getMatchedFlowableRowNumbers() {
-		return matchedFlowableRowNumbers;
-	}
+//	public static Set<Integer> getMatchedFlowableRowNumbers() {
+//		return matchedFlowableRowNumbers;
+//	}
 
 	public static void setMatchedFlowableRowNumbers(LinkedHashSet<Integer> matchedFlowableRowNumbers) {
 		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
 	}
 
-	public static Set<Integer> getMatchedFlowContextRowNumbers() {
-		return matchedFlowContextRowNumbers;
-	}
+//	public static Set<Integer> getMatchedFlowContextRowNumbers() {
+//		return matchedFlowContextRowNumbers;
+//	}
 
 	public static void setMatchedFlowContextRowNumbers(LinkedHashSet<Integer> matchedFlowContextRowNumbers) {
 		CSVTableView.matchedFlowContextRowNumbers = matchedFlowContextRowNumbers;
 	}
 
-	public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
-		return matchedFlowPropertyRowNumbers;
-	}
+//	public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
+//		return matchedFlowPropertyRowNumbers;
+//	}
 
 	public static void setMatchedFlowPropertyRowNumbers(LinkedHashSet<Integer> matchedFlowPropertyRowNumbers) {
 		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;

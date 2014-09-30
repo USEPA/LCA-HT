@@ -136,22 +136,33 @@ public class MatchFlowableTableView extends ViewPart {
 			return;
 		}
 		int row = 1;
-		Integer[] matchSummary = new Integer[7];
+		Integer[] matchSummary = new Integer[6];
 		for (Object dFlowableResource : matchCandidateResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
 			setResultRowData(row, dFlowable);
-			String matchStatus = matchCandidateResources.get(dFlowable);
+			String matchStatus = matchCandidateResources.get(dFlowableResource);
 			TableItem tableItem = table.getItem(row);
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 6; i++) {
 				tableItem.setText(i, "");
 			}
-			int num = MatchStatus.getNumberBySymbol(matchStatus);
+			int num = 0;
+			if (matchStatus != null) {
+				num = MatchStatus.getNumberBySymbol(matchStatus);
+			}
+			if (num < 0) {
+				num = 0;
+			}
+
 			tableItem.setText(num, matchStatus);
 			matchSummary[num]++;
 			row++;
 		}
-		for (int i = 0; i < 7; i++) {
-			table.getItem(0).setText(i, matchSummary[i] + "");
+		for (int i = 0; i < 6; i++) {
+			if (matchSummary[i] == null) {
+				table.getItem(0).setText(i, "0");
+			} else {
+				table.getItem(0).setText(i, matchSummary[i] + "");
+			}
 		}
 	}
 

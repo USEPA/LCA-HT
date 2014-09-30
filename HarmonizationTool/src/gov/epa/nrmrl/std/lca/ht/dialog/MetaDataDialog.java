@@ -137,7 +137,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		Label labelSelectDataSource = new Label(composite, SWT.RIGHT);
 		labelSelectDataSource.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		labelSelectDataSource.setText("Select");
+		labelSelectDataSource.setText("Data set name");
 
 		comboSelectorDataSource = new Combo(composite, SWT.READ_ONLY);
 		comboSelectorDataSource.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
@@ -148,12 +148,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dataSourceRename.setText("Rename");
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
 
-		Button deleteDataSource = new Button(composite, SWT.NONE);
-		deleteDataSource.setToolTipText("Click to delete this data set.");
-		deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
-		deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		deleteDataSource.setText("X");
-		deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
+		if (callingFileMD == null) {
+			Button deleteDataSource = new Button(composite, SWT.NONE);
+			deleteDataSource.setToolTipText("Click to delete this data set.");
+			deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
+			deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			deleteDataSource.setText("X");
+			deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
+		}
 
 		rowIndex++;
 		Label labelVersion = new Label(composite, SWT.RIGHT);
@@ -425,7 +427,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private final class DeleteButtonClickListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-			// TODO THIS ROUTINE NEEDS WORK!  THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
+			// TODO THIS ROUTINE NEEDS WORK! THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
 			String dataSourceToDelete = comboSelectorDataSource.getText();
 			GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
 
