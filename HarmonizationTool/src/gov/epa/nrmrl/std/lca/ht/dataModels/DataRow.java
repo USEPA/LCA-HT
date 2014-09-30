@@ -12,8 +12,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
-	// private List<String> toolTipValues = new ArrayList<String>();
-//	private List<MatchCandidate> matchCandidates = new ArrayList<MatchCandidate>();
+
 	private Flowable flowable = null;
 	private FlowContext flowContext = null;
 	private FlowProperty flowProperty = null;

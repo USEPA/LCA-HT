@@ -67,7 +67,8 @@ public class FlowContext {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Set<Resource> matchCandidates;
+	private Resource matchingResource;
+//	private Set<Resource> matchCandidates;
 
 	// CONSTRUCTORS
 	public FlowContext() {
@@ -212,21 +213,13 @@ public class FlowContext {
 	public static Map<String, LCADataPropertyProvider> getDataPropertyMap() {
 		return dataPropertyMap;
 	}
-	
-	public Set<Resource> getMatchCandidates() {
-		return matchCandidates;
+
+	public Resource getMatchingResource() {
+		return matchingResource;
 	}
 
-	public void setMatchCandidates(Set<Resource> matchCandidates) {
-		this.matchCandidates = matchCandidates;
-	}
-
-	public void addMatchCandidate(Resource resource) {
-		matchCandidates.add(resource);
-	}
-
-	public void removeMatchCandidate(Resource resource) {
-		matchCandidates.remove(resource);
+	public void setMatchingResource(Resource matchingResource) {
+		this.matchingResource = matchingResource;
 	}
 
 }

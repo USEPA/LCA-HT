@@ -25,7 +25,7 @@ public class ShowMatchPropertiesHandler implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			Util.showView(MatchProperties.ID);
-			MatchProperties.initialize();
+//			MatchProperties.initialize();
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

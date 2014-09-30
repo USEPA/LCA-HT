@@ -26,7 +26,7 @@ public class ShowMatchContextsHandler implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			Util.showView(MatchContexts.ID);
-			MatchContexts.initialize();
+//			MatchContexts.initialize();
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

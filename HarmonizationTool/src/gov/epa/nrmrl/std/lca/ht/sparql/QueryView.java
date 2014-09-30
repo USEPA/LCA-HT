@@ -465,12 +465,12 @@ public class QueryView extends ViewPart {
 
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			// resultsView.update(tableProvider);
-			try {
-				matchContexts.update(tableProvider);
-			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + matchContexts);
-				e.printStackTrace();
-			}
+//			try {
+//				matchContexts.update(tableProvider);
+//			} catch (Exception e) {
+//				System.out.println("resultsTreeEditor=" + matchContexts);
+//				e.printStackTrace();
+//			}
 
 			// resultsView.formatForTransform0();
 		} else {

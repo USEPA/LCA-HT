@@ -1,14 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -18,14 +15,10 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
-import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -34,14 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.wb.swt.SWTResourceManager;
-
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -72,11 +58,11 @@ public class AutoMatchJob extends Job {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 
-
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableKey);
-		DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
+		DataSourceProvider dataSourceProvider = tableProvider
+				.getDataSourceProvider();
 
 		Map<String, Flowable> flowableMap = new LinkedHashMap<String, Flowable>();
 		Map<String, FlowContext> flowContextMap = new LinkedHashMap<String, FlowContext>();
@@ -89,10 +75,13 @@ public class AutoMatchJob extends Job {
 		// long triples = ActiveTDB.tdbModel.size();
 		// Table table = CSVTableView.getTable();
 
-		// CSVColumnInfo[] assignedCSVColumns = tableProvider.getAssignedCSVColumnInfo();
-		// CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT THIS HACK, THEN FIX RED BELOW
+		// CSVColumnInfo[] assignedCSVColumns =
+		// tableProvider.getAssignedCSVColumnInfo();
+		// CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT
+		// THIS HACK, THEN FIX RED BELOW
 
-		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
+		LCADataPropertyProvider[] lcaDataProperties = tableProvider
+				.getLcaDataProperties();
 
 		Set<Integer> flowableCSVColumnNumbers = new HashSet<Integer>();
 		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
@@ -105,11 +94,14 @@ public class AutoMatchJob extends Job {
 			if (lcaDataPropertyProvider == null) {
 				continue;
 			}
-			if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+			if (lcaDataPropertyProvider.getPropertyClass().equals(
+					Flowable.label)) {
 				flowableCSVColumnNumbers.add(i);
-			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(
+					FlowContext.label)) {
 				flowContextCSVColumnNumbers.add(i);
-			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(
+					FlowProperty.label)) {
 				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}
@@ -150,7 +142,8 @@ public class AutoMatchJob extends Job {
 		// TableProvider flowContextTableProvider = new TableProvider();
 		// TableProvider flowPropertyTableProvider = new TableProvider();
 
-		// ========================== BEGIN ROW BY ROW ==========================
+		// ========================== BEGIN ROW BY ROW
+		// ==========================
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
@@ -182,7 +175,8 @@ public class AutoMatchJob extends Job {
 			// ========================== FLOWABLE ==========================
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
-				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired()
+						&& dataRow.get(i - 1).equals("")) {
 					flowableConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -196,23 +190,27 @@ public class AutoMatchJob extends Job {
 
 					flowable = new Flowable();
 					flowableMap.put(flowableConcatinated, flowable);
-					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowable.getTdbResource(),
+							ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
-//					flowable.set
+					// flowable.set
 					for (int i : flowableCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);
 						if (dataValue.equals("")) {
 							continue;
 						}
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+						flowable.setProperty(
+								lcaDataPropertyProvider.getPropertyName(),
+								dataValue);
 					}
 
-//					Set<Resource> matches = Flowable.findMatchingFlowableResources(flowable);
+					// Set<Resource> matches =
+					// Flowable.findMatchingFlowableResources(flowable);
 					flowable.setMatches();
-//					for (Resource flowableResource : matches) {
-//						dataRow.addMatchCandidateFlowable(flowableResource);
-//					}
+					// for (Resource flowableResource : matches) {
+					// dataRow.addMatchCandidateFlowable(flowableResource);
+					// }
 
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
@@ -220,19 +218,21 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-//				Display.getDefault().asyncExec(new Runnable() {
-//					public void run() {
-//						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-//					}
-//				});
-				// IS THREAD SYNCING AN ISSUE?  LINE BELOW DOES NOT "WORK"
+				// Display.getDefault().asyncExec(new Runnable() {
+				// public void run() {
+				// FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+				// }
+				// });
+				// IS THREAD SYNCING AN ISSUE? LINE BELOW DOES NOT "WORK"
 				dataRow.setFlowable(flowable);
 			}
 
-			// ========================== FLOW CONTEXT ==========================
+			// ========================== FLOW CONTEXT
+			// ==========================
 			String flowContextConcatinated = "";
 			for (int i : flowContextCSVColumnNumbers) {
-				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired()
+						&& dataRow.get(i - 1).equals("")) {
 					flowContextConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -241,7 +241,8 @@ public class AutoMatchJob extends Job {
 			}
 			if (!flowContextConcatinated.matches("^\\s*$")) {
 				flowContext = flowContextMap.get(flowContextConcatinated);
-				// if ((flowContext = flowContextMap.get(flowContextConcatinated)) == null) {
+				// if ((flowContext =
+				// flowContextMap.get(flowContextConcatinated)) == null) {
 				if (flowContext == null) {
 					// uniqueFlowContextRowNumbers.add(rowNumber);
 
@@ -250,17 +251,22 @@ public class AutoMatchJob extends Job {
 					DataRow flowContextDataRow = new DataRow();
 					flowContextDataRow.add(flowContextConcatinated);
 					// flowContextTableProvider.addDataRow(flowContextDataRow);
-					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(),
+							ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
 
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+							ActiveTDB.tsReplaceLiteral(
+									flowContext.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(),
+									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+							ActiveTDB.tsAddLiteral(
+									flowContext.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(),
+									dataRow.get(i - 1));
 						}
 					}
 
@@ -270,14 +276,18 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				// ActiveTDB.tsAddLiteral(flowContext.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				dataRow.setFlowContext(flowContext);
+				// ActiveTDB.tsAddLiteral(flowContext.getTdbResource(),
+				// FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 
-			// ========================== FLOW PROPERTY ==========================
+			// ========================== FLOW PROPERTY
+			// ==========================
 			String flowPropertyConcatinated = "";
 			for (int i : flowPropertyCSVColumnNumbers) {
-				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
+				if (lcaDataProperties[i].isRequired()
+						&& dataRow.get(i - 1).equals("")) {
 					flowPropertyConcatinated = "";
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
@@ -293,7 +303,8 @@ public class AutoMatchJob extends Job {
 
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
-					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(),
+							ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					DataRow flowPropertyDataRow = new DataRow();
 					flowPropertyDataRow.add(flowPropertyConcatinated);
@@ -301,11 +312,15 @@ public class AutoMatchJob extends Job {
 					for (int i : flowPropertyCSVColumnNumbers) {
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+							ActiveTDB.tsReplaceLiteral(
+									flowProperty.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(),
+									dataRow.get(i - 1));
 						} else {
-							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+							ActiveTDB.tsAddLiteral(
+									flowProperty.getTdbResource(),
+									lcaDataPropertyProvider.getTDBProperty(),
+									dataRow.get(i - 1));
 						}
 					}
 
@@ -315,7 +330,10 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				// ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+				dataRow.setFlowProperty(flowProperty);
+
+				// ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(),
+				// FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 
 			}
 			// ========================== FLOW ==========================
@@ -324,51 +342,55 @@ public class AutoMatchJob extends Job {
 			tempFlow.setFlowContext(flowContext);
 			tempFlow.setFlowProperty(flowProperty);
 
-			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-					dataSourceProvider.getTdbResource());
-			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(),
+					ECO.hasDataSource, dataSourceProvider.getTdbResource());
+			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(),
+					FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			flows.add(tempFlow);
 
 		}
 
-		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
+		// ========================== ROW BY ROW LOOP IS COMPLETE
+		// ==========================
 
-//		final List<String> contexts = new ArrayList<String>();
-//		final List<Resource> contextResources = new ArrayList<Resource>();
-//		for (String flowContextConcat : flowContextMap.keySet()) {
-//			contexts.add(flowContextConcat);
-//		}
-//		Collections.sort(contexts);
-//		for (String flowContextConcat : contexts) {
-//			contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
-//		}
-//		Display.getDefault().asyncExec(new Runnable() {
-//			public void run() {
-//				MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
-//				matchContexts.setContextsToMatch(contexts);
-//				matchContexts.setContextResourcesToMatch(contextResources);
-//				matchContexts.update();
-//			}
-//		});
-//
-//		final List<String> properties = new ArrayList<String>();
-//		final List<Resource> propertyResources = new ArrayList<Resource>();
-//		for (String flowPropertyConcat : flowPropertyMap.keySet()) {
-//			properties.add(flowPropertyConcat);
-//		}
-//		Collections.sort(properties);
-//		for (String flowPropertyConcat : properties) {
-//			propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
-//		}
-//		Display.getDefault().asyncExec(new Runnable() {
-//			public void run() {
-//				MatchProperties matchProperties = (MatchProperties) Util.findView(MatchProperties.ID);
-//				matchProperties.setPropertiesToMatch(properties);
-//				matchProperties.setPropertyResourcesToMatch(propertyResources);
-//
-//				matchProperties.update();
-//			}
-//		});
+		// final List<String> contexts = new ArrayList<String>();
+		// final List<Resource> contextResources = new ArrayList<Resource>();
+		// for (String flowContextConcat : flowContextMap.keySet()) {
+		// contexts.add(flowContextConcat);
+		// }
+		// Collections.sort(contexts);
+		// for (String flowContextConcat : contexts) {
+		// contextResources.add(flowContextMap.get(flowContextConcat).getTdbResource());
+		// }
+		// Display.getDefault().asyncExec(new Runnable() {
+		// public void run() {
+		// MatchContexts matchContexts = (MatchContexts)
+		// Util.findView(MatchContexts.ID);
+		// matchContexts.setContextsToMatch(contexts);
+		// matchContexts.setContextResourcesToMatch(contextResources);
+		// matchContexts.update();
+		// }
+		// });
+		//
+		// final List<String> properties = new ArrayList<String>();
+		// final List<Resource> propertyResources = new ArrayList<Resource>();
+		// for (String flowPropertyConcat : flowPropertyMap.keySet()) {
+		// properties.add(flowPropertyConcat);
+		// }
+		// Collections.sort(properties);
+		// for (String flowPropertyConcat : properties) {
+		// propertyResources.add(flowPropertyMap.get(flowPropertyConcat).getTdbResource());
+		// }
+		// Display.getDefault().asyncExec(new Runnable() {
+		// public void run() {
+		// MatchProperties matchProperties = (MatchProperties)
+		// Util.findView(MatchProperties.ID);
+		// matchProperties.setPropertiesToMatch(properties);
+		// matchProperties.setPropertyResourcesToMatch(propertyResources);
+		//
+		// matchProperties.update();
+		// }
+		// });
 
 		return Status.OK_STATUS;
 	}

@@ -4,11 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import gov.epa.nrmrl.std.lca.ht.utils.Util;
-
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -26,7 +22,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -35,6 +30,10 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.FillLayout;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -58,43 +57,44 @@ public class MatchFlowableTableView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(null);
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("label");
+		outerComposite = new Composite(parent, SWT.NONE);
+		outerComposite.setLayout(new GridLayout(1, false));
 		System.out.println("hello, from sunny MatchFlowableTableView!");
-		initializeTableViewer(composite);
+		initializeTableViewer(outerComposite);
 		// initializePopup(composite);
 		initialize();
 
-		parent.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				table.setSize(table.getParent().getSize());
-			}
-			// THIS IS NOT PERFECT
-			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
-		});
-
-		// table.addListener(SWT.MeasureItem, new Listener() {
-		// public void handleEvent(Event event) {
-		// System.out.println("MeasureItem Event: " + event);
-		// TableItem item = (TableItem) event.item;
-		// String text = item.getText(event.index);
-		// Point size = event.gc.textExtent(text);
-		// event.height = Math.max(event.height, size.y);
-		// }
-		// });
+//		parent.addListener(SWT.Resize, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				table.setSize(table.getParent().getSize());
+//			}
+//			// THIS IS NOT PERFECT
+//			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
+//		});
 
 	}
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-
 	}
 
 	private static void initializeTableViewer(Composite composite) {
+		
+		Composite innterComposite = new Composite(outerComposite, SWT.NONE);
+		innterComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		GridData gd_composite_2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_composite_2.heightHint = 20;
+		innterComposite.setLayoutData(gd_composite_2);
+//		innterComposite.setBounds(0, 0, 64, 64);
+		
+		Button acceptAdvance = new Button(innterComposite, SWT.NONE);
+		acceptAdvance.setText("Assign");
+		
+		Button addToMaster = new Button(innterComposite, SWT.NONE);
+		addToMaster.setText("Add to Master");
+		addToMaster.setVisible(false);
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		editor = new TextCellEditor(tableViewer.getTable());
@@ -105,7 +105,11 @@ public class MatchFlowableTableView extends ViewPart {
 	//
 	private static void initializeTable() {
 		table = tableViewer.getTable();
-		table.addListener(SWT.KeyDown, keyListener);
+		GridData gd_table = new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1);
+		gd_table.widthHint = 3000;
+		gd_table.heightHint = 1500;
+		table.setLayoutData(gd_table);
+//		table.addListener(SWT.KeyDown, keyListener);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 	}
@@ -196,255 +200,96 @@ public class MatchFlowableTableView extends ViewPart {
 		qRow.setText(10, synConcat);
 	}
 
-	// private static void update(Resource flowableResource) {
-	// TableProvider miniTableProvider = new TableProvider();
-	// DataRow miniDataRow = new DataRow();
-	//
-	// String name = "";
-	// if (flowableResource.hasProperty(RDFS.label)) {
-	// Statement statement = flowableResource.getProperty(RDFS.label);
-	// name = statement.getObject().asLiteral().getString();
-	// // name =
-	// // resource.getPropertyResourceValue(RDFS.label).getLocalName();
-	//
-	// }
-	// miniDataRow.add(" - ");
-	//
-	// Resource dataSourceResource = flowableResource.getProperty(ECO.hasDataSource).getObject().asResource();
-	// String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
-	// miniDataRow.add(dataSourceName);
-	//
-	// miniDataRow.add(name);
-	//
-	// String casrn = "";
-	// if (flowableResource.hasProperty(ECO.casNumber)) {
-	//
-	// Statement statement = flowableResource.getProperty(ECO.casNumber);
-	// casrn = statement.getObject().asLiteral().getString();
-	// // casrn =
-	// // resource.getPropertyResourceValue(ECO.casNumber).getLocalName();
-	// }
-	// miniDataRow.add(casrn);
-	//
-	// String syns = "";
-	// StmtIterator stmtIterator = flowableResource.listProperties(SKOS.altLabel);
-	// System.out.println("syns stmtIterator = " + stmtIterator);
-	// while (stmtIterator.hasNext()) {
-	// String synonym = stmtIterator.next().getObject().asLiteral().getString();
-	// syns += synonym + System.getProperty("line.separator");
-	// System.out.println("syns = " + syns);
-	// }
-	// miniDataRow.add(syns);
-	//
-	// miniDataRow.add("other: N/A");
-	// miniTableProvider.addDataRow(miniDataRow);
-	//
-	// update(miniTableProvider);
-	// // TODO - NEED TO ARRANGE A BLANK ROW FOR SEARCH TOOL
-	// }
-	//
-	// private static void update(List<Resource> flowableResources) {
-	// TableProvider miniTableProvider = new TableProvider();
-	//
-	// for (int i = 0; i < flowableResources.size(); i++) {
-	// DataRow miniDataRow = new DataRow();
-	//
-	// Resource resource = flowableResources.get(i);
-	// // TableItem tableItem = table.getItem(i);
-	//
-	// if (i == 0) {
-	// miniDataRow.add(" - ");
-	// } else {
-	// miniDataRow.add(" " + i + " ");
-	// }
-	//
-	// Resource dataSourceResource = resource.getProperty(ECO.hasDataSource).getObject().asResource();
-	// String dataSourceName = dataSourceResource.getProperty(RDFS.label).getObject().asLiteral().getString();
-	// miniDataRow.add(dataSourceName);
-	//
-	// String name = "";
-	// if (resource.hasProperty(RDFS.label)) {
-	// Statement statement = resource.getProperty(RDFS.label);
-	// name = statement.getObject().asLiteral().getString();
-	// }
-	// miniDataRow.add(name);
-	//
-	// String casrn = "";
-	// if (resource.hasProperty(ECO.casNumber)) {
-	// Statement statement = resource.getProperty(ECO.casNumber);
-	// casrn = statement.getObject().asLiteral().getString();
-	// }
-	// miniDataRow.add(casrn);
-	//
-	// String syns = "";
-	// StmtIterator stmtIterator = resource.listProperties(SKOS.altLabel);
-	// System.out.println("syns stmtIterator = " + stmtIterator);
-	// while (stmtIterator.hasNext()) {
-	// String synonym = stmtIterator.next().getObject().asLiteral().getString();
-	// syns += synonym + System.getProperty("line.separator");
-	// System.out.println("syns = " + syns);
-	// }
-	// miniDataRow.add(syns);
-	//
-	// miniDataRow.add("other: N/A");
-	// miniTableProvider.addDataRow(miniDataRow);
-	// }
-	// update(miniTableProvider);
-	// }
-
-	// private static void update(TableProvider miniTableProvider) {
-	// // reset();
-	// // createColumns();
-	// // TableProvider tableProvider = TableKeeper.getTableProvider(key);
-	// // tableViewer.setInput(null);
-	// table.removeAll();
-	// tableViewer.refresh();
-	// tableViewer.setInput(miniTableProvider.getData());
-	// table.getItem(0).setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-	//
-	// int rowCount = table.getItemCount();
-	// // ADD A ROW FOR SEARCHING
-	// table.setItemCount(rowCount + 1);
-	// TableItem queryRow = table.getItem(rowCount);
-	// queryRow.addListener(SWT.Selection, new Listener() {
-	//
-	// @Override
-	// public void handleEvent(Event event) {
-	// System.out.println("Event =" + event);
-	// }
-	// });
-	//
-	// // table.addMouseListener(mouseListener);
-	//
-	// // try{
-	// // table.getItem(4).getData();
-	// // } catch (Exception e) {
-	// // e.printStackTrace();
-	// // }
-	// //
-	// System.out.println("table.getItemCount() " + table.getItemCount());
-	// System.out.println("miniTableProvider.getColumnCount() " + miniTableProvider.getColumnCount());
-	//
-	// // miniTableProvider.resetAssignedCSVColumnInfo();
-	// // colorRowNumberColumn();
-	// // table.setItem
-	// table.setSize(table.getParent().getSize());
-	// // initializeHeaderMenu();
-	// // initializeColumnActionsMenu();
-	// }
-
-	//
-	// public static void reset() {
-	// tableViewer.setInput(null);
-	// // removeColumns();
-	// }
-
-	// private static void removeColumns() {
-	// table.setRedraw(false);
-	// while (table.getColumnCount() > 0) {
-	// table.getColumns()[0].dispose();
-	// }
-	// table.setRedraw(true);
-	// }
-
 	private static void createColumns() {
 
-		TableViewerColumn tableViewerColumn = createTableViewerColumn("?", 20, 0);
+		TableViewerColumn tableViewerColumn;
+		MatchStatus matchStatus;
+		
+		matchStatus = MatchStatus.UNKNOWN;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
 		tableViewerColumn
 				.getColumn()
-				.setToolTipText(
-						"Not assigned.  A check in this column indicates that the Flowable in this row is not explicitly related to that in the top row.");
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
 		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(0));
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn("=", 20, 1);
+		matchStatus = MatchStatus.EQUIVALENT;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
 		tableViewerColumn
 				.getColumn()
-				.setToolTipText(
-						"Equivalent.  A check in this column indicates that the Flowable in this row is the same as that in the top row.");
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
 		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(1));
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		
+		matchStatus = MatchStatus.SUBSET;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		
+		matchStatus = MatchStatus.SUPERSET;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		
+		matchStatus = MatchStatus.PROXY;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
+		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		
+		matchStatus = MatchStatus.NONEQUIVALENT;
+		tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(), 20, matchStatus.getValue());
+		tableViewerColumn
+				.getColumn()
+				.setToolTipText(matchStatus.getName()+ " - "+matchStatus.getComment());
+		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
 		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 
-		tableViewerColumn = createTableViewerColumn("<", 20, 2);
-		tableViewerColumn
-				.getColumn()
-				.setToolTipText(
-						"Subset.  A check in this column indicates that the Flowable in this row is a subset of that in the top row.");
-		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(2));
-		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
-
-		tableViewerColumn = createTableViewerColumn(">", 20, 3);
-		tableViewerColumn
-				.getColumn()
-				.setToolTipText(
-						"Superset.  A check in this column indicates that the Flowable in this row is a superset of that in the top row.");
-		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(3));
-		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
-
-		tableViewerColumn = createTableViewerColumn("~", 20, 4);
-		tableViewerColumn
-				.getColumn()
-				.setToolTipText(
-						"Proxy.  A check in this column indicates that the Flowable in this row is an imperfect match for that in the top row.");
-		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(4));
-		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
-
-		tableViewerColumn = createTableViewerColumn("X", 20, 5);
-		tableViewerColumn
-				.getColumn()
-				.setToolTipText(
-						"Explicit difference.  A check in this column indicates that the Flowable in this row is not the same as that in the top row (despite some evidence to of a match).");
-		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(5));
-		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
-
-		tableViewerColumn = createTableViewerColumn("+", 20, 6);
-		tableViewerColumn
-				.getColumn()
-				.setToolTipText(
-						"Suggested addition.  A check in this column indicates that the Flowable in this row is not available in the Master List, and should be considered a candidate new Flowable.");
-		tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
+		tableViewerColumn = createTableViewerColumn("Data Source", 200, 6);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
-		tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
-		// tableViewerColumn.getColumn().addListener(SWT.KeyDown, keyListener);
 
-		tableViewerColumn = createTableViewerColumn("Data Source", 200, 7);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 7);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(7));
 
-		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 8);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
+		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 8);
+		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(8));
 
-		// String casString = Flowable;
-		tableViewerColumn = createTableViewerColumn(Flowable.casString, 100, 9);
-		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 9);
+		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(9));
 
-		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 10);
+		tableViewerColumn = createTableViewerColumn("Other", 200, 10);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(10));
-
-		tableViewerColumn = createTableViewerColumn("Other", 200, 11);
-		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(11));
 	}
 
-	private static Listener keyListener = new Listener() {
-
-		@Override
-		public void handleEvent(Event event) {
-			System.out.println("Column 1 received event: " + event);
-			System.out.println("event.keyCode: " + event.keyCode);
-			System.out.println("event.character: " + event.character);
-
-		}
-	};
+//	private static Listener keyListener = new Listener() {
+//
+//		@Override
+//		public void handleEvent(Event event) {
+//			System.out.println("Column 1 received event: " + event);
+//			System.out.println("event.keyCode: " + event.keyCode);
+//			System.out.println("event.character: " + event.character);
+//
+//		}
+//	};
 
 	private static MouseListener mouseListener = new MouseListener() {
 
@@ -677,6 +522,7 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
+	private static Composite outerComposite;
 
 	private static void updateRowZeroStatus() {
 //		Integer[] matchSummary = new Integer[7];

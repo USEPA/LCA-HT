@@ -35,31 +35,37 @@ public class FlowProperty {
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyPrimaryIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(
+				flowPropertyPrimaryIdentifier);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(true);
 		lcaDataPropertyProvider.setUnique(true);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyPrimaryDescription);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		lcaDataPropertyProvider
+				.setTDBProperty(FedLCA.flowPropertyPrimaryDescription);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyAdditionalIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(
+				flowPropertyAdditionalIdentifier);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
 		lcaDataPropertyProvider.setUnique(false);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		lcaDataPropertyProvider
+				.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 	}
 
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Set<Resource> matchCandidates;
+	private Resource matchingResource;
 
 	// CONSTRUCTORS
 	public FlowProperty() {
@@ -76,7 +82,8 @@ public class FlowProperty {
 	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				return lcaDataValue.getValue();
 			}
 		}
@@ -86,7 +93,8 @@ public class FlowProperty {
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				resultList.add(lcaDataValue.getValue());
 			}
 		}
@@ -104,7 +112,8 @@ public class FlowProperty {
 		List<LCADataValue> results = new ArrayList<LCADataValue>();
 		for (String key : dataPropertyMap.keySet()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+						.equals(key)) {
 					results.add(lcaDataValue);
 				}
 			}
@@ -119,7 +128,8 @@ public class FlowProperty {
 		if (!dataPropertyMap.containsKey(key)) {
 			return;
 		}
-		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap
+				.get(key);
 		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 		Class<?> objectClass = RDFUtil.getJavaClassFromRDFDatatype(rdfDatatype);
 		if (!objectClass.equals(object.getClass())) {
@@ -128,20 +138,26 @@ public class FlowProperty {
 		LCADataValue newLCADataValue = new LCADataValue();
 		newLCADataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 		newLCADataValue.setValue(object);
-		// newLCADataValue.setValueAsString(object.toString()); // SHOULD WE DO THIS AT ALL?
+		// newLCADataValue.setValueAsString(object.toString()); // SHOULD WE DO
+		// THIS AT ALL?
 
 		if (lcaDataPropertyProvider.isUnique()) {
 			removeValues(lcaDataPropertyProvider.getPropertyName());
-			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsReplaceLiteral(tdbResource,
+					lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+					object);
 		} else {
-			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsAddLiteral(tdbResource,
+					lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+					object);
 		}
 		lcaDataValues.add(newLCADataValue);
 	}
 
 	private void removeValues(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				lcaDataValues.remove(lcaDataValue);
 			}
 		}
@@ -152,29 +168,42 @@ public class FlowProperty {
 			return;
 		}
 		// LCADataPropertyProvider LIST IS ALL LITERALS
-		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap
+				.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider
+					.getTDBProperty())) {
 				continue;
 			}
 			if (lcaDataPropertyProvider.isUnique()) {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
-						.getValue();
-				if (value.getClass().equals(
-						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+				Object value = tdbResource
+						.getProperty(lcaDataPropertyProvider.getTDBProperty())
+						.getLiteral().getValue();
+				if (value
+						.getClass()
+						.equals(RDFUtil
+								.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
+										.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue
+							.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 					lcaDataValue.setValue(value);
 					lcaDataValues.add(lcaDataValue);
 				}
 			} else {
-				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
+				StmtIterator stmtIterator = tdbResource
+						.listProperties(lcaDataPropertyProvider
+								.getTDBProperty());
 				while (stmtIterator.hasNext()) {
 					Object value = stmtIterator.next().getLiteral().getValue();
-					if (value.getClass().equals(
-							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+					if (value
+							.getClass()
+							.equals(RDFUtil
+									.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
+											.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();
-						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue
+								.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
@@ -232,33 +261,42 @@ public class FlowProperty {
 	// public void setPrimaryFlowProperty(String primaryFlowProperty) {
 	// this.primaryFlowProperty = primaryFlowProperty;
 	// RDFDatatype rdfDatatype = getHeaderMenuObjects()[0].getRdfDatatype();
-	// ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
+	// ActiveTDB.tsReplaceLiteral(tdbResource,
+	// FedLCA.flowPropertyPrimaryDescription, rdfDatatype, primaryFlowProperty);
 	// }
 	//
 	// public List<String> getsupplementaryFlowProperties() {
 	// return supplementaryFlowProperties;
 	// }
 	//
-	// public void setSupplementaryFlowProperties(List<String> supplementaryFlowProperties) {
-	// ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.flowPropertySupplementalDescription);
+	// public void setSupplementaryFlowProperties(List<String>
+	// supplementaryFlowProperties) {
+	// ActiveTDB.tsRemoveAllObjects(tdbResource,
+	// FedLCA.flowPropertySupplementalDescription);
 	// this.supplementaryFlowProperties = supplementaryFlowProperties;
 	// for (String supplementaryFlowProperty : supplementaryFlowProperties) {
-	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+	// ActiveTDB.tsAddLiteral(tdbResource,
+	// FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 	// }
 	// }
 
-	// public void addSupplementaryFlowProperty(String supplementaryFlowProperty) {
+	// public void addSupplementaryFlowProperty(String
+	// supplementaryFlowProperty) {
 	// if (supplementaryFlowProperties == null) {
 	// supplementaryFlowProperties = new ArrayList<String>();
 	// }
 	// supplementaryFlowProperties.add(supplementaryFlowProperty);
-	// ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
+	// ActiveTDB.tsAddLiteral(tdbResource,
+	// FedLCA.flowPropertySupplementalDescription, supplementaryFlowProperty);
 	// }
 	//
-	// public void removeSupplementaryFlowProperty(String supplementaryFlowProperty) {
+	// public void removeSupplementaryFlowProperty(String
+	// supplementaryFlowProperty) {
 	// this.supplementaryFlowProperties.remove(supplementaryFlowProperty);
-	// Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
-	// ActiveTDB.tsRemoveStatement(tdbResource, FedLCA.flowPropertySupplementalDescription, literalToRemove);
+	// Literal literalToRemove =
+	// ActiveTDB.tsCreateTypedLiteral(supplementaryFlowProperty);
+	// ActiveTDB.tsRemoveStatement(tdbResource,
+	// FedLCA.flowPropertySupplementalDescription, literalToRemove);
 	// }
 
 	public Resource getTdbResource() {
@@ -283,21 +321,12 @@ public class FlowProperty {
 	public static Map<String, LCADataPropertyProvider> getDataPropertyMap() {
 		return dataPropertyMap;
 	}
-	
-	
-	public Set<Resource> getMatchCandidates() {
-		return matchCandidates;
+
+	public Resource getMatchingResource() {
+		return matchingResource;
 	}
 
-	public void setMatchCandidates(Set<Resource> matchCandidates) {
-		this.matchCandidates = matchCandidates;
-	}
-
-	public void addMatchCandidate(Resource resource) {
-		matchCandidates.add(resource);
-	}
-
-	public void removeMatchCandidate(Resource resource) {
-		matchCandidates.remove(resource);
+	public void setMatchingResource(Resource matchingResource) {
+		this.matchingResource = matchingResource;
 	}
 }

@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.perspectives;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchPropertiesOld;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
@@ -27,7 +27,7 @@ public class FlowDataV3 implements IPerspectiveFactory {
 		matchToolLayout.addView(FlowsWorkflow.ID);
 		matchToolLayout.addView(MatchFlowableTableView.ID);
 		matchToolLayout.addView(MatchContexts.ID);
-		matchToolLayout.addView(MatchProperties.ID);
+		matchToolLayout.addView(MatchPropertiesOld.ID);
 		matchToolLayout.addView(LoggerViewer.ID);
 
 		IFolderLayout dataLayout = layout.createFolder("Data and SPARQL", IPageLayout.RIGHT, 0.01f, editorArea);
