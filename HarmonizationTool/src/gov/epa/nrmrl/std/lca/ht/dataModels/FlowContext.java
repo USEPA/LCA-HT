@@ -74,12 +74,14 @@ public class FlowContext {
 	public FlowContext() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
+		matchingResource = null;
 	}
 
 	public FlowContext(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
 		clearSyncDataFromTDB();
+		// TODO? SYNC THE MATCHING RESOURCE?
 	}
 
 	// METHODS

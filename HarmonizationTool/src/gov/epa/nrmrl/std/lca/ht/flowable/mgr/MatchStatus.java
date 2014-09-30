@@ -110,4 +110,54 @@ public enum MatchStatus {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
+	public static int getNumberBySymbol(String matchStatusSymbol) {
+		if (matchStatusSymbol.equals(UNKNOWN.getSymbol())){
+			return UNKNOWN.getValue();
+		}
+		if (matchStatusSymbol.equals(EQUIVALENT.getSymbol())){
+			return EQUIVALENT.getValue();
+		}
+		if (matchStatusSymbol.equals(SUBSET.getSymbol())){
+			return SUBSET.getValue();
+		}
+		if (matchStatusSymbol.equals(SUPERSET.getSymbol())){
+			return SUPERSET.getValue();
+		}
+		if (matchStatusSymbol.equals(PROXY.getSymbol())){
+			return PROXY.getValue();
+		}
+		if (matchStatusSymbol.equals(NONEQUIVALENT.getSymbol())){
+			return NONEQUIVALENT.getValue();
+		}
+		if (matchStatusSymbol.equals(ADDITION.getSymbol())){
+			return ADDITION.getValue();
+		}
+		return -1;
+	}
+
+	public static MatchStatus getByValue(int statusCol) {
+		if (statusCol == UNKNOWN.getValue()){
+			return UNKNOWN;
+		}
+		if (statusCol == EQUIVALENT.getValue()){
+			return EQUIVALENT;
+		}
+		if (statusCol == SUBSET.getValue()){
+			return SUBSET;
+		}
+		if (statusCol == SUPERSET.getValue()){
+			return SUPERSET;
+		}
+		if (statusCol == PROXY.getValue()){
+			return PROXY;
+		}
+		if (statusCol == NONEQUIVALENT.getValue()){
+			return NONEQUIVALENT;
+		}
+		if (statusCol == ADDITION.getValue()){
+			return ADDITION;
+		}
+		return null;
+	}
 };

@@ -71,12 +71,15 @@ public class FlowProperty {
 	public FlowProperty() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
+		matchingResource = null;
 	}
 
 	public FlowProperty(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
 		clearSyncDataFromTDB();
+		// TODO? SYNC THE MATCHING RESOURCE?
+
 	}
 
 	// METHODS
