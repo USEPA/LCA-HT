@@ -1820,7 +1820,6 @@ public class CSVTableView extends ViewPart {
 						int matchNum = MatchStatus.getNumberBySymbol(symbol);
 						if (matchNum > 0 && matchNum < 5) {
 							hit = true;
-							break;
 						}
 					}
 					Color color;
@@ -2067,6 +2066,27 @@ public class CSVTableView extends ViewPart {
 		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;
 	}
 
+	public static void selectNextFlowable() {
+		int rowCount = table.getItemCount();
+		if (rowCount == 1) {
+			return;
+		}
+		int tableSelIndex = table.getSelectionIndex();
+		if (rowCount == (tableSelIndex + 1)) {
+			return;
+		}
+
+		for (int i = tableSelIndex + 1; i < rowCount; i++) {
+			String rowNumString = table.getItem(i).getText(0);
+			int newRowNumber = Integer.parseInt(rowNumString) - 1;
+			if (uniqueFlowableRowNumbers.contains(newRowNumber)) {
+				table.setSelection(i);
+				MatchFlowableTableView.update(i);
+				return;
+			}
+		}
+	}
+	
 	public static void selectNextContext() {
 		int rowCount = table.getItemCount();
 		if (rowCount == 1) {
@@ -2082,6 +2102,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowContextRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
+				MatchContexts.update(i);
 				return;
 			}
 		}
@@ -2102,6 +2123,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowPropertyRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
+				MatchProperties.update(i);
 				return;
 			}
 		}

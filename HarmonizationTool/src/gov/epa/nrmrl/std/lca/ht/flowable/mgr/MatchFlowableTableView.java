@@ -552,6 +552,7 @@ public class MatchFlowableTableView extends ViewPart {
 			if (gotMatch) {
 				CSVTableView.colorFlowableRows();
 			}
+			CSVTableView.selectNextFlowable();
 		}
 
 		@Override
