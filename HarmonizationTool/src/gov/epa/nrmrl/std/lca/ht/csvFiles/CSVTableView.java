@@ -17,6 +17,7 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
@@ -68,6 +69,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -216,7 +219,7 @@ public class CSVTableView extends ViewPart {
 		table.setLinesVisible(true);
 		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
 		table.addListener(SWT.MouseExit, cellSelectionMouseExitListener);
-		table.addMouseListener(columnMouseListener);
+		table.addMouseListener(tableMouseListener);
 		// table.setSize(10, 10);
 	}
 
@@ -295,7 +298,7 @@ public class CSVTableView extends ViewPart {
 	// }
 	// };
 
-	private static MouseListener columnMouseListener = new MouseListener() {
+	private static MouseListener tableMouseListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
 			System.out.println("double click event :e =" + e);
@@ -315,8 +318,11 @@ public class CSVTableView extends ViewPart {
 			if (e.button == 1) {
 				leftClick(e);
 			} else if (e.button == 3) {
-				for (TableItem tableItem:table.getSelection()){
-					tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				// for (TableItem tableItem:table.getSelection()){
+				// tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				// }
+				for (int selRow : table.getSelectionIndices()) {
+					table.getItem(selRow).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				}
 				table.deselectAll();
 				rightClick(e);
@@ -347,8 +353,11 @@ public class CSVTableView extends ViewPart {
 					table.deselectAll();
 					return;
 				}
-				for (TableItem tableItem:table.getSelection()){
-					tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				// for (TableItem tableItem:table.getSelection()){
+				// tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				// }
+				for (int selRow : table.getSelectionIndices()) {
+					table.getItem(selRow).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				}
 				table.deselectAll();
 				table.setSelection(rowNumSelected);
@@ -427,7 +436,7 @@ public class CSVTableView extends ViewPart {
 			return;
 		}
 		String dataRowNumString = table.getItem(rowNumSelected).getText(0);
-		Integer dataRowNum = Integer.parseInt(dataRowNumString);
+		Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 
 		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 			Util.setPerspective(FlowDataV5.ID);
@@ -1805,53 +1814,118 @@ public class CSVTableView extends ViewPart {
 			int visibleRowNum = 0;
 			for (int i : filterRowNumbers) {
 				if (uniqueFlowableRowNumbers.contains(i)) {
-					int count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-							.getMatchCandidates().size();
+					boolean hit = false;
+					for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
+							.getFlowable().getMatchCandidates().values()) {
+						int matchNum = MatchStatus.getNumberBySymbol(symbol);
+						if (matchNum > 0 && matchNum < 5) {
+							hit = true;
+							break;
+						}
+					}
 					Color color;
-
-					if (count == 0) {
-						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-					} else if (count == 1) {
+					if (hit) {
 						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 					} else {
-						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 					}
 					for (int j : contextColumns) {
 						colorCell(visibleRowNum, j, color);
 					}
-					// colorCell(visibleRowNum, 0, color);
 				}
 				visibleRowNum++;
 			}
 		} else {
 			for (int i : uniqueFlowableRowNumbers) {
-				Flowable flowable = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable();
-				if (flowable == null) {
-					System.out.println("Where did we go wrong?");
-					return;
+				boolean hit = false;
+				for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
+						.getFlowable().getMatchCandidates().values()) {
+					int matchNum = MatchStatus.getNumberBySymbol(symbol);
+					if (matchNum > 0 && matchNum < 5) {
+						hit = true;
+						break;
+					}
 				}
-				int count = 0;
-				if (flowable.getMatchCandidates() != null) {
-					count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-							.getMatchCandidates().size();
-				}
-
 				Color color;
-
-				if (count == 0) {
-					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-				} else if (count == 1) {
+				if (hit) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 				} else {
-					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 				}
 				for (int j : contextColumns) {
 					colorCell(i, j, color);
 				}
-				// colorCell(i, 0, color);
 			}
 		}
 	}
+
+	// BELOW IS THE VERSION THAT COLORS ACCORDING TO HOW MANY CANDIDATES THERE ARE
+	// public static void colorFlowableRows() {
+	// List<Integer> contextColumns = new ArrayList<Integer>();
+	// LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+	// .getLcaDataProperties();
+	// for (int i = 0; i < lcaDataProperties.length; i++) {
+	// LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+	// if (lcaDataPropertyProvider != null) {
+	// if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+	// contextColumns.add(i);
+	// }
+	// }
+	// }
+	//
+	// Set<Integer> filterRowNumbers = getFilterRowNumbers();
+	//
+	// if (filterRowNumbers.size() > 0) {
+	// int visibleRowNum = 0;
+	// for (int i : filterRowNumbers) {
+	// if (uniqueFlowableRowNumbers.contains(i)) {
+	// int count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+	// .getMatchCandidates().size();
+	// Color color;
+	//
+	// if (count == 0) {
+	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+	// } else if (count == 1) {
+	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+	// } else {
+	// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+	// }
+	// for (int j : contextColumns) {
+	// colorCell(visibleRowNum, j, color);
+	// }
+	// // colorCell(visibleRowNum, 0, color);
+	// }
+	// visibleRowNum++;
+	// }
+	// } else {
+	// for (int i : uniqueFlowableRowNumbers) {
+	// Flowable flowable = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable();
+	// if (flowable == null) {
+	// System.out.println("Where did we go wrong?");
+	// return;
+	// }
+	// int count = 0;
+	// if (flowable.getMatchCandidates() != null) {
+	// count = TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+	// .getMatchCandidates().size();
+	// }
+	//
+	// Color color;
+	//
+	// if (count == 0) {
+	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+	// } else if (count == 1) {
+	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+	// } else {
+	// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+	// }
+	// for (int j : contextColumns) {
+	// colorCell(i, j, color);
+	// }
+	// // colorCell(i, 0, color);
+	// }
+	// }
+	// }
 
 	public static void colorFlowContextRows() {
 		List<Integer> contextColumns = new ArrayList<Integer>();
@@ -1945,49 +2019,49 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-//	public static Set<Integer> getUniqueFlowableRowNumbers() {
-//		return uniqueFlowableRowNumbers;
-//	}
+	// public static Set<Integer> getUniqueFlowableRowNumbers() {
+	// return uniqueFlowableRowNumbers;
+	// }
 
 	public static void setUniqueFlowableRowNumbers(LinkedHashSet<Integer> uniqueFlowableRowNumbers) {
 		CSVTableView.uniqueFlowableRowNumbers = uniqueFlowableRowNumbers;
 	}
 
-//	public static Set<Integer> getUniqueFlowContextRowNumbers() {
-//		return uniqueFlowContextRowNumbers;
-//	}
+	// public static Set<Integer> getUniqueFlowContextRowNumbers() {
+	// return uniqueFlowContextRowNumbers;
+	// }
 
 	public static void setUniqueFlowContextRowNumbers(LinkedHashSet<Integer> uniqueFlowContextRowNumbers) {
 		CSVTableView.uniqueFlowContextRowNumbers = uniqueFlowContextRowNumbers;
 	}
 
-//	public static Set<Integer> getUniqueFlowPropertyRowNumbers() {
-//		return uniqueFlowPropertyRowNumbers;
-//	}
+	// public static Set<Integer> getUniqueFlowPropertyRowNumbers() {
+	// return uniqueFlowPropertyRowNumbers;
+	// }
 
 	public static void setUniqueFlowPropertyRowNumbers(LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers) {
 		CSVTableView.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
 	}
 
-//	public static Set<Integer> getMatchedFlowableRowNumbers() {
-//		return matchedFlowableRowNumbers;
-//	}
+	// public static Set<Integer> getMatchedFlowableRowNumbers() {
+	// return matchedFlowableRowNumbers;
+	// }
 
 	public static void setMatchedFlowableRowNumbers(LinkedHashSet<Integer> matchedFlowableRowNumbers) {
 		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
 	}
 
-//	public static Set<Integer> getMatchedFlowContextRowNumbers() {
-//		return matchedFlowContextRowNumbers;
-//	}
+	// public static Set<Integer> getMatchedFlowContextRowNumbers() {
+	// return matchedFlowContextRowNumbers;
+	// }
 
 	public static void setMatchedFlowContextRowNumbers(LinkedHashSet<Integer> matchedFlowContextRowNumbers) {
 		CSVTableView.matchedFlowContextRowNumbers = matchedFlowContextRowNumbers;
 	}
 
-//	public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
-//		return matchedFlowPropertyRowNumbers;
-//	}
+	// public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
+	// return matchedFlowPropertyRowNumbers;
+	// }
 
 	public static void setMatchedFlowPropertyRowNumbers(LinkedHashSet<Integer> matchedFlowPropertyRowNumbers) {
 		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;

@@ -622,12 +622,30 @@ public class MatchContexts extends ViewPart {
 		this.contextResourcesToMatch = contextResourcesToMatch;
 	}
 
-	public static void update(Integer dataRowNum) {
+	private static void update() {
 		Util.findView(CSVTableView.ID);
 		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
 		String rowNumString = tableItem.getText(0);
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+		if (contextResource != null) {
+			TreeItem treeItem = getTreeItemByURI(contextResource);
+			if (treeItem != null) {
+				masterTree.setSelection(getTreeItemByURI(contextResource));
+			} else {
+				masterTree.deselectAll();
+			}
+		} else {
+			masterTree.deselectAll();
+		}
+	}
+	public static void update(Integer dataRowNum) {
+//		Util.findView(CSVTableView.ID);
+//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+//		String rowNumString = tableItem.getText(0);
+//		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
