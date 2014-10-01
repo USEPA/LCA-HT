@@ -696,6 +696,13 @@ public class FlowsWorkflow extends ViewPart {
 			textMatchFlowProperties.setText("");
 
 			btnConcludeFile.setEnabled(false);
+			
+			uniqueFlowContextRowNumbers.clear();
+			uniqueFlowPropertyRowNumbers.clear();
+			uniqueFlowableRowNumbers.clear();
+			matchedFlowContextRowNumbers.clear();
+			matchedFlowPropertyRowNumbers.clear();
+			matchedFlowableRowNumbers.clear();
 
 			if (btnConcludeFile.getText().equals("Close CSV")) {
 				MatchFlowableTableView.initialize();
