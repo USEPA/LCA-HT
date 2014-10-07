@@ -26,6 +26,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -303,6 +304,8 @@ public class CSVTableView extends ViewPart {
 		public void mouseDoubleClick(MouseEvent e) {
 			System.out.println("double click event :e =" + e);
 			Point ptClick = new Point(e.x, e.y);
+			System.out.println("  Point =" + ptClick);
+
 			TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
 			if (tableColumn.getWidth() > 30) {
 				tableColumn.setWidth(25);
@@ -374,11 +377,11 @@ public class CSVTableView extends ViewPart {
 
 		private void rightClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-			Point ptLeft = new Point(1, event.y);
+			// Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int clickedRow = 0;
 			int clickedCol = 0;
-			TableItem item = table.getItem(ptLeft);
+			TableItem item = table.getItem(ptClick);
 			if (item == null) {
 				return;
 			}
@@ -558,7 +561,9 @@ public class CSVTableView extends ViewPart {
 				if (menuItemText.equals("ignore row")) {
 					for (TableItem tableItem : table.getSelection()) {
 						tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
-						int rowNum = table.indexOf(tableItem);
+						String rowNumString = tableItem.getText(0);
+						int rowNum = Integer.parseInt(rowNumString) - 1;
+						// int rowNum = table.indexOf(tableItem);
 						if (!rowsToIgnore.contains(rowNum)) {
 							rowsToIgnore.add(rowNum);
 						}
@@ -892,11 +897,22 @@ public class CSVTableView extends ViewPart {
 			if (!lcaDataPropertyProvider.getPropertyName().equals("CAS")) {
 				return;
 			}
+			Map<Integer, Issue> issuesThisCol = new HashMap<Integer,Issue>();
+			for (Issue issue: issueList){
+				if (issue.getColNumber() == (colNumSelected-1)){
+					issuesThisCol.put(issue.getRowNumber(),issue);
+				}
+			}
 			for (int i = 0; i < table.getItemCount(); i++) {
 				TableItem item = table.getItem(i);
+				String rowNumString = item.getText(0);
+				int rowNum = Integer.parseInt(rowNumString)-1;
 				String value = item.getText(colNumSelected);
 				String fixedValue = Flowable.standardizeCAS(value);
 				if (fixedValue != null) {
+					issuesThisCol.get(rowNum).setStatus(Status.RESOLVED);
+					colorCell(issuesThisCol.get(rowNum));
+
 					// TableProvider tableProvider =
 					// TableKeeper.getTableProvider(tableProviderKey);
 
@@ -906,6 +922,7 @@ public class CSVTableView extends ViewPart {
 					item.setText(colNumSelected, fixedValue);
 				}
 			}
+			
 			// checkOneColumn(colNumSelected);
 		}
 	}
@@ -981,7 +998,9 @@ public class CSVTableView extends ViewPart {
 			Set<Integer> issueSet = new HashSet<Integer>();
 			for (Issue issue : issueList) {
 				if (issue.getColNumber() == colNumSelected) {
-					issueSet.add(issue.getRowNumber());
+					if (!issue.getStatus().equals(Status.RESOLVED)) {
+						issueSet.add(issue.getRowNumber());
+					}
 				}
 			}
 			TableColumn tableColumn = table.getColumn(colNumSelected);
@@ -1837,8 +1856,8 @@ public class CSVTableView extends ViewPart {
 		} else {
 			for (int i : uniqueFlowableRowNumbers) {
 				boolean hit = false;
-				for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
-						.getFlowable().getMatchCandidates().values()) {
+				for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+						.getMatchCandidates().values()) {
 					int matchNum = MatchStatus.getNumberBySymbol(symbol);
 					if (matchNum > 0 && matchNum < 5) {
 						hit = true;
@@ -2086,7 +2105,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	
+
 	public static void selectNextContext() {
 		int rowCount = table.getItemCount();
 		if (rowCount == 1) {
