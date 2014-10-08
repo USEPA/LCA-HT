@@ -767,7 +767,6 @@ public class CSVTableView extends ViewPart {
 					matcher = pattern.matcher(toolTip);
 					issueCount = 0;
 					if (matcher.find()) {
-						// System.out.println("We gots issues: " + toolTip);
 						String count = matcher.group(1);
 
 						issueCount = Integer.parseInt(count);
@@ -782,6 +781,10 @@ public class CSVTableView extends ViewPart {
 								clearFilterRowNumbers();
 							}
 						});
+						
+						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						menuItem.setText("Change issue fields to blank");
+						menuItem.addListener(SWT.Selection, new BlankFieldsListener());
 					}
 				}
 
@@ -897,21 +900,23 @@ public class CSVTableView extends ViewPart {
 			if (!lcaDataPropertyProvider.getPropertyName().equals("CAS")) {
 				return;
 			}
-			Map<Integer, Issue> issuesThisCol = new HashMap<Integer,Issue>();
-			for (Issue issue: issueList){
-				if (issue.getColNumber() == (colNumSelected-1)){
-					issuesThisCol.put(issue.getRowNumber(),issue);
+			Map<Integer, Issue> issuesThisCol = new HashMap<Integer, Issue>();
+			for (Issue issue : issueList) {
+				if (issue.getColNumber() == colNumSelected ) {
+					issuesThisCol.put(issue.getRowNumber(), issue);
 				}
 			}
 			for (int i = 0; i < table.getItemCount(); i++) {
 				TableItem item = table.getItem(i);
 				String rowNumString = item.getText(0);
-				int rowNum = Integer.parseInt(rowNumString)-1;
+				int rowNum = Integer.parseInt(rowNumString) - 1;
 				String value = item.getText(colNumSelected);
 				String fixedValue = Flowable.standardizeCAS(value);
 				if (fixedValue != null) {
-					issuesThisCol.get(rowNum).setStatus(Status.RESOLVED);
-					colorCell(issuesThisCol.get(rowNum));
+					if (issuesThisCol.containsKey(rowNum)) {
+						issuesThisCol.get(rowNum).setStatus(Status.RESOLVED);
+						colorCell(issuesThisCol.get(rowNum));
+					}
 
 					// TableProvider tableProvider =
 					// TableKeeper.getTableProvider(tableProviderKey);
@@ -922,7 +927,7 @@ public class CSVTableView extends ViewPart {
 					item.setText(colNumSelected, fixedValue);
 				}
 			}
-			
+
 			// checkOneColumn(colNumSelected);
 		}
 	}
@@ -963,6 +968,8 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
+			Point point = new Point (event.x, event.y);
+			int rowNum = getRowNumSelected(point);
 			// String[] options = new String[2];
 			// options[0] = "Cancel";
 			// options[1] = "Confirm Deletion";
@@ -977,7 +984,7 @@ public class CSVTableView extends ViewPart {
 					if (issue.getColNumber() == colNumSelected) {
 						DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
 						dataRow.set(issue.getColNumber(), "");
-						table.getItem(issue.getRowNumber()).setText(issue.getColNumber(), "");
+						table.getItem(rowNum).setText(issue.getColNumber()-1, "");
 
 						issue.setStatus(Status.RESOLVED);
 						colorCell(issue);
@@ -1072,97 +1079,6 @@ public class CSVTableView extends ViewPart {
 				} else {
 					tableColumn.setAlignment(SWT.RIGHT);
 				}
-
-				// CSVColumnInfo selectedCSVColumnInfo =
-				// tableProvider.getAssignedCSVColumnInfo()[colNumSelected];
-				// CSVColumnInfo selectedCSVColumnInfo =
-				// assignedCSVColumnInfo[colNumSelected];
-				// LCADataPropertyL
-				// CSVColumnInfo menuCSVColumnInfo =
-				// getCSVColumnInfoByHeaderString(menuItemText);
-				// if (menuCSVColumnInfo == null) {
-				// // POSSIBILITY a)
-				// System.out.println("Possibility a");
-				// if (selectedCSVColumnInfo == null) {
-				// return;
-				// }
-				// MenuItem menuItemToReset =
-				// getHeaderMenuItemFromName(selectedCSVColumnInfo.getHeaderString());
-				// if (menuItemToReset != null) {
-				// menuItemToReset.setEnabled(true);
-				// }
-				//
-				// selectedCSVColumnInfo = null;
-				// table.getColumn(colNumSelected).setText(csvColumnDefaultColumnHeader);
-				// table.getColumn(colNumSelected).setToolTipText(csvColumnDefaultTooltip);
-				// tableProvider.getAssignedCSVColumnInfo()[colNumSelected] =
-				// null;
-				// selectedCSVColumnInfo = null;
-				// } else {
-				// // THIS IS A COLUMN ASSIGNMENT
-				// System.out.println("Possibility b, c, or d");
-				// if (menuCSVColumnInfo.isUnique()) {
-				// menuItem.setEnabled(false);
-				// }
-				// if (selectedCSVColumnInfo == null) {
-				// // POSSIBILITY b
-				// System.out.println("Possibility b");
-				// selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo);
-				// // selectedCSVColumnInfo = new
-				// // CSVColumnInfo(menuCSVColumnInfo.getHeaderString(),
-				// // menuCSVColumnInfo.isRequired(),
-				// // menuCSVColumnInfo.isUnique(),
-				// // menuCSVColumnInfo.getCheckLists());
-				// //
-				// selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
-				// // selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
-				// if (menuCSVColumnInfo.isLeftJustified()) {
-				// table.getColumn(colNumSelected).setAlignment(SWT.LEFT);
-				// } else {
-				// table.getColumn(colNumSelected).setAlignment(SWT.RIGHT);
-				// }
-				// tableProvider.getAssignedCSVColumnInfo()[colNumSelected] =
-				// selectedCSVColumnInfo;
-				// table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
-				// table.getColumn(colNumSelected).setToolTipText("assigned");
-				// return;
-				// }
-				// if
-				// (menuCSVColumnInfo.getHeaderString().equals(selectedCSVColumnInfo.getHeaderString()))
-				// {
-				// // POSSIBILITY d
-				// System.out.println("Possibility d");
-				// // NO ACTION REQUIRED, NOTHING CHANGED
-				// return;
-				// }
-				// // ONLY POSSIBILITY LEFT IS c
-				// System.out.println("Possibility c");
-				//
-				// MenuItem menuItemToReset =
-				// getHeaderMenuItemFromName(selectedCSVColumnInfo.getHeaderString());
-				// if (menuItemToReset != null) {
-				// menuItemToReset.setEnabled(true);
-				// }
-				//
-				// selectedCSVColumnInfo = new CSVColumnInfo(menuCSVColumnInfo);
-				// // selectedCSVColumnInfo = new
-				// // CSVColumnInfo(menuCSVColumnInfo.getHeaderString(),
-				// // menuCSVColumnInfo.isRequired(),
-				// menuCSVColumnInfo.isUnique(),
-				// // menuCSVColumnInfo.getCheckLists());
-				// //
-				// selectedCSVColumnInfo.setLeftJustified(menuCSVColumnInfo.isLeftJustified());
-				// // selectedCSVColumnInfo.setIssues(new ArrayList<Issue>());
-				// if (menuCSVColumnInfo.isLeftJustified()) {
-				// table.getColumn(colNumSelected).setAlignment(SWT.LEFT);
-				// } else {
-				// table.getColumn(colNumSelected).setAlignment(SWT.RIGHT);
-				// }
-				// table.getColumn(colNumSelected).setText(menuCSVColumnInfo.getHeaderString());
-				// table.getColumn(colNumSelected).setToolTipText("assigned");
-				// tableProvider.getAssignedCSVColumnInfo()[colNumSelected] =
-				// null;
-				// }
 			}
 		}
 	}
@@ -1574,6 +1490,19 @@ public class CSVTableView extends ViewPart {
 				// issueList.remove(issue);
 				// issue.dispose(); // <- OR JUST LET GARBAGE COLLECTOR GET IT
 			}
+		}
+	}
+	
+	public static void clearIssues() {
+		if (issueList == null) {
+			return;
+		}
+		if (issueList.size() < 1) {
+			return;
+		}
+		issueList = new ArrayList<Issue>();
+		for (TableItem tableItem:table.getItems()){
+			tableItem.setBackground(SWTResourceManager.getColor(null));
 		}
 	}
 

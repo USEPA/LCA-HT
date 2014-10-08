@@ -16,6 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
@@ -381,6 +382,7 @@ public class FlowsWorkflow extends ViewPart {
 	// ------------------- CHECK LISTENER -------------------
 	SelectionListener checkDataListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
+			CSVTableView.clearIssues();
 			textCheckData.setText(" ... checking data ...");
 			// CSVColumnInfo[] csvColumnInfos =
 			// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
