@@ -165,11 +165,11 @@ public class CSVTableView extends ViewPart {
 		tableViewer.addFilter(rowFilter);
 	}
 
-	public static Set<Integer> getFilterRowNumbers() {
+	public static LinkedHashSet<Integer> getFilterRowNumbers() {
 		return rowFilter.getFilterRowNumbers();
 	}
 
-	public static void setFilterRowNumbers(Set<Integer> filterRowNumbers) {
+	public static void setFilterRowNumbers(LinkedHashSet<Integer> filterRowNumbers) {
 		rowFilter.setFilterRowNumbers(filterRowNumbers);
 	}
 
@@ -182,13 +182,13 @@ public class CSVTableView extends ViewPart {
 
 	private static class TableRowFilter extends ViewerFilter {
 		// private List<Integer> filterRowNumbers = new ArrayList<Integer>();
-		private static Set<Integer> filterRowNumbers = new HashSet<Integer>();
+		private static LinkedHashSet<Integer> filterRowNumbers = new LinkedHashSet<Integer>();
 
-		public Set<Integer> getFilterRowNumbers() {
+		public LinkedHashSet<Integer> getFilterRowNumbers() {
 			return filterRowNumbers;
 		}
 
-		public void setFilterRowNumbers(Set<Integer> newFilterRowNumbers) {
+		public void setFilterRowNumbers(LinkedHashSet<Integer> newFilterRowNumbers) {
 			// System.out.println("newFilterRowNumbers.size()" +
 			// newFilterRowNumbers.size());
 			// System.out.println("filterRowNumbers.size()" +
@@ -198,7 +198,7 @@ public class CSVTableView extends ViewPart {
 		}
 
 		public void clearFilterRowNumbers() {
-			filterRowNumbers = new HashSet<Integer>();
+			filterRowNumbers = new LinkedHashSet<Integer>();
 			tableViewer.refresh();
 		}
 
@@ -680,7 +680,7 @@ public class CSVTableView extends ViewPart {
 		// "Loading more data" MESSAGE
 		// JUNO FIXME
 		// tableProvider.resetAssignedCSVColumnInfo();
-		colorRowNumberColumn();
+		// colorRowNumberColumn();
 		table.setSize(table.getParent().getSize());
 		initializeColumnActionsMenu();
 		initializeOtherViews();
@@ -725,10 +725,37 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private static void colorRowNumberColumn() {
+	private static void colorRowNumberColumn(int colNumber) {
 		for (int i = 0; i < table.getItemCount(); i++) {
 			TableItem item = table.getItem(i);
-			item.setBackground(0, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			item.setBackground(colNumber, null);
+		}
+		List<Integer> origRowsToYellow = new ArrayList<Integer>();
+		for (Issue issue : getIssuesByColumn(colNumber)) {
+			if (!issue.getStatus().equals(Status.RESOLVED)) {
+				origRowsToYellow.add(issue.getRowNumber());
+			}
+		}
+		LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+		int curRow = 0;
+
+		if (getFilterRowNumbers() != null) {
+			if (!filterRowNumbers.isEmpty()) {
+				for (Integer integer : filterRowNumbers) {
+					if (origRowsToYellow.contains(integer)) {
+						table.getItem(curRow).setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+					}
+					curRow++;
+				}
+			}
+		}
+		if (curRow == 0){
+			for (TableItem tableItem:table.getItems()){
+				if (origRowsToYellow.contains(curRow)) {
+					tableItem.setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				}
+				curRow++;
+			}
 		}
 	}
 
@@ -781,7 +808,7 @@ public class CSVTableView extends ViewPart {
 								clearFilterRowNumbers();
 							}
 						});
-						
+
 						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 						menuItem.setText("Change issue fields to blank");
 						menuItem.addListener(SWT.Selection, new BlankFieldsListener());
@@ -900,9 +927,10 @@ public class CSVTableView extends ViewPart {
 			if (!lcaDataPropertyProvider.getPropertyName().equals("CAS")) {
 				return;
 			}
+			clearIssues(colNumSelected);
 			Map<Integer, Issue> issuesThisCol = new HashMap<Integer, Issue>();
 			for (Issue issue : issueList) {
-				if (issue.getColNumber() == colNumSelected ) {
+				if (issue.getColNumber() == colNumSelected) {
 					issuesThisCol.put(issue.getRowNumber(), issue);
 				}
 			}
@@ -916,6 +944,7 @@ public class CSVTableView extends ViewPart {
 					if (issuesThisCol.containsKey(rowNum)) {
 						issuesThisCol.get(rowNum).setStatus(Status.RESOLVED);
 						colorCell(issuesThisCol.get(rowNum));
+						colorCell(i, colNumSelected, null);
 					}
 
 					// TableProvider tableProvider =
@@ -928,7 +957,8 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 
-			// checkOneColumn(colNumSelected);
+			checkOneColumn(colNumSelected);
+			colorRowNumberColumn(colNumSelected);
 		}
 	}
 
@@ -968,8 +998,11 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
-			Point point = new Point (event.x, event.y);
+			System.out.println("rowNumSelected = " + rowNumSelected);
+			Point point = new Point(event.x, event.y);
 			int rowNum = getRowNumSelected(point);
+			System.out.println("rowNum = " + rowNum);
+
 			// String[] options = new String[2];
 			// options[0] = "Cancel";
 			// options[1] = "Confirm Deletion";
@@ -983,8 +1016,8 @@ public class CSVTableView extends ViewPart {
 				for (Issue issue : issueList) {
 					if (issue.getColNumber() == colNumSelected) {
 						DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
-						dataRow.set(issue.getColNumber(), "");
-						table.getItem(rowNum).setText(issue.getColNumber()-1, "");
+						dataRow.set(issue.getColNumber() - 1, "");
+						// table.getItem(rowNumSelected).setText(issue.getColNumber() - 1, "");
 
 						issue.setStatus(Status.RESOLVED);
 						colorCell(issue);
@@ -996,13 +1029,27 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
+	// private static void recolorLastColumn(){
+	//
+	// }
+
+	private static List<Issue> getIssuesByColumn(int columnNumber) {
+		List<Issue> results = new ArrayList<Issue>();
+		for (Issue issue : issueList) {
+			if (issue.getColNumber() == columnNumber) {
+				results.add(issue);
+			}
+		}
+		return results;
+	}
+
 	private static class FilterByIssuesListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
 			if (colNumSelected == 0) {
 				return;
 			}
-			Set<Integer> issueSet = new HashSet<Integer>();
+			LinkedHashSet<Integer> issueSet = new LinkedHashSet<Integer>();
 			for (Issue issue : issueList) {
 				if (issue.getColNumber() == colNumSelected) {
 					if (!issue.getStatus().equals(Status.RESOLVED)) {
@@ -1483,16 +1530,12 @@ public class CSVTableView extends ViewPart {
 		if (issueList.size() < 1) {
 			return;
 		}
-		for (Issue issue : issueList) {
-			if (issue.getColNumber() == colNumber) {
-				issue.setStatus(Status.NOISSUES);
-				colorCell(issue.getRowNumber(), colNumber, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-				// issueList.remove(issue);
-				// issue.dispose(); // <- OR JUST LET GARBAGE COLLECTOR GET IT
-			}
+		for (Issue issue : getIssuesByColumn(colNumber)) {
+			issueList.remove(issueList.indexOf(issue));
+			colorCell(issue.getRowNumber(), colNumber, SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		}
 	}
-	
+
 	public static void clearIssues() {
 		if (issueList == null) {
 			return;
@@ -1501,8 +1544,8 @@ public class CSVTableView extends ViewPart {
 			return;
 		}
 		issueList = new ArrayList<Issue>();
-		for (TableItem tableItem:table.getItems()){
-			tableItem.setBackground(SWTResourceManager.getColor(null));
+		for (TableItem tableItem : table.getItems()) {
+			tableItem.setBackground(null);
 		}
 	}
 
@@ -1589,6 +1632,7 @@ public class CSVTableView extends ViewPart {
 		int colCount = TableKeeper.getTableProvider(tableProviderKey).getColumnCount();
 		for (int colIndex = 1; colIndex <= colCount; colIndex++) {
 			totalIssueCount += checkOneColumn(colIndex);
+			colorRowNumberColumn(colIndex);
 		}
 		return totalIssueCount;
 	}
@@ -1655,10 +1699,28 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void colorCell(Issue issue) {
+		LinkedHashSet<Integer> filterRows = getFilterRowNumbers();
 		int colIndex = issue.getColNumber();
-		// int colIndex = dataColIndex + 1;
-		TableItem tableItem = table.getItem(issue.getRowNumber());
-		tableItem.setBackground(colIndex, issue.getStatus().getColor());
+		if ((filterRows == null) || (filterRows.size() == 0)) {
+			TableItem tableItem = table.getItem(issue.getRowNumber());
+			int rowNumberByLabel = Integer.parseInt(tableItem.getText(0));
+			if (rowNumberByLabel == issue.getRowNumber()) {
+				tableItem.setBackground(colIndex, issue.getStatus().getColor());
+			}
+		} else {
+			if (filterRows.contains(issue.getRowNumber())) {
+				int row = 0;
+				Iterator<Integer> iterator = filterRows.iterator();
+				while (iterator.hasNext()) {
+					Integer origRowNum = iterator.next();
+					if (origRowNum == issue.getRowNumber()) {
+						colorCell(row, colIndex, issue.getStatus().getColor());
+						continue;
+					}
+					row++;
+				}
+			}
+		}
 	}
 
 	private static List<String> getColumnValues(int colIndex) {
