@@ -2,14 +2,14 @@ package gov.epa.nrmrl.std.lca.ht.jenaTDB;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 
-public class Issue {
+public class Issue implements Comparable {
 	private QACheck qaCheck;
 	private int rowNumber;
 	private int colNumber;
 	private int characterPosition;
 	private Status status = null;
 
-	public Issue(QACheck qaCheck, int rowNumber, int colNumber, int characterPosition, Status status){
+	public Issue(QACheck qaCheck, int rowNumber, int colNumber, int characterPosition, Status status) {
 		this.qaCheck = qaCheck;
 		this.rowNumber = rowNumber;
 		this.colNumber = colNumber;
@@ -24,7 +24,7 @@ public class Issue {
 	public void setQaCheck(QACheck qaCheck) {
 		this.qaCheck = qaCheck;
 	}
-	
+
 	public int getRowNumber() {
 		return rowNumber;
 	}
@@ -55,5 +55,12 @@ public class Issue {
 
 	public void setCharacterPosition(int characterPosition) {
 		this.characterPosition = characterPosition;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		Issue issue = (Issue) o;
+		int result = rowNumber - issue.getRowNumber();
+		return result;
 	}
 }

@@ -25,6 +25,7 @@ import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -171,13 +172,31 @@ public class CSVTableView extends ViewPart {
 
 	public static void setFilterRowNumbers(LinkedHashSet<Integer> filterRowNumbers) {
 		rowFilter.setFilterRowNumbers(filterRowNumbers);
+		reColor();
 	}
 
 	public static void clearFilterRowNumbers() {
 		rowFilter.clearFilterRowNumbers();
-		colorFlowableRows();
-		colorFlowContextRows();
-		colorFlowPropertyRows();
+		reColor();
+	}
+
+	private static void reColor() {
+		if (preCommit) {
+			colorByIssues();
+		} else {
+			colorFlowableRows();
+			colorFlowContextRows();
+			colorFlowPropertyRows();
+		}
+	}
+
+	private static void colorByIssues() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			if (tableProvider.getLcaDataProperties()[i] != null) {
+				colorRowNumberColumn(i);
+			}
+		}
 	}
 
 	private static class TableRowFilter extends ViewerFilter {
@@ -185,6 +204,9 @@ public class CSVTableView extends ViewPart {
 		private static LinkedHashSet<Integer> filterRowNumbers = new LinkedHashSet<Integer>();
 
 		public LinkedHashSet<Integer> getFilterRowNumbers() {
+			if (filterRowNumbers == null) {
+				filterRowNumbers = new LinkedHashSet<Integer>();
+			}
 			return filterRowNumbers;
 		}
 
@@ -198,7 +220,8 @@ public class CSVTableView extends ViewPart {
 		}
 
 		public void clearFilterRowNumbers() {
-			filterRowNumbers = new LinkedHashSet<Integer>();
+			filterRowNumbers.clear();
+			// filterRowNumbers = new LinkedHashSet<Integer>();
 			tableViewer.refresh();
 		}
 
@@ -739,18 +762,18 @@ public class CSVTableView extends ViewPart {
 		LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
 		int curRow = 0;
 
-		if (getFilterRowNumbers() != null) {
-			if (!filterRowNumbers.isEmpty()) {
-				for (Integer integer : filterRowNumbers) {
-					if (origRowsToYellow.contains(integer)) {
-						table.getItem(curRow).setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-					}
-					curRow++;
+		// if (getFilterRowNumbers() != null) {
+		if (!filterRowNumbers.isEmpty()) {
+			for (Integer integer : filterRowNumbers) {
+				if (origRowsToYellow.contains(integer)) {
+					table.getItem(curRow).setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
+				curRow++;
 			}
+			// }
 		}
-		if (curRow == 0){
-			for (TableItem tableItem:table.getItems()){
+		if (curRow == 0) {
+			for (TableItem tableItem : table.getItems()) {
 				if (origRowsToYellow.contains(curRow)) {
 					tableItem.setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
@@ -790,14 +813,9 @@ public class CSVTableView extends ViewPart {
 					menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
 
 				} else {
-					pattern = Pattern.compile("^Only showing (\\d+) issues");
-					matcher = pattern.matcher(toolTip);
-					issueCount = 0;
-					if (matcher.find()) {
-						String count = matcher.group(1);
-
-						issueCount = Integer.parseInt(count);
-						final int newIssueCount = issueCount;
+					LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+					if (!filterRowNumbers.isEmpty()) {
+						final int newIssueCount = getIssuesByColumn(colNumSelected).size();
 
 						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 						menuItem.setText("Show all rows");
@@ -1013,14 +1031,27 @@ public class CSVTableView extends ViewPart {
 			if (messageDialog.open() == 1) {
 
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-				for (Issue issue : issueList) {
-					if (issue.getColNumber() == colNumSelected) {
-						DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
-						dataRow.set(issue.getColNumber() - 1, "");
-						// table.getItem(rowNumSelected).setText(issue.getColNumber() - 1, "");
 
-						issue.setStatus(Status.RESOLVED);
-						colorCell(issue);
+				for (Issue issue : getIssuesByColumn(colNumSelected)) {
+					issue.setStatus(Status.RESOLVED);
+					DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
+					dataRow.set(issue.getColNumber() - 1, "");
+					LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+					if (filterRowNumbers != null) {
+						if (filterRowNumbers.isEmpty()) {
+							table.getItem(rowNumSelected).setText(issue.getColNumber(), "");
+							colorCell(rowNumSelected, colNumSelected, issue.getStatus().getColor());
+
+						} else {
+							Iterator<Integer> iterator = filterRowNumbers.iterator();
+							for (int i = 0; i < filterRowNumbers.size(); i++) {
+								if (iterator.next() == issue.getRowNumber()) {
+									table.getItem(i).setText(issue.getColNumber(), "");
+									colorCell(rowNumSelected, colNumSelected, issue.getStatus().getColor());
+
+								}
+							}
+						}
 					}
 				}
 				TableColumn tableColumn = table.getColumn(colNumSelected);
@@ -1033,6 +1064,7 @@ public class CSVTableView extends ViewPart {
 	//
 	// }
 
+	@SuppressWarnings("unchecked")
 	private static List<Issue> getIssuesByColumn(int columnNumber) {
 		List<Issue> results = new ArrayList<Issue>();
 		for (Issue issue : issueList) {
@@ -1040,6 +1072,8 @@ public class CSVTableView extends ViewPart {
 				results.add(issue);
 			}
 		}
+		Collections.sort(results);
+		// System.out.println("results = "+results);
 		return results;
 	}
 
