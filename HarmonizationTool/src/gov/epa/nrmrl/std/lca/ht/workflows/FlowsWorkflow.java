@@ -567,7 +567,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowContexts.setText("Show All Rows");
 				btnMatchFlowProperties.setEnabled(false);
 				btnMatchFlowables.setEnabled(false);
-				CSVTableView.setFilterRowNumbers(uniqueFlowContextRowNumbers);
+				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowContextRowNumbers);
 				CSVTableView.colorFlowContextRows();
 			} else {
 				btnMatchFlowContexts.setText(matchContextsString);
@@ -606,7 +606,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowProperties.setText("Show All Rows");
 				btnMatchFlowContexts.setEnabled(false);
 				btnMatchFlowables.setEnabled(false);
-				CSVTableView.setFilterRowNumbers(uniqueFlowPropertyRowNumbers);
+				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowPropertyRowNumbers);
 				CSVTableView.colorFlowPropertyRows();
 
 			} else {
@@ -644,7 +644,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setText("Show All Rows");
 				btnMatchFlowContexts.setEnabled(false);
 				btnMatchFlowProperties.setEnabled(false);
-				CSVTableView.setFilterRowNumbers(uniqueFlowableRowNumbers);
+				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowableRowNumbers);
 				CSVTableView.colorFlowableRows();
 
 			} else {

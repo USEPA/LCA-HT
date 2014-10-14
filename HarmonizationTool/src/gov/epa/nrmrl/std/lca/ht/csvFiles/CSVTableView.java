@@ -170,8 +170,12 @@ public class CSVTableView extends ViewPart {
 		return rowFilter.getFilterRowNumbers();
 	}
 
-	public static void setFilterRowNumbers(LinkedHashSet<Integer> filterRowNumbers) {
-		rowFilter.setFilterRowNumbers(filterRowNumbers);
+	public static void setFilterRowNumbersWCopy(LinkedHashSet<Integer> filterRowNumbers) {
+		LinkedHashSet<Integer> copyOfUnique = new LinkedHashSet<Integer>();
+		for (Integer rowNumber:filterRowNumbers){
+			copyOfUnique.add(rowNumber);
+		}
+		rowFilter.setFilterRowNumbers(copyOfUnique);
 		reColor();
 	}
 
@@ -1093,7 +1097,7 @@ public class CSVTableView extends ViewPart {
 			}
 			TableColumn tableColumn = table.getColumn(colNumSelected);
 			tableColumn.setToolTipText("Only showing " + issueSet.size() + " issues");
-			setFilterRowNumbers(issueSet);
+			setFilterRowNumbersWCopy(issueSet);
 		}
 	}
 
@@ -2125,7 +2129,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowableRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchFlowableTableView.update(i);
+				MatchFlowableTableView.update(newRowNumber);
 				return;
 			}
 		}
@@ -2146,7 +2150,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowContextRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchContexts.update(i);
+				MatchContexts.update(newRowNumber);
 				return;
 			}
 		}
@@ -2167,7 +2171,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowPropertyRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchProperties.update(i);
+				MatchProperties.update(newRowNumber);
 				return;
 			}
 		}

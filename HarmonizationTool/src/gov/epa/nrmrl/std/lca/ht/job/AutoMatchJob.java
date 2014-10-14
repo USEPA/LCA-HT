@@ -137,8 +137,7 @@ public class AutoMatchJob extends Job {
 		// TableProvider flowContextTableProvider = new TableProvider();
 		// TableProvider flowPropertyTableProvider = new TableProvider();
 
-		// ========================== BEGIN ROW BY ROW
-		// ==========================
+		// ========================== BEGIN ROW BY ROW ==========================
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
 				continue;
@@ -217,8 +216,8 @@ public class AutoMatchJob extends Job {
 				if (flowContext == null) {
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
-//					DataRow flowContextDataRow = new DataRow();
-//					flowContextDataRow.add(flowContextConcatinated);
+					// DataRow flowContextDataRow = new DataRow();
+					// flowContextDataRow.add(flowContextConcatinated);
 					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {

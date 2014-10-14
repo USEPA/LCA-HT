@@ -510,19 +510,6 @@ public class Flowable {
 		return results;
 	}
 
-	// public static String compareFlowables(Resource queryFlowableResource, Resource referenceFlowableResource) {
-	// Flowable queryFlowable = new Flowable(queryFlowableResource); // TEMP
-	// queryFlowable.syncDataFromTDB();
-	// Flowable referenceFlowable = new Flowable(referenceFlowableResource);
-	// referenceFlowable.syncDataFromTDB();
-	// return compareFlowables(queryFlowable, referenceFlowable);
-	// }
-
-	// public List<Flowable> findMatchingFlowables(Flowable flowable) {
-	// List<Flowable> hits = new ArrayList<Flowable>();
-	// return hits;
-	// }
-
 	public static String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
 		// INFO TO SHARE FOR JUST NAME AND CAS:
 		// ++++.+ (BOTH MATCH, BEST)
@@ -594,60 +581,6 @@ public class Flowable {
 		}
 		return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
 	}
-
-	// CSVColumnInfo(String headerString, boolean isRequired, boolean isUnique,
-	// List<QACheck>
-	// checkLists)
-	// FIXME - THIS QUICK HACK CREATES THESE NAMES ONCE, A OBJECT WITH A FACTORY AND ACCESSOR SHOULD BE USED
-
-	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
-	// CSVColumnInfo[] results = new CSVColumnInfo[5];
-	//
-	// results[0] = new CSVColumnInfo(flowableNameString);
-	// results[0].setRequired(true);
-	// results[0].setUnique(true);
-	// results[0].setCheckLists(getFlowablesNameCheckList());
-	// results[0].setRDFClass(rdfClass);
-	// results[0].setTdbProperty(RDFS.label);
-	// results[0].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// results[1] = new CSVColumnInfo(flowableSynonymString);
-	// results[1].setRequired(false);
-	// results[1].setUnique(false);
-	// results[1].setCheckLists(getFlowablesNameCheckList());
-	// results[1].setRDFClass(rdfClass);
-	// results[1].setTdbProperty(SKOS.altLabel);
-	// results[1].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// results[2] = new CSVColumnInfo(casString);
-	// results[2].setRequired(false);
-	// results[2].setUnique(true);
-	// results[2].setCheckLists(getCASCheckList());
-	// results[2].setLeftJustified(false);
-	// results[2].setRDFClass(rdfClass);
-	// results[2].setTdbProperty(ECO.casNumber);
-	// results[2].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// results[3] = new CSVColumnInfo(chemicalFormulaString);
-	// results[3].setRequired(false);
-	// results[3].setUnique(false);
-	// results[3].setCheckLists(getFormulaCheckList());
-	// results[3].setLeftJustified(false);
-	// results[3].setRDFClass(rdfClass);
-	// results[3].setTdbProperty(ECO.chemicalFormula);
-	// results[3].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// results[4] = new CSVColumnInfo(smilesString);
-	// results[4].setRequired(false);
-	// results[4].setUnique(false);
-	// results[4].setCheckLists(getSmilesCheckList());
-	// results[4].setLeftJustified(false);
-	// results[4].setRDFClass(rdfClass);
-	// results[4].setTdbProperty(FedLCA.hasSmilesString);
-	// results[4].setRdfDatatype(XSDDatatype.XSDstring);
-	//
-	// return results;
-	// }
 
 	private static List<QACheck> getFormulaCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
@@ -782,92 +715,6 @@ public class Flowable {
 		return false;
 	}
 
-	//
-	// public void setName(String name) {
-	// this.name = name;
-	// ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, name);
-	// }
-	//
-	// public List<String> getSynonyms() {
-	// return synonyms;
-	// }
-	//
-	// public void setSynonyms(List<String> synonyms) {
-	// ActiveTDB.tsRemoveAllObjects(tdbResource, SKOS.altLabel);
-	// this.synonyms = synonyms;
-	// for (String synonym : synonyms) {
-	// ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
-	// }
-	// }
-	//
-	// public void addSynonym(String synonym) {
-	// if (synonyms == null) {
-	// synonyms = new ArrayList<String>();
-	// }
-	// synonyms.add(synonym);
-	// ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, synonym);
-	// }
-	//
-	// public void removeSynonym(String synonym) {
-	// this.synonyms.remove(synonym);
-	// Literal literalToRemove = ActiveTDB.tsCreateTypedLiteral(synonym);
-	// ActiveTDB.tsRemoveStatement(tdbResource, SKOS.altLabel, literalToRemove);
-	// }
-	//
-	// public String getCas() {
-	// return cas;
-	// }
-	//
-	// public void setCas(String cas) {
-	// this.cas = cas;
-	// ActiveTDB.tsReplaceLiteral(tdbResource, ECO.casNumber, cas);
-	// }
-
-	// public boolean isEmission() {
-	// return isEmission;
-	// }
-	//
-	// public void setEmission(boolean isEmission) {
-	// this.isEmission = isEmission;
-	// if (isEmission) {
-	// ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.EmissionCompartment);
-	// } else {
-	// ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.EmissionCompartment);
-	// }
-	// }
-
-	// public boolean isResource() {
-	// return isResource;
-	// }
-	//
-	// public void setResource(boolean isResource) {
-	// this.isResource = isResource;
-	// if (isResource) {
-	// ActiveTDB.addLiteral(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-	// } else {
-	// ActiveTDB.removeStatement(tdbResource, RDF.type, FASC.ResourceConsumptionCompartment);
-	// }
-	// }
-
-	// public String getFormula() {
-	// return formula;
-	// }
-	//
-	// public void setFormula(String formula) {
-	// this.formula = formula;
-	// ActiveTDB.tsReplaceLiteral(tdbResource, ECO.chemicalFormula, formula);
-	// }
-	//
-	// public String getSmiles() {
-	// return smiles;
-	// }
-	//
-	// public void setSmiles(String smiles) {
-	// this.smiles = smiles;
-	// ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.hasSmilesString, smiles);
-	//
-	// }
-
 	public Resource getTdbResource() {
 		return tdbResource;
 	}
@@ -883,45 +730,7 @@ public class Flowable {
 	public void setLcaDataValues(List<LCADataValue> lcaDataValues) {
 		this.lcaDataValues = lcaDataValues;
 	}
-
-	// private static Pattern acceptableCASFormat =
-	// Pattern.compile("^0*(\\d{2,})-(\\d\\d)-(\\d)$|^0*(\\d{5,})$|^$");
-
-	// public List<QACheck> getQaChecks() {
-	// List<QACheck> allChecks = new ArrayList<QACheck>();
-	//
-	// Pattern p1 = acceptableCASFormat;
-	// Issue i1 = new Issue("Non-standard CAS format",
-	// "CAS numbers may only have all digits, or digits with \"-\" signs 4th and 2nd from the end .",
-	// "Parse digits.  To parse the numeric components, use the auto-clean function.",
-	// true);
-	// allChecks.add(new QACheck(i1.getDescription(), p1, true, i1));
-	// return allChecks;
-	// }
-
-	// public List<String> getHeadersList() {
-	// List<String> headerList = new ArrayList<String>();
-	// headerList.add("Flowable Name");
-	// headerList.add("Flowable AltName");
-	// headerList.add("CAS");
-	// headerList.add("Chemical formula");
-	// headerList.add("SMILES");
-	// return headerList;
-	// }
-
-	// public static Issue fullyCheckCAS(String cas){
-	// QACheck casQACheck = makeCASQACheck();
-	// Issue issue = new Issue();
-	// return issue;
-	// }
-	//
-	// private QACheck makeCASQACheck(){
-	// QACheck casQACheck = new QACheck("Full CAS check",
-	// "Includes format and checksum", null,
-	// null, null, false);
-	// casQACheck.setHandlerMethod(fullyCheckCAS(new Issue()));
-	// return casQACheck;
-	// }
+	
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
@@ -930,25 +739,6 @@ public class Flowable {
 		return dataPropertyMap;
 	}
 
-	// public static String getFlowableNameString() {
-	// return flowableNameString;
-	// }
-	//
-	// public static String getFlowableSynonymString() {
-	// return flowableSynonymString;
-	// }
-	//
-	// public static String getCASString() {
-	// return casString;
-	// }
-	//
-	// public static String getChemicalformulastring() {
-	// return chemicalFormulaString;
-	// }
-	//
-	// public static String getSMILESString() {
-	// return smilesString;
-	// }
 	public LinkedHashMap<Resource, String> getMatchCandidates() {
 		return matchCandidates;
 	}
