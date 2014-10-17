@@ -15,6 +15,7 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
@@ -222,6 +223,7 @@ public class FlowContext {
 
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
+		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
 	}
 
 }

@@ -371,7 +371,7 @@ public class MatchFlowableTableView extends ViewPart {
 				return;
 			}
 			clickedRow = table.indexOf(item);
-			if (clickedRow < 0) {
+			if (clickedRow < 1) {
 				return;
 			}
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
