@@ -172,7 +172,7 @@ public class CSVTableView extends ViewPart {
 
 	public static void setFilterRowNumbersWCopy(LinkedHashSet<Integer> filterRowNumbers) {
 		LinkedHashSet<Integer> copyOfUnique = new LinkedHashSet<Integer>();
-		for (Integer rowNumber:filterRowNumbers){
+		for (Integer rowNumber : filterRowNumbers) {
 			copyOfUnique.add(rowNumber);
 		}
 		rowFilter.setFilterRowNumbers(copyOfUnique);
@@ -254,8 +254,7 @@ public class CSVTableView extends ViewPart {
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			// System.out.println("cellSelectionMouseHoverListener event = " +
-			// event);
+			System.out.println("cellSelectionMouseHoverListener event = " + event);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int hoverRow = 0;
@@ -281,14 +280,21 @@ public class CSVTableView extends ViewPart {
 					return;
 				}
 				List<Issue> issuesOfThisCell = new ArrayList<Issue>();
-				// for (Issue issue : lcaDataPropertyProvider.getIssues()) {
-				for (Issue issue : issueList) {
-					if (issue.getRowNumber() == hoverRow && issue.getColNumber() == hoverCol) {
+
+				for (Issue issue : getIssuesByColumn(hoverCol)) {
+					if (issue.getRowNumber() == hoverRow) {
+						issuesOfThisCell.add(issue);
 					}
 				}
 				if (issuesOfThisCell.size() > 0) {
 					setPopup(issuesOfThisCell);
-					popup.setLocation(event.x + 40, event.y + 10);
+					// int thing = table.getTopIndex();
+					popup.setBounds(event.x + 40, event.y + 10 - (table.getTopIndex() * 15), 300,
+							60 * issuesOfThisCell.size());
+
+					// popup.setLocation(event.x + 40, event.y + 10);
+					// popup.setBounds(90, 90, 300, 60);
+					popup.moveAbove(table);
 					popup.setVisible(true);
 					System.out.println("popup should be visible now!");
 
@@ -414,7 +420,6 @@ public class CSVTableView extends ViewPart {
 			}
 			clickedRow = table.indexOf(item);
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// int dataClickedCol = clickedCol - 1;
 			if (clickedCol < 0) {
 				return;
 			}
@@ -423,20 +428,17 @@ public class CSVTableView extends ViewPart {
 			colNumSelected = clickedCol;
 			if (colNumSelected == 0) {
 				rowMenu.setVisible(true);
-				// item.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 			} else {
-				// CSVColumnInfo csvColumnInfo =
-				// tableProvider.getAssignedCSVColumnInfo()[clickedCol];
-				// TableProvider tableProvider =
-				// TableKeeper.getTableProvider(tableProviderKey);
-				// CSVColumnInfo csvColumnInfo =
-				// tableProvider.getAssignedCSVColumnInfo()[clickedCol];
-				// LCADataPropertyProvider lcaDataPropertyProvider =
-				// tableProvider.getLCADataPropertyProvider(clickedCol);
 				Issue issueOfThisCell = null;
-				for (Issue issue : issueList) {
-					if (issue.getRowNumber() == clickedCol) {
+				boolean firstResolvable = false;
+				for (Issue issue : getIssuesByColumn(clickedCol)) {
+					if (issue.getRowNumber() == rowNumSelected) {
 						issueOfThisCell = issue;
+						if (issue.getQaCheck().getReplacement() != null) {
+							firstResolvable = true;
+						} else {
+							firstResolvable = false;
+						}
 						break;
 					}
 				}
@@ -525,9 +527,10 @@ public class CSVTableView extends ViewPart {
 
 	private static void initializePopup(Composite composite) {
 		// popup.addListener(SWT.Modify, popupResizeListener);
-		popup = new Text(composite, SWT.BORDER | SWT.WRAP);
+		popup = new Text(composite, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
 		popup.setEditable(false);
 		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		popup.moveAbove(composite);
 		popup.setText("");
 		popup.setVisible(false);
 		popup.setLocation(90, 90);
@@ -619,16 +622,24 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private static void initializeFixRowMenu() {
+	private static void initializeFixRowMenu(boolean auto) {
+		if (fixCellMenu != null) {
+			fixCellMenu.dispose();
+		}
 		fixCellMenu = new Menu(table);
 
 		MenuItem menuItem;
 
 		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
-		menuItem.addListener(SWT.Selection, new FixCellMenuSelectionListener());
-		menuItem.setText("Auto-resolve this ");
+		if (auto) {
+			menuItem.addListener(SWT.Selection, new FixCellMenuSelectionListener());
+			menuItem.setText("Auto-resolve issue");
+		} else {
+			menuItem.addListener(SWT.Selection, new EditCellMenuSelectionListener());
+			menuItem.setText("Edit this cell");
+		}
 	}
-
+	
 	private static class FixCellMenuSelectionListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
@@ -636,6 +647,19 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			fixCurrentlySelectedCell();
+		}
+	}
+
+	private static class EditCellMenuSelectionListener implements Listener {
+		@Override
+		public void handleEvent(Event event) {
+			if (!(event.widget instanceof MenuItem)) {
+				return;
+			}
+			TableColumn tableColumn = table.getColumn(colNumSelected);
+			TableItem tableItem = table.getItem(rowNumSelected);
+//			tableItem.get
+			
 		}
 	}
 
@@ -655,7 +679,7 @@ public class CSVTableView extends ViewPart {
 		}
 		TableItem tableItem = table.getItem(rowNumSelected);
 		String startingText = tableItem.getText(colNumSelected);
-		for (Issue issue : issueList) {
+		for (Issue issue : getIssuesByColumn(colNumSelected)) {
 			if ((issue.getRowNumber() == rowNumSelected) && (!issue.getStatus().equals(Status.RESOLVED))) {
 				QACheck qaCheck = issue.getQaCheck();
 				if (qaCheck.getReplacement() != null) {
@@ -991,11 +1015,9 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			int resolvedCount = 0;
-			for (Issue issue : issueList) {
-				if (issue.getColNumber() == colNumSelected) {
-					if (fixOneIssue(issue)) {
-						resolvedCount++;
-					}
+			for (Issue issue : getIssuesByColumn(colNumSelected)) {
+				if (fixOneIssue(issue)) {
+					resolvedCount++;
 				}
 			}
 			TableColumn tableColumn = table.getColumn(colNumSelected);
@@ -1355,18 +1377,35 @@ public class CSVTableView extends ViewPart {
 		if (issuesOfThisCell.size() == 0) {
 			return; // THIS SHOULDN'T HAPPEN
 		}
+		String popupText = "";
+
 		if (issuesOfThisCell.size() == 1) {
-			String popupText = "- " + issuesOfThisCell.get(0).getQaCheck().getDescription();
-			popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
+			if (issuesOfThisCell.get(0).getStatus().equals(Status.RESOLVED)) {
+				popupText = "- RESOLVED: " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+
+			} else {
+				popupText = "- " + issuesOfThisCell.get(0).getQaCheck().getDescription();
+			}
+			popupText += System.lineSeparator() + "       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
 			popup.setText(popupText);
 			return;
 		}
-		String popupText = "0 - " + issuesOfThisCell.get(0).getQaCheck().getDescription();
-		popupText += "\n       - " + issuesOfThisCell.get(0).getQaCheck().getExplanation();
-		for (int i = 1; i < issuesOfThisCell.size(); i++) {
-
-			popupText += "\n" + i + " - " + issuesOfThisCell.get(i).getQaCheck().getDescription();
-			popupText += "\n       - " + issuesOfThisCell.get(i).getQaCheck().getExplanation();
+		int count = 1;
+		for (Issue issue : issuesOfThisCell) {
+			if (!issue.getStatus().equals(Status.RESOLVED)) {
+				popupText = count + " - " + issue.getQaCheck().getDescription();
+				popupText += System.lineSeparator() + "       - " + issue.getQaCheck().getExplanation()
+						+ System.lineSeparator();
+				count++;
+			}
+		}
+		for (Issue issue : issuesOfThisCell) {
+			if (issue.getStatus().equals(Status.RESOLVED)) {
+				popupText = count + " - RESOLVED: " + issue.getQaCheck().getDescription();
+				popupText += System.lineSeparator() + "       - " + issue.getQaCheck().getExplanation()
+						+ System.lineSeparator();
+				count++;
+			}
 		}
 		popup.setText(popupText);
 	}
@@ -1388,7 +1427,7 @@ public class CSVTableView extends ViewPart {
 	public static void initialize() {
 		initializeTable();
 		initializeRowMenu(1);
-		initializeFixRowMenu();
+		initializeFixRowMenu(true);
 		// THIS IS SPECIFIC TO FlowsWorkflow
 		// TODO: MAKE THIS VARY WITH THE WORK FLOW
 		// initializeHeaderMenu();
@@ -1742,7 +1781,7 @@ public class CSVTableView extends ViewPart {
 		if ((filterRows == null) || (filterRows.size() == 0)) {
 			TableItem tableItem = table.getItem(issue.getRowNumber());
 			int rowNumberByLabel = Integer.parseInt(tableItem.getText(0));
-			if (rowNumberByLabel == issue.getRowNumber()) {
+			if (rowNumberByLabel - 1 == issue.getRowNumber()) {
 				tableItem.setBackground(colIndex, issue.getStatus().getColor());
 			}
 		} else {

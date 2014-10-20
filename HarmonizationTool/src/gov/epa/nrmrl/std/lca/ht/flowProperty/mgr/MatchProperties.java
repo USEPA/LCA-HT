@@ -227,6 +227,10 @@ public class MatchProperties extends ViewPart {
 		mass.nodeName = "Mass";
 		mass.uri = FedLCA.Mass;
 
+		TreeNode length = new TreeNode(physicalIndividual);
+		length.nodeName = "Length";
+		length.uri = FedLCA.Length;
+		
 		TreeNode area = new TreeNode(physicalIndividual);
 		area.nodeName = "Area";
 		area.uri = FedLCA.Area;
@@ -250,26 +254,26 @@ public class MatchProperties extends ViewPart {
 		// -------- PHYSICAL COMBINED
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
 		physicalCombined.nodeName = "Physical combined";
-
-		TreeNode volumeTime = new TreeNode(physicalCombined);
-		volumeTime.nodeName = "Volume*time";
-		volumeTime.uri = FedLCA.VolumeTime;
-
+		
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FedLCA.MassTime;
 
-		TreeNode volumeLength = new TreeNode(physicalCombined);
-		volumeLength.nodeName = "Volume*Length";
-		volumeLength.uri = FedLCA.VolumeLength;
+		TreeNode lengthTime = new TreeNode(physicalCombined);
+		lengthTime.nodeName = "Length*time";
+		lengthTime.uri = FedLCA.LengthTime;
 
 		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
 		areaTime.uri = FedLCA.AreaTime;
+		
+		TreeNode volumeTime = new TreeNode(physicalCombined);
+		volumeTime.nodeName = "Volume*time";
+		volumeTime.uri = FedLCA.VolumeTime;
 
-		TreeNode lengthTime = new TreeNode(physicalCombined);
-		lengthTime.nodeName = "Length*time";
-		lengthTime.uri = FedLCA.LengthTime;
+		TreeNode volumeLength = new TreeNode(physicalCombined);
+		volumeLength.nodeName = "Volume*Length";
+		volumeLength.uri = FedLCA.VolumeLength;
 
 		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
 		energyPerMassTime.nodeName = "Energy/mass*time";
@@ -279,6 +283,51 @@ public class MatchProperties extends ViewPart {
 		energyPerAreaTime.nodeName = "Energy/area*time";
 		energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
 
+		// -------- LAND TRANSFORMATION
+		TreeNode landTransformation = new TreeNode(masterPropertyTree);
+		landTransformation.nodeName = "Land transformation";
+		
+		TreeNode bioticProductionOcc = new TreeNode(landTransformation);
+		bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
+		bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
+
+		TreeNode bioticProductionTransf = new TreeNode(landTransformation);
+		bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
+		bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
+		
+		TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
+		erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
+		erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
+
+		TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
+		erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
+		erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
+
+		TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
+		groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
+		groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
+
+		TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
+		groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
+		groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
+
+		TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
+		mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
+		mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
+
+		TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
+		mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
+		mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
+
+		TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
+		physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
+		physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
+
+		TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
+		physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
+		physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
+		
+		
 		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
 		other.nodeName = "Other";
@@ -314,6 +363,11 @@ public class MatchProperties extends ViewPart {
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
 		normalVolume.uri = FedLCA.NormalVolume;
+		
+		TreeNode valueUS2000BulkPrices = new TreeNode(other);
+		valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
+		valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
+		
 		return masterPropertyTree;
 	}
 

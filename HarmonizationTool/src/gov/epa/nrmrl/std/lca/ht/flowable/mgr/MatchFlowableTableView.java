@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -590,6 +591,9 @@ public class MatchFlowableTableView extends ViewPart {
 			Util.findView(CSVTableView.ID);
 			if (gotMatch) {
 				CSVTableView.colorFlowableRows();
+				FlowsWorkflow.updateFlowableCount();
+				// FIXME 
+				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
 			}
 			CSVTableView.selectNextFlowable();
 		}

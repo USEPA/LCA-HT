@@ -72,7 +72,7 @@ public class QACheck {
 		qaCheckPack.add(new QACheck(d4, e4, s4, p4, r4, false));
 
 		String d5 = "Non-ASCII character";
-		String e5 = "A character outside the standard ASCII printable range was detected.  The document encoding may be incorrect, in which case these characters may not be handled correctly.";
+		String e5 = "A character outside the standard ASCII printable range was detected.  This can not be auto-resolved.";
 		String s5 = "Run the character-encoding tool";
 		Pattern p5 = Pattern.compile("[^ -~]");
 		String r5 = null;

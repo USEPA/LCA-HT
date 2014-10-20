@@ -22,7 +22,6 @@ public class FedLCA {
 //	private static Model m_model = ModelFactory.createDefaultModel();
 	private static Model m_model = ActiveTDB.tdbModel;
 
-
 	/**
 	 * <p>
 	 * The namespace of the vocabulary as a string
@@ -428,5 +427,17 @@ public class FedLCA {
 	public static final Resource VehicleTransport = m_model.createResource(NS + "VehicleTransport");
 	// Energy
 	public static final Resource Energy = m_model.createResource(NS + "Energy");
+	
+	public static Resource BioticProductionOcc = m_model.createResource(NS + "BioticProductionOcc");;
+	public static Resource BioticProductionTransf = m_model.createResource(NS + "BioticProductionTransf");;
+	public static Resource ErosionResistanceOcc = m_model.createResource(NS + "ErosionResistanceOcc");;
+	public static Resource ErosionResistanceTransf = m_model.createResource(NS + "ErosionResistanceTransf");;
+	public static Resource GroundwaterReplenishmentOcc = m_model.createResource(NS + "GroundwaterReplenishmentOcc");;
+	public static Resource GroundwaterReplenishmentTransf = m_model.createResource(NS + "GroundwaterReplenishmentTransf");;
+	public static Resource MechanicalFiltrationOcc = m_model.createResource(NS + "MechanicalFiltrationOcc");;
+	public static Resource MechanicalFiltrationTransf = m_model.createResource(NS + "MechanicalFiltrationTransf");;
+	public static Resource PhysicochemicalFiltrationOcc = m_model.createResource(NS + "PhysicochemicalFiltrationOcc");;
+	public static Resource PhysicochemicalFiltrationTransf = m_model.createResource(NS + "PhysicochemicalFiltrationTransf");
 
+	public static Resource ValueUS2000BulkPrices = m_model.createResource(NS + "ValueUS2000BulkPrices");
 }

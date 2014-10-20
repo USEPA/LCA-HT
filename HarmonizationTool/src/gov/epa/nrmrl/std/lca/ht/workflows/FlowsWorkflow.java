@@ -840,4 +840,9 @@ public class FlowsWorkflow extends ViewPart {
 				+ " found.");
 		CSVTableView.colorFlowableRows();
 	}
+
+	public static void updateFlowableCount() {
+		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
+				+ " found.");
+	}
 }

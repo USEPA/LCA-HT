@@ -242,18 +242,13 @@ public class MatchContexts extends ViewPart {
 		// confirmUri(LCAHT.release);
 
 		TreeNode air = new TreeNode(release);
-		air.nodeName = "air";
+		air.nodeName = "air (unspecified)";
 		air.uri = FedLCA.airUnspecified;
 		// confirmUri(FedLCA.release);
 
 		TreeNode airLowPop = new TreeNode(air);
 		airLowPop.nodeName = "low population density";
 		airLowPop.uri = FedLCA.airLow_population_density;
-		// confirmUri(FedLCA.release);
-
-		TreeNode airUnspec = new TreeNode(air);
-		airUnspec.nodeName = "unspecified";
-		airUnspec.uri = FedLCA.airUnspecified;
 		// confirmUri(FedLCA.release);
 
 		TreeNode airHighPop = new TreeNode(air);
@@ -272,7 +267,7 @@ public class MatchContexts extends ViewPart {
 		// confirmUri(FedLCA.release);
 
 		TreeNode water = new TreeNode(release);
-		water.nodeName = "water";
+		water.nodeName = "water (unspecified)";
 		water.uri = FedLCA.waterUnspecified;
 		// confirmUri(FedLCA.release);
 
@@ -326,13 +321,8 @@ public class MatchContexts extends ViewPart {
 		waterSurface.uri = FedLCA.waterSurface;
 		// confirmUri(FedLCA.release);
 
-		TreeNode waterUnspec = new TreeNode(water);
-		waterUnspec.nodeName = "unspecified";
-		waterUnspec.uri = FedLCA.waterUnspecified;
-		// confirmUri(FedLCA.release);
-
 		TreeNode soil = new TreeNode(release);
-		soil.nodeName = "soil";
+		soil.nodeName = "soil (unspecified)";
 		soil.uri = FedLCA.soilUnspecified;
 		// confirmUri(FedLCA.release);
 
@@ -351,14 +341,9 @@ public class MatchContexts extends ViewPart {
 		soilIndustrial.uri = FedLCA.soilIndustrial;
 		// confirmUri(FedLCA.release);
 
-		TreeNode soilUnspec = new TreeNode(soil);
-		soilUnspec.nodeName = "unspecified";
-		soilUnspec.uri = FedLCA.soilUnspecified;
-		// confirmUri(FedLCA.release);
-
 		TreeNode resource = new TreeNode(masterCompartmentTree);
-		resource.nodeName = "Resource";
-		resource.uri = FedLCA.resource;
+		resource.nodeName = "Resource (unspecified)";
+		resource.uri = FedLCA.resourceUnspecified;
 		// confirmUri(FedLCA.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);
@@ -386,12 +371,6 @@ public class MatchContexts extends ViewPart {
 		resourceInWater.uri = FedLCA.resourceIn_water;
 		// confirmUri(FedLCA.release);
 
-		TreeNode resourceUnspec = new TreeNode(resource);
-		resourceUnspec.nodeName = "unspecified";
-		resourceUnspec.uri = FedLCA.resourceUnspecified;
-		// confirmUri(FedLCA.resourceUnspecified);
-
-		// confirmModelContanisCompartments(masterCompartmentTree);
 		return masterCompartmentTree;
 	}
 
