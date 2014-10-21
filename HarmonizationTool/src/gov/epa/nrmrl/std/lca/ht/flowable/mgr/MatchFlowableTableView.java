@@ -5,7 +5,10 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.LinkedHashMap;
@@ -35,7 +38,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
@@ -56,6 +62,7 @@ public class MatchFlowableTableView extends ViewPart {
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
+	private static int csvTableRowNum = -1;
 
 	private static TextCellEditor editor;
 
@@ -91,8 +98,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 		Composite innterComposite = new Composite(outerComposite, SWT.NONE);
 		innterComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-		GridData gd_composite_2 = new GridData(SWT.LEFT, SWT.CENTER, true,
-				false, 1, 1);
+		GridData gd_composite_2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_composite_2.heightHint = 20;
 		innterComposite.setLayoutData(gd_composite_2);
 		// innterComposite.setBounds(0, 0, 64, 64);
@@ -126,26 +132,21 @@ public class MatchFlowableTableView extends ViewPart {
 
 	public static void update(int rowNumber) {
 		initialize();
-		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView
-				.getTableProviderKey());
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
+		csvTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
-		// Resource curDataSet =
-		// tableProvider.getDataSourceProvider().getTdbResource();
-		// List<Resource> queryPlusCandidates = new ArrayList<Resource>();
-		// Flowable qFlowable = dataRow.getFlowable();
 		if (flowableToMatch == null) {
 			return;
 		}
-		flowableToMatch.clearSyncDataFromTDB();
+
+		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY?  GOOD? TODO: CHECK THIS
 		table.clearAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
 		setResultRowData(0, flowableToMatch);
-		table.getItem(0).setBackground(
-				SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch
-				.getMatchCandidates();
+		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		if (matchCandidateResources == null) {
 			return;
 		}
@@ -230,8 +231,7 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(6));
 
-		tableViewerColumn = createTableViewerColumn(
-				Flowable.flowableNameString, 300, 7);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableNameString, 300, 7);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(7));
 
@@ -239,8 +239,7 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.getColumn().setAlignment(SWT.RIGHT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(8));
 
-		tableViewerColumn = createTableViewerColumn(
-				Flowable.flowableSynonymString, 300, 9);
+		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, 300, 9);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(9));
 
@@ -335,6 +334,16 @@ public class MatchFlowableTableView extends ViewPart {
 		for (int colNum = 0; colNum < 6; colNum++) {
 			tableItem.setText(colNum, matchSummary[colNum].toString());
 		}
+		Util.findView(CSVTableView.ID);
+		CSVTableView.colorOneFlowableRow(csvTableRowNum);
+	}
+
+	public static int getCsvTableRowNum() {
+		return csvTableRowNum;
+	}
+
+	public static void setCsvTableRowNum(int csvTableRowNum) {
+		MatchFlowableTableView.csvTableRowNum = csvTableRowNum;
 	}
 
 	private static MouseListener tableMouseListener = new MouseListener() {
@@ -375,6 +384,10 @@ public class MatchFlowableTableView extends ViewPart {
 			if (clickedRow < 1) {
 				return;
 			}
+			if (clickedRow >table.getItemCount()-2){
+				// HANDLE BLANK ROW SEARCH TOOL IF THEY CLICK LAST ROW
+				return;
+			}
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
 			if (clickedCol < 0) {
 				return;
@@ -382,42 +395,22 @@ public class MatchFlowableTableView extends ViewPart {
 			rowNumSelected = clickedRow;
 			colNumSelected = clickedCol;
 
-			LinkedHashMap<Resource, String> candidateMap = flowableToMatch
-					.getMatchCandidates();
+			LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 			if (clickedCol < 6) {
-				Resource flowableCandidateResource = (Resource) candidateMap
-						.keySet().toArray()[rowNumSelected - 1];
-				int oldCol = MatchStatus.getNumberBySymbol(candidateMap
-						.get(flowableCandidateResource));
+				Resource flowableCandidateResource = (Resource) candidateMap.keySet().toArray()[rowNumSelected - 1];
+				int oldCol = MatchStatus.getNumberBySymbol(candidateMap.get(flowableCandidateResource));
 				item.setText(oldCol, "");
-				item.setText(clickedCol, MatchStatus.getByValue(clickedCol)
-						.getSymbol());
-				candidateMap.put(flowableCandidateResource, MatchStatus
-						.getByValue(clickedCol).getSymbol());
+				item.setText(clickedCol, MatchStatus.getByValue(clickedCol).getSymbol());
+				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(clickedCol).getSymbol());
 				table.deselectAll();
+			} else {
+				// HANDLE LOOKUPS AND STUFF
 			}
 			updateMatchCounts();
 		}
 
 		private void rightClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-			// Point ptLeft = new Point(1, event.y);
-			// Point ptClick = new Point(event.x, event.y);
-			// int clickedRow = 0;
-			// int clickedCol = 0;
-			// TableItem item = table.getItem(ptLeft);
-			// if (item == null) {
-			// return;
-			// }
-			// clickedRow = table.indexOf(item);
-			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// // int dataClickedCol = clickedCol - 1;
-			// if (clickedCol < 0) {
-			// return;
-			// }
-			//
-			// rowNumSelected = clickedRow;
-			// colNumSelected = clickedCol;
 		}
 	};
 
@@ -451,8 +444,7 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	}
 
-	private static class RowIndexColumnLabelProvider extends
-			ColumnLabelProvider {
+	private static class RowIndexColumnLabelProvider extends ColumnLabelProvider {
 
 		public RowIndexColumnLabelProvider() {
 		}
@@ -514,11 +506,9 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	}
 
-	private static TableViewerColumn createTableViewerColumn(String title,
-			int bound, final int colNumber) {
+	private static TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 
-		final TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				tableViewer, SWT.NONE, colNumber);
+		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		final TableColumn tableColumn = tableViewerColumn.getColumn();
 		tableColumn.setText(title);
 		tableColumn.setWidth(bound);
@@ -537,18 +527,15 @@ public class MatchFlowableTableView extends ViewPart {
 
 	private static void createTableViewerMatchColumn(MatchStatus matchStatus) {
 		int colNumber = matchStatus.getValue();
-		TableViewerColumn tableViewerColumn = new TableViewerColumn(
-				tableViewer, SWT.NONE, colNumber);
+		TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
 		TableColumn tableColumn = tableViewerColumn.getColumn();
 		tableColumn.setText(matchStatus.getSymbol());
 		tableColumn.setWidth(20);
 		tableColumn.setResizable(true);
 		tableColumn.setMoveable(false);
-		tableColumn.setToolTipText(matchStatus.getName() + " - "
-				+ matchStatus.getComment());
+		tableColumn.setToolTipText(matchStatus.getName() + " - " + matchStatus.getComment());
 		tableColumn.setAlignment(SWT.CENTER);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(
-				matchStatus.getValue()));
+		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
 		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
 	}
 
@@ -580,6 +567,39 @@ public class MatchFlowableTableView extends ViewPart {
 	private static SelectionListener assignSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
+			CSVTableView.selectNextFlowable();
+
+//			TableItem tableItem = table.getItem(0);
+//			boolean gotMatch = false;
+//			for (int colNum = 1; colNum < 5; colNum++) {
+//				if (!tableItem.getText(colNum).equals("")) {
+//					gotMatch = true;
+//					break;
+//				}
+//			}
+//			Util.findView(CSVTableView.ID);
+////			if (gotMatch) {
+//				CSVTableView.colorFlowableRows();
+//				FlowsWorkflow.updateFlowableCount();
+//				// FIXME
+//				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
+////			}
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		};
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+	};
+	
+	private static SelectionListener advanceCSVTableListener = new SelectionListener() {
+
+		private void doit(SelectionEvent e) {
 			TableItem tableItem = table.getItem(0);
 			boolean gotMatch = false;
 			for (int colNum = 1; colNum < 5; colNum++) {
@@ -591,8 +611,8 @@ public class MatchFlowableTableView extends ViewPart {
 			Util.findView(CSVTableView.ID);
 			if (gotMatch) {
 				CSVTableView.colorFlowableRows();
-				FlowsWorkflow.updateFlowableCount();
-				// FIXME 
+//				FlowsWorkflow.updateFlowableCount();
+				// FIXME
 				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
 			}
 			CSVTableView.selectNextFlowable();
@@ -608,6 +628,8 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
+	
+	
 	private static Composite outerComposite;
 
 	public static void initialize() {

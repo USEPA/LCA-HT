@@ -515,6 +515,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			btnCommit.setEnabled(false);
+			Util.findView(CSVTableView.ID);
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
 				textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -527,8 +528,8 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowables.setEnabled(true);
 			btnMatchFlowContexts.setEnabled(true);
 			btnMatchFlowProperties.setEnabled(true);
-
-			CSVTableView.initializeRowMenu(2);
+			CSVTableView.preCommit = false;
+			CSVTableView.initializeRowMenu();
 			String jobKey = "autoMatch_01";
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
 			autoMatchJob.setPriority(Job.SHORT);
@@ -536,7 +537,6 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-			CSVTableView.preCommit = false;
 			btnConcludeFile.setText("Close CSV");
 			// THIS IS AS GOOD A PLACE AS ANY TO SEND THESE 6 REFERENCES:
 			CSVTableView.setUniqueFlowableRowNumbers(uniqueFlowableRowNumbers);

@@ -389,18 +389,14 @@ public class CSVTableView extends ViewPart {
 					table.deselectAll();
 					return;
 				}
-				// for (TableItem tableItem:table.getSelection()){
-				// tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-				// }
-				for (int selRow : table.getSelectionIndices()) {
-					table.getItem(selRow).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				for (TableItem tableItem:table.getItems()){
+					tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				}
 				table.deselectAll();
 				table.setSelection(rowNumSelected);
 				table.getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
 				matchRowContents();
 				return;
-
 			}
 			if (preCommit) {
 				rowMenu.setVisible(true);
@@ -430,14 +426,17 @@ public class CSVTableView extends ViewPart {
 				rowMenu.setVisible(true);
 			} else {
 				Issue issueOfThisCell = null;
-				boolean firstResolvable = false;
+				// boolean firstResolvable = false;
+				initializeFixCellMenu(false);
+
 				for (Issue issue : getIssuesByColumn(clickedCol)) {
 					if (issue.getRowNumber() == rowNumSelected) {
 						issueOfThisCell = issue;
 						if (issue.getQaCheck().getReplacement() != null) {
-							firstResolvable = true;
+							// firstResolvable = true;
+							initializeFixCellMenu(true);
 						} else {
-							firstResolvable = false;
+							// firstResolvable = false;
 						}
 						break;
 					}
@@ -554,13 +553,13 @@ public class CSVTableView extends ViewPart {
 	//
 	// }
 
-	public static void initializeRowMenu(int phase) {
+	public static void initializeRowMenu() {
 		rowMenu = new Menu(table);
 		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
 
 		MenuItem menuItem;
 
-		if (phase == 1) {
+		if (preCommit) {
 			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
 			menuItem.setText("ignore row");
@@ -568,17 +567,34 @@ public class CSVTableView extends ViewPart {
 			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
 			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
 			menuItem.setText("use row");
-		} else if (phase == 2) {
-			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-			menuItem.setText("match contents");
-
-			// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-			// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-			// menuItem.setText("use row");
 		}
-
 	}
+	
+//	public static void initializeRowMenu(int phase) {
+//		rowMenu = new Menu(table);
+//		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
+//
+//		MenuItem menuItem;
+//
+//		if (phase == 1) {
+//			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+//			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+//			menuItem.setText("ignore row");
+//
+//			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+//			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+//			menuItem.setText("use row");
+//		} else if (phase == 2) {
+//			menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+//			menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+//			menuItem.setText("match contents");
+//
+//			// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
+//			// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
+//			// menuItem.setText("use row");
+//		}
+//
+//	}
 
 	private static class RowMenuSelectionListener implements Listener {
 
@@ -612,25 +628,21 @@ public class CSVTableView extends ViewPart {
 					// rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
 					// }
 					// --------- OR TO MATCH THINGS
-				} else if (menuItemText.equals("match contents")) {
-					MatchFlowableTableView.update(rowNumSelected);
-					// tableViewer.getTable().getItem(rowNumSelected)
-					// .setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					// SEND DATA TO THE APPROPRIATE VIEW FOR MATCHING
+//				} else if (menuItemText.equals("match contents")) {
+//					Util.findView(MatchFlowableTableView.ID);
+//					MatchFlowableTableView.update(rowNumSelected);
 				}
 			}
 		}
 	}
 
-	private static void initializeFixRowMenu(boolean auto) {
+	private static void initializeFixCellMenu(boolean auto) {
 		if (fixCellMenu != null) {
 			fixCellMenu.dispose();
 		}
 		fixCellMenu = new Menu(table);
 
-		MenuItem menuItem;
-
-		menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
+		MenuItem menuItem = new MenuItem(fixCellMenu, SWT.NORMAL);
 		if (auto) {
 			menuItem.addListener(SWT.Selection, new FixCellMenuSelectionListener());
 			menuItem.setText("Auto-resolve issue");
@@ -639,7 +651,7 @@ public class CSVTableView extends ViewPart {
 			menuItem.setText("Edit this cell");
 		}
 	}
-	
+
 	private static class FixCellMenuSelectionListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
@@ -658,8 +670,8 @@ public class CSVTableView extends ViewPart {
 			}
 			TableColumn tableColumn = table.getColumn(colNumSelected);
 			TableItem tableItem = table.getItem(rowNumSelected);
-//			tableItem.get
-			
+			// tableItem.get
+
 		}
 	}
 
@@ -686,9 +698,7 @@ public class CSVTableView extends ViewPart {
 					Matcher matcher = qaCheck.getPattern().matcher(startingText);
 					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
 					tableItem.setText(colNumSelected, fixedValue);
-					// TableProvider tableProvider =
-					// TableKeeper.getTableProvider(tableProviderKey);
-					tableProvider.getData().get(rowNumSelected).set(colNumSelected, fixedValue);
+					tableProvider.getData().get(rowNumSelected).set(colNumSelected-1, fixedValue);
 					issue.setStatus(Status.RESOLVED);
 					colorCell(issue);
 				}
@@ -1419,15 +1429,15 @@ public class CSVTableView extends ViewPart {
 
 	public static void reset() {
 		tableViewer.setInput(null);
-		initializeRowMenu(1);
+		initializeRowMenu();
 		removeColumns();
 		preCommit = true;
 	}
 
 	public static void initialize() {
 		initializeTable();
-		initializeRowMenu(1);
-		initializeFixRowMenu(true);
+		initializeRowMenu();
+		initializeFixCellMenu(true);
 		// THIS IS SPECIFIC TO FlowsWorkflow
 		// TODO: MAKE THIS VARY WITH THE WORK FLOW
 		// initializeHeaderMenu();
@@ -1882,15 +1892,76 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public static void colorFlowableRows() {
-		List<Integer> contextColumns = new ArrayList<Integer>();
+	private static int getTableRowFromDataRow(int dataRow) {
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+		if (filterRowNumbers != null) {
+			if (filterRowNumbers.size() == 0) {
+				return dataRow;
+			}
+		}
+		for (int i = 0; i < table.getItemCount(); i++) {
+			String rowNumString = table.getItem(i).getText(0);
+			int rowNum = Integer.parseInt(rowNumString) - 1;
+			if (rowNum == dataRow) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static void colorOneFlowableRow(int rowToColor) {
+		if (!uniqueFlowableRowNumbers.contains(rowToColor)){
+			return;
+		}
+		int tableRowToColor = getTableRowFromDataRow(rowToColor);
+		if (tableRowToColor < 0) {
+			return;
+		}
+
+		List<Integer> flowableColumns = new ArrayList<Integer>();
 		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
 				.getLcaDataProperties();
 		for (int i = 0; i < lcaDataProperties.length; i++) {
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider != null) {
 				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-					contextColumns.add(i);
+					flowableColumns.add(i);
+				}
+			}
+		}
+
+		// WHAT COLOR ARE WE GOING TO COLOR IT?
+		boolean hit = false;
+		for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(rowToColor)
+				.getFlowable().getMatchCandidates().values()) {
+			int matchNum = MatchStatus.getNumberBySymbol(symbol);
+			if (matchNum > 0 && matchNum < 5) {
+				hit = true;
+			}
+		}
+		Color color;
+		if (hit) {
+			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		} else {
+			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		}
+
+		TableItem tableItem = table.getItem(tableRowToColor);
+
+		for (int i : flowableColumns) {
+			tableItem.setBackground(i, color);
+		}
+	}
+
+	public static void colorFlowableRows() {
+		List<Integer> flowableColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+					flowableColumns.add(i);
 				}
 			}
 		}
@@ -1915,7 +1986,7 @@ public class CSVTableView extends ViewPart {
 					} else {
 						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 					}
-					for (int j : contextColumns) {
+					for (int j : flowableColumns) {
 						colorCell(visibleRowNum, j, color);
 					}
 				}
@@ -1938,7 +2009,7 @@ public class CSVTableView extends ViewPart {
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 				}
-				for (int j : contextColumns) {
+				for (int j : flowableColumns) {
 					colorCell(i, j, color);
 				}
 			}
