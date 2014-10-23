@@ -83,7 +83,7 @@ public class ImportTDBHandler implements IHandler {
 
 		// fileDialog
 		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
-		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.rdf" }); // SHOWS
+		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf" }); // SHOWS
 																				// ALL
 																				// TYPES
 																				// IN
@@ -118,7 +118,9 @@ public class ImportTDBHandler implements IHandler {
 					String inputType = "RDF/XML";
 					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
-					}
+					} else if (fileName.matches(".*\\.ttl.*")) {
+						inputType = "TTL";
+					} 
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					runLogger.info("LOAD RDF " + fileName);
@@ -181,6 +183,7 @@ public class ImportTDBHandler implements IHandler {
 
 		// addFilename(fileName);
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		Util.findView(ResultsView.ID);
 		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
 		String title = resultsView.getTitle();
 		System.out.println("title= " + title);
