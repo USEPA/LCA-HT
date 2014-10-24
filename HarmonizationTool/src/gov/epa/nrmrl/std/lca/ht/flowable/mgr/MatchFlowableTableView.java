@@ -62,7 +62,7 @@ public class MatchFlowableTableView extends ViewPart {
 	private static int rowNumSelected = -1;
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
-	private static int csvTableRowNum = -1;
+	private static int dataTableRowNum = -1;
 
 	private static TextCellEditor editor;
 
@@ -134,13 +134,13 @@ public class MatchFlowableTableView extends ViewPart {
 		initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
-		csvTableRowNum = rowNumber;
+		dataTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
 		if (flowableToMatch == null) {
 			return;
 		}
 
-		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY?  GOOD? TODO: CHECK THIS
+		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		table.clearAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
@@ -321,11 +321,14 @@ public class MatchFlowableTableView extends ViewPart {
 	// };
 	private static void updateMatchCounts() {
 		Integer[] matchSummary = new Integer[] { 0, 0, 0, 0, 0, 0 };
-
+		boolean noMatch = true;
 		for (int rowNum = 1; rowNum < table.getItemCount(); rowNum++) {
 			TableItem tableItem = table.getItem(rowNum);
 			for (int colNum = 0; colNum < 6; colNum++) {
 				if (!tableItem.getText(colNum).equals("")) {
+					if (colNum > 0 && colNum < 5) {
+						noMatch = false;
+					}
 					matchSummary[colNum]++;
 				}
 			}
@@ -334,16 +337,24 @@ public class MatchFlowableTableView extends ViewPart {
 		for (int colNum = 0; colNum < 6; colNum++) {
 			tableItem.setText(colNum, matchSummary[colNum].toString());
 		}
-		Util.findView(CSVTableView.ID);
-		CSVTableView.colorOneFlowableRow(csvTableRowNum);
+
+		Util.findView(FlowsWorkflow.ID);
+		if (noMatch) {
+			FlowsWorkflow.removeMatchFlowableRowNum(dataTableRowNum);
+		} else {
+			FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
+		}
+
+//		Util.findView(CSVTableView.ID);
+//		CSVTableView.colorOneFlowableRow(dataTableRowNum);
 	}
 
 	public static int getCsvTableRowNum() {
-		return csvTableRowNum;
+		return dataTableRowNum;
 	}
 
 	public static void setCsvTableRowNum(int csvTableRowNum) {
-		MatchFlowableTableView.csvTableRowNum = csvTableRowNum;
+		MatchFlowableTableView.dataTableRowNum = csvTableRowNum;
 	}
 
 	private static MouseListener tableMouseListener = new MouseListener() {
@@ -384,7 +395,7 @@ public class MatchFlowableTableView extends ViewPart {
 			if (clickedRow < 1) {
 				return;
 			}
-			if (clickedRow >table.getItemCount()-2){
+			if (clickedRow > table.getItemCount() - 2) {
 				// HANDLE BLANK ROW SEARCH TOOL IF THEY CLICK LAST ROW
 				return;
 			}
@@ -569,21 +580,21 @@ public class MatchFlowableTableView extends ViewPart {
 		private void doit(SelectionEvent e) {
 			CSVTableView.selectNextFlowable();
 
-//			TableItem tableItem = table.getItem(0);
-//			boolean gotMatch = false;
-//			for (int colNum = 1; colNum < 5; colNum++) {
-//				if (!tableItem.getText(colNum).equals("")) {
-//					gotMatch = true;
-//					break;
-//				}
-//			}
-//			Util.findView(CSVTableView.ID);
-////			if (gotMatch) {
-//				CSVTableView.colorFlowableRows();
-//				FlowsWorkflow.updateFlowableCount();
-//				// FIXME
-//				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
-////			}
+			// TableItem tableItem = table.getItem(0);
+			// boolean gotMatch = false;
+			// for (int colNum = 1; colNum < 5; colNum++) {
+			// if (!tableItem.getText(colNum).equals("")) {
+			// gotMatch = true;
+			// break;
+			// }
+			// }
+			// Util.findView(CSVTableView.ID);
+			// // if (gotMatch) {
+			// CSVTableView.colorFlowableRows();
+			// FlowsWorkflow.updateFlowableCount();
+			// // FIXME
+			// // PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
+			// // }
 		}
 
 		@Override
@@ -596,7 +607,7 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
-	
+
 	private static SelectionListener advanceCSVTableListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -611,7 +622,7 @@ public class MatchFlowableTableView extends ViewPart {
 			Util.findView(CSVTableView.ID);
 			if (gotMatch) {
 				CSVTableView.colorFlowableRows();
-//				FlowsWorkflow.updateFlowableCount();
+				// FlowsWorkflow.updateFlowableCount();
 				// FIXME
 				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
 			}
@@ -628,8 +639,7 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
-	
-	
+
 	private static Composite outerComposite;
 
 	public static void initialize() {

@@ -814,6 +814,20 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void addMatchFlowableRowNum(int rowNumToSend) {
+//		if (!uniqueFlowableRowNumbers.contains(rowNumToSend)){
+//			Flowable flowable = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend).getFlowable();
+//			int firstRowWithSameFlowable = rowNumToSend;
+//			for (int row = rowNumToSend-1;row>=0;row--){
+//				Flowable otherFlowable = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(row).getFlowable();
+//				if (otherFlowable.equals(flowable)){
+//					firstRowWithSameFlowable = row;
+//				}
+//			}
+//			if (!uniqueFlowableRowNumbers.contains(firstRowWithSameFlowable)){
+//				return;
+//			}
+//			rowNumToSend = firstRowWithSameFlowable;
+//		}
 		matchedFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
@@ -821,6 +835,20 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void removeMatchContextRowNum(int rowNumber) {
+//		if (!uniqueFlowableRowNumbers.contains(rowNumber)){
+//			Flowable flowable = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber).getFlowable();
+//			int firstRowWithSameFlowable = rowNumber;
+//			for (int row = rowNumber-1;row>=0;row--){
+//				Flowable otherFlowable = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(row).getFlowable();
+//				if (otherFlowable.equals(flowable)){
+//					firstRowWithSameFlowable = row;
+//				}
+//			}
+//			if (!uniqueFlowableRowNumbers.contains(firstRowWithSameFlowable)){
+//				return;
+//			}
+//			rowNumber = firstRowWithSameFlowable;
+//		}
 		matchedFlowContextRowNumbers.remove(rowNumber);
 		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
