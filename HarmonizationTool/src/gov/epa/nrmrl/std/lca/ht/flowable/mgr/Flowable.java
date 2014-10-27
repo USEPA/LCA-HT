@@ -730,7 +730,7 @@ public class Flowable {
 	public void setLcaDataValues(List<LCADataValue> lcaDataValues) {
 		this.lcaDataValues = lcaDataValues;
 	}
-	
+
 	public static Resource getRdfclass() {
 		return rdfClass;
 	}
@@ -820,13 +820,40 @@ public class Flowable {
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+		autosetStatus();
+	}
+
+	private void autosetStatus() {
+		String qCAS = getCas();
+		if (qCAS == null) {
+			return;
+		}
+		// Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
+		String qName = getName();
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
+		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
+
+		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
+			System.out.println("Resource: candidateFlowableTDBResource"+candidateFlowableTDBResource);
+			if (candidateFlowableTDBResource.hasLiteral(ECO.casNumber, qCASLiteral)) {
+				if (candidateFlowableTDBResource.hasLiteral(RDFS.label, qNameLiteral)
+						|| candidateFlowableTDBResource.hasLiteral(SKOS.altLabel, qNameLiteral)) {
+					matchCandidates.put(candidateFlowableTDBResource, "=");
+				}
+			}
+		}
 	}
 
 	public String getDataSource() {
 		if (tdbResource.hasProperty(ECO.hasDataSource)) {
 			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
-			String value = qDataSource.getProperty(RDFS.label).getString();
-			return value;
+			if (qDataSource.hasProperty(RDFS.label)) {
+				String value = qDataSource.getProperty(RDFS.label).getString();
+				return value;
+			} else {
+				return "[no source]";
+			}
 		}
 		return null;
 	}

@@ -140,7 +140,7 @@ public class MatchFlowableTableView extends ViewPart {
 			return;
 		}
 
-		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
+//		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		table.clearAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);

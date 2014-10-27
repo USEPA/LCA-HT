@@ -727,7 +727,8 @@ public class CSVTableView extends ViewPart {
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
 		Date loadStartDate = new Date();
 
-		tableViewer.setInput(tableProvider.getData());
+//		tableViewer.setInput(tableProvider.getData());
+		tinyRoutine(tableProvider.getData());
 		// TODO: JUNO CHECK ABOVE TO UNDERSTAND: setInput
 		Date loadEndDate = new Date();
 		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
@@ -745,6 +746,12 @@ public class CSVTableView extends ViewPart {
 		table.setSize(table.getParent().getSize());
 		initializeColumnActionsMenu();
 		initializeOtherViews();
+	}
+	
+
+
+	private static void tinyRoutine(List<DataRow> data) {
+		tableViewer.setInput(data);		
 	}
 
 	private static void createColumns() {
