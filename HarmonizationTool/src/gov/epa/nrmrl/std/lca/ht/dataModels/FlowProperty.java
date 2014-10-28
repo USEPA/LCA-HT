@@ -67,6 +67,7 @@ public class FlowProperty {
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
+	private int firstRow;
 
 	// CONSTRUCTORS
 	public FlowProperty() {
@@ -333,5 +334,13 @@ public class FlowProperty {
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
 		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
+	}
+
+	public int getFirstRow() {
+		return firstRow;
+	}
+
+	public void setFirstRow(int firstRow) {
+		this.firstRow = firstRow;
 	}
 }

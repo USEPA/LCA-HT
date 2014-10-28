@@ -149,6 +149,7 @@ public class Flowable {
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
 	private LinkedHashMap<Resource, String> matchCandidates;
+	private int firstRow;
 
 	// CONSTRUCTORS
 	public Flowable() {
@@ -856,6 +857,14 @@ public class Flowable {
 			}
 		}
 		return null;
+	}
+
+	public int getFirstRow() {
+		return firstRow;
+	}
+
+	public void setFirstRow(int firstRow) {
+		this.firstRow = firstRow;
 	}
 
 }

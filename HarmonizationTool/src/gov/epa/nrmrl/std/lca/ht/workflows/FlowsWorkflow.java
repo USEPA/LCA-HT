@@ -831,7 +831,7 @@ public class FlowsWorkflow extends ViewPart {
 		matchedFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		CSVTableView.colorFlowableRows();
+		CSVTableView.colorOneFlowableRow(rowNumToSend);
 	}
 
 	public static void removeMatchContextRowNum(int rowNumber) {
@@ -852,7 +852,8 @@ public class FlowsWorkflow extends ViewPart {
 		matchedFlowContextRowNumbers.remove(rowNumber);
 		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
-		CSVTableView.colorFlowContextRows();
+//		CSVTableView.colorFlowContextRows();
+		CSVTableView.colorOneFlowableRow(rowNumber);
 	}
 
 	public static void removeMatchPropertyRowNum(int rowNumber) {

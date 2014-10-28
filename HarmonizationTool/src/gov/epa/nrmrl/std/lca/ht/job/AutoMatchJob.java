@@ -192,6 +192,7 @@ public class AutoMatchJob extends Job {
 						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
 					flowable.setMatches();
+					flowable.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
@@ -230,6 +231,7 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
+					flowContext.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addContextRowNum(rowNumToSend);
@@ -266,7 +268,7 @@ public class AutoMatchJob extends Job {
 									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
 						}
 					}
-
+					flowProperty.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addPropertyRowNum(rowNumToSend);

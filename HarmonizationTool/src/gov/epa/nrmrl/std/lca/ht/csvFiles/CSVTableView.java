@@ -2238,6 +2238,7 @@ public class CSVTableView extends ViewPart {
 		}
 		int tableSelIndex = table.getSelectionIndex();
 		if (rowCount == (tableSelIndex + 1)) {
+			table.setSelection(0);
 			return;
 		}
 

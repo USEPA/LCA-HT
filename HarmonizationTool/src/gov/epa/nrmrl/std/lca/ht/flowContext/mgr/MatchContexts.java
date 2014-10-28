@@ -85,12 +85,12 @@ public class MatchContexts extends ViewPart {
 		unAssignButton.setText("Unassign");
 		unAssignButton.addSelectionListener(unassignListener);
 
-		assignButton = new Button(innerComposite, SWT.NONE);
+		nextButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_assignButton.widthHint = 100;
-		assignButton.setLayoutData(gd_assignButton);
-		assignButton.setText("Assign");
-		assignButton.addSelectionListener(assignListener);
+		nextButton.setLayoutData(gd_assignButton);
+		nextButton.setText("Next");
+		nextButton.addSelectionListener(nextListener);
 
 		masterLbl = new Label(outerComposite, SWT.NONE);
 		masterLbl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -122,21 +122,23 @@ public class MatchContexts extends ViewPart {
 		masterTreeViewer.setContentProvider(new MyContentProvider());
 		masterTreeViewer.setInput(createHarmonizeCompartments());
 		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
-
+			public void doit(SelectionEvent e){
+//				TreeNode treeNode = (TreeNode) (e.item.getData());
+//
+//				if (!treeNode.hasChildern()) {
+//					String masterLabel = treeNode.getLabel();
+//					Resource masterResource = treeNode.getUri();
+//				}
+				assign();
+			}
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TreeNode treeNode = (TreeNode) (e.item.getData());
-
-				if (!treeNode.hasChildern()) {
-					String masterLabel = treeNode.getLabel();
-					Resource masterResource = treeNode.getUri();
-				}
+				doit(e);
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				doit(e);
 			}
 		});
 		masterTreeViewer.refresh();
@@ -171,25 +173,46 @@ public class MatchContexts extends ViewPart {
 		}
 	};
 
-	private SelectionListener assignListener = new SelectionListener() {
-		private void doit(SelectionEvent e) {
-			Util.findView(CSVTableView.ID);
-			Util.findView(FlowsWorkflow.ID);
-			TableItem[] tableItems = CSVTableView.getTable().getSelection();
-			TableItem tableItem = tableItems[0];
-			String rowNumString = tableItem.getText(0);
-			int rowNumber = Integer.parseInt(rowNumString) - 1;
-			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	private void assign() {
+		Util.findView(CSVTableView.ID);
+		Util.findView(FlowsWorkflow.ID);
+		TableItem[] tableItems = CSVTableView.getTable().getSelection();
+		TableItem tableItem = tableItems[0];
+		String rowNumString = tableItem.getText(0);
+		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
-			TreeItem treeItem = masterTree.getSelection()[0];
-			TreeNode treeNode = (TreeNode) treeItem.getData();
-			Resource newResource = treeNode.getUri();
-			if (newResource == null) {
-				return;
-			}
-			dataRow.getFlowContext().setMatchingResource(newResource);
-			FlowsWorkflow.addMatchContextRowNum(rowNumber);
-			CSVTableView.colorFlowContextRows();
+		TreeItem treeItem = masterTree.getSelection()[0];
+		TreeNode treeNode = (TreeNode) treeItem.getData();
+		Resource newResource = treeNode.getUri();
+		if (newResource == null) {
+			return;
+		}
+		dataRow.getFlowContext().setMatchingResource(newResource);
+		FlowsWorkflow.addMatchContextRowNum(rowNumber);
+		CSVTableView.colorFlowContextRows();
+//		CSVTableView.selectNextContext();
+	}
+	
+	private SelectionListener nextListener = new SelectionListener() {
+		private void doit(SelectionEvent e) {
+//			Util.findView(CSVTableView.ID);
+//			Util.findView(FlowsWorkflow.ID);
+//			TableItem[] tableItems = CSVTableView.getTable().getSelection();
+//			TableItem tableItem = tableItems[0];
+//			String rowNumString = tableItem.getText(0);
+//			int rowNumber = Integer.parseInt(rowNumString) - 1;
+//			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+//
+//			TreeItem treeItem = masterTree.getSelection()[0];
+//			TreeNode treeNode = (TreeNode) treeItem.getData();
+//			Resource newResource = treeNode.getUri();
+//			if (newResource == null) {
+//				return;
+//			}
+//			dataRow.getFlowContext().setMatchingResource(newResource);
+//			FlowsWorkflow.addMatchContextRowNum(rowNumber);
+//			CSVTableView.colorFlowContextRows();
 			CSVTableView.selectNextContext();
 		}
 
@@ -518,12 +541,12 @@ public class MatchContexts extends ViewPart {
 		@Override
 		public void mouseDown(MouseEvent e) {
 			System.out.println("mouse down event :e =" + e);
-			if (e.button == 1) {
-				leftClick(e);
-			} else if (e.button == 3) {
-				// queryTbl.deselectAll();
-				rightClick(e);
-			}
+//			if (e.button == 1) {
+//				leftClick(e);
+//			} else if (e.button == 3) {
+//				// queryTbl.deselectAll();
+//				rightClick(e);
+//			}
 		}
 
 		@Override
@@ -533,54 +556,54 @@ public class MatchContexts extends ViewPart {
 
 		private void leftClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-			Point ptLeft = new Point(1, event.y);
-			Point ptClick = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
-			// TableItem item = queryTbl.getItem(ptLeft);
-			// if (item == null) {
-			// return;
-			// }
-			// clickedRow = queryTbl.indexOf(item);
-			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// if (clickedCol > 0) {
-			// queryTbl.deselectAll();
-			// return;
-			// }
-			// queryTbl.select(clickedRow);
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = " + rowNumSelected);
-			System.out.println("colNumSelected = " + colNumSelected);
+//			Point ptLeft = new Point(1, event.y);
+//			Point ptClick = new Point(event.x, event.y);
+//			int clickedRow = 0;
+//			int clickedCol = 0;
+//			// TableItem item = queryTbl.getItem(ptLeft);
+//			// if (item == null) {
+//			// return;
+//			// }
+//			// clickedRow = queryTbl.indexOf(item);
+//			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+//			// if (clickedCol > 0) {
+//			// queryTbl.deselectAll();
+//			// return;
+//			// }
+//			// queryTbl.select(clickedRow);
+//			rowNumSelected = clickedRow;
+//			colNumSelected = clickedCol;
+//			System.out.println("rowNumSelected = " + rowNumSelected);
+//			System.out.println("colNumSelected = " + colNumSelected);
 			// rowMenu.setVisible(true);
 		}
 
 		private void rightClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-			Point ptLeft = new Point(1, event.y);
-			Point ptClick = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
-			// TableItem item = queryTbl.getItem(ptLeft);
-			// if (item == null) {
-			// return;
-			// }
-			// clickedRow = queryTbl.indexOf(item);
-			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// int dataClickedCol = clickedCol - 1;
-			if (clickedCol < 0) {
-				return;
-			}
-
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = " + rowNumSelected);
-			System.out.println("colNumSelected = " + colNumSelected);
+//			Point ptLeft = new Point(1, event.y);
+//			Point ptClick = new Point(event.x, event.y);
+//			int clickedRow = 0;
+//			int clickedCol = 0;
+//			// TableItem item = queryTbl.getItem(ptLeft);
+//			// if (item == null) {
+//			// return;
+//			// }
+//			// clickedRow = queryTbl.indexOf(item);
+//			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+//			// int dataClickedCol = clickedCol - 1;
+//			if (clickedCol < 0) {
+//				return;
+//			}
+//
+//			rowNumSelected = clickedRow;
+//			colNumSelected = clickedCol;
+//			System.out.println("rowNumSelected = " + rowNumSelected);
+//			System.out.println("colNumSelected = " + colNumSelected);
 		}
 	};
 	private Composite outerComposite;
 	private Button unAssignButton;
-	private Button assignButton;
+	private Button nextButton;
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);

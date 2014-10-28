@@ -104,8 +104,8 @@ public class MatchFlowableTableView extends ViewPart {
 		// innterComposite.setBounds(0, 0, 64, 64);
 
 		Button acceptAdvance = new Button(innterComposite, SWT.NONE);
-		acceptAdvance.setText("Assign");
-		acceptAdvance.addSelectionListener(assignSelectionListener);
+		acceptAdvance.setText("Next");
+		acceptAdvance.addSelectionListener(nextSelectionListener);
 
 		Button addToMaster = new Button(innterComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
@@ -255,7 +255,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 		//
 		// matchStatus = MatchStatus.EQUIVALENT;
 		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
@@ -265,7 +265,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 
 		// matchStatus = MatchStatus.SUBSET;
 		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
@@ -275,7 +275,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 		//
 		// matchStatus = MatchStatus.SUPERSET;
 		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
@@ -285,7 +285,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 		//
 		// matchStatus = MatchStatus.PROXY;
 		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
@@ -295,7 +295,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 		//
 		// matchStatus = MatchStatus.NONEQUIVALENT;
 		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
@@ -305,7 +305,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
 		// tableViewerColumn.setLabelProvider(new
 		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 
 	}
 
@@ -340,9 +340,12 @@ public class MatchFlowableTableView extends ViewPart {
 
 		Util.findView(FlowsWorkflow.ID);
 		if (noMatch) {
-			FlowsWorkflow.removeMatchFlowableRowNum(dataTableRowNum);
+//			FlowsWorkflow.removeMatchFlowableRowNum(dataTableRowNum);
+			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
+
 		} else {
-			FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
+			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+//			FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
 		}
 
 //		Util.findView(CSVTableView.ID);
@@ -547,7 +550,7 @@ public class MatchFlowableTableView extends ViewPart {
 		tableColumn.setToolTipText(matchStatus.getName() + " - " + matchStatus.getComment());
 		tableColumn.setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(assignSelectionListener);
+		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 	}
 
 	//
@@ -575,7 +578,7 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	};
 
-	private static SelectionListener assignSelectionListener = new SelectionListener() {
+	private static SelectionListener nextSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
 			CSVTableView.selectNextFlowable();

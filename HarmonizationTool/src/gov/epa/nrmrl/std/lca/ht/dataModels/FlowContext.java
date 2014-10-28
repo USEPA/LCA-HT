@@ -69,6 +69,7 @@ public class FlowContext {
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
+	private int firstRow;
 //	private Set<Resource> matchCandidates;
 
 	// CONSTRUCTORS
@@ -224,6 +225,14 @@ public class FlowContext {
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
 		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
+	}
+
+	public int getFirstRow() {
+		return firstRow;
+	}
+
+	public void setFirstRow(int firstRow) {
+		this.firstRow = firstRow;
 	}
 
 }
