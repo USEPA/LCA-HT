@@ -582,22 +582,6 @@ public class MatchFlowableTableView extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			CSVTableView.selectNextFlowable();
-
-			// TableItem tableItem = table.getItem(0);
-			// boolean gotMatch = false;
-			// for (int colNum = 1; colNum < 5; colNum++) {
-			// if (!tableItem.getText(colNum).equals("")) {
-			// gotMatch = true;
-			// break;
-			// }
-			// }
-			// Util.findView(CSVTableView.ID);
-			// // if (gotMatch) {
-			// CSVTableView.colorFlowableRows();
-			// FlowsWorkflow.updateFlowableCount();
-			// // FIXME
-			// // PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
-			// // }
 		}
 
 		@Override

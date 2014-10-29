@@ -16,6 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
@@ -64,6 +65,8 @@ public class MatchProperties extends ViewPart {
 	private static Label masterLbl;
 	private int rowNumSelected;
 	private int colNumSelected;
+	private static FlowProperty propertyToMatch;
+
 
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
@@ -88,12 +91,12 @@ public class MatchProperties extends ViewPart {
 		unAssignButton.setText("Unassign");
 		unAssignButton.addSelectionListener(unassignListener);
 
-		assignButton = new Button(innerComposite, SWT.NONE);
+		nextButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_assignButton.widthHint = 100;
-		assignButton.setLayoutData(gd_assignButton);
-		assignButton.setText("Assign");
-		assignButton.addSelectionListener(assignListener);
+		nextButton.setLayoutData(gd_assignButton);
+		nextButton.setText("Next");
+		nextButton.addSelectionListener(nextListener);
 
 		masterLbl = new Label(outerComposite, SWT.NONE);
 		masterLbl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -126,19 +129,18 @@ public class MatchProperties extends ViewPart {
 		masterTreeViewer.setInput(createHarmonizeCompartments());
 		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 
+			private void doit(SelectionEvent e) {
+				assign();
+			}
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TreeNode treeNode = (TreeNode) (e.item.getData());
-
-				if (!treeNode.hasChildern()) {
-					String masterLabel = treeNode.getLabel();
-					Resource masterResource = treeNode.getUri();
-				}
+				doit(e);
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+				doit(e);
 
 			}
 		});
@@ -149,6 +151,7 @@ public class MatchProperties extends ViewPart {
 	}
 
 	private SelectionListener unassignListener = new SelectionListener() {
+
 		private void doit(SelectionEvent e) {
 			Util.findView(CSVTableView.ID);
 			Util.findView(FlowsWorkflow.ID);
@@ -158,7 +161,7 @@ public class MatchProperties extends ViewPart {
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 			dataRow.getFlowProperty().setMatchingResource(null);
-			FlowsWorkflow.removeMatchPropertyRowNum(rowNumber);
+			FlowsWorkflow.removeMatchPropertyRowNum(propertyToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
 			// tableItem.setBackground(color);
 		}
@@ -174,25 +177,28 @@ public class MatchProperties extends ViewPart {
 		}
 	};
 
-	private SelectionListener assignListener = new SelectionListener() {
-		private void doit(SelectionEvent e) {
-			Util.findView(CSVTableView.ID);
-			Util.findView(FlowsWorkflow.ID);
-			TableItem[] tableItems = CSVTableView.getTable().getSelection();
-			TableItem tableItem = tableItems[0];
-			String rowNumString = tableItem.getText(0);
-			int rowNumber = Integer.parseInt(rowNumString) - 1;
-			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	private static void assign() {
+		Util.findView(CSVTableView.ID);
+		Util.findView(FlowsWorkflow.ID);
+		TableItem[] tableItems = CSVTableView.getTable().getSelection();
+		TableItem tableItem = tableItems[0];
+		String rowNumString = tableItem.getText(0);
+		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
-			TreeItem treeItem = masterTree.getSelection()[0];
-			TreeNode treeNode = (TreeNode) treeItem.getData();
-			Resource newResource = treeNode.getUri();
-			if (newResource == null) {
-				return;
-			}
-			dataRow.getFlowProperty().setMatchingResource(newResource);
-			FlowsWorkflow.addMatchPropertyRowNum(rowNumber);
-			CSVTableView.colorFlowPropertyRows();
+		TreeItem treeItem = masterTree.getSelection()[0];
+		TreeNode treeNode = (TreeNode) treeItem.getData();
+		Resource newResource = treeNode.getUri();
+		if (newResource == null) {
+			return;
+		}
+		dataRow.getFlowProperty().setMatchingResource(newResource);
+		FlowsWorkflow.addMatchPropertyRowNum(propertyToMatch.getFirstRow());
+		CSVTableView.colorFlowPropertyRows();
+	}
+
+	private SelectionListener nextListener = new SelectionListener() {
+		private void doit(SelectionEvent e) {
 			CSVTableView.selectNextProperty();
 		}
 
@@ -230,7 +236,7 @@ public class MatchProperties extends ViewPart {
 		TreeNode length = new TreeNode(physicalIndividual);
 		length.nodeName = "Length";
 		length.uri = FedLCA.Length;
-		
+
 		TreeNode area = new TreeNode(physicalIndividual);
 		area.nodeName = "Area";
 		area.uri = FedLCA.Area;
@@ -254,7 +260,7 @@ public class MatchProperties extends ViewPart {
 		// -------- PHYSICAL COMBINED
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
 		physicalCombined.nodeName = "Physical combined";
-		
+
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FedLCA.MassTime;
@@ -266,7 +272,7 @@ public class MatchProperties extends ViewPart {
 		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
 		areaTime.uri = FedLCA.AreaTime;
-		
+
 		TreeNode volumeTime = new TreeNode(physicalCombined);
 		volumeTime.nodeName = "Volume*time";
 		volumeTime.uri = FedLCA.VolumeTime;
@@ -286,7 +292,7 @@ public class MatchProperties extends ViewPart {
 		// -------- LAND TRANSFORMATION
 		TreeNode landTransformation = new TreeNode(masterPropertyTree);
 		landTransformation.nodeName = "Land transformation";
-		
+
 		TreeNode bioticProductionOcc = new TreeNode(landTransformation);
 		bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
 		bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
@@ -294,7 +300,7 @@ public class MatchProperties extends ViewPart {
 		TreeNode bioticProductionTransf = new TreeNode(landTransformation);
 		bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
 		bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
-		
+
 		TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
 		erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
 		erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
@@ -326,8 +332,7 @@ public class MatchProperties extends ViewPart {
 		TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
 		physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
 		physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
-		
-		
+
 		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
 		other.nodeName = "Other";
@@ -363,11 +368,11 @@ public class MatchProperties extends ViewPart {
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
 		normalVolume.uri = FedLCA.NormalVolume;
-		
+
 		TreeNode valueUS2000BulkPrices = new TreeNode(other);
 		valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
 		valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
-		
+
 		return masterPropertyTree;
 	}
 
@@ -577,7 +582,7 @@ public class MatchProperties extends ViewPart {
 	};
 	private Composite outerComposite;
 	private Button unAssignButton;
-	private Button assignButton;
+	private Button nextButton;
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
@@ -605,6 +610,7 @@ public class MatchProperties extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		Resource propertyResource = dataRow.getFlowProperty().getMatchingResource();
+		propertyToMatch = dataRow.getFlowProperty();
 		if (propertyResource != null) {
 			TreeItem treeItem = getTreeItemByURI(propertyResource);
 			if (treeItem != null) {

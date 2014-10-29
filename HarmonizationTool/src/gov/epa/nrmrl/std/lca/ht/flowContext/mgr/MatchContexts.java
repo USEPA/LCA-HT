@@ -16,6 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class MatchContexts extends ViewPart {
@@ -59,8 +61,9 @@ public class MatchContexts extends ViewPart {
 	private static Tree masterTree;
 	private static TreeViewer masterTreeViewer;
 	private static Label masterLbl;
-	private int rowNumSelected;
-	private int colNumSelected;
+//	private int rowNumSelected;
+//	private int colNumSelected;
+	private static FlowContext contextToMatch;
 
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
@@ -123,12 +126,6 @@ public class MatchContexts extends ViewPart {
 		masterTreeViewer.setInput(createHarmonizeCompartments());
 		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 			public void doit(SelectionEvent e){
-//				TreeNode treeNode = (TreeNode) (e.item.getData());
-//
-//				if (!treeNode.hasChildern()) {
-//					String masterLabel = treeNode.getLabel();
-//					Resource masterResource = treeNode.getUri();
-//				}
 				assign();
 			}
 			@Override
@@ -157,7 +154,7 @@ public class MatchContexts extends ViewPart {
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 			dataRow.getFlowContext().setMatchingResource(null);
-			FlowsWorkflow.removeMatchContextRowNum(rowNumber);
+			FlowsWorkflow.removeMatchContextRowNum(contextToMatch.getFirstRow());
 			CSVTableView.colorFlowContextRows();
 			// tableItem.setBackground(color);
 		}
@@ -189,30 +186,12 @@ public class MatchContexts extends ViewPart {
 			return;
 		}
 		dataRow.getFlowContext().setMatchingResource(newResource);
-		FlowsWorkflow.addMatchContextRowNum(rowNumber);
+		FlowsWorkflow.addMatchContextRowNum(contextToMatch.getFirstRow());
 		CSVTableView.colorFlowContextRows();
-//		CSVTableView.selectNextContext();
 	}
 	
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-//			Util.findView(CSVTableView.ID);
-//			Util.findView(FlowsWorkflow.ID);
-//			TableItem[] tableItems = CSVTableView.getTable().getSelection();
-//			TableItem tableItem = tableItems[0];
-//			String rowNumString = tableItem.getText(0);
-//			int rowNumber = Integer.parseInt(rowNumString) - 1;
-//			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//
-//			TreeItem treeItem = masterTree.getSelection()[0];
-//			TreeNode treeNode = (TreeNode) treeItem.getData();
-//			Resource newResource = treeNode.getUri();
-//			if (newResource == null) {
-//				return;
-//			}
-//			dataRow.getFlowContext().setMatchingResource(newResource);
-//			FlowsWorkflow.addMatchContextRowNum(rowNumber);
-//			CSVTableView.colorFlowContextRows();
 			CSVTableView.selectNextContext();
 		}
 
@@ -648,6 +627,7 @@ public class MatchContexts extends ViewPart {
 //		String rowNumString = tableItem.getText(0);
 //		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
+		contextToMatch = dataRow.getFlowContext();
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);

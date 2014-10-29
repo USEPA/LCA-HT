@@ -837,9 +837,17 @@ public class Flowable {
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
 			System.out.println("Resource: candidateFlowableTDBResource"+candidateFlowableTDBResource);
-			if (candidateFlowableTDBResource.hasLiteral(ECO.casNumber, qCASLiteral)) {
-				if (candidateFlowableTDBResource.hasLiteral(RDFS.label, qNameLiteral)
-						|| candidateFlowableTDBResource.hasLiteral(SKOS.altLabel, qNameLiteral)) {
+			StmtIterator thing = candidateFlowableTDBResource.listProperties();
+			while (thing.hasNext()){
+				Statement fred = thing.next();
+				System.out.println("fred.getPredicate() = "+ fred.getPredicate());
+			}
+//			System.out.println("candidateFlowableTDBResource.listProperties() = "+ candidateFlowableTDBResource.listProperties());
+//			if (candidateFlowableTDBResource.hasLiteral(ECO.casNumber, qCASLiteral)) {
+
+			if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
+				if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+						|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
 					matchCandidates.put(candidateFlowableTDBResource, "=");
 				}
 			}
