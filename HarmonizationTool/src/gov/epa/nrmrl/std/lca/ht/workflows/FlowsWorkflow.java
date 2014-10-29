@@ -796,7 +796,9 @@ public class FlowsWorkflow extends ViewPart {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		CSVTableView.colorFlowableRows();
+//		CSVTableView.colorFlowableRows();
+		CSVTableView.colorOneFlowableRow(rowNumToSend);
+
 	}
 
 	public static void addMatchContextRowNum(int rowNumToSend) {

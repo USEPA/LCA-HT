@@ -191,12 +191,16 @@ public class AutoMatchJob extends Job {
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
-					flowable.setMatches();
+					final boolean hit = flowable.setMatches();
 					flowable.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+							if (hit){
+								FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
+							}
 						}
+			
 					});
 				}
 				dataRow.setFlowable(flowable);

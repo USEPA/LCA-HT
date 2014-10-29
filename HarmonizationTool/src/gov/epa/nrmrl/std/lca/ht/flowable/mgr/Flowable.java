@@ -9,6 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -223,6 +224,18 @@ public class Flowable {
 					Object object = lcaDataValue.getValue();
 					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
 							object);
+					if (!valueAsString.equals(valueAsString.toLowerCase())) {
+						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+						if (key.equals(flowableNameString)) {
+							ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+									valueAsString.toLowerCase());
+						}
+						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+						if (key.equals(flowableSynonymString)) {
+							ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+									valueAsString.toLowerCase());
+						}
+					}
 					continue;
 				}
 			}
@@ -234,6 +247,18 @@ public class Flowable {
 			Object object = lcaDataValue.getValue();
 			lcaDataValues.add(lcaDataValue);
 			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			if (!valueAsString.equals(valueAsString.toLowerCase())) {
+				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+				if (key.equals(flowableNameString)) {
+					ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+							valueAsString.toLowerCase());
+				}
+				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+				if (key.equals(flowableSynonymString)) {
+					ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+							valueAsString.toLowerCase());
+				}
+			}
 		}
 		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
@@ -762,9 +787,10 @@ public class Flowable {
 		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
 
-	public void setMatches() {
+	public boolean setMatches() {
 		String qName = getName();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		String lcQName = qName.toLowerCase();
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
 		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
@@ -785,7 +811,8 @@ public class Flowable {
 		}
 
 		for (String altName : getSynonyms()) {
-			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(altName);
+			String lcAltName = altName.toLowerCase();
+			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
 
 			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
 			// Q-SYN = DB-NAME
@@ -821,37 +848,78 @@ public class Flowable {
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
-		autosetStatus();
+		return autosetStatus();
 	}
 
-	private void autosetStatus() {
+	private boolean autosetStatus() {
+		boolean hit = false;
 		String qCAS = getCas();
-		if (qCAS == null) {
-			return;
+		Literal qCASLiteral = null;
+		if (qCAS != null) {
+			qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
 		}
 		// Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
 		String qName = getName();
 		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
-		Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
 		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-			System.out.println("Resource: candidateFlowableTDBResource"+candidateFlowableTDBResource);
+			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
 			StmtIterator thing = candidateFlowableTDBResource.listProperties();
-			while (thing.hasNext()){
+			while (thing.hasNext()) {
 				Statement fred = thing.next();
-				System.out.println("fred.getPredicate() = "+ fred.getPredicate());
+				System.out.println("fred.getPredicate() = " + fred.getPredicate());
 			}
-//			System.out.println("candidateFlowableTDBResource.listProperties() = "+ candidateFlowableTDBResource.listProperties());
-//			if (candidateFlowableTDBResource.hasLiteral(ECO.casNumber, qCASLiteral)) {
 
-			if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
+			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
+			if (qCASLiteral == null) {
 				if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
 						|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
 					matchCandidates.put(candidateFlowableTDBResource, "=");
+					hit = true;
+					continue;
+					// FlowsWorkflow.addFlowableRowNum(firstRow);
+				}
+				// CRITERION 2: QUERY HAS NO CAS AND SYNONYM MATCHES A NAME OR SYNONYM
+				for (String synonym : getSynonyms()) {
+					Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
+					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+						matchCandidates.put(candidateFlowableTDBResource, "=");
+						hit = true;
+						continue;
+						// FlowsWorkflow.addFlowableRowNum(firstRow);
+					}
+
+				}
+
+			} else {
+				if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
+					// CRITERION 3: CAS MATCHES AND NAME MATCHES A NAME OR SYNONYM
+
+					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
+						matchCandidates.put(candidateFlowableTDBResource, "=");
+						hit = true;
+						continue;
+						// FlowsWorkflow.addFlowableRowNum(firstRow);
+					}
+					// CRITERION 4: CAS MATCHES AND SYNONYM MATCHES A NAME OR SYNONYM
+					for (String synonym : getSynonyms()) {
+						Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
+						if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+								|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+							matchCandidates.put(candidateFlowableTDBResource, "=");
+							hit = true;
+							continue;
+							// FlowsWorkflow.addFlowableRowNum(firstRow);
+						}
+
+					}
 				}
 			}
 		}
+		return hit;
 	}
 
 	public String getDataSource() {
