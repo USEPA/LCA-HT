@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
@@ -22,22 +23,29 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
@@ -64,7 +72,8 @@ public class MatchFlowableTableView extends ViewPart {
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
 
-	private static TextCellEditor editor;
+	// private static TextCellEditor editor;
+	private static TableEditor editor;
 
 	public MatchFlowableTableView() {
 	}
@@ -112,12 +121,12 @@ public class MatchFlowableTableView extends ViewPart {
 		addToMaster.setVisible(false);
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-		editor = new TextCellEditor(tableViewer.getTable());
+		// editor = new TextCellEditor(tableViewer.getTable());
+		editor = new TableEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		createColumns();
 	}
 
-	//
 	private static void initializeTable() {
 		table = tableViewer.getTable();
 		GridData gd_table = new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1);
@@ -125,6 +134,8 @@ public class MatchFlowableTableView extends ViewPart {
 		gd_table.heightHint = 1500;
 		table.setLayoutData(gd_table);
 		// table.addListener(SWT.KeyDown, keyListener);
+		// table.addSelectionListener(selectionAdapter);
+
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.addMouseListener(tableMouseListener);
@@ -140,7 +151,7 @@ public class MatchFlowableTableView extends ViewPart {
 			return;
 		}
 
-//		flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
+		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		table.clearAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
@@ -175,23 +186,22 @@ public class MatchFlowableTableView extends ViewPart {
 			row++;
 		}
 
+		// THE SEARCH ROW (AFTER AUTOMATIC MATCHES)
+		TableItem searchRow = table.getItem(matchCandidateResources.size() + 1);
+		searchRow.setForeground((SWTResourceManager.getColor(SWT.COLOR_BLUE)));
+		searchRow.setText(6, "Click to Search -->");
+		// Text nameEditor = new Text(table, SWT.NONE);
+		// nameEditor.setText(searchRow.getText(7));
+		// nameEditor.addModifyListener(new ModifyListener() {
+		// public void modifyText(ModifyEvent me) {
+		// Text text = (Text) editor.getEditor();
+		// editor.getItem().setText(colNumSelected, text.getText());
+		// }
+		// });
+		// editor.setEditor(nameEditor, searchRow, 7);
+
 		updateMatchCounts();
-
-		// for (int i = 0; i < 6; i++) {
-		// if (matchSummary[i] == null) {
-		// table.getItem(0).setText(i, "0");
-		// } else {
-		// table.getItem(0).setText(i, matchSummary[i].toString());
-		// }
-		// }
 	}
-
-	// private static void updateMatchStatus(int rowNumber) {
-	// Integer[] matchSummary = new Integer[7];
-	// for (int i = 0; i < 7; i++) {
-	// table.getItem(0).setText(i, matchSummary[i] + "");
-	// }
-	// }
 
 	private static void setResultRowData(int rowNum, Flowable flowable) {
 		TableItem qRow = table.getItem(rowNum);
@@ -246,79 +256,107 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn = createTableViewerColumn("Other", 200, 10);
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(10));
-		//
-		// matchStatus = MatchStatus.UNKNOWN;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-		//
-		// matchStatus = MatchStatus.EQUIVALENT;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-
-		// matchStatus = MatchStatus.SUBSET;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-		//
-		// matchStatus = MatchStatus.SUPERSET;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-		//
-		// matchStatus = MatchStatus.PROXY;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-		//
-		// matchStatus = MatchStatus.NONEQUIVALENT;
-		// tableViewerColumn = createTableViewerColumn(matchStatus.getSymbol(),
-		// 20, matchStatus.getValue());
-		// tableViewerColumn.getColumn().setToolTipText(matchStatus.getName() +
-		// " - " + matchStatus.getComment());
-		// tableViewerColumn.getColumn().setAlignment(SWT.CENTER);
-		// tableViewerColumn.setLabelProvider(new
-		// MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
-
 	}
+
+	// private static SelectionAdapter selectionAdapter = new SelectionAdapter() {
+	//
+	// @Override
+	// public void widgetSelected(SelectionEvent e) {
+	// Point ptLeft = new Point(1, e.y);
+	// Point ptClick = new Point(e.x, e.y);
+	// int clickedRow = 0;
+	// int clickedCol = 0;
+	// TableItem item = table.getItem(ptLeft);
+	// if (item == null) {
+	// return;
+	// }
+	// clickedRow = table.indexOf(item);
+	// if (clickedRow < 1) {
+	// return;
+	// }
+	// if (clickedRow > table.getItemCount() - 2) {
+	// // HANDLE BLANK ROW SEARCH TOOL IF THEY CLICK LAST ROW
+	// return;
+	// }
+	// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// if (clickedCol < 0) {
+	// return;
+	// }
+	// rowNumSelected = clickedRow;
+	// colNumSelected = clickedCol;
+	// System.out.println("Click is rowNum: " + rowNumSelected + ". colNum: " + colNumSelected);
+	//
+	// // Clean up any previous editor control
+	// final TableEditor editor = new TableEditor(table);
+	// // The editor must have the same size as the cell and must
+	// // not be any smaller than 50 pixels.
+	// editor.horizontalAlignment = SWT.LEFT;
+	// editor.grabHorizontal = true;
+	// editor.minimumWidth = 50;
+	// Control oldEditor = editor.getEditor();
+	// if (oldEditor != null) {
+	// oldEditor.dispose();
+	// }
+	// // Identify the selected row
+	// item = (TableItem) e.item;
+	// if (item == null) {
+	// return;
+	// }
+	// // The control that will be the editor must be a child of the Table
+	// Text newEditor = new Text(table, SWT.NONE);
+	// newEditor.setText(item.getText(colNumSelected));
+	//
+	// newEditor.addModifyListener(new ModifyListener() {
+	// public void modifyText(ModifyEvent me) {
+	// Text text = (Text) editor.getEditor();
+	// editor.getItem().setText(colNumSelected, text.getText());
+	// }
+	// });
+	// newEditor.selectAll();
+	// newEditor.setFocus();
+	// editor.setEditor(newEditor, item, colNumSelected);
+	// }
+	// };
 
 	// private static Listener keyListener = new Listener() {
 	//
 	// @Override
 	// public void handleEvent(Event event) {
-	// System.out.println("Column 1 received event: " + event);
+	// Point ptLeft = new Point(1, event.y);
+	// Point ptClick = new Point(event.x, event.y);
+	// int clickedRow = 0;
+	// int clickedCol = 0;
+	// TableItem item = table.getItem(ptLeft);
+	// if (item == null) {
+	// return;
+	// }
+	// clickedRow = table.indexOf(item);
+	// if (clickedRow < 1) {
+	// return;
+	// }
+	// if (clickedRow > table.getItemCount() - 2) {
+	// // HANDLE BLANK ROW SEARCH TOOL IF THEY CLICK LAST ROW
+	// return;
+	// }
+	// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// if (clickedCol < 0) {
+	// return;
+	// }
+	// rowNumSelected = clickedRow;
+	// colNumSelected = clickedCol;
+	//
+	// System.out.println("Click is rowNum: " + rowNumSelected + ". colNum: " + colNumSelected);
 	// System.out.println("event.keyCode: " + event.keyCode);
 	// System.out.println("event.character: " + event.character);
+	// if (rowNumSelected == flowableToMatch.getMatchCandidates().size() + 1) {
+	// if (colNumSelected > 6) {
+	// String text = table.getItem(rowNumSelected).getText(colNumSelected);
+	// }
+	// }
 	//
 	// }
 	// };
+
 	private static void updateMatchCounts() {
 		Integer[] matchSummary = new Integer[] { 0, 0, 0, 0, 0, 0 };
 		boolean noMatch = true;
@@ -340,16 +378,16 @@ public class MatchFlowableTableView extends ViewPart {
 
 		Util.findView(FlowsWorkflow.ID);
 		if (noMatch) {
-//			FlowsWorkflow.removeMatchFlowableRowNum(dataTableRowNum);
+			// FlowsWorkflow.removeMatchFlowableRowNum(dataTableRowNum);
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 
 		} else {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
-//			FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
+			// FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
 		}
 
-//		Util.findView(CSVTableView.ID);
-//		CSVTableView.colorOneFlowableRow(dataTableRowNum);
+		// Util.findView(CSVTableView.ID);
+		// CSVTableView.colorOneFlowableRow(dataTableRowNum);
 	}
 
 	public static int getCsvTableRowNum() {
@@ -380,7 +418,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 		@Override
 		public void mouseUp(MouseEvent e) {
-			System.out.println("mouse up event :e =" + e);
+			// System.out.println("mouse up event :e =" + e);
 		}
 
 		private void leftClick(MouseEvent event) {
@@ -398,10 +436,6 @@ public class MatchFlowableTableView extends ViewPart {
 			if (clickedRow < 1) {
 				return;
 			}
-			if (clickedRow > table.getItemCount() - 2) {
-				// HANDLE BLANK ROW SEARCH TOOL IF THEY CLICK LAST ROW
-				return;
-			}
 			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
 			if (clickedCol < 0) {
 				return;
@@ -410,16 +444,42 @@ public class MatchFlowableTableView extends ViewPart {
 			colNumSelected = clickedCol;
 
 			LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-			if (clickedCol < 6) {
+			if (colNumSelected < 6 && rowNumSelected < candidateMap.size() + 1) {
 				Resource flowableCandidateResource = (Resource) candidateMap.keySet().toArray()[rowNumSelected - 1];
 				int oldCol = MatchStatus.getNumberBySymbol(candidateMap.get(flowableCandidateResource));
 				item.setText(oldCol, "");
-				item.setText(clickedCol, MatchStatus.getByValue(clickedCol).getSymbol());
-				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(clickedCol).getSymbol());
+				item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
+				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(colNumSelected).getSymbol());
 				table.deselectAll();
-			} else {
-				// HANDLE LOOKUPS AND STUFF
+			} else if (colNumSelected > 6 && rowNumSelected == candidateMap.size() + 1) {
+				editor = new TableEditor(table);
+				editor.horizontalAlignment = SWT.LEFT;
+				editor.grabHorizontal = true;
+				editor.minimumWidth = 50;
+				Control oldEditor = editor.getEditor();
+				if (oldEditor != null) {
+					oldEditor.dispose();
+				}
+
+				Text newEditor = new Text(table, SWT.NONE);
+				newEditor.setText(item.getText(colNumSelected));
+
+				newEditor.addModifyListener(new ModifyListener() {
+					public void modifyText(ModifyEvent me) {
+						// Text text = (Text) editor.getControl();
+						Text text = (Text) editor.getEditor();
+						if (colNumSelected > 6) {
+							editor.getItem().setText(colNumSelected, text.getText());
+						}
+					}
+				});
+				newEditor.selectAll();
+				newEditor.setFocus();
+				editor.setEditor(newEditor, item, colNumSelected);
+			} else if (colNumSelected == 6 && rowNumSelected == candidateMap.size() + 1) {
+				findMatches();
 			}
+			// table.getItem(candidateMap.size() + 1).setText(6, "Click to Search -->");
 			updateMatchCounts();
 		}
 
@@ -427,6 +487,88 @@ public class MatchFlowableTableView extends ViewPart {
 			System.out.println("cellSelectionMouseDownListener event " + event);
 		}
 	};
+
+	private static void findMatches() {
+		String nameSearch = table.getItem(flowableToMatch.getMatchCandidates().size() + 1).getText(7);
+		String casSearch = table.getItem(flowableToMatch.getMatchCandidates().size() + 1).getText(8);
+		String synSearch = table.getItem(flowableToMatch.getMatchCandidates().size() + 1).getText(9);
+		String otherSearch = table.getItem(flowableToMatch.getMatchCandidates().size() + 1).getText(9);
+
+		String nameRegex = "";
+		String casRegex = "";
+		String synRegex = "";
+		String otherRegex = "";
+
+		StringBuilder b = new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		b.append(" \n");
+		b.append("SELECT ?f  \n");
+		b.append("WHERE \n");
+		b.append("  { ?f a eco:Flowable . \n");
+		b.append("    ?f rdfs:label ?name . \n");
+		b.append("    optional {?f eco:casNumber ?cas . }\n");
+		b.append("    optional {?f skos:altName ?syn . }\n");
+		b.append("    optional {?f ?p ?other . }\n");
+
+		if (!nameSearch.matches("^\\s*$")) {
+			if (!nameSearch.substring(0, 1).equals("*")) {
+				nameRegex = "^";
+			}
+			nameRegex += nameSearch;
+			if (!nameSearch.substring(-1, -1).equals("*")) {
+				nameRegex += "$";
+			}
+			b.append("    filter regex(str(?name),\"" + nameRegex + "\",\"i\n");
+		}
+		if (!casSearch.matches("^\\s*$")) {
+			if (!casSearch.substring(0, 1).equals("*")) {
+				casRegex = "^";
+			}
+			casRegex += casSearch;
+			if (!casSearch.substring(-1, -1).equals("*")) {
+				casRegex += "$";
+			}
+			b.append("    filter regex(str(?cas),\"" + casRegex + "\",\"i\n");
+		}
+		if (!synSearch.matches("^\\s*$")) {
+			if (!synSearch.substring(0, 1).equals("*")) {
+				synRegex = "^";
+			}
+			synRegex += synSearch;
+			if (!synSearch.substring(-1, -1).equals("*")) {
+				synRegex += "$";
+			}
+			b.append("    filter regex(str(?syn),\"" + synRegex + "\",\"i\n");
+		}
+		if (!otherSearch.matches("^\\s*$")) {
+			if (!otherSearch.substring(0, 1).equals("*")) {
+				otherRegex = "^";
+			}
+			otherRegex += otherSearch;
+			if (!otherSearch.substring(-1, -1).equals("*")) {
+				otherRegex += "$";
+			}
+			b.append("    filter regex(str(?other),\"" + otherRegex + "\",\"i\n");
+		}
+		b.append("   } \n");
+		String query = b.toString();
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		System.out.println("resultSet = " + resultSet);
+
+	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
 		private int dataColumnNumber;

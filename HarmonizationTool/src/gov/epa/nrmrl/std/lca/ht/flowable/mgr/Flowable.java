@@ -860,7 +860,7 @@ public class Flowable {
 		}
 		// Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
 		String qName = getName();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName.toLowerCase());
 		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
