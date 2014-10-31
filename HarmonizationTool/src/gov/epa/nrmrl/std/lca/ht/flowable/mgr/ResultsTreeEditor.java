@@ -480,47 +480,47 @@ public class ResultsTreeEditor extends ViewPart {
 	// TableProvider.createTransform0(resultSetRewindable);
 	// resultSetRewindable.reset();
 	//
-	// List<DataRow> data = tableProvider.getData();
-	// DataRow firstRow = data.get(0);
-	// QuerySolution resultSetRow = resultSetRewindable.next();
-	// String keyDataSource = firstRow.get(0);
-	// // THE ROW BELOW WOULD DO THE SAME THING
-	// // String keyDataSource =
-	// //
-	// resultSetRow.get(TableProvider.SUBROW_PREFIX+"1_"+TableProvider.SUBROW_NAMEHEADER).asLiteral().getString();
-	//
-	// TreeNodeRoot trunk = new TreeNodeRoot();
-	// TreeNodeRow treeRow = new TreeNodeRow(trunk);
-	// int subRowIndex = 1;
-	// treeRow.rowSubURI = resultSetRow.get(TableProvider.SUBROW_PREFIX +
-	// subRowIndex + "_" + TableProvider.SUBROW_SUB_URI).asResource();
-	//
-	// int sourceTableRow = -1;
-	// if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
-	// sourceTableRow = resultSetRow.get(TableProvider.SUBROW_PREFIX +
-	// subRowIndex + "_" +
-	// TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
-	// }
-	// treeRow.sourceTableRow = sourceTableRow;
-	//
-	// for (int col = 0; col < firstRow.getSize(); col++) {
-	// treeRow.colLabels.add(firstRow.get(col));
-	// treeRow.addMatchStatus(MatchStatus.UNKNOWN);
-	// }
-	// // trunk.children.add(treeRow);
-	// // trunk.child.add(treeRow);
-	// TreeNodeSubRow treeSubRow;
-	//
-	// for (int i = 1; i < data.size(); i++) {
-	// DataRow dataRow = data.get(i);
-	// resultSetRow = resultSetRewindable.next();
-	// Resource rowURI =
-	// resultSetRow.get(TableProvider.SUBROW_SUB_URI).asResource();
-	// sourceTableRow = -1;
-	// if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
-	// sourceTableRow =
-	// resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
-	// }
+//	 List<DataRow> data = tableProvider.getData();
+//	 DataRow firstRow = data.get(0);
+//	 QuerySolution resultSetRow = resultSetRewindable.next();
+//	 String keyDataSource = firstRow.get(0);
+//	 // THE ROW BELOW WOULD DO THE SAME THING
+//	 // String keyDataSource =
+//	 //
+//	 resultSetRow.get(TableProvider.SUBROW_PREFIX+"1_"+TableProvider.SUBROW_NAMEHEADER).asLiteral().getString();
+//	
+//	 TreeNodeRoot trunk = new TreeNodeRoot();
+//	 TreeNodeRow treeRow = new TreeNodeRow(trunk);
+//	 int subRowIndex = 1;
+//	 treeRow.rowSubURI = resultSetRow.get(TableProvider.SUBROW_PREFIX +
+//	 subRowIndex + "_" + TableProvider.SUBROW_SUB_URI).asResource();
+//	
+//	 int sourceTableRow = -1;
+//	 if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
+//	 sourceTableRow = resultSetRow.get(TableProvider.SUBROW_PREFIX +
+//	 subRowIndex + "_" +
+//	 TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
+//	 }
+//	 treeRow.sourceTableRow = sourceTableRow;
+//	
+//	 for (int col = 0; col < firstRow.getSize(); col++) {
+//	 treeRow.colLabels.add(firstRow.get(col));
+//	 treeRow.addMatchStatus(MatchStatus.UNKNOWN);
+//	 }
+//	 // trunk.children.add(treeRow);
+//	 // trunk.child.add(treeRow);
+//	 TreeNodeSubRow treeSubRow;
+//	
+//	 for (int i = 1; i < data.size(); i++) {
+//	 DataRow dataRow = data.get(i);
+//	 resultSetRow = resultSetRewindable.next();
+//	 Resource rowURI =
+//	 resultSetRow.get(TableProvider.SUBROW_SUB_URI).asResource();
+//	 sourceTableRow = -1;
+//	 if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
+//	 sourceTableRow =
+//	 resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
+//	 }
 	//
 	// if (keyDataSource.equals(dataRow.get(0))) {
 	// subRowIndex = 1;

@@ -150,6 +150,8 @@ public class Flowable {
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
 	private LinkedHashMap<Resource, String> matchCandidates;
+	private LinkedHashMap<Resource, String> searchResults;
+
 	private int firstRow;
 
 	// CONSTRUCTORS
@@ -157,12 +159,14 @@ public class Flowable {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
 		matchCandidates = new LinkedHashMap<Resource, String>();
+		searchResults = new LinkedHashMap<Resource, String>();
 	}
 
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
 		matchCandidates = new LinkedHashMap<Resource, String>();
+		searchResults = new LinkedHashMap<Resource, String>();
 		clearSyncDataFromTDB();
 	}
 
@@ -779,6 +783,11 @@ public class Flowable {
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
 	}
+	
+
+	public void addSearchResult(Resource resource) {
+		searchResults.put(resource, "?");
+	}
 
 	public void removeMatchCandidate(Resource resource) {
 		matchCandidates.remove(resource);
@@ -867,12 +876,12 @@ public class Flowable {
 		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
-			StmtIterator thing = candidateFlowableTDBResource.listProperties();
-			while (thing.hasNext()) {
-				Statement fred = thing.next();
-				System.out.println("fred.getPredicate() = " + fred.getPredicate());
-			}
+//			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
+//			StmtIterator thing = candidateFlowableTDBResource.listProperties();
+//			while (thing.hasNext()) {
+//				Statement fred = thing.next();
+//				System.out.println("fred.getPredicate() = " + fred.getPredicate());
+//			}
 
 			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
 			if (qCASLiteral == null) {
@@ -946,4 +955,14 @@ public class Flowable {
 		this.firstRow = firstRow;
 	}
 
+	public void clearSearchResults() {
+		searchResults.clear();
+	}
+
+	public LinkedHashMap<Resource, String> getSearchResults() {
+		if (searchResults == null){
+			return new LinkedHashMap<Resource, String>();
+		}
+		return searchResults;
+	}
 }
