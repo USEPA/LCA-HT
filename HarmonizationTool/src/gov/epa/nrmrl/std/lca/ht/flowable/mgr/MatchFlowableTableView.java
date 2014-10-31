@@ -424,11 +424,13 @@ public class MatchFlowableTableView extends ViewPart {
 		private void leftClick(MouseEvent event) {
 
 			System.out.println("cellSelectionMouseDownListener event " + event);
+			Object thing = event.getSource();
+			System.out.println("Source object = " + thing);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int clickedRow = 0;
 			int clickedCol = 0;
-			TableItem item = table.getItem(ptLeft);
+			final TableItem item = table.getItem(ptLeft);
 			if (item == null) {
 				return;
 			}
@@ -452,7 +454,7 @@ public class MatchFlowableTableView extends ViewPart {
 				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(colNumSelected).getSymbol());
 				table.deselectAll();
 			} else if (colNumSelected > 6 && rowNumSelected == candidateMap.size() + 1) {
-				editor = new TableEditor(table);
+				final TableEditor editor = new TableEditor(table);
 				editor.horizontalAlignment = SWT.LEFT;
 				editor.grabHorizontal = true;
 				editor.minimumWidth = 50;
@@ -466,11 +468,13 @@ public class MatchFlowableTableView extends ViewPart {
 
 				newEditor.addModifyListener(new ModifyListener() {
 					public void modifyText(ModifyEvent me) {
+						System.out.println("event: " + me);
+						System.out.println("widget: " + me.widget);
 						// Text text = (Text) editor.getControl();
 						Text text = (Text) editor.getEditor();
-						if (colNumSelected > 6) {
-							editor.getItem().setText(colNumSelected, text.getText());
-						}
+						// if (colNumSelected > 6) {
+						item.setText(colNumSelected, text.getText());
+						// }
 					}
 				});
 				newEditor.selectAll();
@@ -526,7 +530,7 @@ public class MatchFlowableTableView extends ViewPart {
 				nameRegex = "^";
 			}
 			nameRegex += nameSearch;
-			if (!nameSearch.substring(-1, -1).equals("*")) {
+			if (!nameSearch.substring(nameSearch.length() - 1).equals("*")) {
 				nameRegex += "$";
 			}
 			b.append("    filter regex(str(?name),\"" + nameRegex + "\",\"i\n");

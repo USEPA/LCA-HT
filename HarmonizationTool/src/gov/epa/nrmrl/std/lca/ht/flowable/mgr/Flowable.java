@@ -766,6 +766,9 @@ public class Flowable {
 	}
 
 	public LinkedHashMap<Resource, String> getMatchCandidates() {
+		if (matchCandidates == null){
+			return new LinkedHashMap<Resource, String>();
+		}
 		return matchCandidates;
 	}
 

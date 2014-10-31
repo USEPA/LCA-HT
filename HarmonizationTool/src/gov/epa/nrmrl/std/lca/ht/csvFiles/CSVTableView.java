@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -1939,8 +1940,9 @@ public class CSVTableView extends ViewPart {
 
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
 		boolean hit = false;
-		for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(rowToColor)
-				.getFlowable().getMatchCandidates().values()) {
+		LinkedHashMap<Resource, String> thing = TableKeeper.getTableProvider(tableProviderKey).getData().get(rowToColor)
+				.getFlowable().getMatchCandidates();
+		for (String symbol : thing.values()) {
 			int matchNum = MatchStatus.getNumberBySymbol(symbol);
 			if (matchNum > 0 && matchNum < 5) {
 				hit = true;
