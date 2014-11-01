@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
@@ -140,12 +141,13 @@ public class MatchFlowableTableView extends ViewPart {
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
+		flowableToMatch.clearSearchResults();
 		if (flowableToMatch == null) {
 			return;
 		}
 
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
-		table.clearAll();
+		table.removeAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
 		setResultRowData(0, flowableToMatch);
@@ -190,7 +192,12 @@ public class MatchFlowableTableView extends ViewPart {
 		// }
 
 		for (int i = 7; i < 11; i++) {
+
 			searchEditor[i] = new TableEditor(table);
+			Control oldEditor = searchEditor[i].getEditor();
+			if (oldEditor != null) {
+				oldEditor.dispose();
+			}
 			searchEditor[i].horizontalAlignment = SWT.LEFT;
 			searchEditor[i].grabHorizontal = true;
 			searchEditor[i].minimumWidth = 50;

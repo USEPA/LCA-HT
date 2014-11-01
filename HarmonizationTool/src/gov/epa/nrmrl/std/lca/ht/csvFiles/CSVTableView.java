@@ -1940,8 +1940,10 @@ public class CSVTableView extends ViewPart {
 
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
 		boolean hit = false;
-		LinkedHashMap<Resource, String> thing = TableKeeper.getTableProvider(tableProviderKey).getData().get(rowToColor)
-				.getFlowable().getMatchCandidates();
+		List<DataRow> data = TableKeeper.getTableProvider(tableProviderKey).getData();
+		DataRow dataRow = data.get(rowToColor);
+		Flowable flowable = dataRow.getFlowable();
+		LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
 		for (String symbol : thing.values()) {
 			int matchNum = MatchStatus.getNumberBySymbol(symbol);
 			if (matchNum > 0 && matchNum < 5) {
