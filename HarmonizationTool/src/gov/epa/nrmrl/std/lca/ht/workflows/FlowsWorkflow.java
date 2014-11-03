@@ -869,7 +869,8 @@ public class FlowsWorkflow extends ViewPart {
 		matchedFlowableRowNumbers.remove(rowNumber);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		CSVTableView.colorFlowableRows();
+//		CSVTableView.colorFlowableRows();
+		CSVTableView.colorOneFlowableRow(rowNumber);
 	}
 
 	public static void updateFlowableCount() {

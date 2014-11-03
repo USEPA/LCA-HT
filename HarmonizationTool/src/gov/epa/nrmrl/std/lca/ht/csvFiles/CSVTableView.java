@@ -1965,67 +1965,71 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void colorFlowableRows() {
-		List<Integer> flowableColumns = new ArrayList<Integer>();
-		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
-				.getLcaDataProperties();
-		for (int i = 0; i < lcaDataProperties.length; i++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-					flowableColumns.add(i);
-				}
-			}
-		}
-
-		Set<Integer> filterRowNumbers = getFilterRowNumbers();
-
-		if (filterRowNumbers.size() > 0) {
-			int visibleRowNum = 0;
-			for (int i : filterRowNumbers) {
-				if (uniqueFlowableRowNumbers.contains(i)) {
-					boolean hit = false;
-					for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
-							.getFlowable().getMatchCandidates().values()) {
-						int matchNum = MatchStatus.getNumberBySymbol(symbol);
-						if (matchNum > 0 && matchNum < 5) {
-							hit = true;
-						}
-					}
-					Color color;
-					if (hit) {
-						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-					} else {
-						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-					}
-					for (int j : flowableColumns) {
-						colorCell(visibleRowNum, j, color);
-					}
-				}
-				visibleRowNum++;
-			}
-		} else {
-			for (int i : uniqueFlowableRowNumbers) {
-				boolean hit = false;
-				for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-						.getMatchCandidates().values()) {
-					int matchNum = MatchStatus.getNumberBySymbol(symbol);
-					if (matchNum > 0 && matchNum < 5) {
-						hit = true;
-						break;
-					}
-				}
-				Color color;
-				if (hit) {
-					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-				} else {
-					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-				}
-				for (int j : flowableColumns) {
-					colorCell(i, j, color);
-				}
-			}
+		for (int i:uniqueFlowableRowNumbers){
+			colorOneFlowableRow(i);
 		}
 	}
+//		List<Integer> flowableColumns = new ArrayList<Integer>();
+//		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+//				.getLcaDataProperties();
+//		for (int i = 0; i < lcaDataProperties.length; i++) {
+//			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+//			if (lcaDataPropertyProvider != null) {
+//				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+//					flowableColumns.add(i);
+//				}
+//			}
+//		}
+//
+//		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+//
+//		if (filterRowNumbers.size() > 0) {
+//			int visibleRowNum = 0;
+//			for (int i : filterRowNumbers) {
+//				if (uniqueFlowableRowNumbers.contains(i)) {
+//					boolean hit = false;
+//					for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
+//							.getFlowable().getMatchCandidates().values()) {
+//						int matchNum = MatchStatus.getNumberBySymbol(symbol);
+//						if (matchNum > 0 && matchNum < 5) {
+//							hit = true;
+//						}
+//					}
+//					Color color;
+//					if (hit) {
+//						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+//					} else {
+//						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+//					}
+//					for (int j : flowableColumns) {
+//						colorCell(visibleRowNum, j, color);
+//					}
+//				}
+//				visibleRowNum++;
+//			}
+//		} else {
+//			for (int i : uniqueFlowableRowNumbers) {
+//				boolean hit = false;
+//				for (String symbol : TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
+//						.getMatchCandidates().values()) {
+//					int matchNum = MatchStatus.getNumberBySymbol(symbol);
+//					if (matchNum > 0 && matchNum < 5) {
+//						hit = true;
+//						break;
+//					}
+//				}
+//				Color color;
+//				if (hit) {
+//					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+//				} else {
+//					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+//				}
+//				for (int j : flowableColumns) {
+//					colorCell(i, j, color);
+//				}
+//			}
+//		}
+//	}
 
 	// BELOW IS THE VERSION THAT COLORS ACCORDING TO HOW MANY CANDIDATES THERE ARE
 	// public static void colorFlowableRows() {

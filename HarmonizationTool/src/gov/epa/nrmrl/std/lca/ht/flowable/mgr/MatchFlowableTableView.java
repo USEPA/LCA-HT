@@ -30,6 +30,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -132,11 +134,11 @@ public class MatchFlowableTableView extends ViewPart {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.addMouseListener(tableMouseListener);
+		table.addListener(SWT.MouseDown, tableMouseListener);
 	}
 
 	public static void update(int rowNumber) {
-		initialize();
+		// initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
@@ -202,6 +204,8 @@ public class MatchFlowableTableView extends ViewPart {
 			searchEditor[i].grabHorizontal = true;
 			searchEditor[i].minimumWidth = 50;
 			searchText[i] = new Text(table, SWT.NONE);
+			searchText[i].setEditable(true);
+			searchText[i].setVisible(true);
 			searchEditor[i].setEditor(searchText[i], searchRow, i);
 		}
 		// textName.addModifyListener(new ModifyListener() {
@@ -271,6 +275,7 @@ public class MatchFlowableTableView extends ViewPart {
 				continue;
 			}
 		}
+		// tableViewer.refresh();
 	}
 
 	private static void setResultRowData(int rowNum, Flowable flowable) {
@@ -455,7 +460,7 @@ public class MatchFlowableTableView extends ViewPart {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			// FlowsWorkflow.addMatchFlowableRowNum(dataTableRowNum);
 		}
-
+		// tableViewer.refresh();
 		// Util.findView(CSVTableView.ID);
 		// CSVTableView.colorOneFlowableRow(dataTableRowNum);
 	}
@@ -468,34 +473,12 @@ public class MatchFlowableTableView extends ViewPart {
 		MatchFlowableTableView.dataTableRowNum = csvTableRowNum;
 	}
 
-	private static MouseListener tableMouseListener = new MouseListener() {
+	// private static MouseListener tableMouseListener = new MouseListener() {
+	private static Listener tableMouseListener = new Listener() {
 
 		@Override
-		public void mouseDoubleClick(MouseEvent e) {
-			System.out.println("double click event :e =" + e);
-		}
-
-		@Override
-		public void mouseDown(MouseEvent e) {
-			System.out.println("mouse down event :e =" + e);
-			if (e.button == 1) {
-				leftClick(e);
-			} else if (e.button == 3) {
-				table.deselectAll();
-				rightClick(e);
-			}
-		}
-
-		@Override
-		public void mouseUp(MouseEvent e) {
-			// System.out.println("mouse up event :e =" + e);
-		}
-
-		private void leftClick(MouseEvent event) {
-
+		public void handleEvent(Event event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-			Object thing = event.getSource();
-			System.out.println("Source object = " + thing);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int clickedRow = 0;
@@ -518,20 +501,45 @@ public class MatchFlowableTableView extends ViewPart {
 			LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 
 			if (colNumSelected < 6 && rowNumSelected < candidateMap.size() + 1) {
-				Resource flowableCandidateResource = (Resource) candidateMap.keySet().toArray()[rowNumSelected - 1];
-				int oldCol = MatchStatus.getNumberBySymbol(candidateMap.get(flowableCandidateResource));
-				item.setText(oldCol, "");
-				item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
-				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(colNumSelected).getSymbol());
+				for (Resource resource : candidateMap.keySet()) {
+					Flowable tempFlowable = new Flowable(resource);
+					String source = tempFlowable.getDataSource();
+					String name = tempFlowable.getName();
+					if (name.equals(item.getText(7)) && source.equals(item.getText(6))) {
+						String symbol = candidateMap.get(resource);
+						int oldCol = MatchStatus.getNumberBySymbol(symbol);
+						item.setText(oldCol, "");
+						item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
+						candidateMap.put(resource, MatchStatus.getByValue(colNumSelected).getSymbol());
+						break;
+					}
+				}
+//				Resource flowableCandidateResource = (Resource) candidateMap.keySet().toArray()[rowNumSelected - 1];
+//				int oldCol = MatchStatus.getNumberBySymbol(candidateMap.get(flowableCandidateResource));
+//				item.setText(oldCol, "");
+//				item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
+//				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(colNumSelected).getSymbol());
+//				Flowable tempFlowable = new Flowable(flowableCandidateResource);
+//				// searchText[7].setText(tempFlowable.getName());
+//				// searchText[8].setText(tempFlowable.getCas());
+//				// searchText[9].setText("");
+//				// searchText[10].setText("");
 				table.deselectAll();
 			} else if (colNumSelected < 6 && rowNumSelected > candidateMap.size() + 1) {
 				LinkedHashMap<Resource, String> searchMap = flowableToMatch.getSearchResults();
-				Resource flowableCandidateResource = (Resource) searchMap.keySet().toArray()[rowNumSelected - 1
-						- candidateMap.size()];
-				int oldCol = MatchStatus.getNumberBySymbol(searchMap.get(flowableCandidateResource));
-				item.setText(oldCol, "");
-				item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
-				candidateMap.put(flowableCandidateResource, MatchStatus.getByValue(colNumSelected).getSymbol());
+				for (Resource resource : searchMap.keySet()) {
+					Flowable tempFlowable = new Flowable(resource);
+					String source = tempFlowable.getDataSource();
+					String name = tempFlowable.getName();
+					if (name.equals(item.getText(7)) && source.equals(item.getText(6))) {
+						String symbol = searchMap.get(resource);
+						int oldCol = MatchStatus.getNumberBySymbol(symbol);
+						item.setText(oldCol, "");
+						item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
+						candidateMap.put(resource, MatchStatus.getByValue(colNumSelected).getSymbol());
+						break;
+					}
+				}
 				table.deselectAll();
 			} else if (colNumSelected > 6 && rowNumSelected == candidateMap.size() + 1) {
 
@@ -570,18 +578,23 @@ public class MatchFlowableTableView extends ViewPart {
 			}
 			// table.getItem(candidateMap.size() + 1).setText(6, "Click to Search -->");
 			updateMatchCounts();
-		}
-
-		private void rightClick(MouseEvent event) {
-			System.out.println("cellSelectionMouseDownListener event " + event);
+			System.out.println("event.widget = " + event.widget);
 		}
 	};
 
 	private static void findMatches() {
+		for (int i=7;i<11;i++){
+			searchText[i].setVisible(false);
+		}
 		String nameSearch = searchText[7].getText();
 		String casSearch = searchText[8].getText();
 		String synSearch = searchText[9].getText();
 		String otherSearch = searchText[10].getText();
+
+		String altNameSearch = table.getItem(rowNumSelected).getText(7);
+		String altcasSearch = table.getItem(rowNumSelected).getText(8);
+		String altsynSearch = table.getItem(rowNumSelected).getText(9);
+		String altotherSearch = table.getItem(rowNumSelected).getText(10);
 
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
@@ -840,37 +853,37 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 	};
 
-	private static SelectionListener advanceCSVTableListener = new SelectionListener() {
-
-		private void doit(SelectionEvent e) {
-			TableItem tableItem = table.getItem(0);
-			boolean gotMatch = false;
-			for (int colNum = 1; colNum < 5; colNum++) {
-				if (!tableItem.getText(colNum).equals("")) {
-					gotMatch = true;
-					break;
-				}
-			}
-			Util.findView(CSVTableView.ID);
-			if (gotMatch) {
-				CSVTableView.colorFlowableRows();
-				// FlowsWorkflow.updateFlowableCount();
-				// FIXME
-				// PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
-			}
-			CSVTableView.selectNextFlowable();
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			doit(e);
-		};
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			doit(e);
-		}
-	};
+	// private static SelectionListener advanceCSVTableListener = new SelectionListener() {
+	//
+	// private void doit(SelectionEvent e) {
+	// TableItem tableItem = table.getItem(0);
+	// boolean gotMatch = false;
+	// for (int colNum = 1; colNum < 5; colNum++) {
+	// if (!tableItem.getText(colNum).equals("")) {
+	// gotMatch = true;
+	// break;
+	// }
+	// }
+	// Util.findView(CSVTableView.ID);
+	// if (gotMatch) {
+	// CSVTableView.colorFlowableRows();
+	// // FlowsWorkflow.updateFlowableCount();
+	// // FIXME
+	// // PROBLEM IS THAT ASSIGNMENT HAPPENS BEFORE "ASSIGN" BUTTON
+	// }
+	// CSVTableView.selectNextFlowable();
+	// }
+	//
+	// @Override
+	// public void widgetSelected(SelectionEvent e) {
+	// doit(e);
+	// };
+	//
+	// @Override
+	// public void widgetDefaultSelected(SelectionEvent e) {
+	// doit(e);
+	// }
+	// };
 
 	private static Composite outerComposite;
 
