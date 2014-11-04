@@ -94,11 +94,14 @@ public class Snippet060TextCellEditorMin {
 
 		@Override
 		protected Object getValue(Object element) {
+			System.out.println("get element = " + element);
 			return ((Color) element).name;
 		}
 
 		@Override
 		protected void setValue(Object element, Object value) {
+			System.out.println("set element = " + element);
+			System.out.println("set element.getClass() = " + element.getClass());
 			((Color) element).name = value.toString();
 			getViewer().update(element, null);
 		}
