@@ -4,6 +4,8 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+//import gov.epa.nrmrl.std.lca.ht.snippets.Snippet060TextCellEditorMin.CellEditingSupport;
+//import gov.epa.nrmrl.std.lca.ht.snippets.Snippet060TextCellEditorMin.TextCellEditorWithContentProposal;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -12,17 +14,30 @@ import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.FocusCellHighlighter;
+import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TableViewerEditor;
+import org.eclipse.jface.viewers.TableViewerFocusCellManager;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -65,8 +80,9 @@ public class MatchFlowableTableView extends ViewPart {
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
-	private static Text[] searchText = new Text[11];
-	private static TableEditor[] searchEditor = new TableEditor[11];
+//	private static Text[] searchText = new Text[11];
+//	private static TableEditor[] searchEditor = new TableEditor[11];
+	private static TableEditor editor;
 
 	// private static TextCellEditor editor;
 	// private static TableEditor editor;
@@ -115,10 +131,36 @@ public class MatchFlowableTableView extends ViewPart {
 		Button addToMaster = new Button(innterComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(false);
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL| SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+//		editor = new TableEditor(tableViewer.getTable());
+//		editor.horizontalAlignment = SWT.LEFT;
+//		editor.grabHorizontal = true;
+//		editor.minimumWidth = 50;
 		// editor = new TextCellEditor(tableViewer.getTable());
 		// editor = new TableEditor(tableViewer.getTable());
+		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
+			@Override
+			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
+					return true;
+				}
+				return false;
+			}
+		};
+		activationSupport.setEnableEditorActivationWithKeyboard(true);
+
+		/*
+		 * Snippet060TextCellEditorWithContentProposal.java Without focus highlighter, keyboard events will not be
+		 * delivered to ColumnViewerEditorActivationStragety#isEditorActivationEvent(...) (see above)
+		 */
+		FocusCellHighlighter focusCellHighlighter = new FocusCellOwnerDrawHighlighter(tableViewer);
+		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer, focusCellHighlighter);
+
+		TableViewerEditor.create(tableViewer, focusCellManager, activationSupport, ColumnViewerEditor.TABBING_VERTICAL
+				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+
+		
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		createColumns();
 	}
@@ -134,7 +176,8 @@ public class MatchFlowableTableView extends ViewPart {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.addListener(SWT.MouseDown, tableMouseListener);
+//		table.addSelectionListener(selectionAdapter);
+//		table.addListener(SWT.MouseDown, tableMouseListener);
 	}
 
 	public static void update(int rowNumber) {
@@ -149,7 +192,7 @@ public class MatchFlowableTableView extends ViewPart {
 		}
 
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
-		table.removeAll();
+//		table.removeAll();
 		int rowCount = flowableToMatch.getMatchCandidates().size() + 2;
 		table.setItemCount(rowCount);
 		setResultRowData(0, flowableToMatch);
@@ -193,21 +236,21 @@ public class MatchFlowableTableView extends ViewPart {
 		// oldEditor.dispose();
 		// }
 
-		for (int i = 7; i < 11; i++) {
-
-			searchEditor[i] = new TableEditor(table);
-			Control oldEditor = searchEditor[i].getEditor();
-			if (oldEditor != null) {
-				oldEditor.dispose();
-			}
-			searchEditor[i].horizontalAlignment = SWT.LEFT;
-			searchEditor[i].grabHorizontal = true;
-			searchEditor[i].minimumWidth = 50;
-			searchText[i] = new Text(table, SWT.NONE);
-			searchText[i].setEditable(true);
-			searchText[i].setVisible(true);
-			searchEditor[i].setEditor(searchText[i], searchRow, i);
-		}
+//		for (int i = 7; i < 11; i++) {
+//
+//			searchEditor[i] = new TableEditor(table);
+//			Control oldEditor = searchEditor[i].getEditor();
+//			if (oldEditor != null) {
+//				oldEditor.dispose();
+//			}
+//			searchEditor[i].horizontalAlignment = SWT.LEFT;
+//			searchEditor[i].grabHorizontal = true;
+//			searchEditor[i].minimumWidth = 50;
+//			searchText[i] = new Text(table, SWT.NONE);
+//			searchText[i].setEditable(true);
+//			searchText[i].setVisible(true);
+//			searchEditor[i].setEditor(searchText[i], searchRow, i);
+//		}
 		// textName.addModifyListener(new ModifyListener() {
 		// public void modifyText(ModifyEvent me) {
 		// System.out.println("event: " + me);
@@ -332,8 +375,27 @@ public class MatchFlowableTableView extends ViewPart {
 		tableViewerColumn.getColumn().setAlignment(SWT.LEFT);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(10));
 	}
+	
+	
 
-	// private static SelectionAdapter selectionAdapter = new SelectionAdapter() {
+	/*******************************************************************************
+	 * Copyright (c) 2000, 2004 IBM Corporation and others.
+	 * All rights reserved. This program and the accompanying materials
+	 * are made available under the terms of the Eclipse Public License v1.0
+	 * which accompanies this distribution, and is available at
+	 * http://www.eclipse.org/legal/epl-v10.html
+	 *
+	 * Contributors:
+	 *     IBM Corporation - initial API and implementation
+	 *******************************************************************************/
+
+	/*
+	 * TableEditor example snippet: edit the text of a table item (in place)
+	 *
+	 * For a list of all SWT example snippets see
+	 * http://www.eclipse.org/swt/snippets/
+	 */
+	 private static SelectionAdapter selectionAdapter = new SelectionAdapter() {
 	//
 	// @Override
 	// public void widgetSelected(SelectionEvent e) {
@@ -391,7 +453,31 @@ public class MatchFlowableTableView extends ViewPart {
 	// newEditor.setFocus();
 	// editor.setEditor(newEditor, item, colNumSelected);
 	// }
-	// };
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Clean up any previous editor control
+				Control oldEditor = editor.getEditor();
+				if (oldEditor != null) oldEditor.dispose();
+		
+				// Identify the selected row
+				TableItem item = (TableItem)e.item;
+				if (item == null) return;
+		
+				// The control that will be the editor must be a child of the Table
+				Text newEditor = new Text(table, SWT.NONE);
+				newEditor.setText(item.getText(7));
+				newEditor.addModifyListener(new ModifyListener() {
+					@Override
+					public void modifyText(ModifyEvent me) {
+						Text text = (Text)editor.getEditor();
+						editor.getItem().setText(7, text.getText());
+					}
+				});
+				newEditor.selectAll();
+				newEditor.setFocus();
+				editor.setEditor(newEditor, item, 7);
+			}
+	 };
 
 	// private static Listener keyListener = new Listener() {
 	//
@@ -552,8 +638,8 @@ public class MatchFlowableTableView extends ViewPart {
 				// oldEditor.dispose();
 				// }
 
-				searchText[colNumSelected].selectAll();
-				searchText[colNumSelected].setFocus();
+//				searchText[colNumSelected].selectAll();
+//				searchText[colNumSelected].setFocus();
 
 				// searchEditor[colNumSelected].setEditor(searchText[colNumSelected], item, colNumSelected);
 
@@ -583,18 +669,23 @@ public class MatchFlowableTableView extends ViewPart {
 	};
 
 	private static void findMatches() {
-		for (int i=7;i<11;i++){
-			searchText[i].setVisible(false);
-		}
-		String nameSearch = searchText[7].getText();
-		String casSearch = searchText[8].getText();
-		String synSearch = searchText[9].getText();
-		String otherSearch = searchText[10].getText();
+//		for (int i=7;i<11;i++){
+//			searchText[i].setVisible(false);
+//		}
+//		String nameSearch = searchText[7].getText();
+//		String casSearch = searchText[8].getText();
+//		String synSearch = searchText[9].getText();
+//		String otherSearch = searchText[10].getText();
 
-		String altNameSearch = table.getItem(rowNumSelected).getText(7);
-		String altcasSearch = table.getItem(rowNumSelected).getText(8);
-		String altsynSearch = table.getItem(rowNumSelected).getText(9);
-		String altotherSearch = table.getItem(rowNumSelected).getText(10);
+//		String altNameSearch = table.getItem(rowNumSelected).getText(7);
+//		String altcasSearch = table.getItem(rowNumSelected).getText(8);
+//		String altsynSearch = table.getItem(rowNumSelected).getText(9);
+//		String altotherSearch = table.getItem(rowNumSelected).getText(10);
+
+		String nameSearch = table.getItem(rowNumSelected).getText(7);
+		String casSearch = table.getItem(rowNumSelected).getText(8);
+		String synSearch = table.getItem(rowNumSelected).getText(9);
+		String otherSearch = table.getItem(rowNumSelected).getText(10);
 
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
@@ -793,6 +884,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// if (colNumber > 0) {
 		// tableColumn.setToolTipText(csvColumnDefaultTooltip);
 		// }
+		tableViewerColumn.setEditingSupport(new CellEditingSupport(tableViewer));
 
 		return tableViewerColumn;
 	}
@@ -948,4 +1040,67 @@ public class MatchFlowableTableView extends ViewPart {
 	public static void setFlowableToMatch(Flowable flowableToMatch) {
 		MatchFlowableTableView.flowableToMatch = flowableToMatch;
 	}
+	
+	private static class CellEditingSupport extends EditingSupport {
+		public TextCellEditorMod1 cellEditor;
+
+		public CellEditingSupport(TableViewer viewer) {
+			super(viewer);
+
+			// IContentProposalProvider contentProposalProvider = new SimpleContentProposalProvider(new String[] {
+			// "red",
+			// "green", "blue" });
+			cellEditor = new TextCellEditorMod1(viewer.getTable(), null, null);
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return (true);
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return cellEditor;
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			System.out.println("element = "+element);
+			System.out.println("cellEditor = "+cellEditor.getValue());
+			System.out.println("getViewer = "+getViewer());
+//			System.out.println("getViewer = "+value.toString());
+			if (element == null){
+				return "hi";
+			}
+//			return ((Color) element).name;
+			return cellEditor.getValue();
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			element = value.toString();
+			getViewer().update(element, null);
+		}
+
+	}
+	
+	public static class TextCellEditorMod1 extends TextCellEditor {
+
+		public TextCellEditorMod1(Composite parent, KeyStroke keyStroke, char[] autoActivationCharacters) {
+			super(parent);
+
+		}
+
+		@Override
+		protected void focusLost() {
+
+		}
+
+		@Override
+		protected boolean dependsOnExternalFocusListener() {
+			return false;
+		}
+	}
 }
+
+
