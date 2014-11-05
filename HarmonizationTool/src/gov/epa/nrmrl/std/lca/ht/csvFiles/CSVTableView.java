@@ -137,7 +137,6 @@ public class CSVTableView extends ViewPart {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
 		System.out.println("hello, from sunny CSVTableView!");
-
 		initializeTableViewer(composite);
 		initialize();
 
@@ -153,15 +152,10 @@ public class CSVTableView extends ViewPart {
 	}
 
 	private static void initializeTableViewer(Composite composite) {
-		// tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL
-		// | SWT.READ_ONLY);
-		// TO SATISFY TODO B21, ADDED THE SWT.MULTI BELOW
-		// tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL
-		// | SWT.READ_ONLY | SWT.MULTI);
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
 
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-		editor = new TextCellEditor(tableViewer.getTable());
+//		editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setSorter(sorter);
 		tableViewer.addFilter(rowFilter);

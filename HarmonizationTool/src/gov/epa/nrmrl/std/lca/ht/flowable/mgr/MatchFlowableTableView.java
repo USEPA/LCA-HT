@@ -99,51 +99,32 @@ public class MatchFlowableTableView extends ViewPart {
 		outerComposite.setLayout(new GridLayout(1, false));
 		System.out.println("hello, from sunny MatchFlowableTableView!");
 		initializeTableViewer(outerComposite);
-		// initializePopup(composite);
 		initialize();
-
-		// parent.addListener(SWT.Resize, new Listener() {
-		// @Override
-		// public void handleEvent(Event event) {
-		// table.setSize(table.getParent().getSize());
-		// }
-		// // THIS IS NOT PERFECT
-		// // WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
-		// });
-
 	}
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-	}
 
 	private static void initializeTableViewer(Composite composite) {
 
-		Composite innterComposite = new Composite(outerComposite, SWT.NONE);
-		innterComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-		GridData gd_composite_2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_composite_2.heightHint = 20;
-		innterComposite.setLayoutData(gd_composite_2);
-		// innterComposite.setBounds(0, 0, 64, 64);
+		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
+		innerComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gridData.heightHint = 20;
+		innerComposite.setLayoutData(gridData);
 
-		Button acceptAdvance = new Button(innterComposite, SWT.NONE);
+		Button acceptAdvance = new Button(innerComposite, SWT.NONE);
 		acceptAdvance.setText("Next");
 		acceptAdvance.addSelectionListener(nextSelectionListener);
 
-		Button addToMaster = new Button(innterComposite, SWT.NONE);
+		// TODO - ADD THIS BUTTON (BELOW) AND IMPLEMENT.
+		Button addToMaster = new Button(innerComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(false);
+		
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setInput(flowableDataRows);
 
-		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-		// editor = new TableEditor(tableViewer.getTable());
-		// editor.horizontalAlignment = SWT.LEFT;
-		// editor.grabHorizontal = true;
-		// editor.minimumWidth = 50;
-		// editor = new TextCellEditor(tableViewer.getTable());
-		// editor = new TableEditor(tableViewer.getTable());
 		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
 			@Override
 			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
@@ -155,10 +136,6 @@ public class MatchFlowableTableView extends ViewPart {
 		};
 		activationSupport.setEnableEditorActivationWithKeyboard(true);
 
-		/*
-		 * Snippet060TextCellEditorWithContentProposal.java Without focus highlighter, keyboard events will not be
-		 * delivered to ColumnViewerEditorActivationStragety#isEditorActivationEvent(...) (see above)
-		 */
 		FocusCellHighlighter focusCellHighlighter = new FocusCellOwnerDrawHighlighter(tableViewer);
 		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
 				focusCellHighlighter);
@@ -166,8 +143,6 @@ public class MatchFlowableTableView extends ViewPart {
 		TableViewerEditor.create(tableViewer, focusCellManager, activationSupport, ColumnViewerEditor.TABBING_VERTICAL
 				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
-		tableViewer.setContentProvider(new ArrayContentProvider());
-		createColumns();
 	}
 
 	private static void initializeTable() {
@@ -187,6 +162,8 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
+		createColumns();
+
 		// initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
@@ -499,6 +476,9 @@ public class MatchFlowableTableView extends ViewPart {
 	private static void updateMatchCounts() {
 		Integer[] matchSummary = new Integer[] { 0, 0, 0, 0, 0, 0 };
 		boolean noMatch = true;
+		if (table.getItemCount() == 0){
+			return;
+		}
 		for (int rowNum = 1; rowNum < table.getItemCount(); rowNum++) {
 			TableItem tableItem = table.getItem(rowNum);
 			for (int colNum = 0; colNum < 6; colNum++) {
@@ -645,6 +625,12 @@ public class MatchFlowableTableView extends ViewPart {
 			System.out.println("event.widget = " + event.widget);
 		}
 	};
+	
+
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+	}
 
 	private static void findMatches() {
 		// for (int i=7;i<11;i++){
