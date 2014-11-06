@@ -160,6 +160,81 @@ public class CSVTableView extends ViewPart {
 		tableViewer.setSorter(sorter);
 		tableViewer.addFilter(rowFilter);
 	}
+	
+	private static void initializeTable() {
+		table = tableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
+		table.addListener(SWT.MouseExit, cellSelectionMouseExitListener);
+		table.addMouseListener(tableMouseListener);
+		// table.setSize(10, 10);
+	}
+
+	private static Listener cellSelectionMouseHoverListener = new Listener() {
+		@Override
+		public void handleEvent(Event event) {
+			System.out.println("cellSelectionMouseHoverListener event = " + event);
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			int hoverRow = 0;
+			int hoverCol = 0;
+			TableItem item = table.getItem(ptLeft);
+			if (item == null) {
+				return;
+			}
+			hoverRow = table.indexOf(item);
+
+			hoverCol = getTableColumnNumFromPoint(hoverRow, ptClick);
+			// int dataHoverCol = hoverCol - 1;
+			if (hoverCol < 1) {
+				return;
+			}
+			if (hoverCol > 0) {
+				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(hoverCol);
+				// CSVColumnInfo csvColumnInfo =
+				// tableProvider.getAssignedCSVColumnInfo()[hoverCol];
+
+				if (lcaDataPropertyProvider == null) {
+					return;
+				}
+				List<Issue> issuesOfThisCell = new ArrayList<Issue>();
+
+				for (Issue issue : getIssuesByColumn(hoverCol)) {
+					if (issue.getRowNumber() == hoverRow) {
+						issuesOfThisCell.add(issue);
+					}
+				}
+				if (issuesOfThisCell.size() > 0) {
+					setPopup(issuesOfThisCell);
+					// int thing = table.getTopIndex();
+					popup.setBounds(event.x + 40, event.y + 10 - (table.getTopIndex() * 15), 300,
+							60 * issuesOfThisCell.size());
+
+					// popup.setLocation(event.x + 40, event.y + 10);
+					// popup.setBounds(90, 90, 300, 60);
+					popup.moveAbove(table);
+					popup.setVisible(true);
+					System.out.println("popup should be visible now!");
+
+				} else {
+					popup.setVisible(false);
+					rowMenu.setVisible(false);
+				}
+			}
+		}
+	};
+
+	private static Listener cellSelectionMouseExitListener = new Listener() {
+		@Override
+		public void handleEvent(Event event) {
+			popup.setVisible(false);
+		}
+
+	};
+
+
 
 	public static LinkedHashSet<Integer> getFilterRowNumbers() {
 		return rowFilter.getFilterRowNumbers();
@@ -236,78 +311,6 @@ public class CSVTableView extends ViewPart {
 	}
 
 	// private static void make
-	private static void initializeTable() {
-		table = tableViewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
-		table.addListener(SWT.MouseExit, cellSelectionMouseExitListener);
-		table.addMouseListener(tableMouseListener);
-		// table.setSize(10, 10);
-	}
-
-	private static Listener cellSelectionMouseHoverListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			System.out.println("cellSelectionMouseHoverListener event = " + event);
-			Point ptLeft = new Point(1, event.y);
-			Point ptClick = new Point(event.x, event.y);
-			int hoverRow = 0;
-			int hoverCol = 0;
-			TableItem item = table.getItem(ptLeft);
-			if (item == null) {
-				return;
-			}
-			hoverRow = table.indexOf(item);
-
-			hoverCol = getTableColumnNumFromPoint(hoverRow, ptClick);
-			// int dataHoverCol = hoverCol - 1;
-			if (hoverCol < 1) {
-				return;
-			}
-			if (hoverCol > 0) {
-				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(hoverCol);
-				// CSVColumnInfo csvColumnInfo =
-				// tableProvider.getAssignedCSVColumnInfo()[hoverCol];
-
-				if (lcaDataPropertyProvider == null) {
-					return;
-				}
-				List<Issue> issuesOfThisCell = new ArrayList<Issue>();
-
-				for (Issue issue : getIssuesByColumn(hoverCol)) {
-					if (issue.getRowNumber() == hoverRow) {
-						issuesOfThisCell.add(issue);
-					}
-				}
-				if (issuesOfThisCell.size() > 0) {
-					setPopup(issuesOfThisCell);
-					// int thing = table.getTopIndex();
-					popup.setBounds(event.x + 40, event.y + 10 - (table.getTopIndex() * 15), 300,
-							60 * issuesOfThisCell.size());
-
-					// popup.setLocation(event.x + 40, event.y + 10);
-					// popup.setBounds(90, 90, 300, 60);
-					popup.moveAbove(table);
-					popup.setVisible(true);
-					System.out.println("popup should be visible now!");
-
-				} else {
-					popup.setVisible(false);
-					rowMenu.setVisible(false);
-				}
-			}
-		}
-	};
-
-	private static Listener cellSelectionMouseExitListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			popup.setVisible(false);
-		}
-
-	};
 
 	// private static MouseListener columnMouseListener2 = new MouseListener() {
 	// public void mouseDoubleClick(MouseEvent e) {
