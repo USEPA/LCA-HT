@@ -72,6 +72,7 @@ public class MatchFlowableTableView extends ViewPart {
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
+	private static int searchRow = 1;
 	private static int maxSearchResults = 50;
 	private static FlowableTableRow[] flowableDataRows;
 
@@ -120,9 +121,31 @@ public class MatchFlowableTableView extends ViewPart {
 			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
 					ViewerCell viewerCell = (ViewerCell) event.getSource();
-					colNumSelected = viewerCell.getColumnIndex();
+					System.out.println("viewerCell.getText() " + viewerCell.getText());
+
 					FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
+
 					rowNumSelected = flowableTableRow.getRowNumber();
+					colNumSelected = viewerCell.getColumnIndex();
+					if (rowNumSelected == 0) {
+						return false;
+					}
+					if ((rowNumSelected == searchRow) && (colNumSelected == 6)) {
+						findMatches();
+						return false;
+					}
+					if ((rowNumSelected == searchRow) && (colNumSelected < 7)) {
+						return false;
+					}
+					if ((rowNumSelected != searchRow) && (colNumSelected > 6)) {
+						return false;
+					}
+					if ((rowNumSelected != searchRow) && (colNumSelected < 7)) {
+						assignMatch();
+						table.deselectAll();
+						return false;
+					}
+
 					// System.out.println("colNumSelected= " + colNumSelected);
 					// Point ptLeft = new Point(1, event.getSource());
 					// Point ptClick = new Point(event.x, event.y);
@@ -146,6 +169,7 @@ public class MatchFlowableTableView extends ViewPart {
 					// }
 					// rowNumSelected = clickedRow;
 					// colNumSelected = clickedCol;
+					table.deselectAll();
 					return true;
 				}
 				return false;
@@ -194,12 +218,12 @@ public class MatchFlowableTableView extends ViewPart {
 		if (flowableToMatch == null) {
 			return;
 		}
-
+		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		// table.removeAll();
 		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		int rowCount = flowableToMatch.getMatchCandidates().size() + 2 + searchResultResources.size();
+		int rowCount = searchRow + 1 + searchResultResources.size();
 
 		if (searchResultResources.size() > maxSearchResults) {
 			rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
@@ -308,7 +332,7 @@ public class MatchFlowableTableView extends ViewPart {
 				continue;
 			}
 		}
-		// tableViewer.refresh();
+//		tableViewer.refresh();
 	}
 
 	// private static void setResultRowData(int rowNum, Flowable flowable) {
@@ -657,6 +681,61 @@ public class MatchFlowableTableView extends ViewPart {
 	// }
 	// };
 
+	protected static void assignMatch() {
+		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		LinkedHashMap<Resource, String> searchMap = flowableToMatch.getSearchResults();
+		FlowableTableRow flowableTabRow = (FlowableTableRow) table.getItem(rowNumSelected).getData();
+		Flowable matchingFlowable = flowableTabRow.getFlowable();
+		if (rowNumSelected < searchRow) {
+			String curSymbol = candidateMap.get(flowableTabRow.getFlowable().getTdbResource());
+			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
+
+			TableItem tableItem = table.getItem(rowNumSelected);
+			FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
+
+			tableItem.setText(curCol, "");
+			flowableTableRow.set(curCol, "");
+
+			String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
+			tableItem.setText(colNumSelected, newString);
+			flowableTableRow.set(colNumSelected, newString);
+			candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
+
+		} else {
+			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
+			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
+
+			TableItem tableItem = table.getItem(rowNumSelected);
+			FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
+
+			tableItem.setText(curCol, "");
+			flowableTableRow.set(curCol, "");
+
+			String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
+			tableItem.setText(colNumSelected, newString);
+			flowableTableRow.set(colNumSelected, newString);
+			candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
+		}
+		CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
+		// int oldCol = matchingFlowable.get
+
+		// }
+		// for (Resource resource : searchMap.keySet()) {
+		// Flowable tempFlowable = new Flowable(resource);
+		// String source = tempFlowable.getDataSource();
+		// String name = tempFlowable.getName();
+		// if (name.equals(item.getText(7)) && source.equals(item.getText(6))) {
+		// String symbol = searchMap.get(resource);
+		// int oldCol = MatchStatus.getNumberBySymbol(symbol);
+		// item.setText(oldCol, "");
+		// item.setText(colNumSelected, MatchStatus.getByValue(colNumSelected).getSymbol());
+		// candidateMap.put(resource, MatchStatus.getByValue(colNumSelected).getSymbol());
+		// break;
+		// }
+		// }
+		// table.deselectAll();
+	}
+
 	@Override
 	public void setFocus() {
 		System.out.println("We got focus!");
@@ -677,10 +756,14 @@ public class MatchFlowableTableView extends ViewPart {
 		// String altsynSearch = table.getItem(rowNumSelected).getText(9);
 		// String altotherSearch = table.getItem(rowNumSelected).getText(10);
 
-		String nameSearch = table.getItem(rowNumSelected).getText(7);
-		String casSearch = table.getItem(rowNumSelected).getText(8);
-		String synSearch = table.getItem(rowNumSelected).getText(9);
-		String otherSearch = table.getItem(rowNumSelected).getText(10);
+		TableItem tableItem = table.getItem(searchRow);
+		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
+
+		String nameSearch = flowableTableRow.get(7);
+		String casSearch = flowableTableRow.get(8);
+		String synSearch = flowableTableRow.get(9);
+		String otherSearch = flowableTableRow.get(10);
+		// WORK HERE
 
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
@@ -1098,31 +1181,45 @@ public class MatchFlowableTableView extends ViewPart {
 
 		@Override
 		protected void setValue(Object element, Object value) {
-			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
+			if (value == null) {
+				System.out.println("NO OVERWRITE!");
+				// tableViewer.refresh();
+			} else {
+				FlowableTableRow flowableTableRow = (FlowableTableRow) element;
 
-			System.out.println("== SET ==");
-			// System.out.println("element = " + element);
-			// System.out.println("cellEditor.getValue() = " + cellEditor.getValue());
-			// System.out.println("cellEditor.getControl() = " + cellEditor.getControl());
-			// System.out.println("value.getClass() = " + value.getClass());
+				System.out.println("== SET ==");
+				// System.out.println("element = " + element);
+				// System.out.println("cellEditor.getValue() = " + cellEditor.getValue());
+				// System.out.println("cellEditor.getControl() = " + cellEditor.getControl());
+				// System.out.println("value.getClass() = " + value.getClass());
 
-			// Control thing = cellEditor.getControl();
-			// element = value.toString();
-			flowableTableRow.set(colNumSelected, (String) value);
-			tableViewer.refresh();
-			// getViewer().update(element, null);
+				// Control thing = cellEditor.getControl();
+				// element = value.toString();
+				flowableTableRow.set(colNumSelected, (String) value);
+				table.deselectAll();
+				tableViewer.refresh();
+				// getViewer().update(element, null);
+			}
 		}
-
 	}
 
 	public static class TextCellEditorMod1 extends TextCellEditor {
 
 		public TextCellEditorMod1(Composite parent, KeyStroke keyStroke, char[] autoActivationCharacters) {
 			super(parent);
+			// System.out.println("keyStroke = " + keyStroke);
+			// System.out.println("autoActivationCharacters" + autoActivationCharacters.toString());
 		}
 
 		@Override
 		protected void focusLost() {
+			System.out.println("Don't go!!!");
+			// System.out.println("keyStroke"+keyStroke);
+
+			System.out.println("this.text.getText() = " + this.text.getText());
+			// this.text.getText();
+			// text.setText(null);
+
 		}
 
 		@Override
