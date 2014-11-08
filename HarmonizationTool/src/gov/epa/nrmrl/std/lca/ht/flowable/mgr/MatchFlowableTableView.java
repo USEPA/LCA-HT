@@ -10,6 +10,7 @@ import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -74,7 +75,8 @@ public class MatchFlowableTableView extends ViewPart {
 	private static int dataTableRowNum = -1;
 	private static int searchRow = 1;
 	private static int maxSearchResults = 50;
-	private static FlowableTableRow[] flowableDataRows;
+	// private static FlowableTableRow[] flowableTableRows;
+	private static List<FlowableTableRow> flowableTableRows;
 
 	// private static Text[] searchText = new Text[11];
 	// private static TableEditor[] searchEditor = new TableEditor[11];
@@ -135,14 +137,19 @@ public class MatchFlowableTableView extends ViewPart {
 						return false;
 					}
 					if ((rowNumSelected == searchRow) && (colNumSelected < 7)) {
+						// table.deselectAll();
+						table.deselect(rowNumSelected);
 						return false;
 					}
 					if ((rowNumSelected != searchRow) && (colNumSelected > 6)) {
+						table.deselect(rowNumSelected);
 						return false;
 					}
 					if ((rowNumSelected != searchRow) && (colNumSelected < 7)) {
 						assignMatch();
-						table.deselectAll();
+						table.deselect(rowNumSelected);
+
+						// table.deselectAll();
 						return false;
 					}
 
@@ -169,7 +176,8 @@ public class MatchFlowableTableView extends ViewPart {
 					// }
 					// rowNumSelected = clickedRow;
 					// colNumSelected = clickedCol;
-					table.deselectAll();
+					table.deselect(rowNumSelected);
+					// table.deselectAll();
 					return true;
 				}
 				return false;
@@ -200,7 +208,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 		// table.addSelectionListener(selectionAdapter);
 		// table.addListener(SWT.MouseDown, tableMouseListener);
-		// tableViewer.setInput(flowableDataRows);
+		// tableViewer.setInput(flowableTableRows);
 	}
 
 	public static void update(int rowNumber) {
@@ -209,7 +217,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 
-		tableViewer.setInput(flowableDataRows);
+		tableViewer.setInput(flowableTableRows);
 
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
@@ -229,31 +237,31 @@ public class MatchFlowableTableView extends ViewPart {
 			rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
 		}
 
-		FlowableTableRow[] flowableDataRows = new FlowableTableRow[rowCount];
-		flowableDataRows[0] = new FlowableTableRow();
-		System.out.println("flowableDataRows[0] = " + flowableDataRows[0]);
-		flowableDataRows[0].setFlowable(flowableToMatch);
-		flowableDataRows[0].setRowNumber(0);
-		flowableDataRows[0].setValues();
+		flowableTableRows = new ArrayList<FlowableTableRow>();
+		FlowableTableRow flowableTableRow0 = new FlowableTableRow();
+		flowableTableRow0.setFlowable(flowableToMatch);
+		flowableTableRow0.setRowNumber(0);
+		flowableTableRow0.setValues();
+		flowableTableRows.add(flowableTableRow0);
+
 		int row = 1;
 		for (Object dFlowableResource : matchCandidateResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
-			flowableDataRows[row] = new FlowableTableRow();
-			flowableDataRows[row].setFlowable(dFlowable);
-			flowableDataRows[row].setRowNumber(row);
-			flowableDataRows[row].matchStatus = MatchStatus.getBySymbol(matchCandidateResources.get(dFlowableResource));
-			flowableDataRows[row].setValues();
+			FlowableTableRow flowableTableRow = new FlowableTableRow();
+			flowableTableRow.setFlowable(dFlowable);
+			flowableTableRow.setRowNumber(row);
+			flowableTableRow.matchStatus = MatchStatus.getBySymbol(matchCandidateResources.get(dFlowableResource));
+			flowableTableRow.setValues();
+			flowableTableRows.add(flowableTableRow);
 			row++;
 		}
 		// NOW CREATE THE ROW WITH THE SEARCH MESSAGE
-		flowableDataRows[row] = new FlowableTableRow();
-		flowableDataRows[row].setRowNumber(row);
-		// for (int i = 0; i < 11; i++) {
-		// flowableDataRows[row].add("");
-		// }
-		flowableDataRows[row].getColumnValues().set(6, "Click to Search -->");
+		FlowableTableRow flowableTableRow = new FlowableTableRow();
+		flowableTableRow.setRowNumber(row);
+		flowableTableRow.getColumnValues().set(6, "Click to Search -->");
+		flowableTableRows.add(flowableTableRow);
 
-		appendSearchResults(row);
+		// appendSearchResults(row);
 
 		// Control oldEditor = editorName.getEditor();
 		// if (oldEditor != null) {
@@ -299,7 +307,7 @@ public class MatchFlowableTableView extends ViewPart {
 		// }
 		// });
 		// editor.setEditor(nameEditor, searchRow, 7);
-		tableViewer.setInput(flowableDataRows);
+		tableViewer.setInput(flowableTableRows);
 		tableViewer.refresh();
 		updateMatchCounts();
 		// showSearchResults(50);
@@ -313,27 +321,47 @@ public class MatchFlowableTableView extends ViewPart {
 		table.setRedraw(true);
 	}
 
-	private static void appendSearchResults(int startRow) {
+	private static void displayNewSearchResults() {
+		clearSearchRows();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		if (searchResultResources == null) {
-			return;
-		}
-
-		int row = startRow;
+		int row = searchRow+1;
 		for (Object dFlowableResource : searchResultResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
-			flowableDataRows[row] = new FlowableTableRow();
-			flowableDataRows[row].setFlowable(dFlowable);
-			flowableDataRows[row].setRowNumber(row);
-			flowableDataRows[row].matchStatus = MatchStatus.getBySymbol(searchResultResources.get(dFlowableResource));
-			flowableDataRows[row].setValues();
+			FlowableTableRow flowableTableRow = new FlowableTableRow();
+			flowableTableRow.setFlowable(dFlowable);
+			flowableTableRow.setRowNumber(row);
+			flowableTableRow.matchStatus = MatchStatus.getBySymbol(searchResultResources.get(dFlowableResource));
+			flowableTableRow.setValues();
+			flowableTableRows.add(flowableTableRow);
 			row++;
-			if (row >= flowableDataRows.length) {
+			if (row >= maxSearchResults + searchRow) {
 				continue;
 			}
 		}
-//		tableViewer.refresh();
+		 tableViewer.refresh();
 	}
+
+//	private static void appendSearchResults(int startRow) {
+//		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
+//		if (searchResultResources == null) {
+//			return;
+//		}
+//
+//		int row = startRow;
+//		for (Object dFlowableResource : searchResultResources.keySet()) {
+//			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
+//			flowableTableRows[row] = new FlowableTableRow();
+//			flowableTableRows[row].setFlowable(dFlowable);
+//			flowableTableRows[row].setRowNumber(row);
+//			flowableTableRows[row].matchStatus = MatchStatus.getBySymbol(searchResultResources.get(dFlowableResource));
+//			flowableTableRows[row].setValues();
+//			row++;
+//			if (row >= flowableTableRows.length) {
+//				continue;
+//			}
+//		}
+//		// tableViewer.refresh();
+//	}
 
 	// private static void setResultRowData(int rowNum, Flowable flowable) {
 	// TableItem qRow = table.getItem(rowNum);
@@ -734,12 +762,23 @@ public class MatchFlowableTableView extends ViewPart {
 		// }
 		// }
 		// table.deselectAll();
+		updateMatchCounts();
 	}
 
 	@Override
 	public void setFocus() {
 		System.out.println("We got focus!");
 
+	}
+
+	private static void clearSearchRows() {
+		System.out.println("flowableTableRows is = " + flowableTableRows);
+		System.out.println("flowableTableRows.length was = " + flowableTableRows.size());
+		int totalRows = flowableTableRows.size();
+		for (int i = totalRows - 1; i > searchRow; i--) {
+			flowableTableRows.remove(i);
+		}
+		System.out.println("flowableTableRows.length now = " + flowableTableRows.size());
 	}
 
 	private static void findMatches() {
@@ -811,7 +850,7 @@ public class MatchFlowableTableView extends ViewPart {
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		System.out.println("resultSet = " + resultSet);
 		flowableToMatch.clearSearchResults();
-		resetTable();
+		// resetTable();
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
@@ -828,7 +867,8 @@ public class MatchFlowableTableView extends ViewPart {
 			// Flowable flowable = new Flowable(rdfNode.asResource());
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
-		appendSearchResults(50);
+		displayNewSearchResults();
+		// appendSearchResults(50);
 	}
 
 	private static void resetTable() {
