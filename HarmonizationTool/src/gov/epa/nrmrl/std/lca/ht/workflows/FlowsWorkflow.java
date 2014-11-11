@@ -101,7 +101,9 @@ public class FlowsWorkflow extends ViewPart {
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		composite.setLayout(new GridLayout(3, false));
+		GridLayout gl_composite = new GridLayout(3, false);
+		gl_composite.verticalSpacing = 2;
+		composite.setLayout(gl_composite);
 		new Label(composite, SWT.NONE);
 
 		Label lblActions = new Label(composite, SWT.NONE);

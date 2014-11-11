@@ -71,7 +71,9 @@ public class MatchFlowableTableView extends ViewPart {
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
 	private static int searchRow = 1;
-	private static boolean readyToEdit = true;
+	private static boolean editingInProgress = false;
+	private static boolean justUpdated = false;
+
 	private static int maxSearchResults = 50;
 	public static Text editorText;
 
@@ -131,61 +133,81 @@ public class MatchFlowableTableView extends ViewPart {
 		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
 			@Override
 			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+				justUpdated = false;
+				System.out.println("=================== Caught by isEditorActivationEvent");
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
-					ViewerCell viewerCell = (ViewerCell) event.getSource();
-					System.out.println("viewerCell.getText() " + viewerCell.getText());
-
-					FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
-					int newRowNumSelected = flowableTableRow.getRowNumber();
-					int newColNumSelected = viewerCell.getColumnIndex();
-					if (!readyToEdit) {
-						table.getItem(rowNumSelected).setText(colNumSelected, editorText.getText());
-						flowableTableRows.get(rowNumSelected).set(colNumSelected,editorText.getText());
-						
-						readyToEdit = true;
-//						editorText
-						System.out.println("editorText.getText() = "+editorText.getText());
-						editorText.setText(flowableTableRows.get(newRowNumSelected).get(newColNumSelected));
-//						return false;
-					}
-					rowNumSelected = newRowNumSelected;
-					colNumSelected = newColNumSelected;
-					if (rowNumSelected == 0) {
-						return false;
-					}
-					if ((rowNumSelected == searchRow) && (colNumSelected == 6)) {
-						findMatches();
-						return false;
-					}
-					if ((rowNumSelected == searchRow) && (colNumSelected < 6)) {
-						table.deselect(rowNumSelected);
-						return false;
-					}
-					if ((rowNumSelected != searchRow) && (colNumSelected > 6)) {
-						table.deselect(rowNumSelected);
-						return false;
-					}
-					if ((rowNumSelected != searchRow) && (colNumSelected < 6)) {
-						assignMatch();
-						table.deselect(rowNumSelected);
-						return false;
-					}
-					table.deselect(rowNumSelected);
-					System.out.println("table = " + table);
-					return true;
+					System.out.println("======= MOUSE_CLICK_SELECTION ========");
 				} else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED) {
-					System.out.println("======= KEY_PRESSED, now ========");
+					System.out.println("======= KEY_PRESSED ========");
 				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-					System.out.println("======= MOUSE_DOUBLE_CLICK_SELECTION, now ========");
+					System.out.println("======= MOUSE_DOUBLE_CLICK_SELECTION ========");
 				} else if (event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC) {
-					System.out.println("======= PROGRAMMATIC, now ========");
+					System.out.println("======= PROGRAMMATIC ========");
 				} else if (event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL) {
-					System.out.println("======= TRAVERSAL, now ========");
+					System.out.println("======= TRAVERSAL ========");
 				} else {
 					System.out.println("======= something else. event.eventType = " + event.eventType);
 				}
-				return false;
+				ViewerCell viewerCell = (ViewerCell) event.getSource();
+				FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
+				int newRowNumSelected = flowableTableRow.getRowNumber();
+				int newColNumSelected = viewerCell.getColumnIndex();
+				if (newRowNumSelected == 0) {
+					table.deselect(rowNumSelected);
+					return false;
+				} else if ((newRowNumSelected != searchRow) && (newColNumSelected < 6)) {
+					rowNumSelected = newRowNumSelected;
+					colNumSelected = newColNumSelected;
+					assignMatch();
+					table.deselect(rowNumSelected);
+					return false;
+				} else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
+					table.deselect(rowNumSelected);
+					return false;
+				} else if (newColNumSelected < 6) {
+					table.deselect(rowNumSelected);
+					return false;
+				} else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
+					if (editingInProgress) {
+						String textInEditor = "[editorText is still null]";
+						if (editorText != null) {
+							textInEditor = editorText.getText();
+						}
+						String textInLastCell = "[no previously selected cell]";
+						if (rowNumSelected > 0 && colNumSelected > 0) {
+							textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
+						}
 
+						String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
+
+						System.out.println("textInEditor: " + textInEditor);
+						System.out.println("textInLastCell: " + textInLastCell);
+						System.out.println("textInNewCell: " + textInNewCell);
+
+						// if (editingInProgress) {
+						// table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
+						flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
+
+						// editorText
+						// System.out.println("editorText.getText() = " + editorText.getText());
+						editorText.setText(textInNewCell);
+						justUpdated = true;
+					}
+					rowNumSelected = newRowNumSelected;
+					colNumSelected = newColNumSelected;
+					if (newColNumSelected == 6) {
+						findMatches();
+						justUpdated = false;
+						editingInProgress = false;
+						System.out.println("Setting editingInProgress to: " + editingInProgress);
+						return false;
+					} else {
+						editingInProgress = true;
+						System.out.println("Setting editingInProgress to: " + editingInProgress);
+
+						return true;
+					}
+				}
 			}
 		};
 		activationSupport.setEnableEditorActivationWithKeyboard(true);
@@ -301,7 +323,7 @@ public class MatchFlowableTableView extends ViewPart {
 			}
 		}
 		updateMatchCounts();
-//		tableViewer.refresh();
+		// tableViewer.refresh();
 	}
 
 	private static void createColumns() {
@@ -424,6 +446,8 @@ public class MatchFlowableTableView extends ViewPart {
 	@Override
 	public void setFocus() {
 		System.out.println("We got focus!");
+		editingInProgress = false;
+		System.out.println("Setting editingInProgress to: " + editingInProgress);
 
 	}
 
@@ -771,21 +795,30 @@ public class MatchFlowableTableView extends ViewPart {
 		protected Object getValue(Object element) {
 			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
 			System.out.println("== GET ==");
-			readyToEdit = false;
+			editingInProgress = true;
+			System.out.println("Setting editingInProgress to: " + editingInProgress);
 			return flowableTableRow.get(colNumSelected);
 		}
 
 		@Override
 		protected void setValue(Object element, Object value) {
+			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
+
 			if (value == null) {
 				System.out.println("NO OVERWRITE!");
 				// tableViewer.refresh();
 			} else {
-				FlowableTableRow flowableTableRow = (FlowableTableRow) element;
 
 				System.out.println("== SET ==");
-				readyToEdit = true;
-				flowableTableRow.set(colNumSelected, (String) value);
+				if (editingInProgress && !justUpdated) {
+					System.out.println("Still editing");
+					flowableTableRow.set(colNumSelected, (String) value);
+					editingInProgress = false;
+					System.out.println("Setting editingInProgress to: " + editingInProgress);
+				} else {
+					System.out.println("Not editing");
+					// flowableTableRow.set(colNumSelected, (String) value);
+				}
 				table.deselectAll();
 				tableViewer.refresh();
 				// getViewer().update(element, null);
@@ -803,7 +836,7 @@ public class MatchFlowableTableView extends ViewPart {
 
 		@Override
 		protected void focusLost() {
-			System.out.println("Don't go!!!");
+			System.out.println("Losing focus");
 			// System.out.println("keyStroke"+keyStroke);
 			editorText = this.text;
 
