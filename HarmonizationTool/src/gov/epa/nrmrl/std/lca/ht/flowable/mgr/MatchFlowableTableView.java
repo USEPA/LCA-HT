@@ -136,12 +136,20 @@ public class MatchFlowableTableView extends ViewPart {
 					System.out.println("viewerCell.getText() " + viewerCell.getText());
 
 					FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
-
+					int newRowNumSelected = flowableTableRow.getRowNumber();
+					int newColNumSelected = viewerCell.getColumnIndex();
 					if (!readyToEdit) {
-						return false;
+						table.getItem(rowNumSelected).setText(colNumSelected, editorText.getText());
+						flowableTableRows.get(rowNumSelected).set(colNumSelected,editorText.getText());
+						
+						readyToEdit = true;
+//						editorText
+						System.out.println("editorText.getText() = "+editorText.getText());
+						editorText.setText(flowableTableRows.get(newRowNumSelected).get(newColNumSelected));
+//						return false;
 					}
-					rowNumSelected = flowableTableRow.getRowNumber();
-					colNumSelected = viewerCell.getColumnIndex();
+					rowNumSelected = newRowNumSelected;
+					colNumSelected = newColNumSelected;
 					if (rowNumSelected == 0) {
 						return false;
 					}
@@ -797,6 +805,7 @@ public class MatchFlowableTableView extends ViewPart {
 		protected void focusLost() {
 			System.out.println("Don't go!!!");
 			// System.out.println("keyStroke"+keyStroke);
+			editorText = this.text;
 
 			System.out.println("this.text.getText() = " + this.text.getText());
 		}

@@ -155,12 +155,12 @@ public class CSVTableView extends ViewPart {
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
 
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-//		editor = new TextCellEditor(tableViewer.getTable());
+		// editor = new TextCellEditor(tableViewer.getTable());
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setSorter(sorter);
 		tableViewer.addFilter(rowFilter);
 	}
-	
+
 	private static void initializeTable() {
 		table = tableViewer.getTable();
 		table.setHeaderVisible(true);
@@ -233,8 +233,6 @@ public class CSVTableView extends ViewPart {
 		}
 
 	};
-
-
 
 	public static LinkedHashSet<Integer> getFilterRowNumbers() {
 		return rowFilter.getFilterRowNumbers();
@@ -1928,11 +1926,14 @@ public class CSVTableView extends ViewPart {
 		List<DataRow> data = TableKeeper.getTableProvider(tableProviderKey).getData();
 		DataRow dataRow = data.get(rowToColor);
 		Flowable flowable = dataRow.getFlowable();
-		LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
-		for (String symbol : thing.values()) {
-			int matchNum = MatchStatus.getNumberBySymbol(symbol);
-			if (matchNum > 0 && matchNum < 5) {
-				hit = true;
+		// TODO: FIX THIS HACK BELOW
+		if (flowable != null) { // HACK TO AVOID RACE CONDITION IN WINDOWS
+			LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
+			for (String symbol : thing.values()) {
+				int matchNum = MatchStatus.getNumberBySymbol(symbol);
+				if (matchNum > 0 && matchNum < 5) {
+					hit = true;
+				}
 			}
 		}
 		Color color;
