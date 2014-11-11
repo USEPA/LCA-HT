@@ -173,6 +173,12 @@ public class MatchFlowableTableView extends ViewPart {
 						if (editorText != null) {
 							textInEditor = editorText.getText();
 						}
+						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))){
+							justUpdated = false;
+							rowNumSelected = newRowNumSelected;
+							colNumSelected = newColNumSelected;
+							return true;
+						}
 						String textInLastCell = "[no previously selected cell]";
 						if (rowNumSelected > 0 && colNumSelected > 0) {
 							textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
@@ -323,6 +329,11 @@ public class MatchFlowableTableView extends ViewPart {
 			}
 		}
 		updateMatchCounts();
+		Point p = table.getParent().getParent().getSize();
+		p.y -= 30;
+		table.setSize(p);
+		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		// tableViewer.refresh();
 	}
 
