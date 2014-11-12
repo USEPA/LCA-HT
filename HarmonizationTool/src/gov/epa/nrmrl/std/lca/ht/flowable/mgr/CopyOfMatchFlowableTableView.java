@@ -92,7 +92,7 @@ public class CopyOfMatchFlowableTableView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		outerComposite = new Composite(parent, SWT.NONE);
 		outerComposite.setLayout(new GridLayout(1, false));
-		System.out.println("hello, from sunny MatchFlowableTableView!");
+		System.out.println("hello, from sunny MatchFlowables!");
 		initializeTableViewer(outerComposite);
 		initialize();
 	}

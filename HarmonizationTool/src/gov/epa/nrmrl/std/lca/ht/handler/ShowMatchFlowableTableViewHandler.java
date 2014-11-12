@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -27,8 +27,8 @@ public class ShowMatchFlowableTableViewHandler implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			// TODO: MAKE THIS A TOGGLE FUNCTION (AND CONTROL THE CHECKBOX IN THE MENU)
-			Util.showView(MatchFlowableTableView.ID);
-			MatchFlowableTableView.initialize();
+			Util.showView(MatchFlowables.ID);
+			MatchFlowables.initialize();
 		} catch (PartInitException e1) {
 			e1.printStackTrace();
 		}

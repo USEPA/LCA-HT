@@ -38,4 +38,8 @@ public class LCAHT {
     public static final Property fileReadDate = m_model.createProperty( NS + "fileReadDate" );
     
     public static final Property containsFile = m_model.createProperty( NS + "containsFile" );
+    
+    public static final Property hasQCStatus = m_model.createProperty( NS + "hasQCStatus" );
+    public static final Resource QCStatusCuratedMaster = m_model.createResource( NS + "QCStatusCuratedMaster" );
+    public static final Resource QCStatusAdHocMaster = m_model.createResource( NS + "QCStatusAdHocMaster" );
  }

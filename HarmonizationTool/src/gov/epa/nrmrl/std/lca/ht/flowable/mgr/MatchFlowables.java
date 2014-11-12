@@ -5,7 +5,9 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ import org.eclipse.swt.layout.FillLayout;
  * @author Tommy E. Cathey and Tom Transue
  * 
  */
-public class MatchFlowableTableView extends ViewPart {
+public class MatchFlowables extends ViewPart {
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView";
 
@@ -87,14 +89,14 @@ public class MatchFlowableTableView extends ViewPart {
 	// private static TextCellEditor editor;
 	// private static TableEditor editor;
 
-	public MatchFlowableTableView() {
+	public MatchFlowables() {
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		outerComposite = new Composite(parent, SWT.NONE);
 		outerComposite.setLayout(new GridLayout(1, false));
-		System.out.println("hello, from sunny MatchFlowableTableView!");
+		System.out.println("hello, from sunny MatchFlowables!");
 		initializeTableViewer(outerComposite);
 		initialize();
 
@@ -124,7 +126,9 @@ public class MatchFlowableTableView extends ViewPart {
 		// TODO - ADD THIS BUTTON (BELOW) AND IMPLEMENT.
 		Button addToMaster = new Button(innerComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
-		addToMaster.setVisible(false);
+		addToMaster.setVisible(true);
+		addToMaster.addSelectionListener(addToMasterListener);
+
 
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -407,7 +411,7 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	public static void setCsvTableRowNum(int csvTableRowNum) {
-		MatchFlowableTableView.dataTableRowNum = csvTableRowNum;
+		MatchFlowables.dataTableRowNum = csvTableRowNum;
 	}
 
 	protected static void assignMatch() {
@@ -744,6 +748,24 @@ public class MatchFlowableTableView extends ViewPart {
 			doit(e);
 		}
 	};
+	
+	private static SelectionListener addToMasterListener = new SelectionListener() {
+
+		private void doit(SelectionEvent e) {
+			ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusCuratedMaster);
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		};
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+	};
+	
 
 	private static Composite outerComposite;
 
@@ -768,7 +790,7 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	public static void setFlowableToMatch(Flowable flowableToMatch) {
-		MatchFlowableTableView.flowableToMatch = flowableToMatch;
+		MatchFlowables.flowableToMatch = flowableToMatch;
 	}
 
 	public static int getMaxSearchResults() {
@@ -776,7 +798,7 @@ public class MatchFlowableTableView extends ViewPart {
 	}
 
 	public static void setMaxSearchResults(int maxSearchResults) {
-		MatchFlowableTableView.maxSearchResults = maxSearchResults;
+		MatchFlowables.maxSearchResults = maxSearchResults;
 	}
 
 	// =====================================================

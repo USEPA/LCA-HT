@@ -57,7 +57,7 @@
             restorable="true">
       </view>
       <view
-            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView"
+            class="gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables"
             id="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
             name="Flowables"
             restorable="true">

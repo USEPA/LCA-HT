@@ -16,7 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
@@ -468,11 +468,11 @@ public class CSVTableView extends ViewPart {
 		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 			Util.setPerspective(FlowDataV5.ID);
 			try {
-				Util.showView(MatchFlowableTableView.ID);
+				Util.showView(MatchFlowables.ID);
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 			}
-			MatchFlowableTableView.update(dataRowNum);
+			MatchFlowables.update(dataRowNum);
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 			Util.setPerspective(FlowDataV4.ID);
 			try {
@@ -625,8 +625,8 @@ public class CSVTableView extends ViewPart {
 					// }
 					// --------- OR TO MATCH THINGS
 					// } else if (menuItemText.equals("match contents")) {
-					// Util.findView(MatchFlowableTableView.ID);
-					// MatchFlowableTableView.update(rowNumSelected);
+					// Util.findView(MatchFlowables.ID);
+					// MatchFlowables.update(rowNumSelected);
 				}
 			}
 		}
@@ -1442,8 +1442,8 @@ public class CSVTableView extends ViewPart {
 
 	private static void initializeOtherViews() {
 
-		Util.findView(MatchFlowableTableView.ID);
-		MatchFlowableTableView.initialize();
+		Util.findView(MatchFlowables.ID);
+		MatchFlowables.initialize();
 
 		// Util.findView(MatchContexts.ID);
 		// MatchContexts.initialize();
@@ -2242,7 +2242,7 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowableRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchFlowableTableView.update(newRowNumber);
+				MatchFlowables.update(newRowNumber);
 				return;
 			}
 		}

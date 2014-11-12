@@ -3,7 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.perspectives;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchPropertiesOld;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
@@ -25,7 +25,7 @@ public class FlowDataV3 implements IPerspectiveFactory {
 
 		IFolderLayout matchToolLayout = layout.createFolder("Control and Matching", IPageLayout.LEFT, 0.4f, editorArea);
 		matchToolLayout.addView(FlowsWorkflow.ID);
-		matchToolLayout.addView(MatchFlowableTableView.ID);
+		matchToolLayout.addView(MatchFlowables.ID);
 		matchToolLayout.addView(MatchContexts.ID);
 		matchToolLayout.addView(MatchPropertiesOld.ID);
 		matchToolLayout.addView(LoggerViewer.ID);

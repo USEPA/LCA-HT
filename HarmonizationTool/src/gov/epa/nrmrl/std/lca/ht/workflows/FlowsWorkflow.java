@@ -15,7 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
@@ -658,7 +658,7 @@ public class FlowsWorkflow extends ViewPart {
 			}
 			Util.setPerspective(FlowDataV5.ID);
 			try {
-				Util.showView(MatchFlowableTableView.ID);
+				Util.showView(MatchFlowables.ID);
 			} catch (PartInitException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -709,7 +709,7 @@ public class FlowsWorkflow extends ViewPart {
 			matchedFlowableRowNumbers.clear();
 
 			if (btnConcludeFile.getText().equals("Close CSV")) {
-				MatchFlowableTableView.initialize();
+				MatchFlowables.initialize();
 				// MatchContexts.initialize();
 				// MatchProperties.initialize();
 

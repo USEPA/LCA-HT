@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.perspectives;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowableTableView;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -30,7 +30,7 @@ public class FlowDataV5 implements IPerspectiveFactory {
 			matchToolLayout.addView("gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties");
 			// FLOAT AFTER IPageLayout.BOTTOM ABOVE IS HEIGHT OF CSVTableView WINDOW (RELATIVE TO MatchTool WINDOWS)
 
-			matchToolLayout.addView(MatchFlowableTableView.ID);
+			matchToolLayout.addView(MatchFlowables.ID);
 
 		}
 
