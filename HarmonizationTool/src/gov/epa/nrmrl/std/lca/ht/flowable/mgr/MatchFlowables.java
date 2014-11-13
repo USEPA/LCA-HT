@@ -75,6 +75,7 @@ public class MatchFlowables extends ViewPart {
 	private static int searchRow = 1;
 	private static boolean editingInProgress = false;
 	private static boolean justUpdated = false;
+	private static Button addToMaster;
 
 	private static int maxSearchResults = 50;
 	public static Text editorText;
@@ -94,7 +95,7 @@ public class MatchFlowables extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		outerComposite = new Composite(parent, SWT.NONE);
+		outerComposite = new Composite(parent, SWT.V_SCROLL);
 		outerComposite.setLayout(new GridLayout(1, false));
 		System.out.println("hello, from sunny MatchFlowables!");
 		initializeTableViewer(outerComposite);
@@ -104,7 +105,7 @@ public class MatchFlowables extends ViewPart {
 
 	private static void initializeTableViewer(Composite composite) {
 
-		Composite innerComposite = new Composite(outerComposite, SWT.V_SCROLL);
+		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
 		innerComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gridData.heightHint = 20;
@@ -124,11 +125,10 @@ public class MatchFlowables extends ViewPart {
 		acceptAdvance.addSelectionListener(nextSelectionListener);
 
 		// TODO - ADD THIS BUTTON (BELOW) AND IMPLEMENT.
-		Button addToMaster = new Button(innerComposite, SWT.NONE);
+		addToMaster = new Button(innerComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
-
 
 		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -177,7 +177,7 @@ public class MatchFlowables extends ViewPart {
 						if (editorText != null) {
 							textInEditor = editorText.getText();
 						}
-						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))){
+						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
 							justUpdated = false;
 							rowNumSelected = newRowNumSelected;
 							colNumSelected = newColNumSelected;
@@ -233,6 +233,7 @@ public class MatchFlowables extends ViewPart {
 
 	private static void initializeTable() {
 		table = tableViewer.getTable();
+		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 	}
@@ -246,6 +247,9 @@ public class MatchFlowables extends ViewPart {
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
+		if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+			addToMaster.setText("Remove from Master");
+		}
 		flowableToMatch.clearSearchResults();
 		if (flowableToMatch == null) {
 			return;
@@ -395,7 +399,11 @@ public class MatchFlowables extends ViewPart {
 		}
 
 		Util.findView(FlowsWorkflow.ID);
-		if (noMatch) {
+
+		if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
+		} else if (noMatch) {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 
@@ -748,11 +756,18 @@ public class MatchFlowables extends ViewPart {
 			doit(e);
 		}
 	};
-	
+
 	private static SelectionListener addToMasterListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusCuratedMaster);
+			if (addToMaster.getText().equals("Add to master")) {
+				ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusCuratedMaster);
+				// ActiveTDB.tsReplaceLiteral(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, "Curated master");
+			} else {
+				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+						LCAHT.QCStatusCuratedMaster);
+			}
+
 		}
 
 		@Override
@@ -765,7 +780,6 @@ public class MatchFlowables extends ViewPart {
 			doit(e);
 		}
 	};
-	
 
 	private static Composite outerComposite;
 
