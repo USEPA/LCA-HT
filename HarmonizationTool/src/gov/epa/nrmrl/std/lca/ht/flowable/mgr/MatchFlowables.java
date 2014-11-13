@@ -51,6 +51,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
@@ -247,12 +248,20 @@ public class MatchFlowables extends ViewPart {
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
-		if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
-			addToMaster.setText("Remove from Master");
-		}
+
 		flowableToMatch.clearSearchResults();
 		if (flowableToMatch == null) {
 			return;
+		}
+		if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+			addToMaster.setText("Remove from Master");
+//		} else if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus)) {
+//			addToMaster.setText("Remove 2");
+//		} else if (flowableToMatch.getTdbResource().hasProperty(RDFS.label)) {
+//			addToMaster.setText("Remove 3");
+		} else {
+			addToMaster.setText("Add to Master");
+//			updateMatchCounts();
 		}
 		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
@@ -760,12 +769,22 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener addToMasterListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			if (addToMaster.getText().equals("Add to master")) {
-				ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusCuratedMaster);
+			if (addToMaster.getText().equals("Add to Master")) {
+				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+							LCAHT.QCStatusAdHocMaster);
+				}
 				// ActiveTDB.tsReplaceLiteral(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, "Curated master");
+				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
+				addToMaster.setText("Remove from Master");
 			} else {
-				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
-						LCAHT.QCStatusCuratedMaster);
+				while (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+					ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+							LCAHT.QCStatusAdHocMaster);
+				}
+				updateMatchCounts();
+				addToMaster.setText("Add to Master");
 			}
 
 		}
