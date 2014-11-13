@@ -1,7 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
-import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -24,82 +22,48 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.tdb.TDB;
 
-public class ImportTDBHandler implements IHandler {
-	// TODO: REFACTOR TO CALL THIS SOMETHING MORE LIKE: ImportRDFHandler
+public class ImportRDFHandler implements IHandler {
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
-
-	// private QGetNextDSIndex qGetNextDSIndex = new QGetNextDSIndex();
-	// private UAssignDSIndex_with_param uAssignDSIndex_with_param = new UAssignDSIndex_with_param();
-	// private XNumberDataSets xNumberDataSets = new XNumberDataSets();
-
-	// qGetNextDSIndex.
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-
-		// public Object execute(ExecutionEvent event) throws ExecutionException
 		System.out.println("executing TDB load");
 		if (ActiveTDB.tdbModel == null) {
-			// String msg = "ERROR no TDB open";
-			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
 		}
 
 		Model model = ActiveTDB.tdbModel;
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
-		String homeDir = System.getProperty("user.home");
-		String inputDirectory = Util.getPreferenceStore().getString("iDirectory");
+		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
 		if (inputDirectory.length() > 0) {
 			fileDialog.setFilterPath(inputDirectory);
 		} else {
+			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
 		}
 
-		// Class dataSource = tdbModel.getClass();
-		// Resource dsIRI = tdbModel.createResource();
-		// Property hasDataSource = tdbModel.getProperty(RDF.type);
+		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf" });
+		// SHOWS ALL TYPES IN ONE WINDOW
 
-		// ResIterator dataSetResources = tdbModel
-		// .listResourcesWithProperty(RDF.type,
-		// ds.asNode());
-
-		// fileDialog
-		// .setFilterExtensions(new String[] { "*.zip", "*.n3", "*.rdf" });
-		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf" }); // SHOWS
-																				// ALL
-																				// TYPES
-																				// IN
-																				// ONE
-																				// WINDOW
-
-		// String homeDir = System.getProperty("user.home");
-		// fileDialog.setFilterPath(homeDir);
-		System.out.println("Ready to open");
-		// ----------------- TOMMY HELP FIX THIS (BELOW) ----------------------
-		// String path = fileDialog.open(); // INPUT FROM USER
-		fileDialog.open(); // INPUT FROM USER
+		fileDialog.open();
 		String path = fileDialog.getFilterPath();
 		String[] fileList = fileDialog.getFileNames();
 
-//		String sep = System.getProperty("file.separator");
+		// String sep = System.getProperty("file.separator");
 		String sep = File.separator;
 
 		System.out.println("path= " + path);
@@ -114,34 +78,29 @@ public class ImportTDBHandler implements IHandler {
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
-					// int next = 1;
 					String inputType = "RDF/XML";
 					if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					} else if (fileName.matches(".*\\.ttl.*")) {
 						inputType = "TTL";
-					} 
+					}
 					InputStream inputStream = new FileInputStream(fileName);
 					model.read(inputStream, null, inputType);
 					runLogger.info("LOAD RDF " + fileName);
 					ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (Exception e) {
-
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else if (fileName.matches(".*\\.zip.*")) {
-				// System.out.println("Got a zip file");
 				try {
+					@SuppressWarnings("resource")
 					ZipFile zf = new ZipFile(fileName);
 					runLogger.info("LOAD RDF (zip file)" + fileName);
 
-					Enumeration entries = zf.entries();
-					// JenaReader jenaReader = new JenaReader();
+					Enumeration<?> entries = zf.entries();
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
@@ -155,11 +114,21 @@ public class ImportTDBHandler implements IHandler {
 							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
 							runLogger.info("  # zip file contains: " + ze.getName());
 
-							model.read(zipStream, null, inputType);
-
+							// --- BEGIN SAFE -WRITE- TRANSACTION ---
+							ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+							try {
+								model.read(zipStream, null, inputType);
+								ActiveTDB.tdbDataset.commit();
+								TDB.sync(ActiveTDB.tdbDataset);
+							} catch (Exception e) {
+								System.out.println("Import failed; see strack trace!");
+								ActiveTDB.tdbDataset.abort();
+							} finally {
+								ActiveTDB.tdbDataset.end();
+							}
+							// ---- END SAFE -WRITE- TRANSACTION ---
+							
 							ActiveTDB.syncTDBtoLCAHT();
-
-							// jenaReader.read(tdbModel, zipStream, null);
 						}
 					}
 
@@ -167,7 +136,6 @@ public class ImportTDBHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
-			// xNumberDataSets.execute();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 
@@ -178,52 +146,21 @@ public class ImportTDBHandler implements IHandler {
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
-		// GenericUpdate iGenericInsert = new
-		// GenericUpdate(queryStr,"Ext. File Update");
-
-		// addFilename(fileName);
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		Util.findView(ResultsView.ID);
-		ResultsView resultsView = (ResultsView) page.findView(ResultsView.ID);
-		String title = resultsView.getTitle();
-		System.out.println("title= " + title);
-
-		// resultsView.update(iGenericInsert.getData());
-		// resultsView.update(iGenericInsert.getQueryResults());
-		// CSVTableView.setKey(fileName);
-		// TableViewer tableViewer = csvTableView.getViewer();
-		// tableViewer.setInput(new Object[] {""});
-		// resultsView.update(fileName);
-
-		// }
-
-		// actionExtUpdate.setText("Exec. Update...");
-		// actionExtUpdate.setToolTipText("SPARQL Update in .ttl file");
-		// actionExtUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
-		// System.out.println("qGetNextDSIndex = "+qGetNextDSIndex.toString());
-
-		// String msg = "Finished Loading TDB: "+Util.getPreferenceStore().getString("defaultTDB");
-		// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-
 		return null;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isHandled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

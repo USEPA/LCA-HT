@@ -34,6 +34,7 @@ import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
@@ -252,6 +253,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -313,6 +315,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			// tr_subject.removeAll(predicate);
 			// tr_subject.addProperty(predicate, object);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -336,6 +339,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbModel.abort();
@@ -361,6 +365,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -390,6 +395,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.add(subject, predicate, object);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -413,6 +419,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -450,6 +457,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			// // subject.removeAll(predicate);
 			// tr_subject.removeAll(predicate);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -492,6 +500,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();
@@ -514,6 +523,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.remove(subject, predicate, object);
 			tdbDataset.commit();
+			TDB.sync(tdbDataset);
 		} catch (Exception e) {
 			System.out.println("TDB transaction failed; see strack trace!");
 			tdbDataset.abort();

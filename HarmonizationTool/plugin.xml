@@ -267,7 +267,7 @@
             name="TDB Dump">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportTDBHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportRDFHandler"
             id="HarmonizationTool.TDB_Load"
             name="TDB Load">
       </command>

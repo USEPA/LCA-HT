@@ -44,8 +44,6 @@ public class ImportCSV implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-
-		System.out.println("executing Import CSV");
 		TableProvider tableProvider = new TableProvider();
 		FileMD fileMD = new FileMD();
 
@@ -60,6 +58,10 @@ public class ImportCSV implements IHandler {
 		}
 
 		String path = fileDialog.open();
+		if (path == null) {
+			runLogger.info("# Cancelling CSV file read");
+			return null;
+		}
 		File file = null;
 		if (path != null) {
 			file = new File(path);
@@ -84,7 +86,8 @@ public class ImportCSV implements IHandler {
 		}
 
 		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
-		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
+		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
+		// COLUMNS
 		String[] values = null;
 		try {
 			values = parser.getLine();
@@ -113,11 +116,14 @@ public class ImportCSV implements IHandler {
 		System.out.println("meta initialized");
 		dialog.create();
 		System.out.println("meta created");
-		if (dialog.open() == MetaDataDialog.CANCEL) { // FIXME
+		boolean thing;
+		if (thing = dialog.open() == MetaDataDialog.CANCEL) { // FIXME
 			System.out.println("cancel!");
+
 			fileMD.remove();
 			return null;
 		}
+		System.out.println("thing = " + thing);
 		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(fileMD);
 		System.out.println("FileMD set in tableProvider");
