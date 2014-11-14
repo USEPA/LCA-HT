@@ -72,21 +72,35 @@ public class ImportRDFHandler implements IHandler {
 			if (!fileName.startsWith(sep)) {
 				fileName = path + sep + fileName;
 			}
-			// }
 
 			long was = model.size();
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
-					String inputType = "RDF/XML";
-					if (fileName.matches(".*\\.n3.*")) {
+					String inputType = "SKIP";
+					if (fileName.matches(".*\\.rdf.*")) {
+						inputType = "RDF/XML";
+					} else if (fileName.matches(".*\\.n3.*")) {
 						inputType = "N3";
 					} else if (fileName.matches(".*\\.ttl.*")) {
 						inputType = "TTL";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
-					model.read(inputStream, null, inputType);
 					runLogger.info("LOAD RDF " + fileName);
+
+					// --- BEGIN SAFE -WRITE- TRANSACTION ---
+					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+					try {
+						model.read(inputStream, null, inputType);
+						ActiveTDB.tdbDataset.commit();
+						TDB.sync(ActiveTDB.tdbDataset);
+					} catch (Exception e) {
+						System.out.println("Import failed; see strack trace!");
+						ActiveTDB.tdbDataset.abort();
+					} finally {
+						ActiveTDB.tdbDataset.end();
+					}
+					// ---- END SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
@@ -108,9 +122,11 @@ public class ImportRDFHandler implements IHandler {
 							inputType = "RDF/XML";
 						} else if (ze.getName().matches(".*\\.n3.*")) {
 							inputType = "N3";
+						} else if (fileName.matches(".*\\.ttl.*")) {
+							inputType = "TTL";
 						}
 						if (inputType != "SKIP") {
-							System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
+							// System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
 							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
 							runLogger.info("  # zip file contains: " + ze.getName());
 
@@ -127,7 +143,7 @@ public class ImportRDFHandler implements IHandler {
 								ActiveTDB.tdbDataset.end();
 							}
 							// ---- END SAFE -WRITE- TRANSACTION ---
-							
+
 							ActiveTDB.syncTDBtoLCAHT();
 						}
 					}

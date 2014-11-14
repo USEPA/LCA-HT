@@ -42,7 +42,7 @@ import com.hp.hpl.jena.update.GraphStoreFactory;
 public class ActiveTDB implements IHandler, IActiveTDB {
 	public static Model tdbModel = null;
 	public static Dataset tdbDataset = null;
-	public static String tdbDir = null;
+//	private static String tdbDir = null;
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
 
@@ -239,7 +239,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
@@ -286,7 +286,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
 				RDFNode rdfNode = nodeIterator.next();
@@ -336,7 +336,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Resource result = null;
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
 			TDB.sync(tdbDataset);
@@ -361,7 +361,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
@@ -392,7 +392,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.add(subject, predicate, object);
 			tdbDataset.commit();
 			TDB.sync(tdbDataset);
@@ -416,7 +416,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
 			TDB.sync(tdbDataset);
@@ -440,7 +440,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
 				RDFNode rdfNode = nodeIterator.next();
@@ -488,7 +488,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 			while (nodeIterator.hasNext()) {
 				RDFNode rdfNode = nodeIterator.next();
@@ -520,7 +520,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
-			Model tdbModel = tdbDataset.getDefaultModel();
+//			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.remove(subject, predicate, object);
 			tdbDataset.commit();
 			TDB.sync(tdbDataset);

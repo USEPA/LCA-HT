@@ -10,9 +10,6 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
-import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -28,15 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -59,7 +53,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -69,7 +62,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -377,7 +369,7 @@ public class CSVTableView extends ViewPart {
 			}
 			rowNumSelected = table.indexOf(item);
 			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
-
+			
 			table.select(rowNumSelected);
 
 			if (colNumSelected > 0) {
@@ -385,6 +377,14 @@ public class CSVTableView extends ViewPart {
 					table.deselectAll();
 					return;
 				}
+				
+				String dataRowNumString = table.getItem(rowNumSelected).getText(0);
+				Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
+				if (rowsToIgnore.contains(dataRowNum)){
+					table.deselectAll();
+					return;
+				}
+
 				for (TableItem tableItem : table.getItems()) {
 					tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				}

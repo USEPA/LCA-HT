@@ -49,8 +49,10 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.eclipse.swt.layout.GridLayout;
@@ -628,68 +630,6 @@ public class MatchFlowables extends ViewPart {
 		}
 	}
 
-	// private static class RowIndexColumnLabelProvider extends ColumnLabelProvider {
-	//
-	// public RowIndexColumnLabelProvider() {
-	// }
-	//
-	// @Override
-	// public String getToolTipText(Object element) {
-	// DataRow dataRow = null;
-	// try {
-	// dataRow = (DataRow) element;
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// System.out.println("element= " + element);
-	// }
-	// String t = "";
-	// try {
-	// t = dataRow.getRowToolTip();
-	//
-	// } catch (Exception e) {
-	// System.out.println("dataRow=" + dataRow);
-	// e.printStackTrace();
-	// }
-	// return t;
-	// }
-	//
-	// @Override
-	// public Point getToolTipShift(Object object) {
-	// return new Point(5, 5);
-	// }
-	//
-	// @Override
-	// public int getToolTipDisplayDelayTime(Object object) {
-	// return 100; // msec
-	// }
-	//
-	// @Override
-	// public int getToolTipTimeDisplayed(Object object) {
-	// return 5000; // msec
-	// }
-	//
-	// @Override
-	// public String getText(Object element) {
-	// DataRow dataRow = null;
-	// try {
-	// dataRow = (DataRow) element;
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// System.out.println("element= " + element);
-	// }
-	// String s = "";
-	// try {
-	// // s = dataRow.getRowNumber() + 1 + "";
-	// int rowNumPlus1 = dataRow.getRowNumber() + 1;
-	// s = rowNumPlus1 + "";
-	// } catch (Exception e) {
-	// System.out.println("dataRow=" + dataRow);
-	// e.printStackTrace();
-	// }
-	// return s;
-	// }
-	// }
-
 	private static TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 
 		final TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE, colNumber);
@@ -724,31 +664,6 @@ public class MatchFlowables extends ViewPart {
 		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 	}
 
-	// //
-	// private static SelectionListener colSelectionListener = new SelectionListener() {
-	//
-	// private void doit(SelectionEvent e) {
-	// // System.out.println("SelectionListener event e= " + e);
-	// if (e.getSource() instanceof TableColumn) {
-	// // TableColumn col = (TableColumn) e.getSource();
-	// // colNumSelected = table.indexOf(col);
-	// // if (colNumSelected > 0) {
-	// // headerMenu.setVisible(true);
-	// // }
-	// }
-	// }
-	//
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// doit(e);
-	// };
-	//
-	// @Override
-	// public void widgetDefaultSelected(SelectionEvent e) {
-	// doit(e);
-	// }
-	// };
-
 	private static SelectionListener nextSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -770,10 +685,13 @@ public class MatchFlowables extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			if (addToMaster.getText().equals("Add to Master")) {
+				Resource thing = flowableToMatch.getTdbResource();
 				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
 				}
+				Model fred = ActiveTDB.tdbModel;
+				GraphStore jim = ActiveTDB.graphStore;
 				// ActiveTDB.tsReplaceLiteral(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, "Curated master");
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
