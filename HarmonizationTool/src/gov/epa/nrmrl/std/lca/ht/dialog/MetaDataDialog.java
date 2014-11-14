@@ -9,6 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.Person;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -154,7 +155,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 			deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
 			deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			deleteDataSource.setText("X");
-			deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
+			deleteDataSource.addSelectionListener(deleteDatasourceListener);
+			// deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
 		}
 
 		rowIndex++;
@@ -257,6 +259,36 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues[8] = textFileReadTime; // ------- 08 File Read Time
 
 	}
+
+	private SelectionListener deleteDatasourceListener = new SelectionListener() {
+
+		private void doit(SelectionEvent e) {
+			String dataSourceToDelete = comboSelectorDataSource.getText();
+
+			MessageDialog messageDialog = new MessageDialog(getShell(), "Confirm", null,
+					"Are you sure you wish to remove the label and contents of the data set with the label: "
+							+ dataSourceToDelete + "?", MessageDialog.QUESTION, new String[] { "Cancel",
+							"Confirm Deletion" }, 0);
+			// messageDialog.create();
+			if (messageDialog.open() == 1) {
+				DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
+				System.out.println("Deleting " + dataSourceToDelete);
+				comboSelectorDataSource.remove(dataSourceToDelete);
+				comboSelectorDataSource.select(0);
+				runLogger.info("User deleted data set: " + dataSourceToDelete);
+			}
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		};
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+	};
 
 	protected void redrawDialogRows() {
 		clearDialogRows();
@@ -424,35 +456,35 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 	}
 
-	private final class DeleteButtonClickListener implements Listener {
-		@Override
-		public void handleEvent(Event event) {
-			// TODO THIS ROUTINE NEEDS WORK! THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
-			String dataSourceToDelete = comboSelectorDataSource.getText();
-			GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
-
-			genericStringBox.create("Delete Data Set", "Please type \"yes\" to confirm deletion of "
-					+ dataSourceToDelete);
-			genericStringBox.open();
-
-			String confirmDeletion = genericStringBox.getResultString();
-			if (!confirmDeletion.equals("yes")) {
-				// NOT CONFIRMED, SO QUIT
-				System.out.println("Not deleting");
-				return;
-			}
-			DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
-			// THE ABOVE ROUTINE NEEDS WORK
-
-			System.out.println("Deleting " + dataSourceToDelete);
-			comboSelectorDataSource.remove(dataSourceToDelete);
-			if (comboSelectorDataSource.getItemCount() == 0) {
-				cancelPressed();
-				return;
-			}
-			comboSelectorDataSource.select(0);
-		}
-	}
+	// private final class DeleteButtonClickListener implements Listener {
+	// @Override
+	// public void handleEvent(Event event) {
+	// // TODO THIS ROUTINE NEEDS WORK! THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
+	// String dataSourceToDelete = comboSelectorDataSource.getText();
+	// GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
+	//
+	// genericStringBox.create("Delete Data Set", "Please type \"yes\" to confirm deletion of "
+	// + dataSourceToDelete);
+	// genericStringBox.open();
+	//
+	// String confirmDeletion = genericStringBox.getResultString();
+	// if (!confirmDeletion.equals("yes")) {
+	// // NOT CONFIRMED, SO QUIT
+	// System.out.println("Not deleting");
+	// return;
+	// }
+	// DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
+	// // THE ABOVE ROUTINE NEEDS WORK
+	//
+	// System.out.println("Deleting " + dataSourceToDelete);
+	// comboSelectorDataSource.remove(dataSourceToDelete);
+	// if (comboSelectorDataSource.getItemCount() == 0) {
+	// cancelPressed();
+	// return;
+	// }
+	// comboSelectorDataSource.select(0);
+	// }
+	// }
 
 	public class ComboSelectorFileMDListener implements ModifyListener {
 
