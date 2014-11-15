@@ -40,7 +40,7 @@ import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
-	// public static Model tdbModel = null;
+	public static Model tdbModel = null;
 	public static Dataset tdbDataset = null;
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
@@ -124,7 +124,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				try {
 					tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 					assert tdbDataset != null : "tdbDataset cannot be null";
-					// tdbModel = tdbDataset.getDefaultModel();
+					tdbModel = tdbDataset.getDefaultModel();
 					graphStore = GraphStoreFactory.create(tdbDataset);
 					System.out.println("TDB Successfully initiated!");
 				} catch (Exception e1) {
@@ -621,6 +621,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Model getModel() {
-		return tdbDataset.getDefaultModel();
+		return tdbModel;
+//		return tdbDataset.getDefaultModel();
 	}
 }
