@@ -690,7 +690,7 @@ public class MatchFlowables extends ViewPart {
 					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
 				}
-				Model fred = ActiveTDB.tdbModel;
+				Model fred = ActiveTDB.getModel();
 				GraphStore jim = ActiveTDB.graphStore;
 				// ActiveTDB.tsReplaceLiteral(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, "Curated master");
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());

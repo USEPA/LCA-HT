@@ -41,11 +41,9 @@ public class ImportRDFHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
 		System.out.println("executing TDB load");
-		if (ActiveTDB.tdbModel == null) {
+		if (ActiveTDB.getModel() == null) {
 			return null;
 		}
-
-		Model model = ActiveTDB.tdbModel;
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
 				| SWT.MULTI);
 		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
@@ -73,7 +71,7 @@ public class ImportRDFHandler implements IHandler {
 				fileName = path + sep + fileName;
 			}
 
-			long was = model.size();
+			long was = ActiveTDB.getModel().size();
 			long startTime = System.currentTimeMillis();
 			if (!fileName.matches(".*\\.zip.*")) {
 				try {
@@ -90,8 +88,9 @@ public class ImportRDFHandler implements IHandler {
 
 					// --- BEGIN SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+					Model tdbModel = ActiveTDB.getModel();
 					try {
-						model.read(inputStream, null, inputType);
+						tdbModel.read(inputStream, null, inputType);
 						ActiveTDB.tdbDataset.commit();
 						TDB.sync(ActiveTDB.tdbDataset);
 					} catch (Exception e) {
@@ -132,8 +131,9 @@ public class ImportRDFHandler implements IHandler {
 
 							// --- BEGIN SAFE -WRITE- TRANSACTION ---
 							ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+							Model tdbModel = ActiveTDB.getModel();
 							try {
-								model.read(zipStream, null, inputType);
+								tdbModel.read(zipStream, null, inputType);
 								ActiveTDB.tdbDataset.commit();
 								TDB.sync(ActiveTDB.tdbDataset);
 							} catch (Exception e) {
@@ -154,8 +154,7 @@ public class ImportRDFHandler implements IHandler {
 			}
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
-
-			long now = model.size();
+			long now = ActiveTDB.getModel().size();
 			long change = now - was;
 			System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
 			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));

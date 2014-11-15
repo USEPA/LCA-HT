@@ -41,11 +41,10 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 	private void executeQuery() {
 		// Query query = QueryFactory.create(queryStr);
-		Model model = ActiveTDB.tdbModel;
-		if (model == null) {
+		if (ActiveTDB.getModel() == null) {
 			return;
 		}
-		long startModelSize = model.size();
+		long startModelSize = ActiveTDB.getModel().size();
 
 		queryResults = new QueryResults();
 		GraphStore graphStore = ActiveTDB.graphStore;
@@ -93,7 +92,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		System.out.println("Time elapsed: " + elapsedTimeSec);
-		long endModelSize = model.size();
+		long endModelSize = ActiveTDB.getModel().size();
 		System.err.printf("After Update: %s\n", endModelSize);
 		// data.add("After Update");
 		// data.add("" + tdbModel.size());

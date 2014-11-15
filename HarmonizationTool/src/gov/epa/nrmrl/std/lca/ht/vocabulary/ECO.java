@@ -21,7 +21,7 @@ public class ECO {
 	 * </p>
 	 */
 //	private static Model m_model = ModelFactory.createDefaultModel();
-	private static Model m_model = ActiveTDB.tdbModel;
+	private static Model m_model = ActiveTDB.getModel();
 
 
 	/**

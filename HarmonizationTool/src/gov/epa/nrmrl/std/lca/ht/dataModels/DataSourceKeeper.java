@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -174,7 +175,8 @@ public class DataSourceKeeper {
 	}
 
 	public static void syncFromTDB() {
-		ResIterator iterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+		Model tdbModel = ActiveTDB.getModel();
+		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		while (iterator.hasNext()) {
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);

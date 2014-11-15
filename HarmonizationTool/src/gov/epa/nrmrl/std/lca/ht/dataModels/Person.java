@@ -5,10 +5,8 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Person {
 	private String name;
@@ -17,7 +15,7 @@ public class Person {
 	private String phone;
 	private static final Resource rdfClass = ECO.Person;
 	private Resource tdbResource;
-	protected final static Model model = ActiveTDB.tdbModel;
+//	protected final static Model model = ActiveTDB.tdbModel;
 
 	public Person() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);

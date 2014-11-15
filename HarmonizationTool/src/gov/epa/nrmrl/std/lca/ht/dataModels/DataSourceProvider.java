@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -72,9 +72,10 @@ public class DataSourceProvider {
 		}
 
 		fileMDList.add(fileMD);
-		if (!ActiveTDB.tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
+//		Model tdbModel = ActiveTDB.getModel();
+//		if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
 			ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-		}
+//		}
 	}
 
 	public List<FileMD> getFileMDList() {

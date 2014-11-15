@@ -63,7 +63,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class FASC {
     /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
 //    private static Model m_model = ModelFactory.createDefaultModel();
-	private static Model m_model = ActiveTDB.tdbModel;
+	private static Model m_model = ActiveTDB.getModel();
 
 
     /** <p>The namespace of the vocabulary as a string</p> */

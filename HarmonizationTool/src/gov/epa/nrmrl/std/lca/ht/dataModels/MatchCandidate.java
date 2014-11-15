@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -39,7 +40,8 @@ public class MatchCandidate {
 		StmtIterator itemStatementIterator = itemToMatchTDBResource.listProperties(RDF.type);
 		while (itemStatementIterator.hasNext()) {
 			RDFNode type = itemStatementIterator.next().getObject();
-			if (ActiveTDB.tdbModel.contains(matchCandidateTDBResource, RDF.type, type)) {
+			Model tdbModel = ActiveTDB.getModel();
+			if (tdbModel.contains(matchCandidateTDBResource, RDF.type, type)) {
 				return true;
 			}
 		}

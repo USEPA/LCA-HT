@@ -18,14 +18,13 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	@Override
 	public ResultSet getResultSet() {
 		System.out.println("query=\n"+query);
-		Model model = ActiveTDB.tdbModel;
 		if(query == null){
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		if(model== null){
+		if(ActiveTDB.getModel() == null){
 			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
 		}
-		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		QueryExecution qexec = QueryExecutionFactory.create(query, ActiveTDB.getModel());
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 
 		return resultSetRewindable;

@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.tdb.TDB;
 
 public class ExportTDBHandler implements IHandler {
@@ -30,7 +31,8 @@ public class ExportTDBHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		if (ActiveTDB.tdbModel == null) {
+		Model tdbModelCopy = ActiveTDB.getModel();
+		if (tdbModelCopy == null) {
 			return null;
 		}
 
@@ -66,8 +68,9 @@ public class ExportTDBHandler implements IHandler {
 				
 				// --- BEGIN SAFE -WRITE- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+				Model tdbModel = ActiveTDB.getModel();
 				try {
-					ActiveTDB.tdbModel.write(fout, outType); // TESTING
+					tdbModel.write(fout, outType); // TESTING
 				} catch (Exception e) {
 					System.out.println("Export failed; see strack trace!");
 					ActiveTDB.tdbDataset.abort();

@@ -128,24 +128,23 @@ public class Util {
 		return Activator.getDefault().getPreferenceStore();
 	}
 
-	public static Resource resolveUriFromString(String uriString) {
-		Resource uri = ActiveTDB.tdbModel.createResource();
+	public static Resource getResourceFromString(String uriString) {
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-			uri = ActiveTDB.tdbModel.getResource(uriString);
+			return ActiveTDB.getModel().getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.tdbModel
+			ResIterator iterator = (ActiveTDB.getModel()
 					.listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
 					AnonId anonId = (AnonId) resource.getId();
 					if (uriString.equals(anonId.toString())) {
-						uri = resource;
+						return resource;
 					}
 				}
 			}
 		}
-		return uri;
+		return null;
 	}
 
 	public static void setPerspective(String perspectiveID) {

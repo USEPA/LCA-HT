@@ -9,12 +9,9 @@ import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
-import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +20,7 @@ import java.util.regex.Pattern;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -57,8 +55,8 @@ public class Flowable {
 		// Literal literal = ActiveTDB.tdbModel.createLiteral(label);
 
 		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
-
-		StmtIterator stmtIterator = ActiveTDB.tdbModel.listStatements();
+		Model tdbModel = ActiveTDB.getModel();
+		StmtIterator stmtIterator = tdbModel.listStatements();
 		System.out.println("rdfClass = " + rdfClass);
 
 		while (stmtIterator.hasNext()) {
@@ -386,7 +384,8 @@ public class Flowable {
 		Resource qResource = flowable.getTdbResource();
 		String qName = flowable.getName();
 		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
-		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+		Model tdbModel = ActiveTDB.getModel();
+		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 
@@ -395,7 +394,7 @@ public class Flowable {
 			}
 		}
 
-		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 
@@ -406,7 +405,7 @@ public class Flowable {
 
 		for (String qSyn : flowable.getSynonyms()) {
 			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn);
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qSynLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qSynLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -414,7 +413,7 @@ public class Flowable {
 				}
 			}
 
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qSynLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qSynLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -428,7 +427,7 @@ public class Flowable {
 			String cas = flowable.getCas();
 			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas);
 
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -440,6 +439,7 @@ public class Flowable {
 	}
 
 	public static Set<MatchCandidate> findMatches(Flowable flowable) {
+		Model tdbModel = ActiveTDB.getModel();
 		Set<MatchCandidate> results = new HashSet<MatchCandidate>();
 		Resource qDataSource = flowable.getTdbResource().getPropertyResourceValue(ECO.hasDataSource);
 
@@ -453,10 +453,10 @@ public class Flowable {
 			return results;
 		}
 		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
-		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
+		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
-			if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+			if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
 				continue; // DON'T MATCH YOURSELF
 			}
 			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -468,10 +468,10 @@ public class Flowable {
 		}
 
 		// Q-NAME = DB-SYN
-		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
-			if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+			if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
 				continue; // DON'T MATCH YOURSELF
 			}
 			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -486,11 +486,11 @@ public class Flowable {
 		StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
 		while (stmtIterator.hasNext()) {
 			RDFNode objectAltName = stmtIterator.next().getObject();
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
+			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
 			// Q-SYN = DB-NAME
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
-				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
 					continue; // DON'T MATCH YOURSELF
 				}
 				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -502,10 +502,10 @@ public class Flowable {
 			}
 
 			// Q-SYN = DB-SYN
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
-				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
 					continue; // DON'T MATCH YOURSELF
 				}
 				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -520,10 +520,10 @@ public class Flowable {
 		// CAS MATCHING
 		if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
 			objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
+			resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
-				if (ActiveTDB.tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
 					continue; // DON'T MATCH YOURSELF
 				}
 				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -803,7 +803,8 @@ public class Flowable {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-		ResIterator resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+		Model tdbModel = ActiveTDB.getModel();
+		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -812,7 +813,7 @@ public class Flowable {
 			}
 		}
 
-		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 
@@ -826,7 +827,7 @@ public class Flowable {
 			String lcAltName = altName.toLowerCase();
 			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
 
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
 			// Q-SYN = DB-NAME
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
@@ -837,7 +838,7 @@ public class Flowable {
 				}
 			}
 
-			resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -851,7 +852,7 @@ public class Flowable {
 		// CAS MATCHING
 		String qCAS = getCas();
 		Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
-		resIterator = ActiveTDB.tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+		resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {

@@ -131,7 +131,7 @@ public class MatchPropertiesOld extends ViewPart {
 				// Property comparedEquivalence = FedLCA.comparedEquivalence;
 				// Resource equivalent = FedLCA.equivalent;
 
-				Model model = ActiveTDB.tdbModel;
+				Model model = ActiveTDB.getModel();
 				// SHOULD MAKE A CLASS FOR Annotation (WITH AUTOMATIC SYNCING
 				// WITH TDB) FIXME
 				// NEED TO DO THE FOLLOWING
@@ -587,7 +587,8 @@ public class MatchPropertiesOld extends ViewPart {
 			Resource queryPropertyResource = null;
 			// Resource fred = (Resource)uri;
 			// thing = ActiveTDB.tdbModel.getResource(fred );
-			ResIterator iterator = (ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, FedLCA.FlowProperty));
+			Model tdbModel = ActiveTDB.getModel();
+			ResIterator iterator = (tdbModel.listSubjectsWithProperty(RDF.type, FedLCA.FlowProperty));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {

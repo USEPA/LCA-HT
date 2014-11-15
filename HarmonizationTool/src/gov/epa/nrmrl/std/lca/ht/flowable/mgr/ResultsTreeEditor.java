@@ -889,7 +889,8 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	public void commitMatches() {
-		Model model = ActiveTDB.tdbModel;
+		Model tdbModel = ActiveTDB.getModel();
+		Model model = tdbModel;
 		Resource annotationResource = model.createResource();
 		// USE Annotation CLASS FIXME
 		model.add(annotationResource, RDF.type, FedLCA.Annotation);
@@ -933,7 +934,8 @@ public class ResultsTreeEditor extends ViewPart {
 	}
 
 	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
-		Model model = ActiveTDB.tdbModel;
+		Model tdbModel = ActiveTDB.getModel();
+		Model model = tdbModel;
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;

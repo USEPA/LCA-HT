@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -131,7 +132,8 @@ public class PersonKeeper {
 	}
 
 	public static void syncFromTDB() {
-		ResIterator iterator = ActiveTDB.tdbModel.listSubjectsWithProperty(RDF.type, ECO.Person);
+		Model tdbModel = ActiveTDB.getModel();
+		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.Person);
 		while (iterator.hasNext()) {
 			Resource personRDFResource = iterator.next();
 			// NOW SEE IF THE Person IS IN THE PersonKeeper YET
