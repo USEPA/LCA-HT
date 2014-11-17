@@ -1,7 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
-import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

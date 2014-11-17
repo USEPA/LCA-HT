@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.Issue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
@@ -16,7 +17,6 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
-import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;

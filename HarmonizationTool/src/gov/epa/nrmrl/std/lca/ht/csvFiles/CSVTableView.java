@@ -15,8 +15,6 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
-import gov.epa.nrmrl.std.lca.ht.jenaTDB.Issue;
-import gov.epa.nrmrl.std.lca.ht.jenaTDB.Status;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -31,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;

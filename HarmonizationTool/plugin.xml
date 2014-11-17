@@ -74,6 +74,12 @@
             name="SPARQL Results"
             restorable="true">
       </view>
+      <view
+            class="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
+            id="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
+            name="Output Harmonized Data"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -111,6 +117,11 @@
             <command
                   commandId="org.eclipse.ui.window.preferences"
                   label="Preferences"
+                  style="push">
+            </command>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
+                  label="Prepare output"
                   style="push">
             </command>
             <command
@@ -158,6 +169,11 @@
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
                      label="Show Properties Window"
+                     style="push">
+               </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
+                     label="Show Output Harmonized Data"
                      style="push">
                </command>
             </menu>
@@ -332,8 +348,8 @@
             name="Show Console">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.flowable.mgr.ControlViewHandler"
-            id="harmonizationtool.tree.viewer.ControlViewHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
+            id="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
             name="Show Control View">
       </command>
       <command
@@ -382,6 +398,10 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
             id="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowPerspectiveHandler"
             name="Restore FlowsWorkflow Perspective">
+      </command>
+      <command
+            id="HarmonizationTool.command1"
+            name="name">
       </command>
    </extension>
    <extension

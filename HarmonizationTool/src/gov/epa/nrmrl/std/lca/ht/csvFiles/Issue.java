@@ -1,7 +1,8 @@
-package gov.epa.nrmrl.std.lca.ht.jenaTDB;
+package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 
+@SuppressWarnings("rawtypes")
 public class Issue implements Comparable {
 	private QACheck qaCheck;
 	private int rowNumber;

@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.perspectives;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
+import gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -37,6 +38,7 @@ public class FlowDataV5 implements IPerspectiveFactory {
 		IFolderLayout dataLayout = layout.createFolder("Data", IPageLayout.RIGHT, 0.3f, "Workflow");
 		// FLOAT AFTER IPageLayout.RIGHT ABOVE IS THE WIDTH OF THE FIRST Workflow and Logger WINDOWS
 		dataLayout.addView(CSVTableView.ID);
+		dataLayout.addView(HarmonizedDataSelector.ID);
 
 		addPerspectiveShortcuts(layout);
 		// FLOAT AFTER IPageLayout.BOTTOM ABOVE IS THE HEIGHT OF THE Workflow WINDOW (RELATIVE TO Logger)

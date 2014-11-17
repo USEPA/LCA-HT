@@ -36,8 +36,7 @@ public class Util {
 		}
 		// SimpleDateFormat dateFormatGmt = new
 		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-		SimpleDateFormat dateFormatGmt = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return dateFormatGmt.format(date);
 	}
@@ -46,22 +45,20 @@ public class Util {
 		if (date == null) {
 			return null;
 		}
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);
 	}
 
 	public static Date setDateFmt(String string) throws ParseException {
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.parse(string);
 	}
 
 	public static String splitCamelCase(String s) {
-		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])",
-				"(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])");
+		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
+				"(?<=[A-Za-z])(?=[^A-Za-z])");
 		String result = s.replaceAll(pattern, " ");
 		String s1 = result.substring(0, 1);
 		String s2 = result.substring(1);
@@ -104,13 +101,11 @@ public class Util {
 		// IF YOU CAN'T, THEN SHOW IT AND FIND IT
 		IViewPart view;
 		try {
-			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().findView(viewID);
+			view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
 		} catch (Exception e) {
 			try {
 				Util.showView(viewID);
-				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage().findView(viewID);
+				view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(viewID);
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 				view = null;
@@ -120,8 +115,8 @@ public class Util {
 	}
 
 	public static void showView(String viewID) throws PartInitException {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-				.showView(viewID);
+		findView(viewID);
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
 	}
 
 	public static IPreferenceStore getPreferenceStore() {
@@ -132,8 +127,7 @@ public class Util {
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
 			return ActiveTDB.getModel().getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.getModel()
-					.listSubjectsWithProperty(RDF.type, ECO.Substance));
+			ResIterator iterator = (ActiveTDB.getModel().listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {
@@ -149,14 +143,9 @@ public class Util {
 
 	public static void setPerspective(String perspectiveID) {
 		IWorkbench iWorkBench = PlatformUI.getWorkbench();
-		IPerspectiveRegistry perspectiveRegistry = iWorkBench
-				.getPerspectiveRegistry();
-		iWorkBench
-				.getActiveWorkbenchWindow()
-				.getActivePage()
-				.setPerspective(
-						perspectiveRegistry
-								.findPerspectiveWithId(perspectiveID));
+		IPerspectiveRegistry perspectiveRegistry = iWorkBench.getPerspectiveRegistry();
+		iWorkBench.getActiveWorkbenchWindow().getActivePage()
+				.setPerspective(perspectiveRegistry.findPerspectiveWithId(perspectiveID));
 	}
 	// public static IStatusLineManager getStatusLine(){
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().
