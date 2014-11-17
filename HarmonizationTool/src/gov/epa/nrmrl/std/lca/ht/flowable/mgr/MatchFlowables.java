@@ -257,13 +257,13 @@ public class MatchFlowables extends ViewPart {
 		}
 		if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 			addToMaster.setText("Remove from Master");
-//		} else if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus)) {
-//			addToMaster.setText("Remove 2");
-//		} else if (flowableToMatch.getTdbResource().hasProperty(RDFS.label)) {
-//			addToMaster.setText("Remove 3");
+			// } else if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus)) {
+			// addToMaster.setText("Remove 2");
+			// } else if (flowableToMatch.getTdbResource().hasProperty(RDFS.label)) {
+			// addToMaster.setText("Remove 3");
 		} else {
 			addToMaster.setText("Add to Master");
-//			updateMatchCounts();
+			// updateMatchCounts();
 		}
 		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
@@ -347,12 +347,13 @@ public class MatchFlowables extends ViewPart {
 				continue;
 			}
 		}
-		updateMatchCounts();
 		Point p = table.getParent().getParent().getSize();
 		p.y -= 30;
 		table.setSize(p);
-		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+//		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		updateMatchCounts();
+
 		// tableViewer.refresh();
 	}
 
@@ -398,15 +399,16 @@ public class MatchFlowables extends ViewPart {
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		for (String value : candidateMap.values()) {
 			int col = MatchStatus.getNumberBySymbol(value);
-			if (col > 0 && col < 4) {
+			if (col > 0 && col < 5) {
 				noMatch = false;
 			}
 			matchSummary[col]++;
 		}
 
-		TableItem tableItem = table.getItem(0);
+//		TableItem tableItem = table.getItem(0);
+		FlowableTableRow rowZero = flowableTableRows.get(0);
 		for (int colNum = 0; colNum < 6; colNum++) {
-			tableItem.setText(colNum, matchSummary[colNum].toString());
+			rowZero.set(colNum, matchSummary[colNum].toString());
 		}
 
 		Util.findView(FlowsWorkflow.ID);
@@ -684,15 +686,14 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener addToMasterListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
+			int count = 0;
 			if (addToMaster.getText().equals("Add to Master")) {
-				Resource thing = flowableToMatch.getTdbResource();
 				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
+					ActiveTDB.sync();
+					count++;
 				}
-				Model fred = ActiveTDB.getModel();
-				GraphStore jim = ActiveTDB.graphStore;
-				// ActiveTDB.tsReplaceLiteral(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, "Curated master");
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				addToMaster.setText("Remove from Master");
@@ -700,11 +701,12 @@ public class MatchFlowables extends ViewPart {
 				while (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
+					count++;
 				}
 				updateMatchCounts();
 				addToMaster.setText("Add to Master");
 			}
-
+			System.out.println("count: " + count);
 		}
 
 		@Override

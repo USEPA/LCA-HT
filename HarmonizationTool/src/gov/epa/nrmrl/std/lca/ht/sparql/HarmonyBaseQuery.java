@@ -82,7 +82,7 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 //					.getStatusLineManager().setMessage(msg);
 			return;
 		}
-
+		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query,
 				ActiveTDB.getModel());
 		// System.out.println("tdbModel.getNsPrefixMap()"+ActiveTDB.tdbModel.getNsPrefixMap().toString());

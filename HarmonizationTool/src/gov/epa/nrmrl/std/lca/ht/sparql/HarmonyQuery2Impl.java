@@ -24,6 +24,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if(ActiveTDB.getModel() == null){
 			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
 		}
+		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, ActiveTDB.getModel());
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 
@@ -38,7 +39,8 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if(model== null){
 			throw new IllegalArgumentException("(RDF) tdbModel is null");
 		}
-
+		
+		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 
