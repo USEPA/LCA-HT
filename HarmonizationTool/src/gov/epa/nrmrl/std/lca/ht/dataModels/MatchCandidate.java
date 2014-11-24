@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -38,8 +39,9 @@ public class MatchCandidate {
 			return false;
 		}
 		StmtIterator itemStatementIterator = itemToMatchTDBResource.listProperties(RDF.type);
-		while (itemStatementIterator.hasNext()) {
-			RDFNode type = itemStatementIterator.next().getObject();
+		while (itemStatementIterator.hasNext()) {	
+//			RDFNode type = itemStatementIterator.next().getObject();
+			RDFNode type = itemStatementIterator.nextStatement().getObject();
 			Model tdbModel = ActiveTDB.getModel();
 			if (tdbModel.contains(matchCandidateTDBResource, RDF.type, type)) {
 				return true;

@@ -234,8 +234,15 @@ public class DataSourceProvider {
 		}
 
 		StmtIterator stmtIterator = tdbResource.listProperties(LCAHT.containsFile);
+		System.out.println("stmtIterator.toList() = " +stmtIterator.toList());
+
 		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
+			// ================= ?BUG IN JENA? USING THE LINE BELOW TO KEEP STABILITY
+			System.out.println("stmtIterator.toList() = " +stmtIterator.toList());
+			// SOMETHING ABOUT THE ABOVE STATEMENT PREVENTS THE TDB AND ITERATOR FROM SCREWING UP
+
+//			Statement statement = stmtIterator.next(); <== SOMETHING WRONG WITH COUNTER IF YOU USE THIS
+			Statement statement = stmtIterator.nextStatement();
 
 			rdfNode = statement.getObject();
 			int fileMDIndex = FileMDKeeper.getIndexByTdbResource(rdfNode.asResource());

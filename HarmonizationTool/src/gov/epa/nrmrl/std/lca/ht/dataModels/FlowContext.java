@@ -183,7 +183,7 @@ public class FlowContext {
 			} else {
 				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
 				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.next().getLiteral().getValue();
+					Object value = stmtIterator.nextStatement().getLiteral().getValue();
 					if (value.getClass().equals(
 							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();

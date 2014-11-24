@@ -60,7 +60,7 @@ public class Flowable {
 		System.out.println("rdfClass = " + rdfClass);
 
 		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.next();
+			Statement statement = stmtIterator.nextStatement();
 			if (!statement.getSubject().isAnon()) {
 				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
 					// Resource thing = statement.getSubject();
@@ -344,7 +344,7 @@ public class Flowable {
 			} else {
 				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
 				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.next().getLiteral().getValue();
+					Object value = stmtIterator.nextStatement().getLiteral().getValue();
 					if (value.getClass().equals(
 							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();
@@ -485,7 +485,7 @@ public class Flowable {
 		//
 		StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
 		while (stmtIterator.hasNext()) {
-			RDFNode objectAltName = stmtIterator.next().getObject();
+			RDFNode objectAltName = stmtIterator.nextStatement().getObject();
 			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
 			// Q-SYN = DB-NAME
 			while (resIterator.hasNext()) {
@@ -880,7 +880,7 @@ public class Flowable {
 //			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
 //			StmtIterator thing = candidateFlowableTDBResource.listProperties();
 //			while (thing.hasNext()) {
-//				Statement fred = thing.next();
+//				Statement fred = thing.nextStatement();
 //				System.out.println("fred.getPredicate() = " + fred.getPredicate());
 //			}
 

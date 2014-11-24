@@ -200,7 +200,7 @@ public class FlowProperty {
 						.listProperties(lcaDataPropertyProvider
 								.getTDBProperty());
 				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.next().getLiteral().getValue();
+					Object value = stmtIterator.nextStatement().getLiteral().getValue();
 					if (value
 							.getClass()
 							.equals(RDFUtil
@@ -311,7 +311,7 @@ public class FlowProperty {
 	public void setTdbResource(Resource tdbResource) {
 		// StmtIterator stmtIterator = this.tdbResource.listProperties();
 		// while (stmtIterator.hasNext()){
-		// Statement statement = stmtIterator.next();
+//		 Statement statement = stmtIterator.nextStatement();
 		// ActiveTDB.tdbModel.remove(statement);
 		// }
 		// NEXT STATEMENT REPLACES ABOVE

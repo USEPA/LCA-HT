@@ -7,6 +7,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
@@ -53,6 +54,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.eclipse.swt.layout.GridLayout;
@@ -438,45 +440,61 @@ public class MatchFlowables extends ViewPart {
 	protected static void assignMatch() {
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		LinkedHashMap<Resource, String> searchMap = flowableToMatch.getSearchResults();
-		FlowableTableRow flowableTabRow = (FlowableTableRow) table.getItem(rowNumSelected).getData();
+		TableItem tableItem = table.getItem(rowNumSelected);
+
+		FlowableTableRow flowableTabRow = (FlowableTableRow) tableItem.getData();
 		Flowable matchingFlowable = flowableTabRow.getFlowable();
+		Resource matchingResource = matchingFlowable.getTdbResource();
+		String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
+		tableItem.setText(colNumSelected, newString);
+		flowableTabRow.set(colNumSelected, newString);
 		if (rowNumSelected < searchRow) {
-			String curSymbol = candidateMap.get(flowableTabRow.getFlowable().getTdbResource());
+			String curSymbol = candidateMap.get(matchingResource);
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
-
-			TableItem tableItem = table.getItem(rowNumSelected);
-			FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
-
 			tableItem.setText(curCol, "");
-			flowableTableRow.set(curCol, "");
+			flowableTabRow.set(curCol, "");
 
-			String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
-			tableItem.setText(colNumSelected, newString);
-			flowableTableRow.set(colNumSelected, newString);
-			candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
-
+			candidateMap.put(matchingResource, newString);
+			tdbUpdateMatch(matchingResource,newString);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
-
-			TableItem tableItem = table.getItem(rowNumSelected);
-			FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
-
 			tableItem.setText(curCol, "");
-			flowableTableRow.set(curCol, "");
+			flowableTabRow.set(curCol, "");
 
-			String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
-			tableItem.setText(colNumSelected, newString);
-			flowableTableRow.set(colNumSelected, newString);
+			searchMap.put(matchingResource, newString);
+			tdbUpdateMatch(matchingResource,newString);
+			
 			if (colNumSelected > 0) {
 				candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			} else {
 				candidateMap.remove(flowableTabRow.getFlowable().getTdbResource());
-			}
-			searchMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
-		}
+			}		}
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
+	}
+
+	private static void tdbUpdateMatch(Resource matchResource, String newString) {
+//		if (newString.equals("?")){
+//			ActiveTDB.tsRemoveAllObjects(subject, predicate);
+//		}
+//		else {
+//			
+//		}
+	}
+
+	
+	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
+		if (querySource == null || master == null) {
+			System.out.println("querySource = " + querySource + " and master = " + master);
+			return null;
+		}
+		Resource comparisonResource = ActiveTDB.tsCreateResource(FedLCA.Comparison);
+		ActiveTDB.tsAddTriple(comparisonResource, RDF.type, FedLCA.Comparison);
+		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedSource, querySource);
+		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedMaster, master);
+		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedEquivalence, equivalence);
+		return comparisonResource;
 	}
 
 	@Override
