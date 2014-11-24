@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
@@ -9,6 +10,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -782,15 +784,19 @@ public class Flowable {
 
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.equivalenceCandidate);
 	}
 	
 
 	public void addSearchResult(Resource resource) {
 		searchResults.put(resource, "?");
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.equivalenceCandidate);
 	}
 
 	public void removeMatchCandidate(Resource resource) {
 		matchCandidates.remove(resource);
+		CurationMethods.removeComparison(tdbResource, resource);
+
 	}
 
 	public void setMatchCandidateStatus(int matchCandidateIndex, int statusCol) {
@@ -809,6 +815,7 @@ public class Flowable {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 				matchCandidates.put(flowableMatchCandidate, "?");
+				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
 				// THIS IS A name-name MATCH
 			}
 		}
@@ -819,6 +826,7 @@ public class Flowable {
 
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 				matchCandidates.put(flowableMatchCandidate, "?");
+				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
 				// THIS IS A name-synonym MATCH
 			}
 		}
@@ -834,6 +842,7 @@ public class Flowable {
 
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 					matchCandidates.put(flowableMatchCandidate, "?");
+					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
 					// THIS IS A synonym-name MATCH
 				}
 			}
@@ -842,6 +851,7 @@ public class Flowable {
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
 					matchCandidates.put(flowableMatchCandidate, "?");
 					// THIS IS A synonym-synonym MATCH
 
@@ -856,11 +866,13 @@ public class Flowable {
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
 				matchCandidates.put(flowableMatchCandidate, "?");
 				// THIS IS AN fCAS-fCAS MATCH
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+		
 		return autosetStatus();
 	}
 

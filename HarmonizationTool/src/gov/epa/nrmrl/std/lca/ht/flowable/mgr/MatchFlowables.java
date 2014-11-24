@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
@@ -352,7 +353,7 @@ public class MatchFlowables extends ViewPart {
 		Point p = table.getParent().getParent().getSize();
 		p.y -= 30;
 		table.setSize(p);
-//		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		// table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 
@@ -407,7 +408,7 @@ public class MatchFlowables extends ViewPart {
 			matchSummary[col]++;
 		}
 
-//		TableItem tableItem = table.getItem(0);
+		// TableItem tableItem = table.getItem(0);
 		FlowableTableRow rowZero = flowableTableRows.get(0);
 		for (int colNum = 0; colNum < 6; colNum++) {
 			rowZero.set(colNum, matchSummary[colNum].toString());
@@ -453,48 +454,29 @@ public class MatchFlowables extends ViewPart {
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
-
-			candidateMap.put(matchingResource, newString);
-			tdbUpdateMatch(matchingResource,newString);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
 
-			searchMap.put(matchingResource, newString);
-			tdbUpdateMatch(matchingResource,newString);
-			
 			if (colNumSelected > 0) {
 				candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			} else {
 				candidateMap.remove(flowableTabRow.getFlowable().getTdbResource());
-			}		}
+			}
+		}
+		candidateMap.put(matchingResource, newString);
+		tdbUpdateMatch(matchingResource, newString);
+
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 	}
 
 	private static void tdbUpdateMatch(Resource matchResource, String newString) {
-//		if (newString.equals("?")){
-//			ActiveTDB.tsRemoveAllObjects(subject, predicate);
-//		}
-//		else {
-//			
-//		}
-	}
-
-	
-	private Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
-		if (querySource == null || master == null) {
-			System.out.println("querySource = " + querySource + " and master = " + master);
-			return null;
-		}
-		Resource comparisonResource = ActiveTDB.tsCreateResource(FedLCA.Comparison);
-		ActiveTDB.tsAddTriple(comparisonResource, RDF.type, FedLCA.Comparison);
-		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedSource, querySource);
-		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedMaster, master);
-		ActiveTDB.tsAddTriple(comparisonResource, FedLCA.comparedEquivalence, equivalence);
-		return comparisonResource;
+		Resource equivalenceResource = MatchStatus.getBySymbol(newString).getEquivalence();
+		Resource comparison = CurationMethods.getComparison(flowableToMatch.getTdbResource(), matchResource);
+		CurationMethods.updateComparison(comparison, equivalenceResource);
 	}
 
 	@Override

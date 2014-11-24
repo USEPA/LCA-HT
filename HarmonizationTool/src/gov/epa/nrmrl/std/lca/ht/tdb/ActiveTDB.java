@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
@@ -34,6 +35,10 @@ import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
@@ -94,6 +99,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
+		CurationMethods.createNewAnnotation();
 	}
 
 	private static void openTDB() {
@@ -307,9 +313,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					if (rdfNodeType.equals(objectType)) {
 						getFreshModel().remove(subject, predicate, rdfNode);
 					}
+				} else {
+					removeAllObjects(subject, predicate);
 				}
 			}
 			getFreshModel().add(subject, predicate, object);
+
+//			getFreshModel().add(subject, predicate, object);
 			// Resource tr_subject;
 			// if (subject.isAnon()){
 			// AnonId anonId = subject.getId();
@@ -490,6 +500,32 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
+	public static void tsRemoveAllObjects(Resource comparison) {
+		if (noReadWrite) {
+			return;
+		}
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+//		Model tdbModel = getFreshModel();
+		try {
+
+			StmtIterator stmtIterator = comparison.listProperties();
+			while (stmtIterator.hasNext()) {
+				Statement statement = stmtIterator.nextStatement();
+				tdbModel.remove(statement);
+			}
+			tdbDataset.commit();
+			sync();
+		} catch (Exception e) {
+			System.out.println("TDB transaction failed; see strack trace!");
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+	}
+
 	private static void removeAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral) {
 		if (noReadWrite)
 			return;
@@ -630,4 +666,5 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static void sync() {
 		TDB.sync(tdbDataset);
 	}
+
 }

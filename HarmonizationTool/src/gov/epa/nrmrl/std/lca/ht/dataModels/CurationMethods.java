@@ -10,8 +10,13 @@ import java.util.Date;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 
 public class CurationMethods {
@@ -56,27 +61,54 @@ public class CurationMethods {
 		Resource annotationResource = ActiveTDB.tsCreateResource(FedLCA.Annotation);
 		Date calendar = new Date();
 		Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
-		ActiveTDB.tsAddLiteral(annotationResource, DCTerms.dateSubmitted, dateLiteral);
+		ActiveTDB.tsAddLiteral(annotationResource, DCTerms.created, dateLiteral);
+		ActiveTDB.tsAddLiteral(annotationResource, DCTerms.modified, dateLiteral);
+
 		if (Util.getPreferenceStore().getString("userName") != null) {
 			String userName = Util.getPreferenceStore().getString("userName");
+			// int count = 0;
+			// while (!ActiveTDB.tdbModel.contains(annotationResource, DCTerms.creator, userName) || true) {
 			ActiveTDB.tsAddLiteral(annotationResource, DCTerms.creator, userName);
 		}
 		currentAnnotation = annotationResource;
 		return annotationResource;
 	}
 
-	public static Resource addComparison(Resource querySource, Resource master, Resource equivalence) {
+	public static void updateAnnotationModifiedDate() {
+		if (currentAnnotation == null) {
+			createNewAnnotation();
+		} else {
+			Date calendar = new Date();
+			Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
+			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, dateLiteral);
+		}
+	}
+
+	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
 		}
+		if (querySource.equals(master)) {
+			return null;
+		}
 		Resource comparison = ActiveTDB.tsCreateResource(FedLCA.Comparison);
 
-		ActiveTDB.tsAddLiteral(comparison, FedLCA.comparedSource, querySource);
-		ActiveTDB.tsAddLiteral(comparison, FedLCA.comparedMaster, master);
-		ActiveTDB.tsAddLiteral(comparison, FedLCA.comparedEquivalence, equivalence);
+		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedSource, querySource);
+		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedMaster, master);
+		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedEquivalence, equivalence);
+		ActiveTDB.tsAddTriple(currentAnnotation, FedLCA.hasComparison, comparison);
+		updateAnnotationModifiedDate();
 		return comparison;
+	}
 
+	public static void updateComparison(Resource comparison, Resource equivalence) {
+		if (comparison == null || equivalence == null) {
+			System.out.println("comparison = " + comparison + " and equivalence = " + equivalence);
+			return;
+		}
+		updateAnnotationModifiedDate();
+		ActiveTDB.tsReplaceResource(comparison, FedLCA.comparedEquivalence, equivalence);
 	}
 
 	public static Resource getCurrentAnnotation() {
@@ -85,5 +117,55 @@ public class CurationMethods {
 
 	public static void setCurrentAnnotation(Resource currentAnnotation) {
 		CurationMethods.currentAnnotation = currentAnnotation;
+	}
+
+	public static void removeComparison(Resource comparison) {
+		ActiveTDB.tsRemoveStatement(currentAnnotation, FedLCA.comparedEquivalence, comparison);
+		ActiveTDB.tsRemoveAllObjects(comparison);
+		updateAnnotationModifiedDate();
+	}
+
+	public static void removeComparison(Resource comparedSource, Resource comparedMaster) {
+		Model model = ActiveTDB.getFreshModel();
+		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, comparedSource);
+		StmtIterator stmtIterator = model.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.nextStatement();
+			int count = 0;
+			while (model.contains(statement.getSubject(), FedLCA.comparedMaster, comparedMaster)) {
+				removeComparison(statement.getSubject());
+				count++;
+			}
+			System.out.println("count " + count);
+			break;
+		}
+	}
+
+	public static Resource getComparison(Resource tdbResource, Resource matchResource) {
+		Resource comparison = findCurrentComparison(tdbResource, matchResource);
+		if (comparison != null) {
+			System.out.println("updating existing comparison");
+			return comparison;
+		}
+		comparison = createNewComparison(tdbResource, matchResource, FedLCA.equivalenceCandidate);
+		System.out.println("creating new comparison");
+		return comparison;
+	}
+
+	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
+		Model model = ActiveTDB.tdbModel;
+		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
+		StmtIterator stmtIterator = model.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.nextStatement();
+			System.out.println("statement " + statement);
+			Resource comparisonCandidate = statement.getSubject();
+			if (model.contains(comparisonCandidate, FedLCA.comparedMaster, matchResource)
+					&& model.contains(currentAnnotation, FedLCA.hasComparison, comparisonCandidate)) {
+				removeComparison(comparisonCandidate);
+				return comparisonCandidate;
+			}
+		}
+		return null;
 	}
 }

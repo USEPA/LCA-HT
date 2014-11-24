@@ -22,7 +22,7 @@ public class CuratorPreferences extends FieldEditorPreferencePage implements IWo
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("sets preferences");
+		setDescription("The LCA HT user is also called the \"curator\".  Curator information is associated with annotations made with the HT.  Enter your information below.");
 
 	}
 
