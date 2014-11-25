@@ -71,7 +71,7 @@ public class ExportTDBHandler implements IHandler {
 				if (outType.equals("SKIP")) {
 					new GenericMessageBox(HandlerUtil.getActiveShell(event), "Unsupported output format",
 							"Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
-//				"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
+//							"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
 					return null;
 				}
 				runLogger.info("  # Writing RDF triples to " + path.toString());
@@ -81,6 +81,8 @@ public class ExportTDBHandler implements IHandler {
 				// rdfWriter.write(tdbModel, fout, null); // WORKED
 				// tdbModel.write(fout, path, outType); // BAD
 
+				ActiveTDB.garbageIn();
+				ActiveTDB.garbageOut();
 				// --- BEGIN SAFE -WRITE- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 				Model tdbModel = ActiveTDB.getModel();

@@ -691,7 +691,7 @@ public class MatchFlowables extends ViewPart {
 				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
-					ActiveTDB.sync();
+//					ActiveTDB.sync();
 					count++;
 				}
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());

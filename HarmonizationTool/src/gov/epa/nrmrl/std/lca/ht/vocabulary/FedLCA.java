@@ -431,17 +431,20 @@ public class FedLCA {
 	public static final Resource VehicleTransport = m_model.createResource(NS + "VehicleTransport");
 	// Energy
 	public static final Resource Energy = m_model.createResource(NS + "Energy");
-	
-	public static Resource BioticProductionOcc = m_model.createResource(NS + "BioticProductionOcc");;
-	public static Resource BioticProductionTransf = m_model.createResource(NS + "BioticProductionTransf");;
-	public static Resource ErosionResistanceOcc = m_model.createResource(NS + "ErosionResistanceOcc");;
-	public static Resource ErosionResistanceTransf = m_model.createResource(NS + "ErosionResistanceTransf");;
-	public static Resource GroundwaterReplenishmentOcc = m_model.createResource(NS + "GroundwaterReplenishmentOcc");;
-	public static Resource GroundwaterReplenishmentTransf = m_model.createResource(NS + "GroundwaterReplenishmentTransf");;
-	public static Resource MechanicalFiltrationOcc = m_model.createResource(NS + "MechanicalFiltrationOcc");;
-	public static Resource MechanicalFiltrationTransf = m_model.createResource(NS + "MechanicalFiltrationTransf");;
-	public static Resource PhysicochemicalFiltrationOcc = m_model.createResource(NS + "PhysicochemicalFiltrationOcc");;
-	public static Resource PhysicochemicalFiltrationTransf = m_model.createResource(NS + "PhysicochemicalFiltrationTransf");
 
-	public static Resource ValueUS2000BulkPrices = m_model.createResource(NS + "ValueUS2000BulkPrices");
+	public static final Resource deleteMe = m_model.createResource(NS + "deleteMe");
+	public static final Property hasValue = m_model.createProperty(NS + "hasValue");
+
+	public static final Resource BioticProductionOcc = m_model.createResource(NS + "BioticProductionOcc");;
+	public static final Resource BioticProductionTransf = m_model.createResource(NS + "BioticProductionTransf");;
+	public static final Resource ErosionResistanceOcc = m_model.createResource(NS + "ErosionResistanceOcc");;
+	public static final Resource ErosionResistanceTransf = m_model.createResource(NS + "ErosionResistanceTransf");;
+	public static final Resource GroundwaterReplenishmentOcc = m_model.createResource(NS + "GroundwaterReplenishmentOcc");;
+	public static final Resource GroundwaterReplenishmentTransf = m_model.createResource(NS + "GroundwaterReplenishmentTransf");;
+	public static final Resource MechanicalFiltrationOcc = m_model.createResource(NS + "MechanicalFiltrationOcc");;
+	public static final Resource MechanicalFiltrationTransf = m_model.createResource(NS + "MechanicalFiltrationTransf");;
+	public static final Resource PhysicochemicalFiltrationOcc = m_model.createResource(NS + "PhysicochemicalFiltrationOcc");;
+	public static final Resource PhysicochemicalFiltrationTransf = m_model.createResource(NS + "PhysicochemicalFiltrationTransf");
+
+	public static final Resource ValueUS2000BulkPrices = m_model.createResource(NS + "ValueUS2000BulkPrices");
 }
