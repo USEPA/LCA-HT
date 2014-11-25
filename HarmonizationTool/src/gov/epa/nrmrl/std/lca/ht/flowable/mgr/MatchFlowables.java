@@ -454,19 +454,19 @@ public class MatchFlowables extends ViewPart {
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
+			candidateMap.put(matchingResource, newString);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
-
+			searchMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			if (colNumSelected > 0) {
 				candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			} else {
 				candidateMap.remove(flowableTabRow.getFlowable().getTdbResource());
 			}
 		}
-		candidateMap.put(matchingResource, newString);
 		tdbUpdateMatch(matchingResource, newString);
 
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
