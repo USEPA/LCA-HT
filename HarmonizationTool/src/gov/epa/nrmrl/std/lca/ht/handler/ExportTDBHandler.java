@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -39,7 +40,8 @@ public class ExportTDBHandler implements IHandler {
 		Logger runLogger = Logger.getLogger("run");
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf" });
+//		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl", "*.jsonld" });
+		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl" });
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
 			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
@@ -55,9 +57,22 @@ public class ExportTDBHandler implements IHandler {
 			long startTime = System.currentTimeMillis();
 
 			try {
-				String outType = "RDF/XML"; // DEFAULT
-				if (path.matches(".*\\.n3.*")) {
+				String outType = "SKIP";
+				if (path.matches(".*\\.rdf.*")) {
+					outType = "RDF/XML";
+				} else if (path.matches(".*\\.n3.*")) {
 					outType = "N3";
+				} else if (path.matches(".*\\.ttl.*")) {
+					outType = "TTL";
+//				} else if (path.matches(".*\\.jsonld.*")) {
+//					outType = "JSON-LD";
+				}
+
+				if (outType.equals("SKIP")) {
+					new GenericMessageBox(HandlerUtil.getActiveShell(event), "Unsupported output format",
+							"Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
+//				"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
+					return null;
 				}
 				runLogger.info("  # Writing RDF triples to " + path.toString());
 				FileOutputStream fout = new FileOutputStream(path);
@@ -65,7 +80,7 @@ public class ExportTDBHandler implements IHandler {
 				// RDFWriter rdfWriter = tdbModel.getWriter(outType); // WORKED
 				// rdfWriter.write(tdbModel, fout, null); // WORKED
 				// tdbModel.write(fout, path, outType); // BAD
-				
+
 				// --- BEGIN SAFE -WRITE- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 				Model tdbModel = ActiveTDB.getModel();
@@ -78,8 +93,8 @@ public class ExportTDBHandler implements IHandler {
 					ActiveTDB.tdbDataset.end();
 				}
 				// ---- END SAFE -WRITE- TRANSACTION ---
-				
-//				ActiveTDB.tdbModel.write(fout, outType); // TESTING
+
+				// ActiveTDB.tdbModel.write(fout, outType); // TESTING
 				fout.close();
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
