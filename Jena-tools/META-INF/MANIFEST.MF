@@ -319,5 +319,6 @@ Export-Package: arq,
  tdb.cmdline,
  tdb.tools
 Require-Bundle: org.apache.xml.resolver,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ json-tools;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

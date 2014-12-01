@@ -32,6 +32,7 @@
       <plugin id="javax.inject"/>
       <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
+      <plugin id="json-tools"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>

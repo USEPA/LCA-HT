@@ -27,6 +27,8 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 //		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, ActiveTDB.getModel());
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
+//		System.out.println("ready to try this?");
+//		System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
 
 		return resultSetRewindable;
 	}
@@ -43,6 +45,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 //		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
+		System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
 
 		return resultSetRewindable;
 	}

@@ -240,8 +240,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
 			Object thingLiteral) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		// Model tdbModel = tdbDataset.getDefaultModel();
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		removeAllLikeLiterals(subject, predicate, thingLiteral);
@@ -250,8 +251,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
 			Object thingLiteral) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -269,9 +275,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("01 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -280,29 +286,45 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		replaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	private static void replaceResource(Resource subject, Property predicate, Resource object) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		subject.removeAll(predicate);
 		subject.addProperty(predicate, object);
 	}
 
 	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
+		if (object == null){
+			tsRemoveAllObjects(subject, predicate);
+			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		try {
@@ -339,9 +361,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			// tr_subject.removeAll(predicate);
 			// tr_subject.addProperty(predicate, object);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("02 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -381,6 +403,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Resource tsCreateResource(Resource rdfclass) {
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
 		// FIXME: resources only valid within a transaction??
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		Resource result = null;
@@ -389,9 +415,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("03 TDB transaction failed; see Exception: " + e);
 			tdbModel.abort();
 		} finally {
 			tdbDataset.end();
@@ -401,16 +427,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		// Model tdbModel = tdbDataset.getDefaultModel();
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
 
 	public static void tsAddLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		// Model tdbModel = tdbDataset.getDefaultModel();
@@ -419,9 +451,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbModel.add(subject, predicate, newRDFNode);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("04 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -430,22 +462,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void addLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		addLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsAddLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsAddLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
 
 	public static void tsAddTriple(Resource subject, Property predicate, Resource object) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		// Model tdbModel = tdbDataset.getDefaultModel();
@@ -453,9 +496,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.add(subject, predicate, object);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("05 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -470,6 +513,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Literal tsCreateTypedLiteral(Object thingLiteral) {
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		Literal literal = null;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
@@ -479,9 +526,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("06 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -491,14 +538,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeAllObjects(Resource subject, Property predicate) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		subject.removeAll(predicate);
 	}
 
 	public static void tsRemoveAllObjects(Resource subject, Property predicate) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		// Model tdbModel = tdbDataset.getDefaultModel();
@@ -520,9 +573,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			// // subject.removeAll(predicate);
 			// tr_subject.removeAll(predicate);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("07 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -531,6 +584,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsRemoveAllObjects(Resource comparison) {
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
 		if (noReadWrite) {
 			return;
 		}
@@ -545,9 +602,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				tdbModel.remove(statement);
 			}
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("08 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -557,8 +614,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		// Model tdbModel = tdbDataset.getDefaultModel();
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
@@ -574,8 +632,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsRemoveAllLikeLiterals(Resource subject, Property predicate, Object object) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(object);
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
@@ -593,9 +656,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("09 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -604,15 +667,21 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static void removeStatement(Resource subject, Property predicate, RDFNode object) {
-		if (noReadWrite)
+		if (noReadWrite){
 			return;
+		}
 		// Model tdbModel = tdbDataset.getDefaultModel();
 		tdbModel.remove(subject, predicate, object);
 	}
 
 	public static void tsRemoveStatement(Resource subject, Property predicate, RDFNode object) {
-		if (noReadWrite)
+		if (tdbDataset.isInTransaction()){
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite){
 			return;
+		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		// Model tdbModel = tdbDataset.getDefaultModel();
@@ -620,9 +689,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Model tdbModel = tdbDataset.getDefaultModel();
 			tdbModel.remove(subject, predicate, object);
 			tdbDataset.commit();
-//			sync();
+			// sync();
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+			System.out.println("10 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -691,12 +760,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Model getModel() {
-//		sync();
+		// sync();
 		return tdbModel;
 	}
 
-//	public static void sync() {
-//		TDB.sync(tdbDataset);
-//	}
+	public static int countAllData() {
+		int result = -1;
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		tdbDataset.begin(ReadWrite.READ);
+//		try {
+//			Model union = tdbDataset.getNamedModel("urn:x-arq:UnionGraph");
+//			StmtIterator stmtIterator = union.listStatements();
+//			while (stmtIterator.hasNext()){
+//				result++;
+//			}
+////			result = union.listStatements().toList().size();
+////			tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("TDB transaction failed; see Exception: " + e);
+//			tdbDataset.abort();
+//		} finally {
+//			tdbDataset.end();
+//		}
+		return result;
+
+	}
+	// public static void sync() {
+	// TDB.sync(tdbDataset);
+	// }
 
 }

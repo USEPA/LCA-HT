@@ -332,6 +332,11 @@ public class FlowProperty {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
+		if (matchingResource == null){
+			ActiveTDB.tsRemoveAllObjects(tdbResource, OWL.sameAs);
+			this.matchingResource = null;
+			return;
+		}
 		this.matchingResource = matchingResource;
 		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
 	}

@@ -5,9 +5,23 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.tdb.TDBFactory;
+import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.GraphStoreFactory;
+
 public class TDBTest implements IHandler, IActiveTDB {
 	{
 
+	}
+	
+	private static void openTDB(){
+		final Dataset tdbDataset = TDBFactory.createDataset("/Users/transue/tdbplay");
+		final Model tdbModel = tdbDataset.getDefaultModel();
+		// tdbModel = tdbDataset.getNamedModel("namedGraph");
+		final GraphStore graphStore = GraphStoreFactory.create(tdbDataset);
+		System.out.println("TDB Successfully initiated!");
 	}
 
 	@Override

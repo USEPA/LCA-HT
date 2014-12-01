@@ -157,6 +157,7 @@ public class MatchProperties extends ViewPart {
 			Util.findView(FlowsWorkflow.ID);
 			TableItem[] tableItems = CSVTableView.getTable().getSelection();
 			TableItem tableItem = tableItems[0];
+			masterTree.deselectAll();
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);

@@ -40,8 +40,8 @@ public class ExportTDBHandler implements IHandler {
 		Logger runLogger = Logger.getLogger("run");
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
-//		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl", "*.jsonld" });
-		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl" });
+		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl", "*.jsonld" });
+//		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl" });
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
 			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
@@ -64,14 +64,14 @@ public class ExportTDBHandler implements IHandler {
 					outType = "N3";
 				} else if (path.matches(".*\\.ttl.*")) {
 					outType = "TTL";
-//				} else if (path.matches(".*\\.jsonld.*")) {
-//					outType = "JSON-LD";
+				} else if (path.matches(".*\\.jsonld.*")) {
+					outType = "JSON-LD";
 				}
 
 				if (outType.equals("SKIP")) {
 					new GenericMessageBox(HandlerUtil.getActiveShell(event), "Unsupported output format",
-							"Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
-//							"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
+//							"Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
+							"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
 					return null;
 				}
 				runLogger.info("  # Writing RDF triples to " + path.toString());

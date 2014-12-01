@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -43,6 +44,10 @@ public class RDFUtil {
 		if (object instanceof Date) {
 			return XSDDatatype.XSDdateTime;
 		}
+		if (object instanceof Calendar) {
+			return XSDDatatype.XSDdateTime;
+		}
+	
 		return null;
 	}
 

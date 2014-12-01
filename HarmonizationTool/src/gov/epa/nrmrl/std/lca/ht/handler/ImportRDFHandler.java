@@ -54,8 +54,8 @@ public class ImportRDFHandler implements IHandler {
 			fileDialog.setFilterPath(homeDir);
 		}
 
-//		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld" });
-		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
+		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld" });
+//		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
 		// SHOWS ALL TYPES IN ONE WINDOW
 
 		fileDialog.open();
@@ -83,8 +83,8 @@ public class ImportRDFHandler implements IHandler {
 						inputType = "N3";
 					} else if (fileName.matches(".*\\.ttl.*")) {
 						inputType = "TTL";
-//					} else if (fileName.matches(".*\\.jsonld.*")) {
-//						inputType = "JSON-LD";
+					} else if (fileName.matches(".*\\.jsonld.*")) {
+						inputType = "JSON-LD";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
@@ -126,8 +126,8 @@ public class ImportRDFHandler implements IHandler {
 							inputType = "N3";
 						} else if (ze.getName().matches(".*\\.ttl.*")) {
 							inputType = "TTL";
-//						} else if (ze.getName().matches(".*\\.jsonld.*")) {
-//							inputType = "JSON-LD";
+						} else if (ze.getName().matches(".*\\.jsonld.*")) {
+							inputType = "JSON-LD";
 						}
 						if (inputType != "SKIP") {
 							// System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
@@ -142,7 +142,7 @@ public class ImportRDFHandler implements IHandler {
 								ActiveTDB.tdbDataset.commit();
 //								TDB.sync(ActiveTDB.tdbDataset);
 							} catch (Exception e) {
-								System.out.println("Import failed; see strack trace!");
+								System.out.println("Import failed; see strack trace!\n"+e);
 								ActiveTDB.tdbDataset.abort();
 							} finally {
 								ActiveTDB.tdbDataset.end();
