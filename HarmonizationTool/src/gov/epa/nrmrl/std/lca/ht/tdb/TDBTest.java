@@ -4,12 +4,18 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class TDBTest implements IHandler, IActiveTDB {
 	{
@@ -22,6 +28,19 @@ public class TDBTest implements IHandler, IActiveTDB {
 		// tdbModel = tdbDataset.getNamedModel("namedGraph");
 		final GraphStore graphStore = GraphStoreFactory.create(tdbDataset);
 		System.out.println("TDB Successfully initiated!");
+		Resource testResource = tdbModel.createResource("testResource");
+		testResource.addProperty(RDFS.label, "test resource");
+		Resource testClass = tdbModel.createResource(OWL.Class);
+		testResource.addProperty(RDF.type, testClass);
+		
+	}
+	
+	public static void main(){
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		openTDB();
+		String query = "select * where {?s ?p ?o}";
+		
 	}
 
 	@Override

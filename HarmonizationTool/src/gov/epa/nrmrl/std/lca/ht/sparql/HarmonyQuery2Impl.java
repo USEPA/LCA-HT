@@ -11,56 +11,57 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	private String query = null;
-	
+
 	public HarmonyQuery2Impl() {
 	}
 
 	@Override
 	public ResultSet getResultSet() {
-		System.out.println("query=\n"+query);
-		if(query == null){
+		ActiveTDB.refreshTDB();
+		System.out.println("query=\n" + query);
+		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		if(ActiveTDB.getModel() == null){
+		if (ActiveTDB.getModel() == null) {
 			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
 		}
-//		ActiveTDB.sync();
+		// ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, ActiveTDB.getModel());
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-//		System.out.println("ready to try this?");
-//		System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
+		// System.out.println("ready to try this?");
+		// System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
 
 		return resultSetRewindable;
 	}
-	
+
 	public ResultSet getResultSet(Model model) throws IllegalArgumentException {
-		System.out.println("query=\n"+query);
-		if(query == null){
+		System.out.println("query=\n" + query);
+		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		if(model== null){
+		if (model == null) {
 			throw new IllegalArgumentException("(RDF) tdbModel is null");
 		}
-		
-//		ActiveTDB.sync();
+
+		// ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
+		System.out.println("And now ActiveTDB.countAllData = " + ActiveTDB.countAllData());
 
 		return resultSetRewindable;
 	}
+
 	@Override
 	public String getQuery() {
 		return query;
 	}
 
-
 	@Override
 	public void setQuery(String query) {
-		this.query = query;		
+		this.query = query;
 	}
-	
-	public void getParamaterFromUser() {}
 
+	public void getParamaterFromUser() {
+	}
 
 }

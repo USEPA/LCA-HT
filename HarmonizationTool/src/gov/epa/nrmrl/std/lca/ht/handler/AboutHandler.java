@@ -7,6 +7,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class AboutHandler implements IHandler {
 //		Logger runLogger = Logger.getLogger("run");
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		String version = Util.getProductVersion();
-		new GenericMessageBox(shell, "Version", "You are using version "+version);
+		new GenericMessageBox(shell, "Version", "You are using HT version "+version+". It uses TDB version "+ActiveTDB.getTDBVersion());
 		return null;
 		}
 

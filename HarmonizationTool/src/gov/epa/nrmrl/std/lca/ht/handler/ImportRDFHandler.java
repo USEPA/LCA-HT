@@ -91,7 +91,7 @@ public class ImportRDFHandler implements IHandler {
 
 					// --- BEGIN SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					Model tdbModel = ActiveTDB.getModel();
+					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 					try {
 						tdbModel.read(inputStream, null, inputType);
 						ActiveTDB.tdbDataset.commit();
@@ -136,7 +136,7 @@ public class ImportRDFHandler implements IHandler {
 
 							// --- BEGIN SAFE -WRITE- TRANSACTION ---
 							ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-							Model tdbModel = ActiveTDB.tdbModel;
+							Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 							try {
 								tdbModel.read(zipStream, null, inputType);
 								ActiveTDB.tdbDataset.commit();

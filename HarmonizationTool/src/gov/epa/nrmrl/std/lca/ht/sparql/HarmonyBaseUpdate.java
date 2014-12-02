@@ -44,7 +44,17 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		if (ActiveTDB.getModel() == null) {
 			return;
 		}
-		long startModelSize = ActiveTDB.getModel().size();
+		// long startModelSize = ActiveTDB.getModel().size();
+		long startModelSize = -1;
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		try {
+			startModelSize = ActiveTDB.tdbDataset.getDefaultModel().size();
+		} catch (Exception e) {
+			System.out.println("Check model size failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
 
 		queryResults = new QueryResults();
 		GraphStore graphStore = ActiveTDB.graphStore;
@@ -80,11 +90,15 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+
 		try {
 			UpdateRequest request = UpdateFactory.create(sparqlUpdateString);
 			UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 			proc.execute();
 			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Update failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -92,7 +106,19 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		System.out.println("Time elapsed: " + elapsedTimeSec);
-		long endModelSize = ActiveTDB.getModel().size();
+		// long endModelSize = ActiveTDB.getModel().size();
+		long endModelSize = -1;
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		try {
+			endModelSize = ActiveTDB.tdbDataset.getDefaultModel().size();
+		} catch (Exception e) {
+			System.out.println("Check model size failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+
 		System.err.printf("After Update: %s\n", endModelSize);
 		// data.add("After Update");
 		// data.add("" + tdbModel.size());
@@ -100,10 +126,10 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		tableProvider.addDataRow(dataRow2);
 		dataRow2.add("After Update");
 		dataRow2.add("" + endModelSize);
-		
+
 		DataRow dataRow3 = new DataRow();
 		tableProvider.addDataRow(dataRow3);
-		
+
 		long modelSizeChange = endModelSize - startModelSize;
 		String message = "New Triples:";
 

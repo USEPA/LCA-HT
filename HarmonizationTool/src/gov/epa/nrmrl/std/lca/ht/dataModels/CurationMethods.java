@@ -79,8 +79,8 @@ public class CurationMethods {
 			createNewAnnotation();
 		} else {
 			Date calendar = new Date();
-			Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
-			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, dateLiteral);
+//			Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
+			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);
 		}
 	}
 
