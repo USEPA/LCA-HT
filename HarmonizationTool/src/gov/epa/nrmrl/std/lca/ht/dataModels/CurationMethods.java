@@ -153,7 +153,7 @@ public class CurationMethods {
 	}
 
 	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
-		Model model = ActiveTDB.tdbModel;
+		Model model = ActiveTDB.getModel();
 		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
 		StmtIterator stmtIterator = model.listStatements(selector);
 		while (stmtIterator.hasNext()) {

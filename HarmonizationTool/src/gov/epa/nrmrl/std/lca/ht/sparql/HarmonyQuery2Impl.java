@@ -22,11 +22,12 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		if (ActiveTDB.getModel() == null) {
+		Model tdbModel = ActiveTDB.getModel();
+		if (tdbModel == null) {
 			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
 		}
 		// ActiveTDB.sync();
-		QueryExecution qexec = QueryExecutionFactory.create(query, ActiveTDB.getModel());
+		QueryExecution qexec = QueryExecutionFactory.create(query, tdbModel);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 		// System.out.println("ready to try this?");
 		// System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());

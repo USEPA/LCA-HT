@@ -97,7 +97,7 @@ public class ImportRDFHandler implements IHandler {
 						ActiveTDB.tdbDataset.commit();
 						TDB.sync(ActiveTDB.tdbDataset);
 					} catch (Exception e) {
-						System.out.println("Import failed; see strack trace!");
+						System.out.println("Import failed with Exception: "+e);
 						ActiveTDB.tdbDataset.abort();
 					} finally {
 						ActiveTDB.tdbDataset.end();
@@ -157,7 +157,7 @@ public class ImportRDFHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
-			ActiveTDB.flush();
+//			ActiveTDB.flush();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 			long now = ActiveTDB.getModel().size();

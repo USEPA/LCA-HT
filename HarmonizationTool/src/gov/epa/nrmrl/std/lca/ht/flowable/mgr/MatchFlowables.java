@@ -688,21 +688,33 @@ public class MatchFlowables extends ViewPart {
 		private void doit(SelectionEvent e) {
 			int count = 0;
 			if (addToMaster.getText().equals("Add to Master")) {
-				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+//				while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
-//					ActiveTDB.sync();
-					count++;
-				}
+//					Model junkModel = ActiveTDB.getFreshModel();
+//					if (junkModel.contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)){
+//						System.out.println("Got it now!");
+//					} else {
+//						System.out.println("Don't have it yet...");
+//					}
+////					ActiveTDB.sync();
+//					count++;
+//				}
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				addToMaster.setText("Remove from Master");
 			} else {
-				while (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
+//				while (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 					ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 							LCAHT.QCStatusAdHocMaster);
-					count++;
-				}
+//					Model junkModel = ActiveTDB.getFreshModel();
+//					if (junkModel.contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)){
+//						System.out.println("Got it now!");
+//					} else {
+//						System.out.println("Don't have it yet...");
+//					}
+//					count++;
+//				}
 				updateMatchCounts();
 				addToMaster.setText("Add to Master");
 			}

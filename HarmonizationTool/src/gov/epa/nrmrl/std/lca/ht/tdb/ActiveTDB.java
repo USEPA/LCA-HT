@@ -47,7 +47,7 @@ import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
-	public static Model tdbModel = null;
+	// public static Model tdbModel = null;
 	public static Dataset tdbDataset = null;
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
@@ -136,7 +136,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					assert tdbDataset != null : "tdbDataset cannot be null";
 					// tdbModel = ModelFactory.createDefaultModel();
 					// tdbDataset.setDefaultModel(tdbModel);
-					tdbModel = tdbDataset.getDefaultModel();
+					// tdbModel = tdbDataset.getDefaultModel();
 					// tdbModel = tdbDataset.getNamedModel("namedGraph");
 					graphStore = GraphStoreFactory.create(tdbDataset);
 					System.out.println("TDB Successfully initiated!");
@@ -247,7 +247,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		removeAllLikeLiterals(subject, predicate, thingLiteral);
 		tdbModel.add(subject, predicate, newRDFNode);
@@ -385,35 +385,36 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static Resource createResource(Resource rdfclass) {
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		Resource result = tdbModel.createResource(rdfclass);
 		return result;
 	}
 
-	public static void flush() {
-		garbageIn();
-		garbageOut();
-	}
+//	public static void flush() {
+//		garbageIn();
+//		garbageOut();
+//	}
 
-	public static void garbageIn() {
-		for (int i = 0; i < 1000; i++) {
-			tsAddLiteral(FedLCA.deleteMe, FedLCA.hasValue, i);
-		}
-	}
-
-	public static void garbageOut() {
-		int count = 0;
-		while (tdbModel.contains(FedLCA.deleteMe, FedLCA.hasValue)) {
-			tsRemoveAllObjects(FedLCA.deleteMe, FedLCA.hasValue);
-			count++;
-			if (count > 100) {
-				System.out.println("count: " + count);
-				System.out.println("Delete garbage failed.");
-				return;
-			}
-		}
-		System.out.println("Delete garbage required " + count + " tries.");
-	}
+//	public static void garbageIn() {
+//		for (int i = 0; i < 1000; i++) {
+//			tsAddLiteral(FedLCA.deleteMe, FedLCA.hasValue, i);
+//		}
+//	}
+//
+//	public static void garbageOut() {
+//		int count = 0;
+//		Model tdbModel = tdbDataset.getDefaultModel();
+//		while (tdbModel.contains(FedLCA.deleteMe, FedLCA.hasValue)) {
+//			tsRemoveAllObjects(FedLCA.deleteMe, FedLCA.hasValue);
+//			count++;
+//			if (count > 100) {
+//				System.out.println("count: " + count);
+//				System.out.println("Delete garbage failed.");
+//				return;
+//			}
+//		}
+//		System.out.println("Delete garbage required " + count + " tries.");
+//	}
 
 	public static Resource tsCreateResource(Resource rdfclass) {
 		if (tdbDataset.isInTransaction()) {
@@ -445,7 +446,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
@@ -526,7 +527,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static Literal createTypedLiteral(Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
 
@@ -639,7 +640,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			return;
 		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
@@ -692,7 +693,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		// Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = tdbDataset.getDefaultModel();
 		tdbModel.remove(subject, predicate, object);
 	}
 
@@ -778,13 +779,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Model getFreshModel() {
-		return tdbDataset.getDefaultModel();
+		tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = tdbDataset.getDefaultModel();
+		tdbDataset.end();
+		return tdbModel;
 		// return tdbDataset.getNamedModel("namedGraph");
 	}
 
 	public static Model getModel() {
 		// sync();
-		return tdbModel;
+		return getFreshModel();
 	}
 
 	public static int countAllData() {

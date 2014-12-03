@@ -81,15 +81,16 @@ public class ExportTDBHandler implements IHandler {
 				// rdfWriter.write(tdbModel, fout, null); // WORKED
 				// tdbModel.write(fout, path, outType); // BAD
 
-				ActiveTDB.garbageIn();
-				ActiveTDB.garbageOut();
+//				ActiveTDB.garbageIn();
+//				ActiveTDB.garbageOut();
 				// --- BEGIN SAFE -WRITE- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-				Model tdbModel = ActiveTDB.getModel();
+				Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+//				Model tdbModel = ActiveTDB.getModel();
 				try {
 					tdbModel.write(fout, outType); // TESTING
 				} catch (Exception e) {
-					System.out.println("Export failed; see strack trace!");
+					System.out.println("Export failed with Exception: "+e);
 					ActiveTDB.tdbDataset.abort();
 				} finally {
 					ActiveTDB.tdbDataset.end();
