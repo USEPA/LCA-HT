@@ -79,7 +79,7 @@ public class CurationMethods {
 			createNewAnnotation();
 		} else {
 			Date calendar = new Date();
-//			Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
+			// Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
 			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);
 		}
 	}
@@ -153,15 +153,15 @@ public class CurationMethods {
 	}
 
 	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
-		Model model = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel();
 		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
-		StmtIterator stmtIterator = model.listStatements(selector);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
-			System.out.println("statement " + statement);
+			// System.out.println("statement " + statement);
 			Resource comparisonCandidate = statement.getSubject();
-			if (model.contains(comparisonCandidate, FedLCA.comparedMaster, matchResource)
-					&& model.contains(currentAnnotation, FedLCA.hasComparison, comparisonCandidate)) {
+			if (tdbModel.contains(comparisonCandidate, FedLCA.comparedMaster, matchResource)
+					&& tdbModel.contains(currentAnnotation, FedLCA.hasComparison, comparisonCandidate)) {
 				removeComparison(comparisonCandidate);
 				return comparisonCandidate;
 			}

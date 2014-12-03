@@ -17,7 +17,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 
 	@Override
 	public ResultSet getResultSet() {
-		ActiveTDB.refreshTDB();
+//		ActiveTDB.refreshTDB();
 		System.out.println("query=\n" + query);
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");

@@ -12,8 +12,6 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
-
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -32,13 +30,10 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Selector;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDB;
@@ -47,7 +42,7 @@ import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
-	// public static Model tdbModel = null;
+	// public static Model tdbModel = null; // DO NOT ATTEMPT TO MANAGE A STATIC COPY OF THE DEFAULT MODEL!!!
 	public static Dataset tdbDataset = null;
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
@@ -64,28 +59,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		setInstance(this);
 	}
 
-	// public static ActiveTDB getInstance() {
-	// return instance;
-	// }
-
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (tdbDataset != null) {
 			if (tdbDataset.getDefaultModel() != null) {
 				// if (tdbDataset.getNamedModel("namedGraph") != null) {
-				System.out.println("tdb seems to be open already!");
+				System.out.println("Attempting to execute ActiveTDB after the TDB is open!");
 				return null;
 			}
 		}
-		// System.out.println("about to open TDB. Model right now is: " +
-		// tdbModel);
-		// IT IS A BAD IDEA TO PRINT THE MODEL [ALL DATA!] TO System.out !!!
 		openTDB();
-		// System.out.println("Now Model is: " + tdbModel);
 		try {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
-			System.out.println("this exception e is => " + e);
+			System.out.println("syncTDBtoLCAHT() failed with Exception: " + e);
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
@@ -109,6 +96,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset == null) {
 			if ((Util.getPreferenceStore().getString("defaultTDB") == null)
 					|| (Util.getPreferenceStore().getString("defaultTDB") == "")) {
+				// TODO: Determine when this message might display and what the user and software shoul do about it.
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
 				b.append("The Harmonization Tool (HT) requires the user to specify a directory for the Triplestore DataBase (TDB). ");
@@ -122,6 +110,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			File defaultTDBFile = new File(defaultTDB);
 			if (!defaultTDBFile.isDirectory()) {
 				// ask user for TDB directory
+				// TODO: Determine when this message might display and what the user and software shoul do about it.
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
 				b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
@@ -140,8 +129,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					// tdbModel = tdbDataset.getNamedModel("namedGraph");
 					graphStore = GraphStoreFactory.create(tdbDataset);
 					System.out.println("TDB Successfully initiated!");
+					// TODO: Write to the Logger whether the TDB is freshly created or has contents already.  Also write to the TDB that the session has started
+
 				} catch (Exception e1) {
 					System.out.println("Exception: " + e1);
+					// TODO: Determine when this message might display and what the user and software shoul do about it.
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 					StringBuilder b = new StringBuilder();
 					b.append("It appears that the HT can not create a TDB in the default directory. ");
@@ -188,14 +180,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// try {
-		// tdbModel.close();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
+	
 		try {
 			// graphStore.close();
 			// TODO: FIGURE OUT WHY THE ABOVE CAUSES PROBLEMS OR IF IT WILL ALWAYS BE CLOSED (SO CAN LEAVE IT OUT)
+			// MAYBE graphStore MUST BE CLOSED BEFORE tdbDataset
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -247,7 +236,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		removeAllLikeLiterals(subject, predicate, thingLiteral);
 		tdbModel.add(subject, predicate, newRDFNode);
@@ -385,7 +379,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	private static Resource createResource(Resource rdfclass) {
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		Resource result = tdbModel.createResource(rdfclass);
 		return result;
 	}
@@ -446,7 +445,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
 	}
@@ -527,7 +531,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static Literal createTypedLiteral(Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
 
@@ -640,7 +649,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			return;
 		}
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
@@ -693,7 +707,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (noReadWrite) {
 			return;
 		}
-		Model tdbModel = tdbDataset.getDefaultModel();
+		Model tdbModel = null;
+		if (tdbDataset.isInTransaction()) {
+			tdbModel = tdbDataset.getDefaultModel();
+		} else {
+			tdbModel = getFreshModel();
+		}
 		tdbModel.remove(subject, predicate, object);
 	}
 
