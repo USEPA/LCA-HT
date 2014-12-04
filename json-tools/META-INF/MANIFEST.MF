@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Json-tools
+Bundle-Name: json-tools
 Bundle-SymbolicName: json-tools
 Bundle-Version: 1.0.0
 Bundle-ClassPath: com.fasterxml.jackson.annotations.jar,
