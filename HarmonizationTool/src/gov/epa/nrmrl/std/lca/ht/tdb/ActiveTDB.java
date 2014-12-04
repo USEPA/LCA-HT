@@ -832,9 +832,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	}
 
-	// public static void sync() {
-	// TDB.sync(tdbDataset);
-	// }
+	public static void sync() {
+		TDB.sync(tdbDataset);
+	}
+	
 	public static String getTDBVersion() {
 		TDB thing = new TDB();
 		String version = thing.VERSION;
