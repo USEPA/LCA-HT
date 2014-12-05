@@ -32,6 +32,9 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class HarmonizedDataSelector extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector";
@@ -43,6 +46,12 @@ public class HarmonizedDataSelector extends ViewPart {
 	private static Combo comboFlowableFields;
 	private static Combo comboContextFields;
 	private static Combo comboPropertyFields;
+	
+	private static TreeItem treeItemFlowable;
+	private static TreeItem treeItemContext;
+	private static TreeItem treeItemProperty;
+	
+	
 	private static DataSourceProvider curDataSourceProvider;
 	private static Logger runLogger = Logger.getLogger("run");
 
@@ -51,8 +60,7 @@ public class HarmonizedDataSelector extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout(4, false));
-		new Label(parent, SWT.NONE);
+		parent.setLayout(new GridLayout(3, false));
 		new Label(parent, SWT.NONE);
 
 		Button btnReset = new Button(parent, SWT.NONE);
@@ -66,54 +74,71 @@ public class HarmonizedDataSelector extends ViewPart {
 		new Label(parent, SWT.NONE);
 
 		Label labelDataset = new Label(parent, SWT.NONE);
+		labelDataset.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		labelDataset.setText("Dataset");
-		new Label(parent, SWT.NONE);
 
 		Label lblDatasetToOutput = new Label(parent, SWT.NONE);
+		lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDatasetToOutput.setText("Choose");
 
 		comboDataSource = new Combo(parent, SWT.NONE);
 		comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Label labelFlowable = new Label(parent, SWT.NONE);
+		Label labelFlowable = new Label(parent, SWT.CENTER);
+		labelFlowable.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
 		labelFlowable.setText("Flowables");
 
 		textFlowableInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		textFlowableInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Label lblFlowableFields = new Label(parent, SWT.NONE);
-		lblFlowableFields.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblFlowableFields.setText("Choose Fields");
+		CheckboxTreeViewer checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER);
+		Tree tree = checkboxTreeViewer.getTree();
+		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
 
-		comboFlowableFields = new Combo(parent, SWT.NONE);
-		comboFlowableFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		treeItemFlowable = new TreeItem(tree, SWT.NONE);
+		treeItemFlowable.setText("Flowable");
+
+		TreeItem trtmNewTreeitem_2 = new TreeItem(treeItemFlowable, SWT.NONE);
+		trtmNewTreeitem_2.setText("New TreeItem");
+		treeItemFlowable.setExpanded(true);
+
+		treeItemContext = new TreeItem(tree, SWT.NONE);
+		treeItemContext.setText("Flow Context");
+
+		treeItemProperty = new TreeItem(tree, SWT.NONE);
+		treeItemProperty.setText("Flow Property");
 
 		Label labelContext = new Label(parent, SWT.NONE);
+		labelContext.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
 		labelContext.setText("Flow Contexts");
 
 		textContextInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		textContextInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Label lblFlowContextFields = new Label(parent, SWT.NONE);
-		lblFlowContextFields.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblFlowContextFields.setText("Choose Fields");
-
-		comboContextFields = new Combo(parent, SWT.NONE);
-		comboContextFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
 		Label labelProperty = new Label(parent, SWT.NONE);
-		labelProperty.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		labelProperty.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
 		labelProperty.setText("Flow Properties");
 
 		textPropertyInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		textPropertyInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
 
-		Label lblFlowPropertyFields = new Label(parent, SWT.NONE);
-		lblFlowPropertyFields.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblFlowPropertyFields.setText("Choose Fields");
+		comboFlowableFields = new Combo(parent, SWT.NONE);
+		comboFlowableFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+
+		comboContextFields = new Combo(parent, SWT.NONE);
+		comboContextFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
 
 		comboPropertyFields = new Combo(parent, SWT.NONE);
 		comboPropertyFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
 		// update();
 	}
 
