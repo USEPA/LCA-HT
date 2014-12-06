@@ -46,12 +46,11 @@ public class HarmonizedDataSelector extends ViewPart {
 	private static Combo comboFlowableFields;
 	private static Combo comboContextFields;
 	private static Combo comboPropertyFields;
-	
+
 	private static TreeItem treeItemFlowable;
 	private static TreeItem treeItemContext;
 	private static TreeItem treeItemProperty;
-	
-	
+
 	private static DataSourceProvider curDataSourceProvider;
 	private static Logger runLogger = Logger.getLogger("run");
 
@@ -98,16 +97,30 @@ public class HarmonizedDataSelector extends ViewPart {
 		treeItemFlowable = new TreeItem(tree, SWT.NONE);
 		treeItemFlowable.setText("Flowable");
 
-		TreeItem trtmNewTreeitem_2 = new TreeItem(treeItemFlowable, SWT.NONE);
-		trtmNewTreeitem_2.setText("New TreeItem");
-		treeItemFlowable.setExpanded(true);
+		for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
+			TreeItem treeItem = new TreeItem(treeItemFlowable, SWT.NONE);
+			treeItem.setText(propertyName);
+			treeItemFlowable.setExpanded(true);
+		}
 
 		treeItemContext = new TreeItem(tree, SWT.NONE);
 		treeItemContext.setText("Flow Context");
 
+		for (String propertyName : FlowContext.getDataPropertyMap().keySet()) {
+			TreeItem treeItem = new TreeItem(treeItemContext, SWT.NONE);
+			treeItem.setText(propertyName);
+			treeItemContext.setExpanded(true);
+		}
+
 		treeItemProperty = new TreeItem(tree, SWT.NONE);
 		treeItemProperty.setText("Flow Property");
 
+		for (String propertyName : FlowProperty.getDataPropertyMap().keySet()) {
+			TreeItem treeItem = new TreeItem(treeItemProperty, SWT.NONE);
+			treeItem.setText(propertyName);
+			treeItemProperty.setExpanded(true);
+		}
+		
 		Label labelContext = new Label(parent, SWT.NONE);
 		labelContext.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
 		labelContext.setText("Flow Contexts");
@@ -215,55 +228,66 @@ public class HarmonizedDataSelector extends ViewPart {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("count");
-			textFlowableInfo.setText(rdfNode.asLiteral().getValue().toString());
+			String countStr = rdfNode.asLiteral().getValue().toString();
+			treeItemFlowable.setText("Flowable (" + countStr + ")");
+			// textFlowableInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
-		b = new StringBuilder();
-		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-		b.append(" \n");
-		b.append("SELECT distinct ?prop  \n");
-		b.append("WHERE \n");
-		b.append("  { \n");
-		b.append("    ?flowable rdf:type eco:Flowable . \n");
-		b.append("    ?flowable eco:hasDataSource ?dataSource . \n");
-		b.append("    optional {?flowable ?prop ?n .} \n");
-		b.append("    ?dataSource rdfs:label ?dataSourceName . \n");
-		b.append("    filter (str(?dataSourceName) = \"" + comboDataSource.getText() + "\") \n");
-		b.append("   } \n");
-		query = b.toString();
-		harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-		resultSet = harmonyQuery2Impl.getResultSet();
-		List<String> propertyNames = new ArrayList<String>();
-		while (resultSet.hasNext()) {
-			QuerySolution querySolution = resultSet.next();
-			RDFNode rdfNode = querySolution.get("prop");
-			Resource resource = rdfNode.asResource();
-			for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
-				LCADataPropertyProvider lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(propertyName);
-				if (lcaDataPropertyProvider.getTDBProperty().asResource().equals(resource)) {
-					propertyNames.add(propertyName);
-				}
-			}
+		// Resource resource = rdfNode.asResource();
+		for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
+			LCADataPropertyProvider lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(propertyName);
+			Resource resource = lcaDataPropertyProvider.getRDFClass();
+			//
+			// b = new StringBuilder();
+			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+			// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+			// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+			// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+			// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+			// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+			// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+			// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+			// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+			// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+			// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+			// b.append(" \n");
+			// b.append("SELECT distinct ?prop  \n");
+			// b.append("WHERE \n");
+			// b.append("  { \n");
+			// b.append("    ?flowable rdf:type eco:Flowable . \n");
+			// b.append("    ?flowable eco:hasDataSource ?dataSource . \n");
+			// b.append("    optional {?flowable ?prop ?n .} \n");
+			// b.append("    ?dataSource rdfs:label ?dataSourceName . \n");
+			// b.append("    filter (str(?dataSourceName) = \"" + comboDataSource.getText() + "\") \n");
+			// b.append("   } \n");
+			// query = b.toString();
+			// harmonyQuery2Impl = new HarmonyQuery2Impl();
+			// harmonyQuery2Impl.setQuery(query);
+			// resultSet = harmonyQuery2Impl.getResultSet();
+			// List<String> propertyNames = new ArrayList<String>();
+			// while (resultSet.hasNext()) {
+			// QuerySolution querySolution = resultSet.next();
+			// RDFNode rdfNode = querySolution.get("prop");
+			
+			// if (lcaDataPropertyProvider.getTDBProperty().asResource().equals(resource)) {
+
+			TreeItem treeItem = new TreeItem(treeItemFlowable, SWT.NONE);
+			treeItem.setText(propertyName);
+
+			treeItemFlowable.setExpanded(true);
+			//
+			// propertyNames.add(propertyName);
+			// }
+			// }
 		}
-		Collections.sort(propertyNames);
-		String[] addEm = new String[propertyNames.size()];
-		for (int i = 0; i < addEm.length; i++) {
-			addEm[i] = propertyNames.get(i);
-		}
-		comboFlowableFields.setItems(addEm);
+		// Collections.sort(propertyNames);
+		// String[] addEm = new String[propertyNames.size()];
+		// for (int i = 0; i < addEm.length; i++) {
+		// addEm[i] = propertyNames.get(i);
+		// }
+		// comboFlowableFields.setItems(addEm);
 	}
 
 	private static void updateContexts() {
