@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.Text;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -38,10 +40,6 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public class HarmonizedDataSelector extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector";
-
-	private static Text textFlowableInfo;
-	private static Text textContextInfo;
-	private static Text textPropertyInfo;
 	private static Combo comboDataSource;
 	private static Combo comboFlowableFields;
 	private static Combo comboContextFields;
@@ -71,31 +69,28 @@ public class HarmonizedDataSelector extends ViewPart {
 		});
 		btnReset.setText("Reset");
 		new Label(parent, SWT.NONE);
-
-		Label labelDataset = new Label(parent, SWT.NONE);
-		labelDataset.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		labelDataset.setText("Dataset");
+		new Label(parent, SWT.NONE);
 
 		Label lblDatasetToOutput = new Label(parent, SWT.NONE);
 		lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDatasetToOutput.setText("Choose");
+		lblDatasetToOutput.setText("Choose Dataset");
 
 		comboDataSource = new Combo(parent, SWT.NONE);
 		comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-		Label labelFlowable = new Label(parent, SWT.CENTER);
-		labelFlowable.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-		labelFlowable.setText("Flowables");
-
-		textFlowableInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
-		textFlowableInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-		CheckboxTreeViewer checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER);
-		Tree tree = checkboxTreeViewer.getTree();
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
-
-		treeItemFlowable = new TreeItem(tree, SWT.NONE);
-		treeItemFlowable.setText("Flowable");
+		new Label(parent, SWT.NONE);
+		
+				CheckboxTreeViewer checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER);
+				Tree tree = checkboxTreeViewer.getTree();
+				tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+				
+						treeItemFlowable = new TreeItem(tree, SWT.NONE);
+						treeItemFlowable.setText("Flowable");
+						
+								treeItemContext = new TreeItem(tree, SWT.NONE);
+								treeItemContext.setText("Flow Context");
+								
+										treeItemProperty = new TreeItem(tree, SWT.NONE);
+										treeItemProperty.setText("Flow Property");
 
 		for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
 			TreeItem treeItem = new TreeItem(treeItemFlowable, SWT.NONE);
@@ -103,63 +98,50 @@ public class HarmonizedDataSelector extends ViewPart {
 			treeItemFlowable.setExpanded(true);
 		}
 
-		treeItemContext = new TreeItem(tree, SWT.NONE);
-		treeItemContext.setText("Flow Context");
-
 		for (String propertyName : FlowContext.getDataPropertyMap().keySet()) {
 			TreeItem treeItem = new TreeItem(treeItemContext, SWT.NONE);
 			treeItem.setText(propertyName);
 			treeItemContext.setExpanded(true);
 		}
 
-		treeItemProperty = new TreeItem(tree, SWT.NONE);
-		treeItemProperty.setText("Flow Property");
-
 		for (String propertyName : FlowProperty.getDataPropertyMap().keySet()) {
 			TreeItem treeItem = new TreeItem(treeItemProperty, SWT.NONE);
 			treeItem.setText(propertyName);
 			treeItemProperty.setExpanded(true);
 		}
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+		new Label(parent, SWT.NONE);
+				new Label(parent, SWT.NONE);
 		
-		Label labelContext = new Label(parent, SWT.NONE);
-		labelContext.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-		labelContext.setText("Flow Contexts");
-
-		textContextInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
-		textContextInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-		Label labelProperty = new Label(parent, SWT.NONE);
-		labelProperty.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-		labelProperty.setText("Flow Properties");
-
-		textPropertyInfo = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
-		textPropertyInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+				comboFlowableFields = new Combo(parent, SWT.NONE);
+				comboFlowableFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(parent, SWT.NONE);
+				new Label(parent, SWT.NONE);
+		
+				comboContextFields = new Combo(parent, SWT.NONE);
+				comboContextFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-
-		comboFlowableFields = new Combo(parent, SWT.NONE);
-		comboFlowableFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-
-		comboContextFields = new Combo(parent, SWT.NONE);
-		comboContextFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-
-		comboPropertyFields = new Combo(parent, SWT.NONE);
-		comboPropertyFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
+				new Label(parent, SWT.NONE);
+		
+				comboPropertyFields = new Combo(parent, SWT.NONE);
+				comboPropertyFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(parent, SWT.NONE);
 		// update();
 	}
 
 	public static void update() {
 		comboDataSource.removeAll();
-		textFlowableInfo.setText("");
-		textContextInfo.setText("");
-		textPropertyInfo.setText("");
+//		textFlowableInfo.setText("");
+//		textContextInfo.setText("");
+//		textPropertyInfo.setText("");
 		comboDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
 		comboDataSource.addSelectionListener(new ComboDataSourceListener());
 
@@ -233,50 +215,65 @@ public class HarmonizedDataSelector extends ViewPart {
 			// textFlowableInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
+		treeItemFlowable.removeAll();
+
 		// Resource resource = rdfNode.asResource();
 		for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
 			LCADataPropertyProvider lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(propertyName);
+			Property property = lcaDataPropertyProvider.getTDBProperty();
 			Resource resource = lcaDataPropertyProvider.getRDFClass();
-			//
-			// b = new StringBuilder();
-			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-			// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-			// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-			// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-			// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-			// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-			// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-			// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-			// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-			// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-			// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-			// b.append(" \n");
-			// b.append("SELECT distinct ?prop  \n");
-			// b.append("WHERE \n");
-			// b.append("  { \n");
-			// b.append("    ?flowable rdf:type eco:Flowable . \n");
-			// b.append("    ?flowable eco:hasDataSource ?dataSource . \n");
-			// b.append("    optional {?flowable ?prop ?n .} \n");
-			// b.append("    ?dataSource rdfs:label ?dataSourceName . \n");
-			// b.append("    filter (str(?dataSourceName) = \"" + comboDataSource.getText() + "\") \n");
-			// b.append("   } \n");
-			// query = b.toString();
-			// harmonyQuery2Impl = new HarmonyQuery2Impl();
-			// harmonyQuery2Impl.setQuery(query);
-			// resultSet = harmonyQuery2Impl.getResultSet();
-			// List<String> propertyNames = new ArrayList<String>();
-			// while (resultSet.hasNext()) {
-			// QuerySolution querySolution = resultSet.next();
-			// RDFNode rdfNode = querySolution.get("prop");
-			
-			// if (lcaDataPropertyProvider.getTDBProperty().asResource().equals(resource)) {
+			String propertyString = null;
+			if (property.isAnon()) {
+				AnonId anonId = (AnonId) property.getId();
+				propertyString = anonId.getLabelString();
+			} else {
+				propertyString = property.getURI();
+			}
 
+			b = new StringBuilder();
+			b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+			b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+			b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+			b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+			b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+			b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+			b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+			b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+			b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+			b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+			b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+			b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+			b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+			b.append(" \n");
+			b.append("SELECT ?flowable \n");
+			b.append("WHERE \n");
+			b.append("  { \n");
+			b.append("    ?flowable rdf:type eco:Flowable . \n");
+			b.append("    ?flowable eco:hasDataSource ?dataSource . \n");
+			b.append("    ?dataSource rdfs:label ?dataSourceName . \n");
+			b.append("    filter (str(?dataSourceName) = \"" + comboDataSource.getText() + "\") \n");
+			b.append("    ?comparison a fedlca:Comparison .\n");
+			b.append("    ?comparison fedlca:comparedSource ?flowable .\n");
+			b.append("    ?comparison fedlca:comparedMaster ?masterFlowable .\n");
+			b.append("    ?masterFlowable <" + propertyString + "> ?value .\n");
+			b.append("   } \n");
+			b.append("   limit 1 \n");
+			query = b.toString();
+
+			harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(query);
+			resultSet = harmonyQuery2Impl.getResultSet();
 			TreeItem treeItem = new TreeItem(treeItemFlowable, SWT.NONE);
 			treeItem.setText(propertyName);
-
 			treeItemFlowable.setExpanded(true);
+			if (resultSet.hasNext()) {
+				treeItem.setChecked(true);
+				treeItem.setGrayed(false);
+			} else {
+				treeItem.setChecked(false);
+				treeItem.setGrayed(true);
+			}
+
 			//
 			// propertyNames.add(propertyName);
 			// }
@@ -321,7 +318,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("count");
-			textContextInfo.setText(rdfNode.asLiteral().getValue().toString());
+//			textContextInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
 		b = new StringBuilder();
@@ -403,7 +400,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("count");
-			textPropertyInfo.setText(rdfNode.asLiteral().getValue().toString());
+//			textPropertyInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
 		b = new StringBuilder();
