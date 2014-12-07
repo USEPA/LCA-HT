@@ -19,7 +19,9 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,20 +36,25 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ITreeViewerListener;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.swt.widgets.TreeItem;
 
 public class HarmonizedDataSelector extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector";
 	private static Combo comboDataSource;
-	private static Combo comboFlowableFields;
-	private static Combo comboContextFields;
-	private static Combo comboPropertyFields;
 
+	private static CheckboxTreeViewer checkboxTreeViewer;
 	private static TreeItem treeItemFlowable;
 	private static TreeItem treeItemContext;
 	private static TreeItem treeItemProperty;
+	private static boolean expansionEventOccurred = false;
+	private List<TreeItem> expandedTrees = new ArrayList<TreeItem>();
+
 
 	private static DataSourceProvider curDataSourceProvider;
 	private static Logger runLogger = Logger.getLogger("run");
@@ -57,40 +64,84 @@ public class HarmonizedDataSelector extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout(3, false));
-		new Label(parent, SWT.NONE);
-
-		Button btnReset = new Button(parent, SWT.NONE);
-		btnReset.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				update();
-			}
-		});
-		btnReset.setText("Reset");
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-
-		Label lblDatasetToOutput = new Label(parent, SWT.NONE);
-		lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDatasetToOutput.setText("Choose Dataset");
-
-		comboDataSource = new Combo(parent, SWT.NONE);
-		comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		parent.setLayout(new GridLayout(2, false));
+		
+				Button btnReset = new Button(parent, SWT.NONE);
+				btnReset.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						update();
+					}
+				});
+				btnReset.setText("Reset");
 		new Label(parent, SWT.NONE);
 		
-				CheckboxTreeViewer checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER);
-				Tree tree = checkboxTreeViewer.getTree();
-				tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-				
-						treeItemFlowable = new TreeItem(tree, SWT.NONE);
-						treeItemFlowable.setText("Flowable");
-						
-								treeItemContext = new TreeItem(tree, SWT.NONE);
-								treeItemContext.setText("Flow Context");
-								
-										treeItemProperty = new TreeItem(tree, SWT.NONE);
-										treeItemProperty.setText("Flow Property");
+				Label lblDatasetToOutput = new Label(parent, SWT.NONE);
+				lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+				lblDatasetToOutput.setText("Choose Dataset");
+		
+				comboDataSource = new Combo(parent, SWT.NONE);
+				comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(parent, SWT.NONE);
+
+		checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		Tree tree = checkboxTreeViewer.getTree();
+		GridData gd_tree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_tree.heightHint = 400;
+		tree.setLayoutData(gd_tree);
+		
+		checkboxTreeViewer.addTreeListener(new ITreeViewerListener() {
+
+			@Override
+			public void treeCollapsed(TreeExpansionEvent event) {
+				expansionEventOccurred = true;
+			}
+
+			@Override
+			public void treeExpanded(TreeExpansionEvent event) {
+				expansionEventOccurred = true;
+			}
+
+		});
+		
+		checkboxTreeViewer.getTree().addListener(SWT.PaintItem, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				GC gc = event.gc;
+				if (expansionEventOccurred) {
+					updateExpandedTrees();
+				}
+				for (TreeItem treeItem : expandedTrees) {
+					int x1 = treeItem.getBounds().x;
+					int y1 = treeItem.getBounds().y;
+					Rectangle rightRect = treeItem.getBounds(checkboxTreeViewer.getTree().getColumnCount() - 1);
+					int x2 = rightRect.x + rightRect.width;
+					Rectangle bottomRect = treeItem.getItem(treeItem.getItemCount() - 1).getBounds();
+					int y2 = bottomRect.y + bottomRect.height;
+					Rectangle fullRowRect = new Rectangle(x1, y1, x2 - x1 - 1, y2 - y1 - 1);
+					int lineWidth = 1;
+					drawRect(gc, fullRowRect, lineWidth);
+				}
+			}
+
+			private void drawRect(GC gc, Rectangle rectangle, int lineWidth) {
+				int lineWidthSave = gc.getLineWidth();
+				gc.setLineWidth(lineWidth);
+				gc.drawRectangle(rectangle);
+				gc.setLineWidth(lineWidthSave);
+			}
+
+		});
+
+		treeItemFlowable = new TreeItem(tree, SWT.NONE);
+		treeItemFlowable.setText("Flowable");
+
+		treeItemContext = new TreeItem(tree, SWT.NONE);
+		treeItemContext.setText("Flow Context");
+
+		treeItemProperty = new TreeItem(tree, SWT.NONE);
+		treeItemProperty.setText("Flow Property");
 
 		for (String propertyName : Flowable.getDataPropertyMap().keySet()) {
 			TreeItem treeItem = new TreeItem(treeItemFlowable, SWT.NONE);
@@ -109,39 +160,14 @@ public class HarmonizedDataSelector extends ViewPart {
 			treeItem.setText(propertyName);
 			treeItemProperty.setExpanded(true);
 		}
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-		new Label(parent, SWT.NONE);
-				new Label(parent, SWT.NONE);
-		
-				comboFlowableFields = new Combo(parent, SWT.NONE);
-				comboFlowableFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
-				new Label(parent, SWT.NONE);
-		
-				comboContextFields = new Combo(parent, SWT.NONE);
-				comboContextFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
-				new Label(parent, SWT.NONE);
-		
-				comboPropertyFields = new Combo(parent, SWT.NONE);
-				comboPropertyFields.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(parent, SWT.NONE);
 		// update();
 	}
 
 	public static void update() {
 		comboDataSource.removeAll();
-//		textFlowableInfo.setText("");
-//		textContextInfo.setText("");
-//		textPropertyInfo.setText("");
+		// textFlowableInfo.setText("");
+		// textContextInfo.setText("");
+		// textPropertyInfo.setText("");
 		comboDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
 		comboDataSource.addSelectionListener(new ComboDataSourceListener());
 
@@ -318,7 +344,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("count");
-//			textContextInfo.setText(rdfNode.asLiteral().getValue().toString());
+			// textContextInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
 		b = new StringBuilder();
@@ -366,7 +392,6 @@ public class HarmonizedDataSelector extends ViewPart {
 		for (int i = 0; i < addEm.length; i++) {
 			addEm[i] = propertyNames.get(i);
 		}
-		comboContextFields.setItems(addEm);
 	}
 
 	private static void updateProperties() {
@@ -400,7 +425,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("count");
-//			textPropertyInfo.setText(rdfNode.asLiteral().getValue().toString());
+			// textPropertyInfo.setText(rdfNode.asLiteral().getValue().toString());
 		}
 
 		b = new StringBuilder();
@@ -448,11 +473,21 @@ public class HarmonizedDataSelector extends ViewPart {
 		for (int i = 0; i < addEm.length; i++) {
 			addEm[i] = propertyNames.get(i);
 		}
-		comboPropertyFields.setItems(addEm);
 	}
 
 	@Override
 	public void setFocus() {
 	}
+	
 
+	protected void updateExpandedTrees() {
+		TreeItem[] treeItems = checkboxTreeViewer.getTree().getItems();
+		expandedTrees.clear();
+		for (TreeItem treeItem : treeItems) {
+			if (treeItem.getExpanded()) {
+				expandedTrees.add(treeItem);
+			}
+		}
+		expansionEventOccurred = false;
+	}
 }
