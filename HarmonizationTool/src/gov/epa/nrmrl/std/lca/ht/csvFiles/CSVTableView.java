@@ -1937,26 +1937,26 @@ public class CSVTableView extends ViewPart {
 					hit = true;
 				}
 			}
-		}
-		Color color;
-		Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(rowToColor).getFlowable()
-				.getTdbResource();
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-				LCAHT.QCStatusAdHocMaster);
-		ActiveTDB.tdbDataset.end();
-		if (adHoc) {
-			color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-		} else if (hit) {
-			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-		} else {
-			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-		}
 
-		TableItem tableItem = table.getItem(tableRowToColor);
+			Color color;
+			Resource resource = flowable.getTdbResource();
+			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+			boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
+					LCAHT.QCStatusAdHocMaster);
+			ActiveTDB.tdbDataset.end();
+			if (adHoc) {
+				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+			} else if (hit) {
+				color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+			} else {
+				color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+			}
 
-		for (int i : flowableColumns) {
-			tableItem.setBackground(i, color);
+			TableItem tableItem = table.getItem(tableRowToColor);
+
+			for (int i : flowableColumns) {
+				tableItem.setBackground(i, color);
+			}
 		}
 	}
 
@@ -2116,16 +2116,16 @@ public class CSVTableView extends ViewPart {
 				if (uniqueFlowContextRowNumbers.contains(i)) {
 
 					Color color;
-//					Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-//							.getTdbResource();
-//					ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-//					boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-//							LCAHT.QCStatusAdHocMaster);
-//					ActiveTDB.tdbDataset.end();
-//					if (adHoc) {
-//						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-//					} else 
-						if (matchedFlowContextRowNumbers.contains(i)) {
+					// Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
+					// .getTdbResource();
+					// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+					// boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
+					// LCAHT.QCStatusAdHocMaster);
+					// ActiveTDB.tdbDataset.end();
+					// if (adHoc) {
+					// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+					// } else
+					if (matchedFlowContextRowNumbers.contains(i)) {
 						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 					} else {
 						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
@@ -2139,16 +2139,16 @@ public class CSVTableView extends ViewPart {
 		} else {
 			for (int i : uniqueFlowContextRowNumbers) {
 				Color color;
-//				Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-//						.getTdbResource();
-//				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-//				boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-//						LCAHT.QCStatusAdHocMaster);
-//				ActiveTDB.tdbDataset.end();
-//				if (adHoc) {
-//					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-//				} else 
-					if (matchedFlowContextRowNumbers.contains(i)) {
+				// Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
+				// .getTdbResource();
+				// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+				// boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
+				// LCAHT.QCStatusAdHocMaster);
+				// ActiveTDB.tdbDataset.end();
+				// if (adHoc) {
+				// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+				// } else
+				if (matchedFlowContextRowNumbers.contains(i)) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
@@ -2180,16 +2180,16 @@ public class CSVTableView extends ViewPart {
 				if (uniqueFlowPropertyRowNumbers.contains(i)) {
 
 					Color color;
-//					Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-//							.getTdbResource();
-//					ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-//					boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-//							LCAHT.QCStatusAdHocMaster);
-//					ActiveTDB.tdbDataset.end();
-//					if (adHoc) {
-//						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-//					} else
-						if (matchedFlowPropertyRowNumbers.contains(i)) {
+					// Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
+					// .getTdbResource();
+					// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+					// boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
+					// LCAHT.QCStatusAdHocMaster);
+					// ActiveTDB.tdbDataset.end();
+					// if (adHoc) {
+					// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+					// } else
+					if (matchedFlowPropertyRowNumbers.contains(i)) {
 						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 					} else {
 						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
@@ -2203,16 +2203,16 @@ public class CSVTableView extends ViewPart {
 		} else {
 			for (int i : uniqueFlowPropertyRowNumbers) {
 				Color color;
-//				Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-//						.getTdbResource();
-//				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-//				boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-//						LCAHT.QCStatusAdHocMaster);
-//				ActiveTDB.tdbDataset.end();
-//				if (adHoc) {
-//					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-//				} else
-					if (matchedFlowPropertyRowNumbers.contains(i)) {
+				// Resource resource = TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
+				// .getTdbResource();
+				// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+				// boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
+				// LCAHT.QCStatusAdHocMaster);
+				// ActiveTDB.tdbDataset.end();
+				// if (adHoc) {
+				// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+				// } else
+				if (matchedFlowPropertyRowNumbers.contains(i)) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);

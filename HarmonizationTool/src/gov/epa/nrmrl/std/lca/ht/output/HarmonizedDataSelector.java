@@ -1,14 +1,21 @@
 package gov.epa.nrmrl.std.lca.ht.output;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
@@ -24,6 +31,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
@@ -40,8 +49,16 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
+import org.eclipse.jface.viewers.TreeViewerEditor;
+import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.widgets.TreeItem;
 
 public class HarmonizedDataSelector extends ViewPart {
@@ -53,8 +70,8 @@ public class HarmonizedDataSelector extends ViewPart {
 	private static TreeItem treeItemContext;
 	private static TreeItem treeItemProperty;
 	private static boolean expansionEventOccurred = false;
-	private List<TreeItem> expandedTrees = new ArrayList<TreeItem>();
-
+	private static List<TreeItem> expandedTrees = new ArrayList<TreeItem>();
+	private static TreeItem selectedItem;
 
 	private static DataSourceProvider curDataSourceProvider;
 	private static Logger runLogger = Logger.getLogger("run");
@@ -65,23 +82,25 @@ public class HarmonizedDataSelector extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
-		
-				Button btnReset = new Button(parent, SWT.NONE);
-				btnReset.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						update();
-					}
-				});
-				btnReset.setText("Reset");
+
+		Button btnReset = new Button(parent, SWT.NONE);
+		btnReset.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getHarmonizedDataRow(3);
+				// HACK ABOVE
+				update();
+			}
+		});
+		btnReset.setText("Reset");
 		new Label(parent, SWT.NONE);
-		
-				Label lblDatasetToOutput = new Label(parent, SWT.NONE);
-				lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-				lblDatasetToOutput.setText("Choose Dataset");
-		
-				comboDataSource = new Combo(parent, SWT.NONE);
-				comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+		Label lblDatasetToOutput = new Label(parent, SWT.NONE);
+		lblDatasetToOutput.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDatasetToOutput.setText("Choose Dataset");
+
+		comboDataSource = new Combo(parent, SWT.NONE);
+		comboDataSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(parent, SWT.NONE);
 
 		checkboxTreeViewer = new CheckboxTreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
@@ -89,7 +108,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		GridData gd_tree = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_tree.heightHint = 400;
 		tree.setLayoutData(gd_tree);
-		
+
 		checkboxTreeViewer.addTreeListener(new ITreeViewerListener() {
 
 			@Override
@@ -103,7 +122,68 @@ public class HarmonizedDataSelector extends ViewPart {
 			}
 
 		});
-		
+
+		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(checkboxTreeViewer,
+				new FocusCellOwnerDrawHighlighter(checkboxTreeViewer));
+		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(checkboxTreeViewer) {
+			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && (event.keyCode == SWT.CR || event.character == ' '))
+						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+			}
+		};
+
+		TreeViewerEditor.create(checkboxTreeViewer, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.TABBING_VERTICAL
+				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+
+		checkboxTreeViewer.getTree().addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				selectedItem = (TreeItem) e.item;
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		checkboxTreeViewer.getControl().addTraverseListener(new TraverseListener() {
+
+			public void keyTraversed(TraverseEvent e) {
+				if ((e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS)
+						&& mgr.getFocusCell().getColumnIndex() == 2) {
+					ColumnViewerEditor editor = checkboxTreeViewer.getColumnViewerEditor();
+					ViewerCell cell = mgr.getFocusCell();
+
+					try {
+						Method m = ColumnViewerEditor.class.getDeclaredMethod("processTraverseEvent", new Class[] {
+								int.class, ViewerRow.class, TraverseEvent.class });
+						m.setAccessible(true);
+						m.invoke(editor, new Object[] { new Integer(cell.getColumnIndex()), cell.getViewerRow(), e });
+					} catch (SecurityException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NoSuchMethodException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IllegalArgumentException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IllegalAccessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InvocationTargetException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+		});
+
 		checkboxTreeViewer.getTree().addListener(SWT.PaintItem, new Listener() {
 
 			@Override
@@ -477,8 +557,9 @@ public class HarmonizedDataSelector extends ViewPart {
 
 	@Override
 	public void setFocus() {
+		checkboxTreeViewer.getControl().setFocus();
+
 	}
-	
 
 	protected void updateExpandedTrees() {
 		TreeItem[] treeItems = checkboxTreeViewer.getTree().getItems();
@@ -489,5 +570,43 @@ public class HarmonizedDataSelector extends ViewPart {
 			}
 		}
 		expansionEventOccurred = false;
+	}
+
+	public static DataRow getHarmonizedDataRow(int rowNumber) {
+		DataRow outputRow = new DataRow();
+		DataRow outputHeader = new DataRow();
+
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		DataRow inputRow = tableProvider.getData().get(rowNumber);
+		DataRow inputHeader = tableProvider.getHeaderRow();
+		int outColOffset = 0;
+		for (int col = 0; col < inputRow.getSize(); col++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(col);
+			System.out.println("Column " + col);
+			String inputCellString = "";
+			if (col == 0) {
+				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
+			} else {
+				inputCellString = inputRow.get(col - 1);
+			}
+
+			if (lcaDataPropertyProvider == null) {
+				System.out.println("this one is null");
+				outputRow.add(inputRow.get(col + outColOffset));
+				outputHeader.add("Not defined");
+			} else {
+				System.out.println("Class: " + lcaDataPropertyProvider.getPropertyClass() + ". Name: "
+						+ lcaDataPropertyProvider.getPropertyName());
+				outputRow.add(inputRow.get(col + outColOffset));
+				outputHeader.add(inputHeader.get(col + outColOffset));
+			}
+		}
+		if (inputRow.getFlowable() != null){
+			Flowable flowable = inputRow.getFlowable();
+			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
+			// PSSH
+		}
+
+		return outputRow;
 	}
 }
