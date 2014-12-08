@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -33,12 +34,12 @@ public class FlowContext {
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
 		System.out.println("label assigned to Flow Context");
 
-//		System.out.println("Flow Context has just assigned label and comment");
-//		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-//			System.out.println(rdfClass.getProperty(RDFS.label).getString());
-//		} else {
-//			System.out.println("wtf");
-//		}
+		// System.out.println("Flow Context has just assigned label and comment");
+		// if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+		// System.out.println(rdfClass.getProperty(RDFS.label).getString());
+		// } else {
+		// System.out.println("wtf");
+		// }
 		// JUNO: THE ABOVE GIVES THE "wtf" RESULT, BUT A QUERY SHOWS THE TRIPLES ARE ADDED. WTF?
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
@@ -70,7 +71,8 @@ public class FlowContext {
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
 	private int firstRow;
-//	private Set<Resource> matchCandidates;
+
+	// private Set<Resource> matchCandidates;
 
 	// CONSTRUCTORS
 	public FlowContext() {
@@ -165,6 +167,7 @@ public class FlowContext {
 			return;
 		}
 		// LCADataPropertyProvider LIST IS ALL LITERALS
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
 			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
 				continue;
@@ -194,6 +197,7 @@ public class FlowContext {
 				}
 			}
 		}
+		ActiveTDB.tdbDataset.end();
 	}
 
 	public void clearSyncDataFromTDB() {
@@ -223,7 +227,7 @@ public class FlowContext {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null){
+		if (matchingResource == null) {
 			ActiveTDB.tsRemoveAllObjects(tdbResource, OWL.sameAs);
 			this.matchingResource = null;
 			return;
@@ -238,6 +242,10 @@ public class FlowContext {
 
 	public void setFirstRow(int firstRow) {
 		this.firstRow = firstRow;
+	}
+
+	public String getDataSource() {
+		return "Master List";
 	}
 
 }

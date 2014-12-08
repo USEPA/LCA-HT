@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -14,9 +15,12 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
+import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 
@@ -87,7 +91,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		btnReset.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				getHarmonizedDataRow(3);
+				getHarmonizedDataRow(36);
 				// HACK ABOVE
 				update();
 			}
@@ -577,10 +581,11 @@ public class HarmonizedDataSelector extends ViewPart {
 		DataRow outputHeader = new DataRow();
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
 		DataRow inputRow = tableProvider.getData().get(rowNumber);
 		DataRow inputHeader = tableProvider.getHeaderRow();
 		int outColOffset = 0;
-		for (int col = 0; col < inputRow.getSize(); col++) {
+		for (int col = 0; col <= inputRow.getSize(); col++) {
 			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(col);
 			System.out.println("Column " + col);
 			String inputCellString = "";
@@ -588,23 +593,76 @@ public class HarmonizedDataSelector extends ViewPart {
 				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
 			} else {
 				inputCellString = inputRow.get(col - 1);
-			}
 
-			if (lcaDataPropertyProvider == null) {
-				System.out.println("this one is null");
-				outputRow.add(inputRow.get(col + outColOffset));
-				outputHeader.add("Not defined");
-			} else {
-				System.out.println("Class: " + lcaDataPropertyProvider.getPropertyClass() + ". Name: "
-						+ lcaDataPropertyProvider.getPropertyName());
-				outputRow.add(inputRow.get(col + outColOffset));
-				outputHeader.add(inputHeader.get(col + outColOffset));
+				if (lcaDataPropertyProvider == null) {
+					System.out.println("this one is null");
+					outputRow.add(inputRow.get(col - 1 + outColOffset));
+					outputHeader.add(csvDataSetName + "(column " + col + ")");
+				} else {
+					System.out.println("Class: " + lcaDataPropertyProvider.getPropertyClass() + ". Name: "
+							+ lcaDataPropertyProvider.getPropertyName());
+					outputRow.add(inputRow.get(col - 1 + outColOffset));
+					outputHeader.add(csvDataSetName + " " + lcaDataPropertyProvider.getPropertyClass() + ": "
+							+ lcaDataPropertyProvider.getPropertyName());
+				}
+				// outputHeader.add(inputHeader.get(col + outColOffset));
 			}
 		}
-		if (inputRow.getFlowable() != null){
-			Flowable flowable = inputRow.getFlowable();
+
+		Flowable flowable = inputRow.getFlowable();
+		FlowContext flowContext = inputRow.getFlowContext();
+		FlowProperty flowProperty = inputRow.getFlowProperty();
+
+		if (flowable != null) {
 			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
-			// PSSH
+			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
+				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
+				if (matchNumber == 1) {
+					Flowable mFlowable = new Flowable(matchCandidate.getKey());
+					String dataSourceName = mFlowable.getDataSource();
+					List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
+
+					for (LCADataValue lcaDataValue : lcaDataValues) {
+						String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+						String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+						String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+						outputHeader.add(field);
+						outputRow.add(lcaDataValue.getValueAsString());
+					}
+				}
+			}
+		}
+
+		if (flowContext != null) {
+			// Resource flowContextResource = flowContext.getTdbResource();
+			Resource flowContextMatchingResource = flowContext.getMatchingResource();
+			FlowContext mFlowContext = new FlowContext(flowContextMatchingResource);
+			String dataSourceName = mFlowContext.getDataSource();
+
+			List<LCADataValue> lcaDataValues = mFlowContext.getPropertyValuesInOrder();
+			for (LCADataValue lcaDataValue : lcaDataValues) {
+				String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+				String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+				String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+				outputHeader.add(field);
+				outputRow.add(lcaDataValue.getValueAsString());
+			}
+		}
+
+		if (flowProperty != null) {
+			// Resource flowContextResource = flowContext.getTdbResource();
+			Resource flowPropertyMatchingResource = flowProperty.getMatchingResource();
+			FlowProperty mFlowProperty = new FlowProperty(flowPropertyMatchingResource);
+			String dataSourceName = mFlowProperty.getDataSource();
+
+			List<LCADataValue> lcaDataValues = mFlowProperty.getPropertyValuesInOrder();
+			for (LCADataValue lcaDataValue : lcaDataValues) {
+				String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+				String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+				String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+				outputHeader.add(field);
+				outputRow.add(lcaDataValue.getValueAsString());
+			}
 		}
 
 		return outputRow;

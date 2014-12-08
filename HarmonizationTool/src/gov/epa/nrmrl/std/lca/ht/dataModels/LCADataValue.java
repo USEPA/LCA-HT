@@ -30,6 +30,9 @@ public class LCADataValue {
 	}
 
 	public String getValueAsString() {
+		if (valueAsString == null) {
+			setValueFromString();
+		}
 		return valueAsString;
 	}
 

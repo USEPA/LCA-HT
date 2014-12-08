@@ -348,4 +348,8 @@ public class FlowProperty {
 	public void setFirstRow(int firstRow) {
 		this.firstRow = firstRow;
 	}
+
+	public String getDataSource() {
+		return "Master List";
+	}
 }
