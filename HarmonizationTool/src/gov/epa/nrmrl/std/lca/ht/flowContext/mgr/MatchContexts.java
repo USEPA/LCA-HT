@@ -18,6 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -61,8 +62,8 @@ public class MatchContexts extends ViewPart {
 	private static Tree masterTree;
 	private static TreeViewer masterTreeViewer;
 	private static Label masterLbl;
-//	private int rowNumSelected;
-//	private int colNumSelected;
+	// private int rowNumSelected;
+	// private int colNumSelected;
 	private static FlowContext contextToMatch;
 
 	// private Composite compositeMatches;
@@ -125,9 +126,10 @@ public class MatchContexts extends ViewPart {
 		masterTreeViewer.setContentProvider(new MyContentProvider());
 		masterTreeViewer.setInput(createHarmonizeCompartments());
 		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
-			public void doit(SelectionEvent e){
+			public void doit(SelectionEvent e) {
 				assign();
 			}
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doit(e);
@@ -190,7 +192,7 @@ public class MatchContexts extends ViewPart {
 		FlowsWorkflow.addMatchContextRowNum(contextToMatch.getFirstRow());
 		CSVTableView.colorFlowContextRows();
 	}
-	
+
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			CSVTableView.selectNextContext();
@@ -237,7 +239,34 @@ public class MatchContexts extends ViewPart {
 	// }
 	// }
 
-	private TreeNode createHarmonizeCompartments() {
+	public static String getNodeNameFromResource(Resource resource) {
+		StringBuilder b = new StringBuilder();
+		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
+			TreeNode treeNode = (TreeNode) treeItem.getData();
+			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
+				Resource nodeResource = testNode.uri;
+				if (nodeResource == null) {
+					continue;
+				}
+				if (nodeResource.equals(resource)) {
+					b.append(testNode.nodeName);
+					TreeNode parentNode = (TreeNode) testNode.getParent();
+					while (parentNode instanceof TreeNode) {
+						if (!(parentNode.getParent() instanceof TreeNode)) {
+							break;
+						}
+						b.insert(0, "; ");
+						b.insert(0, parentNode.nodeName);
+						parentNode = (TreeNode) parentNode.getParent();
+					}
+					return b.toString();
+				}
+			}
+		}
+		return ("(flow context name not found)");
+	}
+
+	private static TreeNode createHarmonizeCompartments() {
 		TreeNode masterCompartmentTree = new TreeNode(null);
 
 		TreeNode release = new TreeNode(masterCompartmentTree);
@@ -521,12 +550,12 @@ public class MatchContexts extends ViewPart {
 		@Override
 		public void mouseDown(MouseEvent e) {
 			System.out.println("mouse down event :e =" + e);
-//			if (e.button == 1) {
-//				leftClick(e);
-//			} else if (e.button == 3) {
-//				// queryTbl.deselectAll();
-//				rightClick(e);
-//			}
+			// if (e.button == 1) {
+			// leftClick(e);
+			// } else if (e.button == 3) {
+			// // queryTbl.deselectAll();
+			// rightClick(e);
+			// }
 		}
 
 		@Override
@@ -536,49 +565,49 @@ public class MatchContexts extends ViewPart {
 
 		private void leftClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-//			Point ptLeft = new Point(1, event.y);
-//			Point ptClick = new Point(event.x, event.y);
-//			int clickedRow = 0;
-//			int clickedCol = 0;
-//			// TableItem item = queryTbl.getItem(ptLeft);
-//			// if (item == null) {
-//			// return;
-//			// }
-//			// clickedRow = queryTbl.indexOf(item);
-//			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			// if (clickedCol > 0) {
-//			// queryTbl.deselectAll();
-//			// return;
-//			// }
-//			// queryTbl.select(clickedRow);
-//			rowNumSelected = clickedRow;
-//			colNumSelected = clickedCol;
-//			System.out.println("rowNumSelected = " + rowNumSelected);
-//			System.out.println("colNumSelected = " + colNumSelected);
+			// Point ptLeft = new Point(1, event.y);
+			// Point ptClick = new Point(event.x, event.y);
+			// int clickedRow = 0;
+			// int clickedCol = 0;
+			// // TableItem item = queryTbl.getItem(ptLeft);
+			// // if (item == null) {
+			// // return;
+			// // }
+			// // clickedRow = queryTbl.indexOf(item);
+			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			// // if (clickedCol > 0) {
+			// // queryTbl.deselectAll();
+			// // return;
+			// // }
+			// // queryTbl.select(clickedRow);
+			// rowNumSelected = clickedRow;
+			// colNumSelected = clickedCol;
+			// System.out.println("rowNumSelected = " + rowNumSelected);
+			// System.out.println("colNumSelected = " + colNumSelected);
 			// rowMenu.setVisible(true);
 		}
 
 		private void rightClick(MouseEvent event) {
 			System.out.println("cellSelectionMouseDownListener event " + event);
-//			Point ptLeft = new Point(1, event.y);
-//			Point ptClick = new Point(event.x, event.y);
-//			int clickedRow = 0;
-//			int clickedCol = 0;
-//			// TableItem item = queryTbl.getItem(ptLeft);
-//			// if (item == null) {
-//			// return;
-//			// }
-//			// clickedRow = queryTbl.indexOf(item);
-//			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			// int dataClickedCol = clickedCol - 1;
-//			if (clickedCol < 0) {
-//				return;
-//			}
-//
-//			rowNumSelected = clickedRow;
-//			colNumSelected = clickedCol;
-//			System.out.println("rowNumSelected = " + rowNumSelected);
-//			System.out.println("colNumSelected = " + colNumSelected);
+			// Point ptLeft = new Point(1, event.y);
+			// Point ptClick = new Point(event.x, event.y);
+			// int clickedRow = 0;
+			// int clickedCol = 0;
+			// // TableItem item = queryTbl.getItem(ptLeft);
+			// // if (item == null) {
+			// // return;
+			// // }
+			// // clickedRow = queryTbl.indexOf(item);
+			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+			// // int dataClickedCol = clickedCol - 1;
+			// if (clickedCol < 0) {
+			// return;
+			// }
+			//
+			// rowNumSelected = clickedRow;
+			// colNumSelected = clickedCol;
+			// System.out.println("rowNumSelected = " + rowNumSelected);
+			// System.out.println("colNumSelected = " + colNumSelected);
 		}
 	};
 	private Composite outerComposite;
@@ -604,29 +633,29 @@ public class MatchContexts extends ViewPart {
 		this.contextResourcesToMatch = contextResourcesToMatch;
 	}
 
-//	private static void update() {
-//		Util.findView(CSVTableView.ID);
-//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		String rowNumString = tableItem.getText(0);
-//		int rowNumber = Integer.parseInt(rowNumString) - 1;
-//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
-//		if (contextResource != null) {
-//			TreeItem treeItem = getTreeItemByURI(contextResource);
-//			if (treeItem != null) {
-//				masterTree.setSelection(getTreeItemByURI(contextResource));
-//			} else {
-//				masterTree.deselectAll();
-//			}
-//		} else {
-//			masterTree.deselectAll();
-//		}
-//	}
+	// private static void update() {
+	// Util.findView(CSVTableView.ID);
+	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+	// String rowNumString = tableItem.getText(0);
+	// int rowNumber = Integer.parseInt(rowNumString) - 1;
+	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	// Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+	// if (contextResource != null) {
+	// TreeItem treeItem = getTreeItemByURI(contextResource);
+	// if (treeItem != null) {
+	// masterTree.setSelection(getTreeItemByURI(contextResource));
+	// } else {
+	// masterTree.deselectAll();
+	// }
+	// } else {
+	// masterTree.deselectAll();
+	// }
+	// }
 	public static void update(Integer dataRowNum) {
-//		Util.findView(CSVTableView.ID);
-//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		String rowNumString = tableItem.getText(0);
-//		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		// Util.findView(CSVTableView.ID);
+		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+		// String rowNumString = tableItem.getText(0);
+		// int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
 		contextToMatch = dataRow.getFlowContext();
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();

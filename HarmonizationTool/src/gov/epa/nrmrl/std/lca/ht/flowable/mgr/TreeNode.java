@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.Node;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -68,6 +69,20 @@ public class TreeNode extends Node {
 
 	public boolean contains(TreeNode treeNode) {
 		return children.contains(treeNode);
+	}
+	
+	public static List<TreeNode> getAllChildNodes(TreeNode treeNode){
+		List<TreeNode> resultsList = new ArrayList<TreeNode>();
+		if (treeNode.hasChildren()){
+			Iterator<Node> iterator = treeNode.getChildIterator();
+			while (iterator.hasNext()){
+				TreeNode newNode = (TreeNode) iterator.next();
+				resultsList.add(newNode);
+				List<TreeNode> moreResults = getAllChildNodes(newNode);
+				resultsList.addAll(moreResults);
+			}
+		}
+		return resultsList;
 	}
 
 //	public void remove(TreeNode treeNode) {

@@ -26,6 +26,8 @@ public class LCADataValue {
 	}
 
 	public void setValue(Object value) {
+		this.valueAsString = value.toString();
+		// TODO: CHECK THE ABOVE TO CONFIRM IT IS ROBUST
 		this.value = value;
 	}
 

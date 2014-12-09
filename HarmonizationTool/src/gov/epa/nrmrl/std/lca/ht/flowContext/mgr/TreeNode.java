@@ -1,5 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.TreeNode;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 
 
@@ -45,6 +51,19 @@ public class TreeNode extends Node {
 		}
 	}
 
+	public static List<TreeNode> getAllChildNodes(TreeNode treeNode){
+		List<TreeNode> resultsList = new ArrayList<TreeNode>();
+		if (treeNode.hasChildren()){
+			Iterator<Node> iterator = treeNode.getChildIterator();
+			while (iterator.hasNext()){
+				TreeNode newNode = (TreeNode) iterator.next();
+				resultsList.add(newNode);
+				List<TreeNode> moreResults = getAllChildNodes(newNode);
+				resultsList.addAll(moreResults);
+			}
+		}
+		return resultsList;
+	}
 //	public Object getChildList() {
 //		List<TreeNode> childList = new ArrayList<TreeNode>();
 //		Iterator<Node> iterator = getChildIterator();

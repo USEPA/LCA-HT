@@ -19,10 +19,14 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
@@ -42,10 +46,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.eclipse.swt.events.SelectionAdapter;
@@ -91,7 +99,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		btnReset.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				getHarmonizedDataRow(36);
+				getHarmonizedDataRow(1);
 				// HACK ABOVE
 				update();
 			}
@@ -614,6 +622,34 @@ public class HarmonizedDataSelector extends ViewPart {
 		FlowProperty flowProperty = inputRow.getFlowProperty();
 
 		if (flowable != null) {
+			Resource flowableResource = flowable.getTdbResource();
+			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+			Model tdbModel = ActiveTDB.getModel();
+			ResIterator resIterator = tdbModel.listSubjectsWithProperty(FedLCA.comparedSource, flowableResource);
+			while (resIterator.hasNext()) {
+				Resource comparisonResource = resIterator.nextResource();
+				if (tdbModel.contains(comparisonResource, FedLCA.comparedEquivalence, FedLCA.equivalent)) {
+					NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(comparisonResource,
+							FedLCA.comparedMaster);
+					if (nodeIterator.hasNext()) {
+						RDFNode rdfNode = nodeIterator.nextNode();
+						Resource masterResource = rdfNode.asResource();
+						Flowable mFlowable = new Flowable(masterResource);
+						String dataSourceName = mFlowable.getDataSource();
+						List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
+
+						for (LCADataValue lcaDataValue : lcaDataValues) {
+							String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+							String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+							String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+							outputHeader.add(field);
+							outputRow.add(lcaDataValue.getValueAsString());
+						}
+					}
+				}
+			}
+			ActiveTDB.tdbDataset.end();
+
 			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
 			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
 				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
@@ -636,32 +672,44 @@ public class HarmonizedDataSelector extends ViewPart {
 		if (flowContext != null) {
 			// Resource flowContextResource = flowContext.getTdbResource();
 			Resource flowContextMatchingResource = flowContext.getMatchingResource();
-			FlowContext mFlowContext = new FlowContext(flowContextMatchingResource);
-			String dataSourceName = mFlowContext.getDataSource();
+			if (flowContextMatchingResource == null) {
+				outputHeader.add("");
+				outputRow.add(" - ");
+			} else {
+				FlowContext mFlowContext = new FlowContext(flowContextMatchingResource);
+				String dataSourceName = mFlowContext.getDataSource();
+				outputHeader.add(dataSourceName + " Flow Context");
+				outputRow.add(MatchContexts.getNodeNameFromResource(flowContextMatchingResource));
 
-			List<LCADataValue> lcaDataValues = mFlowContext.getPropertyValuesInOrder();
-			for (LCADataValue lcaDataValue : lcaDataValues) {
-				String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-				String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-				String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-				outputHeader.add(field);
-				outputRow.add(lcaDataValue.getValueAsString());
+				// List<LCADataValue> lcaDataValues = mFlowContext.getPropertyValuesInOrder();
+				// for (LCADataValue lcaDataValue : lcaDataValues) {
+				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+				//
 			}
 		}
 
 		if (flowProperty != null) {
 			// Resource flowContextResource = flowContext.getTdbResource();
 			Resource flowPropertyMatchingResource = flowProperty.getMatchingResource();
-			FlowProperty mFlowProperty = new FlowProperty(flowPropertyMatchingResource);
-			String dataSourceName = mFlowProperty.getDataSource();
+			if (flowPropertyMatchingResource == null) {
+				outputHeader.add("");
+				outputRow.add(" - ");
+			} else {
+				FlowProperty mFlowProperty = new FlowProperty(flowPropertyMatchingResource);
+				String dataSourceName = mFlowProperty.getDataSource();
+				outputHeader.add(dataSourceName + " Flow Property");
+				outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
 
-			List<LCADataValue> lcaDataValues = mFlowProperty.getPropertyValuesInOrder();
-			for (LCADataValue lcaDataValue : lcaDataValues) {
-				String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-				String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-				String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-				outputHeader.add(field);
-				outputRow.add(lcaDataValue.getValueAsString());
+				// List<LCADataValue> lcaDataValues = mFlowProperty.getPropertyValuesInOrder();
+				// for (LCADataValue lcaDataValue : lcaDataValues) {
+				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+				// outputHeader.add(field);
+				// outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
+				// // outputRow.add(lcaDataValue.getValueAsString());
 			}
 		}
 

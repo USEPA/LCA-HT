@@ -38,7 +38,7 @@ public abstract class Node {
 		return parent;
 	}
 
-	public boolean hasChildern() {
+	public boolean hasChildren() {
 		return !children.isEmpty();
 	}
 

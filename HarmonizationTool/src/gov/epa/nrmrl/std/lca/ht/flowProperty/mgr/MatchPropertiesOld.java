@@ -288,7 +288,7 @@ public class MatchPropertiesOld extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				TreeNode treeNode = (TreeNode) (e.item.getData());
 
-				if (!treeNode.hasChildern()) {
+				if (!treeNode.hasChildren()) {
 					String masterLabel = treeNode.getLabel();
 					Resource masterResource = treeNode.getUri();
 					if (queryTblViewer.getTable().getItemCount() > 0) {

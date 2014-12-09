@@ -67,7 +67,6 @@ public class MatchProperties extends ViewPart {
 	private int colNumSelected;
 	private static FlowProperty propertyToMatch;
 
-
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
 
@@ -221,6 +220,22 @@ public class MatchProperties extends ViewPart {
 		for (TreeItem child : item.getItems()) {
 			expandItem(child);
 		}
+	}
+
+	public static String getNodeNameFromResource(Resource resource) {
+		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
+			TreeNode treeNode = (TreeNode) treeItem.getData();
+			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
+				Resource nodeResource = testNode.uri;
+				if (nodeResource == null) {
+					continue;
+				}
+				if (nodeResource.equals(resource)) {
+					return testNode.nodeName;
+				}
+			}
+		}
+		return ("(flow property name not found)");
 	}
 
 	private TreeNode createHarmonizeCompartments() {

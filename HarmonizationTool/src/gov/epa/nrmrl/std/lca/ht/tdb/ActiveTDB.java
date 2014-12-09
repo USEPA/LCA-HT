@@ -129,7 +129,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					// tdbModel = tdbDataset.getNamedModel("namedGraph");
 					graphStore = GraphStoreFactory.create(tdbDataset);
 					System.out.println("TDB Successfully initiated!");
-					// TODO: Write to the Logger whether the TDB is freshly created or has contents already.  Also write to the TDB that the session has started
+					// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
+					// to the TDB that the session has started
 
 				} catch (Exception e1) {
 					System.out.println("Exception: " + e1);
@@ -180,7 +181,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	
+
 		try {
 			// graphStore.close();
 			// TODO: FIGURE OUT WHY THE ABOVE CAUSES PROBLEMS OR IF IT WILL ALWAYS BE CLOSED (SO CAN LEAVE IT OUT)
@@ -389,31 +390,31 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return result;
 	}
 
-//	public static void flush() {
-//		garbageIn();
-//		garbageOut();
-//	}
+	// public static void flush() {
+	// garbageIn();
+	// garbageOut();
+	// }
 
-//	public static void garbageIn() {
-//		for (int i = 0; i < 1000; i++) {
-//			tsAddLiteral(FedLCA.deleteMe, FedLCA.hasValue, i);
-//		}
-//	}
-//
-//	public static void garbageOut() {
-//		int count = 0;
-//		Model tdbModel = tdbDataset.getDefaultModel();
-//		while (tdbModel.contains(FedLCA.deleteMe, FedLCA.hasValue)) {
-//			tsRemoveAllObjects(FedLCA.deleteMe, FedLCA.hasValue);
-//			count++;
-//			if (count > 100) {
-//				System.out.println("count: " + count);
-//				System.out.println("Delete garbage failed.");
-//				return;
-//			}
-//		}
-//		System.out.println("Delete garbage required " + count + " tries.");
-//	}
+	// public static void garbageIn() {
+	// for (int i = 0; i < 1000; i++) {
+	// tsAddLiteral(FedLCA.deleteMe, FedLCA.hasValue, i);
+	// }
+	// }
+	//
+	// public static void garbageOut() {
+	// int count = 0;
+	// Model tdbModel = tdbDataset.getDefaultModel();
+	// while (tdbModel.contains(FedLCA.deleteMe, FedLCA.hasValue)) {
+	// tsRemoveAllObjects(FedLCA.deleteMe, FedLCA.hasValue);
+	// count++;
+	// if (count > 100) {
+	// System.out.println("count: " + count);
+	// System.out.println("Delete garbage failed.");
+	// return;
+	// }
+	// }
+	// System.out.println("Delete garbage required " + count + " tries.");
+	// }
 
 	public static Resource tsCreateResource(Resource rdfclass) {
 		if (tdbDataset.isInTransaction()) {
@@ -806,8 +807,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static Model getModel() {
+		if (tdbDataset.isInTransaction()) {
+			return tdbDataset.getDefaultModel();
+		} else {
+			return getFreshModel();
+		}
 		// sync();
-		return getFreshModel();
 	}
 
 	public static int countAllData() {
@@ -835,7 +840,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static void sync() {
 		TDB.sync(tdbDataset);
 	}
-	
+
 	public static String getTDBVersion() {
 		TDB thing = new TDB();
 		String version = thing.VERSION;
