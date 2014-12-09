@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -584,132 +585,240 @@ public class HarmonizedDataSelector extends ViewPart {
 		expansionEventOccurred = false;
 	}
 
+	public static DataRow getHarmonizedDataHeader() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		// String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
+		DataRow inputHeader = tableProvider.getHeaderRow();
+
+		DataRow outputHeader = new DataRow();
+		for (int i = 1; i < inputHeader.getSize(); i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(i);
+			outputHeader.add(lcaDataPropertyProvider.getPropertyClass() + ": "
+					+ lcaDataPropertyProvider.getPropertyName());
+		}
+		for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
+			outputHeader.add("Master List "+lcaDataPropertyProvider.getPropertyClass() + ": "
+					+ lcaDataPropertyProvider.getPropertyName());
+		}
+		outputHeader.add("Master List Flow Context");
+		outputHeader.add("Master List Flow Property");
+
+		return outputHeader;
+	}
+
+//	public static DataRow[] getHarmonizedDataRowUnused(int rowNumber) {
+//		DataRow outputRow = new DataRow();
+//		DataRow outputHeader = new DataRow();
+//		DataRow[] output = new DataRow[2];
+//		output[0] = outputHeader;
+//		output[1] = outputRow;
+//
+//		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+//		String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
+//		DataRow inputRow = tableProvider.getData().get(rowNumber);
+//		DataRow inputHeader = tableProvider.getHeaderRow();
+//		int outColOffset = 0;
+//		for (int col = 0; col <= inputRow.getSize(); col++) {
+//			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(col);
+//			System.out.println("Column " + col);
+//			String inputCellString = "";
+//			if (col == 0) {
+//				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
+//			} else {
+//				inputCellString = inputRow.get(col - 1);
+//
+//				if (lcaDataPropertyProvider == null) {
+//					System.out.println("this one is null");
+//					outputRow.add(inputRow.get(col - 1 + outColOffset));
+//					outputHeader.add(csvDataSetName + "(column " + col + ")");
+//				} else {
+//					System.out.println("Class: " + lcaDataPropertyProvider.getPropertyClass() + ". Name: "
+//							+ lcaDataPropertyProvider.getPropertyName());
+//					outputRow.add(inputRow.get(col - 1 + outColOffset));
+//					outputHeader.add(csvDataSetName + " " + lcaDataPropertyProvider.getPropertyClass() + ": "
+//							+ lcaDataPropertyProvider.getPropertyName());
+//				}
+//				// outputHeader.add(inputHeader.get(col + outColOffset));
+//			}
+//		}
+//
+//		Flowable flowable = inputRow.getFlowable();
+//		FlowContext flowContext = inputRow.getFlowContext();
+//		FlowProperty flowProperty = inputRow.getFlowProperty();
+//
+//		if (flowable != null) {
+//			Resource flowableResource = flowable.getTdbResource();
+//			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//			Model tdbModel = ActiveTDB.getModel();
+//			ResIterator resIterator = tdbModel.listSubjectsWithProperty(FedLCA.comparedSource, flowableResource);
+//			while (resIterator.hasNext()) {
+//				Resource comparisonResource = resIterator.nextResource();
+//				if (tdbModel.contains(comparisonResource, FedLCA.comparedEquivalence, FedLCA.equivalent)) {
+//					NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(comparisonResource,
+//							FedLCA.comparedMaster);
+//					if (nodeIterator.hasNext()) {
+//						RDFNode rdfNode = nodeIterator.nextNode();
+//						Resource masterResource = rdfNode.asResource();
+//						Flowable mFlowable = new Flowable(masterResource);
+//						String dataSourceName = mFlowable.getDataSource();
+//						List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
+//
+//						for (LCADataValue lcaDataValue : lcaDataValues) {
+//							String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+//							String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+//							String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+//							outputHeader.add(field);
+//							outputRow.add(lcaDataValue.getValueAsString());
+//						}
+//					}
+//				}
+//			}
+//			ActiveTDB.tdbDataset.end();
+//
+//			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
+//			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
+//				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
+//				if (matchNumber == 1) {
+//					Flowable mFlowable = new Flowable(matchCandidate.getKey());
+//					String dataSourceName = mFlowable.getDataSource();
+//					List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
+//
+//					for (LCADataValue lcaDataValue : lcaDataValues) {
+//						String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+//						String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+//						String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+//						outputHeader.add(field);
+//						outputRow.add(lcaDataValue.getValueAsString());
+//					}
+//				}
+//			}
+//		}
+//
+//		if (flowContext != null) {
+//			// Resource flowContextResource = flowContext.getTdbResource();
+//			Resource flowContextMatchingResource = flowContext.getMatchingResource();
+//			if (flowContextMatchingResource == null) {
+//				outputHeader.add("");
+//				outputRow.add(" - ");
+//			} else {
+//				FlowContext mFlowContext = new FlowContext(flowContextMatchingResource);
+//				String dataSourceName = mFlowContext.getDataSource();
+//				outputHeader.add(dataSourceName + " Flow Context");
+//				outputRow.add(MatchContexts.getNodeNameFromResource(flowContextMatchingResource));
+//
+//				// List<LCADataValue> lcaDataValues = mFlowContext.getPropertyValuesInOrder();
+//				// for (LCADataValue lcaDataValue : lcaDataValues) {
+//				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+//				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+//				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+//				//
+//			}
+//		}
+//
+//		if (flowProperty != null) {
+//			// Resource flowContextResource = flowContext.getTdbResource();
+//			Resource flowPropertyMatchingResource = flowProperty.getMatchingResource();
+//			if (flowPropertyMatchingResource == null) {
+//				outputHeader.add("");
+//				outputRow.add(" - ");
+//			} else {
+//				FlowProperty mFlowProperty = new FlowProperty(flowPropertyMatchingResource);
+//				String dataSourceName = mFlowProperty.getDataSource();
+//				outputHeader.add(dataSourceName + " Flow Property");
+//				outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
+//
+//				// List<LCADataValue> lcaDataValues = mFlowProperty.getPropertyValuesInOrder();
+//				// for (LCADataValue lcaDataValue : lcaDataValues) {
+//				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
+//				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
+//				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
+//				// outputHeader.add(field);
+//				// outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
+//				// // outputRow.add(lcaDataValue.getValueAsString());
+//			}
+//		}
+//
+//		return output;
+//	}
+
 	public static DataRow getHarmonizedDataRow(int rowNumber) {
 		DataRow outputRow = new DataRow();
-		DataRow outputHeader = new DataRow();
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
+		// String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
 		DataRow inputRow = tableProvider.getData().get(rowNumber);
-		DataRow inputHeader = tableProvider.getHeaderRow();
-		int outColOffset = 0;
-		for (int col = 0; col <= inputRow.getSize(); col++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(col);
+		// DataRow inputHeader = tableProvider.getHeaderRow();
+		for (int col = 0; col < inputRow.getSize(); col++) {
 			System.out.println("Column " + col);
-			String inputCellString = "";
 			if (col == 0) {
 				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
-			} else {
-				inputCellString = inputRow.get(col - 1);
-
-				if (lcaDataPropertyProvider == null) {
-					System.out.println("this one is null");
-					outputRow.add(inputRow.get(col - 1 + outColOffset));
-					outputHeader.add(csvDataSetName + "(column " + col + ")");
-				} else {
-					System.out.println("Class: " + lcaDataPropertyProvider.getPropertyClass() + ". Name: "
-							+ lcaDataPropertyProvider.getPropertyName());
-					outputRow.add(inputRow.get(col - 1 + outColOffset));
-					outputHeader.add(csvDataSetName + " " + lcaDataPropertyProvider.getPropertyClass() + ": "
-							+ lcaDataPropertyProvider.getPropertyName());
-				}
-				// outputHeader.add(inputHeader.get(col + outColOffset));
 			}
+			outputRow.add(inputRow.get(col));
 		}
 
 		Flowable flowable = inputRow.getFlowable();
-		FlowContext flowContext = inputRow.getFlowContext();
-		FlowProperty flowProperty = inputRow.getFlowProperty();
-
-		if (flowable != null) {
-			Resource flowableResource = flowable.getTdbResource();
-			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-			Model tdbModel = ActiveTDB.getModel();
-			ResIterator resIterator = tdbModel.listSubjectsWithProperty(FedLCA.comparedSource, flowableResource);
-			while (resIterator.hasNext()) {
-				Resource comparisonResource = resIterator.nextResource();
-				if (tdbModel.contains(comparisonResource, FedLCA.comparedEquivalence, FedLCA.equivalent)) {
-					NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(comparisonResource,
-							FedLCA.comparedMaster);
-					if (nodeIterator.hasNext()) {
-						RDFNode rdfNode = nodeIterator.nextNode();
-						Resource masterResource = rdfNode.asResource();
-						Flowable mFlowable = new Flowable(masterResource);
-						String dataSourceName = mFlowable.getDataSource();
-						List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
-
-						for (LCADataValue lcaDataValue : lcaDataValues) {
-							String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-							String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-							String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-							outputHeader.add(field);
-							outputRow.add(lcaDataValue.getValueAsString());
-						}
-					}
-				}
+		if (flowable == null) {
+			for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
+				outputRow.add("");
 			}
-			ActiveTDB.tdbDataset.end();
-
+		} else {
 			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
+			boolean hit = false;
 			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
 				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
 				if (matchNumber == 1) {
+					hit = true;
 					Flowable mFlowable = new Flowable(matchCandidate.getKey());
-					String dataSourceName = mFlowable.getDataSource();
+					// String dataSourceName = mFlowable.getDataSource();
 					List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
 
-					for (LCADataValue lcaDataValue : lcaDataValues) {
-						String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-						String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-						String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-						outputHeader.add(field);
-						outputRow.add(lcaDataValue.getValueAsString());
+					for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
+						StringBuilder resultForField = new StringBuilder();
+						resultForField.append("");
+						for (LCADataValue lcaDataValue : lcaDataValues) {
+							if (lcaDataPropertyProvider.equals(lcaDataValue.getLcaDataPropertyProvider())) {
+								if (resultForField.length() < 2) {
+									resultForField.append(lcaDataValue.getValueAsString());
+								} else {
+									resultForField.append("; " + lcaDataValue.getValueAsString());
+								}
+							}
+						}
+						outputRow.add(resultForField.toString());
 					}
+				}
+				break;
+			}
+			if (hit == false) {
+				for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
+					outputRow.add("");
 				}
 			}
 		}
 
-		if (flowContext != null) {
-			// Resource flowContextResource = flowContext.getTdbResource();
-			Resource flowContextMatchingResource = flowContext.getMatchingResource();
-			if (flowContextMatchingResource == null) {
-				outputHeader.add("");
-				outputRow.add(" - ");
+		FlowContext flowContext = inputRow.getFlowContext();
+		if (flowContext == null) {
+			outputRow.add("");
+		} else {
+			Resource matchingResource = flowContext.getMatchingResource();
+			if (matchingResource == null) {
+				outputRow.add("");
 			} else {
-				FlowContext mFlowContext = new FlowContext(flowContextMatchingResource);
-				String dataSourceName = mFlowContext.getDataSource();
-				outputHeader.add(dataSourceName + " Flow Context");
-				outputRow.add(MatchContexts.getNodeNameFromResource(flowContextMatchingResource));
-
-				// List<LCADataValue> lcaDataValues = mFlowContext.getPropertyValuesInOrder();
-				// for (LCADataValue lcaDataValue : lcaDataValues) {
-				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-				//
+				String flowContextString = MatchContexts.getNodeNameFromResource(matchingResource);
+				outputRow.add(flowContextString);
 			}
 		}
 
-		if (flowProperty != null) {
-			// Resource flowContextResource = flowContext.getTdbResource();
-			Resource flowPropertyMatchingResource = flowProperty.getMatchingResource();
-			if (flowPropertyMatchingResource == null) {
-				outputHeader.add("");
-				outputRow.add(" - ");
+		FlowProperty flowProperty = inputRow.getFlowProperty();
+		if (flowProperty == null) {
+			outputRow.add("");
+		} else {
+			Resource matchingResource = flowProperty.getMatchingResource();
+			if (matchingResource == null) {
+				outputRow.add("");
 			} else {
-				FlowProperty mFlowProperty = new FlowProperty(flowPropertyMatchingResource);
-				String dataSourceName = mFlowProperty.getDataSource();
-				outputHeader.add(dataSourceName + " Flow Property");
-				outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
-
-				// List<LCADataValue> lcaDataValues = mFlowProperty.getPropertyValuesInOrder();
-				// for (LCADataValue lcaDataValue : lcaDataValues) {
-				// String propertyClass = lcaDataValue.getLcaDataPropertyProvider().getPropertyClass();
-				// String propertyName = lcaDataValue.getLcaDataPropertyProvider().getPropertyName();
-				// String field = dataSourceName + " " + propertyClass + ": " + propertyName;
-				// outputHeader.add(field);
-				// outputRow.add(MatchProperties.getNodeNameFromResource(flowPropertyMatchingResource));
-				// // outputRow.add(lcaDataValue.getValueAsString());
+				String flowPropertyString = MatchProperties.getNodeNameFromResource(matchingResource);
+				outputRow.add(flowPropertyString);
 			}
 		}
 

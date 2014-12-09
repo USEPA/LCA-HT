@@ -115,6 +115,11 @@
                   style="push">
             </command>
             <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
+                  label="Save Harmonized Data"
+                  style="push">
+            </command>
+            <command
                   commandId="org.eclipse.ui.window.preferences"
                   label="Preferences"
                   style="push">
@@ -402,6 +407,11 @@
       <command
             id="HarmonizationTool.command1"
             name="name">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
+            name="Save Harmonized Data">
       </command>
    </extension>
    <extension

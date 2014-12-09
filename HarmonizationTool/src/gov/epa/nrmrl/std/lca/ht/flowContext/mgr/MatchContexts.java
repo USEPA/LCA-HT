@@ -140,6 +140,7 @@ public class MatchContexts extends ViewPart {
 				doit(e);
 			}
 		});
+
 		masterTreeViewer.refresh();
 		for (TreeItem item : masterTree.getItems()) {
 			expandItem(item);
@@ -668,6 +669,15 @@ public class MatchContexts extends ViewPart {
 			}
 		} else {
 			masterTree.deselectAll();
+		}
+		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
+			masterTree.getColumn(i).pack();
+			int width = masterTree.getColumn(i).getWidth();
+			if (width < 20) {
+				masterTree.getColumn(i).setWidth(20);
+			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
+				masterTree.getColumn(i).setWidth(400);
+			}
 		}
 	}
 }

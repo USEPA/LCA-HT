@@ -328,7 +328,15 @@ public class MatchFlowables extends ViewPart {
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
-
+		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+			table.getColumn(i).pack();
+			int width = table.getColumn(i).getWidth();
+			if (width<20){
+				table.getColumn(i).setWidth(20);
+			} else if (width > 400 && table.getHorizontalBar().getVisible()){
+				table.getColumn(i).setWidth(400);
+			}
+		}
 		// tableViewer.refresh();
 	}
 

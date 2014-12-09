@@ -732,6 +732,15 @@ public class CSVTableView extends ViewPart {
 		System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 
 		table.setSize(table.getParent().getSize());
+		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+			table.getColumn(i).pack();
+			int width = table.getColumn(i).getWidth();
+			if (width<20){
+				table.getColumn(i).setWidth(20);
+			} else if (width > 400 && table.getHorizontalBar().getVisible()){
+				table.getColumn(i).setWidth(400);
+			}
+		}
 		initializeColumnActionsMenu();
 		initializeOtherViews();
 	}
