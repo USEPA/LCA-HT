@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class TreeNode extends Node {
 	protected String nodeName = null;
 	protected Resource uri = null;
+	protected String uuid = null;
 	static int count = 0;
 
 	public Resource getUri() {

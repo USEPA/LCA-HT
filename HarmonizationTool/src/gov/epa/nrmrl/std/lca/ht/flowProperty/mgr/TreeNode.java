@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-
 /**
  * @author tec
  * 
@@ -16,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class TreeNode extends Node {
 	protected String nodeName = null;
 	protected Resource uri = null;
+	protected String uuid = null;
 	static int count = 0;
 
 	public Resource getUri() {
@@ -42,20 +42,20 @@ public class TreeNode extends Node {
 		return children.contains(treeNode);
 	}
 
-	public String getLabel(){
-		if(parent == null){
+	public String getLabel() {
+		if (parent == null) {
 			return nodeName;
-		}else{
-			String parentsLabel = ((TreeNode)parent).getLabel();
-			return (parentsLabel != null) ? (parentsLabel +": "+nodeName) : nodeName;
+		} else {
+			String parentsLabel = ((TreeNode) parent).getLabel();
+			return (parentsLabel != null) ? (parentsLabel + ": " + nodeName) : nodeName;
 		}
 	}
 
-	public static List<TreeNode> getAllChildNodes(TreeNode treeNode){
+	public static List<TreeNode> getAllChildNodes(TreeNode treeNode) {
 		List<TreeNode> resultsList = new ArrayList<TreeNode>();
-		if (treeNode.hasChildren()){
+		if (treeNode.hasChildren()) {
 			Iterator<Node> iterator = treeNode.getChildIterator();
-			while (iterator.hasNext()){
+			while (iterator.hasNext()) {
 				TreeNode newNode = (TreeNode) iterator.next();
 				resultsList.add(newNode);
 				List<TreeNode> moreResults = getAllChildNodes(newNode);
@@ -64,13 +64,13 @@ public class TreeNode extends Node {
 		}
 		return resultsList;
 	}
-//	public Object getChildList() {
-//		List<TreeNode> childList = new ArrayList<TreeNode>();
-//		Iterator<Node> iterator = getChildIterator();
-//		while (iterator.hasNext()){
-//			Node child = iterator.next();
-//			childList.add((TreeNode) child);
-//		}
-//		return childList;
-//	}
+	// public Object getChildList() {
+	// List<TreeNode> childList = new ArrayList<TreeNode>();
+	// Iterator<Node> iterator = getChildIterator();
+	// while (iterator.hasNext()){
+	// Node child = iterator.next();
+	// childList.add((TreeNode) child);
+	// }
+	// return childList;
+	// }
 }
