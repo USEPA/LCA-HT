@@ -7,10 +7,7 @@ import java.util.Map;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
-import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.HMatchCategories;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.HSubsSameCas;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
 import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
 //import gov.epa.nrmrl.std.lca.ht.tdb.IActiveTDBListener;
@@ -76,7 +73,6 @@ public class QueryView extends ViewPart {
 		labeledQueries.add(new QMatchCAS());
 		labeledQueries.add(new QMatchCASandName());
 		labeledQueries.add(new HSubsSameCas());
-		labeledQueries.add(new HMatchCategories());
 	}
 
 	private LabeledQuery queryFromKey(String key) {
@@ -429,30 +425,31 @@ public class QueryView extends ViewPart {
 		// TableProvider tableProvider = TableProvider
 		// .create((ResultSetRewindable) resultSet);
 		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-		if (key.startsWith("Harmonize CAS")) { // HACK!!
-			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
-			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-			// USE
-			// WHICH createTransform
-			// AND WHICH formatForTransfor()
-			// SHOULD BE KNOWN BY THE LabledQuery
-			// BUT CHOSEN BY THE CALLER
-			showResultsInWindow = ResultsTreeEditor.ID;
-
-			// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
-			// THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
-			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-
-			// resultsView.update(tableProvider);
-			try {
-				resultsTreeEditor.update(tableProvider);
-			} catch (Exception e) {
-				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
-				e.printStackTrace();
-			}
-
-			// resultsView.formatForTransform0();
-		} else if (key.startsWith("Harmonize Compart")) { // HACK!!
+//		if (key.startsWith("Harmonize CAS")) { // HACK!!
+//			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+//			// USE
+//			// WHICH createTransform
+//			// AND WHICH formatForTransfor()
+//			// SHOULD BE KNOWN BY THE LabledQuery
+//			// BUT CHOSEN BY THE CALLER
+//			showResultsInWindow = ResultsTreeEditor.ID;
+//
+//			// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+//			// THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
+//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+//
+//			// resultsView.update(tableProvider);
+//			try {
+//				resultsTreeEditor.update(tableProvider);
+//			} catch (Exception e) {
+//				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
+//				e.printStackTrace();
+//			}
+//
+//			// resultsView.formatForTransform0();
+//	}
+		if (key.startsWith("Harmonize Compart")) { // HACK!!
 			MatchContexts matchContexts = (MatchContexts) Util
 					.findView(MatchContexts.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD

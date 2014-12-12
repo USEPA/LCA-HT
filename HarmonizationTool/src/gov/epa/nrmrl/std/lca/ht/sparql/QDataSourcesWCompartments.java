@@ -1,6 +1,5 @@
-package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
+package gov.epa.nrmrl.std.lca.ht.sparql;
 
-import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseQuery;
 
 
 public class QDataSourcesWCompartments extends HarmonyBaseQuery {
