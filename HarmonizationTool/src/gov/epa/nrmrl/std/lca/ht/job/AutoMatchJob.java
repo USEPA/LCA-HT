@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
+
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.FlowContext;
-import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;

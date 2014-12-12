@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;

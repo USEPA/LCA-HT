@@ -16,7 +16,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
