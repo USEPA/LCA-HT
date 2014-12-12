@@ -293,7 +293,7 @@
             name="TDB Load">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.sparql.SaveResultsHandler"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
             name="Save SPARQL Results">
       </command>

@@ -1,13 +1,8 @@
-package gov.epa.nrmrl.std.lca.ht.csvFiles;
+package gov.epa.nrmrl.std.lca.ht.sparql;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
-import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
-import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
-import gov.epa.nrmrl.std.lca.ht.sparql.QueryView.QueryViewContentProvider;
-import gov.epa.nrmrl.std.lca.ht.sparql.QueryView.QueryViewLabelProvider;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
