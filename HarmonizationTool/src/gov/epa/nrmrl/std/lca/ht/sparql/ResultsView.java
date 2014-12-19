@@ -143,6 +143,16 @@ public class ResultsView extends ViewPart {
 			table.setHeaderVisible(true);
 			table.setLinesVisible(true);
 			viewer.setInput(tableProvider.getData());
+			for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+				table.getColumn(i).pack();
+				int width = table.getColumn(i).getWidth();
+				if (width<20){
+					table.getColumn(i).setWidth(20);
+				} else if (width > 400 && table.getHorizontalBar().getVisible()){
+					table.getColumn(i).setWidth(400);
+				}
+			}
+			viewer.refresh();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -169,6 +179,16 @@ public class ResultsView extends ViewPart {
 			System.out.println("tableProvider.getData().toString()="
 					+ tableProvider.getData().toString());
 			viewer.setInput(tableProvider.getData());
+			for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+				table.getColumn(i).pack();
+				int width = table.getColumn(i).getWidth();
+				if (width<20){
+					table.getColumn(i).setWidth(20);
+				} else if (width > 400 && table.getHorizontalBar().getVisible()){
+					table.getColumn(i).setWidth(400);
+				}
+			}
+			viewer.refresh();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

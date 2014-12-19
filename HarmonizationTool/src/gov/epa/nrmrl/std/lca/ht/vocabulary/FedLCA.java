@@ -83,7 +83,7 @@ public class FedLCA {
 	 * Predicate pointing to CAS Class
 	 * </p>
 	 */
-	public static final Property hasCAS = m_model.createProperty(NS + "hasCAS");
+//	public static final Property hasCAS = m_model.createProperty(NS + "hasCAS");
 	public static final Property hasFormattedCAS = m_model.createProperty(NS + "hasFormattedCAS");
 
 	/**

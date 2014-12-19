@@ -89,7 +89,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-		CurationMethods.createNewAnnotation();
+		// CurationMethods.createNewAnnotation();
 	}
 
 	private static void openTDB() {
