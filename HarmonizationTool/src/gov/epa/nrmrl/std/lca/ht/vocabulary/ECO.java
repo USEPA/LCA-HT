@@ -562,7 +562,7 @@ public class ECO {
 
 	/**
 	 * <p>
-	 * sourceFrom is used to relate an ouput exchange to the input exchange that it is sourced from.
+	 * sourceFrom is used to relate an output exchange to the input exchange that it is sourced from.
 	 * </p>
 	 */
 	public static final Property sourcedFrom = m_model.createProperty("http://ontology.earthster.org/eco/core#sourcedFrom");
