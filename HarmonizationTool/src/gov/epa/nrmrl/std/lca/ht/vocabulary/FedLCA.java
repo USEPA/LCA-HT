@@ -22,6 +22,8 @@ public class FedLCA {
 //	private static Model m_model = ModelFactory.createDefaultModel();
 	private static Model m_model = ActiveTDB.getModel();
 
+
+
 	/**
 	 * <p>
 	 * The namespace of the vocabulary as a string
@@ -53,6 +55,9 @@ public class FedLCA {
 	 * </p>
 	 */
 	public static final Resource CASRN = m_model.createResource(NS + "CASRN");
+	public static final Resource Flow = m_model.createResource(NS + "Flow");
+	public static final Resource ElementaryFlow = m_model.createResource(NS + "ElementaryFlow");
+	public static final Resource TechnosphereFlow = m_model.createResource(NS + "TechnosphereFlow");
 	
 	public static final Resource Annotation = m_model.createResource(NS + "Annotation");
 	public static final Property hasComparison = m_model.createProperty(NS + "hasComparison");
@@ -395,6 +400,8 @@ public class FedLCA {
 	public static final Resource VolumeTime = m_model.createResource(NS + "VolumeTime");
 	// Mass*time
 	public static final Resource MassTime = m_model.createResource(NS + "MassTime");
+	// Mass*length
+	public static final Resource MassLength = m_model.createResource(NS + "MassLength");
 	// Volume*Length
 	public static final Resource VolumeLength = m_model.createResource(NS + "VolumeLength");
 	// Goods transport (mass*distance)

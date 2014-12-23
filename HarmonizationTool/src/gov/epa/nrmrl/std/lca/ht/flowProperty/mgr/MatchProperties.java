@@ -261,7 +261,8 @@ public class MatchProperties extends ViewPart {
 		volume.uri = FedLCA.Volume;
 
 		TreeNode duration = new TreeNode(physicalIndividual);
-		duration.nodeName = "Duration";
+		duration.nodeName = "Time";
+//		duration.nodeName = "Duration";
 		duration.uri = FedLCA.Duration;
 
 		TreeNode energy = new TreeNode(physicalIndividual);
@@ -274,11 +275,15 @@ public class MatchProperties extends ViewPart {
 
 		// -------- PHYSICAL COMBINED
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
-		physicalCombined.nodeName = "Physical combined";
+		physicalCombined.nodeName = "Physical hybrid";
 
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FedLCA.MassTime;
+
+		TreeNode massLength = new TreeNode(physicalCombined);
+		massTime.nodeName = "Mass*length";
+		massTime.uri = FedLCA.MassLength;
 
 		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";
@@ -304,49 +309,49 @@ public class MatchProperties extends ViewPart {
 		energyPerAreaTime.nodeName = "Energy/area*time";
 		energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
 
-		// -------- LAND TRANSFORMATION
-		TreeNode landTransformation = new TreeNode(masterPropertyTree);
-		landTransformation.nodeName = "Land transformation";
-
-		TreeNode bioticProductionOcc = new TreeNode(landTransformation);
-		bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
-		bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
-
-		TreeNode bioticProductionTransf = new TreeNode(landTransformation);
-		bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
-		bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
-
-		TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
-		erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
-		erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
-
-		TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
-		erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
-		erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
-
-		TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
-		groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
-		groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
-
-		TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
-		groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
-		groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
-
-		TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
-		mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
-		mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
-
-		TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
-		mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
-		mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
-
-		TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
-		physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
-		physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
-
-		TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
-		physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
-		physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
+//		// -------- LAND TRANSFORMATION
+//		TreeNode landTransformation = new TreeNode(masterPropertyTree);
+//		landTransformation.nodeName = "Land transformation";
+//
+//		TreeNode bioticProductionOcc = new TreeNode(landTransformation);
+//		bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
+//		bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
+//
+//		TreeNode bioticProductionTransf = new TreeNode(landTransformation);
+//		bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
+//		bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
+//
+//		TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
+//		erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
+//		erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
+//
+//		TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
+//		erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
+//		erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
+//
+//		TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
+//		groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
+//		groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
+//
+//		TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
+//		groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
+//		groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
+//
+//		TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
+//		mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
+//		mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
+//
+//		TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
+//		mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
+//		mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
+//
+//		TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
+//		physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
+//		physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
+//
+//		TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
+//		physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
+//		physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
 
 		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
