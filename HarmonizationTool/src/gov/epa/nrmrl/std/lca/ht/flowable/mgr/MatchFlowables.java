@@ -706,6 +706,12 @@ public class MatchFlowables extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			int count = 0;
+			if (CSVTableView.getTableProviderKey() == null){
+				return;
+			}
+			if (CSVTableView.preCommit){
+				return;
+			}
 			if (addToMaster.getText().equals("Add to Master")) {
 				// while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 				ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);

@@ -179,6 +179,12 @@ public class MatchProperties extends ViewPart {
 	private static void assign() {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
+		if (CSVTableView.getTableProviderKey() == null){
+			return;
+		}
+		if (CSVTableView.preCommit){
+			return;
+		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
 		TableItem tableItem = tableItems[0];
 		String rowNumString = tableItem.getText(0);
@@ -273,7 +279,7 @@ public class MatchProperties extends ViewPart {
 		radioactivity.nodeName = "Radioactivity";
 		radioactivity.uri = FedLCA.Radioactivity;
 
-		// -------- PHYSICAL COMBINED
+		// -------- PHYSICAL HYBRID
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
 		physicalCombined.nodeName = "Physical hybrid";
 
@@ -282,8 +288,8 @@ public class MatchProperties extends ViewPart {
 		massTime.uri = FedLCA.MassTime;
 
 		TreeNode massLength = new TreeNode(physicalCombined);
-		massTime.nodeName = "Mass*length";
-		massTime.uri = FedLCA.MassLength;
+		massLength.nodeName = "Mass*length";
+		massLength.uri = FedLCA.MassLength;
 
 		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";

@@ -176,6 +176,12 @@ public class MatchContexts extends ViewPart {
 	private void assign() {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
+		if (CSVTableView.getTableProviderKey() == null){
+			return;
+		}
+		if (CSVTableView.preCommit){
+			return;
+		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
 		TableItem tableItem = tableItems[0];
 		String rowNumString = tableItem.getText(0);

@@ -22,7 +22,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowProperty {
 	// CLASS VARIABLES
-	public static final String flowPropertyPrimaryIdentifier = "Primary Info";
+	// public static final String flowPropertyPrimaryIdentifier = "Primary Info";
+	public static final String flowPropertyUnit = "Unit";
+	public static final String flowPropertyString = "Property";
 	public static final String flowPropertyAdditionalIdentifier = "Additional Info";
 	public static final Resource rdfClass = FedLCA.FlowProperty;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
@@ -36,34 +38,54 @@ public class FlowProperty {
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
 		System.out.println("label assigned to Flow Property");
 
+		// dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
+		// LCADataPropertyProvider lcaDataPropertyProvider;
+		//
+		// lcaDataPropertyProvider = new LCADataPropertyProvider(
+		// flowPropertyPrimaryIdentifier);
+		// lcaDataPropertyProvider.setPropertyClass(label);
+		// lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		// lcaDataPropertyProvider.setRequired(true);
+		// lcaDataPropertyProvider.setUnique(true);
+		// lcaDataPropertyProvider.setLeftJustified(true);
+		// lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+		// lcaDataPropertyProvider
+		// .setTDBProperty(FedLCA.flowPropertyPrimaryDescription);
+		// dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+		// lcaDataPropertyProvider);
+
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(
-				flowPropertyPrimaryIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnit);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(true);
 		lcaDataPropertyProvider.setUnique(true);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-		lcaDataPropertyProvider
-				.setTDBProperty(FedLCA.flowPropertyPrimaryDescription);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyUnitString);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(
-				flowPropertyAdditionalIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyString);
+		lcaDataPropertyProvider.setPropertyClass(label);
+		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		lcaDataPropertyProvider.setRequired(false);
+		lcaDataPropertyProvider.setUnique(true);
+		lcaDataPropertyProvider.setLeftJustified(true);
+		lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyAdditionalIdentifier);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
 		lcaDataPropertyProvider.setUnique(false);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-		lcaDataPropertyProvider
-				.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}
 
 	// INSTANCE VARIABLES
@@ -90,8 +112,7 @@ public class FlowProperty {
 	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				return lcaDataValue.getValue();
 			}
 		}
@@ -101,8 +122,7 @@ public class FlowProperty {
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				resultList.add(lcaDataValue.getValue());
 			}
 		}
@@ -120,8 +140,7 @@ public class FlowProperty {
 		List<LCADataValue> results = new ArrayList<LCADataValue>();
 		for (String key : dataPropertyMap.keySet()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-						.equals(key)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 					results.add(lcaDataValue);
 				}
 			}
@@ -136,8 +155,7 @@ public class FlowProperty {
 		if (!dataPropertyMap.containsKey(key)) {
 			return;
 		}
-		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap
-				.get(key);
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
 		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 		Class<?> objectClass = RDFUtil.getJavaClassFromRDFDatatype(rdfDatatype);
 		if (!objectClass.equals(object.getClass())) {
@@ -151,21 +169,16 @@ public class FlowProperty {
 
 		if (lcaDataPropertyProvider.isUnique()) {
 			removeValues(lcaDataPropertyProvider.getPropertyName());
-			ActiveTDB.tsReplaceLiteral(tdbResource,
-					lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-					object);
+			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
 		} else {
-			ActiveTDB.tsAddLiteral(tdbResource,
-					lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-					object);
+			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
 		}
 		lcaDataValues.add(newLCADataValue);
 	}
 
 	private void removeValues(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				lcaDataValues.remove(lcaDataValue);
 			}
 		}
@@ -176,42 +189,29 @@ public class FlowProperty {
 			return;
 		}
 		// LCADataPropertyProvider LIST IS ALL LITERALS
-		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap
-				.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider
-					.getTDBProperty())) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
 				continue;
 			}
 			if (lcaDataPropertyProvider.isUnique()) {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource
-						.getProperty(lcaDataPropertyProvider.getTDBProperty())
-						.getLiteral().getValue();
-				if (value
-						.getClass()
-						.equals(RDFUtil
-								.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
-										.getRdfDatatype()))) {
+				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
+						.getValue();
+				if (value.getClass().equals(
+						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue
-							.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 					lcaDataValue.setValue(value);
 					lcaDataValues.add(lcaDataValue);
 				}
 			} else {
-				StmtIterator stmtIterator = tdbResource
-						.listProperties(lcaDataPropertyProvider
-								.getTDBProperty());
+				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
 				while (stmtIterator.hasNext()) {
 					Object value = stmtIterator.nextStatement().getLiteral().getValue();
-					if (value
-							.getClass()
-							.equals(RDFUtil
-									.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
-											.getRdfDatatype()))) {
+					if (value.getClass().equals(
+							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();
-						lcaDataValue
-								.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
@@ -314,7 +314,7 @@ public class FlowProperty {
 	public void setTdbResource(Resource tdbResource) {
 		// StmtIterator stmtIterator = this.tdbResource.listProperties();
 		// while (stmtIterator.hasNext()){
-//		 Statement statement = stmtIterator.nextStatement();
+		// Statement statement = stmtIterator.nextStatement();
 		// ActiveTDB.tdbModel.remove(statement);
 		// }
 		// NEXT STATEMENT REPLACES ABOVE
@@ -335,7 +335,7 @@ public class FlowProperty {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null){
+		if (matchingResource == null) {
 			ActiveTDB.tsRemoveAllObjects(tdbResource, OWL.sameAs);
 			this.matchingResource = null;
 			return;
