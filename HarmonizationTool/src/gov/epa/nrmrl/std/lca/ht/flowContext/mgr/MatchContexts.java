@@ -176,10 +176,10 @@ public class MatchContexts extends ViewPart {
 	private void assign() {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
-		if (CSVTableView.getTableProviderKey() == null){
+		if (CSVTableView.getTableProviderKey() == null) {
 			return;
 		}
-		if (CSVTableView.preCommit){
+		if (CSVTableView.preCommit) {
 			return;
 		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
@@ -188,8 +188,20 @@ public class MatchContexts extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
+		if (masterTree.getSelectionCount() == 0) {
+			return;
+		}
 		TreeItem treeItem = masterTree.getSelection()[0];
 		TreeNode treeNode = (TreeNode) treeItem.getData();
+		if (treeNode.hasChildren()) {
+			if (treeItem.getExpanded()) {
+				treeItem.setExpanded(false);
+			} else {
+				expandItem(treeItem);
+			}
+			masterTree.deselectAll();
+			return;
+		}
 		Resource newResource = treeNode.getUri();
 		if (newResource == null) {
 			return;
@@ -272,17 +284,44 @@ public class MatchContexts extends ViewPart {
 		return ("(flow context name not found)");
 	}
 
+	public static String[] getTwoNodeNamesFromResource(Resource resource) {
+		String[] result = new String[2];
+		result[0] = "";
+		result[1] = "";
+		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
+			TreeNode treeNode = (TreeNode) treeItem.getData();
+			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
+				Resource nodeResource = testNode.uri;
+				if (nodeResource == null) {
+					continue;
+				}
+				if (nodeResource.equals(resource)) {
+					result[1] = testNode.nodeName;
+					TreeNode parentNode = (TreeNode) testNode.getParent();
+					result[0] = parentNode.nodeName;
+				}
+			}
+		}
+		return result;
+	}
+
 	private static TreeNode createHarmonizeCompartments() {
 		TreeNode masterCompartmentTree = new TreeNode(null);
 
-		TreeNode release = new TreeNode(masterCompartmentTree);
-		release.nodeName = "Release";
+		// TreeNode release = new TreeNode(masterCompartmentTree);
+		// release.nodeName = "Release";
 		// confirmUri(LCAHT.release);
 
-		TreeNode air = new TreeNode(release);
-		air.nodeName = "air (unspecified)";
-		air.uri = FedLCA.airUnspecified;
-		air.uuid = "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7";
+		TreeNode air = new TreeNode(masterCompartmentTree);
+		air.nodeName = "Release to air";
+		// air.uri = FedLCA.airUnspecified;
+		// air.uuid = "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7";
+		// confirmUri(FedLCA.release);
+
+		TreeNode airUnspecified = new TreeNode(air);
+		airUnspecified.nodeName = "unspecified";
+		airUnspecified.uri = FedLCA.airUnspecified;
+		airUnspecified.uuid = "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7";
 		// confirmUri(FedLCA.release);
 
 		TreeNode airLowPop = new TreeNode(air);
@@ -309,10 +348,16 @@ public class MatchContexts extends ViewPart {
 		airLowerStratPlusUpperTrop.uuid = "885ce78b-9872-4a59-8244-deebeb12caea";
 		// confirmUri(FedLCA.release);
 
-		TreeNode water = new TreeNode(release);
-		water.nodeName = "water (unspecified)";
-		water.uri = FedLCA.waterUnspecified;
-		water.uuid = "a7c280e9-d13a-43cf-9127-d3bbf4d0e256";
+		TreeNode water = new TreeNode(masterCompartmentTree);
+		water.nodeName = "Release to water";
+		// water.uri = FedLCA.waterUnspecified;
+		// water.uuid = "a7c280e9-d13a-43cf-9127-d3bbf4d0e256";
+		// confirmUri(FedLCA.release);
+
+		TreeNode waterUnspecified = new TreeNode(water);
+		waterUnspecified.nodeName = "unspecified";
+		waterUnspecified.uri = FedLCA.waterUnspecified;
+		waterUnspecified.uuid = "a7c280e9-d13a-43cf-9127-d3bbf4d0e256";
 		// confirmUri(FedLCA.release);
 
 		TreeNode waterFossil = new TreeNode(water);
@@ -375,10 +420,16 @@ public class MatchContexts extends ViewPart {
 		waterSurface.uuid = "782cf5cb-0a6b-44aa-8a87-e5997dd0d1ff";
 		// confirmUri(FedLCA.release);
 
-		TreeNode soil = new TreeNode(release);
-		soil.nodeName = "soil (unspecified)";
-		soil.uri = FedLCA.soilUnspecified;
-		soil.uuid = "e97d11b5-78e4-4a93-9a63-14673f89f709";
+		TreeNode soil = new TreeNode(masterCompartmentTree);
+		soil.nodeName = "Release to soil";
+		// soil.uri = FedLCA.soilUnspecified;
+		// soil.uuid = "e97d11b5-78e4-4a93-9a63-14673f89f709";
+		// confirmUri(FedLCA.release);
+
+		TreeNode soilUnspecified = new TreeNode(soil);
+		soilUnspecified.nodeName = "unspecified";
+		soilUnspecified.uri = FedLCA.soilUnspecified;
+		soilUnspecified.uuid = "e97d11b5-78e4-4a93-9a63-14673f89f709";
 		// confirmUri(FedLCA.release);
 
 		TreeNode soilAgricultural = new TreeNode(soil);
@@ -400,9 +451,15 @@ public class MatchContexts extends ViewPart {
 		// confirmUri(FedLCA.release);
 
 		TreeNode resource = new TreeNode(masterCompartmentTree);
-		resource.nodeName = "Resource (unspecified)";
-		resource.uri = FedLCA.resourceUnspecified;
-		resource.uuid = "0d557bab-d095-4142-912e-398fccb68240";
+		resource.nodeName = "Resource";
+		// resource.uri = FedLCA.resourceUnspecified;
+		// resource.uuid = "0d557bab-d095-4142-912e-398fccb68240";
+		// confirmUri(FedLCA.release);
+
+		TreeNode resourceUnspecified = new TreeNode(resource);
+		resourceUnspecified.nodeName = "unspecified";
+		resourceUnspecified.uri = FedLCA.resourceUnspecified;
+		resourceUnspecified.uuid = "0d557bab-d095-4142-912e-398fccb68240";
 		// confirmUri(FedLCA.release);
 
 		TreeNode resourceBiotic = new TreeNode(resource);

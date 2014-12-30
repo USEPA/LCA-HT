@@ -600,12 +600,16 @@ public class HarmonizedDataSelector extends ViewPart {
 						+ lcaDataPropertyProvider.getPropertyName());
 			}
 		}
+		outputHeader.add("Master List Flowable Match Condition");
 		for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
 			outputHeader.add("Master List " + lcaDataPropertyProvider.getPropertyClass() + ": "
 					+ lcaDataPropertyProvider.getPropertyName());
 		}
-		outputHeader.add("Master List Flow Context");
+		outputHeader.add("Master List Flow Context 1");
+		outputHeader.add("Master List Flow Context 2");
 		outputHeader.add("Master List Flow Property");
+		outputHeader.add("Master List Flow Property Reference Unit");
+		outputHeader.add("Master List Flow Property Conversion Factor ");
 
 		return outputHeader;
 	}
@@ -760,8 +764,10 @@ public class HarmonizedDataSelector extends ViewPart {
 			outputRow.add(inputRow.get(col));
 		}
 
+		// PREPARE MASTER LIST OUTPUT FOR -- FLOWABLES --
 		Flowable flowable = inputRow.getFlowable();
 		if (flowable == null) {
+			outputRow.add("");
 			for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
 				outputRow.add("");
 			}
@@ -769,8 +775,10 @@ public class HarmonizedDataSelector extends ViewPart {
 			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
 			boolean hit = false;
 			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
+				String matchCondition = matchCandidate.getValue();
+				outputRow.add(matchCondition);
 				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
-				if (matchNumber == 1) {
+				if (matchNumber > 0 && matchNumber < 5) {
 					hit = true;
 					Flowable mFlowable = new Flowable(matchCandidate.getKey());
 					// String dataSourceName = mFlowable.getDataSource();
@@ -792,6 +800,9 @@ public class HarmonizedDataSelector extends ViewPart {
 					}
 				}
 				break;
+				// FIXME : THIS MEANS THAT ONLY THE FIRST FLOWABLE THAT IS EQUAL, SUBSET, SUPERSET, OR PROXY WILL BE LISTED
+				// FIXME : WHAT SHOULD BE DONE IF MORE THAN ONE HIT?  OBVIOUSLY THE EQUAL SHOULD TAKE PRECEDENCE, BUT...
+				// FIXME : WHAT DOES IT MEAN IF THERE ARE MULTIPLE HITS AND SOME ARE SUBSET OR PROXY?
 			}
 			if (hit == false) {
 				for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
@@ -800,29 +811,43 @@ public class HarmonizedDataSelector extends ViewPart {
 			}
 		}
 
+		// PREPARE MASTER LIST OUTPUT FOR -- FLOW CONTEXTS --
 		FlowContext flowContext = inputRow.getFlowContext();
 		if (flowContext == null) {
+			outputRow.add("");
 			outputRow.add("");
 		} else {
 			Resource matchingResource = flowContext.getMatchingResource();
 			if (matchingResource == null) {
 				outputRow.add("");
+				outputRow.add("");
 			} else {
-				String flowContextString = MatchContexts.getNodeNameFromResource(matchingResource);
-				outputRow.add(flowContextString);
+//				String flowContextString = MatchContexts.getConcatinatedNodeNameFromResource(matchingResource);
+				String[] flowContextStrings = MatchContexts.getTwoNodeNamesFromResource(matchingResource);
+
+				outputRow.add(flowContextStrings[0]);
+				outputRow.add(flowContextStrings[1]);
 			}
 		}
 
+		// PREPARE MASTER LIST OUTPUT FOR -- FLOW PROPERTIES --
 		FlowProperty flowProperty = inputRow.getFlowProperty();
 		if (flowProperty == null) {
+			outputRow.add("");
+			outputRow.add("");
 			outputRow.add("");
 		} else {
 			Resource matchingResource = flowProperty.getMatchingResource();
 			if (matchingResource == null) {
 				outputRow.add("");
+				outputRow.add("");
+				outputRow.add("");
 			} else {
-				String flowPropertyString = MatchProperties.getNodeNameFromResource(matchingResource);
-				outputRow.add(flowPropertyString);
+//				String flowPropertyString = MatchProperties.getNodeNameFromResource(matchingResource);
+				String[] flowPropertyStrings = MatchProperties.getThreePropertyStringsFromResource(matchingResource);
+				outputRow.add(flowPropertyStrings[0]);
+				outputRow.add(flowPropertyStrings[1]);			
+				outputRow.add(flowPropertyStrings[2]);
 			}
 		}
 

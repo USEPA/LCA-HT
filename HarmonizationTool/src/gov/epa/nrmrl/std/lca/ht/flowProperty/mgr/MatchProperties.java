@@ -179,10 +179,10 @@ public class MatchProperties extends ViewPart {
 	private static void assign() {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
-		if (CSVTableView.getTableProviderKey() == null){
+		if (CSVTableView.getTableProviderKey() == null) {
 			return;
 		}
-		if (CSVTableView.preCommit){
+		if (CSVTableView.preCommit) {
 			return;
 		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
@@ -243,6 +243,33 @@ public class MatchProperties extends ViewPart {
 		return ("(flow property name not found)");
 	}
 
+	public static String[] getThreePropertyStringsFromResource(Resource resource) {
+		String[] resultStrings = new String[3];
+		resultStrings[0] = ""; // Master List Flow Property
+		resultStrings[1] = ""; // Master List Flow Property Reference Unit
+		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
+
+		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
+			TreeNode treeNode = (TreeNode) treeItem.getData();
+			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
+				Resource nodeResource = testNode.uri;
+				if (nodeResource == null) {
+					continue;
+				}
+				if (nodeResource.equals(resource)) {
+					resultStrings[0] = testNode.nodeName;
+					for (LCAUnit lcaUnit : FlowProperty.lcaUnits) {
+						if (testNode.nodeName.equals(lcaUnit.unit_group)) {
+							resultStrings[1] = lcaUnit.referenceUnit;
+							resultStrings[2] = "" + lcaUnit.conversionFactor;
+						}
+					}
+				}
+			}
+		}
+		return resultStrings;
+	}
+
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterPropertyTree = new TreeNode(null);
 
@@ -253,31 +280,52 @@ public class MatchProperties extends ViewPart {
 		TreeNode mass = new TreeNode(physicalIndividual);
 		mass.nodeName = "Mass";
 		mass.uri = FedLCA.Mass;
+		mass.uuid = "93a60a57-a4c8-11da-a746-0800200c9a66";
+		mass.referenceDescription = "Kilogram";
+		mass.referenceUnit = "kg";
 
 		TreeNode length = new TreeNode(physicalIndividual);
 		length.nodeName = "Length";
 		length.uri = FedLCA.Length;
+		length.uuid = "838aaa22-0117-11db-92e3-0800200c9a66";
+		length.referenceDescription = "Meter";
+		length.referenceUnit = "m";
 
 		TreeNode area = new TreeNode(physicalIndividual);
 		area.nodeName = "Area";
 		area.uri = FedLCA.Area;
+		area.uuid = "93a60a57-a3c8-18da-a746-0800200c9a66";
+		area.referenceDescription = "Square meter";
+		area.referenceUnit = "m2";
 
 		TreeNode volume = new TreeNode(physicalIndividual);
 		volume.nodeName = "Volume";
 		volume.uri = FedLCA.Volume;
+		volume.uuid = "93a60a57-a3c8-12da-a746-0800200c9a66";
+		volume.referenceDescription = "Cubic meter";
+		volume.referenceUnit = "m3";
 
 		TreeNode duration = new TreeNode(physicalIndividual);
 		duration.nodeName = "Time";
-//		duration.nodeName = "Duration";
+		// duration.nodeName = "Duration";
 		duration.uri = FedLCA.Duration;
+		duration.uuid = "af638906-3ec7-4314-8de7-f76039f2dd01";
+		duration.referenceDescription = "Day";
+		duration.referenceUnit = "d";
 
 		TreeNode energy = new TreeNode(physicalIndividual);
 		energy.nodeName = "Energy";
 		energy.uri = FedLCA.Energy;
+		energy.uuid = "93a60a57-a3c8-11da-a746-0800200c9a66";
+		energy.referenceDescription = "Megajoule";
+		energy.referenceUnit = "MJ";
 
 		TreeNode radioactivity = new TreeNode(physicalIndividual);
 		radioactivity.nodeName = "Radioactivity";
 		radioactivity.uri = FedLCA.Radioactivity;
+		radioactivity.uuid = "93a60a57-a3c8-16da-a746-0800200c9a66";
+		radioactivity.referenceDescription = "Kilo-Bequerel, 1000 events per second";
+		radioactivity.referenceUnit = "kBq";
 
 		// -------- PHYSICAL HYBRID
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
@@ -286,78 +334,108 @@ public class MatchProperties extends ViewPart {
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FedLCA.MassTime;
+		massTime.uuid = "59f191d6-5dd3-4553-af88-1a32accfe308";
+		massTime.referenceDescription = "Kilogram times year";
+		massTime.referenceUnit = "kg*a";
 
 		TreeNode massLength = new TreeNode(physicalCombined);
 		massLength.nodeName = "Mass*length";
 		massLength.uri = FedLCA.MassLength;
+		massLength.uuid = "838aaa21-0117-11db-92e3-0800200c9a66";
+		massLength.referenceDescription = "Metric ton-kilometer";
+		massLength.referenceUnit = "t*km";
 
 		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";
 		lengthTime.uri = FedLCA.LengthTime;
+		lengthTime.uuid = "326eb58b-e5b3-4cea-b45a-2398c25109f8";
+		lengthTime.referenceDescription = "Meter times year";
+		lengthTime.referenceUnit = "m*a";
 
 		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
 		areaTime.uri = FedLCA.AreaTime;
+		areaTime.uuid = "93a60a57-a3c8-20da-a746-0800200c9a66";
+		areaTime.referenceDescription = "Square meter times year";
+		areaTime.referenceUnit = "m2*a";
 
 		TreeNode volumeTime = new TreeNode(physicalCombined);
 		volumeTime.nodeName = "Volume*time";
 		volumeTime.uri = FedLCA.VolumeTime;
+		volumeTime.uuid = "93a60a57-a3c8-23da-a746-0800200c9a66";
+		volumeTime.referenceDescription = "Cubic meter times year";
+		volumeTime.referenceUnit = "m3*a";
 
 		TreeNode volumeLength = new TreeNode(physicalCombined);
 		volumeLength.nodeName = "Volume*Length";
 		volumeLength.uri = FedLCA.VolumeLength;
+		volumeLength.uuid = "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d";
+		volumeLength.referenceDescription = "Cubic metre times kilometre";
+		volumeLength.referenceUnit = "m3*km";
 
 		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
 		energyPerMassTime.nodeName = "Energy/mass*time";
 		energyPerMassTime.uri = FedLCA.EnergyPerMassTime;
+		energyPerMassTime.uuid = "258d6abd-14f2-4484-956c-c88e8f6fd8ed";
+		energyPerMassTime.referenceDescription = "Megajoule per kilogram times day";
+		energyPerMassTime.referenceUnit = "MJ/kg*d";
 
 		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
 		energyPerAreaTime.nodeName = "Energy/area*time";
 		energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
+		energyPerAreaTime.uuid = "876adcd3-29e6-44e2-acdd-11be304ae654";
+		energyPerAreaTime.referenceDescription = "Kilowatthour per square meter times day";
+		energyPerAreaTime.referenceUnit = "kWh/m2*d";
 
-//		// -------- LAND TRANSFORMATION
-//		TreeNode landTransformation = new TreeNode(masterPropertyTree);
-//		landTransformation.nodeName = "Land transformation";
-//
-//		TreeNode bioticProductionOcc = new TreeNode(landTransformation);
-//		bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
-//		bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
-//
-//		TreeNode bioticProductionTransf = new TreeNode(landTransformation);
-//		bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
-//		bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
-//
-//		TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
-//		erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
-//		erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
-//
-//		TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
-//		erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
-//		erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
-//
-//		TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
-//		groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
-//		groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
-//
-//		TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
-//		groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
-//		groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
-//
-//		TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
-//		mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
-//		mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
-//
-//		TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
-//		mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
-//		mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
-//
-//		TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
-//		physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
-//		physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
-//
-//		TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
-//		physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
-//		physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
+		// // -------- LAND TRANSFORMATION
+		// TreeNode landTransformation = new TreeNode(masterPropertyTree);
+		// landTransformation.nodeName = "Land transformation";
+		//
+		// TreeNode bioticProductionOcc = new TreeNode(landTransformation);
+		// bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
+		// bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
+		//
+		// TreeNode bioticProductionTransf = new TreeNode(landTransformation);
+		// bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
+		// bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
+		//
+		// TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
+		// erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
+		// erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
+		//
+		// TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
+		// erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
+		// erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
+		//
+		// TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
+		// groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
+		// groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
+		//
+		// TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
+		// groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
+		// groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
+		// groundwaterReplenishmentTransf.uuid = "9e5a91be-b3d1-4268-8e7d-e5e93f6a75d4";
+		// groundwaterReplenishmentTransf.refDescrption = "Millimetre times square metre per year";
+		// groundwaterReplenishmentTransf.referenceUnit = "(mm*m2)/a";
+		//
+		// TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
+		// mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
+		// mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
+		// mechanicalFiltrationOcc.uuid = "59f6a0a2-731f-41c3-86df-d383dc673dfe";
+		// mechanicalFiltrationOcc.refDescrption = "Centimeter times cubic meter";
+		// mechanicalFiltrationOcc.referenceUnit = "cm*m3";
+		//
+		// TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
+		// mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
+		// mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
+		//
+		// TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
+		// physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
+		// physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
+		//
+		// TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
+		// physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
+		// physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
 
 		// -------- OTHER
 		TreeNode other = new TreeNode(masterPropertyTree);
@@ -366,38 +444,65 @@ public class MatchProperties extends ViewPart {
 		TreeNode itemCount = new TreeNode(other);
 		itemCount.nodeName = "Number of Items";
 		itemCount.uri = FedLCA.ItemCount;
+		itemCount.uuid = "5beb6eed-33a9-47b8-9ede-1dfe8f679159";
+		itemCount.referenceDescription = "Number of items";
+		itemCount.referenceUnit = "Item(s)";
 
 		TreeNode itemsLength = new TreeNode(other);
 		itemsLength.nodeName = "Items*Length";
 		itemsLength.uri = FedLCA.ItemsLength;
+		itemsLength.uuid = "5454b231-270e-45e6-89b2-7f4f3e482245";
+		itemsLength.referenceDescription = "Items times kilometre";
+		itemsLength.referenceUnit = "Items*km";
 
 		TreeNode goodsTransportMassDistance = new TreeNode(other);
 		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
 		goodsTransportMassDistance.uri = FedLCA.GoodsTransportMassDistance;
+		goodsTransportMassDistance.uuid = "";
+		goodsTransportMassDistance.referenceDescription = "";
+		goodsTransportMassDistance.referenceUnit = "";
 
 		TreeNode personTransport = new TreeNode(other);
 		personTransport.nodeName = "Person transport";
 		personTransport.uri = FedLCA.PersonTransport;
+		personTransport.uuid = "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7";
+		personTransport.referenceDescription = "Person kilometer";
+		personTransport.referenceUnit = "p*km";
 
 		TreeNode vehicleTransport = new TreeNode(other);
 		vehicleTransport.nodeName = "Vehicle transport";
 		vehicleTransport.uri = FedLCA.VehicleTransport;
+		vehicleTransport.uuid = "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9";
+		vehicleTransport.referenceDescription = "Vehicle-kilometer";
+		vehicleTransport.referenceUnit = "v*km";
 
 		TreeNode netCalorificValue = new TreeNode(other);
 		netCalorificValue.nodeName = "Net calorific value";
 		netCalorificValue.uri = FedLCA.NetCalorificValue;
+		netCalorificValue.uuid = "";
+		netCalorificValue.referenceDescription = "";
+		netCalorificValue.referenceUnit = "";
 
 		TreeNode grossCalorificValue = new TreeNode(other);
 		grossCalorificValue.nodeName = "Gross calorific value";
 		grossCalorificValue.uri = FedLCA.GrossCalorificValue;
+		grossCalorificValue.uuid = "";
+		grossCalorificValue.referenceDescription = "";
+		grossCalorificValue.referenceUnit = "";
 
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
 		normalVolume.uri = FedLCA.NormalVolume;
+		normalVolume.uuid = "";
+		normalVolume.referenceDescription = "";
+		normalVolume.referenceUnit = "";
 
 		TreeNode valueUS2000BulkPrices = new TreeNode(other);
 		valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
 		valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
+		valueUS2000BulkPrices.uuid = "";
+		valueUS2000BulkPrices.referenceDescription = "";
+		valueUS2000BulkPrices.referenceUnit = "";
 
 		return masterPropertyTree;
 	}
