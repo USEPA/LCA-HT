@@ -182,6 +182,9 @@ public class MatchContexts extends ViewPart {
 		if (CSVTableView.preCommit) {
 			return;
 		}
+		if (CSVTableView.getTable().getSelectionCount() == 0){
+			return;
+		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
 		TableItem tableItem = tableItems[0];
 		String rowNumString = tableItem.getText(0);
