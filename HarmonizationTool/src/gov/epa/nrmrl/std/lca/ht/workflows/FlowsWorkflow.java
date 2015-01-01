@@ -1,13 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.csvFiles.Issue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
@@ -20,8 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
+import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -36,7 +31,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -578,7 +572,8 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowContextRows();
 			}
-			Util.setPerspective(FlowDataV4.ID);
+//			Util.setPerspective(FlowDataV4.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
@@ -617,7 +612,8 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			Util.setPerspective(FlowDataV4.ID);
+//			Util.setPerspective(FlowDataV4.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchProperties.ID);
 			} catch (PartInitException e1) {
@@ -656,7 +652,9 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowableRows();
 			}
-			Util.setPerspective(FlowDataV5.ID);
+//			Util.setPerspective(FlowDataV5.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
+
 			try {
 				Util.showView(MatchFlowables.ID);
 			} catch (PartInitException e1) {
@@ -720,7 +718,9 @@ public class FlowsWorkflow extends ViewPart {
 				// TODO - REMOVE THE FileMD
 				// TODO - INDICATE THAT FILE CONTENT WAS REMOVED
 			}
-			Util.setPerspective(FlowDataV4.ID);
+//			Util.setPerspective(FlowDataV4.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
+
 			try {
 				Util.showView(LoggerViewer.ID);
 			} catch (PartInitException e1) {

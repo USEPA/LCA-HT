@@ -31,6 +31,6 @@ public class FlowDataV1 implements IPerspectiveFactory {
 
 	private void addPerspectiveShortcuts(IPageLayout layout) {
 		layout.addPerspectiveShortcut(FlowDataV1.ID);
-		layout.addPerspectiveShortcut(OriginalPerspective.ID);
+//		layout.addPerspectiveShortcut(OriginalPerspective.ID);
 	}
 }

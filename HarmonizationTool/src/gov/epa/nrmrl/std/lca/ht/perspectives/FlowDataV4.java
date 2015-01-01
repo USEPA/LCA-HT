@@ -40,7 +40,7 @@ public class FlowDataV4 implements IPerspectiveFactory {
 
 	private void addPerspectiveShortcuts(IPageLayout layout) {
 		layout.addPerspectiveShortcut(FlowDataV4.ID);
-		layout.addPerspectiveShortcut(OriginalPerspective.ID);
+//		layout.addPerspectiveShortcut(OriginalPerspective.ID);
 	}
 
 	private void addFastViews(IPageLayout layout) {

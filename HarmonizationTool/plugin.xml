@@ -23,6 +23,11 @@
             id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5"
             name="Flowable Matching Perspective">
       </perspective>
+      <perspective
+            class="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective"
+            id="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective"
+            name="LCI Workflow Perspective">
+      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -83,6 +88,9 @@
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective">
+      </perspectiveExtension>
       <perspectiveExtension
             targetID="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective">
       </perspectiveExtension>

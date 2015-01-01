@@ -15,8 +15,9 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
+import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
+//import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4;
+//import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
@@ -468,7 +469,9 @@ public class CSVTableView extends ViewPart {
 		Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 
 		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-			Util.setPerspective(FlowDataV5.ID);
+//			Util.setPerspective(FlowDataV5.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
+
 			try {
 				Util.showView(MatchFlowables.ID);
 			} catch (PartInitException e1) {
@@ -476,7 +479,9 @@ public class CSVTableView extends ViewPart {
 			}
 			MatchFlowables.update(dataRowNum);
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
-			Util.setPerspective(FlowDataV4.ID);
+//			Util.setPerspective(FlowDataV4.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
+
 			try {
 				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
@@ -484,7 +489,9 @@ public class CSVTableView extends ViewPart {
 			}
 			MatchContexts.update(dataRowNum);
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
-			Util.setPerspective(FlowDataV4.ID);
+//			Util.setPerspective(FlowDataV4.ID);
+			Util.setPerspective(LCIWorkflowPerspective.ID);
+
 			try {
 				Util.showView(MatchProperties.ID);
 			} catch (PartInitException e1) {

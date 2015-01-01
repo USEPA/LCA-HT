@@ -2,8 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3;
-import gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective;
+import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -37,18 +36,17 @@ public class ShowPerspectiveHandler implements IHandler {
 		String id = iPerspectiveDescriptor.getId();
 
 		System.out.println("id " + id);
-		if (id.equals(FlowDataV1.ID)) {
-			System.out.println("Matched FlowDataV1!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
-		} else if (id.equals(FlowDataV2.ID)) {
+//		if (id.equals(FlowDataV1.ID)) {
+//			System.out.println("Matched FlowDataV1!");
+//			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
+//		} else if (id.equals(FlowDataV2.ID)) {
+	 if (id.equals(FlowDataV2.ID)) {
 			System.out.println("Matched FlowDataV2!");
 			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV1.ID));
-		} else if (id.equals(FlowDataV3.ID)) {
-			System.out.println("Matched FlowDataV3!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV2.ID));
-		} else if (id.equals(OriginalPerspective.ID)) {
-			System.out.println("Matched Original Perspective!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV3.ID));
+		} else if (id.equals(LCIWorkflowPerspective.ID)) {
+			System.out.println("Matched LCIWorkflowPerspective!");
+			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(LCIWorkflowPerspective.ID));
+
 		}  else {
 			System.out.println("No match, dude.  Sorry!");
 		}
