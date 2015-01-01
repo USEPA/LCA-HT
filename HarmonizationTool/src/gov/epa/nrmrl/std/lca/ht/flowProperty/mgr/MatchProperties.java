@@ -145,6 +145,9 @@ public class MatchProperties extends ViewPart {
 		masterTreeViewer.refresh();
 		for (TreeItem item : masterTree.getItems()) {
 			expandItem(item);
+			for (TreeItem subItem : item.getItems()) {
+				subItem.setExpanded(false);
+			}
 		}
 	}
 
@@ -283,6 +286,7 @@ public class MatchProperties extends ViewPart {
 		mass.uuid = "93a60a57-a4c8-11da-a746-0800200c9a66";
 		mass.referenceDescription = "Kilogram";
 		mass.referenceUnit = "kg";
+		createSubNodes(mass);
 
 		TreeNode length = new TreeNode(physicalIndividual);
 		length.nodeName = "Length";
@@ -290,6 +294,7 @@ public class MatchProperties extends ViewPart {
 		length.uuid = "838aaa22-0117-11db-92e3-0800200c9a66";
 		length.referenceDescription = "Meter";
 		length.referenceUnit = "m";
+		createSubNodes(length);
 
 		TreeNode area = new TreeNode(physicalIndividual);
 		area.nodeName = "Area";
@@ -297,6 +302,7 @@ public class MatchProperties extends ViewPart {
 		area.uuid = "93a60a57-a3c8-18da-a746-0800200c9a66";
 		area.referenceDescription = "Square meter";
 		area.referenceUnit = "m2";
+		createSubNodes(area);
 
 		TreeNode volume = new TreeNode(physicalIndividual);
 		volume.nodeName = "Volume";
@@ -304,6 +310,7 @@ public class MatchProperties extends ViewPart {
 		volume.uuid = "93a60a57-a3c8-12da-a746-0800200c9a66";
 		volume.referenceDescription = "Cubic meter";
 		volume.referenceUnit = "m3";
+		createSubNodes(volume);
 
 		TreeNode duration = new TreeNode(physicalIndividual);
 		duration.nodeName = "Time";
@@ -312,6 +319,7 @@ public class MatchProperties extends ViewPart {
 		duration.uuid = "af638906-3ec7-4314-8de7-f76039f2dd01";
 		duration.referenceDescription = "Day";
 		duration.referenceUnit = "d";
+		createSubNodes(duration);
 
 		TreeNode energy = new TreeNode(physicalIndividual);
 		energy.nodeName = "Energy";
@@ -319,6 +327,7 @@ public class MatchProperties extends ViewPart {
 		energy.uuid = "93a60a57-a3c8-11da-a746-0800200c9a66";
 		energy.referenceDescription = "Megajoule";
 		energy.referenceUnit = "MJ";
+		createSubNodes(energy);
 
 		TreeNode radioactivity = new TreeNode(physicalIndividual);
 		radioactivity.nodeName = "Radioactivity";
@@ -326,6 +335,7 @@ public class MatchProperties extends ViewPart {
 		radioactivity.uuid = "93a60a57-a3c8-16da-a746-0800200c9a66";
 		radioactivity.referenceDescription = "Kilo-Bequerel, 1000 events per second";
 		radioactivity.referenceUnit = "kBq";
+		createSubNodes(radioactivity);
 
 		// -------- PHYSICAL HYBRID
 		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
@@ -337,6 +347,7 @@ public class MatchProperties extends ViewPart {
 		massTime.uuid = "59f191d6-5dd3-4553-af88-1a32accfe308";
 		massTime.referenceDescription = "Kilogram times year";
 		massTime.referenceUnit = "kg*a";
+		createSubNodes(massTime);
 
 		TreeNode massLength = new TreeNode(physicalCombined);
 		massLength.nodeName = "Mass*length";
@@ -344,6 +355,7 @@ public class MatchProperties extends ViewPart {
 		massLength.uuid = "838aaa21-0117-11db-92e3-0800200c9a66";
 		massLength.referenceDescription = "Metric ton-kilometer";
 		massLength.referenceUnit = "t*km";
+		createSubNodes(massLength);
 
 		TreeNode lengthTime = new TreeNode(physicalCombined);
 		lengthTime.nodeName = "Length*time";
@@ -351,6 +363,7 @@ public class MatchProperties extends ViewPart {
 		lengthTime.uuid = "326eb58b-e5b3-4cea-b45a-2398c25109f8";
 		lengthTime.referenceDescription = "Meter times year";
 		lengthTime.referenceUnit = "m*a";
+		createSubNodes(lengthTime);
 
 		TreeNode areaTime = new TreeNode(physicalCombined);
 		areaTime.nodeName = "Area*time";
@@ -358,6 +371,7 @@ public class MatchProperties extends ViewPart {
 		areaTime.uuid = "93a60a57-a3c8-20da-a746-0800200c9a66";
 		areaTime.referenceDescription = "Square meter times year";
 		areaTime.referenceUnit = "m2*a";
+		createSubNodes(areaTime);
 
 		TreeNode volumeTime = new TreeNode(physicalCombined);
 		volumeTime.nodeName = "Volume*time";
@@ -365,13 +379,15 @@ public class MatchProperties extends ViewPart {
 		volumeTime.uuid = "93a60a57-a3c8-23da-a746-0800200c9a66";
 		volumeTime.referenceDescription = "Cubic meter times year";
 		volumeTime.referenceUnit = "m3*a";
+		createSubNodes(volumeTime);
 
 		TreeNode volumeLength = new TreeNode(physicalCombined);
-		volumeLength.nodeName = "Volume*Length";
+		volumeLength.nodeName = "Volume*length";
 		volumeLength.uri = FedLCA.VolumeLength;
 		volumeLength.uuid = "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d";
 		volumeLength.referenceDescription = "Cubic metre times kilometre";
 		volumeLength.referenceUnit = "m3*km";
+		createSubNodes(volumeLength);
 
 		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
 		energyPerMassTime.nodeName = "Energy/mass*time";
@@ -379,6 +395,7 @@ public class MatchProperties extends ViewPart {
 		energyPerMassTime.uuid = "258d6abd-14f2-4484-956c-c88e8f6fd8ed";
 		energyPerMassTime.referenceDescription = "Megajoule per kilogram times day";
 		energyPerMassTime.referenceUnit = "MJ/kg*d";
+		createSubNodes(energyPerMassTime);
 
 		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
 		energyPerAreaTime.nodeName = "Energy/area*time";
@@ -386,6 +403,7 @@ public class MatchProperties extends ViewPart {
 		energyPerAreaTime.uuid = "876adcd3-29e6-44e2-acdd-11be304ae654";
 		energyPerAreaTime.referenceDescription = "Kilowatthour per square meter times day";
 		energyPerAreaTime.referenceUnit = "kWh/m2*d";
+		createSubNodes(energyPerAreaTime);
 
 		// // -------- LAND TRANSFORMATION
 		// TreeNode landTransformation = new TreeNode(masterPropertyTree);
@@ -442,18 +460,20 @@ public class MatchProperties extends ViewPart {
 		other.nodeName = "Other";
 
 		TreeNode itemCount = new TreeNode(other);
-		itemCount.nodeName = "Number of Items";
+		itemCount.nodeName = "Number of items";
 		itemCount.uri = FedLCA.ItemCount;
 		itemCount.uuid = "5beb6eed-33a9-47b8-9ede-1dfe8f679159";
 		itemCount.referenceDescription = "Number of items";
 		itemCount.referenceUnit = "Item(s)";
+		createSubNodes(itemCount);
 
 		TreeNode itemsLength = new TreeNode(other);
-		itemsLength.nodeName = "Items*Length";
+		itemsLength.nodeName = "Items*length";
 		itemsLength.uri = FedLCA.ItemsLength;
 		itemsLength.uuid = "5454b231-270e-45e6-89b2-7f4f3e482245";
 		itemsLength.referenceDescription = "Items times kilometre";
 		itemsLength.referenceUnit = "Items*km";
+		createSubNodes(itemsLength);
 
 		TreeNode goodsTransportMassDistance = new TreeNode(other);
 		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
@@ -461,6 +481,7 @@ public class MatchProperties extends ViewPart {
 		goodsTransportMassDistance.uuid = "";
 		goodsTransportMassDistance.referenceDescription = "";
 		goodsTransportMassDistance.referenceUnit = "";
+		createSubNodes(goodsTransportMassDistance);
 
 		TreeNode personTransport = new TreeNode(other);
 		personTransport.nodeName = "Person transport";
@@ -468,6 +489,7 @@ public class MatchProperties extends ViewPart {
 		personTransport.uuid = "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7";
 		personTransport.referenceDescription = "Person kilometer";
 		personTransport.referenceUnit = "p*km";
+		createSubNodes(personTransport);
 
 		TreeNode vehicleTransport = new TreeNode(other);
 		vehicleTransport.nodeName = "Vehicle transport";
@@ -475,6 +497,7 @@ public class MatchProperties extends ViewPart {
 		vehicleTransport.uuid = "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9";
 		vehicleTransport.referenceDescription = "Vehicle-kilometer";
 		vehicleTransport.referenceUnit = "v*km";
+		createSubNodes(vehicleTransport);
 
 		TreeNode netCalorificValue = new TreeNode(other);
 		netCalorificValue.nodeName = "Net calorific value";
@@ -482,6 +505,7 @@ public class MatchProperties extends ViewPart {
 		netCalorificValue.uuid = "";
 		netCalorificValue.referenceDescription = "";
 		netCalorificValue.referenceUnit = "";
+		createSubNodes(netCalorificValue);
 
 		TreeNode grossCalorificValue = new TreeNode(other);
 		grossCalorificValue.nodeName = "Gross calorific value";
@@ -489,6 +513,7 @@ public class MatchProperties extends ViewPart {
 		grossCalorificValue.uuid = "";
 		grossCalorificValue.referenceDescription = "";
 		grossCalorificValue.referenceUnit = "";
+		createSubNodes(grossCalorificValue);
 
 		TreeNode normalVolume = new TreeNode(other);
 		normalVolume.nodeName = "Normal Volume";
@@ -496,6 +521,7 @@ public class MatchProperties extends ViewPart {
 		normalVolume.uuid = "";
 		normalVolume.referenceDescription = "";
 		normalVolume.referenceUnit = "";
+		createSubNodes(normalVolume);
 
 		TreeNode valueUS2000BulkPrices = new TreeNode(other);
 		valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
@@ -503,8 +529,36 @@ public class MatchProperties extends ViewPart {
 		valueUS2000BulkPrices.uuid = "";
 		valueUS2000BulkPrices.referenceDescription = "";
 		valueUS2000BulkPrices.referenceUnit = "";
+		createSubNodes(valueUS2000BulkPrices);
 
 		return masterPropertyTree;
+	}
+
+	private void createSubNodes(TreeNode flowPropertyNode) {
+		String propertyName = flowPropertyNode.getNodeName();
+		String propertyReferenceUnit = flowPropertyNode.getReferenceUnit();
+		List<LCAUnit> units = new ArrayList<LCAUnit>();
+		for (LCAUnit lcaUnit : FlowProperty.lcaUnits) {
+			if (lcaUnit.unit_group.equals(propertyName)) {
+				if (lcaUnit.name.equals(propertyReferenceUnit)) {
+					units.add(0, lcaUnit);
+				} else {
+					units.add(lcaUnit);
+				}
+			}
+		}
+		for (LCAUnit lcaUnit : units) {
+			System.out.println(lcaUnit.name);
+			System.out.println("// " + lcaUnit.description);
+
+			TreeNode subNode = new TreeNode(flowPropertyNode);
+			subNode.nodeName = lcaUnit.description + "(" + lcaUnit.name + ")";
+			// subNode.uri = FedLCA.[pssh];
+			subNode.uuid = lcaUnit.uuid;
+			subNode.uri = lcaUnit.tdbResource;
+			subNode.referenceDescription = lcaUnit.description;
+			subNode.referenceUnit = flowPropertyNode.referenceUnit;
+		}
 	}
 
 	private class MyContentProvider implements ITreeContentProvider {
@@ -591,6 +645,7 @@ public class MatchProperties extends ViewPart {
 			}
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
+				String node2Name = treeNode2.nodeName;
 				// System.out.println("treeNode2 = " + treeNode2);
 				if (treeNode2.getUri() != null) {
 					if (resource.equals(treeNode2.getUri())) {
@@ -599,11 +654,22 @@ public class MatchProperties extends ViewPart {
 				}
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
+					String node3Name = treeNode3.nodeName;
+
 					// System.out.println("treeNode3 = " + treeNode3);
 					if (treeNode3.getUri() != null) {
 						if (resource.equals(treeNode3.getUri())) {
 							return treeItem3;
 						}
+//						for (TreeItem treeItem4 : treeItem3.getItems()) {
+//							TreeNode treeNode4 = (TreeNode) treeItem4.getData();
+//							// System.out.println("treeNode4 = " + treeNode4);
+//							if (treeNode4.getUri() != null) {
+//								if (resource.equals(treeNode4.getUri())) {
+//									return treeItem4;
+//								}
+//							}
+//						}
 					}
 				}
 			}

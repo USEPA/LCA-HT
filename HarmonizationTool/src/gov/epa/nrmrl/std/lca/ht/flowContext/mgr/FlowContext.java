@@ -24,8 +24,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
 	// CLASS VARIABLES
-	public static final String flowContextPrimaryIdentifier = "Primary Info";
-	public static final String flowContextAdditionalIdentifier = "Additional Info";
+	public static final String flowContextPrimaryIdentifier = "General";
+	public static final String flowContextAdditionalIdentifier = "Specific(s)";
 	private static final Resource rdfClass = FASC.Compartment;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";

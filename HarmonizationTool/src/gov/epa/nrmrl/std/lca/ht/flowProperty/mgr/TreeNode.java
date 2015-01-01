@@ -13,6 +13,38 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * 
  */
 public class TreeNode extends Node {
+	public String getNodeName() {
+		return nodeName;
+	}
+
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getReferenceDescription() {
+		return referenceDescription;
+	}
+
+	public void setReferenceDescription(String referenceDescription) {
+		this.referenceDescription = referenceDescription;
+	}
+
+	public String getReferenceUnit() {
+		return referenceUnit;
+	}
+
+	public void setReferenceUnit(String referenceUnit) {
+		this.referenceUnit = referenceUnit;
+	}
+
 	protected String nodeName = null;
 	protected Resource uri = null;
 	protected String uuid = null;

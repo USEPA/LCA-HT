@@ -34,13 +34,13 @@
       <view
             class="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
             id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
-            name="Flows Workflow"
+            name="Inventory Workflow"
             restorable="true">
       </view>
       <view
             class="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
-            name="CSV Table"
+            name="User Data"
             restorable="true">
       </view>
       <view

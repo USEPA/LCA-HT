@@ -414,7 +414,6 @@ public class FlowsWorkflow extends ViewPart {
 					requiredLCADataPropertyProvider.add(lcaDataPropertyProvider);
 				}
 			}
-			// FIXME LINES BELOW COMMENTED OUT TO MAKE CODE COMPILE
 
 			if (checkForRequiredFlowableFields) {
 				for (LCADataPropertyProvider requiredLCADataProperty : Flowable.getDataPropertyMap().values()) {
