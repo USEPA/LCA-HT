@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -27,6 +28,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -61,7 +63,7 @@ public class MatchProperties extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
 	private static Tree masterTree;
 	private static TreeViewer masterTreeViewer;
-	private static Label masterLbl;
+	private static Label userDataLabel;
 	private int rowNumSelected;
 	private int colNumSelected;
 	private static FlowProperty propertyToMatch;
@@ -75,31 +77,30 @@ public class MatchProperties extends ViewPart {
 		parent.setLayout(gl_parent);
 
 		outerComposite = new Composite(parent, SWT.NONE);
-		outerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		outerComposite.setLayout(new GridLayout(2, false));
+		outerComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		outerComposite.setLayout(new GridLayout(1, false));
 		// ============ NEW COL =========
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		innerComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 		innerComposite.setLayout(new GridLayout(2, false));
 
 		unAssignButton = new Button(innerComposite, SWT.NONE);
-		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_unAssignButton.widthHint = 100;
+		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+		gd_unAssignButton.widthHint = 90;
 		unAssignButton.setLayoutData(gd_unAssignButton);
 		unAssignButton.setText("Unassign");
 		unAssignButton.addSelectionListener(unassignListener);
 
 		nextButton = new Button(innerComposite, SWT.NONE);
-		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_assignButton.widthHint = 100;
+		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
+		gd_assignButton.widthHint = 90;
 		nextButton.setLayoutData(gd_assignButton);
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
 
-		masterLbl = new Label(outerComposite, SWT.NONE);
-		masterLbl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		masterLbl.setSize(120, 14);
-		masterLbl.setText("Master Flow Properties");
+		userDataLabel = new Label(parent, SWT.NONE);
+		userDataLabel.setSize(120, 14);
+		userDataLabel.setText("(user data)");
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
@@ -143,19 +144,24 @@ public class MatchProperties extends ViewPart {
 			}
 		});
 		masterTreeViewer.refresh();
+		// expandAll();
 		for (TreeItem item : masterTree.getItems()) {
 			expandItem(item);
-			for (TreeItem subItem : item.getItems()) {
-				subItem.setExpanded(false);
-			}
+			// for (TreeItem subItem : item.getItems()) {
+			// subItem.setExpanded(true);
+			// }
 		}
 	}
 
 	private SelectionListener unassignListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
+			// collapseAll();
 			Util.findView(CSVTableView.ID);
 			Util.findView(FlowsWorkflow.ID);
+			if (CSVTableView.getTable().getSelectionCount() == 0) {
+				return;
+			}
 			TableItem[] tableItems = CSVTableView.getTable().getSelection();
 			TableItem tableItem = tableItems[0];
 			masterTree.deselectAll();
@@ -165,7 +171,7 @@ public class MatchProperties extends ViewPart {
 			dataRow.getFlowProperty().setMatchingResource(null);
 			FlowsWorkflow.removeMatchPropertyRowNum(propertyToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
-			// tableItem.setBackground(color);
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 
 		@Override
@@ -194,6 +200,10 @@ public class MatchProperties extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
+		if (masterTree.getSelectionCount() == 0) {
+			return;
+		}
+
 		TreeItem treeItem = masterTree.getSelection()[0];
 		TreeNode treeNode = (TreeNode) treeItem.getData();
 		Resource newResource = treeNode.getUri();
@@ -203,10 +213,12 @@ public class MatchProperties extends ViewPart {
 		dataRow.getFlowProperty().setMatchingResource(newResource);
 		FlowsWorkflow.addMatchPropertyRowNum(propertyToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
+		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 	}
 
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
+			// expandAll();
 			CSVTableView.selectNextProperty();
 		}
 
@@ -229,6 +241,24 @@ public class MatchProperties extends ViewPart {
 			expandItem(child);
 		}
 	}
+
+	// private static void expandAll() {
+	// for (TreeItem treeItem1 : masterTreeViewer.getTree().getItems()) {
+	// treeItem1.setExpanded(true);
+	// for (TreeItem treeItem2 : treeItem1.getItems()) {
+	// treeItem2.setExpanded(true);
+	// }
+	// }
+	// }
+	//
+	// private static void collapseAll() {
+	// for (TreeItem treeItem1 : masterTreeViewer.getTree().getItems()) {
+	// for (TreeItem treeItem2 : treeItem1.getItems()) {
+	// treeItem2.setExpanded(false);
+	// }
+	// treeItem1.setExpanded(false);
+	// }
+	// }
 
 	public static String getNodeNameFromResource(Resource resource) {
 		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
@@ -261,7 +291,7 @@ public class MatchProperties extends ViewPart {
 				}
 				if (nodeResource.equals(resource)) {
 					resultStrings[0] = testNode.nodeName;
-					for (LCAUnit lcaUnit : FlowProperty.lcaUnits) {
+					for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
 						if (testNode.nodeName.equals(lcaUnit.unit_group)) {
 							resultStrings[1] = lcaUnit.referenceUnit;
 							resultStrings[2] = "" + lcaUnit.conversionFactor;
@@ -276,10 +306,16 @@ public class MatchProperties extends ViewPart {
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterPropertyTree = new TreeNode(null);
 
-		// -------- PHYSICAL COMBINED
 		TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
 		physicalIndividual.nodeName = "Physical individual";
 
+		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
+		physicalCombined.nodeName = "Physical hybrid";
+
+		TreeNode other = new TreeNode(masterPropertyTree);
+		other.nodeName = "Other";
+
+		// -------- PHYSICAL
 		TreeNode mass = new TreeNode(physicalIndividual);
 		mass.nodeName = "Mass";
 		mass.uri = FedLCA.Mass;
@@ -338,9 +374,6 @@ public class MatchProperties extends ViewPart {
 		createSubNodes(radioactivity);
 
 		// -------- PHYSICAL HYBRID
-		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
-		physicalCombined.nodeName = "Physical hybrid";
-
 		TreeNode massTime = new TreeNode(physicalCombined);
 		massTime.nodeName = "Mass*time";
 		massTime.uri = FedLCA.MassTime;
@@ -405,60 +438,7 @@ public class MatchProperties extends ViewPart {
 		energyPerAreaTime.referenceUnit = "kWh/m2*d";
 		createSubNodes(energyPerAreaTime);
 
-		// // -------- LAND TRANSFORMATION
-		// TreeNode landTransformation = new TreeNode(masterPropertyTree);
-		// landTransformation.nodeName = "Land transformation";
-		//
-		// TreeNode bioticProductionOcc = new TreeNode(landTransformation);
-		// bioticProductionOcc.nodeName = "Biotic Production (Occ.)";
-		// bioticProductionOcc.uri = FedLCA.BioticProductionOcc;
-		//
-		// TreeNode bioticProductionTransf = new TreeNode(landTransformation);
-		// bioticProductionTransf.nodeName = "Biotic Production (Transf.)";
-		// bioticProductionTransf.uri = FedLCA.BioticProductionTransf;
-		//
-		// TreeNode erosionResistanceOcc = new TreeNode(landTransformation);
-		// erosionResistanceOcc.nodeName = "Erosion Resistance (Occ.)";
-		// erosionResistanceOcc.uri = FedLCA.ErosionResistanceOcc;
-		//
-		// TreeNode erosionResistanceTransf = new TreeNode(landTransformation);
-		// erosionResistanceTransf.nodeName = "Erosion Resistance (Transf.)";
-		// erosionResistanceTransf.uri = FedLCA.ErosionResistanceTransf;
-		//
-		// TreeNode groundwaterReplenishmentOcc = new TreeNode(landTransformation);
-		// groundwaterReplenishmentOcc.nodeName = "Groundwater Replenishment (Occ.)";
-		// groundwaterReplenishmentOcc.uri = FedLCA.GroundwaterReplenishmentOcc;
-		//
-		// TreeNode groundwaterReplenishmentTransf = new TreeNode(landTransformation);
-		// groundwaterReplenishmentTransf.nodeName = "Groundwater Replenishment (Transf.)";
-		// groundwaterReplenishmentTransf.uri = FedLCA.GroundwaterReplenishmentTransf;
-		// groundwaterReplenishmentTransf.uuid = "9e5a91be-b3d1-4268-8e7d-e5e93f6a75d4";
-		// groundwaterReplenishmentTransf.refDescrption = "Millimetre times square metre per year";
-		// groundwaterReplenishmentTransf.referenceUnit = "(mm*m2)/a";
-		//
-		// TreeNode mechanicalFiltrationOcc = new TreeNode(landTransformation);
-		// mechanicalFiltrationOcc.nodeName = "Mechanical Filtration (Occ.)";
-		// mechanicalFiltrationOcc.uri = FedLCA.MechanicalFiltrationOcc;
-		// mechanicalFiltrationOcc.uuid = "59f6a0a2-731f-41c3-86df-d383dc673dfe";
-		// mechanicalFiltrationOcc.refDescrption = "Centimeter times cubic meter";
-		// mechanicalFiltrationOcc.referenceUnit = "cm*m3";
-		//
-		// TreeNode mechanicalFiltrationTransf = new TreeNode(landTransformation);
-		// mechanicalFiltrationTransf.nodeName = "Mechanical Filtration (Transf.)";
-		// mechanicalFiltrationTransf.uri = FedLCA.MechanicalFiltrationTransf;
-		//
-		// TreeNode physicochemicalFiltrationOcc = new TreeNode(landTransformation);
-		// physicochemicalFiltrationOcc.nodeName = "Physicochemical Filtration (Occ.)";
-		// physicochemicalFiltrationOcc.uri = FedLCA.PhysicochemicalFiltrationOcc;
-		//
-		// TreeNode physicochemicalFiltrationTransf = new TreeNode(landTransformation);
-		// physicochemicalFiltrationTransf.nodeName = "Physicochemical Filtration (Transf.)";
-		// physicochemicalFiltrationTransf.uri = FedLCA.PhysicochemicalFiltrationTransf;
-
 		// -------- OTHER
-		TreeNode other = new TreeNode(masterPropertyTree);
-		other.nodeName = "Other";
-
 		TreeNode itemCount = new TreeNode(other);
 		itemCount.nodeName = "Number of items";
 		itemCount.uri = FedLCA.ItemCount;
@@ -538,7 +518,7 @@ public class MatchProperties extends ViewPart {
 		String propertyName = flowPropertyNode.getNodeName();
 		String propertyReferenceUnit = flowPropertyNode.getReferenceUnit();
 		List<LCAUnit> units = new ArrayList<LCAUnit>();
-		for (LCAUnit lcaUnit : FlowProperty.lcaUnits) {
+		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
 			if (lcaUnit.unit_group.equals(propertyName)) {
 				if (lcaUnit.name.equals(propertyReferenceUnit)) {
 					units.add(0, lcaUnit);
@@ -637,6 +617,8 @@ public class MatchProperties extends ViewPart {
 	private static TreeItem getTreeItemByURI(Resource resource) {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
 			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
+			String node1Name = treeNode1.nodeName;
+
 			if (treeNode1.getUri() != null) {
 				// System.out.println("treeNode1 = " + treeNode1);
 				if (resource.equals(treeNode1.getUri())) {
@@ -645,6 +627,10 @@ public class MatchProperties extends ViewPart {
 			}
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
+				if (treeNode2 == null) {
+					System.out.println("Choke at level 2 with" + node1Name);
+					return null;
+				}
 				String node2Name = treeNode2.nodeName;
 				// System.out.println("treeNode2 = " + treeNode2);
 				if (treeNode2.getUri() != null) {
@@ -654,6 +640,10 @@ public class MatchProperties extends ViewPart {
 				}
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
+					if (treeNode3 == null) {
+						System.out.println("Choke at level 3 with" + node2Name);
+						return null;
+					}
 					String node3Name = treeNode3.nodeName;
 
 					// System.out.println("treeNode3 = " + treeNode3);
@@ -661,15 +651,15 @@ public class MatchProperties extends ViewPart {
 						if (resource.equals(treeNode3.getUri())) {
 							return treeItem3;
 						}
-//						for (TreeItem treeItem4 : treeItem3.getItems()) {
-//							TreeNode treeNode4 = (TreeNode) treeItem4.getData();
-//							// System.out.println("treeNode4 = " + treeNode4);
-//							if (treeNode4.getUri() != null) {
-//								if (resource.equals(treeNode4.getUri())) {
-//									return treeItem4;
-//								}
-//							}
-//						}
+						// for (TreeItem treeItem4 : treeItem3.getItems()) {
+						// TreeNode treeNode4 = (TreeNode) treeItem4.getData();
+						// // System.out.println("treeNode4 = " + treeNode4);
+						// if (treeNode4.getUri() != null) {
+						// if (resource.equals(treeNode4.getUri())) {
+						// return treeItem4;
+						// }
+						// }
+						// }
 					}
 				}
 			}
@@ -799,24 +789,110 @@ public class MatchProperties extends ViewPart {
 	public void setPropertyResourcesToMatch(List<Resource> contextResourcesToMatch) {
 		this.propertyResourcesToMatch = contextResourcesToMatch;
 	}
-
-	public static void update(Integer dataRowNum) {
+	public static void update() {
 		Util.findView(CSVTableView.ID);
+		if (CSVTableView.getTable().getSelectionCount() == 0){
+			return;
+		}
 		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
 		String rowNumString = tableItem.getText(0);
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		Resource propertyResource = dataRow.getFlowProperty().getMatchingResource();
 		propertyToMatch = dataRow.getFlowProperty();
+		Resource propertyResource = propertyToMatch.getMatchingResource();
+		String labelString = null;
+		String propertyString = propertyToMatch.getPropertyStr();
+		String unitString = propertyToMatch.getUnitStr();
+		if (propertyString == null) {
+			labelString = unitString;
+		} else {
+			labelString = propertyString + ": " + unitString;
+		}
+
+		partialCollapse();
 		if (propertyResource != null) {
 			TreeItem treeItem = getTreeItemByURI(propertyResource);
 			if (treeItem != null) {
-				masterTree.setSelection(getTreeItemByURI(propertyResource));
+				masterTree.setSelection(treeItem);
+//				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				setUserDataLabel(labelString, true);
+
 			} else {
 				masterTree.deselectAll();
+//				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				setUserDataLabel(labelString, true);
 			}
 		} else {
 			masterTree.deselectAll();
+//			setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			setUserDataLabel(labelString, false);
+		}
+	}
+	
+//	public static void update(Integer dataRowNum) {
+//		Util.findView(CSVTableView.ID);
+//		if (CSVTableView.getTable().getSelectionCount() == 0){
+//			return;
+//		}
+//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+//		String rowNumString = tableItem.getText(0);
+//		int rowNumber = Integer.parseInt(rowNumString) - 1;
+//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+//		propertyToMatch = dataRow.getFlowProperty();
+//		Resource propertyResource = propertyToMatch.getMatchingResource();
+//		String labelString = null;
+//		String propertyString = propertyToMatch.getPropertyStr();
+//		String unitString = propertyToMatch.getUnitStr();
+//		if (propertyString == null) {
+//			labelString = unitString;
+//		} else {
+//			labelString = propertyString + ": " + unitString;
+//		}
+//
+//		partialCollapse();
+//		if (propertyResource != null) {
+//			TreeItem treeItem = getTreeItemByURI(propertyResource);
+//			if (treeItem != null) {
+//				masterTree.setSelection(treeItem);
+////				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+//				setUserDataLabel(labelString, true);
+//
+//			} else {
+//				masterTree.deselectAll();
+////				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+//				setUserDataLabel(labelString, true);
+//			}
+//		} else {
+//			masterTree.deselectAll();
+////			setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+//			setUserDataLabel(labelString, false);
+//		}
+//	}
+
+	private static void partialCollapse() {
+		for (TreeItem treeItem1 : masterTreeViewer.getTree().getItems()) {
+			treeItem1.setExpanded(true);
+			for (TreeItem treeItem2 : treeItem1.getItems()) {
+				treeItem2.setExpanded(false);
+			}
+		}
+	}
+
+	private static void setUserDataLabel(String labelString, Color color) {
+		if (labelString != null) {
+			userDataLabel.setText(labelString);
+		}
+		userDataLabel.setBackground(color);
+	}
+	
+	private static void setUserDataLabel(String labelString, boolean isMatched) {
+		if (labelString != null) {
+			userDataLabel.setText(labelString);
+		}
+		if (isMatched){
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		} else {
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 	}
 }

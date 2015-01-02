@@ -469,7 +469,7 @@ public class CSVTableView extends ViewPart {
 		Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 
 		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-//			Util.setPerspective(FlowDataV5.ID);
+			// Util.setPerspective(FlowDataV5.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 
 			try {
@@ -479,7 +479,7 @@ public class CSVTableView extends ViewPart {
 			}
 			MatchFlowables.update(dataRowNum);
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
-//			Util.setPerspective(FlowDataV4.ID);
+			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 
 			try {
@@ -487,9 +487,10 @@ public class CSVTableView extends ViewPart {
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 			}
-			MatchContexts.update(dataRowNum);
+			// MatchContexts.update(dataRowNum);
+			MatchContexts.update();
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
-//			Util.setPerspective(FlowDataV4.ID);
+			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 
 			try {
@@ -497,7 +498,9 @@ public class CSVTableView extends ViewPart {
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 			}
-			MatchProperties.update(dataRowNum);
+			// MatchProperties.update(dataRowNum);
+			MatchProperties.update();
+
 		}
 	}
 
@@ -742,9 +745,9 @@ public class CSVTableView extends ViewPart {
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 			table.getColumn(i).pack();
 			int width = table.getColumn(i).getWidth();
-			if (width<20){
+			if (width < 20) {
 				table.getColumn(i).setWidth(20);
-			} else if (width > 400 && table.getHorizontalBar().getVisible()){
+			} else if (width > 400 && table.getHorizontalBar().getVisible()) {
 				table.getColumn(i).setWidth(400);
 			}
 		}
@@ -2330,7 +2333,8 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowContextRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchContexts.update(newRowNumber);
+				// MatchContexts.update(newRowNumber);
+				MatchContexts.update();
 				return;
 			}
 		}
@@ -2351,7 +2355,8 @@ public class CSVTableView extends ViewPart {
 			int newRowNumber = Integer.parseInt(rowNumString) - 1;
 			if (uniqueFlowPropertyRowNumbers.contains(newRowNumber)) {
 				table.setSelection(i);
-				MatchProperties.update(newRowNumber);
+				// MatchProperties.update(newRowNumber);
+				MatchProperties.update();
 				return;
 			}
 		}

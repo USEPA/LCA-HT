@@ -59,6 +59,15 @@ public class MatchContexts extends ViewPart {
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
 	private static Tree masterTree;
+
+	public static Tree getMasterTree() {
+		return masterTree;
+	}
+
+	public static void setMasterTree(Tree masterTree) {
+		MatchContexts.masterTree = masterTree;
+	}
+
 	private static TreeViewer masterTreeViewer;
 	private static Label masterLbl;
 	// private int rowNumSelected;
@@ -182,7 +191,7 @@ public class MatchContexts extends ViewPart {
 		if (CSVTableView.preCommit) {
 			return;
 		}
-		if (CSVTableView.getTable().getSelectionCount() == 0){
+		if (CSVTableView.getTable().getSelectionCount() == 0) {
 			return;
 		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
@@ -743,12 +752,15 @@ public class MatchContexts extends ViewPart {
 	// masterTree.deselectAll();
 	// }
 	// }
-	public static void update(Integer dataRowNum) {
-		// Util.findView(CSVTableView.ID);
-		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-		// String rowNumString = tableItem.getText(0);
-		// int rowNumber = Integer.parseInt(rowNumString) - 1;
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
+	public static void update() {
+		Util.findView(CSVTableView.ID);
+		if (CSVTableView.getTable().getSelectionCount() == 0) {
+			return;
+		}
+		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+		String rowNumString = tableItem.getText(0);
+		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
@@ -761,14 +773,46 @@ public class MatchContexts extends ViewPart {
 		} else {
 			masterTree.deselectAll();
 		}
-		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
-			masterTree.getColumn(i).pack();
-			int width = masterTree.getColumn(i).getWidth();
-			if (width < 20) {
-				masterTree.getColumn(i).setWidth(20);
-			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
-				masterTree.getColumn(i).setWidth(400);
-			}
-		}
+//		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
+//			masterTree.getColumn(i).pack();
+//			int width = masterTree.getColumn(i).getWidth();
+//			if (width < 20) {
+//				masterTree.getColumn(i).setWidth(20);
+//			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
+//				masterTree.getColumn(i).setWidth(400);
+//			}
+//		}
 	}
+	
+//	public static void update(Integer dataRowNum) {
+//		Util.findView(CSVTableView.ID);
+//		if (CSVTableView.getTable().getSelectionCount() == 0) {
+//			return;
+//		}
+//		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+//		// String rowNumString = tableItem.getText(0);
+//		// int rowNumber = Integer.parseInt(rowNumString) - 1;
+//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
+//		contextToMatch = dataRow.getFlowContext();
+//		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+//		if (contextResource != null) {
+//			TreeItem treeItem = getTreeItemByURI(contextResource);
+//			if (treeItem != null) {
+//				masterTree.setSelection(getTreeItemByURI(contextResource));
+//			} else {
+//				masterTree.deselectAll();
+//			}
+//		} else {
+//			masterTree.deselectAll();
+//		}
+////		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
+////			masterTree.getColumn(i).pack();
+////			int width = masterTree.getColumn(i).getWidth();
+////			if (width < 20) {
+////				masterTree.getColumn(i).setWidth(20);
+////			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
+////				masterTree.getColumn(i).setWidth(400);
+////			}
+////		}
+//	}
 }

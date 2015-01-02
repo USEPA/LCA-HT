@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -198,11 +196,11 @@ public class AutoMatchJob extends Job {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-							if (hit){
+							if (hit) {
 								FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
 							}
 						}
-			
+
 					});
 				}
 				dataRow.setFlowable(flowable);
@@ -228,19 +226,21 @@ public class AutoMatchJob extends Job {
 					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
-						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowContext.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
-						} else {
-							ActiveTDB.tsAddLiteral(flowContext.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+						String dataValue = dataRow.get(i - 1);
+						if (dataValue.equals("")) {
+							continue;
 						}
+						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+						flowContext.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
+					final boolean hit = flowContext.setMatches();
 					flowContext.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addContextRowNum(rowNumToSend);
+							if (hit) {
+								FlowsWorkflow.addMatchContextRowNum(rowNumToSend);
+							}
 						}
 					});
 				}
@@ -265,19 +265,22 @@ public class AutoMatchJob extends Job {
 					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowPropertyCSVColumnNumbers) {
-						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						if (lcaDataPropertyProvider.isUnique()) {
-							ActiveTDB.tsReplaceLiteral(flowProperty.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
-						} else {
-							ActiveTDB.tsAddLiteral(flowProperty.getTdbResource(),
-									lcaDataPropertyProvider.getTDBProperty(), dataRow.get(i - 1));
+						String dataValue = dataRow.get(i - 1);
+						if (dataValue.equals("")) {
+							continue;
 						}
+						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+						flowProperty.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
+
+					final boolean hit = flowProperty.setMatches();
 					flowProperty.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addPropertyRowNum(rowNumToSend);
+							if (hit) {
+								FlowsWorkflow.addMatchPropertyRowNum(rowNumToSend);
+							}
 						}
 					});
 				}

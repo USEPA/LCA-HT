@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.LCAUnit;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
@@ -14,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.ReadWrite;
@@ -24,13 +28,14 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
 	// CLASS VARIABLES
-	public static final String flowContextPrimaryIdentifier = "General";
-	public static final String flowContextAdditionalIdentifier = "Specific(s)";
+	public static final String flowContextGeneral = "General";
+	public static final String flowContextSpecific = "Specific";
 	private static final Resource rdfClass = FASC.Compartment;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";
 	public static final String comment = "Compartments are used for classifying effects.  Effects have a hasCompartment property and the type of the value of that property may be used to classify the effect.  Examples of compartments include emissions to urban air and resource consumption from water.";
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
+	private static List<FlowContext> lcaMasterContexts = new ArrayList<FlowContext>();
 
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
@@ -48,7 +53,7 @@ public class FlowContext {
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextPrimaryIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextGeneral);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(true);
@@ -58,7 +63,7 @@ public class FlowContext {
 		lcaDataPropertyProvider.setTDBProperty(FASC.hasCompartment);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextAdditionalIdentifier);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextSpecific);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 		lcaDataPropertyProvider.setRequired(false);
@@ -67,6 +72,40 @@ public class FlowContext {
 		lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSupplementalDescription);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+		addContext("air", "unspecified", FedLCA.airUnspecified, "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7");
+		addContext("air", "low population density", FedLCA.airLow_population_density,
+				"ebcdff7a-b8c0-405b-8601-98a1ac3f26ef");
+		addContext("air", "high population density", FedLCA.airHigh_population_density,
+				"e6e67f13-0bcb-4113-966b-023c3186b339");
+		addContext("air", "low population density, long-term", FedLCA.airLow_population_densityLong_term,
+				"f9ac762d-1403-4763-9aec-9b11ab79874b");
+		addContext("air", "lower stratosphere + upper troposphere", FedLCA.airLower_stratosphere_upper_troposphere,
+				"885ce78b-9872-4a59-8244-deebeb12caea");
+
+		addContext("water", "unspecified", FedLCA.waterUnspecified, "a7c280e9-d13a-43cf-9127-d3bbf4d0e256");
+		addContext("water", "fossil-", FedLCA.waterFossil, "d0d05279-8621-404d-9878-218f04427fa6");
+		addContext("water", "fresh-", FedLCA.waterFresh, "1657ede0-aec3-41d1-bf1d-eeada890bdce");
+		addContext("water", "fresh-, long-term", FedLCA.waterFreshLong_term, "ed1e0813-ed99-4897-b20c-13ec90584825");
+		addContext("water", "ground-", FedLCA.waterGround, "4f146a17-ae4a-487b-874b-5d3013b86f44");
+		addContext("water", "ground-, long-term", FedLCA.waterGroundLong_term, "eba77525-9745-4f4a-9182-91a67306ba1c");
+		addContext("water", "lake", FedLCA.waterLake, "c1069072-9923-48f6-821d-8fad6e0ace5b");
+		addContext("water", "ocean", FedLCA.waterOcean, "8b7c395f-60ef-4863-a7e6-3560b5ad1aae");
+		addContext("water", "river", FedLCA.waterRiver, "58ed0153-34aa-4d6f-babf-3cfb201eac1d");
+		addContext("water", "river, long-term", FedLCA.waterRiverLong_term, "1df73ec9-e6b7-4f91-8f62-14b8ee2f7d93");
+		addContext("water", "surface water", FedLCA.waterSurface, "782cf5cb-0a6b-44aa-8a87-e5997dd0d1ff");
+
+		addContext("soil", "unspecified", FedLCA.soilUnspecified, "e97d11b5-78e4-4a93-9a63-14673f89f709");
+		addContext("soil", "agricultural", FedLCA.soilAgricultural, "34efc703-6409-4acf-8f1d-dec646adca8c");
+		addContext("soil", "forestry", FedLCA.soilForestry, "b50bb945-da42-49d2-a6e1-73544e36aaf2");
+		addContext("soil", "industrial", FedLCA.soilIndustrial, "185a7592-e3ae-4c44-a124-9c700b76d33d");
+
+		addContext("resource", "unspecified", FedLCA.resourceUnspecified, "0d557bab-d095-4142-912e-398fccb68240");
+		addContext("resource", "biotic", FedLCA.resourceBiotic, "26305d8d-591e-4927-8e19-ca7513edcee9");
+		addContext("resource", "in air", FedLCA.resourceIn_air, "965603be-3e94-42e6-9b2c-95eaf3b998c0");
+		addContext("resource", "in ground", FedLCA.resourceIn_ground, "75c87bc3-468b-4d9f-b2c5-9d521fb4822e");
+		addContext("resource", "in land", FedLCA.resourceIn_land, "54f7604f-c04e-4404-a229-852ede4379dc");
+		addContext("resource", "in water", FedLCA.resourceIn_water, "bcfc6117-3461-4f85-a5c8-fe59a533cc29");
 	}
 
 	// INSTANCE VARIABLES
@@ -74,6 +113,9 @@ public class FlowContext {
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
 	private int firstRow;
+	private String generalString;
+	private String specificString;
+	private String uuid;
 
 	// private Set<Resource> matchCandidates;
 
@@ -82,6 +124,16 @@ public class FlowContext {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
 		matchingResource = null;
+	}
+
+	private static void addContext(String generalString, String specificString, Resource tdbResource, String uuid) {
+		FlowContext flowContext = new FlowContext();
+		flowContext.tdbResource = tdbResource;
+		// THE ABOVE MUST BE DONE FIRST, SO THAT TRIPLES ARE ADDED PROPERLY
+		flowContext.generalString = generalString;
+		flowContext.specificString = specificString;
+		flowContext.uuid = uuid;
+		lcaMasterContexts.add(flowContext);
 	}
 
 	public FlowContext(Resource tdbResource) {
@@ -249,6 +301,24 @@ public class FlowContext {
 
 	public String getDataSource() {
 		return "Master List";
+	}
+
+	public boolean setMatches() {
+		String generalString = (String) getOneProperty(flowContextGeneral);
+		String specificString = (String) getOneProperty(flowContextSpecific);
+		if (generalString == null) {
+			return false;
+		}
+		if (specificString == null) {
+			return false;
+		}
+		for (FlowContext flowContext : lcaMasterContexts) {
+			if (flowContext.generalString.equals(generalString) && flowContext.specificString.equals(specificString)) {
+				matchingResource = flowContext.tdbResource;
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
