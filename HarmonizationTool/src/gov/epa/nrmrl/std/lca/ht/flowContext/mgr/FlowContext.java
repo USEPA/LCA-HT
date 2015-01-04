@@ -14,6 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -36,19 +38,12 @@ public class FlowContext {
 	public static final String comment = "Compartments are used for classifying effects.  Effects have a hasCompartment property and the type of the value of that property may be used to classify the effect.  Examples of compartments include emissions to urban air and resource consumption from water.";
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 	private static List<FlowContext> lcaMasterContexts = new ArrayList<FlowContext>();
+	private static List<Pattern> regexGeneralString = new ArrayList<Pattern>();
 
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
 		System.out.println("label assigned to Flow Context");
-
-		// System.out.println("Flow Context has just assigned label and comment");
-		// if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-		// System.out.println(rdfClass.getProperty(RDFS.label).getString());
-		// } else {
-		// System.out.println("wtf");
-		// }
-		// JUNO: THE ABOVE GIVES THE "wtf" RESULT, BUT A QUERY SHOWS THE TRIPLES ARE ADDED. WTF?
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
@@ -73,6 +68,8 @@ public class FlowContext {
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSupplementalDescription);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
+		Pattern airGeneralRE = Pattern.compile("air", Pattern.CASE_INSENSITIVE);
+		regexGeneralString.add(airGeneralRE);
 		addContext("air", "unspecified", FedLCA.airUnspecified, "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7");
 		addContext("air", "low population density", FedLCA.airLow_population_density,
 				"ebcdff7a-b8c0-405b-8601-98a1ac3f26ef");
@@ -83,23 +80,29 @@ public class FlowContext {
 		addContext("air", "lower stratosphere + upper troposphere", FedLCA.airLower_stratosphere_upper_troposphere,
 				"885ce78b-9872-4a59-8244-deebeb12caea");
 
+		Pattern waterGeneralRE = Pattern.compile("water", Pattern.CASE_INSENSITIVE);
+		regexGeneralString.add(waterGeneralRE);
 		addContext("water", "unspecified", FedLCA.waterUnspecified, "a7c280e9-d13a-43cf-9127-d3bbf4d0e256");
-		addContext("water", "fossil-", FedLCA.waterFossil, "d0d05279-8621-404d-9878-218f04427fa6");
-		addContext("water", "fresh-", FedLCA.waterFresh, "1657ede0-aec3-41d1-bf1d-eeada890bdce");
-		addContext("water", "fresh-, long-term", FedLCA.waterFreshLong_term, "ed1e0813-ed99-4897-b20c-13ec90584825");
-		addContext("water", "ground-", FedLCA.waterGround, "4f146a17-ae4a-487b-874b-5d3013b86f44");
-		addContext("water", "ground-, long-term", FedLCA.waterGroundLong_term, "eba77525-9745-4f4a-9182-91a67306ba1c");
+		addContext("water", "fossil", FedLCA.waterFossil, "d0d05279-8621-404d-9878-218f04427fa6");
+		addContext("water", "fresh", FedLCA.waterFresh, "1657ede0-aec3-41d1-bf1d-eeada890bdce");
+		addContext("water", "fresh, long-term", FedLCA.waterFreshLong_term, "ed1e0813-ed99-4897-b20c-13ec90584825");
+		addContext("water", "ground", FedLCA.waterGround, "4f146a17-ae4a-487b-874b-5d3013b86f44");
+		addContext("water", "ground, long-term", FedLCA.waterGroundLong_term, "eba77525-9745-4f4a-9182-91a67306ba1c");
 		addContext("water", "lake", FedLCA.waterLake, "c1069072-9923-48f6-821d-8fad6e0ace5b");
 		addContext("water", "ocean", FedLCA.waterOcean, "8b7c395f-60ef-4863-a7e6-3560b5ad1aae");
 		addContext("water", "river", FedLCA.waterRiver, "58ed0153-34aa-4d6f-babf-3cfb201eac1d");
 		addContext("water", "river, long-term", FedLCA.waterRiverLong_term, "1df73ec9-e6b7-4f91-8f62-14b8ee2f7d93");
-		addContext("water", "surface water", FedLCA.waterSurface, "782cf5cb-0a6b-44aa-8a87-e5997dd0d1ff");
+		addContext("water", "surface", FedLCA.waterSurface, "782cf5cb-0a6b-44aa-8a87-e5997dd0d1ff");
 
+		Pattern soilGeneralRE = Pattern.compile("soil", Pattern.CASE_INSENSITIVE);
+		regexGeneralString.add(soilGeneralRE);
 		addContext("soil", "unspecified", FedLCA.soilUnspecified, "e97d11b5-78e4-4a93-9a63-14673f89f709");
 		addContext("soil", "agricultural", FedLCA.soilAgricultural, "34efc703-6409-4acf-8f1d-dec646adca8c");
 		addContext("soil", "forestry", FedLCA.soilForestry, "b50bb945-da42-49d2-a6e1-73544e36aaf2");
 		addContext("soil", "industrial", FedLCA.soilIndustrial, "185a7592-e3ae-4c44-a124-9c700b76d33d");
 
+		Pattern resourceGeneralRE = Pattern.compile("resource", Pattern.CASE_INSENSITIVE);
+		regexGeneralString.add(resourceGeneralRE);
 		addContext("resource", "unspecified", FedLCA.resourceUnspecified, "0d557bab-d095-4142-912e-398fccb68240");
 		addContext("resource", "biotic", FedLCA.resourceBiotic, "26305d8d-591e-4927-8e19-ca7513edcee9");
 		addContext("resource", "in air", FedLCA.resourceIn_air, "965603be-3e94-42e6-9b2c-95eaf3b998c0");
@@ -312,10 +315,23 @@ public class FlowContext {
 		if (specificString == null) {
 			return false;
 		}
-		for (FlowContext flowContext : lcaMasterContexts) {
-			if (flowContext.generalString.equals(generalString) && flowContext.specificString.equals(specificString)) {
-				matchingResource = flowContext.tdbResource;
-				return true;
+
+		String udSpecificString = specificString.replaceAll("[()]", "");
+
+		for (Pattern pattern : regexGeneralString) {
+			Matcher matcher1 = pattern.matcher(generalString);
+			if (matcher1.find()) {
+				for (FlowContext flowContext : lcaMasterContexts) {
+					String masterGeneralString = flowContext.generalString;
+					Matcher matcher2 = pattern.matcher(masterGeneralString);
+					if (matcher2.find()) {
+						String masterSpecificString = flowContext.specificString;
+						if (udSpecificString.toLowerCase().equals(masterSpecificString)) {
+							matchingResource = flowContext.tdbResource;
+							return true;
+						}
+					}
+				}
 			}
 		}
 		return false;
