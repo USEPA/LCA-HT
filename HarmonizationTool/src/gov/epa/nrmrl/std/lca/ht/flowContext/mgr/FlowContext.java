@@ -337,4 +337,27 @@ public class FlowContext {
 		return false;
 	}
 
+	public String getGeneralString() {
+		Object result = getOneProperty(flowContextGeneral);
+		if (result == null) {
+			return null;
+		}
+		return (String) result;
+	}
+
+	public String getSpecificString() {
+		Object[] result = getAllProperties(flowContextSpecific);
+		if (result.length == 0) {
+			return null;
+		}
+		if (result.length == 1) {
+			return (String) result[0];
+		}
+		StringBuilder b = new StringBuilder();
+		b.append((String) result[0]);
+		for (int i = 1; i < result.length; i++) {
+			b.append(" -> " + (String) result[i]);
+		}
+		return b.toString();
+	}
 }

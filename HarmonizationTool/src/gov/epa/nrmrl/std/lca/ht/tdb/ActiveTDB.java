@@ -5,13 +5,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -89,7 +90,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-		// CurationMethods.createNewAnnotation();
+		CurationMethods.createNewAnnotation();
 	}
 
 	private static void openTDB() {
