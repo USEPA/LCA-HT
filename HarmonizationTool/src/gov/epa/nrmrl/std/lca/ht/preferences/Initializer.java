@@ -3,7 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.preferences;
 import java.io.File;
 import java.util.Date;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 

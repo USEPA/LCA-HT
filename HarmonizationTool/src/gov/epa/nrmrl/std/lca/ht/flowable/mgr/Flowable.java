@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
@@ -1052,6 +1052,9 @@ public class Flowable {
 				if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
 						|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
 					matchCandidates.put(candidateFlowableTDBResource, "=");
+					Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+					CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
+
 					hit = true;
 					continue;
 					// FlowsWorkflow.addFlowableRowNum(firstRow);
@@ -1062,6 +1065,8 @@ public class Flowable {
 					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
 							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
 						matchCandidates.put(candidateFlowableTDBResource, "=");
+						Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+						CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
 						hit = true;
 						continue;
 						// FlowsWorkflow.addFlowableRowNum(firstRow);
@@ -1076,6 +1081,8 @@ public class Flowable {
 					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
 							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
 						matchCandidates.put(candidateFlowableTDBResource, "=");
+						Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+						CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
 						hit = true;
 						continue;
 						// FlowsWorkflow.addFlowableRowNum(firstRow);
@@ -1086,11 +1093,12 @@ public class Flowable {
 						if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
 								|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
 							matchCandidates.put(candidateFlowableTDBResource, "=");
+							Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+							CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
 							hit = true;
 							continue;
 							// FlowsWorkflow.addFlowableRowNum(firstRow);
 						}
-
 					}
 				}
 			}

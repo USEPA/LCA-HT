@@ -4,6 +4,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
@@ -50,10 +52,10 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.util.Utils;
 
 public class SaveHarmonizedDataHandler implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler";
-
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -69,69 +71,24 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		// public Object execute(ExecutionEvent event) throws ExecutionException
-		// {
-		// -------------------------
-		System.out.println("Saving Harmonized Data");
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		Util.findView(MatchContexts.ID);
+		Util.findView(MatchProperties.ID);
 
-//		ResultsView resultsView;
-//		try {
-//			resultsView = (ResultsView) page.findView(ResultsView.ID);
-//		} catch (Exception e1) {
-//			resultsView = null;
-//		}
-//
-//		if (resultsView == null) {
-//			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-//			new GenericMessageBox(shell, "Nothing to Save",
-//					"The SPARQL Results View is closed, so there are no SPARQL results to save.");
-//			return null;
-//		}
-//
-//		QueryResults queryResults = resultsView.getQueryResults();
-//		if (queryResults == null){
-//			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-//			new GenericMessageBox(shell, "Nothing to Save",
-//					"The SPARQL Results View is empty.  Run a SPARQL query first, then use this command to save the results.");
-//			return null;
-//		}
-//		DataRow[] twoRows = HarmonizedDataSelector.getHarmonizedDataRow(1);
-//		DataRow[] twoRows = getHarmonizedDataRow();
-		
+		System.out.println("Saving Harmonized Data");
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
-		System.out.println("headerRow "+headerRow);
-		
+		System.out.println("headerRow " + headerRow);
+
 		List<DataRow> dataRows = new ArrayList<DataRow>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		for (int i = 0; i < tableProvider.getData().size(); i++){
+		for (int i = 0; i < tableProvider.getData().size(); i++) {
 			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 			dataRows.add(dataRow);
 		}
-//		System.out.println(dataRows.get(0).toString());
 
-		// ISelection iSelection = viewer.getSelection();
-		// Object obj = ((IStructuredSelection) iSelection).getFirstElement();
-		// System.out.println("saving file: " + obj);
-		// Shell shell = getViewSite().getShell();
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Text Files", "All Files (*)" };
 		String[] filterExtensions = new String[] { "*.txt", "*" };
-		// String filterPath = "/";
-		// String platform = SWT.getPlatform();
-		// if (platform.equals("win32") || platform.equals("wpf")) {
-		// filterNames = new String[] { "Text Files", "All Files (*.*)" };
-		// filterExtensions = new String[] {
-		// "*.txt", "*.*" };
-		// filterPath = "c:\\";
-		// }
-		// else if (platform.equals("macosx")) {
-		// filterNames = new String[] { "Text Files", "All Files (*.*)" };
-		// filterExtensions = new String[] {
-		// "*.txt", "*.*" };
-		// filterPath = "~/";
-		// }
 
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -143,14 +100,14 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			dialog.setFilterPath(homeDir);
 		}
-		
+
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFileName("query_results");
 
 		String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
-		if (saveTo == null){
+		if (saveTo == null) {
 			// "dialog was cancelled or an error occurred"
 			return null;
 		}

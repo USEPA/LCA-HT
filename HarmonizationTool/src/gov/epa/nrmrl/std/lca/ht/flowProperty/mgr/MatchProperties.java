@@ -99,7 +99,8 @@ public class MatchProperties extends ViewPart {
 		nextButton.addSelectionListener(nextListener);
 
 		userDataLabel = new Label(parent, SWT.NONE);
-		userDataLabel.setSize(120, 14);
+		userDataLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+//		userDataLabel.setSize(120, 14);
 		userDataLabel.setText("(user data)");
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
@@ -194,6 +195,9 @@ public class MatchProperties extends ViewPart {
 		if (CSVTableView.preCommit) {
 			return;
 		}
+		if (CSVTableView.getTable().getSelectionCount() == 0) {
+			return;
+		}
 		TableItem[] tableItems = CSVTableView.getTable().getSelection();
 		TableItem tableItem = tableItems[0];
 		String rowNumString = tableItem.getText(0);
@@ -203,7 +207,6 @@ public class MatchProperties extends ViewPart {
 		if (masterTree.getSelectionCount() == 0) {
 			return;
 		}
-
 		TreeItem treeItem = masterTree.getSelection()[0];
 		TreeNode treeNode = (TreeNode) treeItem.getData();
 		Resource newResource = treeNode.getUri();
@@ -282,26 +285,35 @@ public class MatchProperties extends ViewPart {
 		resultStrings[1] = ""; // Master List Flow Property Reference Unit
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 
-		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
-			TreeNode treeNode = (TreeNode) treeItem.getData();
-			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
-				Resource nodeResource = testNode.uri;
-				if (nodeResource == null) {
-					continue;
-				}
-				if (nodeResource.equals(resource)) {
-					resultStrings[0] = testNode.nodeName;
-					for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-						if (testNode.nodeName.equals(lcaUnit.unit_group)) {
-							resultStrings[1] = lcaUnit.referenceUnit;
-							resultStrings[2] = "" + lcaUnit.conversionFactor;
-						}
-					}
-				}
+		
+		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
+			if (lcaUnit.tdbResource.equals(resource)) {
+				resultStrings[0] = lcaUnit.unit_group;
+				resultStrings[1] = lcaUnit.referenceUnit;
+				resultStrings[2] = "" + lcaUnit.conversionFactor;
 			}
 		}
 		return resultStrings;
 	}
+	
+	public static String[] getFourPropertyStringsFromResource(Resource resource) {
+		String[] resultStrings = new String[4];
+		resultStrings[0] = ""; // Master List Flow Property
+		resultStrings[1] = ""; // Master List Flow Property Unit (name)
+		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
+		resultStrings[3] = ""; // Master List Flow Property Reference Factor
+		
+		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
+			if (lcaUnit.tdbResource.equals(resource)) {
+				resultStrings[0] = lcaUnit.unit_group;
+				resultStrings[1] = lcaUnit.name;
+				resultStrings[2] = "" + lcaUnit.conversionFactor;
+				resultStrings[3] = lcaUnit.referenceUnit;
+			}
+		}
+		return resultStrings;
+	}
+	
 
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterPropertyTree = new TreeNode(null);
@@ -789,6 +801,7 @@ public class MatchProperties extends ViewPart {
 	public void setPropertyResourcesToMatch(List<Resource> contextResourcesToMatch) {
 		this.propertyResourcesToMatch = contextResourcesToMatch;
 	}
+	
 	public static void update() {
 		Util.findView(CSVTableView.ID);
 		if (CSVTableView.getTable().getSelectionCount() == 0){
@@ -799,7 +812,11 @@ public class MatchProperties extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		propertyToMatch = dataRow.getFlowProperty();
-		Resource propertyResource = propertyToMatch.getMatchingResource();
+		if (propertyToMatch == null){
+			masterTree.deselectAll();
+			setUserDataLabel("",false);
+		}
+
 		String labelString = null;
 		String propertyString = propertyToMatch.getPropertyStr();
 		String unitString = propertyToMatch.getUnitStr();
@@ -810,21 +827,19 @@ public class MatchProperties extends ViewPart {
 		}
 
 		partialCollapse();
+		Resource propertyResource = propertyToMatch.getMatchingResource();
 		if (propertyResource != null) {
 			TreeItem treeItem = getTreeItemByURI(propertyResource);
 			if (treeItem != null) {
 				masterTree.setSelection(treeItem);
-//				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
 				setUserDataLabel(labelString, true);
 
 			} else {
 				masterTree.deselectAll();
-//				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-				setUserDataLabel(labelString, true);
+				setUserDataLabel(labelString, false);
 			}
 		} else {
 			masterTree.deselectAll();
-//			setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			setUserDataLabel(labelString, false);
 		}
 	}

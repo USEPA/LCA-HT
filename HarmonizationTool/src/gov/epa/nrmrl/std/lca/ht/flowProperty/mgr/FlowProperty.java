@@ -15,6 +15,8 @@ import java.util.Set;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -338,7 +340,8 @@ public class FlowProperty {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Resource matchingResource;
+	private Resource matchingResource; // THIS IS A SINGLE RDF Resource FOR THE MATCHING FLOW PROPERTY
+	// TODO: FIGURE OUT IF FLOW PROPERTY INDEPENDENT OF UNIT IS EVERY TO BE USED
 	private int firstRow;
 
 	// CONSTRUCTORS
@@ -493,6 +496,16 @@ public class FlowProperty {
 				}
 			}
 		}
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		ResIterator resIterator = ActiveTDB.getModel().listSubjectsWithProperty(FedLCA.comparedSource, tdbResource);
+		// ActiveTDB.tdbDataset.end();
+		if (resIterator.hasNext()){
+			matchingResource = resIterator.next();
+			ActiveTDB.tdbDataset.end();
+			return;
+		}
+		ActiveTDB.tdbDataset.end();
 	}
 
 	public void clearSyncDataFromTDB() {

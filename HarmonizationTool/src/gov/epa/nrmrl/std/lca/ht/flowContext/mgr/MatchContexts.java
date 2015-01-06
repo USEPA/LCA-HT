@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -38,8 +39,12 @@ import org.eclipse.swt.widgets.Tree;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class MatchContexts extends ViewPart {
-	private List<String> contextsToMatch;
-	private List<Resource> contextResourcesToMatch;
+	private static List<String> contextsToMatch;
+	private static List<Resource> contextResourcesToMatch;
+	private static Composite outerComposite;
+	private static Button unAssignButton;
+	private static Button nextButton;
+	private static Label userDataLabel;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -69,7 +74,6 @@ public class MatchContexts extends ViewPart {
 	}
 
 	private static TreeViewer masterTreeViewer;
-	private static Label masterLbl;
 	// private int rowNumSelected;
 	// private int colNumSelected;
 	private static FlowContext contextToMatch;
@@ -84,7 +88,7 @@ public class MatchContexts extends ViewPart {
 
 		outerComposite = new Composite(parent, SWT.NONE);
 		outerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		outerComposite.setLayout(new GridLayout(2, false));
+		outerComposite.setLayout(new GridLayout(1, false));
 		// ============ NEW COL =========
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
 		innerComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -103,11 +107,11 @@ public class MatchContexts extends ViewPart {
 		nextButton.setLayoutData(gd_assignButton);
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
-
-		masterLbl = new Label(outerComposite, SWT.NONE);
-		masterLbl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		masterLbl.setSize(120, 14);
-		masterLbl.setText("Master Flow Contexts");
+		
+		userDataLabel = new Label(parent, SWT.NONE);
+		userDataLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+//		userDataLabel.setSize(120, 14);
+		userDataLabel.setText("(user data)");
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
 		masterTree = masterTreeViewer.getTree();
@@ -159,6 +163,9 @@ public class MatchContexts extends ViewPart {
 		private void doit(SelectionEvent e) {
 			Util.findView(CSVTableView.ID);
 			Util.findView(FlowsWorkflow.ID);
+			if (CSVTableView.getTable().getSelectionCount() == 0) {
+				return;
+			}
 			TableItem[] tableItems = CSVTableView.getTable().getSelection();
 			TableItem tableItem = tableItems[0];
 			masterTree.deselectAll();
@@ -168,7 +175,7 @@ public class MatchContexts extends ViewPart {
 			dataRow.getFlowContext().setMatchingResource(null);
 			FlowsWorkflow.removeMatchContextRowNum(contextToMatch.getFirstRow());
 			CSVTableView.colorFlowContextRows();
-			// tableItem.setBackground(color);
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 
 		@Override
@@ -221,6 +228,7 @@ public class MatchContexts extends ViewPart {
 		dataRow.getFlowContext().setMatchingResource(newResource);
 		FlowsWorkflow.addMatchContextRowNum(contextToMatch.getFirstRow());
 		CSVTableView.colorFlowContextRows();
+		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 	}
 
 	private SelectionListener nextListener = new SelectionListener() {
@@ -300,6 +308,9 @@ public class MatchContexts extends ViewPart {
 		String[] result = new String[2];
 		result[0] = "";
 		result[1] = "";
+		if (resource == null){
+			return result;
+		}
 		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
 			TreeNode treeNode = (TreeNode) treeItem.getData();
 			for (TreeNode testNode : TreeNode.getAllChildNodes(treeNode)) {
@@ -711,9 +722,8 @@ public class MatchContexts extends ViewPart {
 			// System.out.println("colNumSelected = " + colNumSelected);
 		}
 	};
-	private Composite outerComposite;
-	private Button unAssignButton;
-	private Button nextButton;
+
+	
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
@@ -734,24 +744,6 @@ public class MatchContexts extends ViewPart {
 		this.contextResourcesToMatch = contextResourcesToMatch;
 	}
 
-	// private static void update() {
-	// Util.findView(CSVTableView.ID);
-	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-	// String rowNumString = tableItem.getText(0);
-	// int rowNumber = Integer.parseInt(rowNumString) - 1;
-	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-	// Resource contextResource = dataRow.getFlowContext().getMatchingResource();
-	// if (contextResource != null) {
-	// TreeItem treeItem = getTreeItemByURI(contextResource);
-	// if (treeItem != null) {
-	// masterTree.setSelection(getTreeItemByURI(contextResource));
-	// } else {
-	// masterTree.deselectAll();
-	// }
-	// } else {
-	// masterTree.deselectAll();
-	// }
-	// }
 	public static void update() {
 		Util.findView(CSVTableView.ID);
 		if (CSVTableView.getTable().getSelectionCount() == 0) {
@@ -762,28 +754,49 @@ public class MatchContexts extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
+		if (contextToMatch == null){
+			masterTree.deselectAll();
+			setUserDataLabel("",false);
+		}
+		
+		String labelString = null;
+		String generalString = contextToMatch.getGeneralString();
+		String specificString = contextToMatch.getSpecificString();
+		if (specificString == null) {
+			labelString = generalString;
+		} else {
+			labelString = generalString + " -> " + specificString;
+		}
+		
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
 			if (treeItem != null) {
 				masterTree.setSelection(getTreeItemByURI(contextResource));
+				setUserDataLabel(labelString, true);
+
 			} else {
 				masterTree.deselectAll();
+				setUserDataLabel(labelString, false);
+
 			}
 		} else {
 			masterTree.deselectAll();
+			setUserDataLabel(labelString, false);
+
 		}
-//		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
-//			masterTree.getColumn(i).pack();
-//			int width = masterTree.getColumn(i).getWidth();
-//			if (width < 20) {
-//				masterTree.getColumn(i).setWidth(20);
-//			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
-//				masterTree.getColumn(i).setWidth(400);
-//			}
-//		}
 	}
 	
+	private static void setUserDataLabel(String labelString, boolean isMatched) {
+		if (labelString != null) {
+			userDataLabel.setText(labelString);
+		}
+		if (isMatched){
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		} else {
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		}
+	}
 //	public static void update(Integer dataRowNum) {
 //		Util.findView(CSVTableView.ID);
 //		if (CSVTableView.getTable().getSelectionCount() == 0) {

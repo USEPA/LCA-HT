@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.dataModels;
+package gov.epa.nrmrl.std.lca.ht.curration;
 
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -142,8 +142,8 @@ public class CurationMethods {
 		return currentAnnotation;
 	}
 
-	public static void setCurrentAnnotation(Resource currentAnnotation) {
-		CurationMethods.currentAnnotation = currentAnnotation;
+	public static void setCurrentAnnotation(Resource newAnnotation) {
+		currentAnnotation = newAnnotation;
 	}
 
 	public static void removeComparison(Resource comparison) {
