@@ -83,6 +83,16 @@ public class CurationMethods {
 			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);
 		}
 	}
+	
+	public static void nonTSUpdateAnnotationModifiedDate() {
+		if (currentAnnotation == null) {
+			createNewAnnotation();
+		} else {
+			Date calendar = new Date();
+			// Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar);
+			ActiveTDB.replaceLiteral(currentAnnotation, DCTerms.modified, calendar);
+		}
+	}
 
 	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
 		if (querySource == null || master == null) {
@@ -99,6 +109,23 @@ public class CurationMethods {
 		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedEquivalence, equivalence);
 		ActiveTDB.tsAddTriple(currentAnnotation, FedLCA.hasComparison, comparison);
 		updateAnnotationModifiedDate();
+		return comparison;
+	}
+		public static Resource nonTSCreateNewComparison(Resource querySource, Resource master, Resource equivalence) {
+		if (querySource == null || master == null) {
+			System.out.println("querySource = " + querySource + " and master = " + master);
+			return null;
+		}
+		if (querySource.equals(master)) {
+			return null;
+		}
+		Resource comparison = ActiveTDB.createResource(FedLCA.Comparison);
+
+		ActiveTDB.addTriple(comparison, FedLCA.comparedSource, querySource);
+		ActiveTDB.addTriple(comparison, FedLCA.comparedMaster, master);
+		ActiveTDB.addTriple(comparison, FedLCA.comparedEquivalence, equivalence);
+		ActiveTDB.addTriple(currentAnnotation, FedLCA.hasComparison, comparison);
+		nonTSUpdateAnnotationModifiedDate();
 		return comparison;
 	}
 

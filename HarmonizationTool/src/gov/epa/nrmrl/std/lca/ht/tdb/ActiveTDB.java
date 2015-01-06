@@ -232,7 +232,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-	private static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
+	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
 			Object thingLiteral) {
 		if (noReadWrite) {
 			return;
@@ -379,7 +379,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private static Resource createResource(Resource rdfclass) {
+	public static Resource createResource(Resource rdfclass) {
 		Model tdbModel = null;
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
@@ -442,7 +442,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return result;
 	}
 
-	private static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
+	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
 		if (noReadWrite) {
 			return;
 		}
@@ -530,7 +530,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private static Literal createTypedLiteral(Object thingLiteral) {
+	public static Literal createTypedLiteral(Object thingLiteral) {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		Model tdbModel = null;
 		if (tdbDataset.isInTransaction()) {
@@ -864,5 +864,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.end();
 		}
 		return success;
+	}
+
+	public static void addTriple(Resource s, Property p, Resource o) {
+		s.addProperty(p, o);
 	}
 }
