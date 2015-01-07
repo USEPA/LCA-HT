@@ -64,7 +64,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -119,7 +118,7 @@ public class MatchFlowables extends ViewPart {
 		fl_innerComposite.spacing = 5;
 		innerComposite.setLayout(fl_innerComposite);
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gridData.horizontalIndent = 15;
+		gridData.horizontalIndent = 120;
 		gridData.heightHint = 20;
 		innerComposite.setLayoutData(gridData);
 
@@ -131,10 +130,6 @@ public class MatchFlowables extends ViewPart {
 			// THIS IS NOT PERFECT
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
-		
-		lblNewLabel = new Label(innerComposite, SWT.CENTER);
-		lblNewLabel.setAlignment(SWT.CENTER);
-		lblNewLabel.setText("Assign Below");
 
 		Button acceptAdvance = new Button(innerComposite, SWT.NONE);
 		acceptAdvance.setText("Next");
@@ -767,7 +762,6 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static Composite outerComposite;
-	private static Label lblNewLabel;
 
 	public static void initialize() {
 		initializeTable();
