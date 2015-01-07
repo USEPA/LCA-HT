@@ -64,6 +64,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -114,8 +115,11 @@ public class MatchFlowables extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		FillLayout fl_innerComposite = new FillLayout(SWT.HORIZONTAL);
+		fl_innerComposite.spacing = 5;
+		innerComposite.setLayout(fl_innerComposite);
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gridData.horizontalIndent = 15;
 		gridData.heightHint = 20;
 		innerComposite.setLayoutData(gridData);
 
@@ -127,6 +131,10 @@ public class MatchFlowables extends ViewPart {
 			// THIS IS NOT PERFECT
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
+		
+		lblNewLabel = new Label(innerComposite, SWT.CENTER);
+		lblNewLabel.setAlignment(SWT.CENTER);
+		lblNewLabel.setText("Assign Below");
 
 		Button acceptAdvance = new Button(innerComposite, SWT.NONE);
 		acceptAdvance.setText("Next");
@@ -138,7 +146,7 @@ public class MatchFlowables extends ViewPart {
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
 
-		tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
@@ -759,6 +767,7 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static Composite outerComposite;
+	private static Label lblNewLabel;
 
 	public static void initialize() {
 		initializeTable();

@@ -172,6 +172,8 @@ public class FedLCA {
 
 	public static final Property hasSmilesString = m_model.createProperty(NS + "hasSmilesString");
 
+	public static final Property hasIUPACName = m_model.createProperty(NS + "hasIUPACName");
+
 	public static final Property curatedBy = m_model.createProperty(NS + "curatedBy");
 
 	public static final Property hasContactPerson = m_model.createProperty(NS + "hasContactPerson");

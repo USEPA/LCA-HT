@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
@@ -39,12 +40,14 @@ import org.eclipse.swt.widgets.Tree;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class MatchContexts extends ViewPart {
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
+	private static Tree masterTree;
 	private static List<String> contextsToMatch;
 	private static List<Resource> contextResourcesToMatch;
 	private static Composite outerComposite;
 	private static Button unAssignButton;
 	private static Button nextButton;
-	private static Label userDataLabel;
+	private static Text userDataLabel;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -61,9 +64,6 @@ public class MatchContexts extends ViewPart {
 	public MatchContexts() {
 		// MatchContexts = this;
 	}
-
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
-	private static Tree masterTree;
 
 	public static Tree getMasterTree() {
 		return masterTree;
@@ -87,12 +87,25 @@ public class MatchContexts extends ViewPart {
 		parent.setLayout(gl_parent);
 
 		outerComposite = new Composite(parent, SWT.NONE);
-		outerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		outerComposite.setLayout(new GridLayout(1, false));
+		GridData gd_outerComposite = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_outerComposite.heightHint = 25;
+		outerComposite.setLayoutData(gd_outerComposite);
+		GridLayout gl_outerComposite = new GridLayout(1, false);
+		gl_outerComposite.marginHeight = 0;
+		gl_outerComposite.verticalSpacing = 0;
+		outerComposite.setLayout(gl_outerComposite);
 		// ============ NEW COL =========
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		innerComposite.setLayout(new GridLayout(2, false));
+		GridData gd_innerComposite = new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1);
+		gd_innerComposite.heightHint = 25;
+		innerComposite.setLayoutData(gd_innerComposite);
+		GridLayout gl_innerComposite = new GridLayout(2, false);
+		gl_innerComposite.marginLeft = 5;
+		gl_innerComposite.marginHeight = 0;
+		gl_innerComposite.verticalSpacing = 0;
+		gl_innerComposite.marginWidth = 0;
+		gl_innerComposite.horizontalSpacing = 15;
+		innerComposite.setLayout(gl_innerComposite);
 
 		unAssignButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -107,10 +120,13 @@ public class MatchContexts extends ViewPart {
 		nextButton.setLayoutData(gd_assignButton);
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
-		
-		userDataLabel = new Label(parent, SWT.NONE);
-		userDataLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-//		userDataLabel.setSize(120, 14);
+
+		userDataLabel = new Text(parent, SWT.NONE);
+		GridData gd_userDataLabel = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_userDataLabel.heightHint = 40;
+		gd_userDataLabel.widthHint = 800;
+		userDataLabel.setLayoutData(gd_userDataLabel);
+		// userDataLabel.setSize(120, 14);
 		userDataLabel.setText("(user data)");
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
@@ -308,7 +324,7 @@ public class MatchContexts extends ViewPart {
 		String[] result = new String[2];
 		result[0] = "";
 		result[1] = "";
-		if (resource == null){
+		if (resource == null) {
 			return result;
 		}
 		for (TreeItem treeItem : masterTreeViewer.getTree().getItems()) {
@@ -723,8 +739,6 @@ public class MatchContexts extends ViewPart {
 		}
 	};
 
-	
-
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
 	// for (int i = 0; i < queryTbl.getColumnCount(); i++) {
@@ -754,20 +768,20 @@ public class MatchContexts extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
-		if (contextToMatch == null){
+		if (contextToMatch == null) {
 			masterTree.deselectAll();
-			setUserDataLabel("",false);
+			setUserDataLabel("", false);
 		}
-		
+
 		String labelString = null;
 		String generalString = contextToMatch.getGeneralString();
 		String specificString = contextToMatch.getSpecificString();
 		if (specificString == null) {
 			labelString = generalString;
 		} else {
-			labelString = generalString + " -> " + specificString;
+			labelString = generalString + System.getProperty("line.separator") + "   " +specificString;
 		}
-		
+
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
@@ -786,46 +800,46 @@ public class MatchContexts extends ViewPart {
 
 		}
 	}
-	
+
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {
 			userDataLabel.setText(labelString);
 		}
-		if (isMatched){
+		if (isMatched) {
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		} else {
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 	}
-//	public static void update(Integer dataRowNum) {
-//		Util.findView(CSVTableView.ID);
-//		if (CSVTableView.getTable().getSelectionCount() == 0) {
-//			return;
-//		}
-//		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		// String rowNumString = tableItem.getText(0);
-//		// int rowNumber = Integer.parseInt(rowNumString) - 1;
-//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
-//		contextToMatch = dataRow.getFlowContext();
-//		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
-//		if (contextResource != null) {
-//			TreeItem treeItem = getTreeItemByURI(contextResource);
-//			if (treeItem != null) {
-//				masterTree.setSelection(getTreeItemByURI(contextResource));
-//			} else {
-//				masterTree.deselectAll();
-//			}
-//		} else {
-//			masterTree.deselectAll();
-//		}
-////		for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
-////			masterTree.getColumn(i).pack();
-////			int width = masterTree.getColumn(i).getWidth();
-////			if (width < 20) {
-////				masterTree.getColumn(i).setWidth(20);
-////			} else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
-////				masterTree.getColumn(i).setWidth(400);
-////			}
-////		}
-//	}
+	// public static void update(Integer dataRowNum) {
+	// Util.findView(CSVTableView.ID);
+	// if (CSVTableView.getTable().getSelectionCount() == 0) {
+	// return;
+	// }
+	// // TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+	// // String rowNumString = tableItem.getText(0);
+	// // int rowNumber = Integer.parseInt(rowNumString) - 1;
+	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(dataRowNum);
+	// contextToMatch = dataRow.getFlowContext();
+	// Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+	// if (contextResource != null) {
+	// TreeItem treeItem = getTreeItemByURI(contextResource);
+	// if (treeItem != null) {
+	// masterTree.setSelection(getTreeItemByURI(contextResource));
+	// } else {
+	// masterTree.deselectAll();
+	// }
+	// } else {
+	// masterTree.deselectAll();
+	// }
+	// // for (int i = 0, n = masterTree.getColumnCount(); i < n; i++) {
+	// // masterTree.getColumn(i).pack();
+	// // int width = masterTree.getColumn(i).getWidth();
+	// // if (width < 20) {
+	// // masterTree.getColumn(i).setWidth(20);
+	// // } else if (width > 400 && masterTree.getHorizontalBar().getVisible()) {
+	// // masterTree.getColumn(i).setWidth(400);
+	// // }
+	// // }
+	// }
 }

@@ -233,8 +233,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return null;
 	}
 
-	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype,
-			Object thingLiteral) {
+	public static void replaceLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
 		if (noReadWrite) {
 			return;
 		}
@@ -661,9 +660,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		while (nodeIterator.hasNext()) {
 			RDFNode rdfNode = nodeIterator.next();
 			if (rdfNode.isLiteral()) {
-				if (rdfNode.asLiteral().getDatatype().equals(rdfDatatype)) {
-					// ONLY REMOVING SAME TYPE
-					tdbModel.removeAll(subject, predicate, rdfNode);
+				Literal literalRDFNode = rdfNode.asLiteral();
+				// IF IN A TRANSACTION, WE CAN'T DO .getDatatype() ON THE .asLiteral() VERSION
+				if (tdbDataset.isInTransaction()) {
+					String rdfNodeString = rdfNode.asLiteral().getString();
+				} else {
+					RDFDatatype rdfDatatypeOfLiteral = literalRDFNode.getDatatype();
+					if (rdfDatatypeOfLiteral.equals(rdfDatatype)) {
+						// ONLY REMOVING SAME TYPE
+						tdbModel.removeAll(subject, predicate, rdfNode);
+					}
 				}
 			}
 		}

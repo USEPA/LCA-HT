@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import java.util.concurrent.TimeUnit;
-
-
-
 
 //import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -151,7 +147,7 @@ public class AutoMatchJob extends Job {
 		int percentComplete = 0;
 		// TableProvider flowContextTableProvider = new TableProvider();
 		// TableProvider flowPropertyTableProvider = new TableProvider();
-stopWatch01.start();
+		stopWatch01.start();
 		// ========================== BEGIN ROW BY ROW ==========================
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
 			if (rowsToIgnore.contains(rowNumber)) {
@@ -194,57 +190,56 @@ stopWatch01.start();
 			}
 			stopWatch02.stop();
 			stopWatch03.start();
-//			if (!flowableConcatinated.matches("^\\s*$")) {
-				flowable = flowableMap.get(flowableConcatinated);
-				if (flowable == null) {
-					// --- BEGIN SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-					try {
+			// if (!flowableConcatinated.matches("^\\s*$")) {
+			flowable = flowableMap.get(flowableConcatinated);
+			if (flowable == null) {
+				// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+				// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+				// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+				// try {
 
+				flowable = new Flowable();
+				// flowable = new Flowable(false);
 
-//					flowable = new Flowable();
-					flowable = new Flowable(false);
-
-					flowableMap.put(flowableConcatinated, flowable);
-//					ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
-//							dataSourceProvider.getTdbResource());
-					flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
-					for (int i : flowableCSVColumnNumbers) {
-						String dataValue = dataRow.get(i - 1);
-						if (dataValue.equals("")) {
-							continue;
-						}
-						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-//						flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
-						flowable.nonTSSetProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+				flowableMap.put(flowableConcatinated, flowable);
+				ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
+						dataSourceProvider.getTdbResource());
+				// flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
+				for (int i : flowableCSVColumnNumbers) {
+					String dataValue = dataRow.get(i - 1);
+					if (dataValue.equals("")) {
+						continue;
 					}
-					stopWatch04.start();
-//					final boolean hit = flowable.setMatches();
-					final boolean hit = flowable.nonTSSetMatches();
-					stopWatch04.stop();
-					flowable.setFirstRow(rowNumToSend);
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-							if (hit) {
-								FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
-							}
+					LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+					flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+					// flowable.nonTSSetProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+				}
+				stopWatch04.start();
+				final boolean hit = flowable.setMatches();
+				// final boolean hit = flowable.nonTSSetMatches();
+				stopWatch04.stop();
+				flowable.setFirstRow(rowNumToSend);
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
+						if (hit) {
+							FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
 						}
+					}
 
-					});
-					ActiveTDB.tdbDataset.commit();
-					// sync();
-				} catch (Exception e) {
-					System.out.println("AutoMatchJob Flowable creation transaction failed; see Exception: " + e);
-					ActiveTDB.tdbDataset.abort();
-				} finally {
-					ActiveTDB.tdbDataset.end();
-				}
+				});
+				// ActiveTDB.tdbDataset.commit();
+				// // sync();
+				// } catch (Exception e) {
+				// System.out.println("AutoMatchJob Flowable creation transaction failed; see Exception: " + e);
+				// ActiveTDB.tdbDataset.abort();
+				// } finally {
+				// ActiveTDB.tdbDataset.end();
+				// }
 				// ---- END SAFE -WRITE- TRANSACTION ---
-				}
-				dataRow.setFlowable(flowable);
-//			}
+			}
+			dataRow.setFlowable(flowable);
+			// }
 			stopWatch03.stop();
 
 			// ========================== FLOW CONTEXT ==========================

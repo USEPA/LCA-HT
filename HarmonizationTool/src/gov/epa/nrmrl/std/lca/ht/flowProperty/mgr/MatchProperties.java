@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
@@ -41,8 +42,15 @@ import org.eclipse.swt.widgets.Tree;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class MatchProperties extends ViewPart {
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
 	private List<String> propertiesToMatch;
 	private List<Resource> propertyResourcesToMatch;
+	private static Tree masterTree;
+	private static TreeViewer masterTreeViewer;
+	private static Text userDataLabel;
+	private static int rowNumSelected;
+	private static int colNumSelected;
+	private static FlowProperty propertyToMatch;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -60,14 +68,6 @@ public class MatchProperties extends ViewPart {
 		// MatchContexts = this;
 	}
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
-	private static Tree masterTree;
-	private static TreeViewer masterTreeViewer;
-	private static Label userDataLabel;
-	private int rowNumSelected;
-	private int colNumSelected;
-	private static FlowProperty propertyToMatch;
-
 	// private Composite compositeMatches;
 	// private Composite compositeMaster;
 
@@ -77,15 +77,29 @@ public class MatchProperties extends ViewPart {
 		parent.setLayout(gl_parent);
 
 		outerComposite = new Composite(parent, SWT.NONE);
-		outerComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		outerComposite.setLayout(new GridLayout(1, false));
+		GridData gd_outerComposite = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+		gd_outerComposite.heightHint = 25;
+		outerComposite.setLayoutData(gd_outerComposite);
+		GridLayout gl_outerComposite = new GridLayout(1, false);
+		gl_outerComposite.verticalSpacing = 0;
+		gl_outerComposite.marginHeight = 0;
+		outerComposite.setLayout(gl_outerComposite);
 		// ============ NEW COL =========
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
-		innerComposite.setLayout(new GridLayout(2, false));
+		GridData gd_innerComposite = new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1);
+		gd_innerComposite.heightHint = 25;
+		innerComposite.setLayoutData(gd_innerComposite);
+		GridLayout gl_innerComposite = new GridLayout(2, false);
+		gl_innerComposite.horizontalSpacing = 15;
+		gl_innerComposite.marginHeight = 0;
+		gl_innerComposite.marginLeft = 5;
+		gl_innerComposite.marginWidth = 0;
+		gl_innerComposite.verticalSpacing = 0;
+		innerComposite.setLayout(gl_innerComposite);
 
 		unAssignButton = new Button(innerComposite, SWT.NONE);
-		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_unAssignButton.heightHint = 20;
 		gd_unAssignButton.widthHint = 90;
 		unAssignButton.setLayoutData(gd_unAssignButton);
 		unAssignButton.setText("Unassign");
@@ -98,9 +112,12 @@ public class MatchProperties extends ViewPart {
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
 
-		userDataLabel = new Label(parent, SWT.NONE);
-		userDataLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-//		userDataLabel.setSize(120, 14);
+		userDataLabel = new Text(parent, SWT.NONE);
+		GridData gd_userDataLabel = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_userDataLabel.heightHint = 40;
+		gd_userDataLabel.widthHint = 600;
+		userDataLabel.setLayoutData(gd_userDataLabel);
+		// userDataLabel.setSize(120, 14);
 		userDataLabel.setText("(user data)");
 		// ============ NEW COL =========
 		masterTreeViewer = new TreeViewer(parent, SWT.BORDER);
@@ -285,7 +302,6 @@ public class MatchProperties extends ViewPart {
 		resultStrings[1] = ""; // Master List Flow Property Reference Unit
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 
-		
 		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
 			if (lcaUnit.tdbResource.equals(resource)) {
 				resultStrings[0] = lcaUnit.unit_group;
@@ -295,14 +311,14 @@ public class MatchProperties extends ViewPart {
 		}
 		return resultStrings;
 	}
-	
+
 	public static String[] getFourPropertyStringsFromResource(Resource resource) {
 		String[] resultStrings = new String[4];
 		resultStrings[0] = ""; // Master List Flow Property
 		resultStrings[1] = ""; // Master List Flow Property Unit (name)
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 		resultStrings[3] = ""; // Master List Flow Property Reference Factor
-		
+
 		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
 			if (lcaUnit.tdbResource.equals(resource)) {
 				resultStrings[0] = lcaUnit.unit_group;
@@ -313,7 +329,6 @@ public class MatchProperties extends ViewPart {
 		}
 		return resultStrings;
 	}
-	
 
 	private TreeNode createHarmonizeCompartments() {
 		TreeNode masterPropertyTree = new TreeNode(null);
@@ -801,10 +816,10 @@ public class MatchProperties extends ViewPart {
 	public void setPropertyResourcesToMatch(List<Resource> contextResourcesToMatch) {
 		this.propertyResourcesToMatch = contextResourcesToMatch;
 	}
-	
+
 	public static void update() {
 		Util.findView(CSVTableView.ID);
-		if (CSVTableView.getTable().getSelectionCount() == 0){
+		if (CSVTableView.getTable().getSelectionCount() == 0) {
 			return;
 		}
 		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
@@ -812,9 +827,9 @@ public class MatchProperties extends ViewPart {
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		propertyToMatch = dataRow.getFlowProperty();
-		if (propertyToMatch == null){
+		if (propertyToMatch == null) {
 			masterTree.deselectAll();
-			setUserDataLabel("",false);
+			setUserDataLabel("", false);
 		}
 
 		String labelString = null;
@@ -823,7 +838,9 @@ public class MatchProperties extends ViewPart {
 		if (propertyString == null) {
 			labelString = unitString;
 		} else {
-			labelString = propertyString + ": " + unitString;
+			// labelString = propertyString + ": " + unitString;
+
+			labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
 		}
 
 		partialCollapse();
@@ -843,46 +860,46 @@ public class MatchProperties extends ViewPart {
 			setUserDataLabel(labelString, false);
 		}
 	}
-	
-//	public static void update(Integer dataRowNum) {
-//		Util.findView(CSVTableView.ID);
-//		if (CSVTableView.getTable().getSelectionCount() == 0){
-//			return;
-//		}
-//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		String rowNumString = tableItem.getText(0);
-//		int rowNumber = Integer.parseInt(rowNumString) - 1;
-//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//		propertyToMatch = dataRow.getFlowProperty();
-//		Resource propertyResource = propertyToMatch.getMatchingResource();
-//		String labelString = null;
-//		String propertyString = propertyToMatch.getPropertyStr();
-//		String unitString = propertyToMatch.getUnitStr();
-//		if (propertyString == null) {
-//			labelString = unitString;
-//		} else {
-//			labelString = propertyString + ": " + unitString;
-//		}
-//
-//		partialCollapse();
-//		if (propertyResource != null) {
-//			TreeItem treeItem = getTreeItemByURI(propertyResource);
-//			if (treeItem != null) {
-//				masterTree.setSelection(treeItem);
-////				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-//				setUserDataLabel(labelString, true);
-//
-//			} else {
-//				masterTree.deselectAll();
-////				setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-//				setUserDataLabel(labelString, true);
-//			}
-//		} else {
-//			masterTree.deselectAll();
-////			setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-//			setUserDataLabel(labelString, false);
-//		}
-//	}
+
+	// public static void update(Integer dataRowNum) {
+	// Util.findView(CSVTableView.ID);
+	// if (CSVTableView.getTable().getSelectionCount() == 0){
+	// return;
+	// }
+	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+	// String rowNumString = tableItem.getText(0);
+	// int rowNumber = Integer.parseInt(rowNumString) - 1;
+	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	// propertyToMatch = dataRow.getFlowProperty();
+	// Resource propertyResource = propertyToMatch.getMatchingResource();
+	// String labelString = null;
+	// String propertyString = propertyToMatch.getPropertyStr();
+	// String unitString = propertyToMatch.getUnitStr();
+	// if (propertyString == null) {
+	// labelString = unitString;
+	// } else {
+	// labelString = propertyString + ": " + unitString;
+	// }
+	//
+	// partialCollapse();
+	// if (propertyResource != null) {
+	// TreeItem treeItem = getTreeItemByURI(propertyResource);
+	// if (treeItem != null) {
+	// masterTree.setSelection(treeItem);
+	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+	// setUserDataLabel(labelString, true);
+	//
+	// } else {
+	// masterTree.deselectAll();
+	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
+	// setUserDataLabel(labelString, true);
+	// }
+	// } else {
+	// masterTree.deselectAll();
+	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+	// setUserDataLabel(labelString, false);
+	// }
+	// }
 
 	private static void partialCollapse() {
 		for (TreeItem treeItem1 : masterTreeViewer.getTree().getItems()) {
@@ -899,12 +916,12 @@ public class MatchProperties extends ViewPart {
 		}
 		userDataLabel.setBackground(color);
 	}
-	
+
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {
 			userDataLabel.setText(labelString);
 		}
-		if (isMatched){
+		if (isMatched) {
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		} else {
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
