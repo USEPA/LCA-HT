@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry excluding="**/*" kind="src" path="jena-tdb-src"/>
+	<classpathentry excluding="**/*" kind="src" path="jena-core-src"/>
+	<classpathentry excluding="**/*" kind="src" path="jena-arq-src"/>
+	<classpathentry excluding="**/*" kind="src" path="jena-iri-src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry exported="true" kind="lib" path="commons-codec-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="httpclient-4.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="httpcore-4.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="jcl-over-slf4j-1.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-arq-2.10.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-core-2.10.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-iri-0.9.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-tdb-0.10.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="log4j-1.2.16.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-api-1.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-log4j12-1.6.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JsonMapping"/>
+	<classpathentry exported="true" kind="lib" path="jena-tdb-1.1.0.jar" sourcepath="jena-tdb-src"/>
+	<classpathentry exported="true" kind="lib" path="jena-arq-2.12.0.jar" sourcepath="jena-arq-src"/>
+	<classpathentry exported="true" kind="lib" path="jena-core-2.12.0.jar" sourcepath="jena-core-src"/>
+	<classpathentry exported="true" kind="lib" path="jena-iri-1.1.0.jar" sourcepath="jena-iri-src"/>
+	<classpathentry exported="true" kind="lib" path="jcl-over-slf4j-1.7.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jsonld-java-0.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="httpcore-4.2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="httpclient-4.2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="xml-apis-1.4.01.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-arq-2.10.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-core-2.10.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-iri-0.9.5-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="jena-tdb-0.10.0-sources.jar"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/transue/local/packages/org.apache.xerces_2.9.0.v200909240008.jar"/>
-	<classpathentry kind="lib" path="xercesImpl-2.10.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="xercesImpl-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-codec-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="log4j-1.2.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-log4j12-1.7.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

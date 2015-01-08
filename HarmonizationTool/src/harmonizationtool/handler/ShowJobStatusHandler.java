@@ -1,8 +1,10 @@
 package harmonizationtool.handler;
 
 import gov.epa.nrmrl.std.lca.ht.job.JobStatus;
-import harmonizationtool.ResultsView;
-import harmonizationtool.utils.Util;
+//import harmonizationtool.ResultsView;
+//import harmonizationtool.utils.Util;
+
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

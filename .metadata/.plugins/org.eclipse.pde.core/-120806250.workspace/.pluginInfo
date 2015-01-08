@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+	<bundle bundleID="986" localization="OSGI-INF/l10n/bundle" name="Jena-tools" project="Jena-tools">
+		<library name="jena-tdb-1.1.0.jar"/>
+		<library name="jena-arq-2.12.0.jar"/>
+		<library name="jena-core-2.12.0.jar"/>
+		<library name="jena-iri-1.1.0.jar"/>
+		<library name="jcl-over-slf4j-1.7.6.jar"/>
+		<library name="jsonld-java-0.5.0.jar"/>
+		<library name="httpcore-4.2.5.jar"/>
+		<library name="httpclient-4.2.6.jar"/>
+		<library name="xml-apis-1.4.01.jar"/>
+		<library name="xercesImpl-2.11.0.jar"/>
+		<library name="commons-codec-1.6.jar"/>
+		<library name="log4j-1.2.17.jar"/>
+		<library name="slf4j-log4j12-1.7.6.jar"/>
+		<library name="slf4j-api-1.7.6.jar"/>
+	</bundle>
+	<bundle bundleID="984" class="harmonizationtool.Activator" localization="OSGI-INF/l10n/bundle" name="HarmonizationTool" project="HarmonizationTool" provider="EMVL">
+		<library name="."/>
+		<library name="swt-grouplayout.jar"/>
+		<library name="swing2swt.jar"/>
+	</bundle>
+	<bundle bundleID="985" localization="OSGI-INF/l10n/bundle" name="CSV-tools" project="CSV-tools">
+		<library name="commons-csv-20070724.jar"/>
+	</bundle>
+</map>
