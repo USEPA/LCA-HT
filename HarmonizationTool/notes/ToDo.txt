@@ -1,56 +1,31 @@
 #==========================================================================
 #====  ITEMS WITH "A" - DO BELOW BEFORE 2015-02-20   ======================
 #==========================================================================
+#
+#==== CAT 3: RE-BUILD MANUAL FLOWABLE SEARCH / MATCHING ====
+G6 - GitHub issue #6 "Click to search causes a crash".
+   Status (Tom) The use of wild cards is only somewhat functional.  Better handling of them is necessary.
+     Also, user should be warned of broad searches that will take a while.
 
-1 - A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keeps running 
-   0/445  0/446  0/447...
-  SOLN: Make "Cancel" quit the other thread.
-Status: Just do it.
+B10 FEATURE REQUEST: In the 'Match Flowables' panel, show an index for the row as well as the
+  rank (in mouse over info, perhaps)
+  Status: Tom thinks an index is not necessary, but prioritization is.  Sorting on column header, maybe?
 
-2 - A15 BUG:  Can't stop a commit part of the way through it
-  SOLN: Make it possible to "Cancel" the commit (see A14)
-Status: Just do it.
-  
+#==== CAT 3: PERFORMANCE ====
+4 - Improve program performance. In general, we shouldn't ever stop improving performance but should reach a level of
+    performance acceptable for Tuesday.
+  SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
+      
+#==== CAT 3: TDB => TABLE ====
+A35 - Create LCIA Workflow and fields
+      
+#==== CAT 3: TDB => TABLE ====
+A34 - Once data from .jsonld has been read, create a table in "User Data" space
+
+#==== CAT 2: DOC, STYLE, UI DESIGN, LOOK & FEEL ====
 3 - A17 FEATURE REQUEST:  What are "issues"  - designate them
   SOLN: Document this.  Eventually add new issues with or without auto-resolve.
-Status (chris): Yes, we need to catalog all of these issues and write them down somewhere.
-
-4 - Improve program performance. In general, we shouldn't ever stop improving performance but
-should reach a level of performance acceptable for Tuesday.
-  SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
-
-7 - A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.  
-    Status (chris): Instead of sorting - do filtering of issues, 'tagged rows', perhaps a filter that shows nothing in a row to clean things up...
-
-11 - A31 BUG (WINDOWS platform) -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
-    Status (chris): Super annoying in windows...must fix this.
-    Note: This does not appear to happen in Win7 (64-bit).
-    Status: (Tom) Windows and Mac have different styles and highlighting.  Make sure it looks intuitive in Windows.
-
-12 - A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
-    SOLN: At least detect the issue and tell the user.  Better, read it anyway.
-    ---> GitHub issue #3 <---
-    
-G5 - GitHub issue #5 Once "commit" has been done, it should be possible to recover the CSVTableView (aka User Data) from the TDB
-   Status: (Tom) The process of generating a table from the TDB will require some focus, especially for .jsonld data which may have many fields
-   
-G6 - GitHub issue #6 "Click to search causes a crash".
-   Status (Tom) The use of wild cards is only somewhat functional.  Better handling of them is necessary.  Also, user should be warned of 
-      broad searches that will take a while.
-      
-G7 - GitHub issue #7 "canned" SPARQL queries not functioning
-  Status (Tom) Most of these should be removed.  PI should specifiy which he wants to have working again.
-  
-G8 - GitHub issue #8 "Need a button or command to show existing data info in TDB"
-  Status (Tom) A basic query of "DataSources" and their contents could be revived and presented a) upon return to the TDB and b) upon request.  
-
-#==========================================================================
-#====  ITEMS WITH "A" - DO ABOVE BEFORE 2015-02-20   ======================
-#==========================================================================
-
-#==========================================================================
-#====  ITEMS WITH "B" - MAYBE DO BELOW BEFORE 2015-02-20   ================
-#==========================================================================
+  Status (chris): Yes, we need to catalog all of these issues and write them down somewhere.
 
 B1  FEATURE REQUEST / ISSUE: Help File? Help tab? This could be one of the biggest and most important things to 
   implement before Oct 1... If we write this file, we will definitely come across more bugs.
@@ -67,24 +42,111 @@ B3 ISSUE: The zipped file is completely non-descript... "win64.zip" isn't useful
   Instead, use something like "LCA_Harmonization_v1.8.zip" with a win64 subdirectory
   SOLN: Better name for zip file and better name for the folders that it produces
 
+B11 ISSUE: The Harmonization tool icon in the install directory should not have the same icon as eclipse
+  SOLN: Pick a few icons, let PI decide how much effort to put into this.
+
+B12 FEATURE REQUEST: Add working directory in application window border
+  SOLN: Just add it
+
+B22 (copied from A3)
+  FEATURE REQUEST:  Startup allows user to choose project directory
+  SOLN: Have user select a working directory
+      include a checkbox: use as default working directory and do not show this dialogue box again
+
+B28 (was A2)  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
+  out of it is to go to Task Manager and manually close the application
+  SOLN:  You can't open two at the same time?!?
+  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.
+          Test on Windows and document issues.
+  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.
+          The next thing to do is to allow the creation of new project files and TDB files so that a second instance
+          can be opened if desired.  In short the dialogue box for all of the paths needs to allow files to be created.                     
+C10 FEATURE REQUEST:  A dialogue box or something that explains how a search is run and what is required
+  SOLN: Document and eventually allow user input for criteria for match
+
+C13 FEATURE REQUEST:  Minimize std.err std.out output file 
+  SOLN: See if there is a way to do this systematically instead of removing every freaking System.out.println("") line!
+  Status: (Tom) We should probably just systematically comment out System.out.println lines in favor of meaningful Logger items.
+
+C14 Need a save button - need something to keep these preferences... Is the log supposed to do this?
+  SOLN: Make a system of logging (to tell what happened), and a re-run script created during user run.
+  Status: (Tom) Mike Brown to confirm that Logger shows helpful status.  No re-run script now
+
+#==== CAT 2: WINDOW FUNCTIONALITY: RESIZING, SCROLLING, LAYOUT, ETC. ====
+B29 (was A12) ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
+  size of the window
+  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
+  NEXT: Try again to get this right.
+  NEXT: Chris document which others.
+  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
+         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
+         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
+  UPDATE (Tom): Scrollbar in Match Flowables does not work and is flaky.
+
+C3 BUG: The empty CSV table whitespace doesn't extend the whole window for some reason.
+  SOLN: Fix resizing
+
+#==== CAT 2: MODERATE FEATURE REQUEST ====
+7 - A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.
+    Status (chris): Instead of sorting - do filtering of issues, 'tagged rows', perhaps a filter that shows nothing in a
+      row to clean things up...
+
+G5 - GitHub issue #5 Once "commit" has been done, it should be possible to recover the CSVTableView (aka User Data) from the TDB
+   Status: (Tom) The process of generating a table from the TDB will require some focus, especially for .jsonld data which may
+      have many fields
+
+G7 - GitHub issue #7 "canned" SPARQL queries not functioning
+  Status (Tom) Most of these should be removed.  PI should specifiy which he wants to have working again.
+  See: B5, B6, B7
+    B5 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS Matches' shouldn't error out as 
+      "'Query' has encountered a problem.", instead notify the user that there are no CAS's to
+      match (when no data input)
+      SOLN: Deprecate most buttons, decide the value of others
+
+    B6 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS and Name Matches' shouldn't error out as 
+      "'Query' has encountered a problem.", instead notify the user that there are no CAS's or 
+      Names to match (when no data input)
+      SOLN: Deprecate most buttons, decide the value of others
+    
+    B7 BUG: 'SPARQL' -> 'Show Query View' -> dbl 'Harmonize Compartments' if I hit the X button on
+      the dialogue box that appears, the entire Query panel dissapears.  This does not happen with
+      any other button in the Query panel
+      SOLN: Deprecate most buttons, decide the value of others
+    
+G8 - GitHub issue #8 "Need a button or command to show existing data info in TDB"
+  Status (Tom) A basic query of "DataSources" and their contents could be revived and presented
+    a) upon return to the TDB and
+    b) upon request.  
+
+#==== CAT 1: SMALL BUG FIX ==== 
+1 - A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keeps running 
+   0/445  0/446  0/447...
+  SOLN: Make "Cancel" quit the other thread.
+  Status: Just do it.
+    A15 BUG:  Can't stop a commit part of the way through it
+      SOLN: Make it possible to "Cancel" the commit (see A14)
+      Status: Just do it.
+
+11 - A31 BUG (WINDOWS platform) -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
+    Status (chris): Super annoying in windows...must fix this.
+    Note: This does not appear to happen in Win7 (64-bit).
+    Status: (Tom) Windows and Mac have different styles and highlighting.  Make sure it looks intuitive in Windows.
+
+12 - A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
+    SOLN: At least detect the issue and tell the user.  Better, read it anyway.
+    ---> GitHub issue #3 <---
+#==========================================================================
+#====  ITEMS WITH "A" - DO ABOVE BEFORE 2015-02-20   ======================
+#==========================================================================
+
+#==========================================================================
+#====  ITEMS WITH "B" - MAYBE DO BELOW BEFORE 2015-02-20   ================
+#==========================================================================
+
 B4 ISSUE: Under 'SPARQL' -> 'Show Query View' the 'Run Query' and 'Update Query' buttons look
   poorly positioned
   SOLN: Check position in Win8 and Win7
-
-B5 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS Matches' shouldn't error out as 
-  "'Query' has encountered a problem.", instead notify the user that there are no CAS's to
-  match (when no data input)
-  SOLN: Deprecate most buttons, decide the value of others
-
-B6 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS and Name Matches' shouldn't error out as 
-  "'Query' has encountered a problem.", instead notify the user that there are no CAS's or 
-  Names to match (when no data input)
-  SOLN: Deprecate most buttons, decide the value of others
-
-B7 BUG: 'SPARQL' -> 'Show Query View' -> dbl 'Harmonize Compartments' if I hit the X button on
-  the dialogue box that appears, the entire Query panel dissapears.  This does not happen with
-  any other button in the Query panel
-  SOLN: Deprecate most buttons, decide the value of others
 
 B8 FEATURE REQUEST: Unique icons for different functionality in the tool
   SOLN: Figure out how to get built-in (eclipse or RCP) icons and use them.  Try to match with OpenLCA icons
@@ -92,17 +154,6 @@ B8 FEATURE REQUEST: Unique icons for different functionality in the tool
 
 B9 BUG: No check mark or any indication that a window is shown under 'Window Manager'
   SOLN: Change menu in Harmoniation Tool (Manifest) extensions and make the handler toggle
-
-B10 FEATURE REQUEST: In the 'Match Flowables' panel, show an index for the row as well as the
-  rank (in mouse over info, perhaps)
-  SOLN: Unnecessary, Tom thinks.
-
-B11 ISSUE: The Harmonization tool icon in the install directory should not have the same icon as
-  eclipse
-  SOLN: Pick a few icons, let PI decide how much effort to put into this.
-
-B12 FEATURE REQUEST: Add working directory in application window border
-  SOLN: Just add it
 
 B13 FEATURE REQUEST:  Designate sections of checking data and loading data vs. an actual search
   SOLN: Consider phases with sections for the workflow. Add "Step" above the steps, and "Phase" above the phases
@@ -124,11 +175,7 @@ B18 When I load in my data for the first time, assuming I don't know to assign a
   that directs the user to assign the information where those blank dashes are.  Also, instead of 
   using dashes, have the steps triggered in the headers...
   SOLN: Disable "Check Data" until at least one column is assigned
-
-B22 (copied from A3)
-  FEATURE REQUEST:  Startup allows user to choose project directory
-  SOLN: Have user select a working directory
-      include a checkbox: use as default working directory and do not show this dialogue box again
+  Staus: (Tom) In fact, Check Data should check for required fields, and let user know.
 
 B26 FEATURE REQUEST: Middle mouse button scroll.
 
@@ -149,25 +196,6 @@ B27 FEATURE REQUEST: Allow user to save columns which are not otherwise assigned
                      _:b1 lcaht:hasDataField _:b0 .
    Status: Check the priority with PI.
 
-B28 (was A2)  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
-  out of it is to go to Task Manager and manually close the application
-  SOLN:  You can't open two at the same time?!?
-  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.  Test on Windows and document issues.
-  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.  The next thing to do is to allow the
-         creation of new project files and TDB files so that a second instance can be opened if desired.  In short the dialogue box for all of the paths needs
-         to allow files to be created.                     
-
-B29 (was A12) ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
-  size of the window
-  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
-  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
-  NEXT: Try again to get this right.
-  NEXT: Chris document which others.
-  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
-         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
-         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
-  UPDATE (Tom): Scrollbar in Match Flowables does not work and is flaky.
-         
 B30 FEATURE REQUEST - Make the default Data Source name increment as follows file.csv -> file ... then file.csv -> file(1) ... then file.csv -> file(2) ... and so on
   Status (Tom): should not be hard to do.  Check with PI for priority.
 
@@ -178,14 +206,12 @@ B31 -> A19 BUG: Allow for deletion of data set... can make infinitely many
   SOLN: 1) Make delete easier (confirm)
         2) Delete the data
         3) When you read a new file and assign to existing data set, don't create new data set!
-Status (chris): Probably not super easy to do or high priority for Tuesday...moving to B
+  Status (chris): Probably not super easy to do or high priority for Tuesday...moving to B
   Status (Tom): There is a delete.  I'm not sure how much data it really deletes....
 
-U5: Add changes from flowWorkflowUI.png
-   Interesting design changes.  This is worth considering, but not before 2015-02-20
-   
-U6: Add changes from ToolUI.png?
-   The solution we have now is pretty good, most likely.
+C9 FEATURE REQUEST:  Automatically detect row 1 for column headers
+  SOLN: Maybe later.  It would only be a suggestion, and the user could change it.
+  SOLN: During "check data", if Row 1 has unique strings (perhaps regex match some frequent ones), ask user if it is header?
 
 #==========================================================================
 #====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2015-02-20   ================
@@ -194,6 +220,12 @@ U6: Add changes from ToolUI.png?
 #==========================================================================
 #====  ITEMS WITH "C" - DO BELOW AFTER 2015-02-20   =======================
 #==========================================================================
+
+U5: Add changes from flowWorkflowUI.png
+   Interesting design changes.  This is worth considering, but not before 2015-02-20
+   
+U6: Add changes from ToolUI.png?
+   The solution we have now is pretty good, most likely.
 
 C1 FEATURE REQUEST:  The 'Match Flowables' panel is completely uncustomizable.  I would want to
   be able to view my data in whatever way I want.  I should at least be able to center the 
@@ -205,16 +237,15 @@ C1 FEATURE REQUEST:  The 'Match Flowables' panel is completely uncustomizable.  
 C2 BUG: The borders for a lot of windows are interrupted by the minimize and maximize buttons
   SOLN: Consider turning off access to some buttons?!?
 
-C3 BUG: The empty CSV table whitespace doesn't extend the whole window for some reason.
-  SOLN: Fix resizing
-  
 C5 ISSUE: Can hide all of a column when the name should still appear
   SOLN: Perhaps find a minimum size based on text or something - or defined min. for each View
   Status: Columns auto-size based on data content (with a min and a max).  Put icons in header.
+  SOLN: Provide mouse-over for cells that are cut off.  Check if Mac and/or Windows do some of this automagically.
 
 C6 QUESTION:  Should the CSV Table panel give an indication of what imported data is expected?
   I honestly don't know what data I should be giving the thing...
   SOLN: Consider adding info about the Workflow in the workflow window (a tooltip, maybe)
+  Status: (Tom) I'm not sure what all this means, but it should be easy for the User Data table to say what is in it.
  
 C7 ISSUE: Can I only import a CSV or can I import an xls or xlsx file?
   SOLN: No Excel now.  Later? Yes!
@@ -222,26 +253,14 @@ C7 ISSUE: Can I only import a CSV or can I import an xls or xlsx file?
 C8 QUESTION:  What format should my input file be in?  How will I know if I imported garbage?
   SOLN: Do nothing new.  Garbage data is user's problem
 
-C9 FEATURE REQUEST:  Automatically detect row 1 for column headers
-  SOLN: Maybe later.  It would only be a suggestion, and the user could change it.
-  SOLN: During "check data", if Row 1 has unique strings (perhaps regex match some frequent ones), ask user if it is header?
-
-C10 FEATURE REQUEST:  A dialogue box or something that explains how a search is run and what is required
-  SOLN: Document and eventually allow user input for criteria for match
-
 C11 FEATURE REQUEST: Instantiate:  Flowable Resource Object With Name / Synonym (FROWNS) :-(
   SOLN: The world is ready for FROWNS
+  Status: This is too funny to remove!
  
 C12 FEATURE REQUEST: Instantiate:  Data Unique meta-block system (DUMBS) %^{
   SOLN: The world is ready for DUMBS
+  Status: This is too funny to remove!
   
-C13 FEATURE REQUEST:  Minimize std.err std.out output file 
-  SOLN: See if there is a way to do this systematically instead of removing every freaking System.out.println("") line!
-
-C14 Need a save button - need something to keep these preferences... Is the log supposed to 
-   do this?
-  SOLN: Make a system of logging (to tell what happened), and a re-run script created during user run.
-
 #==========================================================================
 #====  ITEMS WITH "C" - DO ABOVE AFTER 2014-10-01   =======================
 #==========================================================================
