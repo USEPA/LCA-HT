@@ -552,7 +552,7 @@ public class MatchFlowables extends ViewPart {
 		b.append("  { \n");
 		b.append("    ?f rdfs:label ?name . \n");
 		b.append("    optional {?f eco:casNumber ?cas . }\n");
-		b.append("    optional {?f skos:altName ?syn . }\n");
+		b.append("    optional {?f skos:altLabel ?syn . }\n");
 		b.append("    optional {?f ?p ?other . }\n");
 		b.append("    ?f a eco:Flowable . \n");
 
@@ -625,35 +625,41 @@ public class MatchFlowables extends ViewPart {
 	}
 
 	private static String star2regex(String typicalWildcards) {
-		// CASE 1: NO STAR
-		if (!typicalWildcards.contains("*")) {
-			// ^^ FIXME: ABOVE DOESN'T WORK
-			return "^\\\\Q" + typicalWildcards + "\\\\E$";
-		}
-		// CASE 2: STAR AT BEGINNING
-		// CASE 3: STAR AT END
-		System.out.println("looking for stars in " + typicalWildcards);
 		StringBuilder regexBuilder = new StringBuilder();
-		String[] parts = typicalWildcards.split("\\*");
-		if (!parts[0].equals("")) {
-			regexBuilder.append("^\\\\Q" + parts[0] + "\\\\E.*");
-		}
-		for (int i = 1; i < parts.length - 1; i++) {
-			regexBuilder.append("\\\\Q" + parts[i] + "\\\\E.*");
-			System.out.println("parts[i] = " + parts[i]);
-		}
-		if (!typicalWildcards.endsWith("\\*")) {
-			regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E$");
-		} else {
-			regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E");
-		}
-		System.out.println("Regex would look like: " + regexBuilder.toString());
-		// Matcher starMatcher = starPattern.matcher(typicalWildcards);
-		// while (starMatcher.find()){
-		// String part = starMatcher.group(1);
-		// System.out.println("part " + part);
+		regexBuilder.append("^\\\\Q");
+		regexBuilder.append(typicalWildcards.replaceAll("\\*", "\\\\\\\\E.*\\\\\\\\Q"));
+		regexBuilder.append("\\\\E$");
+
+		//
+		// // CASE 1: NO STAR
+		// if (!typicalWildcards.contains("*")) {
+		// // ^^ FIXME: ABOVE DOESN'T WORK
+		// return "^\\\\Q" + typicalWildcards + "\\\\E$";
 		// }
-		// Matcher matcher = qaCheck.getPattern().matcher(startingText);
+		// // CASE 2: STAR AT BEGINNING
+		// // CASE 3: STAR AT END
+		// System.out.println("looking for stars in " + typicalWildcards);
+		// StringBuilder regexBuilder = new StringBuilder();
+		// String[] parts = typicalWildcards.split("\\*");
+		// if (!parts[0].equals("")) {
+		// regexBuilder.append("^\\\\Q" + parts[0] + "\\\\E.*");
+		// }
+		// for (int i = 1; i < parts.length - 1; i++) {
+		// regexBuilder.append("\\\\Q" + parts[i] + "\\\\E.*");
+		// System.out.println("parts[i] = " + parts[i]);
+		// }
+		// if (!typicalWildcards.endsWith("\\*")) {
+		// regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E$");
+		// } else {
+		// regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E");
+		// }
+		// System.out.println("Regex would look like: " + regexBuilder.toString());
+		// // Matcher starMatcher = starPattern.matcher(typicalWildcards);
+		// // while (starMatcher.find()){
+		// // String part = starMatcher.group(1);
+		// // System.out.println("part " + part);
+		// // }
+		// // Matcher matcher = qaCheck.getPattern().matcher(startingText);
 		return regexBuilder.toString();
 		// return "Aint gonna match no how";
 		// Patttern.Compile("(?i)(\Q#strPhrase1#\E|\Q#strPhrase2#\E)");

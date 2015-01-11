@@ -908,8 +908,8 @@ public class Flowable {
 			}
 		}
 
-		for (String altName : getSynonyms()) {
-			String lcAltName = altName.toLowerCase();
+		for (String altLabel : getSynonyms()) {
+			String lcAltName = altLabel.toLowerCase();
 			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
 
 			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
@@ -981,8 +981,8 @@ public class Flowable {
 			}
 		}
 
-		for (String altName : getSynonyms()) {
-			String lcAltName = altName.toLowerCase();
+		for (String altLabel : getSynonyms()) {
+			String lcAltName = altLabel.toLowerCase();
 //			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
 			Literal qAltNameLiteral = ActiveTDB.createTypedLiteral(lcAltName);
 
