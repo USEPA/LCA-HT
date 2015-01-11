@@ -15,6 +15,8 @@ import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -264,7 +266,8 @@ public class MatchFlowables extends ViewPart {
 			return;
 		}
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
+		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(),
+				LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
 		ActiveTDB.tdbDataset.end();
 		if (adHoc) {
 			System.out.println("QC ad hoc detected!");
@@ -334,9 +337,9 @@ public class MatchFlowables extends ViewPart {
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 			table.getColumn(i).pack();
 			int width = table.getColumn(i).getWidth();
-			if (width<20){
+			if (width < 20) {
 				table.getColumn(i).setWidth(20);
-			} else if (width > 400 && table.getHorizontalBar().getVisible()){
+			} else if (width > 400 && table.getHorizontalBar().getVisible()) {
 				table.getColumn(i).setWidth(400);
 			}
 		}
@@ -435,9 +438,10 @@ public class MatchFlowables extends ViewPart {
 		Util.findView(FlowsWorkflow.ID);
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
+		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(),
+				LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
 		ActiveTDB.tdbDataset.end();
-		
+
 		if (adHoc) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
@@ -601,7 +605,7 @@ public class MatchFlowables extends ViewPart {
 		table.remove(flowableToMatch.getMatchCandidates().size() + 2, i);
 	}
 
-	private static String star2regex(String typicalWildcards) {
+	private static String star2regexLeadTrailOnly(String typicalWildcards) {
 		String part1 = "";
 		if (typicalWildcards.substring(0, 1).equals("*")) {
 			part1 = typicalWildcards.substring(1);
@@ -618,6 +622,57 @@ public class MatchFlowables extends ViewPart {
 		// TODO : ESCAPE VARIOUS CHARACTERS THAT MIGHT BE TREATED AS REGEX MATCHES
 
 		return part2;
+	}
+
+	private static String star2regex(String typicalWildcards) {
+		// CASE 1: NO STAR
+		if (!typicalWildcards.contains("*")) {
+			// ^^ FIXME: ABOVE DOESN'T WORK
+			return "^\\\\Q" + typicalWildcards + "\\\\E$";
+		}
+		// CASE 2: STAR AT BEGINNING
+		// CASE 3: STAR AT END
+		System.out.println("looking for stars in " + typicalWildcards);
+		StringBuilder regexBuilder = new StringBuilder();
+		String[] parts = typicalWildcards.split("\\*");
+		if (!parts[0].equals("")) {
+			regexBuilder.append("^\\\\Q" + parts[0] + "\\\\E.*");
+		}
+		for (int i = 1; i < parts.length - 1; i++) {
+			regexBuilder.append("\\\\Q" + parts[i] + "\\\\E.*");
+			System.out.println("parts[i] = " + parts[i]);
+		}
+		if (!typicalWildcards.endsWith("\\*")) {
+			regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E$");
+		} else {
+			regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E");
+		}
+		System.out.println("Regex would look like: " + regexBuilder.toString());
+		// Matcher starMatcher = starPattern.matcher(typicalWildcards);
+		// while (starMatcher.find()){
+		// String part = starMatcher.group(1);
+		// System.out.println("part " + part);
+		// }
+		// Matcher matcher = qaCheck.getPattern().matcher(startingText);
+		return regexBuilder.toString();
+		// return "Aint gonna match no how";
+		// Patttern.Compile("(?i)(\Q#strPhrase1#\E|\Q#strPhrase2#\E)");
+		// String part1 = "";
+		// if (typicalWildcards.substring(0, 1).equals("*")) {
+		// part1 = typicalWildcards.substring(1);
+		// } else {
+		// part1 = "^" + typicalWildcards;
+		// }
+		//
+		// String part2 = "";
+		// if (typicalWildcards.substring(typicalWildcards.length() - 1, typicalWildcards.length()).equals("*")) {
+		// part2 = part1.substring(0, part1.length() - 1);
+		// } else {
+		// part2 = part1 + "$";
+		// }
+		// // TODO : ESCAPE VARIOUS CHARACTERS THAT MIGHT BE TREATED AS REGEX MATCHES
+		//
+		// return part2;
 	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
@@ -709,10 +764,10 @@ public class MatchFlowables extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			int count = 0;
-			if (CSVTableView.getTableProviderKey() == null){
+			if (CSVTableView.getTableProviderKey() == null) {
 				return;
 			}
-			if (CSVTableView.preCommit){
+			if (CSVTableView.preCommit) {
 				return;
 			}
 			if (addToMaster.getText().equals("Add to Master")) {
