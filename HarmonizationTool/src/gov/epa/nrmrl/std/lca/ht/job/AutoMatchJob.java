@@ -215,7 +215,8 @@ public class AutoMatchJob extends Job {
 					// flowable.nonTSSetProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 				}
 				stopWatch04.start();
-				final boolean hit = flowable.setMatches();
+//				final boolean hit = flowable.setMatches();
+				final boolean hit = flowable.setMasterMatches();
 				// final boolean hit = flowable.nonTSSetMatches();
 				stopWatch04.stop();
 				flowable.setFirstRow(rowNumToSend);

@@ -114,23 +114,18 @@
          <menu
                label="File">
             <command
-                  commandId="HarmonizationTool.TDB_Load"
-                  label="Load RDF / XML data"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
+                  label="Load Master List (RDF data)"
                   style="push">
             </command>
             <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
-                  label="Save SPARQL Results"
+                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
+                  label="Save Harmonized Data (CSV)"
                   style="push">
             </command>
             <command
                   commandId="HarmonizationTool.TDB_Dump"
                   label="Export entire TDB"
-                  style="push">
-            </command>
-            <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
-                  label="Save Harmonized Data"
                   style="push">
             </command>
             <command
@@ -212,6 +207,11 @@
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.ResultsView"
                   label="Show SPARQL Results Window"
+                  style="push">
+            </command>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
+                  label="Save SPARQL Results"
                   style="push">
             </command>
             <command
@@ -307,8 +307,8 @@
             name="TDB Dump">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportRDFHandler"
-            id="HarmonizationTool.TDB_Load"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
             name="TDB Load">
       </command>
       <command

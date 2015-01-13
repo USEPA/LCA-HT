@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -334,6 +335,10 @@ public class MatchFlowables extends ViewPart {
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
+		autosizeColumns();
+	}
+
+	private static void autosizeColumns(){
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 			table.getColumn(i).pack();
 			int width = table.getColumn(i).getWidth();
@@ -343,9 +348,8 @@ public class MatchFlowables extends ViewPart {
 				table.getColumn(i).setWidth(400);
 			}
 		}
-		// tableViewer.refresh();
 	}
-
+	
 	private static void removeColumns() {
 		table.setRedraw(false);
 		while (table.getColumnCount() > 0) {
@@ -377,8 +381,7 @@ public class MatchFlowables extends ViewPart {
 		// table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
-
-		// tableViewer.refresh();
+		autosizeColumns();
 	}
 
 	private static void createColumns() {
@@ -528,11 +531,25 @@ public class MatchFlowables extends ViewPart {
 		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
 
 		String nameSearch = flowableTableRow.get(7);
+		String nameMatch = nameSearch.replaceAll("\"", "\\\\\"").toLowerCase();
 		String casSearch = flowableTableRow.get(8);
-		String synSearch = flowableTableRow.get(9);
 		String otherSearch = flowableTableRow.get(10);
-		// WORK HERE
 
+		if (!nameMatch.matches(".*[a-zA-Z0-9].*")) {
+			System.out.println("nameMatch fails " + nameMatch);
+		}
+		if (!casSearch.matches(".*[0-9].*")) {
+			System.out.println("casSearch fails " + casSearch);
+		}
+
+		if (!otherSearch.matches(".*[a-zA-Z0-9].*")) {
+			System.out.println("otherSearch fails" + otherSearch);
+		}
+
+		if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*") && !otherSearch.matches(".*[a-zA-Z0-9].*")) {
+			Logger.getLogger("run").warn("Search cancelled since at least one field must contain an alpha-numeric");
+			return;
+		}
 		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
@@ -550,38 +567,45 @@ public class MatchFlowables extends ViewPart {
 		b.append("SELECT distinct ?f  \n");
 		b.append("WHERE \n");
 		b.append("  { \n");
-		b.append("    ?f rdfs:label ?name . \n");
+		b.append("    ?f skos:altLabel ?syn . \n");
 		b.append("    optional {?f eco:casNumber ?cas . }\n");
-		b.append("    optional {?f skos:altLabel ?syn . }\n");
 		b.append("    optional {?f ?p ?other . }\n");
 		b.append("    ?f a eco:Flowable . \n");
+		b.append("    ?f eco:hasDataSource ?ds . \n");
+//		b.append("    ?ds a lcaht:MasterDataset . \n");
+		b.append("    ?ds a ?masterTest . \n");
+		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
+
+//		b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
+//		b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
+
 
 		if (!casSearch.matches("^\\s*$")) {
 			String casRegex = star2regex(casSearch);
-			b.append("    filter regex(str(?cas),\"" + casRegex + "\",\"i\") \n");
+			b.append("    filter regex(str(?cas),\"" + casRegex + "\") \n");
 		}
-		if (!nameSearch.matches("^\\s*$")) {
-			String nameRegex = star2regex(nameSearch);
-			b.append("    filter regex(str(?name),\"" + nameRegex + "\",\"i\") \n");
-		}
-		if (!synSearch.matches("^\\s*$")) {
-			String synRegex = star2regex(synSearch);
-			b.append("    filter regex(str(?syn),\"" + synRegex + "\",\"i\") \n");
+		if (!nameMatch.matches("^\\s*$")) {
+			String nameRegex = star2regex(nameMatch);
+			b.append("    filter regex(str(?syn),\"" + nameRegex + "\") \n");
 		}
 		if (!otherSearch.matches("^\\s*$")) {
 			String otherRegex = star2regex(otherSearch);
 			b.append("    filter regex(str(?other),\"" + otherRegex + "\",\"i\") \n");
 		}
-		b.append("   } \n");
+		b.append("   } order by ?masterTest \n");
 		String query = b.toString();
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
+		Logger.getLogger("run").info("Searching master list for matching flowables...");
+
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		System.out.println("resultSet = " + resultSet);
 		flowableToMatch.clearSearchResults();
 		// resetTable();
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		int count = 0;
 		while (resultSet.hasNext()) {
+			count++;
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
@@ -596,6 +620,8 @@ public class MatchFlowables extends ViewPart {
 			// Flowable flowable = new Flowable(rdfNode.asResource());
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
+		Logger.getLogger("run").info("... search complete.  Below the search row, " + count + " matching field are shown.");
+
 		displayNewSearchResults();
 		// appendSearchResults(50);
 	}
@@ -966,12 +992,18 @@ public class MatchFlowables extends ViewPart {
 			if (syns.length == 0) {
 				getColumnValues().set(9, "");
 			} else if (syns.length == 1) {
-				getColumnValues().set(9, syns[0]);
+				String syn = syns[0];
+				if (!syn.equals(flowable.getName().toLowerCase())) {
+					getColumnValues().set(9, syn);
+				}
 			} else if (syns.length > 1) {
 				StringBuilder b = new StringBuilder();
 				b.append(syns[0]);
 				for (int i = 1; i < syns.length; i++) {
-					b.append(" -or- " + syns[i]);
+					String syn = syns[i];
+					if (!syn.equals(flowable.getName().toLowerCase())) {
+						b.append(" -or- " + syns[i]);
+					}
 				}
 				getColumnValues().set(9, b.toString());
 			}

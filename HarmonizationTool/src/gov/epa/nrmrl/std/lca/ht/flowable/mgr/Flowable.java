@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
@@ -19,9 +20,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -172,12 +177,12 @@ public class Flowable {
 	}
 
 	public Flowable(boolean transactionSafe) {
-		if (transactionSafe){
+		if (transactionSafe) {
 			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 			lcaDataValues = new ArrayList<LCADataValue>();
 			matchCandidates = new LinkedHashMap<Resource, String>();
 			searchResults = new LinkedHashMap<Resource, String>();
-		}else {
+		} else {
 			this.tdbResource = ActiveTDB.createResource(rdfClass);
 			lcaDataValues = new ArrayList<LCADataValue>();
 			matchCandidates = new LinkedHashMap<Resource, String>();
@@ -223,6 +228,7 @@ public class Flowable {
 		}
 		return results;
 	}
+
 	public void setProperty(String key, String valueAsString) {
 		if (valueAsString == null) {
 			return;
@@ -280,7 +286,7 @@ public class Flowable {
 		}
 		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
-	
+
 	public void nonTSSetProperty(String key, String valueAsString) {
 		if (valueAsString == null) {
 			return;
@@ -298,10 +304,10 @@ public class Flowable {
 					lcaDataValue.setValueAsString(valueAsString);
 					found = true;
 					Object object = lcaDataValue.getValue();
-//					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-//							object);
-					ActiveTDB.replaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-							object);
+					// ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+					// object);
+					ActiveTDB
+							.replaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
 					if (!valueAsString.equals(valueAsString.toLowerCase())) {
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 						if (key.equals(flowableNameString)) {
@@ -324,18 +330,18 @@ public class Flowable {
 			lcaDataValue.setValueAsString(valueAsString);
 			Object object = lcaDataValue.getValue();
 			lcaDataValues.add(lcaDataValue);
-//			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
 			ActiveTDB.addLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
 			if (!valueAsString.equals(valueAsString.toLowerCase())) {
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableNameString)) {
-					ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-							valueAsString.toLowerCase());
+					ActiveTDB
+							.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
 				}
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableSynonymString)) {
-					ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-							valueAsString.toLowerCase());
+					ActiveTDB
+							.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
 				}
 			}
 		}
@@ -461,7 +467,7 @@ public class Flowable {
 		Resource qResource = flowable.getTdbResource();
 		String qName = flowable.getName();
 		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
-//		Model tdbModel = ActiveTDB.getModel();
+		// Model tdbModel = ActiveTDB.getModel();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
@@ -518,107 +524,107 @@ public class Flowable {
 		return results;
 	}
 
-//	public static Set<MatchCandidate> findMatches(Flowable flowable) {
-//		Model tdbModel = ActiveTDB.getModel();
-//		Set<MatchCandidate> results = new HashSet<MatchCandidate>();
-//		Resource qDataSource = flowable.getTdbResource().getPropertyResourceValue(ECO.hasDataSource);
-//
-//		// FIND MATCHES FOR THIS FLOWABLE
-//		// FIND MATCHES INVOLVING NAMES AND SYNONYMS:
-//		// Q-NAME = DB-NAME
-//		// return results;
-//		Statement statement = flowable.getTdbResource().getProperty(RDFS.label);
-//		if (statement == null) {
-//			// System.out.println("Nothing here");
-//			return results;
-//		}
-//		RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
-//		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//			if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//				continue; // DON'T MATCH YOURSELF
-//			}
-//			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				continue; // NOT A FLOWABLE
-//			}
-//			// THIS IS A name-name MATCH
-//			MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//			results.add(matchCandidate);
-//		}
-//
-//		// Q-NAME = DB-SYN
-//		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//			if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//				continue; // DON'T MATCH YOURSELF
-//			}
-//			if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				continue; // NOT A FLOWABLE
-//			}
-//			// THIS IS A name-synonym MATCH
-//			MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//			results.add(matchCandidate);
-//		}
-//
-//		//
-//		StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
-//		while (stmtIterator.hasNext()) {
-//			RDFNode objectAltName = stmtIterator.nextStatement().getObject();
-//			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
-//			// Q-SYN = DB-NAME
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS A synonym-name MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//
-//			// Q-SYN = DB-SYN
-//			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS A synonym-synonym MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//		}
-//
-//		// CAS MATCHING
-//		if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
-//			objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
-//			resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
-//					continue; // DON'T MATCH YOURSELF
-//				}
-//				if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					continue; // NOT A FLOWABLE
-//				}
-//				// THIS IS AN fCAS-fCAS MATCH
-//				MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
-//				results.add(matchCandidate);
-//			}
-//		}
-//
-//		// OTHER MATCHES ?!?
-//
-//		return results;
-//	}
+	// public static Set<MatchCandidate> findMatches(Flowable flowable) {
+	// Model tdbModel = ActiveTDB.getModel();
+	// Set<MatchCandidate> results = new HashSet<MatchCandidate>();
+	// Resource qDataSource = flowable.getTdbResource().getPropertyResourceValue(ECO.hasDataSource);
+	//
+	// // FIND MATCHES FOR THIS FLOWABLE
+	// // FIND MATCHES INVOLVING NAMES AND SYNONYMS:
+	// // Q-NAME = DB-NAME
+	// // return results;
+	// Statement statement = flowable.getTdbResource().getProperty(RDFS.label);
+	// if (statement == null) {
+	// // System.out.println("Nothing here");
+	// return results;
+	// }
+	// RDFNode objectName = flowable.getTdbResource().getProperty(RDFS.label).getObject();
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectName);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+	// continue; // DON'T MATCH YOURSELF
+	// }
+	// if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// continue; // NOT A FLOWABLE
+	// }
+	// // THIS IS A name-name MATCH
+	// MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+	// results.add(matchCandidate);
+	// }
+	//
+	// // Q-NAME = DB-SYN
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+	// continue; // DON'T MATCH YOURSELF
+	// }
+	// if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// continue; // NOT A FLOWABLE
+	// }
+	// // THIS IS A name-synonym MATCH
+	// MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+	// results.add(matchCandidate);
+	// }
+	//
+	// //
+	// StmtIterator stmtIterator = flowable.getTdbResource().listProperties(SKOS.altLabel);
+	// while (stmtIterator.hasNext()) {
+	// RDFNode objectAltName = stmtIterator.nextStatement().getObject();
+	// resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, objectAltName);
+	// // Q-SYN = DB-NAME
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+	// continue; // DON'T MATCH YOURSELF
+	// }
+	// if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// continue; // NOT A FLOWABLE
+	// }
+	// // THIS IS A synonym-name MATCH
+	// MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+	// results.add(matchCandidate);
+	// }
+	//
+	// // Q-SYN = DB-SYN
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, objectName);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+	// continue; // DON'T MATCH YOURSELF
+	// }
+	// if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// continue; // NOT A FLOWABLE
+	// }
+	// // THIS IS A synonym-synonym MATCH
+	// MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+	// results.add(matchCandidate);
+	// }
+	// }
+	//
+	// // CAS MATCHING
+	// if (flowable.getTdbResource().hasProperty(FedLCA.hasFormattedCAS)) {
+	// objectName = flowable.getTdbResource().getProperty(FedLCA.hasFormattedCAS).getObject();
+	// resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, objectName);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (tdbModel.contains(flowableMatchCandidate, ECO.hasDataSource, qDataSource)) {
+	// continue; // DON'T MATCH YOURSELF
+	// }
+	// if (!flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// continue; // NOT A FLOWABLE
+	// }
+	// // THIS IS AN fCAS-fCAS MATCH
+	// MatchCandidate matchCandidate = new MatchCandidate(flowable.getTdbResource(), flowableMatchCandidate);
+	// results.add(matchCandidate);
+	// }
+	// }
+	//
+	// // OTHER MATCHES ?!?
+	//
+	// return results;
+	// }
 
 	public static String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
 		// INFO TO SHARE FOR JUST NAME AND CAS:
@@ -850,7 +856,7 @@ public class Flowable {
 	}
 
 	public LinkedHashMap<Resource, String> getMatchCandidates() {
-		if (matchCandidates == null){
+		if (matchCandidates == null) {
 			return new LinkedHashMap<Resource, String>();
 		}
 		return matchCandidates;
@@ -864,7 +870,6 @@ public class Flowable {
 		matchCandidates.put(resource, "?");
 		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.equivalenceCandidate);
 	}
-	
 
 	public void addSearchResult(Resource resource) {
 		searchResults.put(resource, "?");
@@ -882,6 +887,80 @@ public class Flowable {
 		MatchStatus matchStatus = MatchStatus.getByValue(statusCol);
 		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
+
+	public boolean setMasterMatches() {
+		String qName = getName();
+		String lcQName = qName.toLowerCase();
+		lcQName.replaceAll("\"", "\\\\\"");
+//		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+//		Model tdbModel = ActiveTDB.getModel();
+
+		boolean checkCas = false;
+		String qCAS = getCas();
+		if (qCAS != null) {
+			if (!qCAS.equals("")) {
+				checkCas = true;
+			}
+		}
+
+		// =========================================
+		StringBuilder b = new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		b.append(" \n");
+		b.append("SELECT distinct ?f  \n");
+		b.append("WHERE \n");
+		b.append("  { \n");
+
+		b.append("    ?f skos:altLabel \""+lcQName+"\"^^xsd:string  . \n");
+//		b.append("    filter (str(?syn) = \"" + lcQName + "\")\n");
+
+		if (checkCas) {
+			b.append("    optional {?f eco:casNumber ?cas . }\n");
+			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
+		}
+		b.append("    ?f eco:hasDataSource ?ds . \n");
+		b.append("    ?ds a lcaht:MasterDataset . \n");
+		b.append("    ?f a eco:Flowable . \n");
+		b.append("   } \n");
+
+		String query = b.toString();
+
+//		System.out.println("query = \n");
+//		System.out.println(query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		// Logger.getLogger("run").info("Searching master list for matching flowables...");
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+//		System.out.println("resultSet = " + resultSet);
+		// flowableToMatch.clearSearchResults();
+		// resetTable();
+		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		int count = 0;
+		while (resultSet.hasNext()) {
+			count++;
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rdfNode = querySolution.get("f");
+			matchCandidates.put(rdfNode.asResource(), "=");
+		}
+		if (count > 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean setMatches() {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
@@ -919,7 +998,8 @@ public class Flowable {
 
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 					matchCandidates.put(flowableMatchCandidate, "?");
-					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+							FedLCA.equivalenceCandidate);
 					// THIS IS A synonym-name MATCH
 				}
 			}
@@ -928,7 +1008,8 @@ public class Flowable {
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+							FedLCA.equivalenceCandidate);
 					matchCandidates.put(flowableMatchCandidate, "?");
 					// THIS IS A synonym-synonym MATCH
 
@@ -949,14 +1030,14 @@ public class Flowable {
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
-		
+
 		return autosetStatus();
 	}
-	
+
 	public boolean nonTSSetMatches() {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
-//		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+		// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
 		Literal qNameLiteral = ActiveTDB.createTypedLiteral(lcQName);
 		Model tdbModel = ActiveTDB.getModel();
 		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
@@ -964,8 +1045,10 @@ public class Flowable {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 				matchCandidates.put(flowableMatchCandidate, "?");
-//				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+				// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+				// FedLCA.equivalenceCandidate);
+				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+						FedLCA.equivalenceCandidate);
 				// THIS IS A name-name MATCH
 			}
 		}
@@ -976,14 +1059,15 @@ public class Flowable {
 
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 				matchCandidates.put(flowableMatchCandidate, "?");
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+						FedLCA.equivalenceCandidate);
 				// THIS IS A name-synonym MATCH
 			}
 		}
 
 		for (String altLabel : getSynonyms()) {
 			String lcAltName = altLabel.toLowerCase();
-//			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
+			// Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
 			Literal qAltNameLiteral = ActiveTDB.createTypedLiteral(lcAltName);
 
 			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
@@ -993,7 +1077,8 @@ public class Flowable {
 
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
 					matchCandidates.put(flowableMatchCandidate, "?");
-					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+							FedLCA.equivalenceCandidate);
 					// THIS IS A synonym-name MATCH
 				}
 			}
@@ -1002,7 +1087,8 @@ public class Flowable {
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+							FedLCA.equivalenceCandidate);
 					matchCandidates.put(flowableMatchCandidate, "?");
 					// THIS IS A synonym-synonym MATCH
 
@@ -1017,16 +1103,18 @@ public class Flowable {
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+						FedLCA.equivalenceCandidate);
 				matchCandidates.put(flowableMatchCandidate, "?");
 				// THIS IS AN fCAS-fCAS MATCH
 			}
 		}
 		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
-		
-//		return autosetStatus();
+
+		// return autosetStatus();
 		return nonTSAutosetStatus();
 	}
+
 	private boolean autosetStatus() {
 		boolean hit = false;
 		String qCAS = getCas();
@@ -1040,12 +1128,12 @@ public class Flowable {
 		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-//			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
-//			StmtIterator thing = candidateFlowableTDBResource.listProperties();
-//			while (thing.hasNext()) {
-//				Statement fred = thing.nextStatement();
-//				System.out.println("fred.getPredicate() = " + fred.getPredicate());
-//			}
+			// System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
+			// StmtIterator thing = candidateFlowableTDBResource.listProperties();
+			// while (thing.hasNext()) {
+			// Statement fred = thing.nextStatement();
+			// System.out.println("fred.getPredicate() = " + fred.getPredicate());
+			// }
 
 			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
 			if (qCASLiteral == null) {
@@ -1093,7 +1181,8 @@ public class Flowable {
 						if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
 								|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
 							matchCandidates.put(candidateFlowableTDBResource, "=");
-							Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+							Resource comparison = CurationMethods.getComparison(tdbResource,
+									candidateFlowableTDBResource);
 							CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
 							hit = true;
 							continue;
@@ -1105,7 +1194,7 @@ public class Flowable {
 		}
 		return hit;
 	}
-	
+
 	private boolean nonTSAutosetStatus() {
 		boolean hit = false;
 		String qCAS = getCas();
@@ -1119,12 +1208,12 @@ public class Flowable {
 		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
 
 		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-//			System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
-//			StmtIterator thing = candidateFlowableTDBResource.listProperties();
-//			while (thing.hasNext()) {
-//				Statement fred = thing.nextStatement();
-//				System.out.println("fred.getPredicate() = " + fred.getPredicate());
-//			}
+			// System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
+			// StmtIterator thing = candidateFlowableTDBResource.listProperties();
+			// while (thing.hasNext()) {
+			// Statement fred = thing.nextStatement();
+			// System.out.println("fred.getPredicate() = " + fred.getPredicate());
+			// }
 
 			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
 			if (qCASLiteral == null) {
@@ -1203,7 +1292,7 @@ public class Flowable {
 	}
 
 	public LinkedHashMap<Resource, String> getSearchResults() {
-		if (searchResults == null){
+		if (searchResults == null) {
 			return new LinkedHashMap<Resource, String>();
 		}
 		return searchResults;

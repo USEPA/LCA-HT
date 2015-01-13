@@ -83,7 +83,7 @@ public class CurationMethods {
 			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);
 		}
 	}
-	
+
 	public static void nonTSUpdateAnnotationModifiedDate() {
 		if (currentAnnotation == null) {
 			createNewAnnotation();
@@ -111,7 +111,8 @@ public class CurationMethods {
 		updateAnnotationModifiedDate();
 		return comparison;
 	}
-		public static Resource nonTSCreateNewComparison(Resource querySource, Resource master, Resource equivalence) {
+
+	public static Resource nonTSCreateNewComparison(Resource querySource, Resource master, Resource equivalence) {
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
@@ -171,11 +172,11 @@ public class CurationMethods {
 	public static Resource getComparison(Resource tdbResource, Resource matchResource) {
 		Resource comparison = findCurrentComparison(tdbResource, matchResource);
 		if (comparison != null) {
-			System.out.println("updating existing comparison");
+			// System.out.println("updating existing comparison");
 			return comparison;
 		}
 		comparison = createNewComparison(tdbResource, matchResource, FedLCA.equivalenceCandidate);
-		System.out.println("creating new comparison");
+		// System.out.println("creating new comparison");
 		return comparison;
 	}
 

@@ -90,7 +90,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-		CurationMethods.createNewAnnotation();
+//		CurationMethods.createNewAnnotation();
+		CurationMethods.updateAnnotationModifiedDate();
 	}
 
 	private static void openTDB() {
@@ -192,9 +193,15 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-	public void finalize() {
+	public void finalize() { // AS OF 2015-01-13, NEVER GETS CALLED
 		System.out.println("closing tdbDataset and tdbModel");
 		cleanUp();
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static String getStringFromLiteral(RDFNode rdfNode) {

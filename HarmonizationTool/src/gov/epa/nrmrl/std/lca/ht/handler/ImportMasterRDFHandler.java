@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.jena.riot.system.IRIResolver;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -28,7 +29,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.tdb.TDB;
 
-public class ImportRDFHandler implements IHandler {
+public class ImportMasterRDFHandler implements IHandler {
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 	}
@@ -54,7 +55,7 @@ public class ImportRDFHandler implements IHandler {
 			fileDialog.setFilterPath(homeDir);
 		}
 
-		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld" });
+		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
 //		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
 		// SHOWS ALL TYPES IN ONE WINDOW
 
@@ -66,6 +67,8 @@ public class ImportRDFHandler implements IHandler {
 		String sep = File.separator;
 
 		System.out.println("path= " + path);
+		IRIResolver thing = IRIResolver.create("http://openlca.org/schema/v1.0#");
+
 		for (String fileName : fileList) {
 			System.out.println("fileName= " + fileName);
 			if (!fileName.startsWith(sep)) {
@@ -74,21 +77,24 @@ public class ImportRDFHandler implements IHandler {
 
 			long was = ActiveTDB.getModel().size();
 			long startTime = System.currentTimeMillis();
-			if (!fileName.matches(".*\\.zip.*")) {
+			if (!fileName.matches(".*\\.zip")) {
 				try {
 					String inputType = "SKIP";
-					if (fileName.matches(".*\\.rdf.*")) {
+					if (fileName.matches(".*\\.rdf")) {
 						inputType = "RDF/XML";
-					} else if (fileName.matches(".*\\.n3.*")) {
+					} else if (fileName.matches(".*\\.n3")) {
 						inputType = "N3";
-					} else if (fileName.matches(".*\\.ttl.*")) {
+					} else if (fileName.matches(".*\\.ttl")) {
 						inputType = "TTL";
-					} else if (fileName.matches(".*\\.jsonld.*")) {
+					} else if (fileName.matches(".*\\.jsonld")) {
+						inputType = "JSON-LD";
+					} else if (fileName.matches(".*\\.json")) {
 						inputType = "JSON-LD";
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
 
+					
 					// --- BEGIN SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
@@ -120,13 +126,15 @@ public class ImportRDFHandler implements IHandler {
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
-						if (ze.getName().matches(".*\\.rdf.*")) {
+						if (ze.getName().matches(".*\\.rdf")) {
 							inputType = "RDF/XML";
-						} else if (ze.getName().matches(".*\\.n3.*")) {
+						} else if (ze.getName().matches(".*\\.n3")) {
 							inputType = "N3";
-						} else if (ze.getName().matches(".*\\.ttl.*")) {
+						} else if (ze.getName().matches(".*\\.ttl")) {
 							inputType = "TTL";
-						} else if (ze.getName().matches(".*\\.jsonld.*")) {
+						} else if (ze.getName().matches(".*\\.jsonld")) {
+							inputType = "JSON-LD";
+						} else if (fileName.matches(".*\\.json")) {
 							inputType = "JSON-LD";
 						}
 						if (inputType != "SKIP") {
@@ -157,7 +165,6 @@ public class ImportRDFHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
-//			ActiveTDB.flush();
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 			long now = ActiveTDB.getModel().size();
