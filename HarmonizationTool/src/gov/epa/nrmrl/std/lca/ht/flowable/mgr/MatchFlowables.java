@@ -67,6 +67,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -106,7 +108,7 @@ public class MatchFlowables extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		outerComposite = new Composite(parent, SWT.V_SCROLL);
+		outerComposite = new Composite(parent, SWT.NONE);
 		outerComposite.setLayout(new GridLayout(1, false));
 		System.out.println("hello, from sunny MatchFlowables!");
 		initializeTableViewer(outerComposite);
@@ -117,12 +119,9 @@ public class MatchFlowables extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		FillLayout fl_innerComposite = new FillLayout(SWT.HORIZONTAL);
-		fl_innerComposite.spacing = 5;
-		innerComposite.setLayout(fl_innerComposite);
+		innerComposite.setLayout(new GridLayout(5, false));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gridData.horizontalIndent = 120;
-		gridData.heightHint = 20;
+		gridData.heightHint = 30;
 		innerComposite.setLayoutData(gridData);
 
 		composite.addListener(SWT.Resize, new Listener() {
@@ -138,11 +137,25 @@ public class MatchFlowables extends ViewPart {
 		acceptAdvance.setText("Next");
 		acceptAdvance.addSelectionListener(nextSelectionListener);
 
-		// TODO - ADD THIS BUTTON (BELOW) AND IMPLEMENT.
 		addToMaster = new Button(innerComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
+
+		searchButton = new Button(innerComposite, SWT.NONE);
+		searchButton.setText("Search:");
+		searchButton.addSelectionListener(searchListener);
+
+		chooseSearchFieldCombo = new Combo(innerComposite, SWT.NONE);
+		chooseSearchFieldCombo.add("Name / synonym");
+		chooseSearchFieldCombo.add("CAS RN");
+		chooseSearchFieldCombo.add("(other)");
+		chooseSearchFieldCombo.select(0);
+
+		chooseSearchFieldText = new Text(innerComposite, SWT.BORDER);
+		GridData gd_chooseSearchFieldText = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_chooseSearchFieldText.widthHint = 2000;
+		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
 
 		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -247,7 +260,7 @@ public class MatchFlowables extends ViewPart {
 
 	private static void initializeTable() {
 		table = tableViewer.getTable();
-		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 	}
@@ -338,7 +351,7 @@ public class MatchFlowables extends ViewPart {
 		autosizeColumns();
 	}
 
-	private static void autosizeColumns(){
+	private static void autosizeColumns() {
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 			table.getColumn(i).pack();
 			int width = table.getColumn(i).getWidth();
@@ -349,7 +362,7 @@ public class MatchFlowables extends ViewPart {
 			}
 		}
 	}
-	
+
 	private static void removeColumns() {
 		table.setRedraw(false);
 		while (table.getColumnCount() > 0) {
@@ -526,7 +539,110 @@ public class MatchFlowables extends ViewPart {
 		System.out.println("flowableTableRows.length now = " + flowableTableRows.size());
 	}
 
+	private static SelectionListener searchListener = new SelectionListener() {
+		private void doit(SelectionEvent e) {
+			findMatches();
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+	};
+
 	private static void findMatches() {
+		String whereParam = star2regex(chooseSearchFieldText.getText());
+		if (whereParam.matches("\\s*")) {
+			return;
+		}
+		String whereClause = "";
+		if (chooseSearchFieldCombo.getSelectionIndex() == 0) {
+			if (!whereParam.matches(".*[a-zA-Z0-9].*")) {
+				return;
+			}
+			whereParam.replaceAll("\"", "\\\\\"").toLowerCase();
+			whereClause = "?f skos:altLabel ?syn . \n" + "filter regex(str(?syn),\"" + whereParam + "\") \n";
+		}
+		if (chooseSearchFieldCombo.getSelectionIndex() == 1) {
+			if (!whereParam.matches(".*[0-9].*")) {
+				return;
+			}
+			whereParam.replaceAll("\"", "\\\\\"").toLowerCase();
+			whereClause = "?f eco:casNumber ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
+		}
+		if (chooseSearchFieldCombo.getSelectionIndex() == 2) {
+			if (!whereParam.matches(".*[0-9].*")) {
+				return;
+			}
+			whereParam.replaceAll("\"", "\\\\\"").toLowerCase();
+			whereClause = "    ?f ?p ?other . \n" + "    filter regex(str(?other),\"" + whereParam + "\") \n";
+		}
+
+		StringBuilder b = new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		b.append(" \n");
+		b.append("SELECT distinct ?f  \n");
+		b.append("WHERE \n");
+		b.append("  { \n");
+		b.append(whereClause);
+		b.append("    ?f a eco:Flowable . \n");
+		b.append("    ?f eco:hasDataSource ?ds . \n");
+		b.append("    ?ds a ?masterTest . \n");
+		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
+		b.append("   } order by ?masterTest \n");
+		String query = b.toString();
+		System.out.println("query = \n"+ query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		Logger.getLogger("run").info("Searching master list for matching flowables...");
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		System.out.println("resultSet = " + resultSet);
+		flowableToMatch.clearSearchResults();
+		// resetTable();
+		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		int count = 0;
+		while (resultSet.hasNext()) {
+			count++;
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rdfNode = querySolution.get("f");
+			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
+				continue;
+			}
+			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
+				continue;
+			}
+			if (candidateMap.containsKey(rdfNode)) {
+				continue;
+			}
+			// Flowable flowable = new Flowable(rdfNode.asResource());
+			flowableToMatch.addSearchResult(rdfNode.asResource());
+		}
+		Logger.getLogger("run").info(
+				"... search complete.  Below the search row, " + count + " matching field are shown.");
+
+		displayNewSearchResults();
+		// appendSearchResults(50);
+	}
+
+	private static void findMatchesold() {
 		TableItem tableItem = table.getItem(searchRow);
 		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
 
@@ -546,7 +662,8 @@ public class MatchFlowables extends ViewPart {
 			System.out.println("otherSearch fails" + otherSearch);
 		}
 
-		if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*") && !otherSearch.matches(".*[a-zA-Z0-9].*")) {
+		if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*")
+				&& !otherSearch.matches(".*[a-zA-Z0-9].*")) {
 			Logger.getLogger("run").warn("Search cancelled since at least one field must contain an alpha-numeric");
 			return;
 		}
@@ -572,13 +689,12 @@ public class MatchFlowables extends ViewPart {
 		b.append("    optional {?f ?p ?other . }\n");
 		b.append("    ?f a eco:Flowable . \n");
 		b.append("    ?f eco:hasDataSource ?ds . \n");
-//		b.append("    ?ds a lcaht:MasterDataset . \n");
+		// b.append("    ?ds a lcaht:MasterDataset . \n");
 		b.append("    ?ds a ?masterTest . \n");
 		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
 
-//		b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
-//		b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
-
+		// b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
+		// b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
 
 		if (!casSearch.matches("^\\s*$")) {
 			String casRegex = star2regex(casSearch);
@@ -620,7 +736,8 @@ public class MatchFlowables extends ViewPart {
 			// Flowable flowable = new Flowable(rdfNode.asResource());
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
-		Logger.getLogger("run").info("... search complete.  Below the search row, " + count + " matching field are shown.");
+		Logger.getLogger("run").info(
+				"... search complete.  Below the search row, " + count + " matching field are shown.");
 
 		displayNewSearchResults();
 		// appendSearchResults(50);
@@ -849,6 +966,9 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static Composite outerComposite;
+	private static Combo chooseSearchFieldCombo;
+	private static Text chooseSearchFieldText;
+	private static Button searchButton;
 
 	public static void initialize() {
 		initializeTable();
