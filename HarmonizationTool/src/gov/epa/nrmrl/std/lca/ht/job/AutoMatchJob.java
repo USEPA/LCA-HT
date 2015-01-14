@@ -216,14 +216,14 @@ public class AutoMatchJob extends Job {
 				}
 				stopWatch04.start();
 //				final boolean hit = flowable.setMatches();
-				final boolean hit = flowable.setMasterMatches();
+				final int hitCount = flowable.setMasterMatches();
 				// final boolean hit = flowable.nonTSSetMatches();
 				stopWatch04.stop();
 				flowable.setFirstRow(rowNumToSend);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-						if (hit) {
+						if (hitCount == 1) {
 							FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
 						}
 					}

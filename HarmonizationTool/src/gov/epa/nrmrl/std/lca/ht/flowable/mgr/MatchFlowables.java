@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.naming.directory.SearchControls;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -85,7 +87,7 @@ public class MatchFlowables extends ViewPart {
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
-//	private static int searchRow = 1;
+	// private static int searchRow = 1;
 	private static boolean editingInProgress = false;
 	private static boolean justUpdated = false;
 	private static Button addToMaster;
@@ -119,7 +121,7 @@ public class MatchFlowables extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayout(new GridLayout(5, false));
+		innerComposite.setLayout(new GridLayout(7, false));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gridData.heightHint = 30;
 		innerComposite.setLayoutData(gridData);
@@ -142,6 +144,11 @@ public class MatchFlowables extends ViewPart {
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
 
+		pageCombo = new Combo(innerComposite, SWT.NONE);
+		pageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		pageCombo.add("p.1");
+		pageCombo.select(0);
+
 		searchButton = new Button(innerComposite, SWT.NONE);
 		searchButton.setText("Search:");
 		searchButton.addSelectionListener(searchListener);
@@ -151,11 +158,11 @@ public class MatchFlowables extends ViewPart {
 		chooseSearchFieldCombo.add("CAS RN");
 		chooseSearchFieldCombo.add("(other)");
 		chooseSearchFieldCombo.select(0);
+		new Label(innerComposite, SWT.NONE);
 
 		chooseSearchFieldText = new Text(innerComposite, SWT.BORDER);
-		GridData gd_chooseSearchFieldText = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_chooseSearchFieldText.widthHint = 2000;
-		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
+		// gd_chooseSearchFieldText.widthHint = 2000;
+		chooseSearchFieldText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 
 		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -194,59 +201,59 @@ public class MatchFlowables extends ViewPart {
 					return false;
 				}
 				return false;
-//				} else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
-////					table.deselect(rowNumSelected);
-//					return false;
-//				} else if (newColNumSelected < 6) {
-////					table.deselect(rowNumSelected);
-//					return false;
-//				} else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
-//					if (editingInProgress) {
-//						String textInEditor = "[editorText is still null]";
-//						if (editorText != null) {
-//							textInEditor = editorText.getText();
-//						}
-//						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
-//							justUpdated = false;
-//							rowNumSelected = newRowNumSelected;
-//							colNumSelected = newColNumSelected;
-//							return true;
-//						}
-//						String textInLastCell = "[no previously selected cell]";
-//						if (rowNumSelected > 0 && colNumSelected > 0) {
-//							textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
-//						}
-//
-//						String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
-//
-//						System.out.println("textInEditor: " + textInEditor);
-//						System.out.println("textInLastCell: " + textInLastCell);
-//						System.out.println("textInNewCell: " + textInNewCell);
-//
-//						// if (editingInProgress) {
-//						// table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
-//						flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
-//
-//						// editorText
-//						// System.out.println("editorText.getText() = " + editorText.getText());
-//						editorText.setText(textInNewCell);
-//						justUpdated = true;
-//					}
-//					rowNumSelected = newRowNumSelected;
-//					colNumSelected = newColNumSelected;
-//					if (newColNumSelected == 6) {
-//						findMatches();
-//						justUpdated = false;
-//						editingInProgress = false;
-//						System.out.println("Setting editingInProgress to: " + editingInProgress);
-//						return false;
-//					} else {
-//						editingInProgress = true;
-//						System.out.println("Setting editingInProgress to: " + editingInProgress);
-//
-//						return true;
-//					}
-//				}
+				// } else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
+				// // table.deselect(rowNumSelected);
+				// return false;
+				// } else if (newColNumSelected < 6) {
+				// // table.deselect(rowNumSelected);
+				// return false;
+				// } else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
+				// if (editingInProgress) {
+				// String textInEditor = "[editorText is still null]";
+				// if (editorText != null) {
+				// textInEditor = editorText.getText();
+				// }
+				// if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
+				// justUpdated = false;
+				// rowNumSelected = newRowNumSelected;
+				// colNumSelected = newColNumSelected;
+				// return true;
+				// }
+				// String textInLastCell = "[no previously selected cell]";
+				// if (rowNumSelected > 0 && colNumSelected > 0) {
+				// textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
+				// }
+				//
+				// String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
+				//
+				// System.out.println("textInEditor: " + textInEditor);
+				// System.out.println("textInLastCell: " + textInLastCell);
+				// System.out.println("textInNewCell: " + textInNewCell);
+				//
+				// // if (editingInProgress) {
+				// // table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
+				// flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
+				//
+				// // editorText
+				// // System.out.println("editorText.getText() = " + editorText.getText());
+				// editorText.setText(textInNewCell);
+				// justUpdated = true;
+				// }
+				// rowNumSelected = newRowNumSelected;
+				// colNumSelected = newColNumSelected;
+				// if (newColNumSelected == 6) {
+				// findMatches();
+				// justUpdated = false;
+				// editingInProgress = false;
+				// System.out.println("Setting editingInProgress to: " + editingInProgress);
+				// return false;
+				// } else {
+				// editingInProgress = true;
+				// System.out.println("Setting editingInProgress to: " + editingInProgress);
+				//
+				// return true;
+				// }
+				// }
 			}
 		};
 		activationSupport.setEnableEditorActivationWithKeyboard(true);
@@ -273,9 +280,18 @@ public class MatchFlowables extends ViewPart {
 		// initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 
+		for (int i = pageCombo.getItemCount() - 1; i > 0; i--) {
+			pageCombo.remove(i);
+		}
+		pageCombo.select(0);
+		chooseSearchFieldCombo.select(0);
+		chooseSearchFieldText.setText("");
+
 		DataRow dataRow = tableProvider.getData().get(rowNumber);
 		dataTableRowNum = rowNumber;
 		flowableToMatch = dataRow.getFlowable();
+
+		addToMaster.setText("Add to Master");
 
 		flowableToMatch.clearSearchResults();
 		if (flowableToMatch == null) {
@@ -297,15 +313,15 @@ public class MatchFlowables extends ViewPart {
 			// updateMatchCounts();
 		}
 
-//		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
+		// searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-//		int rowCount = searchRow + 1 + searchResultResources.size();
+		// int rowCount = searchRow + 1 + searchResultResources.size();
 
-//		if (searchResultResources.size() > maxSearchResults) {
-//			rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
-//		}
+		// if (searchResultResources.size() > maxSearchResults) {
+		// rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
+		// }
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
 		FlowableTableRow flowableTableRow0 = new FlowableTableRow();
@@ -326,10 +342,10 @@ public class MatchFlowables extends ViewPart {
 			row++;
 		}
 		// NOW CREATE THE ROW WITH THE SEARCH MESSAGE
-//		FlowableTableRow flowableTableRow = new FlowableTableRow();
-//		flowableTableRow.setRowNumber(row);
-//		flowableTableRow.getColumnValues().set(6, "Click to Search -->");
-//		flowableTableRows.add(flowableTableRow);
+		// FlowableTableRow flowableTableRow = new FlowableTableRow();
+		// flowableTableRow.setRowNumber(row);
+		// flowableTableRow.getColumnValues().set(6, "Click to Search -->");
+		// flowableTableRows.add(flowableTableRow);
 
 		// tableViewer.setInput(flowableTableRows);
 		// Table fred = table;
@@ -348,7 +364,7 @@ public class MatchFlowables extends ViewPart {
 		p.y -= 30;
 		table.setSize(p);
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-//		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		// table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -394,7 +410,7 @@ public class MatchFlowables extends ViewPart {
 		p.y -= 30;
 		table.setSize(p);
 		// table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-//		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		// table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -501,7 +517,10 @@ public class MatchFlowables extends ViewPart {
 			candidateMap.put(matchingResource, newString);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
-			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
+			int curCol = 0;
+			if (curSymbol != null) {
+				curCol = MatchStatus.getNumberBySymbol(curSymbol);
+			}
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
 			searchMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
@@ -560,6 +579,9 @@ public class MatchFlowables extends ViewPart {
 
 	private static void findMatches() {
 		String whereParam = star2regex(chooseSearchFieldText.getText().toLowerCase());
+		int page = Integer.parseInt((pageCombo.getText().substring(2)));
+		String offset = "offset " + 100 * (page - 1);
+
 		if (whereParam.matches("\\s*")) {
 			return;
 		}
@@ -609,8 +631,9 @@ public class MatchFlowables extends ViewPart {
 		b.append("    ?ds a ?masterTest . \n");
 		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
 		b.append("   } order by ?masterTest \n");
+		b.append("   limit 100 " + offset + "\n");
 		String query = b.toString();
-		System.out.println("query = \n"+ query);
+		System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		Logger.getLogger("run").info("Searching master list for matching flowables...");
@@ -637,6 +660,14 @@ public class MatchFlowables extends ViewPart {
 			// Flowable flowable = new Flowable(rdfNode.asResource());
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
+		if (count > 99) {
+			page++;
+			pageCombo.add("p." + page);
+		} else {
+			for (int i = pageCombo.getItemCount() - 1; i >= page; i--) {
+				pageCombo.remove(i);
+			}
+		}
 		Logger.getLogger("run").info(
 				"... search complete.  Below the search row, " + count + " matching field are shown.");
 
@@ -644,106 +675,106 @@ public class MatchFlowables extends ViewPart {
 		// appendSearchResults(50);
 	}
 
-	private static void findMatchesold() {
-		TableItem tableItem = table.getItem(flowableToMatch.getMatchCandidates().size() + 1);
-		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
-
-		String nameSearch = flowableTableRow.get(7);
-		String nameMatch = nameSearch.replaceAll("\"", "\\\\\"").toLowerCase();
-		String casSearch = flowableTableRow.get(8);
-		String otherSearch = flowableTableRow.get(10);
-
-		if (!nameMatch.matches(".*[a-zA-Z0-9].*")) {
-			System.out.println("nameMatch fails " + nameMatch);
-		}
-		if (!casSearch.matches(".*[0-9].*")) {
-			System.out.println("casSearch fails " + casSearch);
-		}
-
-		if (!otherSearch.matches(".*[a-zA-Z0-9].*")) {
-			System.out.println("otherSearch fails" + otherSearch);
-		}
-
-		if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*")
-				&& !otherSearch.matches(".*[a-zA-Z0-9].*")) {
-			Logger.getLogger("run").warn("Search cancelled since at least one field must contain an alpha-numeric");
-			return;
-		}
-		StringBuilder b = new StringBuilder();
-		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-		b.append(" \n");
-		b.append("SELECT distinct ?f  \n");
-		b.append("WHERE \n");
-		b.append("  { \n");
-		b.append("    ?f skos:altLabel ?syn . \n");
-		b.append("    optional {?f eco:casNumber ?cas . }\n");
-		b.append("    optional {?f ?p ?other . }\n");
-		b.append("    ?f a eco:Flowable . \n");
-		b.append("    ?f eco:hasDataSource ?ds . \n");
-		// b.append("    ?ds a lcaht:MasterDataset . \n");
-		b.append("    ?ds a ?masterTest . \n");
-		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-
-		// b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
-		// b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
-
-		if (!casSearch.matches("^\\s*$")) {
-			String casRegex = star2regex(casSearch);
-			b.append("    filter regex(str(?cas),\"" + casRegex + "\") \n");
-		}
-		if (!nameMatch.matches("^\\s*$")) {
-			String nameRegex = star2regex(nameMatch);
-			b.append("    filter regex(str(?syn),\"" + nameRegex + "\") \n");
-		}
-		if (!otherSearch.matches("^\\s*$")) {
-			String otherRegex = star2regex(otherSearch);
-			b.append("    filter regex(str(?other),\"" + otherRegex + "\",\"i\") \n");
-		}
-		b.append("   } order by ?masterTest \n");
-		String query = b.toString();
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-		Logger.getLogger("run").info("Searching master list for matching flowables...");
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		System.out.println("resultSet = " + resultSet);
-		flowableToMatch.clearSearchResults();
-		// resetTable();
-		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-		int count = 0;
-		while (resultSet.hasNext()) {
-			count++;
-			QuerySolution querySolution = resultSet.next();
-			RDFNode rdfNode = querySolution.get("f");
-			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
-				continue;
-			}
-			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
-				continue;
-			}
-			if (candidateMap.containsKey(rdfNode)) {
-				continue;
-			}
-			// Flowable flowable = new Flowable(rdfNode.asResource());
-			flowableToMatch.addSearchResult(rdfNode.asResource());
-		}
-		Logger.getLogger("run").info(
-				"... search complete.  Below the search row, " + count + " matching field are shown.");
-
-		displayNewSearchResults();
-		// appendSearchResults(50);
-	}
+	// private static void findMatchesold() {
+	// TableItem tableItem = table.getItem(flowableToMatch.getMatchCandidates().size() + 1);
+	// FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
+	//
+	// String nameSearch = flowableTableRow.get(7);
+	// String nameMatch = nameSearch.replaceAll("\"", "\\\\\"").toLowerCase();
+	// String casSearch = flowableTableRow.get(8);
+	// String otherSearch = flowableTableRow.get(10);
+	//
+	// if (!nameMatch.matches(".*[a-zA-Z0-9].*")) {
+	// System.out.println("nameMatch fails " + nameMatch);
+	// }
+	// if (!casSearch.matches(".*[0-9].*")) {
+	// System.out.println("casSearch fails " + casSearch);
+	// }
+	//
+	// if (!otherSearch.matches(".*[a-zA-Z0-9].*")) {
+	// System.out.println("otherSearch fails" + otherSearch);
+	// }
+	//
+	// if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*")
+	// && !otherSearch.matches(".*[a-zA-Z0-9].*")) {
+	// Logger.getLogger("run").warn("Search cancelled since at least one field must contain an alpha-numeric");
+	// return;
+	// }
+	// StringBuilder b = new StringBuilder();
+	// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+	// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+	// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+	// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+	// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+	// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+	// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+	// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+	// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+	// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+	// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+	// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+	// b.append(" \n");
+	// b.append("SELECT distinct ?f  \n");
+	// b.append("WHERE \n");
+	// b.append("  { \n");
+	// b.append("    ?f skos:altLabel ?syn . \n");
+	// b.append("    optional {?f eco:casNumber ?cas . }\n");
+	// b.append("    optional {?f ?p ?other . }\n");
+	// b.append("    ?f a eco:Flowable . \n");
+	// b.append("    ?f eco:hasDataSource ?ds . \n");
+	// // b.append("    ?ds a lcaht:MasterDataset . \n");
+	// b.append("    ?ds a ?masterTest . \n");
+	// b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
+	//
+	// // b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
+	// // b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
+	//
+	// if (!casSearch.matches("^\\s*$")) {
+	// String casRegex = star2regex(casSearch);
+	// b.append("    filter regex(str(?cas),\"" + casRegex + "\") \n");
+	// }
+	// if (!nameMatch.matches("^\\s*$")) {
+	// String nameRegex = star2regex(nameMatch);
+	// b.append("    filter regex(str(?syn),\"" + nameRegex + "\") \n");
+	// }
+	// if (!otherSearch.matches("^\\s*$")) {
+	// String otherRegex = star2regex(otherSearch);
+	// b.append("    filter regex(str(?other),\"" + otherRegex + "\",\"i\") \n");
+	// }
+	// b.append("   } order by ?masterTest \n");
+	// String query = b.toString();
+	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+	// harmonyQuery2Impl.setQuery(query);
+	// Logger.getLogger("run").info("Searching master list for matching flowables...");
+	//
+	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+	// System.out.println("resultSet = " + resultSet);
+	// flowableToMatch.clearSearchResults();
+	// // resetTable();
+	// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+	// int count = 0;
+	// while (resultSet.hasNext()) {
+	// count++;
+	// QuerySolution querySolution = resultSet.next();
+	// RDFNode rdfNode = querySolution.get("f");
+	// if (flowableToMatch.getTdbResource().equals(rdfNode)) {
+	// continue;
+	// }
+	// if (flowableToMatch.getTdbResource().equals(rdfNode)) {
+	// continue;
+	// }
+	// if (candidateMap.containsKey(rdfNode)) {
+	// continue;
+	// }
+	// // Flowable flowable = new Flowable(rdfNode.asResource());
+	// flowableToMatch.addSearchResult(rdfNode.asResource());
+	// }
+	// Logger.getLogger("run").info(
+	// "... search complete.  Below the search row, " + count + " matching field are shown.");
+	//
+	// displayNewSearchResults();
+	// // appendSearchResults(50);
+	// }
 
 	private static void resetTable() {
 		int i = table.getItemCount() - 1;
@@ -971,6 +1002,7 @@ public class MatchFlowables extends ViewPart {
 	private static Combo chooseSearchFieldCombo;
 	private static Text chooseSearchFieldText;
 	private static Button searchButton;
+	private static Combo pageCombo;
 
 	public static void initialize() {
 		initializeTable();

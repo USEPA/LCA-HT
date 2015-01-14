@@ -55,6 +55,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -108,6 +109,8 @@ public class CSVTableView extends ViewPart {
 	private static ViewerSorter sorter;
 
 	private static TableRowFilter rowFilter = new TableRowFilter();
+	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
+
 
 	public static boolean preCommit = true;
 
@@ -1943,7 +1946,7 @@ public class CSVTableView extends ViewPart {
 		}
 
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
-		boolean hit = false;
+		int hitCount = 0;
 		List<DataRow> data = TableKeeper.getTableProvider(tableProviderKey).getData();
 		DataRow dataRow = data.get(rowToColor);
 		Flowable flowable = dataRow.getFlowable();
@@ -1953,7 +1956,7 @@ public class CSVTableView extends ViewPart {
 			for (String symbol : thing.values()) {
 				int matchNum = MatchStatus.getNumberBySymbol(symbol);
 				if (matchNum > 0 && matchNum < 5) {
-					hit = true;
+					hitCount++;
 				}
 			}
 
@@ -1965,8 +1968,10 @@ public class CSVTableView extends ViewPart {
 			ActiveTDB.tdbDataset.end();
 			if (adHoc) {
 				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-			} else if (hit) {
+			} else if (hitCount == 1) {
 				color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+			} else if (hitCount > 1) {
+				color = orange;
 			} else {
 				color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 			}
