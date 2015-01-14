@@ -85,7 +85,7 @@ public class MatchFlowables extends ViewPart {
 	private static int colNumSelected = -1;
 	private static Flowable flowableToMatch;
 	private static int dataTableRowNum = -1;
-	private static int searchRow = 1;
+//	private static int searchRow = 1;
 	private static boolean editingInProgress = false;
 	private static boolean justUpdated = false;
 	private static Button addToMaster;
@@ -186,65 +186,67 @@ public class MatchFlowables extends ViewPart {
 				if (newRowNumSelected == 0) {
 					table.deselect(rowNumSelected);
 					return false;
-				} else if ((newRowNumSelected != searchRow) && (newColNumSelected < 6)) {
+				} else if (newColNumSelected < 6) {
 					rowNumSelected = newRowNumSelected;
 					colNumSelected = newColNumSelected;
 					assignMatch();
 					table.deselect(rowNumSelected);
 					return false;
-				} else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
-					table.deselect(rowNumSelected);
-					return false;
-				} else if (newColNumSelected < 6) {
-					table.deselect(rowNumSelected);
-					return false;
-				} else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
-					if (editingInProgress) {
-						String textInEditor = "[editorText is still null]";
-						if (editorText != null) {
-							textInEditor = editorText.getText();
-						}
-						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
-							justUpdated = false;
-							rowNumSelected = newRowNumSelected;
-							colNumSelected = newColNumSelected;
-							return true;
-						}
-						String textInLastCell = "[no previously selected cell]";
-						if (rowNumSelected > 0 && colNumSelected > 0) {
-							textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
-						}
-
-						String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
-
-						System.out.println("textInEditor: " + textInEditor);
-						System.out.println("textInLastCell: " + textInLastCell);
-						System.out.println("textInNewCell: " + textInNewCell);
-
-						// if (editingInProgress) {
-						// table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
-						flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
-
-						// editorText
-						// System.out.println("editorText.getText() = " + editorText.getText());
-						editorText.setText(textInNewCell);
-						justUpdated = true;
-					}
-					rowNumSelected = newRowNumSelected;
-					colNumSelected = newColNumSelected;
-					if (newColNumSelected == 6) {
-						findMatches();
-						justUpdated = false;
-						editingInProgress = false;
-						System.out.println("Setting editingInProgress to: " + editingInProgress);
-						return false;
-					} else {
-						editingInProgress = true;
-						System.out.println("Setting editingInProgress to: " + editingInProgress);
-
-						return true;
-					}
 				}
+				return false;
+//				} else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
+////					table.deselect(rowNumSelected);
+//					return false;
+//				} else if (newColNumSelected < 6) {
+////					table.deselect(rowNumSelected);
+//					return false;
+//				} else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
+//					if (editingInProgress) {
+//						String textInEditor = "[editorText is still null]";
+//						if (editorText != null) {
+//							textInEditor = editorText.getText();
+//						}
+//						if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
+//							justUpdated = false;
+//							rowNumSelected = newRowNumSelected;
+//							colNumSelected = newColNumSelected;
+//							return true;
+//						}
+//						String textInLastCell = "[no previously selected cell]";
+//						if (rowNumSelected > 0 && colNumSelected > 0) {
+//							textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
+//						}
+//
+//						String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
+//
+//						System.out.println("textInEditor: " + textInEditor);
+//						System.out.println("textInLastCell: " + textInLastCell);
+//						System.out.println("textInNewCell: " + textInNewCell);
+//
+//						// if (editingInProgress) {
+//						// table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
+//						flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
+//
+//						// editorText
+//						// System.out.println("editorText.getText() = " + editorText.getText());
+//						editorText.setText(textInNewCell);
+//						justUpdated = true;
+//					}
+//					rowNumSelected = newRowNumSelected;
+//					colNumSelected = newColNumSelected;
+//					if (newColNumSelected == 6) {
+//						findMatches();
+//						justUpdated = false;
+//						editingInProgress = false;
+//						System.out.println("Setting editingInProgress to: " + editingInProgress);
+//						return false;
+//					} else {
+//						editingInProgress = true;
+//						System.out.println("Setting editingInProgress to: " + editingInProgress);
+//
+//						return true;
+//					}
+//				}
 			}
 		};
 		activationSupport.setEnableEditorActivationWithKeyboard(true);
@@ -295,15 +297,15 @@ public class MatchFlowables extends ViewPart {
 			// updateMatchCounts();
 		}
 
-		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
+//		searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		int rowCount = searchRow + 1 + searchResultResources.size();
+//		int rowCount = searchRow + 1 + searchResultResources.size();
 
-		if (searchResultResources.size() > maxSearchResults) {
-			rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
-		}
+//		if (searchResultResources.size() > maxSearchResults) {
+//			rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
+//		}
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
 		FlowableTableRow flowableTableRow0 = new FlowableTableRow();
@@ -324,10 +326,10 @@ public class MatchFlowables extends ViewPart {
 			row++;
 		}
 		// NOW CREATE THE ROW WITH THE SEARCH MESSAGE
-		FlowableTableRow flowableTableRow = new FlowableTableRow();
-		flowableTableRow.setRowNumber(row);
-		flowableTableRow.getColumnValues().set(6, "Click to Search -->");
-		flowableTableRows.add(flowableTableRow);
+//		FlowableTableRow flowableTableRow = new FlowableTableRow();
+//		flowableTableRow.setRowNumber(row);
+//		flowableTableRow.getColumnValues().set(6, "Click to Search -->");
+//		flowableTableRows.add(flowableTableRow);
 
 		// tableViewer.setInput(flowableTableRows);
 		// Table fred = table;
@@ -346,7 +348,7 @@ public class MatchFlowables extends ViewPart {
 		p.y -= 30;
 		table.setSize(p);
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+//		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -374,7 +376,7 @@ public class MatchFlowables extends ViewPart {
 	private static void displayNewSearchResults() {
 		clearSearchRows();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		int row = searchRow + 1;
+		int row = flowableToMatch.getMatchCandidates().size() + 1;
 		for (Object dFlowableResource : searchResultResources.keySet()) {
 			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
 			FlowableTableRow flowableTableRow = new FlowableTableRow();
@@ -384,7 +386,7 @@ public class MatchFlowables extends ViewPart {
 			flowableTableRow.setValues();
 			flowableTableRows.add(flowableTableRow);
 			row++;
-			if (row >= maxSearchResults + searchRow) {
+			if (row >= maxSearchResults + flowableToMatch.getMatchCandidates().size() + 1) {
 				continue;
 			}
 		}
@@ -392,7 +394,7 @@ public class MatchFlowables extends ViewPart {
 		p.y -= 30;
 		table.setSize(p);
 		// table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+//		table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -491,7 +493,7 @@ public class MatchFlowables extends ViewPart {
 		String newString = MatchStatus.getByValue(colNumSelected).getSymbol();
 		tableItem.setText(colNumSelected, newString);
 		flowableTabRow.set(colNumSelected, newString);
-		if (rowNumSelected < searchRow) {
+		if (rowNumSelected < flowableToMatch.getMatchCandidates().size() + 1) {
 			String curSymbol = candidateMap.get(matchingResource);
 			int curCol = MatchStatus.getNumberBySymbol(curSymbol);
 			tableItem.setText(curCol, "");
@@ -533,7 +535,7 @@ public class MatchFlowables extends ViewPart {
 		System.out.println("flowableTableRows is = " + flowableTableRows);
 		System.out.println("flowableTableRows.length was = " + flowableTableRows.size());
 		int totalRows = flowableTableRows.size();
-		for (int i = totalRows - 1; i > searchRow; i--) {
+		for (int i = totalRows - 1; i > flowableToMatch.getMatchCandidates().size() + 1; i--) {
 			flowableTableRows.remove(i);
 		}
 		System.out.println("flowableTableRows.length now = " + flowableTableRows.size());
@@ -557,7 +559,7 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static void findMatches() {
-		String whereParam = star2regex(chooseSearchFieldText.getText());
+		String whereParam = star2regex(chooseSearchFieldText.getText().toLowerCase());
 		if (whereParam.matches("\\s*")) {
 			return;
 		}
@@ -643,7 +645,7 @@ public class MatchFlowables extends ViewPart {
 	}
 
 	private static void findMatchesold() {
-		TableItem tableItem = table.getItem(searchRow);
+		TableItem tableItem = table.getItem(flowableToMatch.getMatchCandidates().size() + 1);
 		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
 
 		String nameSearch = flowableTableRow.get(7);
