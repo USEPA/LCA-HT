@@ -952,11 +952,11 @@ public class Flowable {
 		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		int count = 0;
 		while (resultSet.hasNext()) {
-			count++;
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			RDFNode dataSetTypeNode = querySolution.get("masterTest");
 			if (dataSetTypeNode.asResource().getURI().matches(".*MasterDataset.*")){
+				count++;
 				matchCandidates.put(rdfNode.asResource(), "=");
 			}
 			if (dataSetTypeNode.asResource().getURI().matches(".*SupplementaryReferenceDataset.*")){

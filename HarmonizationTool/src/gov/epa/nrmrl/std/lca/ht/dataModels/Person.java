@@ -3,10 +3,13 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class Person {
 	private String name;
@@ -15,7 +18,8 @@ public class Person {
 	private String phone;
 	private static final Resource rdfClass = ECO.Person;
 	private Resource tdbResource;
-//	protected final static Model model = ActiveTDB.tdbModel;
+
+	// protected final static Model model = ActiveTDB.tdbModel;
 
 	public Person() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
@@ -131,12 +135,19 @@ public class Person {
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		try {
-			tdbResource.removeAll(FedLCA.personName);
-			tdbResource.removeAll(FedLCA.affiliation);
-			tdbResource.removeAll(FedLCA.email);
-			tdbResource.removeAll(FedLCA.voicePhone);
-
+			StmtIterator stmtIterator = tdbResource.listProperties();
+			while (stmtIterator.hasNext()) {
+				tdbModel.remove(stmtIterator.next());
+			}
+			for (int i = 0; i < DataSourceKeeper.size(); i++) {
+				DataSourceProvider dataSourceProvider = DataSourceKeeper.get(i);
+				Person person = dataSourceProvider.getContactPerson();
+				if (person.equals(this)) {
+					tdbModel.remove(dataSourceProvider.getTdbResource(), FedLCA.hasContactPerson, tdbResource);
+				}
+			}
 			ActiveTDB.tdbDataset.commit();
 		} finally {
 			ActiveTDB.tdbDataset.end();

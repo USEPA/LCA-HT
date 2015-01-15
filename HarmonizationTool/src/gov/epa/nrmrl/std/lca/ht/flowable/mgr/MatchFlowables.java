@@ -92,7 +92,8 @@ public class MatchFlowables extends ViewPart {
 	private static boolean justUpdated = false;
 	private static Button addToMaster;
 
-	private static int maxSearchResults = 50;
+	private static int maxSearchResults = 100;
+	private static int nextStartResult = 0;
 	public static Text editorText;
 
 	// private static FlowableTableRow[] flowableTableRows;
@@ -121,7 +122,7 @@ public class MatchFlowables extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayout(new GridLayout(7, false));
+		innerComposite.setLayout(new GridLayout(6, false));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gridData.heightHint = 30;
 		innerComposite.setLayoutData(gridData);
@@ -144,11 +145,6 @@ public class MatchFlowables extends ViewPart {
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
 
-		pageCombo = new Combo(innerComposite, SWT.NONE);
-		pageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		pageCombo.add("p.1");
-		pageCombo.select(0);
-
 		searchButton = new Button(innerComposite, SWT.NONE);
 		searchButton.setText("Search:");
 		searchButton.addSelectionListener(searchListener);
@@ -158,11 +154,35 @@ public class MatchFlowables extends ViewPart {
 		chooseSearchFieldCombo.add("CAS RN");
 		chooseSearchFieldCombo.add("(other)");
 		chooseSearchFieldCombo.select(0);
-		new Label(innerComposite, SWT.NONE);
+		chooseSearchFieldCombo.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				resetSearchButton();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				resetSearchButton();
+			}
+		});
 
 		chooseSearchFieldText = new Text(innerComposite, SWT.BORDER);
-		// gd_chooseSearchFieldText.widthHint = 2000;
-		chooseSearchFieldText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		GridData gd_chooseSearchFieldText = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_chooseSearchFieldText.widthHint = 6000;
+		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
+		chooseSearchFieldText.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				resetSearchButton();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				resetSearchButton();
+			}
+		});
 
 		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -280,10 +300,7 @@ public class MatchFlowables extends ViewPart {
 		// initialize();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 
-		for (int i = pageCombo.getItemCount() - 1; i > 0; i--) {
-			pageCombo.remove(i);
-		}
-		pageCombo.select(0);
+		resetSearchButton();
 		chooseSearchFieldCombo.select(0);
 		chooseSearchFieldText.setText("");
 
@@ -402,9 +419,9 @@ public class MatchFlowables extends ViewPart {
 			flowableTableRow.setValues();
 			flowableTableRows.add(flowableTableRow);
 			row++;
-			if (row >= maxSearchResults + flowableToMatch.getMatchCandidates().size() + 1) {
-				continue;
-			}
+			// if (row >= maxSearchResults + flowableToMatch.getMatchCandidates().size() + 1) {
+			// continue;
+			// }
 		}
 		Point p = table.getParent().getParent().getSize();
 		p.y -= 30;
@@ -579,8 +596,6 @@ public class MatchFlowables extends ViewPart {
 
 	private static void findMatches() {
 		String whereParam = star2regex(chooseSearchFieldText.getText().toLowerCase());
-		int page = Integer.parseInt((pageCombo.getText().substring(2)));
-		String offset = "offset " + 100 * (page - 1);
 
 		if (whereParam.matches("\\s*")) {
 			return;
@@ -631,7 +646,7 @@ public class MatchFlowables extends ViewPart {
 		b.append("    ?ds a ?masterTest . \n");
 		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
 		b.append("   } order by ?masterTest \n");
-		b.append("   limit 100 " + offset + "\n");
+		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
 		System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
@@ -661,18 +676,20 @@ public class MatchFlowables extends ViewPart {
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
 		if (count > 99) {
-			page++;
-			pageCombo.add("p." + page);
+			nextStartResult += maxSearchResults;
+			searchButton.setText(nextStartResult + " -");
 		} else {
-			for (int i = pageCombo.getItemCount() - 1; i >= page; i--) {
-				pageCombo.remove(i);
-			}
+			resetSearchButton();
 		}
-		Logger.getLogger("run").info(
-				"... search complete.  Below the search row, " + count + " matching field are shown.");
+		Logger.getLogger("run").info("... search complete. " + count + " matching field are shown.");
 
 		displayNewSearchResults();
 		// appendSearchResults(50);
+	}
+
+	private static void resetSearchButton() {
+		nextStartResult = 0;
+		searchButton.setText("Search:");
 	}
 
 	// private static void findMatchesold() {
@@ -1002,7 +1019,6 @@ public class MatchFlowables extends ViewPart {
 	private static Combo chooseSearchFieldCombo;
 	private static Text chooseSearchFieldText;
 	private static Button searchButton;
-	private static Combo pageCombo;
 
 	public static void initialize() {
 		initializeTable();

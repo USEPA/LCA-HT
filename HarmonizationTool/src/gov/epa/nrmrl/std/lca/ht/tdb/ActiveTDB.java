@@ -90,7 +90,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-//		CurationMethods.createNewAnnotation();
+		// CurationMethods.createNewAnnotation();
 		CurationMethods.updateAnnotationModifiedDate();
 	}
 
@@ -327,6 +327,37 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
+		if (tdbDataset.isInTransaction()) {
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object() {
+			}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite) {
+			return;
+		}
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = tdbDataset.getDefaultModel();
+		try {
+			if (subject.hasProperty(predicate)) {
+				StmtIterator stmtIterator = subject.listProperties(predicate);
+				while (stmtIterator.hasNext()) {
+					Statement statement = stmtIterator.next();
+					tdbModel.remove(statement);
+				}
+			}
+			tdbModel.add(subject, predicate, object);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("02 TDB transaction failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void tsReplaceResourceSameType(Resource subject, Property predicate, Resource object) {
 		if (tdbDataset.isInTransaction()) {
 			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
 			System.out.println(new Object() {
@@ -882,5 +913,41 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static void addTriple(Resource s, Property p, Resource o) {
 		s.addProperty(p, o);
+	}
+
+	public static void tsAddThree(Resource tdbResource, Property prop1, Resource resource1, Property prop2,
+			Resource resource2, Property prop3, Resource resource3) {
+		if (tdbDataset.isInTransaction()) {
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object() {
+			}.getClass().getEnclosingMethod().getName());
+		}
+		if (noReadWrite) {
+			return;
+		}
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = tdbDataset.getDefaultModel();
+		try {
+			tdbResource.removeAll(prop1);
+			tdbResource.removeAll(prop2);
+			tdbResource.removeAll(prop3);
+			// subject.addProperty(predicate, object);
+			// tdbModel.remove(subject, predicate, object);
+			// StmtIterator stmtIterator = subject.listProperties(predicate);
+			// while (stmtIterator.hasNext()) {
+			// tdbModel.remove(stmtIterator.next());
+			// }
+			tdbModel.add(tdbResource, prop1, resource1);
+			tdbModel.add(tdbResource, prop2, resource2);
+			tdbModel.add(tdbResource, prop3, resource3);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("02 TDB transaction failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 }

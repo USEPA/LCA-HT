@@ -65,9 +65,11 @@ public class AutoMatchJob extends Job {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		StopWatch stopWatch01 = new StopWatch("Total Time");
-		StopWatch stopWatch02 = new StopWatch("Concat. Flowables");
-		StopWatch stopWatch03 = new StopWatch("Checking Flowables");
-		StopWatch stopWatch04 = new StopWatch("set matches");
+		StopWatch stopWatch02 = new StopWatch("Concat. and hash Flowables");
+		StopWatch stopWatch03 = new StopWatch("Create Flowables");
+		StopWatch stopWatch04 = new StopWatch("Find matches + color rows");
+		StopWatch stopWatch05 = new StopWatch("Flow Context and Properties");
+		StopWatch stopWatch06 = new StopWatch("Flow");
 
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
@@ -179,6 +181,7 @@ public class AutoMatchJob extends Job {
 
 			// ========================== FLOWABLE ==========================
 			stopWatch02.start();
+
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
 				if (lcaDataProperties[i].isRequired() && dataRow.get(i - 1).equals("")) {
@@ -188,11 +191,13 @@ public class AutoMatchJob extends Job {
 				}
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
-			stopWatch02.stop();
-			stopWatch03.start();
+	
 			// if (!flowableConcatinated.matches("^\\s*$")) {
 			flowable = flowableMap.get(flowableConcatinated);
+			stopWatch02.stop();
 			if (flowable == null) {
+				stopWatch03.start();
+
 				// // --- BEGIN SAFE -WRITE- TRANSACTION ---
 				// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 				// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
@@ -202,6 +207,7 @@ public class AutoMatchJob extends Job {
 				// flowable = new Flowable(false);
 
 				flowableMap.put(flowableConcatinated, flowable);
+
 				ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
 						dataSourceProvider.getTdbResource());
 				// flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
@@ -214,21 +220,23 @@ public class AutoMatchJob extends Job {
 					flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					// flowable.nonTSSetProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 				}
+				stopWatch03.stop();
 				stopWatch04.start();
-//				final boolean hit = flowable.setMatches();
+				// final boolean hit = flowable.setMatches();
 				final int hitCount = flowable.setMasterMatches();
 				// final boolean hit = flowable.nonTSSetMatches();
-				stopWatch04.stop();
 				flowable.setFirstRow(rowNumToSend);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
-						if (hitCount == 1) {
+						if (hitCount > 0) {
 							FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
 						}
 					}
 
 				});
+				stopWatch04.stop();
+
 				// ActiveTDB.tdbDataset.commit();
 				// // sync();
 				// } catch (Exception e) {
@@ -241,7 +249,7 @@ public class AutoMatchJob extends Job {
 			}
 			dataRow.setFlowable(flowable);
 			// }
-			stopWatch03.stop();
+			stopWatch05.start();
 
 			// ========================== FLOW CONTEXT ==========================
 			String flowContextConcatinated = "";
@@ -323,17 +331,20 @@ public class AutoMatchJob extends Job {
 				}
 				dataRow.setFlowProperty(flowProperty);
 			}
+			stopWatch05.stop();
 			// ========================== FLOW ==========================
+			stopWatch06.start();
 			Flow tempFlow = new Flow();
-			tempFlow.setFlowable(flowable);
-			tempFlow.setFlowContext(flowContext);
-			tempFlow.setFlowProperty(flowProperty);
+//			tempFlow.setFlowable(flowable);
+//			tempFlow.setFlowContext(flowContext);
+//			tempFlow.setFlowProperty(flowProperty);
+			tempFlow.setThree(flowable,flowContext,flowProperty);
 
 			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
 					dataSourceProvider.getTdbResource());
 			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
 			flows.add(tempFlow);
-
+			stopWatch06.stop();
 		}
 		stopWatch01.stop();
 
@@ -341,6 +352,10 @@ public class AutoMatchJob extends Job {
 		System.out.println(stopWatch02);
 		System.out.println(stopWatch03);
 		System.out.println(stopWatch04);
+		System.out.println(stopWatch05);
+		System.out.println(stopWatch06);
+
+
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 		return Status.OK_STATUS;
 	}

@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
@@ -8,8 +7,10 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import java.util.Date;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class FileMD {
 	private String filename;
@@ -164,14 +165,20 @@ public class FileMD {
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		try {
-			Resource tdbResource = ActiveTDB.tdbDataset.getDefaultModel().createResource(rdfClass);
-			tdbResource.removeAll(LCAHT.fileName);
-			tdbResource.removeAll(LCAHT.filePath);
-			tdbResource.removeAll(LCAHT.fileEncoding);
-			tdbResource.removeAll(LCAHT.byteCount);
-			tdbResource.removeAll(LCAHT.fileModifiedDate);
-			tdbResource.removeAll(LCAHT.fileReadDate);
+			StmtIterator stmtIterator = tdbResource.listProperties();
+			while (stmtIterator.hasNext()) {
+				tdbModel.remove(stmtIterator.next());
+			}
+			for (int i = 0; i < DataSourceKeeper.size(); i++) {
+				DataSourceProvider dataSourceProvider = DataSourceKeeper.get(i);
+				for (FileMD fileMD : dataSourceProvider.getFileMDList()) {
+					if (fileMD.equals(this)) {
+						tdbModel.remove(dataSourceProvider.getTdbResource(), LCAHT.containsFile, tdbResource);
+					}
+				}
+			}
 			ActiveTDB.tdbDataset.commit();
 		} finally {
 			ActiveTDB.tdbDataset.end();
