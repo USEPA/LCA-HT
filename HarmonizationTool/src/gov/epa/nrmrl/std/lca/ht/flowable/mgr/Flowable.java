@@ -888,7 +888,7 @@ public class Flowable {
 		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
 
-	public int setMasterMatches() {
+	public int setMasterMatches(boolean doubleCheck) {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		lcQName.replaceAll("\"", "\\\\\"");
@@ -956,6 +956,10 @@ public class Flowable {
 			matchCandidates.put(rdfNode.asResource(), "=");
 		}
 		if (count > 0) {
+			return count;
+		}
+		
+		if (!doubleCheck){
 			return count;
 		}
 

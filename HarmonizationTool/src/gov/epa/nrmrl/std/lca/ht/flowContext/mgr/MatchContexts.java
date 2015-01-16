@@ -49,17 +49,17 @@ public class MatchContexts extends ViewPart {
 	private static Button nextButton;
 	private static Text userDataLabel;
 
-	private class ContentProvider implements IStructuredContentProvider {
-		public Object[] getElements(Object inputElement) {
-			return new Object[0];
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
+//	private class ContentProvider implements IStructuredContentProvider {
+//		public Object[] getElements(Object inputElement) {
+//			return new Object[0];
+//		}
+//
+//		public void dispose() {
+//		}
+//
+//		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//		}
+//	}
 
 	public MatchContexts() {
 		// MatchContexts = this;

@@ -223,7 +223,7 @@ public class AutoMatchJob extends Job {
 				stopWatch03.stop();
 				stopWatch04.start();
 				// final boolean hit = flowable.setMatches();
-				final int hitCount = flowable.setMasterMatches();
+				final int hitCount = flowable.setMasterMatches(false);
 				// final boolean hit = flowable.nonTSSetMatches();
 				flowable.setFirstRow(rowNumToSend);
 				Display.getDefault().asyncExec(new Runnable() {

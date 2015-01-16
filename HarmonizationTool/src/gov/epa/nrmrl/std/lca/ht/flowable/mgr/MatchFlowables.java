@@ -645,7 +645,7 @@ public class MatchFlowables extends ViewPart {
 		b.append("    ?f eco:hasDataSource ?ds . \n");
 		b.append("    ?ds a ?masterTest . \n");
 		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-		b.append("   } order by ?masterTest \n");
+		b.append("   } order by afn:localname(?masterTest) \n");
 		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
 		System.out.println("query = \n" + query);
