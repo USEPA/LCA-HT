@@ -6,6 +6,7 @@
 G6 - GitHub issue #6 "Click to search causes a crash".
    Status (Tom) The use of wild cards is only somewhat functional.  Better handling of them is necessary.
      Also, user should be warned of broad searches that will take a while.
+     STATUS: (Tom, 1-16-2015) This is pretty much done.  
 
 B10 FEATURE REQUEST: In the 'Match Flowables' panel, show an index for the row as well as the
   rank (in mouse over info, perhaps)
@@ -15,6 +16,7 @@ B10 FEATURE REQUEST: In the 'Match Flowables' panel, show an index for the row a
 4 - Improve program performance. In general, we shouldn't ever stop improving performance but should reach a level of
     performance acceptable for Tuesday.
   SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
+  STATUS: (Tom, 1-16-2015) AutoMatch speed is less than half after not creating Flow objects (just populating TDB)
       
 #==== CAT 3: TDB => TABLE ====
 A35 - Create LCIA Workflow and fields

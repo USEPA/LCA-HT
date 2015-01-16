@@ -334,16 +334,17 @@ public class AutoMatchJob extends Job {
 			stopWatch05.stop();
 			// ========================== FLOW ==========================
 			stopWatch06.start();
-			Flow tempFlow = new Flow();
+			Flow.addFlowData(rowNumberPlusOne,flowable,flowContext,flowProperty,dataSourceProvider.getTdbResource());
+//			Flow tempFlow = new Flow();
 //			tempFlow.setFlowable(flowable);
 //			tempFlow.setFlowContext(flowContext);
 //			tempFlow.setFlowProperty(flowProperty);
-			tempFlow.setThree(flowable,flowContext,flowProperty);
-
-			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-					dataSourceProvider.getTdbResource());
-			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
-			flows.add(tempFlow);
+//			tempFlow.setThree(flowable,flowContext,flowProperty);
+//
+//			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+//					dataSourceProvider.getTdbResource());
+//			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+//			flows.add(tempFlow);
 			stopWatch06.stop();
 		}
 		stopWatch01.stop();

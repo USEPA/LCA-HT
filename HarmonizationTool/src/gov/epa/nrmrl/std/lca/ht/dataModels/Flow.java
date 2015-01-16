@@ -10,7 +10,9 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -90,5 +92,45 @@ public class Flow {
 		this.flowProperty = flowProperty2;
 		ActiveTDB.tsAddThree(tdbResource, ECO.hasFlowable, flowable2.getTdbResource(), FASC.hasCompartment,
 				flowContext2.getTdbResource(), FedLCA.hasFlowProperty, flowProperty2.getTdbResource());
+	}
+
+	public static void addFlowData(int rowNumberPlusOne, Flowable flowable2, FlowContext flowContext2,
+			FlowProperty flowProperty2, Resource dataSourceResource) {
+		// Model tdbModel = ActiveTDB.getModel();
+		if (ActiveTDB.tdbDataset.isInTransaction()) {
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object() {
+			}.getClass().getEnclosingMethod().getName());
+		}
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			Resource tdbResource = tdbModel.createResource(rdfClass);
+			if (rowNumberPlusOne > 0) {
+				Literal rowNumberLiteral = tdbModel.createTypedLiteral(rowNumberPlusOne);
+				tdbModel.add(tdbResource, FedLCA.sourceTableRowNumber, rowNumberLiteral);
+			}
+			if (flowable2 != null) {
+				tdbModel.add(tdbResource, ECO.hasFlowable, flowable2.getTdbResource());
+			}
+			if (flowContext2 != null) {
+				tdbModel.add(tdbResource, FASC.hasCompartment, flowContext2.getTdbResource());
+			}
+			if (flowProperty2 != null) {
+				tdbModel.add(tdbResource, FedLCA.hasFlowProperty, flowProperty2.getTdbResource());
+			}
+			if (dataSourceResource != null) {
+				tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("addFlowData failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 }

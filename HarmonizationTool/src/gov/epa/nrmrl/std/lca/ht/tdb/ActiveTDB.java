@@ -460,7 +460,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			System.out.println(new Object() {
 			}.getClass().getEnclosingMethod().getName());
 		}
-		// FIXME: resources only valid within a transaction??
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		Resource result = null;
 		tdbDataset.begin(ReadWrite.WRITE);
