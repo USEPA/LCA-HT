@@ -111,7 +111,6 @@ public class CSVTableView extends ViewPart {
 	private static TableRowFilter rowFilter = new TableRowFilter();
 	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
-
 	public static boolean preCommit = true;
 
 	public static List<Integer> getRowsToIgnore() {
@@ -471,17 +470,22 @@ public class CSVTableView extends ViewPart {
 		String dataRowNumString = table.getItem(rowNumSelected).getText(0);
 		Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 
-		if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-			// Util.setPerspective(FlowDataV5.ID);
-			Util.setPerspective(LCIWorkflowPerspective.ID);
+		MatchFlowables.update(dataRowNum);
+		MatchContexts.update();
+		MatchProperties.update();
 
-			try {
-				Util.showView(MatchFlowables.ID);
-			} catch (PartInitException e1) {
-				e1.printStackTrace();
-			}
-			MatchFlowables.update(dataRowNum);
-		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+		// if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+		// // Util.setPerspective(FlowDataV5.ID);
+		// Util.setPerspective(LCIWorkflowPerspective.ID);
+		//
+		// try {
+		// Util.showView(MatchFlowables.ID);
+		// } catch (PartInitException e1) {
+		// e1.printStackTrace();
+		// }
+		// // MatchFlowables.update(dataRowNum);
+		// } else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+		if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 
@@ -491,7 +495,7 @@ public class CSVTableView extends ViewPart {
 				e1.printStackTrace();
 			}
 			// MatchContexts.update(dataRowNum);
-			MatchContexts.update();
+			// MatchContexts.update();
 		} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
 			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
@@ -502,8 +506,7 @@ public class CSVTableView extends ViewPart {
 				e1.printStackTrace();
 			}
 			// MatchProperties.update(dataRowNum);
-			MatchProperties.update();
-
+			// MatchProperties.update();
 		}
 	}
 
@@ -1957,6 +1960,10 @@ public class CSVTableView extends ViewPart {
 				int matchNum = MatchStatus.getNumberBySymbol(symbol);
 				if (matchNum > 0 && matchNum < 5) {
 					hitCount++;
+				}
+				if (matchNum == 0) {
+					hitCount = 2;
+					break;
 				}
 			}
 

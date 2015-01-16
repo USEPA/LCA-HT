@@ -892,8 +892,8 @@ public class Flowable {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		lcQName.replaceAll("\"", "\\\\\"");
-//		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-//		Model tdbModel = ActiveTDB.getModel();
+		// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+		// Model tdbModel = ActiveTDB.getModel();
 
 		boolean checkCas = false;
 		String qCAS = getCas();
@@ -922,31 +922,28 @@ public class Flowable {
 		b.append("WHERE \n");
 		b.append("  { \n");
 
-		b.append("    ?f skos:altLabel \""+lcQName+"\"^^xsd:string  . \n");
-//		b.append("    filter (str(?syn) = \"" + lcQName + "\")\n");
+		b.append("    ?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . \n");
 
 		if (checkCas) {
 			b.append("    optional {?f eco:casNumber ?cas . }\n");
 			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
 		}
 		b.append("    ?f eco:hasDataSource ?ds . \n");
-//		b.append("    ?ds a lcaht:MasterDataset . \n");
+		b.append("    ?ds a lcaht:MasterDataset . \n");
 		b.append("    ?f a eco:Flowable . \n");
-		b.append("    ?ds a ?masterTest . \n");
-		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-		b.append("   } order by ?masterTest \n");
+		b.append("   } \n");
 
 		String query = b.toString();
 
-//		System.out.println("query = \n");
-//		System.out.println(query);
+//		System.out.println("query = \n"+query);
+		// System.out.println(query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		// Logger.getLogger("run").info("Searching master list for matching flowables...");
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-//		System.out.println("resultSet = " + resultSet);
+		// System.out.println("resultSet = " + resultSet);
 		// flowableToMatch.clearSearchResults();
 		// resetTable();
 		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
@@ -954,106 +951,141 @@ public class Flowable {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
-			RDFNode dataSetTypeNode = querySolution.get("masterTest");
-			if (dataSetTypeNode.asResource().getURI().matches(".*MasterDataset.*")){
-				count++;
-				matchCandidates.put(rdfNode.asResource(), "=");
-			}
-			if (dataSetTypeNode.asResource().getURI().matches(".*SupplementaryReferenceDataset.*")){
-				if (matchCandidates.size() == 1){
-					break;
-				}
-				count++;
-				matchCandidates.put(rdfNode.asResource(), "?");
-			}
+//			RDFNode dataSetTypeNode = querySolution.get("masterTest");
+			count++;
+			matchCandidates.put(rdfNode.asResource(), "=");
 		}
-//		if (count > 0) {
-//			return true;
-//		}
+		if (count > 0) {
+			return count;
+		}
+
+		b = new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		b.append(" \n");
+		b.append("SELECT distinct ?f \n");
+		b.append("WHERE \n");
+		b.append("  { \n");
+		b.append("    { \n");
+		b.append("      {?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . }\n  UNION ");
+		b.append("      {?f eco:casNumber ?cas . \n");
+		b.append("        filter (str(?cas) = \"" + qCAS + "\") }\n");
+		b.append("    } \n");
+		b.append("    ?f eco:hasDataSource ?ds . \n");
+		b.append("    ?f a eco:Flowable . \n");
+		b.append("    ?ds a ?masterTest . \n");
+		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
+		b.append("   } order by ?masterTest \n");
+
+		query = b.toString();
+//		System.out.println("Query: " + query);
+		harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		// Logger.getLogger("run").info("Searching master list for matching flowables...");
+
+		resultSet = harmonyQuery2Impl.getResultSet();
+
+		count = 0;
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rdfNode = querySolution.get("f");
+			count++;
+			matchCandidates.put(rdfNode.asResource(), "?");
+		}
 		return count;
 	}
-	
-//	public boolean setMasterMatches() {
-//		String qName = getName();
-//		String lcQName = qName.toLowerCase();
-//		lcQName.replaceAll("\"", "\\\\\"");
-////		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-////		Model tdbModel = ActiveTDB.getModel();
-//
-//		boolean checkCas = false;
-//		String qCAS = getCas();
-//		if (qCAS != null) {
-//			if (!qCAS.equals("")) {
-//				checkCas = true;
-//			}
-//		}
-//
-//		// =========================================
-//		StringBuilder b = new StringBuilder();
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-//		b.append(" \n");
-//		b.append("SELECT distinct ?f ?masterTest \n");
-//		b.append("WHERE \n");
-//		b.append("  { \n");
-//
-//		b.append("    ?f skos:altLabel \""+lcQName+"\"^^xsd:string  . \n");
-////		b.append("    filter (str(?syn) = \"" + lcQName + "\")\n");
-//
-//		if (checkCas) {
-//			b.append("    optional {?f eco:casNumber ?cas . }\n");
-//			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
-//		}
-//		b.append("    ?f eco:hasDataSource ?ds . \n");
-////		b.append("    ?ds a lcaht:MasterDataset . \n");
-//		b.append("    ?f a eco:Flowable . \n");
-//		b.append("    ?ds a ?masterTest . \n");
-//		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-//		b.append("   } order by ?masterTest \n");
-//
-//		String query = b.toString();
-//
-////		System.out.println("query = \n");
-////		System.out.println(query);
-//
-//		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-//		harmonyQuery2Impl.setQuery(query);
-//		// Logger.getLogger("run").info("Searching master list for matching flowables...");
-//
-//		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-////		System.out.println("resultSet = " + resultSet);
-//		// flowableToMatch.clearSearchResults();
-//		// resetTable();
-//		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-//		int count = 0;
-//		while (resultSet.hasNext()) {
-//			count++;
-//			QuerySolution querySolution = resultSet.next();
-//			RDFNode rdfNode = querySolution.get("f");
-//			RDFNode dataSetTypeNode = querySolution.get("masterTest");
-//			if (dataSetTypeNode.asResource().getURI().matches(".*MasterDataset.*")){
-//				matchCandidates.put(rdfNode.asResource(), "=");
-//			}
-//			if (dataSetTypeNode.asResource().getURI().matches(".*SupplementaryReferenceDataset.*")){
-//				count++;
-//				matchCandidates.put(rdfNode.asResource(), "?");
-//			}
-//		}
-//		if (count > 0) {
-//			return true;
-//		}
-//		return false;
-//	}
+
+	// public boolean setMasterMatches() {
+	// String qName = getName();
+	// String lcQName = qName.toLowerCase();
+	// lcQName.replaceAll("\"", "\\\\\"");
+	// // Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+	// // Model tdbModel = ActiveTDB.getModel();
+	//
+	// boolean checkCas = false;
+	// String qCAS = getCas();
+	// if (qCAS != null) {
+	// if (!qCAS.equals("")) {
+	// checkCas = true;
+	// }
+	// }
+	//
+	// // =========================================
+	// StringBuilder b = new StringBuilder();
+	// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+	// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+	// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+	// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+	// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+	// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+	// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+	// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+	// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+	// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+	// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+	// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+	// b.append(" \n");
+	// b.append("SELECT distinct ?f ?masterTest \n");
+	// b.append("WHERE \n");
+	// b.append("  { \n");
+	//
+	// b.append("    ?f skos:altLabel \""+lcQName+"\"^^xsd:string  . \n");
+	// // b.append("    filter (str(?syn) = \"" + lcQName + "\")\n");
+	//
+	// if (checkCas) {
+	// b.append("    optional {?f eco:casNumber ?cas . }\n");
+	// b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
+	// }
+	// b.append("    ?f eco:hasDataSource ?ds . \n");
+	// // b.append("    ?ds a lcaht:MasterDataset . \n");
+	// b.append("    ?f a eco:Flowable . \n");
+	// b.append("    ?ds a ?masterTest . \n");
+	// b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
+	// b.append("   } order by ?masterTest \n");
+	//
+	// String query = b.toString();
+	//
+	// // System.out.println("query = \n");
+	// // System.out.println(query);
+	//
+	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+	// harmonyQuery2Impl.setQuery(query);
+	// // Logger.getLogger("run").info("Searching master list for matching flowables...");
+	//
+	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+	// // System.out.println("resultSet = " + resultSet);
+	// // flowableToMatch.clearSearchResults();
+	// // resetTable();
+	// // LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+	// int count = 0;
+	// while (resultSet.hasNext()) {
+	// count++;
+	// QuerySolution querySolution = resultSet.next();
+	// RDFNode rdfNode = querySolution.get("f");
+	// RDFNode dataSetTypeNode = querySolution.get("masterTest");
+	// if (dataSetTypeNode.asResource().getURI().matches(".*MasterDataset.*")){
+	// matchCandidates.put(rdfNode.asResource(), "=");
+	// }
+	// if (dataSetTypeNode.asResource().getURI().matches(".*SupplementaryReferenceDataset.*")){
+	// count++;
+	// matchCandidates.put(rdfNode.asResource(), "?");
+	// }
+	// }
+	// if (count > 0) {
+	// return true;
+	// }
+	// return false;
+	// }
 
 	public boolean setMatches() {
 		String qName = getName();
