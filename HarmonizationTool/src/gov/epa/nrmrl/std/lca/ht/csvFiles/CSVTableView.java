@@ -1170,6 +1170,12 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
+	
+	public static void selectNextAllThree(){
+		selectNextFlowable();
+		selectNextContext();
+		selectNextProperty();
+	}
 
 	// private static void recolorLastColumn(){
 	//

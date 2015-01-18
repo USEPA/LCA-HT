@@ -945,7 +945,7 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener nextSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			CSVTableView.selectNextFlowable();
+			CSVTableView.selectNextAllThree();
 		}
 
 		@Override
