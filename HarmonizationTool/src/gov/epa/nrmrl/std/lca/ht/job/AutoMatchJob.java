@@ -191,7 +191,7 @@ public class AutoMatchJob extends Job {
 				}
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
-	
+
 			// if (!flowableConcatinated.matches("^\\s*$")) {
 			flowable = flowableMap.get(flowableConcatinated);
 			stopWatch02.stop();
@@ -223,7 +223,7 @@ public class AutoMatchJob extends Job {
 				stopWatch03.stop();
 				stopWatch04.start();
 				// final boolean hit = flowable.setMatches();
-//				final int hitCount = flowable.setMasterMatches(false);
+				// final int hitCount = flowable.setMasterMatches(false);
 				final int hitCount = flowable.setMasterMatches(true);
 				// final boolean hit = flowable.nonTSSetMatches();
 				flowable.setFirstRow(rowNumToSend);
@@ -333,21 +333,31 @@ public class AutoMatchJob extends Job {
 				dataRow.setFlowProperty(flowProperty);
 			}
 			stopWatch05.stop();
-			// ========================== FLOW ==========================
-			stopWatch06.start();
-			Flow.addFlowData(rowNumberPlusOne,flowable,flowContext,flowProperty,dataSourceProvider.getTdbResource());
-//			Flow tempFlow = new Flow();
-//			tempFlow.setFlowable(flowable);
-//			tempFlow.setFlowContext(flowContext);
-//			tempFlow.setFlowProperty(flowProperty);
-//			tempFlow.setThree(flowable,flowContext,flowProperty);
-//
-//			ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-//					dataSourceProvider.getTdbResource());
-//			ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
-//			flows.add(tempFlow);
-			stopWatch06.stop();
+			// // ========================== FLOW ==========================
+			// stopWatch06.start();
+			// Flow.addFlowData(rowNumberPlusOne,flowable,flowContext,flowProperty,dataSourceProvider.getTdbResource());
+			// Flow tempFlow = new Flow();
+			// tempFlow.setFlowable(flowable);
+			// tempFlow.setFlowContext(flowContext);
+			// tempFlow.setFlowProperty(flowProperty);
+			// tempFlow.setThree(flowable,flowContext,flowProperty);
+			//
+			// ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
+			// dataSourceProvider.getTdbResource());
+			// ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
+			// flows.add(tempFlow);
+			// stopWatch06.stop();
 		}
+		// ========================== FLOW ==========================
+
+		stopWatch06.start();
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextCommit("Adding flow data...");
+				Flow.addAllFlowData();
+			}
+		});
+		stopWatch06.stop();
 		stopWatch01.stop();
 
 		System.out.println(stopWatch01);
@@ -356,7 +366,6 @@ public class AutoMatchJob extends Job {
 		System.out.println(stopWatch04);
 		System.out.println(stopWatch05);
 		System.out.println(stopWatch06);
-
 
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 		return Status.OK_STATUS;

@@ -1,9 +1,13 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import java.util.List;
+
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -123,6 +127,59 @@ public class Flow {
 			}
 			if (dataSourceResource != null) {
 				tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("addFlowData failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void addAllFlowData() {
+		// Model tdbModel = ActiveTDB.getModel();
+		if (ActiveTDB.tdbDataset.isInTransaction()) {
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object() {
+			}.getClass().getEnclosingMethod().getName());
+			return;
+			// TODO: MAKE THIS AN ASSERT
+		}
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			Util.showView(CSVTableView.ID);
+			TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+			Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
+			List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
+			for (int i = 0; i < tableProvider.getData().size(); i++) {
+				if (rowsToIgnore.contains(i)) {
+					continue;
+				}
+				int rowNumberPlusOne = i + 1;
+				DataRow dataRow = tableProvider.getData().get(i);
+
+				Resource tdbResource = tdbModel.createResource(rdfClass);
+				if (rowNumberPlusOne > 0) {
+					Literal rowNumberLiteral = tdbModel.createTypedLiteral(rowNumberPlusOne);
+					tdbModel.add(tdbResource, FedLCA.sourceTableRowNumber, rowNumberLiteral);
+				}
+				if (dataRow.getFlowable() != null) {
+					tdbModel.add(tdbResource, ECO.hasFlowable, dataRow.getFlowable().getTdbResource());
+				}
+				if (dataRow.getFlowContext() != null) {
+					tdbModel.add(tdbResource, FASC.hasCompartment, dataRow.getFlowContext().getTdbResource());
+				}
+				if (dataRow.getFlowProperty() != null) {
+					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowProperty().getTdbResource());
+				}
+				if (dataSourceResource != null) {
+					tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
+				}
 			}
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
