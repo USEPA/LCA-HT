@@ -239,7 +239,7 @@ public class MatchProperties extends ViewPart {
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			// expandAll();
-			CSVTableView.selectNextAllThree();
+			CSVTableView.selectNext();
 		}
 
 		@Override
@@ -817,6 +817,51 @@ public class MatchProperties extends ViewPart {
 		this.propertyResourcesToMatch = contextResourcesToMatch;
 	}
 
+	public static void update(int rowNumber) {
+		// Util.findView(CSVTableView.ID);
+		// if (CSVTableView.getTable().getSelectionCount() == 0) {
+		// return;
+		// }
+		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+		// String rowNumString = tableItem.getText(0);
+		// int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		propertyToMatch = dataRow.getFlowProperty();
+		if (propertyToMatch == null) {
+			masterTree.deselectAll();
+			setUserDataLabel("", false);
+		} else {
+
+			String labelString = null;
+			String propertyString = propertyToMatch.getPropertyStr();
+			String unitString = propertyToMatch.getUnitStr();
+			if (propertyString == null) {
+				labelString = unitString;
+			} else {
+				// labelString = propertyString + ": " + unitString;
+
+				labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
+			}
+
+			partialCollapse();
+			Resource propertyResource = propertyToMatch.getMatchingResource();
+			if (propertyResource != null) {
+				TreeItem treeItem = getTreeItemByURI(propertyResource);
+				if (treeItem != null) {
+					masterTree.setSelection(treeItem);
+					setUserDataLabel(labelString, true);
+
+				} else {
+					masterTree.deselectAll();
+					setUserDataLabel(labelString, false);
+				}
+			} else {
+				masterTree.deselectAll();
+				setUserDataLabel(labelString, false);
+			}
+		}
+	}
+
 	public static void update() {
 		Util.findView(CSVTableView.ID);
 		if (CSVTableView.getTable().getSelectionCount() == 0) {
@@ -830,34 +875,35 @@ public class MatchProperties extends ViewPart {
 		if (propertyToMatch == null) {
 			masterTree.deselectAll();
 			setUserDataLabel("", false);
-		}
-
-		String labelString = null;
-		String propertyString = propertyToMatch.getPropertyStr();
-		String unitString = propertyToMatch.getUnitStr();
-		if (propertyString == null) {
-			labelString = unitString;
 		} else {
-			// labelString = propertyString + ": " + unitString;
 
-			labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
-		}
+			String labelString = null;
+			String propertyString = propertyToMatch.getPropertyStr();
+			String unitString = propertyToMatch.getUnitStr();
+			if (propertyString == null) {
+				labelString = unitString;
+			} else {
+				// labelString = propertyString + ": " + unitString;
 
-		partialCollapse();
-		Resource propertyResource = propertyToMatch.getMatchingResource();
-		if (propertyResource != null) {
-			TreeItem treeItem = getTreeItemByURI(propertyResource);
-			if (treeItem != null) {
-				masterTree.setSelection(treeItem);
-				setUserDataLabel(labelString, true);
+				labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
+			}
 
+			partialCollapse();
+			Resource propertyResource = propertyToMatch.getMatchingResource();
+			if (propertyResource != null) {
+				TreeItem treeItem = getTreeItemByURI(propertyResource);
+				if (treeItem != null) {
+					masterTree.setSelection(treeItem);
+					setUserDataLabel(labelString, true);
+
+				} else {
+					masterTree.deselectAll();
+					setUserDataLabel(labelString, false);
+				}
 			} else {
 				masterTree.deselectAll();
 				setUserDataLabel(labelString, false);
 			}
-		} else {
-			masterTree.deselectAll();
-			setUserDataLabel(labelString, false);
 		}
 	}
 

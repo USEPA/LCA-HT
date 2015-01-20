@@ -45,6 +45,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -95,6 +96,8 @@ public class MatchFlowables extends ViewPart {
 	private static int maxSearchResults = 100;
 	private static int nextStartResult = 0;
 	public static Text editorText;
+
+	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
 	// private static FlowableTableRow[] flowableTableRows;
 	private static List<FlowableTableRow> flowableTableRows;
@@ -309,36 +312,24 @@ public class MatchFlowables extends ViewPart {
 		flowableToMatch = dataRow.getFlowable();
 
 		addToMaster.setText("Add to Master");
-
-		flowableToMatch.clearSearchResults();
 		if (flowableToMatch == null) {
 			return;
 		}
+		flowableToMatch.clearSearchResults();
+
+		boolean adHoc = false;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(),
-				LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
+		adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+				LCAHT.QCStatusAdHocMaster);
 		ActiveTDB.tdbDataset.end();
 		if (adHoc) {
 			System.out.println("QC ad hoc detected!");
 			addToMaster.setText("Remove from Master");
-			// } else if (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus)) {
-			// addToMaster.setText("Remove 2");
-			// } else if (flowableToMatch.getTdbResource().hasProperty(RDFS.label)) {
-			// addToMaster.setText("Remove 3");
-		} else {
-			addToMaster.setText("Add to Master");
-			// updateMatchCounts();
 		}
 
-		// searchRow = flowableToMatch.getMatchCandidates().size() + 1;
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
 		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		// int rowCount = searchRow + 1 + searchResultResources.size();
-
-		// if (searchResultResources.size() > maxSearchResults) {
-		// rowCount = flowableToMatch.getMatchCandidates().size() + 2 + maxSearchResults;
-		// }
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
 		FlowableTableRow flowableTableRow0 = new FlowableTableRow();
@@ -358,30 +349,13 @@ public class MatchFlowables extends ViewPart {
 			flowableTableRows.add(flowableTableRow);
 			row++;
 		}
-		// NOW CREATE THE ROW WITH THE SEARCH MESSAGE
-		// FlowableTableRow flowableTableRow = new FlowableTableRow();
-		// flowableTableRow.setRowNumber(row);
-		// flowableTableRow.getColumnValues().set(6, "Click to Search -->");
-		// flowableTableRows.add(flowableTableRow);
 
-		// tableViewer.setInput(flowableTableRows);
-		// Table fred = table;
-		// table.getItemCount();
-		// showSearchResults(50);
 		tableViewer.setInput(flowableTableRows);
 
-		// Composite thing = table.getParent();
-		// thing.setRedraw(true);
-		// thing.redraw();
-		// Composite thing2 = thing.getParent();
-		// thing2.setRedraw(true);
-		// thing2.redraw();
-		// tableViewer.refresh();
 		Point p = table.getParent().getParent().getSize();
 		p.y -= 30;
 		table.setSize(p);
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		// table.getItem(searchRow).setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -467,7 +441,7 @@ public class MatchFlowables extends ViewPart {
 
 	private static void updateMatchCounts() {
 		Integer[] matchSummary = new Integer[] { 0, 0, 0, 0, 0, 0 };
-		boolean noMatch = true;
+		int hits = 0;
 		if (table.getItemCount() == 0) {
 			return;
 		}
@@ -475,7 +449,7 @@ public class MatchFlowables extends ViewPart {
 		for (String value : candidateMap.values()) {
 			int col = MatchStatus.getNumberBySymbol(value);
 			if (col > 0 && col < 5) {
-				noMatch = false;
+				hits++;
 			}
 			matchSummary[col]++;
 		}
@@ -496,13 +470,16 @@ public class MatchFlowables extends ViewPart {
 		if (adHoc) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
-		} else if (noMatch) {
+		} else if (hits == 0) {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 
-		} else {
+		} else if (hits == 1) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		} else {
+			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+			table.getItem(0).setBackground(orange);
 		}
 		tableViewer.refresh();
 	}
@@ -945,7 +922,7 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener nextSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			CSVTableView.selectNextAllThree();
+			CSVTableView.selectNext();
 		}
 
 		@Override

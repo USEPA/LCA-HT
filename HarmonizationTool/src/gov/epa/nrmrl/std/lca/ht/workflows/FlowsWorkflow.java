@@ -571,8 +571,10 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowContextRows();
 			}
+			CSVTableView.setSelection(0);
+			CSVTableView.matchRowContents();
 //			Util.setPerspective(FlowDataV4.ID);
-			Util.setPerspective(LCIWorkflowPerspective.ID);
+//			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
@@ -611,8 +613,10 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
+			CSVTableView.setSelection(0);
+			CSVTableView.matchRowContents();
 //			Util.setPerspective(FlowDataV4.ID);
-			Util.setPerspective(LCIWorkflowPerspective.ID);
+//			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchProperties.ID);
 			} catch (PartInitException e1) {
@@ -651,8 +655,10 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowableRows();
 			}
+			CSVTableView.setSelection(0);
+			CSVTableView.matchRowContents();
 //			Util.setPerspective(FlowDataV5.ID);
-			Util.setPerspective(LCIWorkflowPerspective.ID);
+//			Util.setPerspective(LCIWorkflowPerspective.ID);
 
 			try {
 				Util.showView(MatchFlowables.ID);
@@ -676,8 +682,11 @@ public class FlowsWorkflow extends ViewPart {
 	// ------------- CONCLUDE FILE LISTENER ----------------
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
+			CSVTableView.clearFilterRowNumbers();
 			CSVTableView.reset();
 			CSVTableView.initialize();
+			CSVTableView.setSelection(0);
+
 			btnLoadCSV.setEnabled(true);
 			textLoadCSV.setText("");
 

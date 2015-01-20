@@ -49,17 +49,17 @@ public class MatchContexts extends ViewPart {
 	private static Button nextButton;
 	private static Text userDataLabel;
 
-//	private class ContentProvider implements IStructuredContentProvider {
-//		public Object[] getElements(Object inputElement) {
-//			return new Object[0];
-//		}
-//
-//		public void dispose() {
-//		}
-//
-//		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//		}
-//	}
+	// private class ContentProvider implements IStructuredContentProvider {
+	// public Object[] getElements(Object inputElement) {
+	// return new Object[0];
+	// }
+	//
+	// public void dispose() {
+	// }
+	//
+	// public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+	// }
+	// }
 
 	public MatchContexts() {
 		// MatchContexts = this;
@@ -249,7 +249,7 @@ public class MatchContexts extends ViewPart {
 
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			CSVTableView.selectNextAllThree();
+			CSVTableView.selectNext();
 		}
 
 		@Override
@@ -758,14 +758,14 @@ public class MatchContexts extends ViewPart {
 		this.contextResourcesToMatch = contextResourcesToMatch;
 	}
 
-	public static void update() {
-		Util.findView(CSVTableView.ID);
-		if (CSVTableView.getTable().getSelectionCount() == 0) {
-			return;
-		}
-		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-		String rowNumString = tableItem.getText(0);
-		int rowNumber = Integer.parseInt(rowNumString) - 1;
+	public static void update(int rowNumber) {
+		// Util.findView(CSVTableView.ID);
+		// if (CSVTableView.getTable().getSelectionCount() == 0) {
+		// return;
+		// }
+		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+		// String rowNumString = tableItem.getText(0);
+		// int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {
@@ -779,7 +779,7 @@ public class MatchContexts extends ViewPart {
 		if (specificString == null) {
 			labelString = generalString;
 		} else {
-			labelString = generalString + System.getProperty("line.separator") + "   " +specificString;
+			labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
 		}
 
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
@@ -798,6 +798,51 @@ public class MatchContexts extends ViewPart {
 			masterTree.deselectAll();
 			setUserDataLabel(labelString, false);
 
+		}
+	}
+
+	public static void update() {
+		Util.findView(CSVTableView.ID);
+		if (CSVTableView.getTable().getSelectionCount() == 0) {
+			return;
+		}
+		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+		String rowNumString = tableItem.getText(0);
+		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		contextToMatch = dataRow.getFlowContext();
+		if (contextToMatch == null) {
+			masterTree.deselectAll();
+			setUserDataLabel("", false);
+		} else {
+
+			String labelString = null;
+
+			String generalString = contextToMatch.getGeneralString();
+			String specificString = contextToMatch.getSpecificString();
+			if (specificString == null) {
+				labelString = generalString;
+			} else {
+				labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
+			}
+
+			Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+			if (contextResource != null) {
+				TreeItem treeItem = getTreeItemByURI(contextResource);
+				if (treeItem != null) {
+					masterTree.setSelection(getTreeItemByURI(contextResource));
+					setUserDataLabel(labelString, true);
+
+				} else {
+					masterTree.deselectAll();
+					setUserDataLabel(labelString, false);
+
+				}
+			} else {
+				masterTree.deselectAll();
+				setUserDataLabel(labelString, false);
+
+			}
 		}
 	}
 
