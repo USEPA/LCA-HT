@@ -49,6 +49,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Label;
 
 //public class QueryView extends ViewPart implements IActiveTDBListener {
 public class QueryView extends ViewPart {
@@ -96,13 +99,43 @@ public class QueryView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(null);
 
 		Device device = Display.getCurrent();
+		parent.setLayout(new GridLayout(2, false));
+		// parent.setLayout(null);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		Table table = viewer.getTable();
+		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		viewer.setContentProvider(new QueryViewContentProvider(viewer));
+
+		// queryWindow.append("Query Window");
+		viewer.setLabelProvider(new QueryViewLabelProvider());
+		viewer.setInput(getViewSite());
+
+		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL
+				| SWT.MULTI);
+		GridData gd_windowQueryUpdate = new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 3);
+		gd_windowQueryUpdate.heightHint = 1000;
+		gd_windowQueryUpdate.widthHint = 1000;
+		gd_windowQueryUpdate.minimumHeight = 100;
+		gd_windowQueryUpdate.minimumWidth = 200;
+		windowQueryUpdate.setLayoutData(gd_windowQueryUpdate);
+		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
+
+		// Color queryWindowColor = new Color(device, 255, 255, 200);
+		windowQueryUpdate.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		windowQueryUpdate.setText("select * where {?s ?p ?o }");
+		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
+			@Override
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+			}
+		});
 
 		Button queryButton = new Button(parent, SWT.BORDER);
-		// btnNewButton.setBounds(149, 0, 148, 469);
-		queryButton.setBounds(20, 150, 100, 30);
 		queryButton.setAlignment(SWT.LEFT);
 		queryButton.setText("Run Query");
 		queryButton.addSelectionListener(new SelectionListener() {
@@ -110,6 +143,12 @@ public class QueryView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				try {
+					Util.showView(ResultsView.ID);
+				} catch (PartInitException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 				String title = resultsView.getTitle();
 				System.out.println("title= " + title);
@@ -129,8 +168,8 @@ public class QueryView extends ViewPart {
 			}
 		});
 		Button updateButton = new Button(parent, SWT.BORDER);
+		updateButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 		updateButton.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
-		updateButton.setBounds(20, 190, 100, 30);
 		updateButton.setAlignment(SWT.LEFT);
 		// updateButton.setBackground(new Color(device,255,200,200)); // DOES
 		// NOT WORK IN WINDOWS
@@ -158,35 +197,6 @@ public class QueryView extends ViewPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 
-			}
-		});
-
-		windowQueryUpdate = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL
-				| SWT.MULTI);
-		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
-		// txtTextArea.setBounds(297, 0, 148, 469);
-		windowQueryUpdate.setBounds(150, 0, 600, 500);
-
-		// Color queryWindowColor = new Color(device, 255, 255, 200);
-		windowQueryUpdate.setBackground(new Color(device, 255, 255, 200));
-		windowQueryUpdate.setText("select * where {?s ?p ?o }");
-		// parent.setLayout(null);
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		Table table = viewer.getTable();
-		// table.setBounds(445, 0, 149, 469);
-		table.setBounds(0, 0, 150, 500);
-		viewer.setContentProvider(new QueryViewContentProvider(viewer));
-
-		// queryWindow.append("Query Window");
-		viewer.setLabelProvider(new QueryViewLabelProvider());
-		viewer.setInput(getViewSite());
-		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
-			@Override
-			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
 			}
 		});
 
@@ -425,33 +435,32 @@ public class QueryView extends ViewPart {
 		// TableProvider tableProvider = TableProvider
 		// .create((ResultSetRewindable) resultSet);
 		setTextAreaContent(((HarmonyQuery2Impl) labeledQuery).getQuery());
-//		if (key.startsWith("Harmonize CAS")) { // HACK!!
-//			ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
-//			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
-//			// USE
-//			// WHICH createTransform
-//			// AND WHICH formatForTransfor()
-//			// SHOULD BE KNOWN BY THE LabledQuery
-//			// BUT CHOSEN BY THE CALLER
-//			showResultsInWindow = ResultsTreeEditor.ID;
-//
-//			// TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
-//			// THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
-//			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-//
-//			// resultsView.update(tableProvider);
-//			try {
-//				resultsTreeEditor.update(tableProvider);
-//			} catch (Exception e) {
-//				System.out.println("resultsTreeEditor=" + resultsTreeEditor);
-//				e.printStackTrace();
-//			}
-//
-//			// resultsView.formatForTransform0();
-//	}
+		// if (key.startsWith("Harmonize CAS")) { // HACK!!
+		// ResultsTreeEditor resultsTreeEditor = (ResultsTreeEditor) Util.findView(ResultsTreeEditor.ID);
+		// // FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
+		// // USE
+		// // WHICH createTransform
+		// // AND WHICH formatForTransfor()
+		// // SHOULD BE KNOWN BY THE LabledQuery
+		// // BUT CHOSEN BY THE CALLER
+		// showResultsInWindow = ResultsTreeEditor.ID;
+		//
+		// // TableProvider tableProvider = TableProvider.createTransform0((ResultSetRewindable) resultSet);
+		// // THE LINE BELOW TOSSES OUT THE IDEA OF createTransform0, BUT WORKS FOR STANDARD QUERIES
+		// TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		//
+		// // resultsView.update(tableProvider);
+		// try {
+		// resultsTreeEditor.update(tableProvider);
+		// } catch (Exception e) {
+		// System.out.println("resultsTreeEditor=" + resultsTreeEditor);
+		// e.printStackTrace();
+		// }
+		//
+		// // resultsView.formatForTransform0();
+		// }
 		if (key.startsWith("Harmonize Compart")) { // HACK!!
-			MatchContexts matchContexts = (MatchContexts) Util
-					.findView(MatchContexts.ID);
+			MatchContexts matchContexts = (MatchContexts) Util.findView(MatchContexts.ID);
 			// FIXME , BECAUSE WHICH ResultsSet CAN / SHOULD
 			// USE
 			// WHICH createTransform
@@ -462,12 +471,12 @@ public class QueryView extends ViewPart {
 
 			TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
 			// resultsView.update(tableProvider);
-//			try {
-//				matchContexts.update(tableProvider);
-//			} catch (Exception e) {
-//				System.out.println("resultsTreeEditor=" + matchContexts);
-//				e.printStackTrace();
-//			}
+			// try {
+			// matchContexts.update(tableProvider);
+			// } catch (Exception e) {
+			// System.out.println("resultsTreeEditor=" + matchContexts);
+			// e.printStackTrace();
+			// }
 
 			// resultsView.formatForTransform0();
 		} else {

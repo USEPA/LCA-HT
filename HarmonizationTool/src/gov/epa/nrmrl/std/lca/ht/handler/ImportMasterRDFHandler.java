@@ -1,5 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -23,6 +27,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.ReadWrite;
@@ -41,7 +46,7 @@ public class ImportMasterRDFHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-		System.out.println("executing TDB load");
+//		System.out.println("executing TDB load");
 		if (ActiveTDB.getModel() == null) {
 			return null;
 		}
@@ -54,6 +59,48 @@ public class ImportMasterRDFHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
 		}
+		
+		// ------------------------------
+
+		StringBuilder b=new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append(" \n");
+		b.append("insert  \n");
+		b.append("{?s eco:hasDataSource lcaht:tempDataSource . } \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append("  ?s ?p ?o . \n");
+		b.append("  filter ( \n");
+		b.append("    (!exists \n");
+		b.append("      {?s eco:hasDataSource ?ds . } \n");
+		b.append("    )  \n");
+		b.append("    &&  \n");
+		b.append("    (!isBlank(?s)) \n");
+		b.append("  ) \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+
+		// addFilename(path);
+		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//		try {
+//			Util.showView(ResultsView.ID);
+//		} catch (PartInitException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
+//		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+//		String title = resultsView.getTitle();
+//		System.out.println("title= " + title);
+//		resultsView.update(iGenericUpdate.getData());
+//		resultsView.update(iGenericUpdate.getQueryResults());
+		iGenericUpdate.getData();
+		iGenericUpdate.getQueryResults();
+
+		// ------------------------------
 
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
 //		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
@@ -174,6 +221,48 @@ public class ImportMasterRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
+		
+		// ------------------------------
+		b=new StringBuilder();
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append(" \n");
+		b.append("insert  \n");
+		b.append("{?s eco:hasDataSource [ a eco:DataSource, lcaht:MasterDataset ; rdfs:label \"New DataSource\" ] . } \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append("  ?s ?p ?o . \n");
+		b.append("  filter ( \n");
+		b.append("    (!exists \n");
+		b.append("      {?s eco:hasDataSource ?ds . } \n");
+		b.append("    )  \n");
+		b.append("    &&  \n");
+		b.append("    (!isBlank(?s)) \n");
+		b.append("  ) \n");
+		b.append("} \n");
+		query = b.toString();
+
+		iGenericUpdate = new GenericUpdate(query, "Data source");
+
+		// addFilename(path);
+		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//		try {
+//			Util.showView(ResultsView.ID);
+//		} catch (PartInitException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
+//		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+//		String title = resultsView.getTitle();
+//		System.out.println("title= " + title);
+//		resultsView.update(iGenericUpdate.getData());
+//		resultsView.update(iGenericUpdate.getQueryResults());
+		iGenericUpdate.getData();
+		iGenericUpdate.getQueryResults();
+
+		// ------------------------------
+		
 		return null;
 	}
 

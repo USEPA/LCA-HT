@@ -26,6 +26,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FlowContext {
@@ -43,6 +44,8 @@ public class FlowContext {
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+		ActiveTDB.tsAddTriple(rdfClass, RDF.type, OWL.Class);
+
 		System.out.println("label assigned to Flow Context");
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();

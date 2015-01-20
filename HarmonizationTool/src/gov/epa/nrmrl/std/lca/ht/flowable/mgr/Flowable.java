@@ -34,6 +34,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -53,6 +54,7 @@ public class Flowable {
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
 		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
+		ActiveTDB.tsAddTriple(rdfClass, RDF.type, OWL.Class);
 
 		// ActiveTDB.replaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
 		// ActiveTDB.addLiteral(rdfClass, RDFS.comment, comment);
