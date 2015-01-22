@@ -1,11 +1,17 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericQuery;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +21,9 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -30,9 +38,16 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.tdb.TDB;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportMasterRDFHandler implements IHandler {
 	@Override
@@ -46,7 +61,7 @@ public class ImportMasterRDFHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-//		System.out.println("executing TDB load");
+		// System.out.println("executing TDB load");
 		if (ActiveTDB.getModel() == null) {
 			return null;
 		}
@@ -59,10 +74,13 @@ public class ImportMasterRDFHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
 		}
-		
+
 		// ------------------------------
 
-		StringBuilder b=new StringBuilder();
+		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource");
+		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "tempDataSource");
+
+		StringBuilder b = new StringBuilder();
 		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
 		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
 		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
@@ -83,27 +101,42 @@ public class ImportMasterRDFHandler implements IHandler {
 		String query = b.toString();
 
 		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-
-		// addFilename(path);
-		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//		try {
-//			Util.showView(ResultsView.ID);
-//		} catch (PartInitException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//		}
-//		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-//		String title = resultsView.getTitle();
-//		System.out.println("title= " + title);
-//		resultsView.update(iGenericUpdate.getData());
-//		resultsView.update(iGenericUpdate.getQueryResults());
 		iGenericUpdate.getData();
 		iGenericUpdate.getQueryResults();
 
 		// ------------------------------
+		List<String> currentNames = new ArrayList<String>();
+		b = new StringBuilder();
+		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+		b.append("select distinct ?dataSource \n");
+		b.append("where {  \n");
+		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("  ?ds rdfs:label ?ds_name . \n");
+		b.append("  bind (str(?ds_name) as ?dataSource) \n");
+		b.append("} \n");
+		query = b.toString();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rdfNode = querySolution.get("dataSource");
+			currentNames.add(rdfNode.asLiteral().getString());
+		}
+		int priorDataSetCount = currentNames.size();
+		String[] currentNamesArray = new String[priorDataSetCount];
+		for (int i = 0; i < priorDataSetCount; i++) {
+			currentNamesArray[i] = currentNames.get(i);
+		}
+		System.out.println("priorDataSetCount = " + priorDataSetCount);
+
+		// ------------------------------
 
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
-//		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
+		// fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
 		// SHOWS ALL TYPES IN ONE WINDOW
 
 		fileDialog.open();
@@ -114,7 +147,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		String sep = File.separator;
 
 		System.out.println("path= " + path);
-		IRIResolver thing = IRIResolver.create("http://openlca.org/schema/v1.0#");
+		// IRIResolver thing = IRIResolver.create("http://openlca.org/schema/v1.0/");
 
 		for (String fileName : fileList) {
 			System.out.println("fileName= " + fileName);
@@ -141,7 +174,6 @@ public class ImportMasterRDFHandler implements IHandler {
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
 
-					
 					// --- BEGIN SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
@@ -150,7 +182,7 @@ public class ImportMasterRDFHandler implements IHandler {
 						ActiveTDB.tdbDataset.commit();
 						TDB.sync(ActiveTDB.tdbDataset);
 					} catch (Exception e) {
-						System.out.println("Import failed with Exception: "+e);
+						System.out.println("Import failed with Exception: " + e);
 						ActiveTDB.tdbDataset.abort();
 					} finally {
 						ActiveTDB.tdbDataset.end();
@@ -195,9 +227,9 @@ public class ImportMasterRDFHandler implements IHandler {
 							try {
 								tdbModel.read(zipStream, null, inputType);
 								ActiveTDB.tdbDataset.commit();
-//								TDB.sync(ActiveTDB.tdbDataset);
+								// TDB.sync(ActiveTDB.tdbDataset);
 							} catch (Exception e) {
-								System.out.println("Import failed; see strack trace!\n"+e);
+								System.out.println("Import failed; see strack trace!\n" + e);
 								ActiveTDB.tdbDataset.abort();
 							} finally {
 								ActiveTDB.tdbDataset.end();
@@ -221,48 +253,74 @@ public class ImportMasterRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
-		
-		// ------------------------------
-		b=new StringBuilder();
-		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b.append(" \n");
-		b.append("insert  \n");
-		b.append("{?s eco:hasDataSource [ a eco:DataSource, lcaht:MasterDataset ; rdfs:label \"New DataSource\" ] . } \n");
-		b.append(" \n");
-		b.append("where { \n");
-		b.append("  ?s ?p ?o . \n");
-		b.append("  filter ( \n");
-		b.append("    (!exists \n");
-		b.append("      {?s eco:hasDataSource ?ds . } \n");
-		b.append("    )  \n");
-		b.append("    &&  \n");
-		b.append("    (!isBlank(?s)) \n");
-		b.append("  ) \n");
-		b.append("} \n");
-		query = b.toString();
 
-		iGenericUpdate = new GenericUpdate(query, "Data source");
+		StringBuilder b2 = new StringBuilder();
+		b2.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b2.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+		b2.append("select (count(distinct ?ds) as ?count) \n");
+		b2.append("where {  \n");
+		b2.append("  ?s eco:hasDataSource ?ds .  \n");
+		b2.append("} \n");
+		String query2 = b2.toString();
 
-		// addFilename(path);
-		// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//		try {
-//			Util.showView(ResultsView.ID);
-//		} catch (PartInitException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//		}
-//		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-//		String title = resultsView.getTitle();
-//		System.out.println("title= " + title);
-//		resultsView.update(iGenericUpdate.getData());
-//		resultsView.update(iGenericUpdate.getQueryResults());
-		iGenericUpdate.getData();
-		iGenericUpdate.getQueryResults();
+		System.out.println("query2 = " + query2);
 
-		// ------------------------------
-		
+		HarmonyQuery2Impl harmonyQuery2Impl2 = new HarmonyQuery2Impl();
+		harmonyQuery2Impl2.setQuery(query2);
+
+		ResultSet resultSet2 = harmonyQuery2Impl2.getResultSet();
+		QuerySolution querySolution2 = resultSet2.next();
+
+		RDFNode rdfNode = querySolution2.get("count");
+		int postDataSetCount = (int) rdfNode.asLiteral().getInt();
+		System.out.println("postDataSetCount = " + postDataSetCount);
+
+		if (postDataSetCount == priorDataSetCount) {
+			// NEW DATA DID NOT HAVE A DATA SOURCE
+			String newFileName = null;
+			while (newFileName == null && !currentNames.contains(newFileName)) {
+				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
+						"(new data set)", currentNamesArray);
+				genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
+				genericStringBox.open();
+				newFileName = genericStringBox.getResultString();
+			}
+			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+
+			b = new StringBuilder();
+			b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+			b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+			b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+			b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+
+			b.append(" \n");
+			b.append("insert  \n");
+			b.append("{?s eco:hasDataSource ?newds . } \n");
+			b.append(" \n");
+			b.append("where { \n");
+			b.append("  ?newds a eco:DataSource . \n");
+			b.append("  ?newds rdfs:label \"" + newFileName + "\"^^xsd:string . \n");
+			b.append("  ?s ?p ?o . \n");
+			b.append("  filter ( \n");
+			b.append("    (!exists \n");
+			b.append("      {?s eco:hasDataSource ?ds . } \n");
+			b.append("    )  \n");
+			b.append("    &&  \n");
+			b.append("    (!isBlank(?s)) \n");
+			b.append("  ) \n");
+			b.append("} \n");
+			query = b.toString();
+
+			iGenericUpdate = new GenericUpdate(query, "Temp data source");
+			iGenericUpdate.getData();
+			iGenericUpdate.getQueryResults();
+		} else if (postDataSetCount - priorDataSetCount > 1) {
+			// NEW DATA HAD MULTIPLE DATA SOURCES
+		} else {
+			// NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
+		}
 		return null;
 	}
 

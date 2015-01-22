@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -31,6 +32,7 @@ public class GenericStringBox extends TitleAreaDialog {
 	private Color defaultColor = null;
 
 	private List<String> nameList = new ArrayList<String>();
+	private Button okButton;
 
 	// private String[] referenceDataSources = null;
 
@@ -43,12 +45,11 @@ public class GenericStringBox extends TitleAreaDialog {
 		this.currentName = currentName;
 	}
 
-	public GenericStringBox(Shell parentShell, String currentName,
-			String[] items) {
+	public GenericStringBox(Shell parentShell, String currentName, String[] items) {
 		super(parentShell);
 		this.currentName = currentName;
 		for (String item : items) {
-			if (!item.equals(this.currentName)){
+			if (!item.equals(this.currentName)) {
 				this.nameList.add(item);
 			}
 		}
@@ -74,24 +75,25 @@ public class GenericStringBox extends TitleAreaDialog {
 
 		text = new Text(composite, SWT.BORDER);
 		defaultColor = text.getForeground();
-		text.setBounds(0,0,200,20);
-		if (currentName != null){
+		text.setBounds(0, 0, 200, 20);
+		if (currentName != null) {
 			text.setText(currentName);
 		}
 		text.addModifyListener(new ModifyListener() {
-			
+
 			@Override
 			public void modifyText(ModifyEvent e) {
-				System.out.println("e = "+e);
-				System.out.println("text.getText() = "+ text.getText());
-				if (nameList.contains(text.getText())){
+				System.out.println("e = " + e);
+				System.out.println("text.getText() = " + text.getText());
+				if (nameList.contains(text.getText())) {
 					text.setForeground(red);
-				}
-				else {
+					okButton.setEnabled(false);
+				} else {
 					text.setForeground(defaultColor);
+					okButton.setEnabled(true);
 				}
 				resultString = text.getText();
-				
+
 			}
 		});
 		return parent;
@@ -109,7 +111,7 @@ public class GenericStringBox extends TitleAreaDialog {
 		parent.setLayoutData(gridData);
 		// Create Add button
 		// Own method as we need to overview the SelectionAdapter
-		createOkButton(parent, OK, "OK", true);
+		okButton = createOkButton(parent, OK, "OK", true);
 		// Add a SelectionListener
 
 		// Create Cancel button
@@ -123,8 +125,7 @@ public class GenericStringBox extends TitleAreaDialog {
 		});
 	}
 
-	protected Button createOkButton(Composite parent, int id, String label,
-			boolean defaultButton) {
+	protected Button createOkButton(Composite parent, int id, String label, boolean defaultButton) {
 		// increment the number of columns in the button bar
 		((GridLayout) parent.getLayout()).numColumns++;
 		Button button = new Button(parent, SWT.PUSH);

@@ -478,6 +478,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		return result;
 	}
+	
+	public static Resource tsCreateResource(String uri) {
+		if (tdbDataset.isInTransaction()) {
+			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+			System.out.println(new Object() {
+			}.getClass().getEnclosingMethod().getName());
+		}
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		Resource result = null;
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = tdbDataset.getDefaultModel();
+		try {
+			// Model tdbModel = tdbDataset.getDefaultModel();
+			result = tdbModel.createResource(uri);
+			tdbDataset.commit();
+			// sync();
+		} catch (Exception e) {
+			System.out.println("03 TDB transaction failed; see Exception: " + e);
+			tdbModel.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		return result;
+	}
+
+	
 
 	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
 		if (noReadWrite) {
