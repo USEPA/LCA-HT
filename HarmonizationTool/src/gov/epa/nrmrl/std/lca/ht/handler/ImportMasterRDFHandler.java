@@ -1,13 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
-import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericQuery;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
-import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
-import gov.epa.nrmrl.std.lca.ht.sparql.ResultsView;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
@@ -27,7 +23,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.jena.riot.system.IRIResolver;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -35,13 +30,11 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -78,12 +71,15 @@ public class ImportMasterRDFHandler implements IHandler {
 		// ------------------------------
 
 		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource");
-		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "tempDataSource");
+		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
+		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "(LCA-HT default dataset)");
 
 		StringBuilder b = new StringBuilder();
-		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append(Prefixes.getPrefixesForQuery());
+
+//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+//		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
 		b.append(" \n");
 		b.append("insert  \n");
 		b.append("{?s eco:hasDataSource lcaht:tempDataSource . } \n");
@@ -107,8 +103,9 @@ public class ImportMasterRDFHandler implements IHandler {
 		// ------------------------------
 		List<String> currentNames = new ArrayList<String>();
 		b = new StringBuilder();
-		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+		b.append(Prefixes.getPrefixesForQuery());
+//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
 		b.append("select distinct ?dataSource \n");
 		b.append("where {  \n");
 		b.append("  ?s eco:hasDataSource ?ds .  \n");
@@ -255,8 +252,9 @@ public class ImportMasterRDFHandler implements IHandler {
 		}
 
 		StringBuilder b2 = new StringBuilder();
-		b2.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b2.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
+		b2.append(Prefixes.getPrefixesForQuery());
+//		b2.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+//		b2.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
 		b2.append("select (count(distinct ?ds) as ?count) \n");
 		b2.append("where {  \n");
 		b2.append("  ?s eco:hasDataSource ?ds .  \n");
@@ -290,10 +288,12 @@ public class ImportMasterRDFHandler implements IHandler {
 			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
 
 			b = new StringBuilder();
-			b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-			b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-			b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-			b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+			b.append(Prefixes.getPrefixesForQuery());
+
+//			b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+//			b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+//			b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+//			b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
 
 			b.append(" \n");
 			b.append("insert  \n");

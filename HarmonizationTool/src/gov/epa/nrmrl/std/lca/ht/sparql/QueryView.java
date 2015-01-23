@@ -67,15 +67,15 @@ public class QueryView extends ViewPart {
 	private Map<String, HarmonyUpdate> updateMap = new HashMap<String, HarmonyUpdate>();
 	private List<String> paramUpdates = new ArrayList<String>();
 
-	private Text windowQueryUpdate;
+	private static Text windowQueryUpdate;
 
 	private void createLabeledQueries() {
 		labeledQueries.add(new QDataSources());
 		labeledQueries.add(new QDataSetContents());
-		labeledQueries.add(new QCountMatches());
-		labeledQueries.add(new QMatchCAS());
-		labeledQueries.add(new QMatchCASandName());
-		labeledQueries.add(new HSubsSameCas());
+//		labeledQueries.add(new QCountMatches());
+//		labeledQueries.add(new QMatchCAS());
+//		labeledQueries.add(new QMatchCASandName());
+//		labeledQueries.add(new HSubsSameCas());
 	}
 
 	private LabeledQuery queryFromKey(String key) {
@@ -92,8 +92,8 @@ public class QueryView extends ViewPart {
 	}
 
 	public QueryView() {
-		paramUpdates.add("Delete data set..."); // FIXME, SHOULD GET THE KEY
-												// FROM THE QUERY FILE
+//		paramUpdates.add("Delete data set..."); // FIXME, SHOULD GET THE KEY
+//												// FROM THE QUERY FILE
 		createLabeledQueries();
 	}
 
@@ -142,29 +142,12 @@ public class QueryView extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				try {
-					Util.showView(ResultsView.ID);
-				} catch (PartInitException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-				String title = resultsView.getTitle();
-				System.out.println("title= " + title);
-
-				HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-				harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
-				ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
-
-				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
-				resultsView.update(tableProvider);
+				runQuery();
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				runQuery();
 			}
 		});
 		Button updateButton = new Button(parent, SWT.BORDER);
@@ -178,25 +161,12 @@ public class QueryView extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// txtTextArea.setText("new text");
-				String updateStr = windowQueryUpdate.getText();
-				GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
-
-				// addFilename(path);
-				// IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
-				String title = resultsView.getTitle();
-				System.out.println("title= " + title);
-
-				resultsView.update(iGenericUpdate.getData());
-				resultsView.update(iGenericUpdate.getQueryResults());
-
+				runUpdate();
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				runUpdate();
 			}
 		});
 
@@ -210,7 +180,44 @@ public class QueryView extends ViewPart {
 			addQuery(labeledQuery);
 		}
 
-		addUpdate(uDelDataSource);
+//		addUpdate(uDelDataSource);
+	}
+
+	private static void runQuery() {
+		try {
+			Util.showView(ResultsView.ID);
+		} catch (PartInitException e1) {
+			e1.printStackTrace();
+		}
+		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+		String title = resultsView.getTitle();
+		System.out.println("title= " + title);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+		ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
+
+		TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		resultsView.update(tableProvider);
+	}
+
+	private static void runUpdate() {
+		try {
+			Util.showView(ResultsView.ID);
+		} catch (PartInitException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+
+		String updateStr = windowQueryUpdate.getText();
+		GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
+
+		String title = resultsView.getTitle();
+		System.out.println("title= " + title);
+
+		resultsView.update(iGenericUpdate.getData());
+		resultsView.update(iGenericUpdate.getQueryResults());
 	}
 
 	@Override
@@ -315,103 +322,23 @@ public class QueryView extends ViewPart {
 				System.out.println("key=" + key);
 
 				LabeledQuery labeledQuery = queryFromKey(key);
-				String showResultsInWindow = ResultsView.ID;
-				if (labeledQuery != null) {
-					if (labeledQuery instanceof HarmonyQuery2Impl) {
 
-						// Code to initiate query execution Job
-						// once the job is done queryCallback(ResultSet
-						// resultSet, String key) will be called to display
-						// results
-						QueryViewJob harmonyQuery2ImplJob = new QueryViewJob("Query", (HarmonyQuery2Impl) labeledQuery);
-						((HarmonyQuery2Impl) labeledQuery).getParamaterFromUser();
-						harmonyQuery2ImplJob.setPriority(Job.SHORT);
-						harmonyQuery2ImplJob.setSystem(false);
-						harmonyQuery2ImplJob.addJobChangeListener(new QueryViewJobChangeListener((QueryView) Util
-								.findView(QueryView.ID), key));
-						harmonyQuery2ImplJob.schedule();
-
-					}
-
-				}
-				// DialogQueryDataset dialog = new DialogQueryDataset(Display
-				// .getCurrent().getActiveShell());
-				//
-				//
-				// dialog.create();
-				// if (dialog.open() == Window.OK) {
-				// System.out.println("OK");
-				// String primaryDataSet = dialog.getPrimaryDataSet();
-				// String[] referenceDataSets = dialog.getReferenceDataSets();
-				// System.out.println(primaryDataSet);
-				// for (String s : referenceDataSets) {
-				// System.out.println(s);
-				// }
-				// // do query
-				//
-				//
-				//
-				// if (q instanceof IParamQuery) {
-				// System.out.println(" is instanceof IParamQuery");
-				// IParamQuery paramQuery = (IParamQuery) q;
-				// paramQuery.setPrimaryDataSet(primaryDataSet);
-				// paramQuery.setReferenceDataSets(referenceDataSets);
-				// System.out.println(q.getQuery());
-				//
-				// IWorkbenchPage page = PlatformUI.getWorkbench()
-				// .getActiveWorkbenchWindow().getActivePage();
-				// ResultsView resultsView = (ResultsView) page
-				// .findView(ResultsView.ID);
-				//
-				// // q.getData();
-				// System.out.println("It worked, now take this out and go back to work!");
-				// // resultsView.update(q.getData());
-				// // resultsView.update(q.getQueryResults());
-				//
-				// System.out.println("done");
-				// } else if (q instanceof IParamHarmonize) {
-				// System.out.println(" is instanceof IParamHarmonize");
-				// IParamHarmonize iParamHarmonize = (IParamHarmonize) q;
-				// iParamHarmonize.setQueryDataSet(primaryDataSet);
-				// iParamHarmonize.setReferenceDataSet(referenceDataSets[0]);
-				// System.out.println(q.getQuery());
-				//
-				// IWorkbenchPage page = PlatformUI.getWorkbench()
-				// .getActiveWorkbenchWindow().getActivePage();
-				// ResultsView resultsView = (ResultsView) page
-				// .findView(ResultsView.ID);
-				// // resultsView.update(q);
-				//
-				// // resultsView.iUpdate(q.getDataXform());
-				// // resultsView.iUpdate(q.getQueryResults());
-				//
-				// System.out.println("done");
-				// }
-				//
-				// }
-				// } else if (paramUpdates.contains(key)) {
-				//
-				// // GET THE UPDATE STRING (BUT DON'T RUN IT)
-				// HarmonyUpdate u = updateMap.get(key);
-				// System.out.println("u is:"+u.toString());
-				// String updateStr = u.getQuery();
-				//
-				// IWorkbenchPage page =
-				// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				// QueryView queryView = (QueryView)
-				// page.findView(QueryView.ID);
-				// queryView.setTextAreaContent(updateStr);
-				//
-				// System.out.println("done");
-				//
-				// }
-
+				// ==
 				try {
-					Util.showView(showResultsInWindow);
-				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Util.showView(ResultsView.ID);
+				} catch (PartInitException e1) {
+					e1.printStackTrace();
 				}
+				ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
+				String title = resultsView.getTitle();
+				System.out.println("title= " + title);
+
+				ResultSet resultSet = ((HarmonyQuery2Impl) labeledQuery).getResultSet();
+
+				TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+				resultsView.update(tableProvider);
+				windowQueryUpdate.setText(((HarmonyQuery2Impl) labeledQuery).getQuery());
+
 			}
 		});
 

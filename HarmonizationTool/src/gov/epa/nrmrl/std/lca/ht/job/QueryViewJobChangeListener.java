@@ -58,8 +58,8 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 		Logger.getLogger("run").info("Job: " + key + " ended: " + endDate);
 
-		job = event.getJob();
-		JobStatus.textAdd("Job: "+job.getName()+" finished: "+jobEndDate+"\\n");
+//		job = event.getJob();
+//		JobStatus.textAdd("Job: "+job.getName()+" finished: "+jobEndDate+"\\n");
 
 		if (job instanceof QueryViewJob) {
 			Display.getDefault().asyncExec(new Runnable() {
@@ -72,6 +72,8 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 				}
 
 			});
+		} else {
+			System.out.println("job = "+job);
 		}
 
 	}
