@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.sparql;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.LinkedHashMap;
@@ -20,7 +21,7 @@ public class Prefixes {
 	private static void createMap() {
 		prefixMap.put("fedlca", FedLCA.NS); // http://epa.gov/nrmrl/std/lca/fedlca/1.0#
 		prefixMap.put("lcaht", LCAHT.NS); // http://epa.gov/nrmrl/std/lca/ht/1.0#
-		prefixMap.put("olca", "http://openlca.org/schema/v1.0/");
+		prefixMap.put("olca", OpenLCA.NS); // http://openlca.org/schema/v1.0/");
 		prefixMap.put("eco", ECO.NS); // http://ontology.earthster.org/eco/core#
 		prefixMap.put("skos", SKOS.NS); // http://www.w3.org/2004/02/skos/core#
 

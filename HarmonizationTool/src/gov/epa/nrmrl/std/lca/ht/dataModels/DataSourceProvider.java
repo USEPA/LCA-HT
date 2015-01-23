@@ -1,5 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -9,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -49,6 +54,44 @@ public class DataSourceProvider {
 		return contactPerson;
 	}
 
+	public static int createSourceForOrphanData() {
+		int count = 0;
+		// ================
+		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
+		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);
+		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
+		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
+				+ nextOrphanNumber);
+
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		b.append(" \n");
+		b.append("insert  \n");
+		b.append("{?s eco:hasDataSource lcaht:tempDataSource_" + nextOrphanNumber + " . } \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append("  ?s ?p ?o . \n");
+		b.append("  filter ( \n");
+		b.append("    (!exists \n");
+		b.append("      {?s eco:hasDataSource ?ds . } \n");
+		b.append("    )  \n");
+		// b.append("    &&  \n");
+		// b.append("    (!isBlank(?s)) \n");
+		b.append("  ) \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+		System.out.println("iGenericUpdate.getData " + iGenericUpdate.getData());
+		System.out.println("iGenericUpdate.getQueryResults " + iGenericUpdate.getQueryResults());
+		// ================
+		return count;
+	}
+
 	public void setContactPerson(Person contactPerson) {
 		this.contactPerson = contactPerson;
 		if (contactPerson == null) {
@@ -72,10 +115,10 @@ public class DataSourceProvider {
 		}
 
 		fileMDList.add(fileMD);
-//		Model tdbModel = ActiveTDB.getModel();
-//		if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-			ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
-//		}
+		// Model tdbModel = ActiveTDB.getModel();
+		// if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
+		ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		// }
 	}
 
 	public List<FileMD> getFileMDList() {
@@ -234,14 +277,14 @@ public class DataSourceProvider {
 		}
 
 		StmtIterator stmtIterator = tdbResource.listProperties(LCAHT.containsFile);
-		System.out.println("stmtIterator.toList() = " +stmtIterator.toList());
+		System.out.println("stmtIterator.toList() = " + stmtIterator.toList());
 
 		while (stmtIterator.hasNext()) {
 			// ================= ?BUG IN JENA? USING THE LINE BELOW TO KEEP STABILITY
-			System.out.println("stmtIterator.toList() = " +stmtIterator.toList());
+			System.out.println("stmtIterator.toList() = " + stmtIterator.toList());
 			// SOMETHING ABOUT THE ABOVE STATEMENT PREVENTS THE TDB AND ITERATOR FROM SCREWING UP
 
-//			Statement statement = stmtIterator.next(); <== SOMETHING WRONG WITH COUNTER IF YOU USE THIS
+			// Statement statement = stmtIterator.next(); <== SOMETHING WRONG WITH COUNTER IF YOU USE THIS
 			Statement statement = stmtIterator.nextStatement();
 
 			rdfNode = statement.getObject();

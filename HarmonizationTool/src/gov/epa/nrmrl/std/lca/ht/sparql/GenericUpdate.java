@@ -7,11 +7,11 @@ public class GenericUpdate extends HarmonyBaseUpdate {
 		queryStr = query;
 		this.label = label;
 		System.out.println("Running a generic update:");
-		if (queryStr.length() >500){
-			System.out.println(queryStr.substring(0, 500)+" ....");
-		}
-		else {
-			System.out.println(queryStr);
-		}
+//		if (queryStr.length() >500){
+//			System.out.println(queryStr.substring(0, 500)+" ....");
+//		}
+//		else {
+//			System.out.println(queryStr);
+//		}
 	}
 }

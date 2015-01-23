@@ -23,6 +23,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	protected String queryStr = null;
 	private List<String> data = null;
 	private QueryResults queryResults = null;
+	private Long triplesAdded = null;
 
 	public HarmonyBaseUpdate() {
 		super();
@@ -131,6 +132,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		tableProvider.addDataRow(dataRow3);
 
 		long modelSizeChange = endModelSize - startModelSize;
+		triplesAdded = modelSizeChange;
 		String message = "New Triples:";
 
 		if (modelSizeChange > 0) {
@@ -156,6 +158,10 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	@Override
 	public QueryResults getQueryResults() {
 		return queryResults;
+	}
+	
+	public Long getAddedTriples(){
+		return triplesAdded;
 	}
 	//
 	// @Override

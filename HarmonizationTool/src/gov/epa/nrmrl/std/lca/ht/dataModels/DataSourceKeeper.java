@@ -17,14 +17,19 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DataSourceKeeper {
 	private static List<DataSourceProvider> dataSourceProviderList = new ArrayList<DataSourceProvider>();
+	private static final String orphanDataSourceNameBase = "LCA-HT internal dataset ";
 
 	// protected final static Model tdbModel = ActiveTDB.tdbModel;
+
+	public static String getOrphanDataDourceNameBase() {
+		return orphanDataSourceNameBase;
+	}
 
 	private DataSourceKeeper() {
 	}
 
 	public static boolean add(DataSourceProvider dataSourceProvider) {
-		if (dataSourceProviderList.contains(dataSourceProvider)){
+		if (dataSourceProviderList.contains(dataSourceProvider)) {
 			return false;
 		}
 		return dataSourceProviderList.add(dataSourceProvider);
@@ -34,6 +39,16 @@ public class DataSourceKeeper {
 		dataSourceProvider.remove();
 		// TODO - NEEDS TO REMOVE ALL DATA
 		return dataSourceProviderList.remove(dataSourceProvider);
+	}
+
+	public static int getNextOrphanDataSetNumber() {
+		int newNumber = 1;
+		for (String name : getAlphabetizedNames()) {
+			if (name.startsWith(orphanDataSourceNameBase)) {
+				newNumber = 1 + Integer.parseInt(name.substring(orphanDataSourceNameBase.length()));
+			}
+		}
+		return newNumber;
 	}
 
 	// public static boolean remove(DataSourceProvider dataSourceProvider,
@@ -123,7 +138,7 @@ public class DataSourceKeeper {
 	}
 
 	public static Integer indexOf(DataSourceProvider dataSourceProvider) {
-		if (dataSourceProvider == null){
+		if (dataSourceProvider == null) {
 			return -1;
 		}
 		return dataSourceProviderList.indexOf(dataSourceProvider);

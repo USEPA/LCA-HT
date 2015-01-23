@@ -44,7 +44,7 @@ import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-public class ImportMasterRDFHandler implements IHandler {
+public class ImportSupplementaryRDFHandler implements IHandler {
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 	}
@@ -141,11 +141,11 @@ public class ImportMasterRDFHandler implements IHandler {
 		String status = fileDialog.open();
 		System.out.println("status = " + status);
 		if (status == null) {
-			runLogger.info("# Cancelling Master RDF file read");
+			runLogger.info("# Cancelling Supplementary RDF file read");
 			return null;
 		}
 		String path = fileDialog.getFilterPath();
-		runLogger.info("# Read Master RDF data from " + path);
+		runLogger.info("# Read Supplementary RDF data from " + path);
 
 		String[] fileList = fileDialog.getFileNames();
 
@@ -288,12 +288,12 @@ public class ImportMasterRDFHandler implements IHandler {
 			while (newFileName == null && !currentNames.contains(newFileName)) {
 				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
 						"(new data set)", currentNamesArray);
-				genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
+				genericStringBox.create("Name Data Set", "Please type a new data set name for this Supplementary Data Set");
 				genericStringBox.open();
 				newFileName = genericStringBox.getResultString();
 			}
 			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.SupplementaryReferenceDataset);
 			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
 
 			b = new StringBuilder();

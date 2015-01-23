@@ -119,6 +119,11 @@
                   style="push">
             </command>
             <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
+                  label="Load Supplementary List (RDF data)"
+                  style="push">
+            </command>
+            <command
                   commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
                   label="Save Harmonized Data (CSV)"
                   style="push">
@@ -309,7 +314,7 @@
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
             id="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
-            name="TDB Load">
+            name="Import Master RDF Data">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.sparql.SaveResultsHandler"
@@ -357,8 +362,8 @@
             name="Show Flows Workflow Command">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportCSV"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportCSV"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV"
             name="Import CSV">
       </command>
       <command
@@ -436,6 +441,11 @@
             defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
             id="harmonizationtool.handler.ShowJobStatusHandler"
             name="Show Job Status">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
+            name="Import Supplementary RDF Data">
       </command>
    </extension>
    <extension

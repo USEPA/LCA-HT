@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-public class ImportCSV implements IHandler {
+public class ImportUserDataRDF implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -39,7 +39,7 @@ public class ImportCSV implements IHandler {
 
 	}
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportCSV";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

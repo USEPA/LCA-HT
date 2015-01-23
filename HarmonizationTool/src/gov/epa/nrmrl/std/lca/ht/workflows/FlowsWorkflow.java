@@ -343,7 +343,7 @@ public class FlowsWorkflow extends ViewPart {
 
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
-				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportCSV", null);
+				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
