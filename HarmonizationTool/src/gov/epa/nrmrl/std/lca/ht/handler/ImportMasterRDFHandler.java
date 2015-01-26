@@ -180,16 +180,22 @@ public class ImportMasterRDFHandler implements IHandler {
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
+						int suffixLength = 0;
 						if (ze.getName().matches(".*\\.rdf")) {
 							inputType = "RDF/XML";
+							suffixLength = 4;
 						} else if (ze.getName().matches(".*\\.n3")) {
 							inputType = "N3";
+							suffixLength = 3;
 						} else if (ze.getName().matches(".*\\.ttl")) {
 							inputType = "TTL";
+							suffixLength = 4;
 						} else if (ze.getName().matches(".*\\.jsonld")) {
 							inputType = "JSON-LD";
+							suffixLength = 7;
 						} else if (fileName.matches(".*\\.json")) {
 							inputType = "JSON-LD";
+							suffixLength = 5;
 						}
 						if (inputType != "SKIP") {
 							// System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
@@ -213,6 +219,14 @@ public class ImportMasterRDFHandler implements IHandler {
 
 							ActiveTDB.syncTDBtoLCAHT();
 						}
+						int postDataSetCount = countDataSources();
+						System.out.println("postDataSetCount = " + postDataSetCount);
+
+						if (postDataSetCount == priorDataSetCount) {
+							String proposedName = ze.getName().substring(0, ze.getName().length()-suffixLength);
+							createNewDataSet(event, currentNames, proposedName);
+//							addDataToDataSet(proposedName);
+						}
 					}
 
 				} catch (IOException e) {
@@ -229,64 +243,84 @@ public class ImportMasterRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
 
-		int postDataSetCount = countDataSources();
-		System.out.println("postDataSetCount = " + postDataSetCount);
+//		int postDataSetCount = countDataSources();
+//		System.out.println("postDataSetCount = " + postDataSetCount);
+//
+//		if (postDataSetCount == priorDataSetCount) {
+//			createNewDataSet(event, currentNames, proposedName);
+////			// NEW DATA DID NOT HAVE A DATA SOURCE
+//			String newFileName = null;
+//			while (newFileName == null && !currentNames.contains(newFileName)) {
+//				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
+//						"(new data set)", currentNamesArray);
+//				genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
+//				genericStringBox.open();
+//				newFileName = genericStringBox.getResultString();
+//			}
+//			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+//			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
+//			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
 
-		if (postDataSetCount == priorDataSetCount) {
-			// NEW DATA DID NOT HAVE A DATA SOURCE
-			String newFileName = null;
-			while (newFileName == null && !currentNames.contains(newFileName)) {
-				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
-						"(new data set)", currentNamesArray);
-				genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
-				genericStringBox.open();
-				newFileName = genericStringBox.getResultString();
-			}
-			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
-			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
-
-			b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());
-
-			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-			// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-
-			b.append(" \n");
-			b.append("insert  \n");
-			b.append("{?s eco:hasDataSource ?newds . } \n");
-			b.append(" \n");
-			b.append("where { \n");
-			b.append("  ?newds a eco:DataSource . \n");
-			b.append("  ?newds rdfs:label \"" + newFileName + "\"^^xsd:string . \n");
-			b.append("  ?s ?p ?o . \n");
-			b.append("  filter ( \n");
-			b.append("    (!exists \n");
-			b.append("      {?s eco:hasDataSource ?ds . } \n");
-			b.append("    )  \n");
-			// b.append("    &&  \n");
-			// b.append("    (!isBlank(?s)) \n");
-			b.append("  ) \n");
-			b.append("} \n");
-			query = b.toString();
-
-			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-			iGenericUpdate.getData();
-			int added = iGenericUpdate.getAddedTriples().intValue();
-			runLogger.info("# " + added + " triples were added assigning new data to data set " + newFileName);
-
-			int olcaInferrences = OpenLCA.inferOpenLCATriples();
-			runLogger.info("# " + olcaInferrences + " triples were added assigning openLCA data types");
+//			b = new StringBuilder();
+//			b.append(Prefixes.getPrefixesForQuery());
+//
+//			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+//			// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+//			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+//			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+//
+//			b.append(" \n");
+//			b.append("insert  \n");
+//			b.append("{?s eco:hasDataSource ?newds . } \n");
+//			b.append(" \n");
+//			b.append("where { \n");
+//			b.append("  ?newds a eco:DataSource . \n");
+//			b.append("  ?newds rdfs:label \"" + newFileName + "\"^^xsd:string . \n");
+//			b.append("  ?s ?p ?o . \n");
+//			b.append("  filter ( \n");
+//			b.append("    (!exists \n");
+//			b.append("      {?s eco:hasDataSource ?ds . } \n");
+//			b.append("    )  \n");
+//			// b.append("    &&  \n");
+//			// b.append("    (!isBlank(?s)) \n");
+//			b.append("  ) \n");
+//			b.append("} \n");
+//			query = b.toString();
+//
+//			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+//			iGenericUpdate.getData();
+//			int added = iGenericUpdate.getAddedTriples().intValue();
+//			runLogger.info("# " + added + " triples were added assigning new data to data set " + newFileName);
+//
+//			int olcaInferrences = OpenLCA.inferOpenLCATriples();
+//			runLogger.info("# " + olcaInferrences + " triples were added assigning openLCA data types");
 
 			// iGenericUpdate.getQueryResults();
-		} else if (postDataSetCount - priorDataSetCount > 1) {
-			// NEW DATA HAD MULTIPLE DATA SOURCES
-		} else {
-			// NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
-		}
+		// } else if (postDataSetCount - priorDataSetCount > 1) {
+		// // NEW DATA HAD MULTIPLE DATA SOURCES
+		// } else {
+		// // NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
+		// }
 		return null;
+	}
+	
+	private static Resource createNewDataSet(ExecutionEvent event, List<String> currentNames, String proposedName){
+		String newFileName = null;
+		while (newFileName == null && !currentNames.contains(newFileName)) {
+			String[] currentNamesArray = new String[currentNames.size()];
+			for (int i = 0; i < currentNames.size(); i++) {
+				currentNamesArray[i] = currentNames.get(i);
+			}
+			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
+					proposedName, currentNamesArray);
+			genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
+			genericStringBox.open();
+			newFileName = genericStringBox.getResultString();
+		}
+		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+		ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
+		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+		return newDataSource;
 	}
 	
 	private static int countDataSources(){
