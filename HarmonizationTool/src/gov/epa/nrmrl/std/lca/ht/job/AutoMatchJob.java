@@ -1,16 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import java.util.concurrent.TimeUnit;
-
-//import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVColumnInfo;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
@@ -24,7 +19,6 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.StopWatch;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -32,9 +26,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
-
-import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Model;
 
 /**
  * @author tsb Tommy Cathey 919-541-1500
@@ -47,29 +38,27 @@ public class AutoMatchJob extends Job {
 	private String tableKey;
 	private Integer[] results = new Integer[3];
 
-	// 1: HIGH EVIDENCE HITS
-	// 2: LOWER EVIDENCE HITS
-	// 3: NO EVIDENCE ITEMS (UNMATCHED)
+	/* 1: HIGH EVIDENCE HITS - AutoMatch FINDS THESE THROUGH METHODS: */
+	/* -- Flowable.setMasterMatches() */
+	/* -- FlowContext.setMatches() */
+	/* -- FlowProperty.setMatches() */
+
+	/* 2: DUPLICATE HITS - GET FLAGGED ORANGE DURING AUTO-MATCH */
+	/* 3: PARTIAL EVIDENCE ITEMS (PROCESS SHOULD NOT BE IN AUTOMATCH) */
+
 	public AutoMatchJob(String name) {
 		super(name);
 		this.tableKey = CSVTableView.getTableProviderKey();
-		// this.harmonyQuery2Impl = harmonyQuery2Impl;
 	}
-
-	// public AutoMatchJob(String name, String tableKey) {
-	// super(name);
-	// this.tableKey = tableKey;
-	// // this.harmonyQuery2Impl = harmonyQuery2Impl;
-	// }
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		StopWatch stopWatch01 = new StopWatch("Total Time");
-		StopWatch stopWatch02 = new StopWatch("Concat. and hash Flowables");
-		StopWatch stopWatch03 = new StopWatch("Create Flowables");
-		StopWatch stopWatch04 = new StopWatch("Find matches + color rows");
-		StopWatch stopWatch05 = new StopWatch("Flow Context and Properties");
-		StopWatch stopWatch06 = new StopWatch("Flow");
+//		StopWatch stopWatch02 = new StopWatch("Concat. and hash Flowables");
+//		StopWatch stopWatch03 = new StopWatch("Create Flowables");
+//		StopWatch stopWatch04 = new StopWatch("Find matches + color rows");
+//		StopWatch stopWatch05 = new StopWatch("Flow Context and Properties");
+//		StopWatch stopWatch06 = new StopWatch("Flow");
 
 		List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 
@@ -80,27 +69,14 @@ public class AutoMatchJob extends Job {
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
 		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
 
-		// List<MatchCandidate[]> matchRows = new ArrayList<MatchCandidate[]>();
-
-		List<Flow> flows = new ArrayList<Flow>();
-
-		// long triples = ActiveTDB.tdbModel.size();
-		// Table table = CSVTableView.getTable();
-
-		// CSVColumnInfo[] assignedCSVColumns =
-		// tableProvider.getAssignedCSVColumnInfo();
-		// CSVColumnInfo[] assignedCSVColumns = null; // <== FIXME COMMENT OUT
-		// THIS HACK, THEN FIX RED BELOW
-
 		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
 
 		Set<Integer> flowableCSVColumnNumbers = new HashSet<Integer>();
 		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
 		Set<Integer> flowPropertyCSVColumnNumbers = new HashSet<Integer>();
 
-		// assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
+		// NOTE: assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
-			// CSVColumnInfo csvColumnInfo = assignedCSVColumns[i];
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider == null) {
 				continue;
@@ -147,8 +123,6 @@ public class AutoMatchJob extends Job {
 			}
 		});
 		int percentComplete = 0;
-		// TableProvider flowContextTableProvider = new TableProvider();
-		// TableProvider flowPropertyTableProvider = new TableProvider();
 		stopWatch01.start();
 		// ========================== BEGIN ROW BY ROW ==========================
 		for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
@@ -170,17 +144,11 @@ public class AutoMatchJob extends Job {
 			FlowContext flowContext = null;
 			FlowProperty flowProperty = null;
 
-			final int rowNumberPlusOne = rowNumber + 1;
 			final int rowNumToSend = rowNumber;
-
-			// Literal rowLiteral =
-			// ActiveTDB.createTypedLiteral(rowNumberPlusOne);
-
-			// Item item = tableProvider.getItem(rowNumber);
 			DataRow dataRow = tableProvider.getData().get(rowNumber);
 
 			// ========================== FLOWABLE ==========================
-			stopWatch02.start();
+//			stopWatch02.start();
 
 			String flowableConcatinated = "";
 			for (int i : flowableCSVColumnNumbers) {
@@ -192,25 +160,15 @@ public class AutoMatchJob extends Job {
 				flowableConcatinated += dataRow.get(i - 1) + "\t";
 			}
 
-			// if (!flowableConcatinated.matches("^\\s*$")) {
 			flowable = flowableMap.get(flowableConcatinated);
-			stopWatch02.stop();
+//			stopWatch02.stop();
 			if (flowable == null) {
-				stopWatch03.start();
-
-				// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-				// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-				// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-				// try {
-
+//				stopWatch03.start();
 				flowable = new Flowable();
-				// flowable = new Flowable(false);
-
 				flowableMap.put(flowableConcatinated, flowable);
 
 				ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
 						dataSourceProvider.getTdbResource());
-				// flowable.getTdbResource().addProperty(ECO.hasDataSource, dataSourceProvider.getTdbResource());
 				for (int i : flowableCSVColumnNumbers) {
 					String dataValue = dataRow.get(i - 1);
 					if (dataValue.equals("")) {
@@ -218,14 +176,10 @@ public class AutoMatchJob extends Job {
 					}
 					LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 					flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
-					// flowable.nonTSSetProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 				}
-				stopWatch03.stop();
-				stopWatch04.start();
-				// final boolean hit = flowable.setMatches();
-				// final int hitCount = flowable.setMasterMatches(false);
-				final int hitCount = flowable.setMasterMatches(true);
-				// final boolean hit = flowable.nonTSSetMatches();
+//				stopWatch03.stop();
+//				stopWatch04.start();
+				final int hitCount = flowable.setMasterMatches(false);
 				flowable.setFirstRow(rowNumToSend);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -236,21 +190,11 @@ public class AutoMatchJob extends Job {
 					}
 
 				});
-				stopWatch04.stop();
-
-				// ActiveTDB.tdbDataset.commit();
-				// // sync();
-				// } catch (Exception e) {
-				// System.out.println("AutoMatchJob Flowable creation transaction failed; see Exception: " + e);
-				// ActiveTDB.tdbDataset.abort();
-				// } finally {
-				// ActiveTDB.tdbDataset.end();
-				// }
-				// ---- END SAFE -WRITE- TRANSACTION ---
+//				stopWatch04.stop();
 			}
 			dataRow.setFlowable(flowable);
 			// }
-			stopWatch05.start();
+//			stopWatch05.start();
 
 			// ========================== FLOW CONTEXT ==========================
 			String flowContextConcatinated = "";
@@ -267,8 +211,6 @@ public class AutoMatchJob extends Job {
 				if (flowContext == null) {
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
-					// DataRow flowContextDataRow = new DataRow();
-					// flowContextDataRow.add(flowContextConcatinated);
 					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
@@ -332,40 +274,25 @@ public class AutoMatchJob extends Job {
 				}
 				dataRow.setFlowProperty(flowProperty);
 			}
-			stopWatch05.stop();
-			// // ========================== FLOW ==========================
-			// stopWatch06.start();
-			// Flow.addFlowData(rowNumberPlusOne,flowable,flowContext,flowProperty,dataSourceProvider.getTdbResource());
-			// Flow tempFlow = new Flow();
-			// tempFlow.setFlowable(flowable);
-			// tempFlow.setFlowContext(flowContext);
-			// tempFlow.setFlowProperty(flowProperty);
-			// tempFlow.setThree(flowable,flowContext,flowProperty);
-			//
-			// ActiveTDB.tsReplaceResource(tempFlow.getTdbResource(), ECO.hasDataSource,
-			// dataSourceProvider.getTdbResource());
-			// ActiveTDB.tsAddLiteral(tempFlow.getTdbResource(), FedLCA.sourceTableRowNumber, rowNumberPlusOne);
-			// flows.add(tempFlow);
-			// stopWatch06.stop();
+//			stopWatch05.stop();
 		}
 		// ========================== FLOW ==========================
-
-		stopWatch06.start();
+//		stopWatch06.start();
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				FlowsWorkflow.setTextCommit("Adding flow data...");
 				Flow.addAllFlowData();
 			}
 		});
-		stopWatch06.stop();
+//		stopWatch06.stop();
 		stopWatch01.stop();
 
 		System.out.println(stopWatch01);
-		System.out.println(stopWatch02);
-		System.out.println(stopWatch03);
-		System.out.println(stopWatch04);
-		System.out.println(stopWatch05);
-		System.out.println(stopWatch06);
+		// System.out.println(stopWatch02);
+		// System.out.println(stopWatch03);
+		// System.out.println(stopWatch04);
+		// System.out.println(stopWatch05);
+		// System.out.println(stopWatch06);
 
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 		return Status.OK_STATUS;

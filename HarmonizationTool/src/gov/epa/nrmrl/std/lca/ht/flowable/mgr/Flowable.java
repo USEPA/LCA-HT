@@ -290,66 +290,66 @@ public class Flowable {
 		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
 
-	public void nonTSSetProperty(String key, String valueAsString) {
-		if (valueAsString == null) {
-			return;
-		}
-		if (!dataPropertyMap.containsKey(key)) {
-			return;
-		}
-		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
-		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
-
-		boolean found = false;
-		if (lcaDataPropertyProvider.isUnique()) {
-			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
-					lcaDataValue.setValueAsString(valueAsString);
-					found = true;
-					Object object = lcaDataValue.getValue();
-					// ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-					// object);
-					ActiveTDB
-							.replaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-					if (!valueAsString.equals(valueAsString.toLowerCase())) {
-						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-						if (key.equals(flowableNameString)) {
-							ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-									valueAsString.toLowerCase());
-						}
-						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-						if (key.equals(flowableSynonymString)) {
-							ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-									valueAsString.toLowerCase());
-						}
-					}
-					continue;
-				}
-			}
-		}
-		if (!found) {
-			LCADataValue lcaDataValue = new LCADataValue();
-			lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-			lcaDataValue.setValueAsString(valueAsString);
-			Object object = lcaDataValue.getValue();
-			lcaDataValues.add(lcaDataValue);
-			// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-			ActiveTDB.addLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-			if (!valueAsString.equals(valueAsString.toLowerCase())) {
-				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-				if (key.equals(flowableNameString)) {
-					ActiveTDB
-							.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
-				}
-				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-				if (key.equals(flowableSynonymString)) {
-					ActiveTDB
-							.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
-				}
-			}
-		}
-		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
-	}
+	// public void nonTSSetProperty(String key, String valueAsString) {
+	// if (valueAsString == null) {
+	// return;
+	// }
+	// if (!dataPropertyMap.containsKey(key)) {
+	// return;
+	// }
+	// LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+	// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
+	//
+	// boolean found = false;
+	// if (lcaDataPropertyProvider.isUnique()) {
+	// for (LCADataValue lcaDataValue : lcaDataValues) {
+	// if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
+	// lcaDataValue.setValueAsString(valueAsString);
+	// found = true;
+	// Object object = lcaDataValue.getValue();
+	// // ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+	// // object);
+	// ActiveTDB
+	// .replaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+	// if (!valueAsString.equals(valueAsString.toLowerCase())) {
+	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+	// if (key.equals(flowableNameString)) {
+	// ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+	// valueAsString.toLowerCase());
+	// }
+	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+	// if (key.equals(flowableSynonymString)) {
+	// ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
+	// valueAsString.toLowerCase());
+	// }
+	// }
+	// continue;
+	// }
+	// }
+	// }
+	// if (!found) {
+	// LCADataValue lcaDataValue = new LCADataValue();
+	// lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+	// lcaDataValue.setValueAsString(valueAsString);
+	// Object object = lcaDataValue.getValue();
+	// lcaDataValues.add(lcaDataValue);
+	// // ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+	// ActiveTDB.addLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+	// if (!valueAsString.equals(valueAsString.toLowerCase())) {
+	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+	// if (key.equals(flowableNameString)) {
+	// ActiveTDB
+	// .addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
+	// }
+	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+	// if (key.equals(flowableSynonymString)) {
+	// ActiveTDB
+	// .addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
+	// }
+	// }
+	// }
+	// // ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
+	// }
 
 	// public void setProperty(String key, Object object) {
 	// if (object == null) {
@@ -447,6 +447,20 @@ public class Flowable {
 	public void clearSyncDataFromTDB() {
 		lcaDataValues.clear();
 		updateSyncDataFromTDB();
+	}
+
+	public boolean notMatched() {
+		int count = 0;
+		for (String hit : matchCandidates.values()) {
+			int hitNumber = MatchStatus.getNumberBySymbol(hit);
+			if (hitNumber > 0 && hitNumber < 6) {
+				count++;
+			}
+		}
+		if (count == 1) {
+			return false;
+		}
+		return true;
 	}
 
 	// public void remove() {
@@ -762,30 +776,6 @@ public class Flowable {
 		return qaChecks;
 	}
 
-	// private class FlowableHeaderObj {
-	// private String headerString;
-	// private boolean isRequired;
-	// private boolean isUnique;
-	// public FlowableHeaderObj(String headerString, boolean isRequired, boolean
-	// isUnique){
-	// this.headerString=headerString;
-	// this.isRequired = isRequired;
-	// this.isUnique = isUnique;
-	// }
-	// }
-
-	// public void setQaChecks(List<QACheck> qaChecks) {
-	// this.qaChecks = qaChecks;
-	// }
-
-	// public static boolean validStandardFormat(String candidate) {
-	// Matcher matcher = acceptableCASFormat.matcher(candidate);
-	// if (matcher.find()) {
-	// return true;
-	// }
-	// return false;
-	// }
-
 	public static String stripCASdigits(String candidate) {
 		String strippedCas = "";
 		strippedCas = candidate.replaceAll("\\D", "");
@@ -909,19 +899,6 @@ public class Flowable {
 		// =========================================
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?f ?masterTest \n");
 		b.append("WHERE \n");
@@ -940,57 +917,56 @@ public class Flowable {
 
 		String query = b.toString();
 
-//		System.out.println("query = \n"+query);
-		// System.out.println(query);
-
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
-		// Logger.getLogger("run").info("Searching master list for matching flowables...");
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		// System.out.println("resultSet = " + resultSet);
-		// flowableToMatch.clearSearchResults();
-		// resetTable();
-		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+
 		int count = 0;
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
-//			RDFNode dataSetTypeNode = querySolution.get("masterTest");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
 		}
 		if (count > 0) {
 			return count;
 		}
-		
-		if (!doubleCheck){
+
+		if (!doubleCheck) {
 			return count;
 		}
+		count += setCandidates();
+		return count;
+	}
 
-		b = new StringBuilder();
+	public int setCandidates() {
+		String qName = getName();
+		String lcQName = qName.toLowerCase();
+		lcQName.replaceAll("\"", "\\\\\"");
+
+		boolean checkCas = false;
+		String qCAS = getCas();
+		if (qCAS != null) {
+			if (!qCAS.equals("")) {
+				checkCas = true;
+			}
+		}
+		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?f \n");
 		b.append("WHERE \n");
 		b.append("  { \n");
 		b.append("    { \n");
-		b.append("      {?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . }\n  UNION ");
-		b.append("      {?f eco:casNumber ?cas . \n");
-		b.append("        filter (str(?cas) = \"" + qCAS + "\") }\n");
+		if (checkCas) {
+			b.append("      {?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . }\n  UNION ");
+			b.append("      {?f eco:casNumber ?cas . \n");
+			b.append("        filter (str(?cas) = \"" + qCAS + "\") }\n");
+		} else {
+			b.append("    ?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . \n   ");
+		}
 		b.append("    } \n");
 		b.append("    ?f eco:hasDataSource ?ds . \n");
 		b.append("    ?f a eco:Flowable . \n");
@@ -998,15 +974,13 @@ public class Flowable {
 		b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
 		b.append("   } order by ?masterTest \n");
 
-		query = b.toString();
-//		System.out.println("Query: " + query);
-		harmonyQuery2Impl = new HarmonyQuery2Impl();
+		String query = b.toString();
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
-		// Logger.getLogger("run").info("Searching master list for matching flowables...");
 
-		resultSet = harmonyQuery2Impl.getResultSet();
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
-		count = 0;
+		int count = 0;
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
@@ -1016,392 +990,312 @@ public class Flowable {
 		return count;
 	}
 
-	// public boolean setMasterMatches() {
+	// =========================================
+
+	// public boolean setMatches() {
 	// String qName = getName();
 	// String lcQName = qName.toLowerCase();
-	// lcQName.replaceAll("\"", "\\\\\"");
-	// // Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-	// // Model tdbModel = ActiveTDB.getModel();
+	// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+	// Model tdbModel = ActiveTDB.getModel();
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+	// // THIS IS A name-name MATCH
+	// }
+	// }
 	//
-	// boolean checkCas = false;
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+	// // THIS IS A name-synonym MATCH
+	// }
+	// }
+	//
+	// for (String altLabel : getSynonyms()) {
+	// String lcAltName = altLabel.toLowerCase();
+	// Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
+	// // Q-SYN = DB-NAME
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// // THIS IS A synonym-name MATCH
+	// }
+	// }
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// // THIS IS A synonym-synonym MATCH
+	//
+	// }
+	// }
+	// }
+	//
+	// // CAS MATCHING
 	// String qCAS = getCas();
+	// Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
+	// resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// // THIS IS AN fCAS-fCAS MATCH
+	// }
+	// }
+	// matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+	//
+	// return autosetStatus();
+	// }
+
+	// public boolean nonTSSetMatches() {
+	// String qName = getName();
+	// String lcQName = qName.toLowerCase();
+	// // Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
+	// Literal qNameLiteral = ActiveTDB.createTypedLiteral(lcQName);
+	// Model tdbModel = ActiveTDB.getModel();
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// // CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
+	// // FedLCA.equivalenceCandidate);
+	// CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// // THIS IS A name-name MATCH
+	// }
+	// }
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// // THIS IS A name-synonym MATCH
+	// }
+	// }
+	//
+	// for (String altLabel : getSynonyms()) {
+	// String lcAltName = altLabel.toLowerCase();
+	// // Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
+	// Literal qAltNameLiteral = ActiveTDB.createTypedLiteral(lcAltName);
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
+	// // Q-SYN = DB-NAME
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// // THIS IS A synonym-name MATCH
+	// }
+	// }
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// // THIS IS A synonym-synonym MATCH
+	//
+	// }
+	// }
+	// }
+	//
+	// // CAS MATCHING
+	// String qCAS = getCas();
+	// Literal qCASLiteral = ActiveTDB.createTypedLiteral(qCAS);
+	// resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
+	// FedLCA.equivalenceCandidate);
+	// matchCandidates.put(flowableMatchCandidate, "?");
+	// // THIS IS AN fCAS-fCAS MATCH
+	// }
+	// }
+	// matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
+	//
+	// // return autosetStatus();
+	// return nonTSAutosetStatus();
+	// }
+
+	// private boolean autosetStatus() {
+	// boolean hit = false;
+	// String qCAS = getCas();
+	// Literal qCASLiteral = null;
 	// if (qCAS != null) {
-	// if (!qCAS.equals("")) {
-	// checkCas = true;
+	// qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
 	// }
+	// // Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
+	// String qName = getName();
+	// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName.toLowerCase());
+	// // Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
+	//
+	// for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
+	// // System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
+	// // StmtIterator thing = candidateFlowableTDBResource.listProperties();
+	// // while (thing.hasNext()) {
+	// // Statement fred = thing.nextStatement();
+	// // System.out.println("fred.getPredicate() = " + fred.getPredicate());
+	// // }
+	//
+	// // CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
+	// if (qCASLiteral == null) {
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+	// CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
+	//
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
+	// }
+	// // CRITERION 2: QUERY HAS NO CAS AND SYNONYM MATCHES A NAME OR SYNONYM
+	// for (String synonym : getSynonyms()) {
+	// Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+	// CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
 	// }
 	//
-	// // =========================================
-	// StringBuilder b = new StringBuilder();
-	// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-	// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-	// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-	// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-	// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-	// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-	// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-	// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-	// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-	// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-	// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-	// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-	// b.append(" \n");
-	// b.append("SELECT distinct ?f ?masterTest \n");
-	// b.append("WHERE \n");
-	// b.append("  { \n");
-	//
-	// b.append("    ?f skos:altLabel \""+lcQName+"\"^^xsd:string  . \n");
-	// // b.append("    filter (str(?syn) = \"" + lcQName + "\")\n");
-	//
-	// if (checkCas) {
-	// b.append("    optional {?f eco:casNumber ?cas . }\n");
-	// b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
 	// }
-	// b.append("    ?f eco:hasDataSource ?ds . \n");
-	// // b.append("    ?ds a lcaht:MasterDataset . \n");
-	// b.append("    ?f a eco:Flowable . \n");
-	// b.append("    ?ds a ?masterTest . \n");
-	// b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-	// b.append("   } order by ?masterTest \n");
 	//
-	// String query = b.toString();
+	// } else {
+	// if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
+	// // CRITERION 3: CAS MATCHES AND NAME MATCHES A NAME OR SYNONYM
 	//
-	// // System.out.println("query = \n");
-	// // System.out.println(query);
-	//
-	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-	// harmonyQuery2Impl.setQuery(query);
-	// // Logger.getLogger("run").info("Searching master list for matching flowables...");
-	//
-	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-	// // System.out.println("resultSet = " + resultSet);
-	// // flowableToMatch.clearSearchResults();
-	// // resetTable();
-	// // LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-	// int count = 0;
-	// while (resultSet.hasNext()) {
-	// count++;
-	// QuerySolution querySolution = resultSet.next();
-	// RDFNode rdfNode = querySolution.get("f");
-	// RDFNode dataSetTypeNode = querySolution.get("masterTest");
-	// if (dataSetTypeNode.asResource().getURI().matches(".*MasterDataset.*")){
-	// matchCandidates.put(rdfNode.asResource(), "=");
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
+	// CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
 	// }
-	// if (dataSetTypeNode.asResource().getURI().matches(".*SupplementaryReferenceDataset.*")){
-	// count++;
-	// matchCandidates.put(rdfNode.asResource(), "?");
+	// // CRITERION 4: CAS MATCHES AND SYNONYM MATCHES A NAME OR SYNONYM
+	// for (String synonym : getSynonyms()) {
+	// Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// Resource comparison = CurationMethods.getComparison(tdbResource,
+	// candidateFlowableTDBResource);
+	// CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
 	// }
 	// }
-	// if (count > 0) {
-	// return true;
 	// }
-	// return false;
+	// }
+	// }
+	// return hit;
 	// }
 
-	public boolean setMatches() {
-		String qName = getName();
-		String lcQName = qName.toLowerCase();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-		Model tdbModel = ActiveTDB.getModel();
-		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.put(flowableMatchCandidate, "?");
-				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
-				// THIS IS A name-name MATCH
-			}
-		}
-
-		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.put(flowableMatchCandidate, "?");
-				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
-				// THIS IS A name-synonym MATCH
-			}
-		}
-
-		for (String altLabel : getSynonyms()) {
-			String lcAltName = altLabel.toLowerCase();
-			Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
-
-			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
-			// Q-SYN = DB-NAME
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					matchCandidates.put(flowableMatchCandidate, "?");
-					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
-							FedLCA.equivalenceCandidate);
-					// THIS IS A synonym-name MATCH
-				}
-			}
-
-			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
-							FedLCA.equivalenceCandidate);
-					matchCandidates.put(flowableMatchCandidate, "?");
-					// THIS IS A synonym-synonym MATCH
-
-				}
-			}
-		}
-
-		// CAS MATCHING
-		String qCAS = getCas();
-		Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
-		resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate, FedLCA.equivalenceCandidate);
-				matchCandidates.put(flowableMatchCandidate, "?");
-				// THIS IS AN fCAS-fCAS MATCH
-			}
-		}
-		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
-
-		return autosetStatus();
-	}
-
-	public boolean nonTSSetMatches() {
-		String qName = getName();
-		String lcQName = qName.toLowerCase();
-		// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
-		Literal qNameLiteral = ActiveTDB.createTypedLiteral(lcQName);
-		Model tdbModel = ActiveTDB.getModel();
-		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.put(flowableMatchCandidate, "?");
-				// CurationMethods.createNewComparison(tdbResource, flowableMatchCandidate,
-				// FedLCA.equivalenceCandidate);
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
-						FedLCA.equivalenceCandidate);
-				// THIS IS A name-name MATCH
-			}
-		}
-
-		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				matchCandidates.put(flowableMatchCandidate, "?");
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
-						FedLCA.equivalenceCandidate);
-				// THIS IS A name-synonym MATCH
-			}
-		}
-
-		for (String altLabel : getSynonyms()) {
-			String lcAltName = altLabel.toLowerCase();
-			// Literal qAltNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcAltName);
-			Literal qAltNameLiteral = ActiveTDB.createTypedLiteral(lcAltName);
-
-			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qAltNameLiteral);
-			// Q-SYN = DB-NAME
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					matchCandidates.put(flowableMatchCandidate, "?");
-					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
-							FedLCA.equivalenceCandidate);
-					// THIS IS A synonym-name MATCH
-				}
-			}
-
-			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qAltNameLiteral);
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
-							FedLCA.equivalenceCandidate);
-					matchCandidates.put(flowableMatchCandidate, "?");
-					// THIS IS A synonym-synonym MATCH
-
-				}
-			}
-		}
-
-		// CAS MATCHING
-		String qCAS = getCas();
-		Literal qCASLiteral = ActiveTDB.createTypedLiteral(qCAS);
-		resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				CurationMethods.nonTSCreateNewComparison(tdbResource, flowableMatchCandidate,
-						FedLCA.equivalenceCandidate);
-				matchCandidates.put(flowableMatchCandidate, "?");
-				// THIS IS AN fCAS-fCAS MATCH
-			}
-		}
-		matchCandidates.remove(tdbResource); // JUST IN CASE YOU TRIED TO MATCH YOURSELF!!
-
-		// return autosetStatus();
-		return nonTSAutosetStatus();
-	}
-
-	private boolean autosetStatus() {
-		boolean hit = false;
-		String qCAS = getCas();
-		Literal qCASLiteral = null;
-		if (qCAS != null) {
-			qCASLiteral = ActiveTDB.tsCreateTypedLiteral(qCAS);
-		}
-		// Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
-		String qName = getName();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName.toLowerCase());
-		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
-
-		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-			// System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
-			// StmtIterator thing = candidateFlowableTDBResource.listProperties();
-			// while (thing.hasNext()) {
-			// Statement fred = thing.nextStatement();
-			// System.out.println("fred.getPredicate() = " + fred.getPredicate());
-			// }
-
-			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
-			if (qCASLiteral == null) {
-				if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
-						|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
-					matchCandidates.put(candidateFlowableTDBResource, "=");
-					Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
-					CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
-
-					hit = true;
-					continue;
-					// FlowsWorkflow.addFlowableRowNum(firstRow);
-				}
-				// CRITERION 2: QUERY HAS NO CAS AND SYNONYM MATCHES A NAME OR SYNONYM
-				for (String synonym : getSynonyms()) {
-					Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
-					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
-							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
-						matchCandidates.put(candidateFlowableTDBResource, "=");
-						Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
-						CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
-						hit = true;
-						continue;
-						// FlowsWorkflow.addFlowableRowNum(firstRow);
-					}
-
-				}
-
-			} else {
-				if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
-					// CRITERION 3: CAS MATCHES AND NAME MATCHES A NAME OR SYNONYM
-
-					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
-							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
-						matchCandidates.put(candidateFlowableTDBResource, "=");
-						Resource comparison = CurationMethods.getComparison(tdbResource, candidateFlowableTDBResource);
-						CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
-						hit = true;
-						continue;
-						// FlowsWorkflow.addFlowableRowNum(firstRow);
-					}
-					// CRITERION 4: CAS MATCHES AND SYNONYM MATCHES A NAME OR SYNONYM
-					for (String synonym : getSynonyms()) {
-						Literal qSynLiteral = qCASLiteral = ActiveTDB.tsCreateTypedLiteral(synonym.toLowerCase());
-						if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
-								|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
-							matchCandidates.put(candidateFlowableTDBResource, "=");
-							Resource comparison = CurationMethods.getComparison(tdbResource,
-									candidateFlowableTDBResource);
-							CurationMethods.updateComparison(comparison, FedLCA.equivalenceCandidate);
-							hit = true;
-							continue;
-							// FlowsWorkflow.addFlowableRowNum(firstRow);
-						}
-					}
-				}
-			}
-		}
-		return hit;
-	}
-
-	private boolean nonTSAutosetStatus() {
-		boolean hit = false;
-		String qCAS = getCas();
-		Literal qCASLiteral = null;
-		if (qCAS != null) {
-			qCASLiteral = ActiveTDB.createTypedLiteral(qCAS);
-		}
-		// Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
-		String qName = getName();
-		Literal qNameLiteral = ActiveTDB.createTypedLiteral(qName.toLowerCase());
-		// Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
-
-		for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
-			// System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
-			// StmtIterator thing = candidateFlowableTDBResource.listProperties();
-			// while (thing.hasNext()) {
-			// Statement fred = thing.nextStatement();
-			// System.out.println("fred.getPredicate() = " + fred.getPredicate());
-			// }
-
-			// CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
-			if (qCASLiteral == null) {
-				if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
-						|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
-					matchCandidates.put(candidateFlowableTDBResource, "=");
-					hit = true;
-					continue;
-					// FlowsWorkflow.addFlowableRowNum(firstRow);
-				}
-				// CRITERION 2: QUERY HAS NO CAS AND SYNONYM MATCHES A NAME OR SYNONYM
-				for (String synonym : getSynonyms()) {
-					Literal qSynLiteral = qCASLiteral = ActiveTDB.createTypedLiteral(synonym.toLowerCase());
-					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
-							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
-						matchCandidates.put(candidateFlowableTDBResource, "=");
-						hit = true;
-						continue;
-						// FlowsWorkflow.addFlowableRowNum(firstRow);
-					}
-
-				}
-
-			} else {
-				if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
-					// CRITERION 3: CAS MATCHES AND NAME MATCHES A NAME OR SYNONYM
-
-					if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
-							|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
-						matchCandidates.put(candidateFlowableTDBResource, "=");
-						hit = true;
-						continue;
-						// FlowsWorkflow.addFlowableRowNum(firstRow);
-					}
-					// CRITERION 4: CAS MATCHES AND SYNONYM MATCHES A NAME OR SYNONYM
-					for (String synonym : getSynonyms()) {
-						Literal qSynLiteral = qCASLiteral = ActiveTDB.createTypedLiteral(synonym.toLowerCase());
-						if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
-								|| candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
-							matchCandidates.put(candidateFlowableTDBResource, "=");
-							hit = true;
-							continue;
-							// FlowsWorkflow.addFlowableRowNum(firstRow);
-						}
-
-					}
-				}
-			}
-		}
-		return hit;
-	}
+	// private boolean nonTSAutosetStatus() {
+	// boolean hit = false;
+	// String qCAS = getCas();
+	// Literal qCASLiteral = null;
+	// if (qCAS != null) {
+	// qCASLiteral = ActiveTDB.createTypedLiteral(qCAS);
+	// }
+	// // Literal nameLiteral = tdbResource.getProperty(RDFS.label).getObject().asLiteral();
+	// String qName = getName();
+	// Literal qNameLiteral = ActiveTDB.createTypedLiteral(qName.toLowerCase());
+	// // Literal casLiteral = (Literal) tdbResource.getProperty(ECO.casNumber).getObject().asLiteral();
+	//
+	// for (Resource candidateFlowableTDBResource : matchCandidates.keySet()) {
+	// // System.out.println("Resource: candidateFlowableTDBResource" + candidateFlowableTDBResource);
+	// // StmtIterator thing = candidateFlowableTDBResource.listProperties();
+	// // while (thing.hasNext()) {
+	// // Statement fred = thing.nextStatement();
+	// // System.out.println("fred.getPredicate() = " + fred.getPredicate());
+	// // }
+	//
+	// // CRITERION 1: QUERY HAS NO CAS AND NAME MATCHES A NAME OR SYNONYM
+	// if (qCASLiteral == null) {
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
+	// }
+	// // CRITERION 2: QUERY HAS NO CAS AND SYNONYM MATCHES A NAME OR SYNONYM
+	// for (String synonym : getSynonyms()) {
+	// Literal qSynLiteral = qCASLiteral = ActiveTDB.createTypedLiteral(synonym.toLowerCase());
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
+	// }
+	//
+	// }
+	//
+	// } else {
+	// if (candidateFlowableTDBResource.hasProperty(ECO.casNumber, qCASLiteral)) {
+	// // CRITERION 3: CAS MATCHES AND NAME MATCHES A NAME OR SYNONYM
+	//
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qNameLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qNameLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
+	// }
+	// // CRITERION 4: CAS MATCHES AND SYNONYM MATCHES A NAME OR SYNONYM
+	// for (String synonym : getSynonyms()) {
+	// Literal qSynLiteral = qCASLiteral = ActiveTDB.createTypedLiteral(synonym.toLowerCase());
+	// if (candidateFlowableTDBResource.hasProperty(RDFS.label, qSynLiteral)
+	// || candidateFlowableTDBResource.hasProperty(SKOS.altLabel, qSynLiteral)) {
+	// matchCandidates.put(candidateFlowableTDBResource, "=");
+	// hit = true;
+	// continue;
+	// // FlowsWorkflow.addFlowableRowNum(firstRow);
+	// }
+	//
+	// }
+	// }
+	// }
+	// }
+	// return hit;
+	// }
 
 	public String getDataSource() {
 		if (tdbResource.hasProperty(ECO.hasDataSource)) {

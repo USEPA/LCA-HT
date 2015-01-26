@@ -229,26 +229,7 @@ public class ImportMasterRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
 
-		StringBuilder b2 = new StringBuilder();
-		b2.append(Prefixes.getPrefixesForQuery());
-		// b2.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b2.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
-		b2.append("select (count(distinct ?ds) as ?count) \n");
-		b2.append("where {  \n");
-		b2.append("  ?s eco:hasDataSource ?ds .  \n");
-		b2.append("} \n");
-		String query2 = b2.toString();
-
-		System.out.println("query2 = " + query2);
-
-		HarmonyQuery2Impl harmonyQuery2Impl2 = new HarmonyQuery2Impl();
-		harmonyQuery2Impl2.setQuery(query2);
-
-		ResultSet resultSet2 = harmonyQuery2Impl2.getResultSet();
-		QuerySolution querySolution2 = resultSet2.next();
-
-		RDFNode rdfNode = querySolution2.get("count");
-		int postDataSetCount = (int) rdfNode.asLiteral().getInt();
+		int postDataSetCount = countDataSources();
 		System.out.println("postDataSetCount = " + postDataSetCount);
 
 		if (postDataSetCount == priorDataSetCount) {
@@ -306,6 +287,27 @@ public class ImportMasterRDFHandler implements IHandler {
 			// NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
 		}
 		return null;
+	}
+	
+	private static int countDataSources(){
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select (count(distinct ?ds) as ?count) \n");
+		b.append("where {  \n");
+		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		System.out.println("query = " + query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		QuerySolution querySolution = resultSet.next();
+
+		RDFNode rdfNode = querySolution.get("count");
+		return(rdfNode.asLiteral().getInt());
 	}
 
 	@Override

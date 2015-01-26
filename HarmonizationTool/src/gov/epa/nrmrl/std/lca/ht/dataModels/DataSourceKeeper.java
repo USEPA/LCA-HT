@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 
@@ -10,10 +12,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSourceKeeper {
 	private static List<DataSourceProvider> dataSourceProviderList = new ArrayList<DataSourceProvider>();
@@ -187,6 +193,47 @@ public class DataSourceKeeper {
 			}
 		}
 		return null;
+	}
+
+	public static int countDataSourcesInTDB() {
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select (count(distinct ?ds) as ?count) \n");
+		b.append("where {  \n");
+		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		System.out.println("query = " + query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		QuerySolution querySolution = resultSet.next();
+
+		RDFNode rdfNode = querySolution.get("count");
+		return (rdfNode.asLiteral().getInt());
+	}
+
+	public static void resolveUnsavedDataSources() {
+		int dataSourcesInTDB = countDataSourcesInTDB();
+		int dataSourcesInKeeper = dataSourceProviderList.size();
+		if (dataSourcesInTDB > dataSourcesInKeeper) {
+			syncFromTDB();
+		} else if (dataSourcesInTDB < dataSourcesInKeeper) {
+			for (DataSourceProvider dataSourceProvider : dataSourceProviderList) {
+				if (dataSourceProvider.getTdbResource() != null) {
+					// WHAT DOES IT MEAN IF YOU'RE HERE?!?
+					ActiveTDB.addTriple(dataSourceProvider.getTdbResource(), RDF.type, ECO.DataSource);
+				} else {
+					String newDSName = getOrphanDataDourceNameBase() + getNextOrphanDataSetNumber();
+					Resource newDSResource = ActiveTDB.createResource(ECO.DataSource);
+					ActiveTDB.tsAddTriple(newDSResource, RDFS.label, ActiveTDB.tsCreateTypedLiteral(newDSName)
+							.asResource());
+				}
+			}
+		}
 	}
 
 	public static void syncFromTDB() {
