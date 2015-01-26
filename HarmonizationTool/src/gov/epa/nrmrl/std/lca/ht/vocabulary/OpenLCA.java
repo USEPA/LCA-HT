@@ -1,14 +1,23 @@
 package gov.epa.nrmrl.std.lca.ht.vocabulary;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -185,12 +194,13 @@ public class OpenLCA {
 
 		resourceMap.put(Category, FASC.Compartment);
 		resourceMap.put(FlowProperty, FedLCA.FlowProperty);
-		resourceMap.put(Flow, ECO.Flowable);
+		resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
 
 	}
 
 	public static int inferOpenLCATriples() {
 		int count = 0;
+		// ADD INFERENCES IN WHICH AN
 		for (Property propertyFrom : propertyMap.keySet()) {
 			Property propertyTo = propertyMap.get(propertyFrom);
 			StringBuilder b = new StringBuilder();
@@ -221,19 +231,78 @@ public class OpenLCA {
 		}
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("INSERT { ?s <" + SKOS.altLabel.getURI() + "> ?tol . } \n");
-		b.append("WHERE { ?s <" + RDFS.label + "> ?to . \n ");
-		b.append("        bind (xsd:string(fn:lower-case(?to)) as ?tol )} \n");
+		b.append("select distinct  ?name ?cas ?formula where { \n");
+		b.append("  ?flow olca:name ?name . \n");
+		b.append("  ?flow a olca:Flow . \n");
+		b.append("  optional { \n");
+		b.append("    ?flow olca:cas ?cas . \n");
+		b.append("  } \n");
+		b.append("  optional { \n");
+		b.append("    ?flow olca:formula ?formula . \n");
+		b.append("  } \n");
+		b.append("} \n");
+		b.append("order by ?name");
 		String query = b.toString();
-		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		iGenericUpdate.getData();
-		Long added = iGenericUpdate.getAddedTriples();
-		if (added != null) {
-			count += added.intValue();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			// ONE APPROACH IS TO BUILD THE OBJECTS -- BELOW
+			QuerySolution querySolution = resultSet.next();
+			Flowable flowable = new Flowable();
+			List<LCADataValue> lcaDataValues = new ArrayList<LCADataValue>();
+
+			RDFNode nameNode = querySolution.get("name");
+			String name = nameNode.asLiteral().getString();
+			LCADataValue nameVal = new LCADataValue();
+			nameVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
+			nameVal.setValue(name);
+			lcaDataValues.add(nameVal);
+
+			LCADataValue synonymVal = new LCADataValue();
+			synonymVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.flowableSynonymString));
+			synonymVal.setValue(name.toLowerCase());
+			lcaDataValues.add(synonymVal);
+
+			RDFNode casNode = querySolution.get("cas");
+			if (casNode != null) {
+				String cas = casNode.asLiteral().getString();
+				if (!cas.equals("")) {
+					LCADataValue casVal = new LCADataValue();
+					casVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.casString));
+					casVal.setValue(cas);
+					lcaDataValues.add(casVal);
+				}
+			}
+
+			RDFNode formulaNode = querySolution.get("formula");
+			if (formulaNode != null) {
+				String formula = formulaNode.asLiteral().getString();
+				if (!formula.equals("")) {
+					LCADataValue formulaVal = new LCADataValue();
+					formulaVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(
+							Flowable.chemicalFormulaString));
+					formulaVal.setValue(formula);
+					lcaDataValues.add(formulaVal);
+				}
+			}
+			flowable.setLcaDataValues(lcaDataValues);
+			// FASTER APPROACH IS LIKELY TO JUST MAKE THE TRIPLES...
 		}
 
+		// b.append("INSERT { ?s <" + SKOS.altLabel.getURI() + "> ?tol . } \n");
+		// b.append("WHERE { ?s <" + RDFS.label + "> ?to . \n ");
+		// b.append("        bind (xsd:string(fn:lower-case(?to)) as ?tol )} \n");
+		// String query = b.toString();
+		// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+		// iGenericUpdate.getData();
+		// Long added = iGenericUpdate.getAddedTriples();
+		// if (added != null) {
+		// count += added.intValue();
+		// }
 
 		return count;
 	}
-
 }

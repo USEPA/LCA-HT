@@ -72,42 +72,11 @@ public class ImportMasterRDFHandler implements IHandler {
 
 		// ------------------------------
 		DataSourceProvider.createSourceForOrphanData();
-		// Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource");
-		// ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
-		// ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "(LCA-HT default dataset)");
-		//
-		// StringBuilder b = new StringBuilder();
-		// b.append(Prefixes.getPrefixesForQuery());
-		//
-		// // b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		// // b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		// // b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b.append(" \n");
-		// b.append("insert  \n");
-		// b.append("{?s eco:hasDataSource lcaht:tempDataSource . } \n");
-		// b.append(" \n");
-		// b.append("where { \n");
-		// b.append("  ?s ?p ?o . \n");
-		// b.append("  filter ( \n");
-		// b.append("    (!exists \n");
-		// b.append("      {?s eco:hasDataSource ?ds . } \n");
-		// b.append("    )  \n");
-		// b.append("    &&  \n");
-		// b.append("    (!isBlank(?s)) \n");
-		// b.append("  ) \n");
-		// b.append("} \n");
-		// String query = b.toString();
-		//
-		// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		// iGenericUpdate.getData();
-		// iGenericUpdate.getQueryResults();
 
 		// ------------------------------
 		List<String> currentNames = new ArrayList<String>();
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
 		b.append("select distinct ?dataSource \n");
 		b.append("where {  \n");
 		b.append("  ?s eco:hasDataSource ?ds .  \n");

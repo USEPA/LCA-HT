@@ -16,6 +16,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -56,7 +57,6 @@ public class DataSourceProvider {
 
 	public static int createSourceForOrphanData() {
 		int count = 0;
-		// ================
 		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
 		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);
 		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
@@ -86,9 +86,16 @@ public class DataSourceProvider {
 		String query = b.toString();
 
 		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		System.out.println("iGenericUpdate.getData " + iGenericUpdate.getData());
-		System.out.println("iGenericUpdate.getQueryResults " + iGenericUpdate.getQueryResults());
-		// ================
+		iGenericUpdate.getData();
+		count = iGenericUpdate.getAddedTriples().intValue();
+		System.out.println("Orphan triples: " + count);
+		if (count > 0){
+			DataSourceProvider newDataSource = new DataSourceProvider(tempDataSource);
+			newDataSource.syncFromTDB();
+			DataSourceKeeper.add(newDataSource);
+		} else {
+			ActiveTDB.tsRemoveAllObjects(tempDataSource);	
+		}
 		return count;
 	}
 

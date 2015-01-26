@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class GenericStringBox extends TitleAreaDialog {
 
@@ -28,10 +29,10 @@ public class GenericStringBox extends TitleAreaDialog {
 	private Text text;
 	private String resultString = null;
 	private String currentName = null;
-	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
+//	private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultColor = null;
 
-	private List<String> nameList = new ArrayList<String>();
+	private List<String> forbiddenList = new ArrayList<String>();
 	private Button okButton;
 
 	// private String[] referenceDataSources = null;
@@ -50,7 +51,7 @@ public class GenericStringBox extends TitleAreaDialog {
 		this.currentName = currentName;
 		for (String item : items) {
 			if (!item.equals(this.currentName)) {
-				this.nameList.add(item);
+				this.forbiddenList.add(item);
 			}
 		}
 	}
@@ -85,11 +86,11 @@ public class GenericStringBox extends TitleAreaDialog {
 			public void modifyText(ModifyEvent e) {
 				System.out.println("e = " + e);
 				System.out.println("text.getText() = " + text.getText());
-				if (nameList.contains(text.getText())) {
-					text.setForeground(red);
+				if (forbiddenList.contains(text.getText())) {
+					text.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 					okButton.setEnabled(false);
 				} else {
-					text.setForeground(defaultColor);
+					text.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					okButton.setEnabled(true);
 				}
 				resultString = text.getText();

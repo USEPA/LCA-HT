@@ -25,7 +25,12 @@ public class Flow {
 	private FlowContext flowContext;
 	private FlowProperty flowProperty;
 	private Resource tdbResource;
-	private static final Resource rdfClass = FASC.FlowAggregationCategory;
+	private static final Resource rdfClass = FedLCA.Flow;
+//	private static final Resource rdfClass = FASC.FlowAggregationCategory;
+
+	public static Resource getRdfclass() {
+		return rdfClass;
+	}
 
 	public Flow() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);

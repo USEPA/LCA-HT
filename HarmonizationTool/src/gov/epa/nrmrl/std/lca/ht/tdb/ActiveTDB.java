@@ -678,7 +678,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	public static void tsRemoveAllObjects(Resource comparison) {
+	public static void tsRemoveAllObjects(Resource resourceToRemove) {
 		if (tdbDataset.isInTransaction()) {
 			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
 			System.out.println(new Object() {
@@ -692,7 +692,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Model tdbModel = tdbDataset.getDefaultModel();
 		try {
 			// Model tdbModel = tdbDataset.getDefaultModel();
-			StmtIterator stmtIterator = comparison.listProperties();
+			StmtIterator stmtIterator = resourceToRemove.listProperties();
 			while (stmtIterator.hasNext()) {
 				Statement statement = stmtIterator.nextStatement();
 				tdbModel.remove(statement);
