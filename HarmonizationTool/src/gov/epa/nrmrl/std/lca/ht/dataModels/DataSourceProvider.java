@@ -55,50 +55,6 @@ public class DataSourceProvider {
 		return contactPerson;
 	}
 
-	public static int createSourceForOrphanData() {
-		int count = 0;
-		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
-		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);
-		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
-		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
-				+ nextOrphanNumber);
-
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-
-		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		b.append(" \n");
-		b.append("insert  \n");
-		b.append("{?s eco:hasDataSource lcaht:tempDataSource_" + nextOrphanNumber + " . } \n");
-		b.append(" \n");
-		b.append("where { \n");
-		b.append("  ?s ?p ?o . \n");
-		b.append("  filter ( \n");
-		b.append("    (!exists \n");
-		b.append("      {?s eco:hasDataSource ?ds . } \n");
-		b.append("    )  \n");
-		// b.append("    &&  \n");
-		// b.append("    (!isBlank(?s)) \n");
-		b.append("  ) \n");
-		b.append("} \n");
-		String query = b.toString();
-
-		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		iGenericUpdate.getData();
-		count = iGenericUpdate.getAddedTriples().intValue();
-		System.out.println("Orphan triples: " + count);
-		if (count > 0){
-			DataSourceProvider newDataSource = new DataSourceProvider(tempDataSource);
-			newDataSource.syncFromTDB();
-			DataSourceKeeper.add(newDataSource);
-		} else {
-			ActiveTDB.tsRemoveAllObjects(tempDataSource);	
-		}
-		return count;
-	}
-
 	public void setContactPerson(Person contactPerson) {
 		this.contactPerson = contactPerson;
 		if (contactPerson == null) {

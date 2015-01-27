@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
@@ -71,7 +72,7 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 		}
 
 		// ------------------------------
-		DataSourceProvider.createSourceForOrphanData();
+		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
 		// Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource");
 		// ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
 		// ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "(LCA-HT default dataset)");

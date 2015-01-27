@@ -46,6 +46,9 @@ public class GenericStringBox extends TitleAreaDialog {
 		this.currentName = currentName;
 	}
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public GenericStringBox(Shell parentShell, String currentName, String[] items) {
 		super(parentShell);
 		this.currentName = currentName;

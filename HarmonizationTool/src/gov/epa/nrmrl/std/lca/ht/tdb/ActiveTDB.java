@@ -677,6 +677,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
+	
+	public static String getURIString(Resource resource){
+		if (resource.isLiteral()){
+			return resource.asLiteral().getString();
+		}
+		if (resource.isAnon()){
+			return resource.toString();
+		}
+		return resource.toString();
+	}
 
 	public static void tsRemoveAllObjects(Resource resourceToRemove) {
 		if (tdbDataset.isInTransaction()) {

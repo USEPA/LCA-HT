@@ -1,9 +1,12 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +15,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.ui.handlers.HandlerUtil;
+
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -215,6 +223,161 @@ public class DataSourceKeeper {
 		RDFNode rdfNode = querySolution.get("count");
 		return (rdfNode.asLiteral().getInt());
 	}
+
+	public static List<String> getDataSourceNamesInTDB() {
+		List<String> currentNames = new ArrayList<String>();
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct ?dataSource \n");
+		b.append("where {  \n");
+		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("  ?ds rdfs:label ?ds_name . \n");
+		b.append("  bind (str(?ds_name) as ?dataSource) \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rdfNode = querySolution.get("dataSource");
+			currentNames.add(rdfNode.asLiteral().getString());
+		}
+		return currentNames;
+	}
+
+	public static Resource createNewDataSet(ExecutionEvent event, String proposedName, Resource dataSetType) {
+		String newFileName = null;
+		List<String> currentNames = getDataSourceNamesInTDB();
+		while (newFileName == null && !currentNames.contains(newFileName)) {
+			String[] currentNamesArray = new String[currentNames.size()];
+			for (int i = 0; i < currentNames.size(); i++) {
+				currentNamesArray[i] = currentNames.get(i);
+			}
+			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event), proposedName,
+					currentNamesArray);
+			genericStringBox.create("Provide New Data Set Name",
+					"Recently loaded data is not assigned to a data set.  Please provide a name for this new set.");
+			genericStringBox.open();
+			newFileName = genericStringBox.getResultString();
+		}
+		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+		ActiveTDB.tsAddTriple(newDataSource, RDF.type, dataSetType);
+		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+		return newDataSource;
+	}
+
+	public static int placeOrphanDataInNewOrphanDataset() {
+		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
+		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);
+		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
+		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, LCAHT.OrphanDataset);
+		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
+				+ nextOrphanNumber);
+		return placeOrphanDataInDataset(tempDataSource);
+	}
+
+	public static String getTDBDataSourceName(Resource dataSourceResource) {
+		String name = null;
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(dataSourceResource, RDFS.label);
+			RDFNode rdfNode = nodeIterator.next();
+			name = rdfNode.asLiteral().getString();
+		} catch (Exception e) {
+			System.out.println("Import failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		return name;
+	}
+
+	public static int placeOrphanDataInDataset(Resource dataSetResource) {
+		if (dataSetResource == null) {
+			return -1;
+		}
+		if (!ActiveTDB.getModel().contains(dataSetResource, RDF.type, ECO.DataSource)) {
+			return -1;
+		}
+
+		String dataSourceName = getTDBDataSourceName(dataSetResource);
+		if (dataSourceName == null) {
+			return -1;
+		}
+
+		int count = 0;
+//		String dsName = ActiveTDB.getURIString(dataSetResource);
+
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append(" \n");
+		b.append("insert  \n");
+		b.append("{?s eco:hasDataSource ?newds . } \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append("  {select ?newds where { \n ");
+		b.append("      ?newds a eco:DataSource . \n ");
+		b.append("      ?newds rdfs:label \""+dataSourceName+"\"^^xsd:string . \n ");
+		b.append("    } \n ");
+		b.append("  } \n ");
+		b.append("  {select ?s where {  \n ");
+		b.append("    ?s ?p ?o .  \n ");
+		b.append("    filter   \n ");
+		b.append("      (!exists  \n ");
+		b.append("        {?s eco:hasDataSource ?ds . }  \n ");
+		b.append("      )   \n ");
+		b.append("    }   \n ");
+		b.append("  }   \n ");
+		b.append("} \n ");
+		
+		String query = b.toString();
+		System.out.println("Query: \n" + query);
+
+		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+		iGenericUpdate.getData();
+		count = iGenericUpdate.getAddedTriples().intValue();
+		System.out.println("Orphan triples: " + count);
+		if (count > 0) {
+			DataSourceProvider newDataSource = new DataSourceProvider(dataSetResource);
+			// newDataSource.syncFromTDB();
+			DataSourceKeeper.add(newDataSource);
+		} else {
+			ActiveTDB.tsRemoveAllObjects(dataSetResource);
+		}
+		return count;
+	}
+
+//	public static boolean anyOrphans() {
+//		StringBuilder b = new StringBuilder();
+//		b.append(Prefixes.getPrefixesForQuery());
+//		b.append(" \n");
+//		b.append("ask  \n");
+//		b.append("where { \n");
+//		b.append("  ?s ?p ?o . \n");
+//		b.append("  ?ds a eco:DataSource . \n");
+//		b.append("  filter ( \n");
+//		b.append("    (!exists \n");
+//		b.append("      {?s eco:hasDataSource ?ds . } \n");
+//		b.append("    )  \n");
+//		b.append("  ) \n");
+//		b.append("} \n");
+//		String query = b.toString();
+//
+//		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+//		iGenericUpdate.getData();
+//		int count = iGenericUpdate.getAddedTriples().intValue();
+//		System.out.println("Orphan triples: " + count);
+//		if (count > 0) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	public static void resolveUnsavedDataSources() {
 		int dataSourcesInTDB = countDataSourcesInTDB();

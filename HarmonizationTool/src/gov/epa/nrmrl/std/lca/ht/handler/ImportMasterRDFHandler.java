@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
@@ -56,7 +57,6 @@ public class ImportMasterRDFHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-		// System.out.println("executing TDB load");
 		if (ActiveTDB.getModel() == null) {
 			return null;
 		}
@@ -69,31 +69,9 @@ public class ImportMasterRDFHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
 		}
+		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
 
-		// ------------------------------
-		DataSourceProvider.createSourceForOrphanData();
-
-		// ------------------------------
-		List<String> currentNames = new ArrayList<String>();
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct ?dataSource \n");
-		b.append("where {  \n");
-		b.append("  ?s eco:hasDataSource ?ds .  \n");
-		b.append("  ?ds rdfs:label ?ds_name . \n");
-		b.append("  bind (str(?ds_name) as ?dataSource) \n");
-		b.append("} \n");
-		String query = b.toString();
-
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		while (resultSet.hasNext()) {
-			QuerySolution querySolution = resultSet.next();
-			RDFNode rdfNode = querySolution.get("dataSource");
-			currentNames.add(rdfNode.asLiteral().getString());
-		}
+		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
 		int priorDataSetCount = currentNames.size();
 		String[] currentNamesArray = new String[priorDataSetCount];
 		for (int i = 0; i < priorDataSetCount; i++) {
@@ -101,11 +79,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		}
 		System.out.println("priorDataSetCount = " + priorDataSetCount);
 
-		// ------------------------------
-
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
-		// fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
-		// SHOWS ALL TYPES IN ONE WINDOW
 
 		String status = fileDialog.open();
 		System.out.println("status = " + status);
@@ -117,7 +91,6 @@ public class ImportMasterRDFHandler implements IHandler {
 		runLogger.info("# Read Master RDF data from " + path);
 
 		String[] fileList = fileDialog.getFileNames();
-
 		// String sep = System.getProperty("file.separator");
 		String sep = File.separator;
 
@@ -148,22 +121,8 @@ public class ImportMasterRDFHandler implements IHandler {
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
-
-					// --- BEGIN SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-					try {
-						tdbModel.read(inputStream, null, inputType);
-						ActiveTDB.tdbDataset.commit();
-						TDB.sync(ActiveTDB.tdbDataset);
-					} catch (Exception e) {
-						System.out.println("Import failed with Exception: " + e);
-						ActiveTDB.tdbDataset.abort();
-					} finally {
-						ActiveTDB.tdbDataset.end();
-					}
-					// ---- END SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.syncTDBtoLCAHT();
+					readStreamCountNewDataSources(inputStream, inputType);
+//					ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
@@ -177,6 +136,7 @@ public class ImportMasterRDFHandler implements IHandler {
 					runLogger.info("LOAD RDF (zip file)" + fileName);
 
 					Enumeration<?> entries = zf.entries();
+
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
@@ -198,34 +158,10 @@ public class ImportMasterRDFHandler implements IHandler {
 							suffixLength = 5;
 						}
 						if (inputType != "SKIP") {
-							// System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
 							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
 							runLogger.info("  # zip file contains: " + ze.getName());
-
-							// --- BEGIN SAFE -WRITE- TRANSACTION ---
-							ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-							Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-							try {
-								tdbModel.read(zipStream, null, inputType);
-								ActiveTDB.tdbDataset.commit();
-								// TDB.sync(ActiveTDB.tdbDataset);
-							} catch (Exception e) {
-								System.out.println("Import failed; see strack trace!\n" + e);
-								ActiveTDB.tdbDataset.abort();
-							} finally {
-								ActiveTDB.tdbDataset.end();
-							}
-							// ---- END SAFE -WRITE- TRANSACTION ---
-
+							readBufferCountNewDataSources(zipStream, inputType);
 							ActiveTDB.syncTDBtoLCAHT();
-						}
-						int postDataSetCount = countDataSources();
-						System.out.println("postDataSetCount = " + postDataSetCount);
-
-						if (postDataSetCount == priorDataSetCount) {
-							String proposedName = ze.getName().substring(0, ze.getName().length()-suffixLength);
-							createNewDataSet(event, currentNames, proposedName);
-//							addDataToDataSet(proposedName);
 						}
 					}
 
@@ -233,6 +169,7 @@ public class ImportMasterRDFHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
+
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 			long now = ActiveTDB.getModel().size();
@@ -241,107 +178,51 @@ public class ImportMasterRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
+			int postDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
+			System.out.println("postDataSetCount = " + postDataSetCount);
+			if (postDataSetCount == priorDataSetCount) {
+				String proposedName = fileList[0];
+				Resource newDataSetResource = DataSourceKeeper.createNewDataSet(event, proposedName,
+						LCAHT.MasterDataset);
+				DataSourceKeeper.placeOrphanDataInDataset(newDataSetResource);
+			}
 		}
 
-//		int postDataSetCount = countDataSources();
-//		System.out.println("postDataSetCount = " + postDataSetCount);
-//
-//		if (postDataSetCount == priorDataSetCount) {
-//			createNewDataSet(event, currentNames, proposedName);
-////			// NEW DATA DID NOT HAVE A DATA SOURCE
-//			String newFileName = null;
-//			while (newFileName == null && !currentNames.contains(newFileName)) {
-//				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
-//						"(new data set)", currentNamesArray);
-//				genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
-//				genericStringBox.open();
-//				newFileName = genericStringBox.getResultString();
-//			}
-//			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-//			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
-//			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
-
-//			b = new StringBuilder();
-//			b.append(Prefixes.getPrefixesForQuery());
-//
-//			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//			// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//
-//			b.append(" \n");
-//			b.append("insert  \n");
-//			b.append("{?s eco:hasDataSource ?newds . } \n");
-//			b.append(" \n");
-//			b.append("where { \n");
-//			b.append("  ?newds a eco:DataSource . \n");
-//			b.append("  ?newds rdfs:label \"" + newFileName + "\"^^xsd:string . \n");
-//			b.append("  ?s ?p ?o . \n");
-//			b.append("  filter ( \n");
-//			b.append("    (!exists \n");
-//			b.append("      {?s eco:hasDataSource ?ds . } \n");
-//			b.append("    )  \n");
-//			// b.append("    &&  \n");
-//			// b.append("    (!isBlank(?s)) \n");
-//			b.append("  ) \n");
-//			b.append("} \n");
-//			query = b.toString();
-//
-//			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-//			iGenericUpdate.getData();
-//			int added = iGenericUpdate.getAddedTriples().intValue();
-//			runLogger.info("# " + added + " triples were added assigning new data to data set " + newFileName);
-//
-//			int olcaInferrences = OpenLCA.inferOpenLCATriples();
-//			runLogger.info("# " + olcaInferrences + " triples were added assigning openLCA data types");
-
-			// iGenericUpdate.getQueryResults();
-		// } else if (postDataSetCount - priorDataSetCount > 1) {
-		// // NEW DATA HAD MULTIPLE DATA SOURCES
-		// } else {
-		// // NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
-		// }
 		return null;
 	}
-	
-	private static Resource createNewDataSet(ExecutionEvent event, List<String> currentNames, String proposedName){
-		String newFileName = null;
-		while (newFileName == null && !currentNames.contains(newFileName)) {
-			String[] currentNamesArray = new String[currentNames.size()];
-			for (int i = 0; i < currentNames.size(); i++) {
-				currentNamesArray[i] = currentNames.get(i);
-			}
-			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
-					proposedName, currentNamesArray);
-			genericStringBox.create("Name Data Set", "Please type a new data set name for this Master Data Set");
-			genericStringBox.open();
-			newFileName = genericStringBox.getResultString();
+
+	public static void readStreamCountNewDataSources(InputStream inputStream, String inputType) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			tdbModel.read(inputStream, null, inputType);
+			ActiveTDB.tdbDataset.commit();
+			// TDB.sync(ActiveTDB.tdbDataset);
+		} catch (Exception e) {
+			System.out.println("Import failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
 		}
-		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-		ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.MasterDataset);
-		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
-		return newDataSource;
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
-	private static int countDataSources(){
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select (count(distinct ?ds) as ?count) \n");
-		b.append("where {  \n");
-		b.append("  ?s eco:hasDataSource ?ds .  \n");
-		b.append("} \n");
-		String query = b.toString();
 
-		System.out.println("query = " + query);
-
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		QuerySolution querySolution = resultSet.next();
-
-		RDFNode rdfNode = querySolution.get("count");
-		return(rdfNode.asLiteral().getInt());
+	public static void readBufferCountNewDataSources(BufferedReader zipStream, String inputType) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			tdbModel.read(zipStream, null, inputType);
+			ActiveTDB.tdbDataset.commit();
+			// TDB.sync(ActiveTDB.tdbDataset);
+		} catch (Exception e) {
+			System.out.println("Import failed; see strack trace!\n" + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	@Override
