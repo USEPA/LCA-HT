@@ -121,7 +121,9 @@ public class FlowsWorkflow extends ViewPart {
 		GridData gd_btnLoadCSV = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
 		gd_btnLoadCSV.widthHint = 120;
 		btnLoadCSV.setLayoutData(gd_btnLoadCSV);
-		btnLoadCSV.setText("Load CSV Data");
+//		btnLoadCSV.setText("Load CSV Data");
+		btnLoadCSV.setText("Load RDF Data");
+
 
 		btnLoadCSV.addSelectionListener(loadCSVListener);
 
@@ -343,7 +345,9 @@ public class FlowsWorkflow extends ViewPart {
 
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
-				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV", null);
+				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF", null);
+
+//				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
