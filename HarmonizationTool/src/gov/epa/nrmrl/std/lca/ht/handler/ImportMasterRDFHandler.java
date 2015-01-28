@@ -153,7 +153,7 @@ public class ImportMasterRDFHandler implements IHandler {
 						} else if (ze.getName().matches(".*\\.jsonld")) {
 							inputType = "JSON-LD";
 							suffixLength = 7;
-						} else if (fileName.matches(".*\\.json")) {
+						} else if (ze.getName().matches(".*\\.json")) {
 							inputType = "JSON-LD";
 							suffixLength = 5;
 						}

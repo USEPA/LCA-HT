@@ -62,16 +62,13 @@ public class ImportUserDataCSV implements IHandler {
 			runLogger.info("# Cancelling CSV file read");
 			return null;
 		}
-		File file = null;
-		if (path != null) {
-			file = new File(path);
+		File file = new File(path);
 
-			runLogger.info("LOAD CSV " + path);
+		runLogger.info("LOAD CSV " + path);
 
-			if (!file.exists()) {
-				runLogger.warn("# File not found\n");
-				return null;
-			}
+		if (!file.exists()) {
+			runLogger.warn("# File not found\n");
+			return null;
 		}
 
 		FileReader fileReader = null;
@@ -96,9 +93,6 @@ public class ImportUserDataCSV implements IHandler {
 		}
 		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
 			runLogger.warn("# No content in CSV file!");
-
-			// Util.findView(View.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
-			// System.out.println(" No content in CSV file!");
 			return null;
 		}
 		fileMD.setFilename(file.getName());

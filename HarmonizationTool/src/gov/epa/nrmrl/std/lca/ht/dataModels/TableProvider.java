@@ -19,7 +19,7 @@ public class TableProvider {
 	private int lastChecked;
 	private int lastUpdated;
 
-//	private CSVColumnInfo[] assignedCSVColumnInfo = null;  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+	// private CSVColumnInfo[] assignedCSVColumnInfo = null; // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 
 	private LCADataPropertyProvider[] lcaDataProperties = null;
 
@@ -27,34 +27,35 @@ public class TableProvider {
 	// // PSSH (PUT SOMETHING SMART HERE)
 	// }
 
-//	public CSVColumnInfo[] getAssignedCSVColumnInfo() {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
-//		return assignedCSVColumnInfo;
-//	}
-//
-//	public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) {  // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
-//		this.assignedCSVColumnInfo = assignedCSVColumnInfo;
-//	}
+	// public CSVColumnInfo[] getAssignedCSVColumnInfo() { // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
+	// return assignedCSVColumnInfo;
+	// }
+	//
+	// public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) { // <== FIXME COMMT OUT THIS LINE
+	// THEN FIX BROKEN CODE
+	// this.assignedCSVColumnInfo = assignedCSVColumnInfo;
+	// }
 
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
-		if (lcaDataProperties == null){
+		if (lcaDataProperties == null) {
 			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
 		}
 		return lcaDataProperties[colNumber];
 	}
-	
+
 	public void setLCADataPropertyProvider(int colNumber, LCADataPropertyProvider lcaDataPropertyProvider) {
-		if (lcaDataProperties == null){
+		if (lcaDataProperties == null) {
 			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
 		}
 		lcaDataProperties[colNumber] = lcaDataPropertyProvider;
 	}
-	
-//	public void resetAssignedCSVColumnInfo() {
-//		int columnCount = headerRow.getSize();
-//		if (columnCount > 0) {
-//			this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
-//		}
-//	}
+
+	// public void resetAssignedCSVColumnInfo() {
+	// int columnCount = headerRow.getSize();
+	// if (columnCount > 0) {
+	// this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
+	// }
+	// }
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
@@ -83,12 +84,10 @@ public class TableProvider {
 			}
 		}
 		if (shorterRows > 0) {
-			issues += "Found " + shorterRows
-					+ "rows shorter than the first row.\\n";
+			issues += "Found " + shorterRows + "rows shorter than the first row.\\n";
 		}
 		if (longerRows > 0) {
-			issues += "Found " + longerRows
-					+ "rows longer than the first row.\\n";
+			issues += "Found " + longerRows + "rows longer than the first row.\\n";
 		}
 		if (issues.equals("")) {
 			return null;
@@ -134,6 +133,21 @@ public class TableProvider {
 		}
 	}
 
+	public void setHeaderNamesOffset(List<String> columnNames) {
+		assert columnNames != null : "columnNames cannot be null";
+		assert columnNames.size() != 0 : "columnNames cannot be empty";
+		if (headerRow == null) {
+			headerRow = new DataRow();
+		} else {
+			headerRow.clear();
+		}
+		headerRow.add("");
+		for (String name : columnNames) {
+			headerRow.add(name);
+			headerRow.setRowNumber(-1);
+		}
+	}
+
 	public static TableProvider create(ResultSetRewindable resultSetRewindable) {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
@@ -142,8 +156,7 @@ public class TableProvider {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
 			tableProvider.addDataRow(dataRow);
-			Iterator<String> iterator = tableProvider.getHeaderRow()
-					.getIterator();
+			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
 				try {
@@ -154,10 +167,8 @@ public class TableProvider {
 
 					} else {
 						dataRow.add(rdfNode.toString());
-						System.out.println("Resource string is "
-								+ rdfNode.toString());
-						System.out.println("Type of RDFNode = "
-								+ RDFNode.class.getName());
+						System.out.println("Resource string is " + rdfNode.toString());
+						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
 						// System.out.println("  soln.getResource(header) =" +
 						// soln.getResource(header));
 						System.out.println("  soln.get(header)  = " + rdfNode);
@@ -203,7 +214,7 @@ public class TableProvider {
 	}
 
 	public LCADataPropertyProvider[] getLcaDataProperties() {
-		if (lcaDataProperties == null){
+		if (lcaDataProperties == null) {
 			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
 		}
 		return lcaDataProperties;
@@ -211,6 +222,45 @@ public class TableProvider {
 
 	public void setLcaDataProperties(LCADataPropertyProvider[] lcaDataProperties) {
 		this.lcaDataProperties = lcaDataProperties;
+	}
+
+	public static TableProvider createUserData(ResultSetRewindable resultSetRewindable) {
+		TableProvider tableProvider = new TableProvider();
+		resultSetRewindable.reset();
+		tableProvider.setHeaderNamesOffset(resultSetRewindable.getResultVars());
+//		int count = 0;
+		while (resultSetRewindable.hasNext()) {
+			QuerySolution soln = resultSetRewindable.nextSolution();
+			DataRow dataRow = new DataRow();
+//			dataRow.setRowNumber(count);
+			tableProvider.addDataRow(dataRow);
+			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
+			while (iterator.hasNext()) {
+				String header = iterator.next();
+				if (header.equals("")){
+					continue;
+				}
+				try {
+					RDFNode rdfNode = null;
+					rdfNode = soln.get(header);
+					if (rdfNode == null) {
+						dataRow.add("");
+
+					} else {
+						dataRow.add(rdfNode.toString());
+						System.out.println("Resource string is " + rdfNode.toString());
+						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+						// System.out.println("  soln.getResource(header) =" +
+						// soln.getResource(header));
+						System.out.println("  soln.get(header)  = " + rdfNode);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+//			count++;
+		}
+		return tableProvider;
 	}
 
 	// private class TransformCell {

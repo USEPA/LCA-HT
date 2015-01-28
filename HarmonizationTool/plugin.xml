@@ -124,6 +124,11 @@
                   style="push">
             </command>
             <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
+                  label="Import User Data in RDF"
+                  style="push">
+            </command>
+            <command
                   commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
                   label="Save Harmonized Data (CSV)"
                   style="push">
@@ -446,6 +451,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
             id="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
             name="Import Supplementary RDF Data">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
+            name="Import User Data RDF">
       </command>
    </extension>
    <extension

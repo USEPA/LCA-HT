@@ -87,6 +87,21 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("SET META start - new file");
 	}
 
+	public MetaDataDialog(Shell parentShell, FileMD fileMD, String newProposedName) {
+		super(parentShell);
+		// CASE 2) WITH A NEW FILE TO
+		// 2a) CREATE A NEW DATA SOURCE
+		// 2b) ADD TO AN EXISTING DATA SOURCE
+
+		assert fileMD != null : "fileMD cannot be null";
+		this.callingFileMD = fileMD;
+		this.curDataSourceProvider = new DataSourceProvider();
+		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(newProposedName));
+		this.curDataSourceProvider.addFileMD(this.callingFileMD);
+		this.newDataSourceProvider = curDataSourceProvider;
+		runLogger.info("SET META start - new file");
+	}
+
 	// MAKE AND "WIRE" THE WHOLE DIALOG BOX
 	@Override
 	protected Control createDialogArea(Composite parent) {
