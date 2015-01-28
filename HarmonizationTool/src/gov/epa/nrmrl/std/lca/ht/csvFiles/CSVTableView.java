@@ -1974,10 +1974,10 @@ public class CSVTableView extends ViewPart {
 				if (matchNum > 0 && matchNum < 5) {
 					hitCount++;
 				}
-				if (matchNum == 0) {
-					hitCount = 2;
-					break;
-				}
+//				if (matchNum == 0) {
+//					hitCount = 2;
+//					break;
+//				}
 			}
 
 			Color color;
