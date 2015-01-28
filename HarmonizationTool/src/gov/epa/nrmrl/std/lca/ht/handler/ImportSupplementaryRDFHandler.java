@@ -57,7 +57,6 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-		// System.out.println("executing TDB load");
 		if (ActiveTDB.getModel() == null) {
 			return null;
 		}
@@ -70,62 +69,9 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 			String homeDir = System.getProperty("user.home");
 			fileDialog.setFilterPath(homeDir);
 		}
-
-		// ------------------------------
 		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
-		// Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource");
-		// ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
-		// ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, "(LCA-HT default dataset)");
-		//
-		// StringBuilder b = new StringBuilder();
-		// b.append(Prefixes.getPrefixesForQuery());
-		//
-		// // b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		// // b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		// // b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b.append(" \n");
-		// b.append("insert  \n");
-		// b.append("{?s eco:hasDataSource lcaht:tempDataSource . } \n");
-		// b.append(" \n");
-		// b.append("where { \n");
-		// b.append("  ?s ?p ?o . \n");
-		// b.append("  filter ( \n");
-		// b.append("    (!exists \n");
-		// b.append("      {?s eco:hasDataSource ?ds . } \n");
-		// b.append("    )  \n");
-		// b.append("    &&  \n");
-		// b.append("    (!isBlank(?s)) \n");
-		// b.append("  ) \n");
-		// b.append("} \n");
-		// String query = b.toString();
-		//
-		// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		// iGenericUpdate.getData();
-		// iGenericUpdate.getQueryResults();
 
-		// ------------------------------
-		List<String> currentNames = new ArrayList<String>();
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
-		b.append("select distinct ?dataSource \n");
-		b.append("where {  \n");
-		b.append("  ?s eco:hasDataSource ?ds .  \n");
-		b.append("  ?ds rdfs:label ?ds_name . \n");
-		b.append("  bind (str(?ds_name) as ?dataSource) \n");
-		b.append("} \n");
-		String query = b.toString();
-
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		while (resultSet.hasNext()) {
-			QuerySolution querySolution = resultSet.next();
-			RDFNode rdfNode = querySolution.get("dataSource");
-			currentNames.add(rdfNode.asLiteral().getString());
-		}
+		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
 		int priorDataSetCount = currentNames.size();
 		String[] currentNamesArray = new String[priorDataSetCount];
 		for (int i = 0; i < priorDataSetCount; i++) {
@@ -133,11 +79,7 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 		}
 		System.out.println("priorDataSetCount = " + priorDataSetCount);
 
-		// ------------------------------
-
 		fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
-		// fileDialog.setFilterExtensions(new String[] { "*.zip;*.n3;*.ttl;*.rdf;" });
-		// SHOWS ALL TYPES IN ONE WINDOW
 
 		String status = fileDialog.open();
 		System.out.println("status = " + status);
@@ -149,7 +91,6 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 		runLogger.info("# Read Supplementary RDF data from " + path);
 
 		String[] fileList = fileDialog.getFileNames();
-
 		// String sep = System.getProperty("file.separator");
 		String sep = File.separator;
 
@@ -180,22 +121,8 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 					}
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
-
-					// --- BEGIN SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-					try {
-						tdbModel.read(inputStream, null, inputType);
-						ActiveTDB.tdbDataset.commit();
-						TDB.sync(ActiveTDB.tdbDataset);
-					} catch (Exception e) {
-						System.out.println("Import failed with Exception: " + e);
-						ActiveTDB.tdbDataset.abort();
-					} finally {
-						ActiveTDB.tdbDataset.end();
-					}
-					// ---- END SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.syncTDBtoLCAHT();
+					readStreamCountNewDataSources(inputStream, inputType);
+					// ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
@@ -209,40 +136,31 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 					runLogger.info("LOAD RDF (zip file)" + fileName);
 
 					Enumeration<?> entries = zf.entries();
+
 					while (entries.hasMoreElements()) {
 						ZipEntry ze = (ZipEntry) entries.nextElement();
 						String inputType = "SKIP";
+						int suffixLength = 0;
 						if (ze.getName().matches(".*\\.rdf")) {
 							inputType = "RDF/XML";
+							suffixLength = 4;
 						} else if (ze.getName().matches(".*\\.n3")) {
 							inputType = "N3";
+							suffixLength = 3;
 						} else if (ze.getName().matches(".*\\.ttl")) {
 							inputType = "TTL";
+							suffixLength = 4;
 						} else if (ze.getName().matches(".*\\.jsonld")) {
 							inputType = "JSON-LD";
-						} else if (fileName.matches(".*\\.json")) {
+							suffixLength = 7;
+						} else if (ze.getName().matches(".*\\.json")) {
 							inputType = "JSON-LD";
+							suffixLength = 5;
 						}
 						if (inputType != "SKIP") {
-							// System.out.println("Adding data from " + inputType + " zipped file:" + ze.getName());
 							BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
 							runLogger.info("  # zip file contains: " + ze.getName());
-
-							// --- BEGIN SAFE -WRITE- TRANSACTION ---
-							ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-							Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-							try {
-								tdbModel.read(zipStream, null, inputType);
-								ActiveTDB.tdbDataset.commit();
-								// TDB.sync(ActiveTDB.tdbDataset);
-							} catch (Exception e) {
-								System.out.println("Import failed; see strack trace!\n" + e);
-								ActiveTDB.tdbDataset.abort();
-							} finally {
-								ActiveTDB.tdbDataset.end();
-							}
-							// ---- END SAFE -WRITE- TRANSACTION ---
-
+							readBufferCountNewDataSources(zipStream, inputType);
 							ActiveTDB.syncTDBtoLCAHT();
 						}
 					}
@@ -251,6 +169,7 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 					e.printStackTrace();
 				}
 			}
+
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 			System.out.println("Time elapsed: " + elapsedTimeSec);
 			long now = ActiveTDB.getModel().size();
@@ -259,85 +178,55 @@ public class ImportSupplementaryRDFHandler implements IHandler {
 			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
-		}
-
-		StringBuilder b2 = new StringBuilder();
-		b2.append(Prefixes.getPrefixesForQuery());
-		// b2.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b2.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  \n");
-		b2.append("select (count(distinct ?ds) as ?count) \n");
-		b2.append("where {  \n");
-		b2.append("  ?s eco:hasDataSource ?ds .  \n");
-		b2.append("} \n");
-		String query2 = b2.toString();
-
-		System.out.println("query2 = " + query2);
-
-		HarmonyQuery2Impl harmonyQuery2Impl2 = new HarmonyQuery2Impl();
-		harmonyQuery2Impl2.setQuery(query2);
-
-		ResultSet resultSet2 = harmonyQuery2Impl2.getResultSet();
-		QuerySolution querySolution2 = resultSet2.next();
-
-		RDFNode rdfNode = querySolution2.get("count");
-		int postDataSetCount = (int) rdfNode.asLiteral().getInt();
-		System.out.println("postDataSetCount = " + postDataSetCount);
-
-		if (postDataSetCount == priorDataSetCount) {
-			// NEW DATA DID NOT HAVE A DATA SOURCE
-			String newFileName = null;
-			while (newFileName == null && !currentNames.contains(newFileName)) {
-				GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
-						"(new data set)", currentNamesArray);
-				genericStringBox.create("Name Data Set", "Please type a new data set name for this Supplementary Data Set");
-				genericStringBox.open();
-				newFileName = genericStringBox.getResultString();
+			int postDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
+			System.out.println("postDataSetCount = " + postDataSetCount);
+			if (postDataSetCount == priorDataSetCount) {
+				String proposedName = fileList[0];
+				Resource newDataSetResource = DataSourceKeeper.createNewDataSet(event, proposedName,
+						LCAHT.SupplementaryReferenceDataset);
+				
+				DataSourceKeeper.placeOrphanDataInDataset(newDataSetResource);
 			}
-			Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-			ActiveTDB.tsAddTriple(newDataSource, RDF.type, LCAHT.SupplementaryReferenceDataset);
-			ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+			int olcaAdded = OpenLCA.inferOpenLCATriples();
+			runLogger.info("  # RDF triples added to openLCA data:  " + olcaAdded);
 
-			b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());
-
-			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-			// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-
-			b.append(" \n");
-			b.append("insert  \n");
-			b.append("{?s eco:hasDataSource ?newds . } \n");
-			b.append(" \n");
-			b.append("where { \n");
-			b.append("  ?newds a eco:DataSource . \n");
-			b.append("  ?newds rdfs:label \"" + newFileName + "\"^^xsd:string . \n");
-			b.append("  ?s ?p ?o . \n");
-			b.append("  filter ( \n");
-			b.append("    (!exists \n");
-			b.append("      {?s eco:hasDataSource ?ds . } \n");
-			b.append("    )  \n");
-			// b.append("    &&  \n");
-			// b.append("    (!isBlank(?s)) \n");
-			b.append("  ) \n");
-			b.append("} \n");
-			query = b.toString();
-
-			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-			iGenericUpdate.getData();
-			int added = iGenericUpdate.getAddedTriples().intValue();
-			runLogger.info("# " + added + " triples were added assigning new data to data set " + newFileName);
-
-			int olcaInferrences = OpenLCA.inferOpenLCATriples();
-			runLogger.info("# " + olcaInferrences + " triples were added assigning openLCA data types");
-
-			// iGenericUpdate.getQueryResults();
-		} else if (postDataSetCount - priorDataSetCount > 1) {
-			// NEW DATA HAD MULTIPLE DATA SOURCES
-		} else {
-			// NEW DATA HAD 1 DATA SOURCE (BECAUSE THERE WILL NOT BE LESS?!?)
 		}
+
 		return null;
+	}
+
+	public static void readStreamCountNewDataSources(InputStream inputStream, String inputType) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			tdbModel.read(inputStream, null, inputType);
+			ActiveTDB.tdbDataset.commit();
+			// TDB.sync(ActiveTDB.tdbDataset);
+		} catch (Exception e) {
+			System.out.println("Import failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void readBufferCountNewDataSources(BufferedReader zipStream, String inputType) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			tdbModel.read(zipStream, null, inputType);
+			ActiveTDB.tdbDataset.commit();
+			// TDB.sync(ActiveTDB.tdbDataset);
+		} catch (Exception e) {
+			System.out.println("Import failed; see strack trace!\n" + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	@Override
