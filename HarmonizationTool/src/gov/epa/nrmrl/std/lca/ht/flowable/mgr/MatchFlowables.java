@@ -474,7 +474,8 @@ public class MatchFlowables extends ViewPart {
 		if (adHoc) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
-		} else if (hits == 0) {
+			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+		} else if (hits == 0 && candidateMap.size() == 0) {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 
@@ -482,7 +483,7 @@ public class MatchFlowables extends ViewPart {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		} else {
-			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
+			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(orange);
 		}
 		tableViewer.refresh();
