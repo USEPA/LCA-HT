@@ -72,10 +72,10 @@ public class QueryView extends ViewPart {
 	private void createLabeledQueries() {
 		labeledQueries.add(new QDataSources());
 		labeledQueries.add(new QDataSetContents());
-//		labeledQueries.add(new QCountMatches());
-//		labeledQueries.add(new QMatchCAS());
-//		labeledQueries.add(new QMatchCASandName());
-//		labeledQueries.add(new HSubsSameCas());
+		// labeledQueries.add(new QCountMatches());
+		// labeledQueries.add(new QMatchCAS());
+		// labeledQueries.add(new QMatchCASandName());
+		// labeledQueries.add(new HSubsSameCas());
 	}
 
 	private LabeledQuery queryFromKey(String key) {
@@ -92,8 +92,8 @@ public class QueryView extends ViewPart {
 	}
 
 	public QueryView() {
-//		paramUpdates.add("Delete data set..."); // FIXME, SHOULD GET THE KEY
-//												// FROM THE QUERY FILE
+		// paramUpdates.add("Delete data set..."); // FIXME, SHOULD GET THE KEY
+		// // FROM THE QUERY FILE
 		createLabeledQueries();
 	}
 
@@ -124,7 +124,12 @@ public class QueryView extends ViewPart {
 
 		// Color queryWindowColor = new Color(device, 255, 255, 200);
 		windowQueryUpdate.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
-		windowQueryUpdate.setText("select * where {?s ?p ?o }");
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select * where {?s ?p ?o }");
+		b.append("limit 100");
+
+		windowQueryUpdate.setText(b.toString());
 		windowQueryUpdate.addKeyListener(new org.eclipse.swt.events.KeyListener() {
 			@Override
 			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
@@ -180,7 +185,7 @@ public class QueryView extends ViewPart {
 			addQuery(labeledQuery);
 		}
 
-//		addUpdate(uDelDataSource);
+		// addUpdate(uDelDataSource);
 	}
 
 	private static void runQuery() {

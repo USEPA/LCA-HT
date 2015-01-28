@@ -1,8 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
-import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
-import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -12,11 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -204,27 +200,48 @@ public class DataSourceProvider {
 	}
 
 	public void syncFromTDB() {
-		RDFNode rdfNode;
-
-		if (tdbResource.hasProperty(RDFS.label)) {
-			rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+		RDFNode rdfNode = null;
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(tdbResource, RDFS.label);
+			if (nodeIterator.hasNext()) {
+				rdfNode = nodeIterator.next();
+			}
 			if (rdfNode == null) {
-				dataSourceName = DataSourceKeeper.uniquify("unkownName");
+				dataSourceName = DataSourceKeeper.uniquify("unknownName");
 			} else {
-				dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
+				dataSourceName = rdfNode.asLiteral().getString();
 			}
-
-		} else {
-			dataSourceName = DataSourceKeeper.uniquify("unkownName");
-			ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
+		} catch (Exception e) {
+			System.out.println("Syncing of dataset failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
 		}
+		// ---- END SAFE -READ- TRANSACTION ---
+		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 
-		if (tdbResource.hasProperty(DCTerms.hasVersion)) {
-			rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
-			if (rdfNode != null) {
-				version = ActiveTDB.getStringFromLiteral(rdfNode);
-			}
-		}
+		// if (tdbResource.hasProperty(RDFS.label)) {
+		// rdfNode = tdbResource.getProperty(RDFS.label).getObject();
+		// if (rdfNode == null) {
+		// dataSourceName = DataSourceKeeper.uniquify("unknownName");
+		// } else {
+		// dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
+		// }
+		//
+		// } else {
+		// dataSourceName = DataSourceKeeper.uniquify("unknownName");
+		// ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
+		// }
+		//
+		// if (tdbResource.hasProperty(DCTerms.hasVersion)) {
+		// rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
+		// if (rdfNode != null) {
+		// version = ActiveTDB.getStringFromLiteral(rdfNode);
+		// }
+		// }
 
 		if (tdbResource.hasProperty(RDFS.comment)) {
 			rdfNode = tdbResource.getProperty(RDFS.comment).getObject();

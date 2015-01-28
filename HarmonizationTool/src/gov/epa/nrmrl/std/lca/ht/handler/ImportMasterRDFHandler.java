@@ -122,7 +122,7 @@ public class ImportMasterRDFHandler implements IHandler {
 					InputStream inputStream = new FileInputStream(fileName);
 					runLogger.info("LOAD RDF " + fileName);
 					readStreamCountNewDataSources(inputStream, inputType);
-//					ActiveTDB.syncTDBtoLCAHT();
+					// ActiveTDB.syncTDBtoLCAHT();
 
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
@@ -184,8 +184,12 @@ public class ImportMasterRDFHandler implements IHandler {
 				String proposedName = fileList[0];
 				Resource newDataSetResource = DataSourceKeeper.createNewDataSet(event, proposedName,
 						LCAHT.MasterDataset);
+				
 				DataSourceKeeper.placeOrphanDataInDataset(newDataSetResource);
 			}
+			int olcaAdded = OpenLCA.inferOpenLCATriples();
+			runLogger.info("  # RDF triples added to openLCA data:  " + olcaAdded);
+
 		}
 
 		return null;

@@ -16,11 +16,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -260,7 +262,10 @@ public class DataSourceKeeper {
 					currentNamesArray);
 			genericStringBox.create("Provide New Data Set Name",
 					"Recently loaded data is not assigned to a data set.  Please provide a name for this new set.");
-			genericStringBox.open();
+			int result = genericStringBox.open();
+			if (result == Window.CANCEL) {
+				return null;
+			}
 			newFileName = genericStringBox.getResultString();
 		}
 		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
@@ -276,6 +281,7 @@ public class DataSourceKeeper {
 		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, LCAHT.OrphanDataset);
 		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
 				+ nextOrphanNumber);
+		new DataSourceProvider(tempDataSource);
 		return placeOrphanDataInDataset(tempDataSource);
 	}
 
@@ -294,7 +300,7 @@ public class DataSourceKeeper {
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		// ---- END SAFE -READ- TRANSACTION ---
 		return name;
 	}
 
@@ -306,78 +312,84 @@ public class DataSourceKeeper {
 			return -1;
 		}
 
-		String dataSourceName = getTDBDataSourceName(dataSetResource);
-		if (dataSourceName == null) {
-			return -1;
-		}
-
 		int count = 0;
-//		String dsName = ActiveTDB.getURIString(dataSetResource);
 
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-		b.append(" \n");
-		b.append("insert  \n");
-		b.append("{?s eco:hasDataSource ?newds . } \n");
-		b.append(" \n");
-		b.append("where { \n");
-		b.append("  {select ?newds where { \n ");
-		b.append("      ?newds a eco:DataSource . \n ");
-		b.append("      ?newds rdfs:label \""+dataSourceName+"\"^^xsd:string . \n ");
-		b.append("    } \n ");
-		b.append("  } \n ");
-		b.append("  {select ?s where {  \n ");
-		b.append("    ?s ?p ?o .  \n ");
-		b.append("    filter   \n ");
-		b.append("      (!exists  \n ");
-		b.append("        {?s eco:hasDataSource ?ds . }  \n ");
-		b.append("      )   \n ");
-		b.append("    }   \n ");
-		b.append("  }   \n ");
-		b.append("} \n ");
-		
-		String query = b.toString();
-		System.out.println("Query: \n" + query);
-
-		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		iGenericUpdate.getData();
-		count = iGenericUpdate.getAddedTriples().intValue();
-		System.out.println("Orphan triples: " + count);
+		List<Resource> orphans = getOrphanResources();
+		count = orphans.size();
+		System.out.println("Orphans found: " + count);
 		if (count > 0) {
-			DataSourceProvider newDataSource = new DataSourceProvider(dataSetResource);
+			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+			Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+			try {
+				for (Resource orphan : orphans) {
+					tdbModel.add(orphan, ECO.hasDataSource, dataSetResource);
+				}
+				ActiveTDB.tdbDataset.commit();
+			} catch (Exception e) {
+				ActiveTDB.tdbDataset.abort();
+			} finally {
+				ActiveTDB.tdbDataset.end();
+			}
+			// ---- END SAFE -WRITE- TRANSACTION ---
+			new DataSourceProvider(dataSetResource);
 			// newDataSource.syncFromTDB();
-			DataSourceKeeper.add(newDataSource);
 		} else {
 			ActiveTDB.tsRemoveAllObjects(dataSetResource);
 		}
 		return count;
 	}
 
-//	public static boolean anyOrphans() {
-//		StringBuilder b = new StringBuilder();
-//		b.append(Prefixes.getPrefixesForQuery());
-//		b.append(" \n");
-//		b.append("ask  \n");
-//		b.append("where { \n");
-//		b.append("  ?s ?p ?o . \n");
-//		b.append("  ?ds a eco:DataSource . \n");
-//		b.append("  filter ( \n");
-//		b.append("    (!exists \n");
-//		b.append("      {?s eco:hasDataSource ?ds . } \n");
-//		b.append("    )  \n");
-//		b.append("  ) \n");
-//		b.append("} \n");
-//		String query = b.toString();
-//
-//		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-//		iGenericUpdate.getData();
-//		int count = iGenericUpdate.getAddedTriples().intValue();
-//		System.out.println("Orphan triples: " + count);
-//		if (count > 0) {
-//			return true;
-//		}
-//		return false;
-//	}
+	// public static boolean anyOrphans() {
+	// StringBuilder b = new StringBuilder();
+	// b.append(Prefixes.getPrefixesForQuery());
+	// b.append(" \n");
+	// b.append("ask  \n");
+	// b.append("where { \n");
+	// b.append("  ?s ?p ?o . \n");
+	// b.append("  ?ds a eco:DataSource . \n");
+	// b.append("  filter ( \n");
+	// b.append("    (!exists \n");
+	// b.append("      {?s eco:hasDataSource ?ds . } \n");
+	// b.append("    )  \n");
+	// b.append("  ) \n");
+	// b.append("} \n");
+	// String query = b.toString();
+	//
+	// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+	// iGenericUpdate.getData();
+	// int count = iGenericUpdate.getAddedTriples().intValue();
+	// System.out.println("Orphan triples: " + count);
+	// if (count > 0) {
+	// return true;
+	// }
+	// return false;
+	// }
+
+	public static List<Resource> getOrphanResources() {
+		List<Resource> results = new ArrayList<Resource>();
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append(" \n");
+		b.append("select distinct ?s  \n");
+		b.append("where { \n");
+		b.append("    ?s ?p ?o .  \n ");
+		b.append("  minus ");
+		b.append("    {?s eco:hasDataSource ?ds .} . \n ");
+		b.append("} \n ");
+
+		String query = b.toString();
+		System.out.println("Query: \n" + query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			results.add(querySolution.get("s").asResource());
+		}
+		return results;
+	}
 
 	public static void resolveUnsavedDataSources() {
 		int dataSourcesInTDB = countDataSourcesInTDB();

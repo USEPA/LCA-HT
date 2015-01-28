@@ -14,7 +14,9 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -231,77 +233,61 @@ public class OpenLCA {
 		}
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct  ?name ?cas ?formula where { \n");
-		b.append("  ?flow olca:name ?name . \n");
+		b.append("select distinct  ?name ?cas ?formula ?dataset_name where { \n");
 		b.append("  ?flow a olca:Flow . \n");
+		b.append("  ?flow olca:name ?name . \n");
 		b.append("  optional { \n");
 		b.append("    ?flow olca:cas ?cas . \n");
 		b.append("  } \n");
 		b.append("  optional { \n");
 		b.append("    ?flow olca:formula ?formula . \n");
 		b.append("  } \n");
+		b.append("  optional { \n");
+		b.append("    ?flow eco:hasDataSource ?dataSource . \n");
+		b.append("    ?dataSource rdfs:label ?dataset_name . \n");
+		b.append("  } \n");
 		b.append("} \n");
-		b.append("order by ?name");
 		String query = b.toString();
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<RDFNode> names = new ArrayList<RDFNode>();
+		List<RDFNode> cass = new ArrayList<RDFNode>();
+		List<RDFNode> formulae = new ArrayList<RDFNode>();
+		List<RDFNode> datasets = new ArrayList<RDFNode>();
 		while (resultSet.hasNext()) {
-			// ONE APPROACH IS TO BUILD THE OBJECTS -- BELOW
 			QuerySolution querySolution = resultSet.next();
-			Flowable flowable = new Flowable();
-			List<LCADataValue> lcaDataValues = new ArrayList<LCADataValue>();
-
-			RDFNode nameNode = querySolution.get("name");
-			String name = nameNode.asLiteral().getString();
-			LCADataValue nameVal = new LCADataValue();
-			nameVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
-			nameVal.setValue(name);
-			lcaDataValues.add(nameVal);
-
-			LCADataValue synonymVal = new LCADataValue();
-			synonymVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.flowableSynonymString));
-			synonymVal.setValue(name.toLowerCase());
-			lcaDataValues.add(synonymVal);
-
-			RDFNode casNode = querySolution.get("cas");
-			if (casNode != null) {
-				String cas = casNode.asLiteral().getString();
-				if (!cas.equals("")) {
-					LCADataValue casVal = new LCADataValue();
-					casVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(Flowable.casString));
-					casVal.setValue(cas);
-					lcaDataValues.add(casVal);
-				}
-			}
-
-			RDFNode formulaNode = querySolution.get("formula");
-			if (formulaNode != null) {
-				String formula = formulaNode.asLiteral().getString();
-				if (!formula.equals("")) {
-					LCADataValue formulaVal = new LCADataValue();
-					formulaVal.setLcaDataPropertyProvider(Flowable.getDataPropertyMap().get(
-							Flowable.chemicalFormulaString));
-					formulaVal.setValue(formula);
-					lcaDataValues.add(formulaVal);
-				}
-			}
-			flowable.setLcaDataValues(lcaDataValues);
-			// FASTER APPROACH IS LIKELY TO JUST MAKE THE TRIPLES...
+			names.add(querySolution.get("name"));
+			formulae.add(querySolution.get("formula"));
+			cass.add(querySolution.get("cas"));
+			datasets.add(querySolution.get("dataSource"));
 		}
-
-		// b.append("INSERT { ?s <" + SKOS.altLabel.getURI() + "> ?tol . } \n");
-		// b.append("WHERE { ?s <" + RDFS.label + "> ?to . \n ");
-		// b.append("        bind (xsd:string(fn:lower-case(?to)) as ?tol )} \n");
-		// String query = b.toString();
-		// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-		// iGenericUpdate.getData();
-		// Long added = iGenericUpdate.getAddedTriples();
-		// if (added != null) {
-		// count += added.intValue();
-		// }
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			for (int i = 0; i < names.size(); i++) {
+				Resource newFlowable = tdbModel.createResource(ECO.Flowable);
+				tdbModel.addLiteral(newFlowable, RDFS.label, names.get(i).asLiteral());
+				if (cass.get(i) != null) {
+					tdbModel.addLiteral(newFlowable, ECO.casNumber, cass.get(i).asLiteral());
+				}
+				if (formulae.get(i) != null) {
+					tdbModel.addLiteral(newFlowable, ECO.chemicalFormula, formulae.get(i).asLiteral());
+				}
+				if (datasets.get(i) != null) {
+					tdbModel.add(newFlowable, ECO.hasDataSource, datasets.get(i).asResource());
+				}
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		return count;
 	}
