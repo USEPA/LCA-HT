@@ -233,7 +233,7 @@ public class OpenLCA {
 		}
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct  ?name ?cas ?formula ?dataset_name where { \n");
+		b.append("select distinct  ?name ?cas ?formula ?dataSource where { \n");
 		b.append("  ?flow a olca:Flow . \n");
 		b.append("  ?flow olca:name ?name . \n");
 		b.append("  optional { \n");
@@ -244,7 +244,6 @@ public class OpenLCA {
 		b.append("  } \n");
 		b.append("  optional { \n");
 		b.append("    ?flow eco:hasDataSource ?dataSource . \n");
-		b.append("    ?dataSource rdfs:label ?dataset_name . \n");
 		b.append("  } \n");
 		b.append("} \n");
 		String query = b.toString();
@@ -270,15 +269,26 @@ public class OpenLCA {
 		try {
 			for (int i = 0; i < names.size(); i++) {
 				Resource newFlowable = tdbModel.createResource(ECO.Flowable);
-				tdbModel.addLiteral(newFlowable, RDFS.label, names.get(i).asLiteral());
+				String nameString = names.get(i).asLiteral().getString();
+				Literal nameLiteral = tdbModel.createTypedLiteral(nameString);
+				Literal nameLiteralLC = tdbModel.createTypedLiteral(nameString.toLowerCase());
+				tdbModel.addLiteral(newFlowable, RDFS.label, nameLiteral);
+				tdbModel.addLiteral(newFlowable, SKOS.altLabel, nameLiteralLC);
+
 				if (cass.get(i) != null) {
-					tdbModel.addLiteral(newFlowable, ECO.casNumber, cass.get(i).asLiteral());
+					String casString = cass.get(i).asLiteral().getString();
+					Literal casLiteral = tdbModel.createTypedLiteral(casString);
+					tdbModel.addLiteral(newFlowable, ECO.casNumber, casLiteral);
 				}
 				if (formulae.get(i) != null) {
-					tdbModel.addLiteral(newFlowable, ECO.chemicalFormula, formulae.get(i).asLiteral());
+					String formulaString = formulae.get(i).asLiteral().getString();
+					Literal formulaLiteral = tdbModel.createTypedLiteral(formulaString);
+					tdbModel.addLiteral(newFlowable, ECO.chemicalFormula, formulaLiteral);
 				}
 				if (datasets.get(i) != null) {
 					tdbModel.add(newFlowable, ECO.hasDataSource, datasets.get(i).asResource());
+				} else {
+
 				}
 			}
 			ActiveTDB.tdbDataset.commit();
