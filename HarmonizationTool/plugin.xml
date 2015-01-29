@@ -124,7 +124,7 @@
                   style="push">
             </command>
             <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
                   label="Import User Data in RDF"
                   style="push">
             </command>
@@ -322,6 +322,11 @@
             name="Import Master RDF Data">
       </command>
       <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
+            name="Import User Data RDF">
+      </command>
+      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.sparql.SaveResultsHandler"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
             name="Save SPARQL Results">
@@ -352,11 +357,6 @@
             name="Show Match Properties View">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"
-            id="gov.epa.nrmrl.std.lca.ht.ResultsView"
-            name="Show Results View">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
             id="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
             name="Show Results Tree Editor">
@@ -367,9 +367,9 @@
             name="Show Flows Workflow Command">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV"
-            name="Import CSV">
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
+            name="Import">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.EditMetadataHandler"
@@ -400,14 +400,6 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.GenericShowViewHandler"
             id="harmonizationtool.handler.GenericShowViewHandler"
             name="Show Logger">
-         <commandParameter
-               id="HarmonizationTool.commandParameter1"
-               name="Name"
-               optional="true">
-            <values
-                  class="gov.epa.nrmrl.std.lca.ht.harmonizationtool.ParameterValues1">
-            </values>
-         </commandParameter>
       </command>
       <command
             id="HarmonizationTool.command1"
@@ -434,10 +426,6 @@
             name="Restore FlowsWorkflow Perspective">
       </command>
       <command
-            id="HarmonizationTool.command1"
-            name="name">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             name="Save Harmonized Data">
@@ -453,9 +441,9 @@
             name="Import Supplementary RDF Data">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF"
-            name="Import User Data RDF">
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"
+            id="gov.epa.nrmrl.std.lca.ht.ResultsView"
+            name="Show Results View">
       </command>
    </extension>
    <extension

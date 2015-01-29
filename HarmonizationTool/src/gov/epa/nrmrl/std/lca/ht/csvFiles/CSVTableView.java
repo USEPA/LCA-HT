@@ -768,16 +768,22 @@ public class CSVTableView extends ViewPart {
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 			// String defaultHeader = headerMenu.getItem(0).getText();
 			DataRow headerRow = tableProvider.getHeaderRow();
-			System.out.println("Adding headers");
-			List<DataRow> tableData = tableProvider.getData();
-			DataRow dataRow = tableData.get(0);
-			// while (headerRow.getSize() < dataRow.getSize()) {
-			// headerRow.add(defaultHeader);
-			// }
+			int columnCount = tableProvider.getData().get(0).getSize();
+			while (headerRow.getSize() <= columnCount) {
+				headerRow.add("");
+			}
+
 			headerRow.add("");
-			for (int i = 1; i <= dataRow.getSize(); i++) {
-				// headerRow.add(csvColumnDefaultColumnHeader);
-				headerRow.add("- " + i + " -");
+			for (int i = 1; i <= columnCount; i++) {
+				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(i-1);
+				if (lcaDataPropertyProvider == null) {
+					headerRow.set(i, "- " + i + " -");
+				} else {
+					headerRow.set(
+							i,
+							lcaDataPropertyProvider.getPropertyClass() + ": "
+									+ lcaDataPropertyProvider.getPropertyName());
+				}
 			}
 			System.out.println("Adding columns");
 
@@ -847,7 +853,9 @@ public class CSVTableView extends ViewPart {
 			addLCADataPropertiesToHeaderMenu();
 		} else if (option == 2) { // IS ASSIGNED
 			if (preCommit) {
-				String colType = TableKeeper.getTableProvider(tableProviderKey)
+				String colTypeGeneral = TableKeeper.getTableProvider(tableProviderKey)
+						.getLCADataPropertyProvider(colNumSelected).getPropertyClass();
+				String colTypeSpecific = TableKeeper.getTableProvider(tableProviderKey)
 						.getLCADataPropertyProvider(colNumSelected).getPropertyName();
 
 				final TableColumn tableColumn = table.getColumn(colNumSelected);
@@ -886,7 +894,7 @@ public class CSVTableView extends ViewPart {
 					}
 				}
 
-				if (colType.equals(Flowable.casString)) {
+				if (colTypeGeneral.equals(Flowable.label) && colTypeSpecific.equals(Flowable.casString)) {
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 					menuItem.setText("Standardize CAS");
@@ -1974,10 +1982,10 @@ public class CSVTableView extends ViewPart {
 				if (matchNum > 0 && matchNum < 5) {
 					hitCount++;
 				}
-//				if (matchNum == 0) {
-//					hitCount = 2;
-//					break;
-//				}
+				// if (matchNum == 0) {
+				// hitCount = 2;
+				// break;
+				// }
 			}
 
 			Color color;

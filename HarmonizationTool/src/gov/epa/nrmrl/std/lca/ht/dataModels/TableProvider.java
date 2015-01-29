@@ -133,20 +133,20 @@ public class TableProvider {
 		}
 	}
 
-	public void setHeaderNamesOffset(List<String> columnNames) {
-		assert columnNames != null : "columnNames cannot be null";
-		assert columnNames.size() != 0 : "columnNames cannot be empty";
-		if (headerRow == null) {
-			headerRow = new DataRow();
-		} else {
-			headerRow.clear();
-		}
-		headerRow.add("");
-		for (String name : columnNames) {
-			headerRow.add(name);
-			headerRow.setRowNumber(-1);
-		}
-	}
+	// public void setHeaderNamesOffset(List<String> columnNames) {
+	// assert columnNames != null : "columnNames cannot be null";
+	// assert columnNames.size() != 0 : "columnNames cannot be empty";
+	// if (headerRow == null) {
+	// headerRow = new DataRow();
+	// } else {
+	// headerRow.clear();
+	// }
+	// // headerRow.add("");
+	// for (String name : columnNames) {
+	// headerRow.add(name);
+	// headerRow.setRowNumber(-1);
+	// }
+	// }
 
 	public static TableProvider create(ResultSetRewindable resultSetRewindable) {
 		TableProvider tableProvider = new TableProvider();
@@ -227,7 +227,7 @@ public class TableProvider {
 	public static TableProvider createUserData(ResultSetRewindable resultSetRewindable) {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
-		tableProvider.setHeaderNamesOffset(resultSetRewindable.getResultVars());
+		tableProvider.setHeaderNames(resultSetRewindable.getResultVars());
 		// int count = 0;
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
@@ -261,8 +261,6 @@ public class TableProvider {
 			// }
 			// count++;
 		}
-		tableProvider.headerRow = new DataRow(); // THIS CLEARS THE VALUES SO CSVTableView can add them
-		// TODO - AUTO ASSIGN THESE
 
 		return tableProvider;
 	}
