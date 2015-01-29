@@ -48,7 +48,7 @@ public class ImportUserDataCSV implements IHandler {
 		FileMD fileMD = new FileMD();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*.csv" });
+		fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
 		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
 		if (inputDirectory.length() > 0) {
 			fileDialog.setFilterPath(inputDirectory);
@@ -63,6 +63,10 @@ public class ImportUserDataCSV implements IHandler {
 			return null;
 		}
 		File file = new File(path);
+		if (!path.matches(".*\\.csv")){
+			ImportUserDataRDF.loadUserDataFromRDFFile(file);
+			return null;
+		}
 
 		runLogger.info("LOAD CSV " + path);
 

@@ -228,38 +228,42 @@ public class TableProvider {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
 		tableProvider.setHeaderNamesOffset(resultSetRewindable.getResultVars());
-//		int count = 0;
+		// int count = 0;
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
-//			dataRow.setRowNumber(count);
+			// dataRow.setRowNumber(count);
 			tableProvider.addDataRow(dataRow);
 			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
-				if (header.equals("")){
-					continue;
-				}
 				try {
 					RDFNode rdfNode = null;
 					rdfNode = soln.get(header);
 					if (rdfNode == null) {
 						dataRow.add("");
-
 					} else {
 						dataRow.add(rdfNode.toString());
 						System.out.println("Resource string is " + rdfNode.toString());
 						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
 						// System.out.println("  soln.getResource(header) =" +
 						// soln.getResource(header));
+						System.out.println("  header  = " + header);
+
 						System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-//			count++;
+			// for (int i = 0; i< tableProvider.headerRow.getSize();i++){
+			// tableProvider.headerRow.set(i, null);
+			// }
+			// count++;
 		}
+		tableProvider.headerRow = new DataRow(); // THIS CLEARS THE VALUES SO CSVTableView can add them
+		// TODO - AUTO ASSIGN THESE
+
 		return tableProvider;
 	}
 

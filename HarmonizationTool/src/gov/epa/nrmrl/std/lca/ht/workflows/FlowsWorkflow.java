@@ -122,7 +122,7 @@ public class FlowsWorkflow extends ViewPart {
 		gd_btnLoadCSV.widthHint = 120;
 		btnLoadCSV.setLayoutData(gd_btnLoadCSV);
 //		btnLoadCSV.setText("Load CSV Data");
-		btnLoadCSV.setText("Load RDF Data");
+		btnLoadCSV.setText("Load User Data");
 
 
 		btnLoadCSV.addSelectionListener(loadCSVListener);
@@ -345,8 +345,8 @@ public class FlowsWorkflow extends ViewPart {
 
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
-				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF", null);
-//				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV", null);
+//				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF", null);
+				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataCSV", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
