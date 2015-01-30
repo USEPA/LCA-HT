@@ -9,18 +9,12 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.naming.directory.SearchControls;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -59,20 +53,12 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.update.GraphStore;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -117,7 +103,7 @@ public class MatchFlowables extends ViewPart {
 	public void createPartControl(Composite parent) {
 		outerComposite = new Composite(parent, SWT.NONE);
 		outerComposite.setLayout(new GridLayout(1, false));
-		System.out.println("hello, from sunny MatchFlowables!");
+//		System.out.println("hello, from sunny MatchFlowables!");
 		initializeTableViewer(outerComposite);
 		initialize();
 
@@ -543,20 +529,20 @@ public class MatchFlowables extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		System.out.println("We got focus!");
+//		System.out.println("We got focus!");
 		editingInProgress = false;
-		System.out.println("Setting editingInProgress to: " + editingInProgress);
+//		System.out.println("Setting editingInProgress to: " + editingInProgress);
 
 	}
 
 	private static void clearSearchRows() {
-		System.out.println("flowableTableRows is = " + flowableTableRows);
-		System.out.println("flowableTableRows.length was = " + flowableTableRows.size());
+//		System.out.println("flowableTableRows is = " + flowableTableRows);
+//		System.out.println("flowableTableRows.length was = " + flowableTableRows.size());
 		int totalRows = flowableTableRows.size();
 		for (int i = totalRows - 1; i > flowableToMatch.getMatchCandidates().size() + 1; i--) {
 			flowableTableRows.remove(i);
 		}
-		System.out.println("flowableTableRows.length now = " + flowableTableRows.size());
+//		System.out.println("flowableTableRows.length now = " + flowableTableRows.size());
 	}
 
 	private static SelectionListener searchListener = new SelectionListener() {
@@ -632,13 +618,13 @@ public class MatchFlowables extends ViewPart {
 		b.append("   } order by afn:localname(?masterTest) \n");
 		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
-		System.out.println("query = \n" + query);
+//		System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		Logger.getLogger("run").info("Searching master list for matching flowables...");
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		System.out.println("resultSet = " + resultSet);
+//		System.out.println("resultSet = " + resultSet);
 		flowableToMatch.clearSearchResults();
 		// resetTable();
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
@@ -876,7 +862,7 @@ public class MatchFlowables extends ViewPart {
 				flowableTableRow = (FlowableTableRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("element= " + element);
+//				System.out.println("element= " + element);
 			}
 			String s = "";
 			try {
@@ -885,7 +871,7 @@ public class MatchFlowables extends ViewPart {
 					s = flowableTableRow.getColumnValues().get(dataColumnNumber);
 				}
 			} catch (Exception e) {
-				System.out.println("dataRow=" + flowableTableRow);
+//				System.out.println("dataRow=" + flowableTableRow);
 				e.printStackTrace();
 			}
 			return s;
@@ -985,7 +971,7 @@ public class MatchFlowables extends ViewPart {
 				updateMatchCounts();
 				addToMaster.setText("Add to Master");
 			}
-			System.out.println("count: " + count);
+//			System.out.println("count: " + count);
 		}
 
 		@Override
@@ -1062,9 +1048,9 @@ public class MatchFlowables extends ViewPart {
 		@Override
 		protected Object getValue(Object element) {
 			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
-			System.out.println("== GET ==");
+//			System.out.println("== GET ==");
 			editingInProgress = true;
-			System.out.println("Setting editingInProgress to: " + editingInProgress);
+//			System.out.println("Setting editingInProgress to: " + editingInProgress);
 			return flowableTableRow.get(colNumSelected);
 		}
 
@@ -1079,12 +1065,12 @@ public class MatchFlowables extends ViewPart {
 
 				System.out.println("== SET ==");
 				if (editingInProgress && !justUpdated) {
-					System.out.println("Still editing");
+//					System.out.println("Still editing");
 					flowableTableRow.set(colNumSelected, (String) value);
 					editingInProgress = false;
-					System.out.println("Setting editingInProgress to: " + editingInProgress);
+//					System.out.println("Setting editingInProgress to: " + editingInProgress);
 				} else {
-					System.out.println("Not editing");
+//					System.out.println("Not editing");
 					// flowableTableRow.set(colNumSelected, (String) value);
 				}
 				table.deselectAll();
@@ -1104,11 +1090,11 @@ public class MatchFlowables extends ViewPart {
 
 		@Override
 		protected void focusLost() {
-			System.out.println("Losing focus");
+//			System.out.println("Losing focus");
 			// System.out.println("keyStroke"+keyStroke);
 			editorText = this.text;
 
-			System.out.println("this.text.getText() = " + this.text.getText());
+//			System.out.println("this.text.getText() = " + this.text.getText());
 		}
 
 		@Override

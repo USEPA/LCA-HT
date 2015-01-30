@@ -325,7 +325,6 @@ public class FlowsWorkflow extends ViewPart {
 
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
-				// handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserDataRDF", null);
 				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserData", null);
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -343,7 +342,6 @@ public class FlowsWorkflow extends ViewPart {
 						.getFileMD().getPath());
 				btnCheckData.setEnabled(true);
 				System.out.println("About to do setHeaderInfo()");
-				// setHeaderInfo();
 			}
 		}
 
@@ -681,12 +679,20 @@ public class FlowsWorkflow extends ViewPart {
 			matchedFlowableRowNumbers.clear();
 
 			if (btnConcludeFile.getText().equals("Export Harmonized Data")) {
-				MatchFlowables.initialize();
+				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
+				try {
+					handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler", null);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				// MatchFlowables.initialize();
 
 			} else if (btnConcludeFile.getText().equals("Cancel Harmonization")) {
 				// TODO - CONFIRM WITH USER
 				// TODO - REMOVE THE FileMD
 				// TODO - INDICATE THAT FILE CONTENT WAS REMOVED
+				MatchFlowables.initialize();
+
 			}
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 

@@ -73,6 +73,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
+		int jj = 0;
 
 		System.out.println("Saving Harmonized Data");
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
@@ -142,9 +143,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			csvWriter.writeRecord(map);
 
 			// prepare and write data
+			int row = 0;
 			for (DataRow dataRow : dataRows) {
+				System.out.println("Row: "+row++);
 				map.clear();
 				for (int i = 0; i < dataRow.getColumnValues().size(); i++) {
+					System.out.println("  Col: "+i);
 					String fieldName = headerRow.getColumnValues().get(i).trim();
 					String value = dataRow.getColumnValues().get(i);
 					map.put(fieldName, value);

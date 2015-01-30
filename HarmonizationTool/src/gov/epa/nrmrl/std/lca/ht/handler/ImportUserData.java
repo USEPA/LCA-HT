@@ -258,7 +258,7 @@ public class ImportUserData implements IHandler {
 					}
 					if (inputType != "SKIP") {
 						BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
-						runLogger.info("  # zip file contains: " + ze.getName());
+//						runLogger.info("  # zip file contains: " + ze.getName());
 						ImportMasterRDFHandler.readBufferCountNewDataSources(zipStream, inputType);
 					}
 				}
@@ -385,6 +385,8 @@ public class ImportUserData implements IHandler {
 
 		TableKeeper.saveTableProvider(path, tableProvider);
 		System.out.println("Save tableProvider in TableKeeper");
+		
+		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN COUNT FIELD TO TABLES
 
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
@@ -396,14 +398,13 @@ public class ImportUserData implements IHandler {
 			e.printStackTrace();
 		}
 		System.out.println("About to update CSVTableView");
-		tableProvider.setLCADataPropertyProvider(0, Flowable.getDataPropertyMap().get(Flowable.label));
-		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.casString));
-		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
-		tableProvider.setLCADataPropertyProvider(3, FlowContext.getDataPropertyMap().get(FlowContext.flowContextGeneral));
-		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(5, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyUnit));
-		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
-//		tableProvider.getHeaderRow().set(0, "" );
+		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
+		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.casString));
+		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
+		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap().get(FlowContext.flowContextGeneral));
+		tableProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
+		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyUnit));
+		tableProvider.setLCADataPropertyProvider(7, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
 		CSVTableView.update(path);
 		return;
 

@@ -634,9 +634,9 @@ public class HarmonizedDataSelector extends ViewPart {
 		DataRow inputRow = tableProvider.getData().get(rowNumber);
 		// DataRow inputHeader = tableProvider.getHeaderRow();
 		for (int col = 0; col < inputRow.getSize(); col++) {
-			System.out.println("Column " + col);
+//			System.out.println("Column " + col);
 			if (col == 0) {
-				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
+//				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
 			}
 			outputRow.add(inputRow.get(col));
 		}

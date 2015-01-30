@@ -3,7 +3,6 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
-import gov.epa.nrmrl.std.lca.ht.dataModels.MatchCandidate;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -20,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -68,7 +65,7 @@ public class Flowable {
 		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
 		Model tdbModel = ActiveTDB.getModel();
 		StmtIterator stmtIterator = tdbModel.listStatements();
-		System.out.println("rdfClass = " + rdfClass);
+//		System.out.println("rdfClass = " + rdfClass);
 
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
@@ -77,23 +74,23 @@ public class Flowable {
 					// Resource thing = statement.getSubject();
 					// Resource thing2 = statement.getResource();
 					// System.out.println("Flowable.getRdfclass() = " +Flowable.getRdfclass());
-					System.out.println("statement.getSubject().getLocalName() = "
-							+ statement.getSubject().getLocalName());
-
-					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
-							+ " -- " + statement.getObject());
+//					System.out.println("statement.getSubject().getLocalName() = "
+//							+ statement.getSubject().getLocalName());
+//
+//					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+//							+ " -- " + statement.getObject());
 				}
 			}
 		}
 
 		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-			System.out.println(rdfClass.getProperty(RDFS.label).getString());
+//			System.out.println(rdfClass.getProperty(RDFS.label).getString());
 		} else {
-			System.out.println("wtf");
+//			System.out.println("wtf");
 		}
 		//
 
-		System.out.println("label assigned to Flowable");
+//		System.out.println("label assigned to Flowable");
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;

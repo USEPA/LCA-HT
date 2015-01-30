@@ -14,27 +14,11 @@ public class TableProvider {
 
 	private DataRow headerRow = new DataRow();
 	private List<DataRow> data = new ArrayList<DataRow>();
-	// TODO: JUNO CHECK ABOVE TO CONSIDER A BETTER WAY TO STORE -ALL- CSV DATA
-	// CONFIRM COMPATIBILITY WITH TableViewer.setInput
 	private int lastChecked;
 	private int lastUpdated;
 
-	// private CSVColumnInfo[] assignedCSVColumnInfo = null; // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
 
 	private LCADataPropertyProvider[] lcaDataProperties = null;
-
-	// public TableProvider() {
-	// // PSSH (PUT SOMETHING SMART HERE)
-	// }
-
-	// public CSVColumnInfo[] getAssignedCSVColumnInfo() { // <== FIXME COMMT OUT THIS LINE THEN FIX BROKEN CODE
-	// return assignedCSVColumnInfo;
-	// }
-	//
-	// public void setAssignedCSVColumnInfo(CSVColumnInfo[] assignedCSVColumnInfo) { // <== FIXME COMMT OUT THIS LINE
-	// THEN FIX BROKEN CODE
-	// this.assignedCSVColumnInfo = assignedCSVColumnInfo;
-	// }
 
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
 		if (lcaDataProperties == null) {
