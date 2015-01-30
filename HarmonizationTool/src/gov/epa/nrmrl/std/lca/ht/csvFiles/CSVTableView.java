@@ -774,6 +774,7 @@ public class CSVTableView extends ViewPart {
 			}
 
 			headerRow.add("");
+			headerRow.set(0, "");
 			for (int i = 1; i <= columnCount; i++) {
 				LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(i-1);
 				if (lcaDataPropertyProvider == null) {

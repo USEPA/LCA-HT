@@ -200,6 +200,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		try {
+			tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
 			tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);
@@ -217,6 +218,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		try {
+			tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
 			tdbModel.read(zipStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);

@@ -244,13 +244,13 @@ public class TableProvider {
 						dataRow.add("");
 					} else {
 						dataRow.add(rdfNode.toString());
-						System.out.println("Resource string is " + rdfNode.toString());
-						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
-						// System.out.println("  soln.getResource(header) =" +
-						// soln.getResource(header));
-						System.out.println("  header  = " + header);
-
-						System.out.println("  soln.get(header)  = " + rdfNode);
+//						System.out.println("Resource string is " + rdfNode.toString());
+//						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+//						// System.out.println("  soln.getResource(header) =" +
+//						// soln.getResource(header));
+//						System.out.println("  header  = " + header);
+//
+//						System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

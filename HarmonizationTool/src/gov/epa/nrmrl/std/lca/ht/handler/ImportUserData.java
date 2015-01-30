@@ -260,7 +260,6 @@ public class ImportUserData implements IHandler {
 						BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
 						runLogger.info("  # zip file contains: " + ze.getName());
 						ImportMasterRDFHandler.readBufferCountNewDataSources(zipStream, inputType);
-						ActiveTDB.syncTDBtoLCAHT();
 					}
 				}
 
@@ -268,9 +267,10 @@ public class ImportUserData implements IHandler {
 				e.printStackTrace();
 			}
 		}
+		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-		System.out.println("Time elapsed: " + elapsedTimeSec);
+//		System.out.println("Time elapsed: " + elapsedTimeSec);
 		long now = ActiveTDB.getModel().size();
 		long change = now - was;
 		System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
@@ -403,7 +403,7 @@ public class ImportUserData implements IHandler {
 		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tableProvider.setLCADataPropertyProvider(5, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyUnit));
 		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
-		tableProvider.getHeaderRow().set(0, "" );
+//		tableProvider.getHeaderRow().set(0, "" );
 		CSVTableView.update(path);
 		return;
 
