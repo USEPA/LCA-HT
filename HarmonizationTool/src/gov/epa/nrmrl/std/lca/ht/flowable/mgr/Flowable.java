@@ -65,7 +65,7 @@ public class Flowable {
 		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
 		Model tdbModel = ActiveTDB.getModel();
 		StmtIterator stmtIterator = tdbModel.listStatements();
-//		System.out.println("rdfClass = " + rdfClass);
+		// System.out.println("rdfClass = " + rdfClass);
 
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
@@ -74,23 +74,23 @@ public class Flowable {
 					// Resource thing = statement.getSubject();
 					// Resource thing2 = statement.getResource();
 					// System.out.println("Flowable.getRdfclass() = " +Flowable.getRdfclass());
-//					System.out.println("statement.getSubject().getLocalName() = "
-//							+ statement.getSubject().getLocalName());
-//
-//					System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
-//							+ " -- " + statement.getObject());
+					// System.out.println("statement.getSubject().getLocalName() = "
+					// + statement.getSubject().getLocalName());
+					//
+					// System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+					// + " -- " + statement.getObject());
 				}
 			}
 		}
 
 		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
-//			System.out.println(rdfClass.getProperty(RDFS.label).getString());
+			// System.out.println(rdfClass.getProperty(RDFS.label).getString());
 		} else {
-//			System.out.println("wtf");
+			// System.out.println("wtf");
 		}
 		//
 
-//		System.out.println("label assigned to Flowable");
+		// System.out.println("label assigned to Flowable");
 
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
@@ -286,94 +286,6 @@ public class Flowable {
 		}
 		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
 	}
-
-	// public void nonTSSetProperty(String key, String valueAsString) {
-	// if (valueAsString == null) {
-	// return;
-	// }
-	// if (!dataPropertyMap.containsKey(key)) {
-	// return;
-	// }
-	// LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
-	// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
-	//
-	// boolean found = false;
-	// if (lcaDataPropertyProvider.isUnique()) {
-	// for (LCADataValue lcaDataValue : lcaDataValues) {
-	// if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
-	// lcaDataValue.setValueAsString(valueAsString);
-	// found = true;
-	// Object object = lcaDataValue.getValue();
-	// // ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
-	// // object);
-	// ActiveTDB
-	// .replaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-	// if (!valueAsString.equals(valueAsString.toLowerCase())) {
-	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-	// if (key.equals(flowableNameString)) {
-	// ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-	// valueAsString.toLowerCase());
-	// }
-	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-	// if (key.equals(flowableSynonymString)) {
-	// ActiveTDB.addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-	// valueAsString.toLowerCase());
-	// }
-	// }
-	// continue;
-	// }
-	// }
-	// }
-	// if (!found) {
-	// LCADataValue lcaDataValue = new LCADataValue();
-	// lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-	// lcaDataValue.setValueAsString(valueAsString);
-	// Object object = lcaDataValue.getValue();
-	// lcaDataValues.add(lcaDataValue);
-	// // ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-	// ActiveTDB.addLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-	// if (!valueAsString.equals(valueAsString.toLowerCase())) {
-	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-	// if (key.equals(flowableNameString)) {
-	// ActiveTDB
-	// .addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
-	// }
-	// // SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
-	// if (key.equals(flowableSynonymString)) {
-	// ActiveTDB
-	// .addLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring, valueAsString.toLowerCase());
-	// }
-	// }
-	// }
-	// // ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
-	// }
-
-	// public void setProperty(String key, Object object) {
-	// if (object == null) {
-	// return;
-	// }
-	// if (!dataPropertyMap.containsKey(key)) {
-	// return;
-	// }
-	// LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
-	// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
-	// Class<?> objectClass = RDFUtil.getJavaClassFromRDFDatatype(rdfDatatype);
-	// if (!objectClass.equals(object.getClass())) {
-	// return;
-	// }
-	// LCADataValue newLCADataValue = new LCADataValue();
-	// newLCADataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-	// newLCADataValue.setValue(object);
-	// // newLCADataValue.setValueAsString(object.toString()); // SHOULD WE DO THIS AT ALL?
-	//
-	// if (lcaDataPropertyProvider.isUnique()) {
-	// removeValues(lcaDataPropertyProvider.getPropertyName());
-	// ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-	// } else {
-	// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
-	// }
-	// lcaDataValues.add(newLCADataValue);
-	// }
 
 	public String getName() {
 		return (String) getOneProperty(flowableNameString);
@@ -764,6 +676,20 @@ public class Flowable {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		lcQName.replaceAll("\"", "\\\\\"");
+		List<String> namesToMatch = new ArrayList<String>();
+		namesToMatch.add(lcQName);
+		if (lcQName.matches(".*;.*")) {
+			namesToMatch.add(lcQName.split(";")[0]);
+		}
+		for (String syn : getSynonyms()) {
+			String lcSyn = syn.toLowerCase();
+			lcSyn.replaceAll("\"", "\\\\\"");
+			namesToMatch.add(lcSyn);
+			if (lcSyn.matches(".*;.*")) {
+				namesToMatch.add(lcSyn.split(";")[0]);
+			}
+		}
+
 		// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(lcQName);
 		// Model tdbModel = ActiveTDB.getModel();
 
@@ -782,8 +708,13 @@ public class Flowable {
 		b.append("SELECT distinct ?f ?masterTest \n");
 		b.append("WHERE \n");
 		b.append("  { \n");
+		b.append("    { \n");
 
-		b.append("    ?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . \n");
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
+		for (int i = 1; i < namesToMatch.size(); i++) {
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
+		}
+		b.append("    } \n");
 
 		if (checkCas) {
 			b.append("    optional {?f eco:casNumber ?cas . }\n");
@@ -795,6 +726,7 @@ public class Flowable {
 		b.append("   } \n");
 
 		String query = b.toString();
+		System.out.println("Query = \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -823,6 +755,19 @@ public class Flowable {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		lcQName.replaceAll("\"", "\\\\\"");
+		List<String> namesToMatch = new ArrayList<String>();
+		namesToMatch.add(lcQName);
+		if (lcQName.matches(".*;.*")) {
+			namesToMatch.add(lcQName.split(";")[0]);
+		}
+		for (String syn : getSynonyms()) {
+			String lcSyn = syn.toLowerCase();
+			lcSyn.replaceAll("\"", "\\\\\"");
+			namesToMatch.add(lcSyn);
+			if (lcSyn.matches(".*;.*")) {
+				namesToMatch.add(lcSyn.split(";")[0]);
+			}
+		}
 
 		boolean checkCas = false;
 		String qCAS = getCas();
@@ -840,11 +785,13 @@ public class Flowable {
 		b.append("  { \n");
 		b.append("    { \n");
 		if (checkCas) {
-			b.append("      {?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . }\n  UNION ");
 			b.append("      {?f eco:casNumber ?cas . \n");
-			b.append("        filter (str(?cas) = \"" + qCAS + "\") }\n");
-		} else {
-			b.append("    ?f skos:altLabel \"" + lcQName + "\"^^xsd:string  . \n   ");
+			b.append("        filter (str(?cas) = \"" + qCAS + "\") } UNION \n");
+		}
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
+		for (int i = 1; i < namesToMatch.size(); i++) {
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
+
 		}
 		b.append("    } \n");
 		b.append("    ?f eco:hasDataSource ?ds . \n");
