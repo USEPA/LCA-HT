@@ -201,6 +201,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 		try {
 			tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
+//			tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
 			tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);

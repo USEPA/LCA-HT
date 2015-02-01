@@ -10,6 +10,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -130,9 +131,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					// tdbModel = tdbDataset.getDefaultModel();
 					// tdbModel = tdbDataset.getNamedModel("namedGraph");
 					graphStore = GraphStoreFactory.create(tdbDataset);
-					System.out.println("TDB Successfully initiated!");
 					// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
 					// to the TDB that the session has started
+					Prefixes.syncPrefixMapToTDBModel();
 
 				} catch (Exception e1) {
 					System.out.println("Exception: " + e1);

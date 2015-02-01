@@ -73,7 +73,6 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
-		int jj = 0;
 
 		System.out.println("Saving Harmonized Data");
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();

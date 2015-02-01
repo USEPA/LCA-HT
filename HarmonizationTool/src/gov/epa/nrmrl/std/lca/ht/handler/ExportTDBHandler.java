@@ -1,11 +1,15 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -33,15 +37,35 @@ public class ExportTDBHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Model tdbModelCopy = ActiveTDB.getModel();
+
 		if (tdbModelCopy == null) {
 			return null;
 		}
+		Prefixes.syncPrefixMapToTDBModel();
+
+//		// == will this work?
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		Model tdbModelA = ActiveTDB.tdbDataset.getDefaultModel();
+//		Map<String, String> prefixMap = Prefixes.getPrefixmap();
+//		try {
+//			for (String key : prefixMap.keySet()) {
+//				String value = prefixMap.get(key);
+//				tdbModelA.setNsPrefix(key, value);
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Import failed with Exception: " + e);
+//			ActiveTDB.tdbDataset.abort();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		Logger runLogger = Logger.getLogger("run");
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
 		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl", "*.jsonld" });
-//		fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl" });
+		// fileDialog.setFilterExtensions(new String[] { "*.n3", "*.rdf", "*.ttl" });
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
 			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
@@ -70,7 +94,7 @@ public class ExportTDBHandler implements IHandler {
 
 				if (outType.equals("SKIP")) {
 					new GenericMessageBox(HandlerUtil.getActiveShell(event), "Unsupported output format",
-//							"Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
+					// "Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
 							"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
 					return null;
 				}
@@ -81,16 +105,16 @@ public class ExportTDBHandler implements IHandler {
 				// rdfWriter.write(tdbModel, fout, null); // WORKED
 				// tdbModel.write(fout, path, outType); // BAD
 
-//				ActiveTDB.garbageIn();
-//				ActiveTDB.garbageOut();
+				// ActiveTDB.garbageIn();
+				// ActiveTDB.garbageOut();
 				// --- BEGIN SAFE -WRITE- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 				Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-//				Model tdbModel = ActiveTDB.getModel();
+				// Model tdbModel = ActiveTDB.getModel();
 				try {
 					tdbModel.write(fout, outType); // TESTING
 				} catch (Exception e) {
-					System.out.println("Export failed with Exception: "+e);
+					System.out.println("Export failed with Exception: " + e);
 					ActiveTDB.tdbDataset.abort();
 				} finally {
 					ActiveTDB.tdbDataset.end();

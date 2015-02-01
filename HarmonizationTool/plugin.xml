@@ -134,7 +134,7 @@
                   style="push">
             </command>
             <command
-                  commandId="HarmonizationTool.TDB_Dump"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
                   label="Export entire TDB"
                   style="push">
             </command>
@@ -313,7 +313,7 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
-            id="HarmonizationTool.TDB_Dump"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
             name="TDB Dump">
       </command>
       <command
