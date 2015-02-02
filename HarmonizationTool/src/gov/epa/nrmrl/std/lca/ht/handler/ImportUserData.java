@@ -16,6 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,9 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -43,8 +47,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportUserData implements IHandler {
 
@@ -82,7 +88,7 @@ public class ImportUserData implements IHandler {
 			return null;
 		}
 		File file = new File(path);
-		if (!path.matches(".*\\.csv")){
+		if (!path.matches(".*\\.csv")) {
 			loadUserDataFromRDFFile(file);
 			return null;
 		}
@@ -175,7 +181,7 @@ public class ImportUserData implements IHandler {
 
 		return null;
 	}
-	
+
 	public static void loadUserDataFromRDFFile(File file) {
 		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
 		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
@@ -188,6 +194,8 @@ public class ImportUserData implements IHandler {
 
 		runLogger.info("LOAD RDF " + path);
 		String sep = File.separator;
+
+		List<String> fileContents = new ArrayList<String>();
 
 		// String path = fileDialog.getFilterPath();
 		// runLogger.info("# Read Master RDF data from " + path);
@@ -224,9 +232,28 @@ public class ImportUserData implements IHandler {
 				} else if (fileName.matches(".*\\.json")) {
 					inputType = "JSON-LD";
 				}
-				InputStream inputStream = new FileInputStream(path);
+
+				String pattern = "(\\@id\":)(\\d+)";
+
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+				System.out.println("line was: " + line);
+				String newLine = line.replaceAll(pattern, "$1" + "\"" + "$2" + "\"");
+				System.out.println("line now is: " + newLine);
+				while (line != null) {
+					sb.append(line);
+					sb.append(System.lineSeparator());
+					line = br.readLine();
+				}
+				String everything = sb.toString();
+				fileContents.add(everything);
+
+				// InputStream inputStream = new FileInputStream(path);
 				runLogger.info("LOAD RDF " + fileName);
-				ImportMasterRDFHandler.readStreamCountNewDataSources(inputStream, inputType);
+				// String contents = inputStream.read().
+				readStringsCountNewDataSources(fileContents, inputType);
+				// ImportMasterRDFHandler.readStreamCountNewDataSources(inputStream, inputType);
 				// ActiveTDB.syncTDBtoLCAHT();
 
 			} catch (FileNotFoundException e1) {
@@ -258,7 +285,7 @@ public class ImportUserData implements IHandler {
 					}
 					if (inputType != "SKIP") {
 						BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
-//						runLogger.info("  # zip file contains: " + ze.getName());
+						// runLogger.info("  # zip file contains: " + ze.getName());
 						ImportMasterRDFHandler.readBufferCountNewDataSources(zipStream, inputType);
 					}
 				}
@@ -270,7 +297,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-//		System.out.println("Time elapsed: " + elapsedTimeSec);
+		// System.out.println("Time elapsed: " + elapsedTimeSec);
 		long now = ActiveTDB.getModel().size();
 		long change = now - was;
 		System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
@@ -322,16 +349,16 @@ public class ImportUserData implements IHandler {
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select \n");
 		b.append("  ?flowable  \n");
-//		b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
+		// b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?cas \n");
 		b.append("  ?formula \n");
 		b.append("  ?context_general \n");
 		b.append("  ?context_specific \n");
-//		b.append("  (fn:substring(str(?cat), ?cat_length - 35) as?context_specific_uuid) \n");
+		// b.append("  (fn:substring(str(?cat), ?cat_length - 35) as?context_specific_uuid) \n");
 		b.append("  ?reference_unit \n");
-//		b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
+		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
 		b.append("  ?flow_property \n");
-//		b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
+		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");
@@ -385,8 +412,9 @@ public class ImportUserData implements IHandler {
 
 		TableKeeper.saveTableProvider(path, tableProvider);
 		System.out.println("Save tableProvider in TableKeeper");
-		
-		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN COUNT FIELD TO TABLES
+
+		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
+												// COUNT FIELD TO TABLES
 
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
@@ -401,13 +429,40 @@ public class ImportUserData implements IHandler {
 		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
 		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.casString));
 		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
-		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap().get(FlowContext.flowContextGeneral));
-		tableProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyUnit));
-		tableProvider.setLCADataPropertyProvider(7, FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
+		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap()
+				.get(FlowContext.flowContextGeneral));
+		tableProvider.setLCADataPropertyProvider(5,
+				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
+		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap()
+				.get(FlowProperty.flowPropertyUnit));
+		tableProvider.setLCADataPropertyProvider(7,
+				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
 		CSVTableView.update(path);
 		return;
 
+	}
+
+	private static void readStringsCountNewDataSources(List<String> fileContentsList, String inputType) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		try {
+			tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
+			// tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
+			for (String fileContents : fileContentsList) {
+				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
+				tdbModel.read(stream, null, inputType);
+			}
+			// tdbModel.read(inputStream, null, inputType);
+			ActiveTDB.tdbDataset.commit();
+			// TDB.sync(ActiveTDB.tdbDataset);
+		} catch (Exception e) {
+			System.out.println("Import failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	private DataRow initDataRow(String[] values) {

@@ -112,7 +112,7 @@ public class ExportTDBHandler implements IHandler {
 				Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
 				// Model tdbModel = ActiveTDB.getModel();
 				try {
-					tdbModel.write(fout, outType); // TESTING
+					tdbModel.write(fout, outType);
 				} catch (Exception e) {
 					System.out.println("Export failed with Exception: " + e);
 					ActiveTDB.tdbDataset.abort();
