@@ -123,10 +123,10 @@ public class ImportUserData implements IHandler {
 		} else {
 			loadUserDataFromRDFFile(file);
 		}
-		
+
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
-		runLogger.info("# File read time (in seconds): " + secondsRead);		
+		runLogger.info("# File read time (in seconds): " + secondsRead);
 
 		try {
 			Util.showView(CSVTableView.ID);
@@ -185,10 +185,10 @@ public class ImportUserData implements IHandler {
 		return;
 	}
 
-	public static void loadUserDataFromRDFFile(File file) {
+	private static void loadUserDataFromRDFFile(File file) {
 		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
-//		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
-//		int priorDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
+		// List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
+		// int priorDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
 
 		String fileName = file.getName();
 		String path = file.getPath();
@@ -223,7 +223,6 @@ public class ImportUserData implements IHandler {
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
 				runLogger.info("LOAD RDF " + fileName);
-				// readStringsCountNewDataSources(fileContents, inputType);
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -262,7 +261,6 @@ public class ImportUserData implements IHandler {
 						fileContents.put(bufferToString(zipStream, fixIDs), inputType);
 
 						runLogger.info("LOAD RDF " + ze.getName());
-						// readStringsCountNewDataSources(fileContents, inputType);
 					}
 				}
 
@@ -270,7 +268,7 @@ public class ImportUserData implements IHandler {
 				e.printStackTrace();
 			}
 		}
-		readStringsCountNewDataSources(fileContents);
+		int newDataSources = readStringsCountNewDataSources(fileContents);
 
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -281,10 +279,14 @@ public class ImportUserData implements IHandler {
 		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
+		if (newDataSources > 0) {
+			runLogger.info("  # RDF data contained:  " + newDataSources + "new data sources");
+		}
+
 		buildUserDataTableFromQueryResults();
 	}
-	
-	private static void buildUserDataTableFromQueryResults(){
+
+	private static void buildUserDataTableFromQueryResults() {
 
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
@@ -383,7 +385,8 @@ public class ImportUserData implements IHandler {
 		return stringBuilder.toString();
 	}
 
-	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList) {
+	private static int readStringsCountNewDataSources(Map<String, String> fileContentsList) {
+		int before = DataSourceKeeper.countDataSourcesInTDB();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
@@ -393,7 +396,7 @@ public class ImportUserData implements IHandler {
 			// tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
 			for (String fileContents : fileContentsList.keySet()) {
 				failedString = fileContents;
-//				if (tableProvider.doesContainUntranslatedOpenLCAData()){
+				// if (tableProvider.doesContainUntranslatedOpenLCAData()){
 
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
@@ -410,6 +413,7 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
+		return DataSourceKeeper.countDataSourcesInTDB() - before;
 	}
 
 	private static DataRow initDataRow(String[] values) {

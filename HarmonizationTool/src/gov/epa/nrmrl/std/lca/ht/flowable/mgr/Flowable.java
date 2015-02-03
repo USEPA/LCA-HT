@@ -726,7 +726,7 @@ public class Flowable {
 		b.append("   } \n");
 
 		String query = b.toString();
-		System.out.println("Query = \n" + query);
+//		System.out.println("Query = \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
