@@ -130,7 +130,7 @@ public class CSVTableView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
-//		System.out.println("hello, from sunny CSVTableView!");
+		// System.out.println("hello, from sunny CSVTableView!");
 		initializeTableViewer(composite);
 		initialize();
 
@@ -168,7 +168,7 @@ public class CSVTableView extends ViewPart {
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-//			System.out.println("cellSelectionMouseHoverListener event = " + event);
+			// System.out.println("cellSelectionMouseHoverListener event = " + event);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int hoverRow = 0;
@@ -325,9 +325,9 @@ public class CSVTableView extends ViewPart {
 	private static MouseListener tableMouseListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-//			System.out.println("double click event :e =" + e);
+			// System.out.println("double click event :e =" + e);
 			Point ptClick = new Point(e.x, e.y);
-//			System.out.println("  Point =" + ptClick);
+			// System.out.println("  Point =" + ptClick);
 
 			TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
 			if (tableColumn.getWidth() > 30) {
@@ -361,7 +361,7 @@ public class CSVTableView extends ViewPart {
 		}
 
 		private void leftClick(MouseEvent event) {
-//			System.out.println("cellSelectionMouseDownListener event " + event);
+			// System.out.println("cellSelectionMouseDownListener event " + event);
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 
@@ -405,7 +405,7 @@ public class CSVTableView extends ViewPart {
 		}
 
 		private void rightClick(MouseEvent event) {
-//			System.out.println("cellSelectionMouseDownListener event " + event);
+			// System.out.println("cellSelectionMouseDownListener event " + event);
 			// Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 			int clickedRow = 0;
@@ -739,7 +739,7 @@ public class CSVTableView extends ViewPart {
 
 		Date loadEndDate = new Date();
 		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
-//		System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
+		// System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 
 		table.setSize(table.getParent().getSize());
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
@@ -760,9 +760,15 @@ public class CSVTableView extends ViewPart {
 	// }
 
 	private static void createColumns() {
-//		System.out.println("key=" + tableProviderKey);
+		// System.out.println("key=" + tableProviderKey);
 		if (tableProviderKey != null) {
 			TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+			if (tableProvider.getData() == null) {
+				return;
+			}
+			if (tableProvider.getData().size() == 0) {
+				return;
+			}
 			// String defaultHeader = headerMenu.getItem(0).getText();
 			DataRow headerRow = tableProvider.getHeaderRow();
 			int columnCount = tableProvider.getData().get(0).getSize();
@@ -783,7 +789,7 @@ public class CSVTableView extends ViewPart {
 									+ lcaDataPropertyProvider.getPropertyName());
 				}
 			}
-//			System.out.println("Adding columns");
+			// System.out.println("Adding columns");
 
 			// COLUMN ZERO
 			TableViewerColumn tableViewerColumn = createTableViewerColumn("", 50, 0);
@@ -795,7 +801,7 @@ public class CSVTableView extends ViewPart {
 
 			for (int i = 0; i < tableProvider.getColumnCount(); i++) {
 				int iplus1 = i + 1;
-//				System.out.println("Populating column " + iplus1 + " with data from tableProvider column " + i);
+				// System.out.println("Populating column " + iplus1 + " with data from tableProvider column " + i);
 				// tableViewerColumn =
 				// createTableViewerColumn(csvColumnDefaultColumnHeader, 100,
 				// iplus1);
@@ -1073,10 +1079,10 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
-//			System.out.println("rowNumSelected = " + rowNumSelected);
+			// System.out.println("rowNumSelected = " + rowNumSelected);
 			Point point = new Point(event.x, event.y);
 			int rowNum = getRowNumSelected(point);
-//			System.out.println("rowNum = " + rowNum);
+			// System.out.println("rowNum = " + rowNum);
 
 			// String[] options = new String[2];
 			// options[0] = "Cancel";
@@ -1118,8 +1124,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void selectNext() {
-//		System.out.println("RowNumSelected = " + rowNumSelected);
-//		System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+		// System.out.println("RowNumSelected = " + rowNumSelected);
+		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
 		if (rowNumSelected < (table.getItemCount() - 1)) {
 			rowNumSelected++;
 			table.setSelection(rowNumSelected);
@@ -1181,15 +1187,15 @@ public class CSVTableView extends ViewPart {
 			// ANOTHER)
 			// d) NO CHANGE
 
-//			System.out.println("HeaderMenuColumnAssignmentListener event.widget  = " + event.widget);
+			// System.out.println("HeaderMenuColumnAssignmentListener event.widget  = " + event.widget);
 			if (!(event.widget instanceof MenuItem)) {
-//				System.out.println("What's going on here?");
+				// System.out.println("What's going on here?");
 				return;
 			}
 			// int dataColNumSelected = colNumSelected - 1;
 			if (colNumSelected == 0) {
 				// MAY HANDLE THIS AT SOME POINT
-//				System.out.println("Clicked on col. zero.  How did this fire?");
+				// System.out.println("Clicked on col. zero.  How did this fire?");
 				return;
 			}
 			MenuItem menuItem = (MenuItem) event.widget;
@@ -1212,14 +1218,14 @@ public class CSVTableView extends ViewPart {
 				}
 
 				if (lcaDataPropertyProvider == null) {
-//					System.out.println("Hmm, didn't find anything matching!");
+					// System.out.println("Hmm, didn't find anything matching!");
 				}
 
 				TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 				LCADataPropertyProvider oldLCADataPropertyProvider = tableProvider
 						.getLCADataPropertyProvider(colNumSelected);
 				if (oldLCADataPropertyProvider != null) {
-//					System.out.println("No longer allowed to re-assign a column.  Must de-assign first!");
+					// System.out.println("No longer allowed to re-assign a column.  Must de-assign first!");
 				}
 				tableProvider.setLCADataPropertyProvider(colNumSelected, lcaDataPropertyProvider);
 				TableColumn tableColumn = table.getColumn(colNumSelected);
@@ -1257,7 +1263,7 @@ public class CSVTableView extends ViewPart {
 				t = dataRow.getRowToolTip();
 
 			} catch (Exception e) {
-//				System.out.println("dataRow=" + dataRow);
+				// System.out.println("dataRow=" + dataRow);
 				e.printStackTrace();
 			}
 			return t;
@@ -1285,7 +1291,7 @@ public class CSVTableView extends ViewPart {
 				dataRow = (DataRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-//				System.out.println("element= " + element);
+				// System.out.println("element= " + element);
 			}
 			String s = "";
 			try {
@@ -1293,7 +1299,7 @@ public class CSVTableView extends ViewPart {
 				int rowNumPlus1 = dataRow.getRowNumber() + 1;
 				s = rowNumPlus1 + "";
 			} catch (Exception e) {
-//				System.out.println("dataRow=" + dataRow);
+				// System.out.println("dataRow=" + dataRow);
 				e.printStackTrace();
 			}
 			return s;
@@ -1314,7 +1320,7 @@ public class CSVTableView extends ViewPart {
 				dataRow = (DataRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-//				System.out.println("element= " + element);
+				// System.out.println("element= " + element);
 			}
 			String s = "";
 			try {
@@ -1323,7 +1329,7 @@ public class CSVTableView extends ViewPart {
 					s = dataRow.getColumnValues().get(dataColumnNumber);
 				}
 			} catch (Exception e) {
-//				System.out.println("dataRow=" + dataRow);
+				// System.out.println("dataRow=" + dataRow);
 				e.printStackTrace();
 			}
 			return s;
@@ -1361,7 +1367,7 @@ public class CSVTableView extends ViewPart {
 	private static SelectionListener colSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-//			System.out.println("SelectionListener event e= " + e);
+			// System.out.println("SelectionListener event e= " + e);
 			if (e.getSource() instanceof TableColumn) {
 				TableColumn col = (TableColumn) e.getSource();
 				colNumSelected = table.indexOf(col);
@@ -1500,13 +1506,13 @@ public class CSVTableView extends ViewPart {
 
 	private static void resetFields() {
 		lcaDataPropertyProviders.clear();
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 1");
+		// System.out.println("Workflow telling CSVTableView to add header menu stuff 1");
 		addFields(Flowable.getDataPropertyMap());
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
+		// System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
 		addFields(FlowContext.getDataPropertyMap());
-//		System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
+		// System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
 		addFields(FlowProperty.getDataPropertyMap());
-//		System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
+		// System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 	}
 
 	private static void removeColumns() {
@@ -1543,7 +1549,7 @@ public class CSVTableView extends ViewPart {
 		Menu curMenu = null;
 		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
 			String newMenuName = lcaDataPropertyProvider.getPropertyClass();
-//			System.out.println("newMenuName = " + newMenuName);
+			// System.out.println("newMenuName = " + newMenuName);
 			MenuItem menuParent = null;
 			if (!newMenuName.equals(curMenuName)) {
 				curMenuName = newMenuName;
@@ -1565,7 +1571,7 @@ public class CSVTableView extends ViewPart {
 			}
 			menuItem.addListener(SWT.Selection, new HeaderMenuColumnAssignmentListener());
 			menuItem.setText(lcaDataPropertyProvider.getPropertyName());
-//			System.out.println("menuItem.getText() = " + menuItem.getText());
+			// System.out.println("menuItem.getText() = " + menuItem.getText());
 
 		}
 	}
@@ -1599,7 +1605,7 @@ public class CSVTableView extends ViewPart {
 		// int colNumber = dataColNumber + 1;
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		String startingText = tableItem.getText(colNumber);
-//		System.out.println("trying to fix: " + startingText);
+		// System.out.println("trying to fix: " + startingText);
 		QACheck qaCheck = issue.getQaCheck();
 		if (qaCheck.getReplacement() != null) {
 			Matcher matcher = qaCheck.getPattern().matcher(startingText);
@@ -1922,10 +1928,10 @@ public class CSVTableView extends ViewPart {
 
 	public static void addFields(Map<String, LCADataPropertyProvider> dataPropertyMap) {
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
-//			System.out.println("Adding lcaDataPropertyProvider.getPropertyName(): "
-//					+ lcaDataPropertyProvider.getPropertyName());
+			// System.out.println("Adding lcaDataPropertyProvider.getPropertyName(): "
+			// + lcaDataPropertyProvider.getPropertyName());
 			lcaDataPropertyProviders.add(lcaDataPropertyProvider);
-//			System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
+			// System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 		}
 	}
 

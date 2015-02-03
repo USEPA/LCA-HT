@@ -17,8 +17,8 @@ public class TableProvider {
 	private int lastChecked;
 	private int lastUpdated;
 
-
 	private LCADataPropertyProvider[] lcaDataProperties = null;
+	private boolean containsUntranslatedOpenLCAData = false;
 
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
 		if (lcaDataProperties == null) {
@@ -33,13 +33,6 @@ public class TableProvider {
 		}
 		lcaDataProperties[colNumber] = lcaDataPropertyProvider;
 	}
-
-	// public void resetAssignedCSVColumnInfo() {
-	// int columnCount = headerRow.getSize();
-	// if (columnCount > 0) {
-	// this.assignedCSVColumnInfo = new CSVColumnInfo[columnCount];
-	// }
-	// }
 
 	public void addDataRow(DataRow dataRow) {
 		data.add(dataRow);
@@ -117,21 +110,6 @@ public class TableProvider {
 		}
 	}
 
-	// public void setHeaderNamesOffset(List<String> columnNames) {
-	// assert columnNames != null : "columnNames cannot be null";
-	// assert columnNames.size() != 0 : "columnNames cannot be empty";
-	// if (headerRow == null) {
-	// headerRow = new DataRow();
-	// } else {
-	// headerRow.clear();
-	// }
-	// // headerRow.add("");
-	// for (String name : columnNames) {
-	// headerRow.add(name);
-	// headerRow.setRowNumber(-1);
-	// }
-	// }
-
 	public static TableProvider create(ResultSetRewindable resultSetRewindable) {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
@@ -208,17 +186,47 @@ public class TableProvider {
 		this.lcaDataProperties = lcaDataProperties;
 	}
 
-	public static TableProvider createUserData(ResultSetRewindable resultSetRewindable) {
-		TableProvider tableProvider = new TableProvider();
+//	public static TableProvider createUserData(ResultSetRewindable resultSetRewindable) {
+//		TableProvider tableProvider = new TableProvider();
+//		resultSetRewindable.reset();
+//		tableProvider.setHeaderNames(resultSetRewindable.getResultVars());
+//		// int count = 0;
+//		while (resultSetRewindable.hasNext()) {
+//			QuerySolution soln = resultSetRewindable.nextSolution();
+//			DataRow dataRow = new DataRow();
+//			// dataRow.setRowNumber(count);
+//			tableProvider.addDataRow(dataRow);
+//			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
+//			while (iterator.hasNext()) {
+//				String header = iterator.next();
+//				try {
+//					RDFNode rdfNode = null;
+//					rdfNode = soln.get(header);
+//					if (rdfNode == null) {
+//						dataRow.add("");
+//					} else {
+//						dataRow.add(rdfNode.toString());
+//
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//
+//		return tableProvider;
+//	}
+
+	public void createUserData(ResultSetRewindable resultSetRewindable) {
 		resultSetRewindable.reset();
-		tableProvider.setHeaderNames(resultSetRewindable.getResultVars());
+		setHeaderNames(resultSetRewindable.getResultVars());
 		// int count = 0;
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
 			// dataRow.setRowNumber(count);
-			tableProvider.addDataRow(dataRow);
-			Iterator<String> iterator = tableProvider.getHeaderRow().getIterator();
+			addDataRow(dataRow);
+			Iterator<String> iterator = getHeaderRow().getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
 				try {
@@ -228,35 +236,23 @@ public class TableProvider {
 						dataRow.add("");
 					} else {
 						dataRow.add(rdfNode.toString());
-//						System.out.println("Resource string is " + rdfNode.toString());
-//						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
-//						// System.out.println("  soln.getResource(header) =" +
-//						// soln.getResource(header));
-//						System.out.println("  header  = " + header);
-//
-//						System.out.println("  soln.get(header)  = " + rdfNode);
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			// for (int i = 0; i< tableProvider.headerRow.getSize();i++){
-			// tableProvider.headerRow.set(i, null);
-			// }
-			// count++;
 		}
 
-		return tableProvider;
+		return;
 	}
 
-	// private class TransformCell {
-	// public final int rowNum;
-	// public final String newHeader;
-	//
-	// public TransformCell(int rowNum, String newHeader) {
-	// this.rowNum = rowNum;
-	// this.newHeader = newHeader;
-	// }
-	// }
+	
+	public void setContainsUntranslatedOpenLCAData(boolean b) {
+		this.containsUntranslatedOpenLCAData = b;
+	}
 
+	public boolean doesContainUntranslatedOpenLCAData() {
+		return containsUntranslatedOpenLCAData;
+	}
 }

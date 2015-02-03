@@ -18,19 +18,15 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -65,12 +61,12 @@ public class ImportUserData implements IHandler {
 	}
 
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportUserData";
+	private static TableProvider tableProvider;
+	private static Logger runLogger = Logger.getLogger("run");
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Logger runLogger = Logger.getLogger("run");
-		TableProvider tableProvider = new TableProvider();
-		FileMD fileMD = new FileMD();
+		tableProvider = new TableProvider();
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 		fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
@@ -88,42 +84,7 @@ public class ImportUserData implements IHandler {
 			return null;
 		}
 		File file = new File(path);
-		if (!path.matches(".*\\.csv")) {
-			loadUserDataFromRDFFile(file);
-			return null;
-		}
-
-		runLogger.info("LOAD CSV " + path);
-
-		if (!file.exists()) {
-			runLogger.warn("# File not found\n");
-			return null;
-		}
-
-		FileReader fileReader = null;
-		try {
-			fileReader = new FileReader(path);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		if (fileReader == null) {
-			runLogger.error("# File not readable\n");
-			return null;
-		}
-
-		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
-		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
-		// COLUMNS
-		String[] values = null;
-		try {
-			values = parser.getLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
-			runLogger.warn("# No content in CSV file!");
-			return null;
-		}
+		FileMD fileMD = new FileMD();
 		fileMD.setFilename(file.getName());
 		fileMD.setPath(path);
 		fileMD.setByteCount(file.length());
@@ -157,19 +118,15 @@ public class ImportUserData implements IHandler {
 		TableKeeper.saveTableProvider(path, tableProvider);
 		System.out.println("Save tableProvider in TableKeeper");
 
-		// READ THE FILE NOW
-		try {
-			while (values != null) {
-				DataRow dataRow = initDataRow(values);
-				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
-				values = parser.getLine();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (path.matches(".*\\.csv")) {
+			loadUserDataFromCSVFile(file);
+		} else {
+			loadUserDataFromRDFFile(file);
 		}
+		
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
-		runLogger.info("# File read time (in seconds): " + secondsRead);
+		runLogger.info("# File read time (in seconds): " + secondsRead);		
 
 		try {
 			Util.showView(CSVTableView.ID);
@@ -182,39 +139,65 @@ public class ImportUserData implements IHandler {
 		return null;
 	}
 
+	private static void loadUserDataFromCSVFile(File file) {
+		runLogger.info("LOAD CSV " + file.getPath());
+
+		if (!file.exists()) {
+			runLogger.warn("# File not found\n");
+			return;
+		}
+
+		FileReader fileReader = null;
+		try {
+			fileReader = new FileReader(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if (fileReader == null) {
+			runLogger.error("# File not readable\n");
+			return;
+		}
+
+		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
+		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
+		// COLUMNS
+		String[] values = null;
+		try {
+			values = parser.getLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
+			runLogger.warn("# No content in CSV file!");
+			return;
+		}
+
+		// READ THE FILE NOW
+		try {
+			while (values != null) {
+				DataRow dataRow = initDataRow(values);
+				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
+				values = parser.getLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
 	public static void loadUserDataFromRDFFile(File file) {
 		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
-		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
-		int priorDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
-		FileMD fileMD = new FileMD();
+//		List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
+//		int priorDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
 
 		String fileName = file.getName();
 		String path = file.getPath();
 		Logger runLogger = Logger.getLogger("run");
 
 		runLogger.info("LOAD RDF " + path);
-		String sep = File.separator;
 
-		List<String> fileContents = new ArrayList<String>();
-
-		// String path = fileDialog.getFilterPath();
-		// runLogger.info("# Read Master RDF data from " + path);
-		//
-		// String[] fileList = fileDialog.getFileNames();
-		// // String sep = System.getProperty("file.separator");
-		// String sep = File.separator;
-
-		// System.out.println("path= " + path);
-		// IRIResolver thing = IRIResolver.create("http://openlca.org/schema/v1.0/");
-		// File firstFile = null;
-		// for (String fileName : fileList) {
-		// System.out.println("fileName= " + fileName);
-		// if (!fileName.startsWith(sep)) {
-		// fileName = path + sep + fileName;
-		// }
-		// if (firstFile == null){
-		// firstFile = new File(fileName);
-		// }
+		Map<String, String> fileContents = new HashMap<String, String>();
+		// List<String> fileContents = new ArrayList<String>();
 
 		long was = ActiveTDB.getModel().size();
 		long startTime = System.currentTimeMillis();
@@ -233,29 +216,14 @@ public class ImportUserData implements IHandler {
 					inputType = "JSON-LD";
 				}
 
-				String pattern = "(\\@id\":)(\\d+)";
-
 				BufferedReader br = new BufferedReader(new FileReader(file));
-				StringBuilder sb = new StringBuilder();
-				String line = br.readLine();
-				System.out.println("line was: " + line);
-				String newLine = line.replaceAll(pattern, "$1" + "\"" + "$2" + "\"");
-				System.out.println("line now is: " + newLine);
-				while (line != null) {
-					sb.append(line);
-					sb.append(System.lineSeparator());
-					line = br.readLine();
+				boolean fixIDs = false;
+				if (inputType.equals("JSON-LD")) {
+					fixIDs = true;
 				}
-				String everything = sb.toString();
-				fileContents.add(everything);
-
-				// InputStream inputStream = new FileInputStream(path);
+				fileContents.put(bufferToString(br, fixIDs), inputType);
 				runLogger.info("LOAD RDF " + fileName);
-				// String contents = inputStream.read().
-				readStringsCountNewDataSources(fileContents, inputType);
-				// ImportMasterRDFHandler.readStreamCountNewDataSources(inputStream, inputType);
-				// ActiveTDB.syncTDBtoLCAHT();
-
+				// readStringsCountNewDataSources(fileContents, inputType);
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -284,9 +252,17 @@ public class ImportUserData implements IHandler {
 						inputType = "JSON-LD";
 					}
 					if (inputType != "SKIP") {
+
 						BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
-						// runLogger.info("  # zip file contains: " + ze.getName());
-						ImportMasterRDFHandler.readBufferCountNewDataSources(zipStream, inputType);
+						boolean fixIDs = false;
+						if (inputType.equals("JSON-LD")) {
+							fixIDs = true;
+						}
+						// fileContents.add(bufferToString(zipStream, fixIDs));
+						fileContents.put(bufferToString(zipStream, fixIDs), inputType);
+
+						runLogger.info("LOAD RDF " + ze.getName());
+						// readStringsCountNewDataSources(fileContents, inputType);
 					}
 				}
 
@@ -294,60 +270,25 @@ public class ImportUserData implements IHandler {
 				e.printStackTrace();
 			}
 		}
+		readStringsCountNewDataSources(fileContents);
+
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-		// System.out.println("Time elapsed: " + elapsedTimeSec);
 		long now = ActiveTDB.getModel().size();
 		long change = now - was;
-		System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
+		runLogger.info(fileContents.size() + " files imported in " + elapsedTimeSec + "seconds.");
 		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
-		int postDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
-		System.out.println("postDataSetCount = " + postDataSetCount);
-		String proposedName = fileName;
-		if (priorDataSetCount < postDataSetCount) {
-			List<String> newNames = DataSourceKeeper.getDataSourceNamesInTDB();
-			for (String name : newNames) {
-				if (!currentNames.contains(name)) {
-					proposedName = name;
-				}
-			}
-		}
-
-		// ==============
-
-		fileMD.setFilename(fileName);
-		fileMD.setPath(path);
-		fileMD.setByteCount(file.length());
-		fileMD.setModifiedDate(new Date(file.lastModified()));
-		Date readDate = new Date();
-		fileMD.setReadDate(readDate);
-		runLogger.info("# File read at: " + Util.getLocalDateFmt(readDate));
-		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
-		runLogger.info("# File size: " + file.length());
-
-		System.out.println("All's fine before opening dialog");
-		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD, proposedName);
-		System.out.println("meta initialized");
-		dialog.create();
-		System.out.println("meta created");
-		boolean thing;
-		if (thing = dialog.open() == MetaDataDialog.CANCEL) { // FIXME
-			System.out.println("cancel!");
-
-			fileMD.remove();
-			return;
-		}
-		System.out.println("thing = " + thing);
-		System.out.println("Got past opening dialog");
-
-		// RUN QUERY TO PARSE THE FILE DATA NOW
+		buildUserDataTableFromQueryResults();
+	}
+	
+	private static void buildUserDataTableFromQueryResults(){
 
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select \n");
+		b.append("select distinct \n");
 		b.append("  ?flowable  \n");
 		// b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?cas \n");
@@ -402,30 +343,11 @@ public class ImportUserData implements IHandler {
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
-		TableProvider tableProvider = TableProvider.createUserData((ResultSetRewindable) resultSet);
-
-		tableProvider.setFileMD(fileMD);
-		System.out.println("FileMD set in tableProvider");
-
-		tableProvider.setDataSourceProvider(dialog.getCurDataSourceProvider());
-		System.out.println("DataSource set in tableProvider");
-
-		TableKeeper.saveTableProvider(path, tableProvider);
-		System.out.println("Save tableProvider in TableKeeper");
+		tableProvider.createUserData((ResultSetRewindable) resultSet);
 
 		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
 												// COUNT FIELD TO TABLES
 
-		Date readEndDate = new Date();
-		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
-		runLogger.info("# File read time (in seconds): " + secondsRead);
-
-		try {
-			Util.showView(CSVTableView.ID);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-		System.out.println("About to update CSVTableView");
 		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
 		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.casString));
 		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
@@ -437,27 +359,52 @@ public class ImportUserData implements IHandler {
 				.get(FlowProperty.flowPropertyUnit));
 		tableProvider.setLCADataPropertyProvider(7,
 				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
-		CSVTableView.update(path);
 		return;
-
 	}
 
-	private static void readStringsCountNewDataSources(List<String> fileContentsList, String inputType) {
+	private static String bufferToString(BufferedReader bufferedReader, boolean fixIDs) {
+		String pattern = "(\\@id\":)(\\d+)";
+		StringBuilder stringBuilder = new StringBuilder();
+		String line;
+		try {
+			line = bufferedReader.readLine();
+			while (line != null) {
+				String newLine = line;
+				if (fixIDs) {
+					newLine = line.replaceAll(pattern, "$1" + "\"" + "$2" + "\"");
+				}
+				stringBuilder.append(newLine);
+				stringBuilder.append(System.lineSeparator());
+				line = bufferedReader.readLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return stringBuilder.toString();
+	}
+
+	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		String failedString = "";
 		try {
-			tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
+			// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
 			// tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
-			for (String fileContents : fileContentsList) {
+			for (String fileContents : fileContentsList.keySet()) {
+				failedString = fileContents;
+//				if (tableProvider.doesContainUntranslatedOpenLCAData()){
+
+				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
-				tdbModel.read(stream, null, inputType);
+				tdbModel.read(stream, "http://openlca.org/schema/v1.0/", inputType);
 			}
 			// tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);
 		} catch (Exception e) {
 			System.out.println("Import failed with Exception: " + e);
+			System.out.println("The failing string was: \n" + failedString);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -465,7 +412,7 @@ public class ImportUserData implements IHandler {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private DataRow initDataRow(String[] values) {
+	private static DataRow initDataRow(String[] values) {
 		DataRow dataRow = new DataRow();
 		for (String s : values) {
 			dataRow.add(s);
