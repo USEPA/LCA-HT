@@ -199,7 +199,7 @@ public class ImportUserData implements IHandler {
 		Map<String, String> fileContents = new HashMap<String, String>();
 		// List<String> fileContents = new ArrayList<String>();
 
-		long was = ActiveTDB.getModel().size();
+		long was = ActiveTDB.getModel(null).size();
 		long startTime = System.currentTimeMillis();
 		if (!fileName.matches(".*\\.zip")) {
 			String inputType = ActiveTDB.getRDFTypeFromSuffix(fileName);
@@ -254,7 +254,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-		long now = ActiveTDB.getModel().size();
+		long now = ActiveTDB.getModel(null).size();
 		long change = now - was;
 		runLogger.info(fileContents.size() + " files imported in " + elapsedTimeSec + "seconds.");
 		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
@@ -370,7 +370,7 @@ public class ImportUserData implements IHandler {
 		int before = DataSourceKeeper.countDataSourcesInTDB();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		String failedString = "";
 		try {
 			// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");

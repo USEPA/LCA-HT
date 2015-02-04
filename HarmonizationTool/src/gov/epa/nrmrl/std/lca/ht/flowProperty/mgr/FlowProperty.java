@@ -501,7 +501,7 @@ public class FlowProperty {
 		}
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		ResIterator resIterator = ActiveTDB.getModel().listSubjectsWithProperty(FedLCA.comparedSource, tdbResource);
+		ResIterator resIterator = ActiveTDB.getModel(null).listSubjectsWithProperty(FedLCA.comparedSource, tdbResource);
 		// ActiveTDB.tdbDataset.end();
 		if (resIterator.hasNext()){
 			matchingResource = resIterator.next();

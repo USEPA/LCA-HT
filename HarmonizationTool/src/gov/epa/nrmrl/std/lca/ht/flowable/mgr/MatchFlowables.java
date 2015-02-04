@@ -309,7 +309,7 @@ public class MatchFlowables extends ViewPart {
 
 		boolean adHoc = false;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+		adHoc = ActiveTDB.getModel(null).contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 				LCAHT.QCStatusAdHocMaster);
 		ActiveTDB.tdbDataset.end();
 		if (adHoc) {
@@ -453,7 +453,7 @@ public class MatchFlowables extends ViewPart {
 		Util.findView(FlowsWorkflow.ID);
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(flowableToMatch.getTdbResource(),
+		boolean adHoc = ActiveTDB.getModel(null).contains(flowableToMatch.getTdbResource(),
 				LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
 		ActiveTDB.tdbDataset.end();
 

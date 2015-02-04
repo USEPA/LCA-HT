@@ -203,7 +203,7 @@ public class DataSourceProvider {
 		RDFNode rdfNode = null;
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(tdbResource, RDFS.label);
 			if (nodeIterator.hasNext()) {
@@ -222,26 +222,6 @@ public class DataSourceProvider {
 		}
 		// ---- END SAFE -READ- TRANSACTION ---
 		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
-
-		// if (tdbResource.hasProperty(RDFS.label)) {
-		// rdfNode = tdbResource.getProperty(RDFS.label).getObject();
-		// if (rdfNode == null) {
-		// dataSourceName = DataSourceKeeper.uniquify("unknownName");
-		// } else {
-		// dataSourceName = ActiveTDB.getStringFromLiteral(rdfNode);
-		// }
-		//
-		// } else {
-		// dataSourceName = DataSourceKeeper.uniquify("unknownName");
-		// ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
-		// }
-		//
-		// if (tdbResource.hasProperty(DCTerms.hasVersion)) {
-		// rdfNode = tdbResource.getProperty(DCTerms.hasVersion).getObject();
-		// if (rdfNode != null) {
-		// version = ActiveTDB.getStringFromLiteral(rdfNode);
-		// }
-		// }
 
 		if (tdbResource.hasProperty(RDFS.comment)) {
 			rdfNode = tdbResource.getProperty(RDFS.comment).getObject();

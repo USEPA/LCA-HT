@@ -76,15 +76,12 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 		// create QueryResults to hold the query results
 		queryResults = new QueryResults();
 		data = null;
-		if (ActiveTDB.getModel() == null) {
-//			String msg = "ERROR no TDB open";
-//			Util.findView(QueryView.ID).getViewSite().getActionBars()
-//					.getStatusLineManager().setMessage(msg);
+		if (ActiveTDB.getModel(null) == null) {
 			return;
 		}
 //		ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query,
-				ActiveTDB.getModel());
+				ActiveTDB.getModel(null));
 		// System.out.println("tdbModel.getNsPrefixMap()"+ActiveTDB.tdbModel.getNsPrefixMap().toString());
 
 		try {

@@ -131,7 +131,7 @@ public class FileMDKeeper {
 		FileMDKeeper.fileMDList = fileMDList;
 	}
 	public static void syncFromTDB() {
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
 		while (iterator.hasNext()) {
 			Resource fileMDRDFResource = iterator.next();

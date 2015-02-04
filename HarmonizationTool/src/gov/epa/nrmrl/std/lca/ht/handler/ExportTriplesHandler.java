@@ -34,7 +34,7 @@ public class ExportTriplesHandler implements IHandler {
 		// public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		System.out.println("executing Export Triples");
-		if (ActiveTDB.getModel() == null) {
+		if (ActiveTDB.getModel(ActiveTDB.exportGraphName) == null) {
 			// String msg = "ERROR no TDB open";
 			// Util.findView(QueryView.ID).getViewSite().getActionBars().getStatusLineManager().setMessage(msg);
 			return null;
@@ -58,7 +58,7 @@ public class ExportTriplesHandler implements IHandler {
 				FileOutputStream fout = new FileOutputStream(path);
 				// tdbModel.write(fout,"TURTLE");
 				// tdbModel.write(fout, "TURTLE", null);
-				ActiveTDB.getModel().write(fout, "N3");
+				ActiveTDB.getModel(ActiveTDB.exportGraphName).write(fout, "N3");
 				
 				// CHOICES
 				// RDF/XML

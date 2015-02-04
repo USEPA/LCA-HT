@@ -125,9 +125,9 @@ public class Util {
 
 	public static Resource getResourceFromString(String uriString) {
 		if (uriString.startsWith("http:") || uriString.startsWith("file:")) {
-			return ActiveTDB.getModel().getResource(uriString);
+			return ActiveTDB.getModel(null).getResource(uriString);
 		} else {
-			ResIterator iterator = (ActiveTDB.getModel().listSubjectsWithProperty(RDF.type, ECO.Substance));
+			ResIterator iterator = (ActiveTDB.getModel(null).listSubjectsWithProperty(RDF.type, ECO.Substance));
 			while (iterator.hasNext()) {
 				Resource resource = iterator.next();
 				if (resource.isAnon()) {

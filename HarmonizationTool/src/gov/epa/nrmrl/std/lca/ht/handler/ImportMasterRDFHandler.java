@@ -50,7 +50,7 @@ public class ImportMasterRDFHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Logger runLogger = Logger.getLogger("run");
-		if (ActiveTDB.getModel() == null) {
+		if (ActiveTDB.getModel(ActiveTDB.importGraphName) == null) {
 			return null;
 		}
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN
@@ -113,18 +113,23 @@ public class ImportMasterRDFHandler implements IHandler {
 
 			}
 
-			long was = ActiveTDB.getModel().size();
+			long was = ActiveTDB.getModel(null).size();
 			long startTime = System.currentTimeMillis();
 
-			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-			System.out.println("Time elapsed: " + elapsedTimeSec);
-			long now = ActiveTDB.getModel().size();
+//			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
+			// System.out.println("Time elapsed: " + elapsedTimeSec);
+			long now = ActiveTDB.getModel(null).size();
 			long change = now - was;
 			System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
 			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 		}
+
+		float startGraphCopy = System.currentTimeMillis();
+		ActiveTDB.copyImportGraphToDefault();
+		float endGraphCopy = (System.currentTimeMillis() - startGraphCopy) / 1000F;
+		System.out.println("Time elapsed: " + endGraphCopy);
 
 		return null;
 	}
@@ -230,7 +235,10 @@ public class ImportMasterRDFHandler implements IHandler {
 		int before = DataSourceKeeper.countDataSourcesInTDB();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		// Model importModel = ActiveTDB.tdbDataset.getNamedModel(LCAHT.NS+"import_graph");
+		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+
 		String failedString = "";
 		try {
 			// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
@@ -240,7 +248,7 @@ public class ImportMasterRDFHandler implements IHandler {
 				// if (tableProvider.doesContainUntranslatedOpenLCAData()){
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
-				tdbModel.read(stream, "http://openlca.org/schema/v1.0/", inputType);
+				importModel.read(stream, "http://openlca.org/schema/v1.0/", inputType);
 			}
 			// tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
@@ -255,43 +263,6 @@ public class ImportMasterRDFHandler implements IHandler {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		return DataSourceKeeper.countDataSourcesInTDB() - before;
 	}
-
-	// private static void readStreamCountNewDataSources(InputStream inputStream, String inputType) {
-	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-	// try {
-	// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
-	// // tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
-	// tdbModel.read(inputStream, null, inputType);
-	// ActiveTDB.tdbDataset.commit();
-	// // TDB.sync(ActiveTDB.tdbDataset);
-	// } catch (Exception e) {
-	// System.out.println("Import failed with Exception: " + e);
-	// ActiveTDB.tdbDataset.abort();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// // ---- END SAFE -WRITE- TRANSACTION ---
-	// }
-
-	// private static void readBufferCountNewDataSources(BufferedReader zipStream, String inputType) {
-	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-	// try {
-	// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
-	// tdbModel.read(zipStream, null, inputType);
-	// ActiveTDB.tdbDataset.commit();
-	// // TDB.sync(ActiveTDB.tdbDataset);
-	// } catch (Exception e) {
-	// System.out.println("Import failed; see strack trace!\n" + e);
-	// ActiveTDB.tdbDataset.abort();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// // ---- END SAFE -WRITE- TRANSACTION ---
-	// }
 
 	@Override
 	public boolean isEnabled() {

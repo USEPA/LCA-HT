@@ -63,7 +63,7 @@ public class Flowable {
 		// Literal literal = ActiveTDB.tdbModel.createLiteral(label);
 
 		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		StmtIterator stmtIterator = tdbModel.listStatements();
 		// System.out.println("rdfClass = " + rdfClass);
 
@@ -379,7 +379,7 @@ public class Flowable {
 		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
 		// Model tdbModel = ActiveTDB.getModel();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();

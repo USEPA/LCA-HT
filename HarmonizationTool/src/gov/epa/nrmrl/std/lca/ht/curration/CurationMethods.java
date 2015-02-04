@@ -156,7 +156,7 @@ public class CurationMethods {
 	}
 
 	public static void removeComparison(Resource comparedSource, Resource comparedMaster) {
-		Model model = ActiveTDB.getFreshModel();
+		Model model = ActiveTDB.getModel(null);
 		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, comparedSource);
 		StmtIterator stmtIterator = model.listStatements(selector);
 		while (stmtIterator.hasNext()) {
@@ -183,7 +183,7 @@ public class CurationMethods {
 	}
 
 	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
 		StmtIterator stmtIterator = tdbModel.listStatements(selector);
 		while (stmtIterator.hasNext()) {

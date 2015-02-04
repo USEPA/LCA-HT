@@ -4,13 +4,8 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -22,7 +17,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.tdb.TDB;
 
 public class ExportTDBHandler implements IHandler {
 
@@ -36,30 +30,10 @@ public class ExportTDBHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		Model tdbModelCopy = ActiveTDB.getModel();
-
-		if (tdbModelCopy == null) {
+		if (ActiveTDB.getModel(null) == null) {
 			return null;
 		}
 		Prefixes.syncPrefixMapToTDBModel();
-
-//		// == will this work?
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		Model tdbModelA = ActiveTDB.tdbDataset.getDefaultModel();
-//		Map<String, String> prefixMap = Prefixes.getPrefixmap();
-//		try {
-//			for (String key : prefixMap.keySet()) {
-//				String value = prefixMap.get(key);
-//				tdbModelA.setNsPrefix(key, value);
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Import failed with Exception: " + e);
-//			ActiveTDB.tdbDataset.abort();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
-//		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		Logger runLogger = Logger.getLogger("run");
 
@@ -79,20 +53,9 @@ public class ExportTDBHandler implements IHandler {
 		String path = fileDialog.open();
 		if (path != null) {
 			long startTime = System.currentTimeMillis();
-
+			String outType = ActiveTDB.getRDFTypeFromSuffix(path);
 			try {
-				String outType = "SKIP";
-				if (path.matches(".*\\.rdf.*")) {
-					outType = "RDF/XML";
-				} else if (path.matches(".*\\.n3.*")) {
-					outType = "N3";
-				} else if (path.matches(".*\\.ttl.*")) {
-					outType = "TTL";
-				} else if (path.matches(".*\\.jsonld.*")) {
-					outType = "JSON-LD";
-				}
-
-				if (outType.equals("SKIP")) {
+				if (outType == null) {
 					new GenericMessageBox(HandlerUtil.getActiveShell(event), "Unsupported output format",
 					// "Supported output formats include .rdf (RDF/XML), .n3, and .ttl");
 							"Supported output formats include .rdf (RDF/XML), .n3, .ttl, and .jsonld");
@@ -100,17 +63,11 @@ public class ExportTDBHandler implements IHandler {
 				}
 				runLogger.info("  # Writing RDF triples to " + path.toString());
 				FileOutputStream fout = new FileOutputStream(path);
-				// RDFWriter rdfWriter = tdbModel.getWriter("RDF/XML");
-				// RDFWriter rdfWriter = tdbModel.getWriter(outType); // WORKED
-				// rdfWriter.write(tdbModel, fout, null); // WORKED
-				// tdbModel.write(fout, path, outType); // BAD
 
-				// ActiveTDB.garbageIn();
-				// ActiveTDB.garbageOut();
-				// --- BEGIN SAFE -WRITE- TRANSACTION ---
+				// --- BEGIN SAFE -READ- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-				Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-				// Model tdbModel = ActiveTDB.getModel();
+				Model tdbModel = ActiveTDB.getModel(null);
+
 				try {
 					tdbModel.write(fout, outType);
 				} catch (Exception e) {
@@ -121,7 +78,6 @@ public class ExportTDBHandler implements IHandler {
 				}
 				// ---- END SAFE -WRITE- TRANSACTION ---
 
-				// ActiveTDB.tdbModel.write(fout, outType); // TESTING
 				fout.close();
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();

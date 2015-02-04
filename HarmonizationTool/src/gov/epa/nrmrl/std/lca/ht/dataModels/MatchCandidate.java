@@ -42,7 +42,7 @@ public class MatchCandidate {
 		while (itemStatementIterator.hasNext()) {	
 //			RDFNode type = itemStatementIterator.next().getObject();
 			RDFNode type = itemStatementIterator.nextStatement().getObject();
-			Model tdbModel = ActiveTDB.getModel();
+			Model tdbModel = ActiveTDB.getModel(null);
 			if (tdbModel.contains(matchCandidateTDBResource, RDF.type, type)) {
 				return true;
 			}

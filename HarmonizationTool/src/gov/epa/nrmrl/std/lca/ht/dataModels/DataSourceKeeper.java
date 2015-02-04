@@ -289,7 +289,7 @@ public class DataSourceKeeper {
 		String name = null;
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(dataSourceResource, RDFS.label);
 			RDFNode rdfNode = nodeIterator.next();
@@ -308,7 +308,7 @@ public class DataSourceKeeper {
 		if (dataSetResource == null) {
 			return -1;
 		}
-		if (!ActiveTDB.getModel().contains(dataSetResource, RDF.type, ECO.DataSource)) {
+		if (!ActiveTDB.getModel(null).contains(dataSetResource, RDF.type, ECO.DataSource)) {
 			return -1;
 		}
 
@@ -320,7 +320,7 @@ public class DataSourceKeeper {
 		if (count > 0) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+			Model tdbModel = ActiveTDB.getModel(null);
 			try {
 				for (Resource orphan : orphans) {
 					tdbModel.add(orphan, ECO.hasDataSource, dataSetResource);
@@ -339,32 +339,6 @@ public class DataSourceKeeper {
 		}
 		return count;
 	}
-
-	// public static boolean anyOrphans() {
-	// StringBuilder b = new StringBuilder();
-	// b.append(Prefixes.getPrefixesForQuery());
-	// b.append(" \n");
-	// b.append("ask  \n");
-	// b.append("where { \n");
-	// b.append("  ?s ?p ?o . \n");
-	// b.append("  ?ds a eco:DataSource . \n");
-	// b.append("  filter ( \n");
-	// b.append("    (!exists \n");
-	// b.append("      {?s eco:hasDataSource ?ds . } \n");
-	// b.append("    )  \n");
-	// b.append("  ) \n");
-	// b.append("} \n");
-	// String query = b.toString();
-	//
-	// GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
-	// iGenericUpdate.getData();
-	// int count = iGenericUpdate.getAddedTriples().intValue();
-	// System.out.println("Orphan triples: " + count);
-	// if (count > 0) {
-	// return true;
-	// }
-	// return false;
-	// }
 
 	public static List<Resource> getOrphanResources() {
 		List<Resource> results = new ArrayList<Resource>();
@@ -412,7 +386,7 @@ public class DataSourceKeeper {
 	}
 
 	public static void syncFromTDB() {
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		while (iterator.hasNext()) {
 			Resource dataSourceRDFResource = iterator.next();

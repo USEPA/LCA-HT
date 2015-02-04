@@ -3,7 +3,9 @@ package gov.epa.nrmrl.std.lca.ht.tdb;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -13,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -29,6 +32,8 @@ import org.eclipse.ui.services.IServiceLocator;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.query.DatasetAccessorFactory;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -38,6 +43,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
@@ -53,6 +59,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB";
+	public static final String importGraphName = LCAHT.NS + "importGraph";
+	public static final String exportGraphName = LCAHT.NS + "exportGraph";
+	private static DatasetAccessor datasetAccessor;
 
 	private static final boolean noReadWrite = false;
 
@@ -126,6 +135,14 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				try {
 					tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 					assert tdbDataset != null : "tdbDataset cannot be null";
+					Model importModel = GraphFactory.makePlainModel();
+					Model exportModel = GraphFactory.makePlainModel();
+
+					datasetAccessor = DatasetAccessorFactory.create(tdbDataset);
+					datasetAccessor.putModel(importGraphName, importModel);
+					datasetAccessor.putModel(exportGraphName, exportModel);
+
+					// tdbDataset.putModel(LCAHT.NS + "import_graph", )
 					// tdbModel = ModelFactory.createDefaultModel();
 					// tdbDataset.setDefaultModel(tdbModel);
 					// tdbModel = tdbDataset.getDefaultModel();
@@ -148,6 +165,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
+	}
+
+	public static void copyImportGraphToDefault() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model importModel = getModel(importGraphName);
+		try {
+			datasetAccessor.add(importModel);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("01 TDB transaction failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	private static void redirectToPreferences() {
@@ -249,7 +282,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		removeAllLikeLiterals(subject, predicate, thingLiteral);
@@ -423,7 +456,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		Resource result = tdbModel.createResource(rdfclass);
 		return result;
@@ -513,7 +546,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 		tdbModel.add(subject, predicate, newRDFNode);
@@ -599,7 +632,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		return tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 	}
@@ -727,7 +760,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
 		while (nodeIterator.hasNext()) {
@@ -792,7 +825,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (tdbDataset.isInTransaction()) {
 			tdbModel = tdbDataset.getDefaultModel();
 		} else {
-			tdbModel = getFreshModel();
+			tdbModel = getFreshModel(null);
 		}
 		tdbModel.remove(subject, predicate, object);
 	}
@@ -878,21 +911,45 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return resultingDate;
 	}
 
-	public static Model getFreshModel() {
+	// public static Model getFreshModel() {
+	// tdbDataset.begin(ReadWrite.READ);
+	// Model tdbModel = tdbDataset.getDefaultModel();
+	// tdbDataset.end();
+	// return tdbModel;
+	// // return tdbDataset.getNamedModel("namedGraph");
+	// }
+	//
+	// public static Model getModel() {
+	// if (tdbDataset.isInTransaction()) {
+	// return tdbDataset.getDefaultModel();
+	// } else {
+	// return getFreshModel();
+	// }
+	// // sync();
+	// }
+
+	private static Model getFreshModel(String graphName) {
+		Model model;
 		tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = tdbDataset.getDefaultModel();
+		if (graphName == null) {
+			model = tdbDataset.getDefaultModel();
+		} else {
+			model = tdbDataset.getNamedModel(graphName);
+		}
 		tdbDataset.end();
-		return tdbModel;
-		// return tdbDataset.getNamedModel("namedGraph");
+		return model;
 	}
 
-	public static Model getModel() {
+	public static Model getModel(String graphName) {
 		if (tdbDataset.isInTransaction()) {
-			return tdbDataset.getDefaultModel();
+			if (graphName == null) {
+				return tdbDataset.getDefaultModel();
+			} else {
+				return tdbDataset.getNamedModel(graphName);
+			}
 		} else {
-			return getFreshModel();
+			return getFreshModel(graphName);
 		}
-		// sync();
 	}
 
 	public static int countAllData() {
@@ -1002,8 +1059,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			inputType = "JSON-LD";
 		}
 		/*
-		/* Jena reader RIOT Lang */
-	
+		 * /* Jena reader RIOT Lang
+		 */
+
 		/* "TURTLE" TURTLE */
 		/* "TTL" TURTLE */
 		/* "Turtle" TURTLE */

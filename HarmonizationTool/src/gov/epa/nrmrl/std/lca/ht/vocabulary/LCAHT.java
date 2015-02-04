@@ -15,7 +15,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class LCAHT {
     /** <p>The RDF tdbModel that holds the vocabulary terms</p> */
 //    private static Model m_model = ModelFactory.createDefaultModel();
-	private static Model m_model = ActiveTDB.getModel();
+	private static Model m_model = ActiveTDB.getModel(null);
 
 
 

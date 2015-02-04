@@ -20,7 +20,7 @@ public class FedLCA {
 	 * </p>
 	 */
 //	private static Model m_model = ModelFactory.createDefaultModel();
-	private static Model m_model = ActiveTDB.getModel();
+	private static Model m_model = ActiveTDB.getModel(null);
 
 
 

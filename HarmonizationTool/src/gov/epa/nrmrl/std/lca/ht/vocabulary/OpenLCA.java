@@ -37,7 +37,7 @@ public class OpenLCA {
 	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
-	private static Model m_model = ActiveTDB.getModel();
+	private static Model m_model = ActiveTDB.getModel(null);
 
 	/**
 	 * <p>
@@ -265,7 +265,7 @@ public class OpenLCA {
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			for (int i = 0; i < names.size(); i++) {
 				Resource newFlowable = tdbModel.createResource(ECO.Flowable);

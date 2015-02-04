@@ -16,22 +16,29 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	}
 
 	@Override
-	public ResultSet getResultSet() {
-//		ActiveTDB.refreshTDB();
-//		System.out.println("query=\n" + query);
+	public ResultSet getResultSet() throws IllegalArgumentException {
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		if (tdbModel == null) {
 			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
 		}
-		// ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, tdbModel);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		// System.out.println("ready to try this?");
-		// System.out.println("And now ActiveTDB.countAllData = "+ActiveTDB.countAllData());
+		return resultSetRewindable;
+	}
 
+	public ResultSet getResultSet(String graphName) throws IllegalArgumentException {
+		System.out.println("query=\n" + query);
+		if (query == null) {
+			throw new IllegalArgumentException("query cannot be null");
+		}
+
+		Model model = ActiveTDB.getModel(graphName);
+
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 		return resultSetRewindable;
 	}
 
@@ -41,14 +48,10 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 			throw new IllegalArgumentException("query cannot be null");
 		}
 		if (model == null) {
-			throw new IllegalArgumentException("(RDF) tdbModel is null");
+			model = ActiveTDB.getModel(null);
 		}
-
-		// ActiveTDB.sync();
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		System.out.println("And now ActiveTDB.countAllData = " + ActiveTDB.countAllData());
-
 		return resultSetRewindable;
 	}
 

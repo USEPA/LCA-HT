@@ -277,27 +277,19 @@ public class CSVTableView extends ViewPart {
 		}
 
 		public void setFilterRowNumbers(LinkedHashSet<Integer> newFilterRowNumbers) {
-			// System.out.println("newFilterRowNumbers.size()" +
-			// newFilterRowNumbers.size());
-			// System.out.println("filterRowNumbers.size()" +
-			// filterRowNumbers.size());
 			filterRowNumbers = newFilterRowNumbers;
 			tableViewer.refresh();
 		}
 
 		public void clearFilterRowNumbers() {
 			filterRowNumbers.clear();
-			// filterRowNumbers = new LinkedHashSet<Integer>();
 			tableViewer.refresh();
 		}
 
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
-			// TableViewer tableViewer = (TableViewer) viewer;
-			// List<DataRow> data = (List<DataRow>) parentElement;
 			DataRow row = (DataRow) element;
 			int dataRowNum = row.getRowNumber();
-			// System.out.println("filterRowNumbers" + filterRowNumbers);
 			return (filterRowNumbers.isEmpty() || filterRowNumbers.contains(dataRowNum));
 		}
 	}
@@ -305,10 +297,7 @@ public class CSVTableView extends ViewPart {
 	private static MouseListener tableMouseListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			// System.out.println("double click event :e =" + e);
 			Point ptClick = new Point(e.x, e.y);
-			// System.out.println("  Point =" + ptClick);
-
 			TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
 			if (tableColumn.getWidth() > 30) {
 				tableColumn.setWidth(25);
@@ -496,15 +485,6 @@ public class CSVTableView extends ViewPart {
 		return table.indexOf(item);
 	}
 
-	// private static Listener columnMouseListener3 = new Listener() {
-	//
-	// @Override
-	// public void handleEvent(Event event) {
-	// System.out.println("Double click on a column header with event: " +
-	// event);
-	// }
-	// };
-
 	private static void initializePopup(Composite composite) {
 		// popup.addListener(SWT.Modify, popupResizeListener);
 		popup = new Text(composite, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
@@ -560,15 +540,6 @@ public class CSVTableView extends ViewPart {
 							rowsToIgnore.remove(rowsToIgnore.indexOf(rowNum));
 						}
 					}
-					// tableViewer.getTable().getItem(rowNumSelected)
-					// .setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					// if (rowsToIgnore.contains(rowNumSelected)) {
-					// rowsToIgnore.remove(rowsToIgnore.indexOf(rowNumSelected));
-					// }
-					// --------- OR TO MATCH THINGS
-					// } else if (menuItemText.equals("match contents")) {
-					// Util.findView(MatchFlowables.ID);
-					// MatchFlowables.update(rowNumSelected);
 				}
 			}
 		}
@@ -863,26 +834,6 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	// private static void initializeHeaderMenu() {
-	// if (headerMenu != null) {
-	// headerMenu.dispose();
-	// }
-	//
-	// // CSVColumnInfo ignoreColumnInfo = new
-	// CSVColumnInfo(csvColumnDefaultColumnHeader);
-	// // availableCSVColumnInfo.add(ignoreColumnInfo);
-	//
-	// headerMenu = new Menu(table);
-	//
-	// MenuItem menuItem;
-	// menuItem = new MenuItem(headerMenu, SWT.CASCADE);
-	// menuItem.setText("Column Actions");
-	// initializeColumnActionsMenu();
-	// menuItem.setMenu(columnActionsMenu);
-	//
-	// addLCADataPropertiesToHeaderMenu();
-	// }
-
 	private static void initializeColumnActionsMenu() {
 		if (columnActionsMenu != null) {
 			columnActionsMenu.dispose();
@@ -1062,7 +1013,7 @@ public class CSVTableView extends ViewPart {
 			matchRowContents();
 		}
 	}
-	
+
 	public static void selectNext(String viewCallerID) {
 		// System.out.println("RowNumSelected = " + rowNumSelected);
 		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
@@ -1078,16 +1029,6 @@ public class CSVTableView extends ViewPart {
 			e.printStackTrace();
 		}
 	}
-
-	// public static void selectNextAllThree(){
-	// selectNextFlowable();
-	// selectNextContext();
-	// selectNextProperty();
-	// }
-
-	// private static void recolorLastColumn(){
-	//
-	// }
 
 	@SuppressWarnings("unchecked")
 	private static List<Issue> getIssuesByColumn(int columnNumber) {
@@ -1343,21 +1284,6 @@ public class CSVTableView extends ViewPart {
 
 	};
 
-	// public static void updateCheckedData() {
-	// TableProvider tableProvider =
-	// TableKeeper.getTableProvider(tableProviderKey);
-	// for (int rowNumber = tableProvider.getLastUpdated(); rowNumber <=
-	// tableProvider.getLastChecked(); rowNumber++) {
-	// if (!rowsToIgnore.contains(rowNumber)) {
-	// colorCell(rowNumber, 0, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-	// }
-	// }
-	// }
-
-	// public void appendHeaderMenuDiv() {
-	// new MenuItem(headerMenu, SWT.SEPARATOR);
-	// }
-
 	private static MenuItem getHeaderMenuItemFromName(String headerName) {
 		for (MenuItem item : headerMenu.getItems()) {
 			if (item.getMenu() != null) {
@@ -1469,27 +1395,6 @@ public class CSVTableView extends ViewPart {
 		table.setRedraw(true);
 	}
 
-	// public static void appendToAvailableCSVColumnInfo(CSVColumnInfo
-	// csvColumnInfo) {
-	// availableCSVColumnInfo.add(csvColumnInfo);
-	//
-	// MenuItem menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-	// clearMenuItemListeners(menuItem);
-	// menuItem.addListener(SWT.Selection, new
-	// HeaderMenuColumnAssignmentListener());
-	// menuItem.setText(csvColumnInfo.getHeaderString());
-	// }
-	//
-	// public static void appendToAvailableCSVColumnInfo(Menu menuParent,
-	// CSVColumnInfo csvColumnInfo) {
-	// availableCSVColumnInfo.add(csvColumnInfo);
-	// MenuItem menuItem = new MenuItem(menuParent, SWT.NORMAL);
-	// clearMenuItemListeners(menuItem);
-	// menuItem.addListener(SWT.Selection, new
-	// HeaderMenuColumnAssignmentListener());
-	// menuItem.setText(csvColumnInfo.getHeaderString());
-	// }
-
 	private static void addLCADataPropertiesToHeaderMenu() {
 		String curMenuName = "";
 		Menu curMenu = null;
@@ -1521,24 +1426,6 @@ public class CSVTableView extends ViewPart {
 
 		}
 	}
-
-	// public void appendToAvailableCSVColumnInfo(CSVColumnInfo[]
-	// csvColumnInfos) {
-	// for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
-	// appendToAvailableCSVColumnInfo(csvColumnInfo);
-	// }
-	// }
-	//
-	// public static void appendToAvailableCSVColumnInfo(String fieldType,
-	// CSVColumnInfo[] csvColumnInfos) {
-	// MenuItem menuParent = new MenuItem(headerMenu, SWT.CASCADE);
-	// menuParent.setText(fieldType);
-	// Menu newMenu = new Menu(headerMenu);
-	// menuParent.setMenu(newMenu);
-	// for (CSVColumnInfo csvColumnInfo : csvColumnInfos) {
-	// appendToAvailableCSVColumnInfo(newMenu, csvColumnInfo);
-	// }
-	// }
 
 	private static void clearMenuItemListeners(MenuItem menuItem) {
 		for (Listener listener : menuItem.getListeners(SWT.Selection)) {
@@ -1574,31 +1461,6 @@ public class CSVTableView extends ViewPart {
 		return false;
 	}
 
-	// private void fixIssueInColumn() {
-	// if (colNumSelected == 0) {
-	// return;
-	// }
-	// CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colNumSelected];
-	// if (csvColumnInfo == null) {
-	// return;
-	// }
-	// TableItem tableItem = table.getItem(rowNumSelected);
-	// String startingText = tableItem.getText(colNumSelected);
-	// System.out.println("trying to fix: " + startingText);
-	// QACheck qaCheckToFix = null;
-	// for (Issue issue : csvColumnInfo.getIssues()) {
-	// if ((issue.getRowNumber() == rowNumSelected) &&
-	// (!issue.getStatus().equals(Status.RESOLVED)))
-	// {
-	// qaCheckToFix = issue.getQaCheck();
-	// }
-	// }
-	// for (Issue issue : csvColumnInfo.getIssues()) {
-	// if (issue.getQaCheck().equals(qaCheckToFix)) {
-	// fixOneIssue(issue);
-	// }
-	// }
-	// }
 	private static void clearIssues(int colNumber) {
 		if (issueList == null) {
 			return;
@@ -1624,27 +1486,6 @@ public class CSVTableView extends ViewPart {
 			tableItem.setBackground(null);
 		}
 	}
-
-	// private static void clearIssueColors(int rowNumber) {
-	// // List<Issue> issueList = csvColumnInfo.getIssues();
-	// // if (issueList != null) {
-	// for (Issue issue : issueList) {
-	// if (issue.getRowNumber() == rowNumber) {
-	// colorCell(rowNumber, issue.getColNumber(),
-	// SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-	// }
-	// }
-	// }
-
-	// private static void clearIssueColors(CSVColumnInfo csvColumnInfo) {
-	// List<Issue> issueList = csvColumnInfo.getIssues();
-	// if (issueList != null) {
-	// for (Issue issue : issueList) {
-	// colorCell(issue.getRowNumber(), issue.getColNumber(),
-	// SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-	// }
-	// }
-	// }
 
 	private static int checkOneColumn(int colIndex) {
 		if (colIndex == 0) {
@@ -1713,60 +1554,6 @@ public class CSVTableView extends ViewPart {
 		return totalIssueCount;
 	}
 
-	// public static int autoFixColumn(int colIndex) {
-	// // int dataColIndex = colIndex - 1;
-	// if (colIndex == 0) {
-	// return 0;
-	// }
-	// TableProvider tableProvider =
-	// TableKeeper.getTableProvider(tableProviderKey);
-	// CSVColumnInfo csvColumnInfo =
-	// tableProvider.getAssignedCSVColumnInfo()[colIndex];
-	// // CSVColumnInfo csvColumnInfo = assignedCSVColumnInfo[colIndex];
-	// if (csvColumnInfo == null) {
-	// return 0;
-	// }
-	// int issuesRemaining = 0;
-	// csvColumnInfo.clearIssues();
-	// List<String> columnValues = getColumnValues(colIndex);
-	// for (QACheck qaCheck : csvColumnInfo.getCheckLists()) {
-	// for (int i = 0; i < columnValues.size(); i++) {
-	// String val = columnValues.get(i);
-	//
-	// Matcher matcher = qaCheck.getPattern().matcher(val);
-	// if (qaCheck.getReplacement() != null) {
-	// matcher.replaceAll(qaCheck.getReplacement());
-	// }
-	// // while (matcher.find()) {
-	// // issuesRemaining++;
-	// // // System.out.println("check.getIssue() " +
-	// // // qaCheck.getIssue());
-	// // Issue issue = qaCheck.getIssue();
-	// // issue.setRowNumber(i);
-	// // issue.setColNumber(colIndex);
-	// // issue.setRowNumber(i);
-	// // issue.setCharacterPosition(matcher.end());
-	// // issue.setStatus(Status.UNRESOLVED);
-	// //
-	// // Logger.getLogger("run").warn(issue.getDescription());
-	// // Logger.getLogger("run").warn("  ->Row" +
-	// // issue.getRowNumber());
-	// // Logger.getLogger("run").warn("  ->Column" +
-	// // issue.getColNumber());
-	// // Logger.getLogger("run").warn("  ->Character position" +
-	// // issue.getCharacterPosition());
-	// // assignIssue(issue);
-	// // csvColumnInfo.addIssue(issue);
-	// // table.getColumn(colIndex).setToolTipText(csvColumnInfo.getIssueCount()
-	// // +
-	// // " issueList below");
-	// // }
-	// }
-	// // }
-	// }
-	// return issuesRemaining;
-	// }
-
 	public static void colorCell(int rowNumber, int colNumber, Color color) {
 		if (rowNumber > -1 && rowNumber < table.getItemCount()) {
 			TableItem tableItem = table.getItem(rowNumber);
@@ -1804,12 +1591,6 @@ public class CSVTableView extends ViewPart {
 		for (TableItem item : table.getItems()) {
 			results.add(item.getText(colIndex));
 		}
-
-		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		// List<DataRow> dataRowList = tableProvider.getData();
-		// for (DataRow dataRow : dataRowList) {
-		// results.add(dataRow.get(colIndex));
-		// }
 		return results;
 	}
 
@@ -1818,24 +1599,10 @@ public class CSVTableView extends ViewPart {
 			return;
 		}
 		issueList.add(issue);
-		// TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		// DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
-		// String toolTip =
-		// "- "+issue.getQaCheck().getDescription()+"\n - "+issue.getQaCheck().getExplanation();
-		// dataRow.setToolTipValue(issue.getColNumber(), toolTip);
+
 		colorCell(issue);
 		return;
 	}
-
-	// private static CSVColumnInfo getCSVColumnInfoByHeaderString(String
-	// headerString) {
-	// for (CSVColumnInfo csvColumnInfo : availableCSVColumnInfo) {
-	// if (csvColumnInfo.getHeaderString().equals(headerString)) {
-	// return csvColumnInfo;
-	// }
-	// }
-	// return null;
-	// }
 
 	private static LCADataPropertyProvider getLCADataPropertyProviderByMenuString(String classLabel, String propertyName) {
 		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
@@ -1944,10 +1711,11 @@ public class CSVTableView extends ViewPart {
 
 			Color color;
 			Resource resource = flowable.getTdbResource();
+
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-			boolean adHoc = ActiveTDB.tdbDataset.getDefaultModel().contains(resource, LCAHT.hasQCStatus,
-					LCAHT.QCStatusAdHocMaster);
+			boolean adHoc = ActiveTDB.getModel(null).contains(resource, LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
 			ActiveTDB.tdbDataset.end();
+
 			if (adHoc) {
 				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 			} else if (hitCount == 1) {
@@ -1972,144 +1740,6 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	// List<Integer> flowableColumns = new ArrayList<Integer>();
-	// LCADataPropertyProvider[] lcaDataProperties =
-	// TableKeeper.getTableProvider(tableProviderKey)
-	// .getLcaDataProperties();
-	// for (int i = 0; i < lcaDataProperties.length; i++) {
-	// LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-	// if (lcaDataPropertyProvider != null) {
-	// if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-	// flowableColumns.add(i);
-	// }
-	// }
-	// }
-	//
-	// Set<Integer> filterRowNumbers = getFilterRowNumbers();
-	//
-	// if (filterRowNumbers.size() > 0) {
-	// int visibleRowNum = 0;
-	// for (int i : filterRowNumbers) {
-	// if (uniqueFlowableRowNumbers.contains(i)) {
-	// boolean hit = false;
-	// for (String symbol :
-	// TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i)
-	// .getFlowable().getMatchCandidates().values()) {
-	// int matchNum = MatchStatus.getNumberBySymbol(symbol);
-	// if (matchNum > 0 && matchNum < 5) {
-	// hit = true;
-	// }
-	// }
-	// Color color;
-	// if (hit) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-	// } else {
-	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-	// }
-	// for (int j : flowableColumns) {
-	// colorCell(visibleRowNum, j, color);
-	// }
-	// }
-	// visibleRowNum++;
-	// }
-	// } else {
-	// for (int i : uniqueFlowableRowNumbers) {
-	// boolean hit = false;
-	// for (String symbol :
-	// TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-	// .getMatchCandidates().values()) {
-	// int matchNum = MatchStatus.getNumberBySymbol(symbol);
-	// if (matchNum > 0 && matchNum < 5) {
-	// hit = true;
-	// break;
-	// }
-	// }
-	// Color color;
-	// if (hit) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-	// } else {
-	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-	// }
-	// for (int j : flowableColumns) {
-	// colorCell(i, j, color);
-	// }
-	// }
-	// }
-	// }
-
-	// BELOW IS THE VERSION THAT COLORS ACCORDING TO HOW MANY CANDIDATES THERE
-	// ARE
-	// public static void colorFlowableRows() {
-	// List<Integer> contextColumns = new ArrayList<Integer>();
-	// LCADataPropertyProvider[] lcaDataProperties =
-	// TableKeeper.getTableProvider(tableProviderKey)
-	// .getLcaDataProperties();
-	// for (int i = 0; i < lcaDataProperties.length; i++) {
-	// LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-	// if (lcaDataPropertyProvider != null) {
-	// if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-	// contextColumns.add(i);
-	// }
-	// }
-	// }
-	//
-	// Set<Integer> filterRowNumbers = getFilterRowNumbers();
-	//
-	// if (filterRowNumbers.size() > 0) {
-	// int visibleRowNum = 0;
-	// for (int i : filterRowNumbers) {
-	// if (uniqueFlowableRowNumbers.contains(i)) {
-	// int count =
-	// TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-	// .getMatchCandidates().size();
-	// Color color;
-	//
-	// if (count == 0) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-	// } else if (count == 1) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-	// } else {
-	// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-	// }
-	// for (int j : contextColumns) {
-	// colorCell(visibleRowNum, j, color);
-	// }
-	// // colorCell(visibleRowNum, 0, color);
-	// }
-	// visibleRowNum++;
-	// }
-	// } else {
-	// for (int i : uniqueFlowableRowNumbers) {
-	// Flowable flowable =
-	// TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable();
-	// if (flowable == null) {
-	// System.out.println("Where did we go wrong?");
-	// return;
-	// }
-	// int count = 0;
-	// if (flowable.getMatchCandidates() != null) {
-	// count =
-	// TableKeeper.getTableProvider(getTableProviderKey()).getData().get(i).getFlowable()
-	// .getMatchCandidates().size();
-	// }
-	//
-	// Color color;
-	//
-	// if (count == 0) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-	// } else if (count == 1) {
-	// color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-	// } else {
-	// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-	// }
-	// for (int j : contextColumns) {
-	// colorCell(i, j, color);
-	// }
-	// // colorCell(i, 0, color);
-	// }
-	// }
-	// }
-
 	public static void colorFlowContextRows() {
 		List<Integer> contextColumns = new ArrayList<Integer>();
 		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
@@ -2130,18 +1760,6 @@ public class CSVTableView extends ViewPart {
 				if (uniqueFlowContextRowNumbers.contains(i)) {
 
 					Color color;
-					// Resource resource =
-					// TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-					// .getTdbResource();
-					// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-					// boolean adHoc =
-					// ActiveTDB.tdbDataset.getDefaultModel().contains(resource,
-					// LCAHT.hasQCStatus,
-					// LCAHT.QCStatusAdHocMaster);
-					// ActiveTDB.tdbDataset.end();
-					// if (adHoc) {
-					// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-					// } else
 					if (matchedFlowContextRowNumbers.contains(i)) {
 						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 					} else {
@@ -2156,18 +1774,6 @@ public class CSVTableView extends ViewPart {
 		} else {
 			for (int i : uniqueFlowContextRowNumbers) {
 				Color color;
-				// Resource resource =
-				// TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
-				// .getTdbResource();
-				// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-				// boolean adHoc =
-				// ActiveTDB.tdbDataset.getDefaultModel().contains(resource,
-				// LCAHT.hasQCStatus,
-				// LCAHT.QCStatusAdHocMaster);
-				// ActiveTDB.tdbDataset.end();
-				// if (adHoc) {
-				// color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-				// } else
 				if (matchedFlowContextRowNumbers.contains(i)) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 				} else {

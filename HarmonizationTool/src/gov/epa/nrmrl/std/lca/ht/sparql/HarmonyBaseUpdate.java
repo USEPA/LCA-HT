@@ -41,15 +41,14 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	}
 
 	private void executeQuery() {
-		// Query query = QueryFactory.create(queryStr);
-		if (ActiveTDB.getModel() == null) {
+		if (ActiveTDB.getModel(null) == null) {
 			return;
 		}
 		// long startModelSize = ActiveTDB.getModel().size();
 		long startModelSize = -1;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		try {
-			startModelSize = ActiveTDB.tdbDataset.getDefaultModel().size();
+			startModelSize = ActiveTDB.getModel(null).size();
 		} catch (Exception e) {
 			System.out.println("Check model size failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -112,7 +111,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		try {
-			endModelSize = ActiveTDB.tdbDataset.getDefaultModel().size();
+			endModelSize = ActiveTDB.getModel(null).size();
 		} catch (Exception e) {
 			System.out.println("Check model size failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();

@@ -51,7 +51,7 @@ public class Prefixes {
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			for (String key : prefixMap.keySet()) {
 				String value = prefixMap.get(key);

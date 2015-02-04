@@ -132,7 +132,7 @@ public class PersonKeeper {
 	}
 
 	public static void syncFromTDB() {
-		Model tdbModel = ActiveTDB.getModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.Person);
 		while (iterator.hasNext()) {
 			Resource personRDFResource = iterator.next();

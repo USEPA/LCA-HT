@@ -83,7 +83,7 @@ public class Flow {
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			StmtIterator stmtIterator = tdbResource.listProperties();
 			while (stmtIterator.hasNext()) {
@@ -114,7 +114,7 @@ public class Flow {
 
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			Resource tdbResource = tdbModel.createResource(rdfClass);
 			if (rowNumberPlusOne > 0) {
@@ -155,7 +155,7 @@ public class Flow {
 
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			Util.showView(CSVTableView.ID);
 			TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());

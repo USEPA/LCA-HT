@@ -135,7 +135,7 @@ public class Person {
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			StmtIterator stmtIterator = tdbResource.listProperties();
 			while (stmtIterator.hasNext()) {
