@@ -479,7 +479,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		return result;
 	}
-	
+
 	public static Resource tsCreateResource(String uri) {
 		if (tdbDataset.isInTransaction()) {
 			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
@@ -504,8 +504,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		return result;
 	}
-
-	
 
 	public static void addLiteral(Resource subject, Property predicate, RDFDatatype rdfDatatype, Object thingLiteral) {
 		if (noReadWrite) {
@@ -678,12 +676,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
-	public static String getURIString(Resource resource){
-		if (resource.isLiteral()){
+
+	public static String getURIString(Resource resource) {
+		if (resource.isLiteral()) {
 			return resource.asLiteral().getString();
 		}
-		if (resource.isAnon()){
+		if (resource.isAnon()) {
 			return resource.toString();
 		}
 		return resource.toString();
@@ -986,5 +984,37 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static String getRDFTypeFromSuffix(String fileName) {
+		String inputType = null;
+		if (fileName.matches(".*\\.rdf")) {
+			inputType = "RDF/XML";
+		} else if (fileName.matches(".*\\.nt")) {
+			inputType = "N-TRIPLES";
+		} else if (fileName.matches(".*\\.n3")) {
+			inputType = "N3";
+		} else if (fileName.matches(".*\\.ttl")) {
+			inputType = "TTL";
+		} else if (fileName.matches(".*\\.jsonld")) {
+			inputType = "JSON-LD";
+		} else if (fileName.matches(".*\\.json")) {
+			inputType = "JSON-LD";
+		}
+		/*
+		/* Jena reader RIOT Lang */
+	
+		/* "TURTLE" TURTLE */
+		/* "TTL" TURTLE */
+		/* "Turtle" TURTLE */
+		/* "N-TRIPLES" NTRIPLES */
+		/* "N-TRIPLE" NTRIPLES */
+		/* "NT" NTRIPLES */
+		/* "RDF/XML" RDFXML */
+		/* "N3" N3 */
+		/* "JSON-LD" JSONLD */
+		/* "RDF/JSON" RDFJSON */
+
+		return inputType;
 	}
 }

@@ -99,7 +99,8 @@ public class ImportMasterRDFHandler implements IHandler {
 				loadDataFromRDFFile(file);
 				if (shouldInferOLCAtriples) {
 					int olcaAdded = OpenLCA.inferOpenLCATriples();
-					runLogger.info("  # RDF triples added to openLCA data:  " + NumberFormat.getIntegerInstance().format(olcaAdded));
+					runLogger.info("  # RDF triples added to openLCA data:  "
+							+ NumberFormat.getIntegerInstance().format(olcaAdded));
 				}
 				List<String> newNames = DataSourceKeeper.getDataSourceNamesInTDB();
 				if (newNames.size() == currentNames.size()) {
@@ -142,19 +143,11 @@ public class ImportMasterRDFHandler implements IHandler {
 		// long was = ActiveTDB.getModel().size();
 		// long startTime = System.currentTimeMillis();
 		if (!fileName.matches(".*\\.zip")) {
+			String inputType = ActiveTDB.getRDFTypeFromSuffix(fileName);
+			if (inputType == null) {
+				return;
+			}
 			try {
-				String inputType = "SKIP";
-				if (fileName.matches(".*\\.rdf")) {
-					inputType = "RDF/XML";
-				} else if (fileName.matches(".*\\.n3")) {
-					inputType = "N3";
-				} else if (fileName.matches(".*\\.ttl")) {
-					inputType = "TTL";
-				} else if (fileName.matches(".*\\.jsonld")) {
-					inputType = "JSON-LD";
-				} else if (fileName.matches(".*\\.json")) {
-					inputType = "JSON-LD";
-				}
 
 				BufferedReader br = new BufferedReader(new FileReader(file));
 				boolean fixIDs = false;
@@ -178,30 +171,21 @@ public class ImportMasterRDFHandler implements IHandler {
 
 				while (entries.hasMoreElements()) {
 					ZipEntry ze = (ZipEntry) entries.nextElement();
-					String inputType = "SKIP";
-					if (ze.getName().matches(".*\\.rdf")) {
-						inputType = "RDF/XML";
-					} else if (ze.getName().matches(".*\\.n3")) {
-						inputType = "N3";
-					} else if (ze.getName().matches(".*\\.ttl")) {
-						inputType = "TTL";
-					} else if (ze.getName().matches(".*\\.jsonld")) {
-						inputType = "JSON-LD";
-					} else if (ze.getName().matches(".*\\.json")) {
-						inputType = "JSON-LD";
+					String inputType = ActiveTDB.getRDFTypeFromSuffix(ze.getName());
+					if (inputType == null) {
+						continue;
 					}
-					if (inputType != "SKIP") {
 
-						BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
-						boolean fixIDs = false;
-						if (inputType.equals("JSON-LD")) {
-							fixIDs = true;
-						}
-						// fileContents.add(bufferToString(zipStream, fixIDs));
-						fileContents.put(bufferToString(zipStream, fixIDs), inputType);
-
-						runLogger.info("LOAD RDF " + ze.getName());
+					BufferedReader zipStream = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
+					boolean fixIDs = false;
+					if (inputType.equals("JSON-LD")) {
+						fixIDs = true;
 					}
+					// fileContents.add(bufferToString(zipStream, fixIDs));
+					fileContents.put(bufferToString(zipStream, fixIDs), inputType);
+
+					runLogger.info("LOAD RDF " + ze.getName());
+
 				}
 
 			} catch (IOException e) {
