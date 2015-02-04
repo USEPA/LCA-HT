@@ -249,7 +249,7 @@ public class MatchContexts extends ViewPart {
 
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			CSVTableView.selectNext();
+			CSVTableView.selectNext(ID);
 		}
 
 		@Override

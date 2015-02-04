@@ -239,7 +239,7 @@ public class MatchProperties extends ViewPart {
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			// expandAll();
-			CSVTableView.selectNext();
+			CSVTableView.selectNext(ID);
 		}
 
 		@Override

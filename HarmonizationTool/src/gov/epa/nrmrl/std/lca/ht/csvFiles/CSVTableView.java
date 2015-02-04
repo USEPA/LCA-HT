@@ -302,26 +302,6 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	// private static void make
-
-	// private static MouseListener columnMouseListener2 = new MouseListener() {
-	// public void mouseDoubleClick(MouseEvent e) {
-	// System.out.println("double click event :e =" + e);
-	// }
-	//
-	// @Override
-	// public void mouseDown(MouseEvent e) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// @Override
-	// public void mouseUp(MouseEvent e) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// };
-
 	private static MouseListener tableMouseListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
@@ -344,12 +324,6 @@ public class CSVTableView extends ViewPart {
 			if (e.button == 1) {
 				leftClick(e);
 			} else if (e.button == 3) {
-				// for (TableItem tableItem:table.getSelection()){
-				// tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-				// }
-				// for (int selRow : table.getSelectionIndices()) {
-				// table.getItem(selRow).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-				// }
 				table.deselectAll();
 				rightClick(e);
 			}
@@ -543,23 +517,6 @@ public class CSVTableView extends ViewPart {
 		popup.setBounds(90, 90, 300, 60);
 	}
 
-	// private static void initializeRowMenu() {
-	// rowMenu = new Menu(table);
-	// RowMenuSelectionListener rowMenuSelectionListener = new
-	// RowMenuSelectionListener();
-	//
-	// MenuItem menuItem;
-	//
-	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// menuItem.setText("ignore row");
-	//
-	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// menuItem.setText("use row");
-	//
-	// }
-
 	public static void initializeRowMenu() {
 		rowMenu = new Menu(table);
 		RowMenuSelectionListener rowMenuSelectionListener = new RowMenuSelectionListener();
@@ -576,33 +533,6 @@ public class CSVTableView extends ViewPart {
 			menuItem.setText("use row");
 		}
 	}
-
-	// public static void initializeRowMenu(int phase) {
-	// rowMenu = new Menu(table);
-	// RowMenuSelectionListener rowMenuSelectionListener = new
-	// RowMenuSelectionListener();
-	//
-	// MenuItem menuItem;
-	//
-	// if (phase == 1) {
-	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// menuItem.setText("ignore row");
-	//
-	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// menuItem.setText("use row");
-	// } else if (phase == 2) {
-	// menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// menuItem.setText("match contents");
-	//
-	// // menuItem = new MenuItem(rowMenu, SWT.NORMAL);
-	// // menuItem.addListener(SWT.Selection, rowMenuSelectionListener);
-	// // menuItem.setText("use row");
-	// }
-	//
-	// }
 
 	private static class RowMenuSelectionListener implements Listener {
 
@@ -1130,6 +1060,22 @@ public class CSVTableView extends ViewPart {
 			rowNumSelected++;
 			table.setSelection(rowNumSelected);
 			matchRowContents();
+		}
+	}
+	
+	public static void selectNext(String viewCallerID) {
+		// System.out.println("RowNumSelected = " + rowNumSelected);
+		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+		if (rowNumSelected < (table.getItemCount() - 1)) {
+			rowNumSelected++;
+			table.setSelection(rowNumSelected);
+			matchRowContents();
+		}
+		try {
+			Util.showView(viewCallerID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
