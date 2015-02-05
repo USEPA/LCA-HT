@@ -1,8 +1,12 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
+import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
@@ -15,8 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -27,13 +34,20 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportMasterRDFHandler implements IHandler {
 
@@ -80,59 +94,194 @@ public class ImportMasterRDFHandler implements IHandler {
 
 		// System.out.println("path= " + path);
 		// IRIResolver thing = IRIResolver.create("http://openlca.org/schema/v1.0/");
-		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
+		// DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
 
 		for (String fileName : fileList) {
 			System.out.println("fileName= " + fileName);
-			if (!fileName.startsWith(sep)) {
-				fileName = path + sep + fileName;
-				File file = new File(fileName);
-
-				List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
-				int priorDataSetCount = currentNames.size();
-				String[] currentNamesArray = new String[priorDataSetCount];
-				for (int i = 0; i < priorDataSetCount; i++) {
-					currentNamesArray[i] = currentNames.get(i);
-				}
-
-				shouldInferOLCAtriples = false;
-				loadDataFromRDFFile(file);
-				if (shouldInferOLCAtriples) {
-					int olcaAdded = OpenLCA.inferOpenLCATriples();
-					runLogger.info("  # RDF triples added to openLCA data:  "
-							+ NumberFormat.getIntegerInstance().format(olcaAdded));
-				}
-				List<String> newNames = DataSourceKeeper.getDataSourceNamesInTDB();
-				if (newNames.size() == currentNames.size()) {
-					String proposedName = fileList[0];
-					Resource newDataSetResource = DataSourceKeeper.createNewDataSet(event, proposedName,
-							LCAHT.MasterDataset);
-
-					DataSourceKeeper.placeOrphanDataInDataset(newDataSetResource);
-				}
-
+			if (fileName.startsWith(sep)) {
+				continue;
 			}
+			DataSourceProvider dataSourceProvider = null;
+			int dotPos = fileName.lastIndexOf('.');
+			String fileRoot = fileName.substring(0, dotPos);
+			String fullName = path + sep + fileName;
+			File file = new File(fullName);
 
-			long was = ActiveTDB.getModel(null).size();
 			long startTime = System.currentTimeMillis();
 
-//			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-			// System.out.println("Time elapsed: " + elapsedTimeSec);
-			long now = ActiveTDB.getModel(null).size();
-			long change = now - was;
-			System.out.println("Was:" + was + " Added:" + change + " Now:" + now);
-			runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
-			runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
-			runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
+			shouldInferOLCAtriples = false;
+			loadDataFromRDFFile(file);
+			if (shouldInferOLCAtriples) {
+				int olcaAdded = OpenLCA.inferOpenLCATriples();
+				runLogger.info("  # RDF triples added to openLCA data:  "
+						+ NumberFormat.getIntegerInstance().format(olcaAdded));
+			}
+
+			long added = 0;
+			HashMap<String, Resource> datasetNames = new HashMap<String, Resource>();
+			// --- BEGIN SAFE -READ- TRANSACTION ---
+			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+			Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+			try {
+				added = importModel.size();
+				ResIterator resIterator = importModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+				while (resIterator.hasNext()) {
+					Resource dataSourceResource = resIterator.next();
+					NodeIterator nodeIterator = importModel.listObjectsOfProperty(dataSourceResource, RDFS.label);
+					datasetNames.put(nodeIterator.next().asLiteral().getString(), dataSourceResource);
+				}
+
+			} catch (Exception e) {
+				System.out.println("Import failed with Exception: " + e);
+				ActiveTDB.tdbDataset.abort();
+			} finally {
+				ActiveTDB.tdbDataset.end();
+			}
+			// ---- END SAFE -READ- TRANSACTION ---
+
+			runLogger.info("READ file: " + fullName + "\n");
+			runLogger.info("  # Added triples:" + NumberFormat.getIntegerInstance().format(added));
+			int dataSetCount = datasetNames.size();
+
+			Resource newDatasetResource = null;
+			if (dataSetCount == 0) {
+				newDatasetResource = DataSourceKeeper.createNewDataSet(event, fileRoot, LCAHT.MasterDataset);
+				dataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.getByTdbResource(newDatasetResource));
+				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+			} else if (dataSetCount == 1) {
+				String datasetName = (String) datasetNames.keySet().toArray()[0];
+				String fixedName = getConfirmedNewDatasetName(event, datasetName);
+				newDatasetResource = datasetNames.get(datasetName);
+				if (!datasetName.equals(fixedName)) {
+					// --- BEGIN SAFE -WRITE- TRANSACTION ---
+					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+					try {
+						Literal oldNameLiteral = importModel.createTypedLiteral(datasetName);
+						Literal newNameLiteral = importModel.createTypedLiteral(fixedName);
+						importModel.remove(newDatasetResource, RDFS.label, oldNameLiteral);
+						importModel.add(newDatasetResource, RDFS.label, newNameLiteral);
+						ActiveTDB.tdbDataset.commit();
+					} catch (Exception e) {
+						System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+						ActiveTDB.tdbDataset.abort();
+					} finally {
+						ActiveTDB.tdbDataset.end();
+					}
+					// ---- END SAFE -WRITE- TRANSACTION ---
+					runLogger
+							.warn("  # File contains a data set whose name collides with an existing data set.  User selected: "
+									+ fixedName + "\n");
+				} else {
+					runLogger.info("  # File contains data set: " + fixedName + "\n");
+				}
+				dataSourceProvider = new DataSourceProvider(newDatasetResource);
+				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+			} else {
+				String datasetName = (String) datasetNames.keySet().toArray()[0];
+				String fixedName = getConfirmedNewDatasetName(event, datasetName);
+				newDatasetResource = datasetNames.get(datasetName);
+				if (!datasetName.equals(fixedName)) {
+					// --- BEGIN SAFE -WRITE- TRANSACTION ---
+					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+					try {
+						Literal oldNameLiteral = importModel.createTypedLiteral(datasetName);
+						Literal newNameLiteral = importModel.createTypedLiteral(fixedName);
+						importModel.remove(newDatasetResource, RDFS.label, oldNameLiteral);
+						importModel.add(newDatasetResource, RDFS.label, newNameLiteral);
+						ActiveTDB.tdbDataset.commit();
+					} catch (Exception e) {
+						System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+						ActiveTDB.tdbDataset.abort();
+					} finally {
+						ActiveTDB.tdbDataset.end();
+					}
+					// ---- END SAFE -WRITE- TRANSACTION ---
+					runLogger.warn("  # File contains multiple data sets.  User selected: " + fixedName + "\n");
+				} else {
+					runLogger.warn("  # File contains multiple data sets.  Using first of: " + datasetNames.keySet()
+							+ "\n");
+				}
+				dataSourceProvider = new DataSourceProvider(newDatasetResource);
+				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+			}
+
+			/* CHECK FOR AND PROVIDE DATASOURCE FOR ORPHANS */
+			List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB.getModel(ActiveTDB.importGraphName));
+			if (!orphans.isEmpty()) {
+				// --- BEGIN SAFE -WRITE- TRANSACTION ---
+				ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+				importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+				try {
+					for (Resource orphan : orphans) {
+						importModel.add(orphan, ECO.hasDataSource, newDatasetResource);
+					}
+					ActiveTDB.tdbDataset.commit();
+				} catch (Exception e) {
+					System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+					ActiveTDB.tdbDataset.abort();
+				} finally {
+					ActiveTDB.tdbDataset.end();
+				}
+				// ---- END SAFE -WRITE- TRANSACTION ---
+			}
+			FileMD fileMD = new FileMD();
+			fileMD.setFilename(fileName);
+			fileMD.setPath(path);
+			fileMD.setByteCount(file.length());
+			fileMD.setModifiedDate(new Date(file.lastModified()));
+			Date readDate = new Date();
+			fileMD.setReadDate(readDate);
+			dataSourceProvider.addFileMD(fileMD);
+
+			/* TRANSFER DATA TO DEFAULT GRAPH */
+			float startGraphCopy = System.currentTimeMillis();
+			ActiveTDB.copyImportGraphContentsToDefault();
+			ActiveTDB.clearImportGraphContents();
+			float endGraphCopy = (System.currentTimeMillis() - startGraphCopy) / 1000F;
+			System.out.println("Time elapsed: " + endGraphCopy);
 		}
-
-		float startGraphCopy = System.currentTimeMillis();
-		ActiveTDB.copyImportGraphToDefault();
-		float endGraphCopy = (System.currentTimeMillis() - startGraphCopy) / 1000F;
-		System.out.println("Time elapsed: " + endGraphCopy);
-
 		return null;
 	}
+
+	private static String getConfirmedNewDatasetName(ExecutionEvent event, String proposedName) {
+		if (DataSourceKeeper.getByName(proposedName) == null) {
+			return proposedName;
+
+		}
+		String confirmedName = null;
+		int result = Window.CANCEL;
+		while (result == Window.CANCEL) {
+			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
+					DataSourceKeeper.uniquify(proposedName), DataSourceKeeper.getAlphabetizedNames());
+			genericStringBox
+					.create("Provide Alternative Data Set Name",
+							"Recently loaded data has a dataset name that collides with an existing name.  Please provide a different name for this new set.");
+			result = genericStringBox.open();
+			confirmedName = genericStringBox.getResultString();
+		}
+		return confirmedName;
+	}
+
+	// private static void replaceDatasetName(String datasetName, String fixedName) {
+	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+	// try {
+	// for (Resource orphan : DataSourceKeeper.getOrphanResources(ActiveTDB
+	// .getModel(ActiveTDB.importGraphName))) {
+	// orphan.addProperty(ECO.hasDataSource, newDatasetResource);
+	// }
+	// ActiveTDB.tdbDataset.commit();
+	// } catch (Exception e) {
+	// System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+	// ActiveTDB.tdbDataset.abort();
+	// } finally {
+	// ActiveTDB.tdbDataset.end();
+	// }
+	// // ---- END SAFE -WRITE- TRANSACTION ---
+	// }
 
 	private static void loadDataFromRDFFile(File file) {
 
@@ -188,7 +337,6 @@ public class ImportMasterRDFHandler implements IHandler {
 					}
 					// fileContents.add(bufferToString(zipStream, fixIDs));
 					fileContents.put(bufferToString(zipStream, fixIDs), inputType);
-
 					runLogger.info("LOAD RDF " + ze.getName());
 
 				}
@@ -199,7 +347,7 @@ public class ImportMasterRDFHandler implements IHandler {
 		}
 		// int newDataSources = readStringsCountNewDataSources(fileContents);
 		readStringsCountNewDataSources(fileContents);
-		ActiveTDB.syncTDBtoLCAHT();
+		// ActiveTDB.syncTDBtoLCAHT();
 	}
 
 	// int olcaAdded = OpenLCA.inferOpenLCATriples();
@@ -235,24 +383,17 @@ public class ImportMasterRDFHandler implements IHandler {
 		int before = DataSourceKeeper.countDataSourcesInTDB();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		// Model tdbModel = ActiveTDB.tdbDataset.getDefaultModel();
-		// Model importModel = ActiveTDB.tdbDataset.getNamedModel(LCAHT.NS+"import_graph");
 		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 
 		String failedString = "";
 		try {
-			// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
-			// tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
 			for (String fileContents : fileContentsList.keySet()) {
 				failedString = fileContents;
-				// if (tableProvider.doesContainUntranslatedOpenLCAData()){
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
 				importModel.read(stream, "http://openlca.org/schema/v1.0/", inputType);
 			}
-			// tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
-			// TDB.sync(ActiveTDB.tdbDataset);
 		} catch (Exception e) {
 			System.out.println("Import failed with Exception: " + e);
 			System.out.println("The failing string was: \n" + failedString);

@@ -167,12 +167,28 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 	}
 
-	public static void copyImportGraphToDefault() {
+	public static void copyImportGraphContentsToDefault() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model importModel = getModel(importGraphName);
 		try {
 			datasetAccessor.add(importModel);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("01 TDB transaction failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+
+	public static void clearImportGraphContents() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model importModel = getModel(importGraphName);
+		try {
+			importModel.removeAll();
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("01 TDB transaction failed; see Exception: " + e);

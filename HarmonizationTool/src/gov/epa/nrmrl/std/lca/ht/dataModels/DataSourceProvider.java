@@ -42,7 +42,10 @@ public class DataSourceProvider {
 	public DataSourceProvider(Resource tdbResource) {
 		if (DataSourceKeeper.getByTdbResource(tdbResource) < 0) {
 			this.tdbResource = tdbResource;
-			syncFromTDB();
+			boolean synced = syncFromTDB(null);
+			if (!synced){
+				synced = syncFromTDB(ActiveTDB.importGraphName);
+			}
 			DataSourceKeeper.add(this);
 		}
 	}
@@ -199,12 +202,15 @@ public class DataSourceProvider {
 		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.comment, comments);
 	}
 
-	public void syncFromTDB() {
+	public boolean syncFromTDB(String graphName) {
 		RDFNode rdfNode = null;
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
+		Model tdbModel = ActiveTDB.getModel(graphName);
 		try {
+			if (!tdbModel.containsResource(tdbResource)){
+				return false;
+			}
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(tdbResource, RDFS.label);
 			if (nodeIterator.hasNext()) {
 				rdfNode = nodeIterator.next();
@@ -258,6 +264,7 @@ public class DataSourceProvider {
 			}
 			addFileMD(fileMD);
 		}
+		return true;
 	}
 
 	public static Resource getRdfclass() {

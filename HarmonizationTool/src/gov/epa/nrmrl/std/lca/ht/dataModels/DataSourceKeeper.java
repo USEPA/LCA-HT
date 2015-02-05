@@ -258,7 +258,7 @@ public class DataSourceKeeper {
 			for (int i = 0; i < currentNames.size(); i++) {
 				currentNamesArray[i] = currentNames.get(i);
 			}
-			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event), proposedName,
+			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event), uniquify(proposedName),
 					currentNamesArray);
 			genericStringBox.create("Provide New Data Set Name",
 					"Recently loaded data is not assigned to a data set.  Please provide a name for this new set.");
@@ -271,6 +271,7 @@ public class DataSourceKeeper {
 		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
 		ActiveTDB.tsAddTriple(newDataSource, RDF.type, dataSetType);
 		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+		new DataSourceProvider(newDataSource);
 		return newDataSource;
 	}
 
@@ -355,6 +356,32 @@ public class DataSourceKeeper {
 		String query = b.toString();
 		System.out.println("Query: \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			results.add(querySolution.get("s").asResource());
+		}
+		return results;
+	}
+	
+
+	public static List<Resource> getOrphanResources(Model model) {
+		List<Resource> results = new ArrayList<Resource>();
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append(" \n");
+		b.append("select distinct ?s  \n");
+		b.append("where { \n");
+		b.append("    ?s ?p ?o .  \n ");
+		b.append("  minus ");
+		b.append("    {?s eco:hasDataSource ?ds .} . \n ");
+		b.append("} \n ");
+
+		String query = b.toString();
+		System.out.println("Query: \n" + query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl(model);
 		harmonyQuery2Impl.setQuery(query);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();

@@ -11,22 +11,29 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	private String query = null;
+	private Model model = null;
 
 	public HarmonyQuery2Impl() {
+		model = null;
+	}
+
+	public HarmonyQuery2Impl(Model modelToUse) {
+		model = modelToUse;
 	}
 
 	@Override
 	public ResultSet getResultSet() throws IllegalArgumentException {
-		if (query == null) {
-			throw new IllegalArgumentException("query cannot be null");
-		}
-		Model tdbModel = ActiveTDB.getModel(null);
-		if (tdbModel == null) {
-			throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
-		}
-		QueryExecution qexec = QueryExecutionFactory.create(query, tdbModel);
-		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		return resultSetRewindable;
+		return getResultSet(model);
+		// if (query == null) {
+		// throw new IllegalArgumentException("query cannot be null");
+		// }
+		// Model tdbModel = ActiveTDB.getModel(null);
+		// if (tdbModel == null) {
+		// throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
+		// }
+		// QueryExecution qexec = QueryExecutionFactory.create(query, tdbModel);
+		// ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
+		// return resultSetRewindable;
 	}
 
 	public ResultSet getResultSet(String graphName) throws IllegalArgumentException {
@@ -42,15 +49,15 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		return resultSetRewindable;
 	}
 
-	public ResultSet getResultSet(Model model) throws IllegalArgumentException {
+	public ResultSet getResultSet(Model modelToUse) throws IllegalArgumentException {
 		System.out.println("query=\n" + query);
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-		if (model == null) {
-			model = ActiveTDB.getModel(null);
+		if (modelToUse == null) {
+			modelToUse = ActiveTDB.getModel(null);
 		}
-		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		QueryExecution qexec = QueryExecutionFactory.create(query, modelToUse);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 		return resultSetRewindable;
 	}
