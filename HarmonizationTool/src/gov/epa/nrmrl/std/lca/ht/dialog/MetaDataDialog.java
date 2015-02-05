@@ -9,6 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.Person;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -38,10 +39,13 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private Combo comboSelectorDataSource;
 	private Combo comboSelectorFileMD;
 	private Text[] dialogValues = new Text[9];
+//	private Integer referenceDataStatus = null;
 
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND);
 	private Logger runLogger = Logger.getLogger("run");
+	private Button masterButton;
+	private Button supplementaryButton;
 
 	// protected String combDataSourceSelectorSavedText = "";
 
@@ -102,6 +106,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("SET META start - new file");
 	}
 
+	public MetaDataDialog(Shell parentShell, DataSourceProvider dataSourceProvider) {
+		super(parentShell);
+		assert dataSourceProvider != null : "dataSourceProvider cannot be null";
+		this.curDataSourceProvider = dataSourceProvider;
+		this.newDataSourceProvider = curDataSourceProvider;
+		runLogger.info("SET META start - new file");
+	}
+
 	// MAKE AND "WIRE" THE WHOLE DIALOG BOX
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -129,7 +141,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	private void layoutDialog(Composite parent) {
-		setTitle("CSV file Meta Data");
+		setTitle("View / Edit Dataset Meta Data");
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		// composite.setBounds(0, 0, 600, 1200);
@@ -150,7 +162,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 		label_section1.setText("Data Set Information:");
 
 		rowIndex++;
-
 		Label labelSelectDataSource = new Label(composite, SWT.RIGHT);
 		labelSelectDataSource.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		labelSelectDataSource.setText("Data set name");
@@ -172,6 +183,26 @@ public class MetaDataDialog extends TitleAreaDialog {
 			deleteDataSource.setText("X");
 			deleteDataSource.addSelectionListener(deleteDatasourceListener);
 			// deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
+		}
+
+		if (curDataSourceProvider.getReferenceDataStatus() != null) {
+			rowIndex++;
+			Label labelReferenceDataStatus = new Label(composite, SWT.RIGHT);
+			labelReferenceDataStatus.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+			labelReferenceDataStatus.setText("Reference Data");
+			masterButton = new Button(composite, SWT.RADIO);
+			masterButton.setBounds(col2Left, rowIndex * disBtwnRows, col1Width - 10, rowHeight);
+			masterButton.setText("Master List");
+			masterButton.addSelectionListener(radioListener);
+			supplementaryButton = new Button(composite, SWT.RADIO);
+			supplementaryButton.setBounds(col2Left + 110, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+			supplementaryButton.setText("Supplementary List");
+			supplementaryButton.addSelectionListener(radioListener);
+			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
+				masterButton.setSelection(true);
+			} else if (curDataSourceProvider.getReferenceDataStatus() == 2) {
+				supplementaryButton.setSelection(true);
+			}
 		}
 
 		rowIndex++;
@@ -274,6 +305,31 @@ public class MetaDataDialog extends TitleAreaDialog {
 		dialogValues[8] = textFileReadTime; // ------- 08 File Read Time
 
 	}
+
+	SelectionListener radioListener = new SelectionListener() {
+		private void doit(SelectionEvent e) {
+			 System.out.println(e.getSource());
+			 Button thing = (Button) e.getSource();
+			 String thing2 = thing.getText();
+			 if (thing2.matches(".*Master.*")){
+				 curDataSourceProvider.setReferenceDataStatus(1);
+			 } else if (thing2.matches(".*Supplementary.*")){
+				 curDataSourceProvider.setReferenceDataStatus(2);
+			 }
+
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+	};
 
 	private SelectionListener deleteDatasourceListener = new SelectionListener() {
 
@@ -470,36 +526,6 @@ public class MetaDataDialog extends TitleAreaDialog {
 			}
 		}
 	}
-
-	// private final class DeleteButtonClickListener implements Listener {
-	// @Override
-	// public void handleEvent(Event event) {
-	// // TODO THIS ROUTINE NEEDS WORK! THE DATA DO NOT ACTUALLY GET DELETED, SEE A FEW LINES DOWN
-	// String dataSourceToDelete = comboSelectorDataSource.getText();
-	// GenericStringBox genericStringBox = new GenericStringBox(getShell(), "cancel");
-	//
-	// genericStringBox.create("Delete Data Set", "Please type \"yes\" to confirm deletion of "
-	// + dataSourceToDelete);
-	// genericStringBox.open();
-	//
-	// String confirmDeletion = genericStringBox.getResultString();
-	// if (!confirmDeletion.equals("yes")) {
-	// // NOT CONFIRMED, SO QUIT
-	// System.out.println("Not deleting");
-	// return;
-	// }
-	// DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
-	// // THE ABOVE ROUTINE NEEDS WORK
-	//
-	// System.out.println("Deleting " + dataSourceToDelete);
-	// comboSelectorDataSource.remove(dataSourceToDelete);
-	// if (comboSelectorDataSource.getItemCount() == 0) {
-	// cancelPressed();
-	// return;
-	// }
-	// comboSelectorDataSource.select(0);
-	// }
-	// }
 
 	public class ComboSelectorFileMDListener implements ModifyListener {
 

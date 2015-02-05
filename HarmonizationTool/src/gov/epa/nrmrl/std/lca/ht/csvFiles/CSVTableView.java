@@ -800,6 +800,11 @@ public class CSVTableView extends ViewPart {
 				}
 
 				if (colTypeGeneral.equals(Flowable.label) && colTypeSpecific.equals(Flowable.casString)) {
+					if (issueCount > 0) {
+						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						menuItem.setText("Auto-resolve " + issueCount + " Issues");
+						menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
+					}
 
 					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 					menuItem.setText("Standardize CAS");

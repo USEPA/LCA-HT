@@ -250,31 +250,40 @@ public class DataSourceKeeper {
 		return currentNames;
 	}
 
-	public static Resource createNewDataSet(ExecutionEvent event, String proposedName, Resource dataSetType) {
-		String newFileName = null;
-		List<String> currentNames = getDataSourceNamesInTDB();
-		while (newFileName == null && !currentNames.contains(newFileName)) {
-			String[] currentNamesArray = new String[currentNames.size()];
-			for (int i = 0; i < currentNames.size(); i++) {
-				currentNamesArray[i] = currentNames.get(i);
-			}
-			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event), uniquify(proposedName),
-					currentNamesArray);
-			genericStringBox.create("Provide New Data Set Name",
-					"Recently loaded data is not assigned to a data set.  Please provide a name for this new set.");
-			int result = genericStringBox.open();
-			if (result == Window.CANCEL) {
-				return null;
-			}
-			newFileName = genericStringBox.getResultString();
-		}
-		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
-		ActiveTDB.tsAddTriple(newDataSource, RDF.type, dataSetType);
-		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
-		new DataSourceProvider(newDataSource);
-		return newDataSource;
-	}
-
+//	public static Resource createNewDataSetConfirmName(ExecutionEvent event, String proposedName, Resource dataSetType) {
+//		String newFileName = null;
+//		List<String> currentNames = getDataSourceNamesInTDB();
+//		while (newFileName == null && !currentNames.contains(newFileName)) {
+//			String[] currentNamesArray = new String[currentNames.size()];
+//			for (int i = 0; i < currentNames.size(); i++) {
+//				currentNamesArray[i] = currentNames.get(i);
+//			}
+//			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event), uniquify(proposedName),
+//					currentNamesArray);
+//			genericStringBox.create("Provide New Data Set Name",
+//					"Recently loaded data is not assigned to a data set.  Please provide a name for this new set.");
+//			int result = genericStringBox.open();
+//			if (result == Window.CANCEL) {
+//				return null;
+//			}
+//			newFileName = genericStringBox.getResultString();
+//		}
+//		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+//		ActiveTDB.tsAddTriple(newDataSource, RDF.type, dataSetType);
+//		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+//		new DataSourceProvider(newDataSource);
+//		return newDataSource;
+//	}
+//
+//	public static Resource createNewDataSet(ExecutionEvent event, String proposedName, Resource dataSetType) {
+//		String newFileName = uniquify(proposedName);
+//		Resource newDataSource = ActiveTDB.tsCreateResource(ECO.DataSource);
+//		ActiveTDB.tsAddTriple(newDataSource, RDF.type, dataSetType);
+//		ActiveTDB.tsAddLiteral(newDataSource, RDFS.label, newFileName);
+//		new DataSourceProvider(newDataSource);
+//		return newDataSource;
+//	}
+	
 	public static int placeOrphanDataInNewOrphanDataset() {
 		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
 		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);

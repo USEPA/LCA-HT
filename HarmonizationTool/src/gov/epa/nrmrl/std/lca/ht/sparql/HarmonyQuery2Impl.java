@@ -37,7 +37,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	}
 
 	public ResultSet getResultSet(String graphName) throws IllegalArgumentException {
-		System.out.println("query=\n" + query);
+//		System.out.println("query=\n" + query);
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
@@ -50,7 +50,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	}
 
 	public ResultSet getResultSet(Model modelToUse) throws IllegalArgumentException {
-		System.out.println("query=\n" + query);
+//		System.out.println("query=\n" + query);
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}

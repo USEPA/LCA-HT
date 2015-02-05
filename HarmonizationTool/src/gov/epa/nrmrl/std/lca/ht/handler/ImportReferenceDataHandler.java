@@ -4,6 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
@@ -36,6 +37,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -49,7 +51,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-public class ImportMasterRDFHandler implements IHandler {
+public class ImportReferenceDataHandler implements IHandler {
 
 	private static boolean shouldInferOLCAtriples = false;
 
@@ -118,6 +120,7 @@ public class ImportMasterRDFHandler implements IHandler {
 			}
 
 			long added = 0;
+			Integer referenceStatus = 1;
 			HashMap<String, Resource> datasetNames = new HashMap<String, Resource>();
 			// --- BEGIN SAFE -READ- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
@@ -129,6 +132,11 @@ public class ImportMasterRDFHandler implements IHandler {
 					Resource dataSourceResource = resIterator.next();
 					NodeIterator nodeIterator = importModel.listObjectsOfProperty(dataSourceResource, RDFS.label);
 					datasetNames.put(nodeIterator.next().asLiteral().getString(), dataSourceResource);
+					if (importModel.contains(dataSourceResource, RDF.type, LCAHT.MasterDataset)) {
+						referenceStatus = 1;
+					} else if (importModel.contains(dataSourceResource, RDF.type, LCAHT.SupplementaryReferenceDataset)) {
+						referenceStatus = 2;
+					}
 				}
 
 			} catch (Exception e) {
@@ -144,69 +152,53 @@ public class ImportMasterRDFHandler implements IHandler {
 			int dataSetCount = datasetNames.size();
 
 			Resource newDatasetResource = null;
+			String proposedNewDatasetName = DataSourceKeeper.uniquify(fileName);
 			if (dataSetCount == 0) {
-				newDatasetResource = DataSourceKeeper.createNewDataSet(event, fileRoot, LCAHT.MasterDataset);
-				dataSourceProvider = DataSourceKeeper.get(DataSourceKeeper.getByTdbResource(newDatasetResource));
-				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				dataSourceProvider = new DataSourceProvider();
+				newDatasetResource = dataSourceProvider.getTdbResource();
+				runLogger.info("  # Creating new data set for file using name: " + proposedNewDatasetName + "\n");
+				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
+				dataSourceProvider.setReferenceDataStatus(1);
 			} else if (dataSetCount == 1) {
-				String datasetName = (String) datasetNames.keySet().toArray()[0];
-				String fixedName = getConfirmedNewDatasetName(event, datasetName);
-				newDatasetResource = datasetNames.get(datasetName);
-				if (!datasetName.equals(fixedName)) {
-					// --- BEGIN SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
-					try {
-						Literal oldNameLiteral = importModel.createTypedLiteral(datasetName);
-						Literal newNameLiteral = importModel.createTypedLiteral(fixedName);
-						importModel.remove(newDatasetResource, RDFS.label, oldNameLiteral);
-						importModel.add(newDatasetResource, RDFS.label, newNameLiteral);
-						ActiveTDB.tdbDataset.commit();
-					} catch (Exception e) {
-						System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
-						ActiveTDB.tdbDataset.abort();
-					} finally {
-						ActiveTDB.tdbDataset.end();
-					}
-					// ---- END SAFE -WRITE- TRANSACTION ---
-					runLogger
-							.warn("  # File contains a data set whose name collides with an existing data set.  User selected: "
-									+ fixedName + "\n");
-				} else {
-					runLogger.info("  # File contains data set: " + fixedName + "\n");
-				}
+				proposedNewDatasetName = DataSourceKeeper.uniquify((String) datasetNames.keySet().toArray()[0]);
+				newDatasetResource = datasetNames.get(proposedNewDatasetName);
+				runLogger.info("  # File contains data set: " + proposedNewDatasetName + "\n");
 				dataSourceProvider = new DataSourceProvider(newDatasetResource);
-				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
+				dataSourceProvider.setReferenceDataStatus(referenceStatus);
 			} else {
-				String datasetName = (String) datasetNames.keySet().toArray()[0];
-				String fixedName = getConfirmedNewDatasetName(event, datasetName);
-				newDatasetResource = datasetNames.get(datasetName);
-				if (!datasetName.equals(fixedName)) {
-					// --- BEGIN SAFE -WRITE- TRANSACTION ---
-					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
-					try {
-						Literal oldNameLiteral = importModel.createTypedLiteral(datasetName);
-						Literal newNameLiteral = importModel.createTypedLiteral(fixedName);
-						importModel.remove(newDatasetResource, RDFS.label, oldNameLiteral);
-						importModel.add(newDatasetResource, RDFS.label, newNameLiteral);
-						ActiveTDB.tdbDataset.commit();
-					} catch (Exception e) {
-						System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
-						ActiveTDB.tdbDataset.abort();
-					} finally {
-						ActiveTDB.tdbDataset.end();
-					}
-					// ---- END SAFE -WRITE- TRANSACTION ---
-					runLogger.warn("  # File contains multiple data sets.  User selected: " + fixedName + "\n");
-				} else {
-					runLogger.warn("  # File contains multiple data sets.  Using first of: " + datasetNames.keySet()
-							+ "\n");
-				}
+				proposedNewDatasetName = DataSourceKeeper.uniquify((String) datasetNames.keySet().toArray()[0]);
+				newDatasetResource = datasetNames.get(proposedNewDatasetName);
+				runLogger
+						.warn("  # File contains multiple data sets.  Using first of: " + datasetNames.keySet() + "\n");
 				dataSourceProvider = new DataSourceProvider(newDatasetResource);
-				dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
+				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
+				dataSourceProvider.setReferenceDataStatus(referenceStatus);
 			}
+			FileMD fileMD = new FileMD();
+			fileMD.setFilename(fileName);
+			fileMD.setPath(path);
+			fileMD.setByteCount(file.length());
+			fileMD.setModifiedDate(new Date(file.lastModified()));
+			Date readDate = new Date();
+			fileMD.setReadDate(readDate);
+			dataSourceProvider.addFileMD(fileMD);
 
+			MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), dataSourceProvider);
+			System.out.println("meta initialized");
+			dialog.create();
+			System.out.println("meta created");
+			int metaStatus = dialog.open();
+			if (metaStatus == MetaDataDialog.CANCEL) {
+				ActiveTDB.clearImportGraphContents();
+			}
+			boolean isMaster = true;
+			if (dataSourceProvider.getReferenceDataStatus() == 2){
+				isMaster = false;
+			}
 			/* CHECK FOR AND PROVIDE DATASOURCE FOR ORPHANS */
 			List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB.getModel(ActiveTDB.importGraphName));
 			if (!orphans.isEmpty()) {
@@ -216,6 +208,11 @@ public class ImportMasterRDFHandler implements IHandler {
 				try {
 					for (Resource orphan : orphans) {
 						importModel.add(orphan, ECO.hasDataSource, newDatasetResource);
+						if (isMaster) {
+							importModel.add(newDatasetResource, RDF.type, LCAHT.MasterDataset);
+						} else {
+							importModel.add(newDatasetResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+						}
 					}
 					ActiveTDB.tdbDataset.commit();
 				} catch (Exception e) {
@@ -226,14 +223,6 @@ public class ImportMasterRDFHandler implements IHandler {
 				}
 				// ---- END SAFE -WRITE- TRANSACTION ---
 			}
-			FileMD fileMD = new FileMD();
-			fileMD.setFilename(fileName);
-			fileMD.setPath(path);
-			fileMD.setByteCount(file.length());
-			fileMD.setModifiedDate(new Date(file.lastModified()));
-			Date readDate = new Date();
-			fileMD.setReadDate(readDate);
-			dataSourceProvider.addFileMD(fileMD);
 
 			/* TRANSFER DATA TO DEFAULT GRAPH */
 			float startGraphCopy = System.currentTimeMillis();
@@ -245,24 +234,43 @@ public class ImportMasterRDFHandler implements IHandler {
 		return null;
 	}
 
-	private static String getConfirmedNewDatasetName(ExecutionEvent event, String proposedName) {
-		if (DataSourceKeeper.getByName(proposedName) == null) {
-			return proposedName;
-
+	private static void renameDataSet(Resource datasetResource, String oldName, String newName) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+		try {
+			Literal oldNameLiteral = importModel.createTypedLiteral(oldName);
+			Literal newNameLiteral = importModel.createTypedLiteral(newName);
+			importModel.remove(datasetResource, RDFS.label, oldNameLiteral);
+			importModel.add(datasetResource, RDFS.label, newNameLiteral);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
 		}
-		String confirmedName = null;
-		int result = Window.CANCEL;
-		while (result == Window.CANCEL) {
-			GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
-					DataSourceKeeper.uniquify(proposedName), DataSourceKeeper.getAlphabetizedNames());
-			genericStringBox
-					.create("Provide Alternative Data Set Name",
-							"Recently loaded data has a dataset name that collides with an existing name.  Please provide a different name for this new set.");
-			result = genericStringBox.open();
-			confirmedName = genericStringBox.getResultString();
-		}
-		return confirmedName;
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
+
+	// private static String getConfirmedNewDatasetName(ExecutionEvent event, String proposedName) {
+	// if (DataSourceKeeper.getByName(proposedName) == null) {
+	// return proposedName;
+	//
+	// }
+	// String confirmedName = null;
+	// int result = Window.CANCEL;
+	// while (result == Window.CANCEL) {
+	// GenericStringBox genericStringBox = new GenericStringBox(HandlerUtil.getActiveShell(event),
+	// DataSourceKeeper.uniquify(proposedName), DataSourceKeeper.getAlphabetizedNames());
+	// genericStringBox
+	// .create("Provide Alternative Data Set Name",
+	// "Recently loaded data has a dataset name that collides with an existing name.  Please provide a different name for this new set.");
+	// result = genericStringBox.open();
+	// confirmedName = genericStringBox.getResultString();
+	// }
+	// return confirmedName;
+	// }
 
 	// private static void replaceDatasetName(String datasetName, String fixedName) {
 	// // --- BEGIN SAFE -WRITE- TRANSACTION ---

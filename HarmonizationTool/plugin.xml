@@ -114,18 +114,8 @@
          <menu
                label="File">
             <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
-                  label="Load Master List (RDF data)"
-                  style="push">
-            </command>
-            <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
-                  label="Load Supplementary List (RDF data)"
-                  style="push">
-            </command>
-            <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
-                  label="Import User Data in RDF"
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportReferenceDataHandler"
+                  label="Load Reference Data List"
                   style="push">
             </command>
             <command
@@ -317,9 +307,9 @@
             name="TDB Dump">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportMasterRDFHandler"
-            name="Import Master RDF Data">
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportReferenceDataHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportReferenceDataHandler"
+            name="Import Reference Data">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
@@ -434,11 +424,6 @@
             defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
             id="harmonizationtool.handler.ShowJobStatusHandler"
             name="Show Job Status">
-      </command>
-      <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportSupplementaryRDFHandler"
-            name="Import Supplementary RDF Data">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"

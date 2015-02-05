@@ -19,7 +19,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportTriplesHandler implements IHandler {
-	// TODO: REMOVE THIS OR DETERMINE HOW IT IS DIFFERENT FROM ImportMasterRDFHandler
+	// TODO: REMOVE THIS OR DETERMINE HOW IT IS DIFFERENT FROM ImportReferenceDataHandler
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {

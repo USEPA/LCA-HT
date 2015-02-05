@@ -29,8 +29,8 @@ public class DataSourceProvider {
 	// private List<Annotation> annotationList = new ArrayList<Annotation>();
 	private Resource tdbResource;
 	private static final Resource rdfClass = ECO.DataSource;
-
-	private boolean isMaster = false;
+	private Integer referenceDataStatus = null;
+//	private boolean isMaster = false;
 
 	public DataSourceProvider() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
@@ -41,9 +41,13 @@ public class DataSourceProvider {
 
 	public DataSourceProvider(Resource tdbResource) {
 		if (DataSourceKeeper.getByTdbResource(tdbResource) < 0) {
-			this.tdbResource = tdbResource;
+			if (tdbResource == null) {
+				this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+			} else {
+				this.tdbResource = tdbResource;
+			}
 			boolean synced = syncFromTDB(null);
-			if (!synced){
+			if (!synced) {
 				synced = syncFromTDB(ActiveTDB.importGraphName);
 			}
 			DataSourceKeeper.add(this);
@@ -146,13 +150,6 @@ public class DataSourceProvider {
 		ActiveTDB.tsRemoveAllObjects(tdbResource, LCAHT.containsFile);
 	}
 
-	public boolean isMaster() {
-		return isMaster;
-	}
-
-	public void setMaster(boolean isMaster) {
-		this.isMaster = isMaster;
-	}
 
 	public String getDataSourceName() {
 		return dataSourceName;
@@ -204,11 +201,14 @@ public class DataSourceProvider {
 
 	public boolean syncFromTDB(String graphName) {
 		RDFNode rdfNode = null;
+		if (tdbResource == null) {
+			return false;
+		}
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(graphName);
 		try {
-			if (!tdbModel.containsResource(tdbResource)){
+			if (!tdbModel.containsResource(tdbResource)) {
 				return false;
 			}
 			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(tdbResource, RDFS.label);
@@ -219,6 +219,13 @@ public class DataSourceProvider {
 				dataSourceName = DataSourceKeeper.uniquify("unknownName");
 			} else {
 				dataSourceName = rdfNode.asLiteral().getString();
+			}
+			if (tdbModel.contains(tdbResource, RDF.type, LCAHT.MasterDataset)){
+				setReferenceDataStatus(1);
+			} else if (tdbModel.contains(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset)){
+				setReferenceDataStatus(2);
+			} else {
+				referenceDataStatus = null;
 			}
 		} catch (Exception e) {
 			System.out.println("Syncing of dataset failed with Exception: " + e);
@@ -269,5 +276,13 @@ public class DataSourceProvider {
 
 	public static Resource getRdfclass() {
 		return rdfClass;
+	}
+
+	public Integer getReferenceDataStatus() {
+		return referenceDataStatus;
+	}
+
+	public void setReferenceDataStatus(Integer referenceDataStatus) {
+		this.referenceDataStatus = referenceDataStatus;
 	}
 }
