@@ -200,7 +200,7 @@ public class OpenLCA {
 
 	}
 
-	public static int inferOpenLCATriples() {
+	public static int inferOpenLCATriples(String graphName) {
 		int count = 0;
 		// ADD INFERENCES IN WHICH AN
 		for (Property propertyFrom : propertyMap.keySet()) {
@@ -210,7 +210,7 @@ public class OpenLCA {
 			b.append("INSERT { ?s <" + propertyTo.getURI() + "> ?to . } \n");
 			b.append("WHERE { ?s <" + propertyFrom.getURI() + "> ?to . } \n");
 			String query = b.toString();
-			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();
 			Long added = iGenericUpdate.getAddedTriples();
 			if (added != null) {
@@ -224,7 +224,7 @@ public class OpenLCA {
 			b.append("INSERT { ?s ?p <" + resourceTo.getURI() + "> . } \n");
 			b.append("WHERE { ?s ?p <" + resourceFrom.getURI() + "> . } \n");
 			String query = b.toString();
-			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source");
+			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();
 			Long added = iGenericUpdate.getAddedTriples();
 			if (added != null) {
@@ -251,7 +251,7 @@ public class OpenLCA {
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet(graphName);
 		List<RDFNode> names = new ArrayList<RDFNode>();
 		List<RDFNode> cass = new ArrayList<RDFNode>();
 		List<RDFNode> formulae = new ArrayList<RDFNode>();
@@ -265,7 +265,7 @@ public class OpenLCA {
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(null);
+		Model tdbModel = ActiveTDB.getModel(graphName);
 		try {
 			for (int i = 0; i < names.size(); i++) {
 				Resource newFlowable = tdbModel.createResource(ECO.Flowable);

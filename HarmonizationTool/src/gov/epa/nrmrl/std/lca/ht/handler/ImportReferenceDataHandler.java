@@ -109,14 +109,27 @@ public class ImportReferenceDataHandler implements IHandler {
 			String fullName = path + sep + fileName;
 			File file = new File(fullName);
 
-			long startTime = System.currentTimeMillis();
+			long time0 = System.currentTimeMillis();
 
 			shouldInferOLCAtriples = false;
 			loadDataFromRDFFile(file);
+			long time1 = System.currentTimeMillis();
+
+			boolean alreadyEcoDataSource = false;
+			if (importGraphContainsEcoDataSource()) {
+				shouldInferOLCAtriples = false;
+				alreadyEcoDataSource = true;
+			}
+
+			long time2;
 			if (shouldInferOLCAtriples) {
-				int olcaAdded = OpenLCA.inferOpenLCATriples();
+				int olcaAdded = OpenLCA.inferOpenLCATriples(ActiveTDB.importGraphName);
 				runLogger.info("  # RDF triples added to openLCA data:  "
 						+ NumberFormat.getIntegerInstance().format(olcaAdded));
+				time2 = System.currentTimeMillis();
+
+			} else {
+				time2 = 0;
 			}
 
 			long added = 0;
@@ -147,7 +160,7 @@ public class ImportReferenceDataHandler implements IHandler {
 			}
 			// ---- END SAFE -READ- TRANSACTION ---
 
-			runLogger.info("READ file: " + fullName + "\n");
+			runLogger.info("  # File read complete");
 			runLogger.info("  # Added triples:" + NumberFormat.getIntegerInstance().format(added));
 			int dataSetCount = datasetNames.size();
 
@@ -156,14 +169,14 @@ public class ImportReferenceDataHandler implements IHandler {
 			if (dataSetCount == 0) {
 				dataSourceProvider = new DataSourceProvider();
 				newDatasetResource = dataSourceProvider.getTdbResource();
-				runLogger.info("  # Creating new data set for file using name: " + proposedNewDatasetName + "\n");
+				runLogger.info("  # Creating new data set for file using name: " + proposedNewDatasetName);
 				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
 				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
 				dataSourceProvider.setReferenceDataStatus(1);
 			} else if (dataSetCount == 1) {
 				proposedNewDatasetName = DataSourceKeeper.uniquify((String) datasetNames.keySet().toArray()[0]);
 				newDatasetResource = datasetNames.get(proposedNewDatasetName);
-				runLogger.info("  # File contains data set: " + proposedNewDatasetName + "\n");
+				runLogger.info("  # File contains data set: " + proposedNewDatasetName);
 				dataSourceProvider = new DataSourceProvider(newDatasetResource);
 				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
 				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
@@ -171,8 +184,7 @@ public class ImportReferenceDataHandler implements IHandler {
 			} else {
 				proposedNewDatasetName = DataSourceKeeper.uniquify((String) datasetNames.keySet().toArray()[0]);
 				newDatasetResource = datasetNames.get(proposedNewDatasetName);
-				runLogger
-						.warn("  # File contains multiple data sets.  Using first of: " + datasetNames.keySet() + "\n");
+				runLogger.warn("  # File contains multiple data sets.  Using first of: " + datasetNames.keySet());
 				dataSourceProvider = new DataSourceProvider(newDatasetResource);
 				// dataSourceProvider.syncFromTDB(ActiveTDB.importGraphName);
 				dataSourceProvider.setDataSourceName(proposedNewDatasetName);
@@ -186,6 +198,7 @@ public class ImportReferenceDataHandler implements IHandler {
 			Date readDate = new Date();
 			fileMD.setReadDate(readDate);
 			dataSourceProvider.addFileMD(fileMD);
+			long time3 = System.currentTimeMillis();
 
 			MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), dataSourceProvider);
 			System.out.println("meta initialized");
@@ -196,42 +209,86 @@ public class ImportReferenceDataHandler implements IHandler {
 				ActiveTDB.clearImportGraphContents();
 			}
 			boolean isMaster = true;
-			if (dataSourceProvider.getReferenceDataStatus() == 2){
+			if (dataSourceProvider.getReferenceDataStatus() == 2) {
 				isMaster = false;
 			}
 			/* CHECK FOR AND PROVIDE DATASOURCE FOR ORPHANS */
-			List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB.getModel(ActiveTDB.importGraphName));
-			if (!orphans.isEmpty()) {
-				// --- BEGIN SAFE -WRITE- TRANSACTION ---
-				ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-				importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
-				try {
-					for (Resource orphan : orphans) {
-						importModel.add(orphan, ECO.hasDataSource, newDatasetResource);
-						if (isMaster) {
-							importModel.add(newDatasetResource, RDF.type, LCAHT.MasterDataset);
-						} else {
-							importModel.add(newDatasetResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			long time4 = System.currentTimeMillis();
+
+			if (!alreadyEcoDataSource) {
+				List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB
+						.getModel(ActiveTDB.importGraphName));
+				if (!orphans.isEmpty()) {
+					// --- BEGIN SAFE -WRITE- TRANSACTION ---
+					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+					try {
+						for (Resource orphan : orphans) {
+							importModel.add(orphan, ECO.hasDataSource, newDatasetResource);
+							if (isMaster) {
+								importModel.add(newDatasetResource, RDF.type, LCAHT.MasterDataset);
+							} else {
+								importModel.add(newDatasetResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+							}
 						}
+						ActiveTDB.tdbDataset.commit();
+					} catch (Exception e) {
+						System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+						ActiveTDB.tdbDataset.abort();
+					} finally {
+						ActiveTDB.tdbDataset.end();
 					}
-					ActiveTDB.tdbDataset.commit();
-				} catch (Exception e) {
-					System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
-					ActiveTDB.tdbDataset.abort();
-				} finally {
-					ActiveTDB.tdbDataset.end();
+					// ---- END SAFE -WRITE- TRANSACTION ---
 				}
-				// ---- END SAFE -WRITE- TRANSACTION ---
 			}
+			long time5 = System.currentTimeMillis();
 
 			/* TRANSFER DATA TO DEFAULT GRAPH */
-			float startGraphCopy = System.currentTimeMillis();
 			ActiveTDB.copyImportGraphContentsToDefault();
+			long time6 = System.currentTimeMillis();
 			ActiveTDB.clearImportGraphContents();
-			float endGraphCopy = (System.currentTimeMillis() - startGraphCopy) / 1000F;
-			System.out.println("Time elapsed: " + endGraphCopy);
+			long time7 = System.currentTimeMillis();
+
+			float interval1 = ((time1 - time0) / 1000F);
+			runLogger.info("  # Seconds to read file:  " + interval1);
+			float interval3;
+			if (time2 > 0) {
+				float interval2 = ((time2 - time1) / 1000F);
+				interval3 = ((time3 - time2) / 1000F);
+				runLogger.info("  # Seconds to infer openLCA triples: " + interval2);
+			} else {
+				interval3 = ((time3 - time1) / 1000F);
+			}
+			runLogger.info("  # Seconds to prepare dataset info: " + interval3);
+			float interval4 = ((time5 - time4) / 1000F);
+			if (!alreadyEcoDataSource) {
+				runLogger.info("  # Seconds to assign data to dataset: " + interval4);
+			}
+			float interval5 = ((time6 - time5) / 1000F);
+			runLogger.info("  # Seconds to transfer data to main graph: " + interval5);
+			float interval6 = ((time7 - time6) / 1000F);
+			runLogger.info("  # Seconds to empty import graph: " + interval6);
+
 		}
 		return null;
+	}
+
+	private static boolean importGraphContainsEcoDataSource() {
+		boolean result = false;
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+		try {
+			result = importModel.contains(null, RDF.type, ECO.DataSource);
+
+		} catch (Exception e) {
+			System.out.println("Import failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		return result;
+		// ---- END SAFE -READ- TRANSACTION ---
 	}
 
 	private static void renameDataSet(Resource datasetResource, String oldName, String newName) {
@@ -297,7 +354,7 @@ public class ImportReferenceDataHandler implements IHandler {
 		String path = file.getPath();
 		Logger runLogger = Logger.getLogger("run");
 
-		runLogger.info("LOAD RDF " + path);
+		runLogger.info("\nLOAD RDF " + path);
 
 		Map<String, String> fileContents = new HashMap<String, String>();
 		// List<String> fileContents = new ArrayList<String>();
@@ -317,7 +374,6 @@ public class ImportReferenceDataHandler implements IHandler {
 					fixIDs = true;
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
-				runLogger.info("LOAD RDF " + fileName);
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -327,7 +383,7 @@ public class ImportReferenceDataHandler implements IHandler {
 			try {
 				@SuppressWarnings("resource")
 				ZipFile zf = new ZipFile(path);
-				runLogger.info("LOAD RDF (zip file)" + fileName);
+				runLogger.info("  # File is a zip file");
 
 				Enumeration<?> entries = zf.entries();
 
@@ -345,7 +401,7 @@ public class ImportReferenceDataHandler implements IHandler {
 					}
 					// fileContents.add(bufferToString(zipStream, fixIDs));
 					fileContents.put(bufferToString(zipStream, fixIDs), inputType);
-					runLogger.info("LOAD RDF " + ze.getName());
+					runLogger.info("  # Zip contents: " + ze.getName());
 
 				}
 
@@ -353,9 +409,7 @@ public class ImportReferenceDataHandler implements IHandler {
 				e.printStackTrace();
 			}
 		}
-		// int newDataSources = readStringsCountNewDataSources(fileContents);
 		readStringsCountNewDataSources(fileContents);
-		// ActiveTDB.syncTDBtoLCAHT();
 	}
 
 	// int olcaAdded = OpenLCA.inferOpenLCATriples();
@@ -387,8 +441,7 @@ public class ImportReferenceDataHandler implements IHandler {
 		return stringBuilder.toString();
 	}
 
-	private static int readStringsCountNewDataSources(Map<String, String> fileContentsList) {
-		int before = DataSourceKeeper.countDataSourcesInTDB();
+	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
@@ -410,7 +463,6 @@ public class ImportReferenceDataHandler implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		return DataSourceKeeper.countDataSourcesInTDB() - before;
 	}
 
 	@Override

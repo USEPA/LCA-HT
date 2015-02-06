@@ -30,7 +30,8 @@ public class DataSourceProvider {
 	private Resource tdbResource;
 	private static final Resource rdfClass = ECO.DataSource;
 	private Integer referenceDataStatus = null;
-//	private boolean isMaster = false;
+
+	// private boolean isMaster = false;
 
 	public DataSourceProvider() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
@@ -150,7 +151,6 @@ public class DataSourceProvider {
 		ActiveTDB.tsRemoveAllObjects(tdbResource, LCAHT.containsFile);
 	}
 
-
 	public String getDataSourceName() {
 		return dataSourceName;
 	}
@@ -220,10 +220,10 @@ public class DataSourceProvider {
 			} else {
 				dataSourceName = rdfNode.asLiteral().getString();
 			}
-			if (tdbModel.contains(tdbResource, RDF.type, LCAHT.MasterDataset)){
-				setReferenceDataStatus(1);
-			} else if (tdbModel.contains(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset)){
-				setReferenceDataStatus(2);
+			if (tdbModel.contains(tdbResource, RDF.type, LCAHT.MasterDataset)) {
+				referenceDataStatus = 1;
+			} else if (tdbModel.contains(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset)) {
+				referenceDataStatus = 1;
 			} else {
 				referenceDataStatus = null;
 			}
@@ -234,6 +234,7 @@ public class DataSourceProvider {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -READ- TRANSACTION ---
+		
 		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 
 		if (tdbResource.hasProperty(RDFS.comment)) {
@@ -284,5 +285,14 @@ public class DataSourceProvider {
 
 	public void setReferenceDataStatus(Integer referenceDataStatus) {
 		this.referenceDataStatus = referenceDataStatus;
+		ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
+		ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+		if (referenceDataStatus != null) {
+			if (referenceDataStatus == 2) {
+				ActiveTDB.tsAddTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			} else {
+				ActiveTDB.tsAddTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			}
+		}
 	}
 }

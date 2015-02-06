@@ -24,6 +24,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	private List<String> data = null;
 	private QueryResults queryResults = null;
 	private Long triplesAdded = null;
+	protected String graphName = null;
 
 	public HarmonyBaseUpdate() {
 		super();
@@ -40,15 +41,16 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		return queryStr;
 	}
 
-	private void executeQuery() {
-		if (ActiveTDB.getModel(null) == null) {
+	private void executeQuery(String graphNameToUse) {
+		graphName = graphNameToUse;
+		if (ActiveTDB.getModel(graphName) == null) {
 			return;
 		}
 		// long startModelSize = ActiveTDB.getModel().size();
 		long startModelSize = -1;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		try {
-			startModelSize = ActiveTDB.getModel(null).size();
+			startModelSize = ActiveTDB.getModel(graphName).size();
 		} catch (Exception e) {
 			System.out.println("Check model size failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -111,7 +113,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		try {
-			endModelSize = ActiveTDB.getModel(null).size();
+			endModelSize = ActiveTDB.getModel(graphName).size();
 		} catch (Exception e) {
 			System.out.println("Check model size failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -150,7 +152,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 	@Override
 	public List<String> getData() {
 		data = new ArrayList<String>();
-		executeQuery();
+		executeQuery(graphName);
 		return data;
 	}
 

@@ -39,7 +39,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	private Combo comboSelectorDataSource;
 	private Combo comboSelectorFileMD;
 	private Text[] dialogValues = new Text[9];
-//	private Integer referenceDataStatus = null;
+	// private Integer referenceDataStatus = null;
 
 	// private Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	private Color defaultBG = SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND);
@@ -185,23 +185,31 @@ public class MetaDataDialog extends TitleAreaDialog {
 			// deleteDataSource.addListener(SWT.Selection, new DeleteButtonClickListener());
 		}
 
-		if (curDataSourceProvider.getReferenceDataStatus() != null) {
-			rowIndex++;
-			Label labelReferenceDataStatus = new Label(composite, SWT.RIGHT);
-			labelReferenceDataStatus.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-			labelReferenceDataStatus.setText("Reference Data");
-			masterButton = new Button(composite, SWT.RADIO);
-			masterButton.setBounds(col2Left, rowIndex * disBtwnRows, col1Width - 10, rowHeight);
-			masterButton.setText("Master List");
-			masterButton.addSelectionListener(radioListener);
-			supplementaryButton = new Button(composite, SWT.RADIO);
-			supplementaryButton.setBounds(col2Left + 110, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
-			supplementaryButton.setText("Supplementary List");
-			supplementaryButton.addSelectionListener(radioListener);
-			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
-				masterButton.setSelection(true);
-			} else if (curDataSourceProvider.getReferenceDataStatus() == 2) {
+		rowIndex++;
+		Label labelReferenceDataStatus = new Label(composite, SWT.RIGHT);
+		labelReferenceDataStatus.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
+		labelReferenceDataStatus.setText("Reference Data");
+		masterButton = new Button(composite, SWT.RADIO);
+		masterButton.setBounds(col2Left, rowIndex * disBtwnRows, col1Width - 10, rowHeight);
+		masterButton.setText("Master List");
+		masterButton.addSelectionListener(radioListener);
+		supplementaryButton = new Button(composite, SWT.RADIO);
+		supplementaryButton.setBounds(col2Left + 110, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		supplementaryButton.setText("Supplementary List");
+		supplementaryButton.addSelectionListener(radioListener);
+		if (curDataSourceProvider.getReferenceDataStatus() == null) {
+			masterButton.setEnabled(false);
+			supplementaryButton.setEnabled(false);
+		} else {
+			masterButton.setEnabled(true);
+			supplementaryButton.setEnabled(true);
+			if (curDataSourceProvider.getReferenceDataStatus() == 2) {
 				supplementaryButton.setSelection(true);
+				masterButton.setSelection(false);
+
+			} else {
+				masterButton.setSelection(true);
+				supplementaryButton.setSelection(false);
 			}
 		}
 
@@ -308,14 +316,14 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 	SelectionListener radioListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			 System.out.println(e.getSource());
-			 Button thing = (Button) e.getSource();
-			 String thing2 = thing.getText();
-			 if (thing2.matches(".*Master.*")){
-				 curDataSourceProvider.setReferenceDataStatus(1);
-			 } else if (thing2.matches(".*Supplementary.*")){
-				 curDataSourceProvider.setReferenceDataStatus(2);
-			 }
+			System.out.println(e.getSource());
+			Button thing = (Button) e.getSource();
+			String thing2 = thing.getText();
+			if (thing2.matches(".*Master.*")) {
+				curDataSourceProvider.setReferenceDataStatus(1);
+			} else if (thing2.matches(".*Supplementary.*")) {
+				curDataSourceProvider.setReferenceDataStatus(2);
+			}
 
 		}
 
@@ -390,6 +398,21 @@ public class MetaDataDialog extends TitleAreaDialog {
 			dialogValues[3].setText(contactPerson.getAffiliationString());
 			dialogValues[4].setText(contactPerson.getEmailString());
 			dialogValues[5].setText(contactPerson.getPhoneString());
+		}
+		if (curDataSourceProvider.getReferenceDataStatus() == null) {
+			masterButton.setEnabled(false);
+			supplementaryButton.setEnabled(false);
+		} else {
+			masterButton.setEnabled(true);
+			supplementaryButton.setEnabled(true);
+			if (curDataSourceProvider.getReferenceDataStatus() == 2) {
+				supplementaryButton.setSelection(true);
+				masterButton.setSelection(false);
+
+			} else {
+				masterButton.setSelection(true);
+				supplementaryButton.setSelection(false);
+			}
 		}
 	}
 
