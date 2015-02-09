@@ -250,8 +250,8 @@ public class OpenLCA {
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet(graphName);
+		harmonyQuery2Impl.setGraphName(graphName);
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<RDFNode> names = new ArrayList<RDFNode>();
 		List<RDFNode> cass = new ArrayList<RDFNode>();
 		List<RDFNode> formulae = new ArrayList<RDFNode>();

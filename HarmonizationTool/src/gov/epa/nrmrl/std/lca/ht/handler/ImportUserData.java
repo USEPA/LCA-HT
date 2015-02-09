@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
@@ -14,6 +15,8 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -47,6 +50,10 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportUserData implements IHandler {
 
@@ -186,7 +193,7 @@ public class ImportUserData implements IHandler {
 	}
 
 	private static void loadUserDataFromRDFFile(File file) {
-		DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
+		// DataSourceKeeper.placeOrphanDataInNewOrphanDataset();
 		// List<String> currentNames = DataSourceKeeper.getDataSourceNamesInTDB();
 		// int priorDataSetCount = DataSourceKeeper.countDataSourcesInTDB();
 
@@ -249,7 +256,46 @@ public class ImportUserData implements IHandler {
 				e.printStackTrace();
 			}
 		}
-		int newDataSources = readStringsCountNewDataSources(fileContents);
+		readStringsCountNewDataSources(fileContents);
+		Resource existingDataSource = null;
+		boolean haveOLCAData = false;
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+
+		if (importModel.contains(null, RDF.type, OpenLCA.Flow)) {
+			haveOLCAData = true;
+		}
+
+		if (importModel.contains(null, RDF.type, ECO.DataSource)) {
+			ResIterator resIterator = importModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+			while (resIterator.hasNext()) {
+				existingDataSource = resIterator.next();
+				if (importModel.contains(null, ECO.hasDataSource, existingDataSource)) {
+					break;
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
+		if (haveOLCAData) {
+			OpenLCA.inferOpenLCATriples(ActiveTDB.importGraphName);
+		}
+
+		if (existingDataSource != null) {
+			DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
+			ActiveTDB.tsReplaceLiteral(existingDataSource, RDFS.label, dataSourceProvider.getDataSourceName(),
+					ActiveTDB.importGraphName);
+			Resource toRemove = dataSourceProvider.getTdbResource();
+			dataSourceProvider.setTdbResource(existingDataSource);
+			ActiveTDB.tsRemoveAllObjects(toRemove, ActiveTDB.importGraphName);
+		}
+
+		buildUserDataTableFromQueryResults();
+
+		/* TRANSFER DATA TO DEFAULT GRAPH */
+		ActiveTDB.copyImportGraphContentsToDefault();
+		ActiveTDB.clearImportGraphContents();
 
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -260,15 +306,10 @@ public class ImportUserData implements IHandler {
 		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
-		if (newDataSources > 0) {
-			runLogger.info("  # RDF data contained:  " + newDataSources + "new data sources");
-		}
 
-		buildUserDataTableFromQueryResults();
 	}
 
 	private static void buildUserDataTableFromQueryResults() {
-
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct \n");
@@ -318,11 +359,62 @@ public class ImportUserData implements IHandler {
 		b.append(" \n");
 		b.append("} \n");
 		b.append("order by ?flowable  \n");
+	
+		/* The below needs some serious work */
+//		b.append("select distinct \n");
+//		b.append("  ?flowable  \n");
+//		// b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
+//		b.append("  ?cas \n");
+//		b.append("  ?formula \n");
+//		b.append("  ?context_general \n");
+//		b.append("  ?context_specific \n");
+//		// b.append("  (fn:substring(str(?cat), ?cat_length - 35) as?context_specific_uuid) \n");
+//		b.append("  ?reference_unit \n");
+//		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
+//		b.append("  ?flow_property \n");
+//		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
+//		b.append(" \n");
+//		b.append("where { \n");
+//		b.append(" \n");
+//		b.append("  #--- FLOWABLE \n");
+//		b.append("  ?f a eco:FLOW . \n");
+//		b.append("  ?f eco:hasFlowable ?flowable . \n");
+//		b.append("  optional { \n");
+//		b.append("    ?f eco:casNumber ?cas . \n");
+//		b.append("  } \n");
+//		b.append("  optional { \n");
+//		b.append("    ?f eco:chemicalFormula ?formula . \n");
+//		b.append("  } \n");
+//		b.append("bind (fn:string-length(str(?f)) as ?flowable_length) \n");
+//		b.append(" \n");
+//		b.append("  #--- FLOW CONTEXT \n");
+//		b.append("  ?f fasc:hasCompartment ?cat . \n");
+//		b.append("  ?cat fasc:flowContextSupplementalDescription ?context_specific . \n");
+//		b.append("  ?cat fasc:hasCompartment ?parentCat . \n");
+//		b.append("  ?parentCat rdfs:label ?context_general . \n");
+//		b.append("  bind (fn:string-length(str(?cat)) as ?cat_length) \n");
+//		b.append(" \n");
+//		b.append(" \n");
+//		b.append("  #--- FLOW PROPERTY \n");
+//		b.append("  ?f fedlca:hasFlowProperty ?fpf . \n");
+//		b.append("  ?fpf fedlca:hasFlowProperty ?fp . \n");
+//		b.append("  ?fp rdfs:label ?flow_property . \n");
+//		b.append("  bind (fn:string-length(str(?fp)) as ?fp_length) \n");
+//		b.append(" \n");
+//		b.append("  ?fp fedlca:flowPropertyUnitString ?ug . \n");
+//		b.append("  ?ug olca:referenceUnit ?ru . \n");
+//		b.append("  ?ru olca:name ?reference_unit . \n");
+//		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
+//		b.append(" \n");
+//		b.append("} \n");
+//		b.append("order by ?flowable  \n");
+		/* The above needs some serious work */
 
 		String query = b.toString();
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
@@ -366,22 +458,22 @@ public class ImportUserData implements IHandler {
 		return stringBuilder.toString();
 	}
 
-	private static int readStringsCountNewDataSources(Map<String, String> fileContentsList) {
-		int before = DataSourceKeeper.countDataSourcesInTDB();
+	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList) {
+		// int before = DataSourceKeeper.countDataSourcesInTDB();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(null);
+		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 		String failedString = "";
 		try {
-			// tdbModel.setNsPrefix("", "http://openlca.org/schema/v1.0/");
-			// tdbModel.setNsPrefix("eco", "http://ontology.earthster.org/eco/core#");
 			for (String fileContents : fileContentsList.keySet()) {
 				failedString = fileContents;
-				// if (tableProvider.doesContainUntranslatedOpenLCAData()){
-
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
 				tdbModel.read(stream, "http://openlca.org/schema/v1.0/", inputType);
+				/*
+				 * The central argument is the @base. TODO: check if other values may become necessary if data without
+				 * fully qualified URIs is to be read in
+				 */
 			}
 			// tdbModel.read(inputStream, null, inputType);
 			ActiveTDB.tdbDataset.commit();
@@ -394,7 +486,6 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		return DataSourceKeeper.countDataSourcesInTDB() - before;
 	}
 
 	private static DataRow initDataRow(String[] values) {

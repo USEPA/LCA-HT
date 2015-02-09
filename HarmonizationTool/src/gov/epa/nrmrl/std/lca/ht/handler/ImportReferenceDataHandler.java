@@ -165,7 +165,7 @@ public class ImportReferenceDataHandler implements IHandler {
 			int dataSetCount = datasetNames.size();
 
 			Resource newDatasetResource = null;
-			String proposedNewDatasetName = DataSourceKeeper.uniquify(fileName);
+			String proposedNewDatasetName = DataSourceKeeper.uniquify(fileRoot);
 			if (dataSetCount == 0) {
 				dataSourceProvider = new DataSourceProvider();
 				newDatasetResource = dataSourceProvider.getTdbResource();
@@ -216,20 +216,19 @@ public class ImportReferenceDataHandler implements IHandler {
 			long time4 = System.currentTimeMillis();
 
 			if (!alreadyEcoDataSource) {
-				List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB
-						.getModel(ActiveTDB.importGraphName));
+				List<Resource> orphans = DataSourceKeeper.getOrphanResources(ActiveTDB.importGraphName);
 				if (!orphans.isEmpty()) {
 					// --- BEGIN SAFE -WRITE- TRANSACTION ---
 					ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 					importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 					try {
+						if (isMaster) {
+							importModel.add(newDatasetResource, RDF.type, LCAHT.MasterDataset);
+						} else {
+							importModel.add(newDatasetResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+						}
 						for (Resource orphan : orphans) {
 							importModel.add(orphan, ECO.hasDataSource, newDatasetResource);
-							if (isMaster) {
-								importModel.add(newDatasetResource, RDF.type, LCAHT.MasterDataset);
-							} else {
-								importModel.add(newDatasetResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
-							}
 						}
 						ActiveTDB.tdbDataset.commit();
 					} catch (Exception e) {
@@ -240,6 +239,9 @@ public class ImportReferenceDataHandler implements IHandler {
 					}
 					// ---- END SAFE -WRITE- TRANSACTION ---
 				}
+			} else {
+				ActiveTDB.tsReplaceLiteral(newDatasetResource, RDFS.label, dataSourceProvider.getDataSourceName(),
+						ActiveTDB.importGraphName);
 			}
 			long time5 = System.currentTimeMillis();
 

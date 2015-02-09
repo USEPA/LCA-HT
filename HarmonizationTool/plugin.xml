@@ -124,6 +124,11 @@
                   style="push">
             </command>
             <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
+                  label="Save Harmonized Data (json)"
+                  style="push">
+            </command>
+            <command
                   commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
                   label="Export entire TDB"
                   style="push">
@@ -429,6 +434,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"
             id="gov.epa.nrmrl.std.lca.ht.ResultsView"
             name="Show Results View">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
+            id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
+            name="Export Data to Jsonld">
       </command>
    </extension>
    <extension

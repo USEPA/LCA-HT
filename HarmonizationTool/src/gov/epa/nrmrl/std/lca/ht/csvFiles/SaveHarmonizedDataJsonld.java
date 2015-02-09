@@ -1,9 +1,12 @@
 package gov.epa.nrmrl.std.lca.ht.csvFiles;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector;
@@ -33,6 +36,7 @@ import java.util.Map;
 import org.apache.commons.csv.writer.CSVConfig;
 import org.apache.commons.csv.writer.CSVWriter;
 import org.apache.commons.csv.writer.CSVField;
+import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -51,6 +55,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.util.Utils;
 
@@ -73,6 +78,8 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
+
+		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("Saving Harmonized Data to .jsonld file");
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
@@ -103,7 +110,14 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
-		dialog.setFileName("harmoinzed_data");
+		Util.findView(CSVTableView.ID);
+		String key = CSVTableView.getTableProviderKey();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
+		String currentName = dataSourceProvider.getDataSourceName();
+		dialog.setFileName(currentName + "_harmoinzed");
+
+		// GenericStringBox dataSetNameSelector = new GenericStringBox(shell, "(choose dataset)",
+		// DataSourceKeeper.getAlphabetizedNames());
 
 		String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
@@ -112,58 +126,27 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 			return null;
 		}
 
-		/* To copy a dataset to the export graph */
-		
+		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		try {
-			CSVWriter csvWriter = new CSVWriter();
-			CSVConfig csvConfig = new CSVConfig();
-			csvConfig.setDelimiter('\t');
-			// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
-			// csvConfig.setIgnoreValueDelimiter(true);
-			// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
+			FileOutputStream fout = new FileOutputStream(saveTo);
+			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
+			ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 
-			// configure file for output
-			File file = new File(saveTo);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			Writer fileWriter = new FileWriter(file);
-			csvWriter.setWriter(fileWriter);
+			// --- BEGIN SAFE -READ- TRANSACTION ---
+			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+			Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+			tdbModel.write(fout, outType);
+			ActiveTDB.tdbDataset.end();
+			// ---- END SAFE -WRITE- TRANSACTION ---
 
-			// configure fields
-			for (String header : headerRow.getColumnValues()) {
-				csvConfig.addField(new CSVField(header.trim()));
-			}
-			csvWriter.setConfig(csvConfig);
-
-			// prepare and write headers
-			Map<String, String> map = new HashMap<String, String>();
-			for (String header : headerRow.getColumnValues()) {
-				map.put(header.trim(), header.trim());
-			}
-			csvWriter.writeRecord(map);
-
-			// prepare and write data
-			int row = 0;
-			for (DataRow dataRow : dataRows) {
-				System.out.println("Row: "+row++);
-				map.clear();
-				for (int i = 0; i < dataRow.getColumnValues().size(); i++) {
-					System.out.println("  Col: "+i);
-					String fieldName = headerRow.getColumnValues().get(i).trim();
-					String value = dataRow.getColumnValues().get(i);
-					map.put(fieldName, value);
-				}
-				csvWriter.writeRecord(map);
-			}
-
-			// flush and close writer
-			fileWriter.flush();
-			fileWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			ActiveTDB.tdbDataset.abort();
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
+		/* To copy a dataset to the export graph */
+		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
 		return null;
 	}
 

@@ -376,7 +376,7 @@ public class DataSourceKeeper {
 	}
 	
 
-	public static List<Resource> getOrphanResources(Model model) {
+	public static List<Resource> getOrphanResources(String graphName) {
 		List<Resource> results = new ArrayList<Resource>();
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
@@ -390,7 +390,8 @@ public class DataSourceKeeper {
 
 		String query = b.toString();
 		System.out.println("Query: \n" + query);
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl(model);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setGraphName(graphName);
 		harmonyQuery2Impl.setQuery(query);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();

@@ -10,34 +10,15 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class HarmonyQuery2Impl implements HarmonyQuery2 {
+	private String graphName = null;
 	private String query = null;
-	private Model model = null;
 
 	public HarmonyQuery2Impl() {
-		model = null;
-	}
 
-	public HarmonyQuery2Impl(Model modelToUse) {
-		model = modelToUse;
 	}
 
 	@Override
 	public ResultSet getResultSet() throws IllegalArgumentException {
-		return getResultSet(model);
-		// if (query == null) {
-		// throw new IllegalArgumentException("query cannot be null");
-		// }
-		// Model tdbModel = ActiveTDB.getModel(null);
-		// if (tdbModel == null) {
-		// throw new IllegalArgumentException("ActiveTDB.tdbModel is null");
-		// }
-		// QueryExecution qexec = QueryExecutionFactory.create(query, tdbModel);
-		// ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		// return resultSetRewindable;
-	}
-
-	public ResultSet getResultSet(String graphName) throws IllegalArgumentException {
-//		System.out.println("query=\n" + query);
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
@@ -45,19 +26,6 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		Model model = ActiveTDB.getModel(graphName);
 
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
-		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		return resultSetRewindable;
-	}
-
-	public ResultSet getResultSet(Model modelToUse) throws IllegalArgumentException {
-//		System.out.println("query=\n" + query);
-		if (query == null) {
-			throw new IllegalArgumentException("query cannot be null");
-		}
-		if (modelToUse == null) {
-			modelToUse = ActiveTDB.getModel(null);
-		}
-		QueryExecution qexec = QueryExecutionFactory.create(query, modelToUse);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 		return resultSetRewindable;
 	}
@@ -73,6 +41,10 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	}
 
 	public void getParamaterFromUser() {
+	}
+
+	public void setGraphName(String graphNameToUse) {
+		graphName = graphNameToUse;
 	}
 
 }
