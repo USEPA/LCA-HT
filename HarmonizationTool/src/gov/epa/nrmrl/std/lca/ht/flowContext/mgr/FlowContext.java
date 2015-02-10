@@ -36,7 +36,11 @@ public class FlowContext {
 	private static final Resource rdfClass = FASC.Compartment;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";
-	public static final String comment = "Compartments are used for classifying effects.  Effects have a hasCompartment property and the type of the value of that property may be used to classify the effect.  Examples of compartments include emissions to urban air and resource consumption from water.";
+	
+	public static final String comment = "The Flow Context is a term developed for the LCA Harmonization Tool.  It encompases terms such as 'Category' or 'Compartment' and may have several descriptors including geological feature, population density, or land use.  A Flow has a hasFlowContext property with an object being a FlowContext.  "
+			+ "This term is similar to fasc:Compartment.  Examples of Flow Contexts include emissions to urban air and resource consumption from water.";
+
+//	public static final String comment = "Compartments are used for classifying effects.  Effects have a hasCompartment property and the type of the value of that property may be used to classify the effect.  Examples of compartments include emissions to urban air and resource consumption from water.";
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 	private static List<FlowContext> lcaMasterContexts = new ArrayList<FlowContext>();
 	private static List<Pattern> regexGeneralString = new ArrayList<Pattern>();

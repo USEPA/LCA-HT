@@ -123,7 +123,7 @@ public class ImportReferenceDataHandler implements IHandler {
 
 			long time2;
 			if (shouldInferOLCAtriples) {
-				int olcaAdded = OpenLCA.inferOpenLCATriples(ActiveTDB.importGraphName);
+				int olcaAdded = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
 				runLogger.info("  # RDF triples added to openLCA data:  "
 						+ NumberFormat.getIntegerInstance().format(olcaAdded));
 				time2 = System.currentTimeMillis();

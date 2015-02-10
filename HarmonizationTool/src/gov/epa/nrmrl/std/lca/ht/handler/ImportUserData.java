@@ -279,7 +279,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.tdbDataset.end();
 
 		if (haveOLCAData) {
-			OpenLCA.inferOpenLCATriples(ActiveTDB.importGraphName);
+			OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
 		}
 
 		if (existingDataSource != null) {

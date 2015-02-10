@@ -200,7 +200,7 @@ public class OpenLCA {
 
 	}
 
-	public static int inferOpenLCATriples(String graphName) {
+	public static int convertOpenLCAToLCAHT(String graphName) {
 		int count = 0;
 		// ADD INFERENCES IN WHICH AN
 		for (Property propertyFrom : propertyMap.keySet()) {
@@ -231,6 +231,111 @@ public class OpenLCA {
 				count += added.intValue();
 			}
 		}
+		/* OpenLCA does not have Flowables, so we must create Flowables for distinct Flow name, cas, formula, dataset */
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct  ?name ?cas ?formula ?dataSource where { \n");
+		b.append("  ?flow a olca:Flow . \n");
+		b.append("  ?flow olca:name ?name . \n");
+		b.append("  optional { \n");
+		b.append("    ?flow olca:cas ?cas . \n");
+		b.append("  } \n");
+		b.append("  optional { \n");
+		b.append("    ?flow olca:formula ?formula . \n");
+		b.append("  } \n");
+		b.append("  optional { \n");
+		b.append("    ?flow eco:hasDataSource ?dataSource . \n");
+		b.append("  } \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(graphName);
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<RDFNode> names = new ArrayList<RDFNode>();
+		List<RDFNode> cass = new ArrayList<RDFNode>();
+		List<RDFNode> formulae = new ArrayList<RDFNode>();
+		List<RDFNode> datasets = new ArrayList<RDFNode>();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			names.add(querySolution.get("name"));
+			formulae.add(querySolution.get("formula"));
+			cass.add(querySolution.get("cas"));
+			datasets.add(querySolution.get("dataSource"));
+		}
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(graphName);
+		try {
+			count += names.size();
+			for (int i = 0; i < names.size(); i++) {
+				Resource newFlowable = tdbModel.createResource(ECO.Flowable);
+				String nameString = names.get(i).asLiteral().getString();
+				Literal nameLiteral = tdbModel.createTypedLiteral(nameString);
+				Literal nameLiteralLC = tdbModel.createTypedLiteral(nameString.toLowerCase());
+				tdbModel.addLiteral(newFlowable, RDFS.label, nameLiteral);
+				tdbModel.addLiteral(newFlowable, SKOS.altLabel, nameLiteralLC);
+
+				if (cass.get(i) != null) {
+					String casString = cass.get(i).asLiteral().getString();
+					Literal casLiteral = tdbModel.createTypedLiteral(casString);
+					tdbModel.addLiteral(newFlowable, ECO.casNumber, casLiteral);
+				}
+				if (formulae.get(i) != null) {
+					String formulaString = formulae.get(i).asLiteral().getString();
+					Literal formulaLiteral = tdbModel.createTypedLiteral(formulaString);
+					tdbModel.addLiteral(newFlowable, ECO.chemicalFormula, formulaLiteral);
+				}
+				if (datasets.get(i) != null) {
+					tdbModel.add(newFlowable, ECO.hasDataSource, datasets.get(i).asResource());
+				} else {
+
+				}
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+		return count;
+	}
+
+	public static int convertLCAHTToOpenLCA(String graphName) {
+		int count = 0;
+		// ADD INFERENCES IN WHICH AN
+		for (Property propertyTo : propertyMap.keySet()) {
+			Property propertyFrom = propertyMap.get(propertyTo);
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("INSERT { ?s <" + propertyTo.getURI() + "> ?to . } \n");
+			b.append("WHERE { ?s <" + propertyFrom.getURI() + "> ?to . } \n");
+			String query = b.toString();
+			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
+			iGenericUpdate.getData();
+			Long added = iGenericUpdate.getAddedTriples();
+			if (added != null) {
+				count += added.intValue();
+			}
+		}
+		for (Resource resourceTo : resourceMap.keySet()) {
+			Resource resourceFrom = resourceMap.get(resourceTo);
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("INSERT { ?s ?p <" + resourceTo.getURI() + "> . } \n");
+			b.append("WHERE { ?s ?p <" + resourceFrom.getURI() + "> . } \n");
+			String query = b.toString();
+			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
+			iGenericUpdate.getData();
+			Long added = iGenericUpdate.getAddedTriples();
+			if (added != null) {
+				count += added.intValue();
+			}
+		}
+		/* To convert LCAHT Flow data, determine how to create an openLCA Flow name */
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct  ?name ?cas ?formula ?dataSource where { \n");

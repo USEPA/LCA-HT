@@ -4,6 +4,7 @@ public class GenericUpdate extends HarmonyBaseUpdate {
 
 	public GenericUpdate(String query, String label) {
 		queryStr = query;
+		graphName = null;
 		this.label = label;
 		System.out.println("Running a generic update:");
 	}
