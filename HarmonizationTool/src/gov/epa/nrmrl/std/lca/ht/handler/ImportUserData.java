@@ -260,6 +260,8 @@ public class ImportUserData implements IHandler {
 		Resource existingDataSource = null;
 		boolean haveOLCAData = false;
 
+		new FlowContext(); /* This initiates and runs static methods */
+		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 
@@ -277,6 +279,8 @@ public class ImportUserData implements IHandler {
 			}
 		}
 		ActiveTDB.tdbDataset.end();
+		// ---- END SAFE -READ- TRANSACTION ---
+
 
 		if (haveOLCAData) {
 			OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
@@ -291,8 +295,11 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tsRemoveAllObjects(toRemove, ActiveTDB.importGraphName);
 		}
 
-		buildUserDataTableFromQueryResults();
-
+		if (haveOLCAData) {
+			buildUserDataTableFromOLCADataViaQuery();
+		} else {
+			buildUserDataTableFromLCAHTDataViaQuery();
+		}
 		/* TRANSFER DATA TO DEFAULT GRAPH */
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
@@ -309,7 +316,7 @@ public class ImportUserData implements IHandler {
 
 	}
 
-	private static void buildUserDataTableFromQueryResults() {
+	private static void buildUserDataTableFromOLCADataViaQuery() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct \n");
@@ -359,56 +366,6 @@ public class ImportUserData implements IHandler {
 		b.append(" \n");
 		b.append("} \n");
 		b.append("order by ?flowable  \n");
-	
-		/* The below needs some serious work */
-//		b.append("select distinct \n");
-//		b.append("  ?flowable  \n");
-//		// b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
-//		b.append("  ?cas \n");
-//		b.append("  ?formula \n");
-//		b.append("  ?context_general \n");
-//		b.append("  ?context_specific \n");
-//		// b.append("  (fn:substring(str(?cat), ?cat_length - 35) as?context_specific_uuid) \n");
-//		b.append("  ?reference_unit \n");
-//		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
-//		b.append("  ?flow_property \n");
-//		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
-//		b.append(" \n");
-//		b.append("where { \n");
-//		b.append(" \n");
-//		b.append("  #--- FLOWABLE \n");
-//		b.append("  ?f a eco:FLOW . \n");
-//		b.append("  ?f eco:hasFlowable ?flowable . \n");
-//		b.append("  optional { \n");
-//		b.append("    ?f eco:casNumber ?cas . \n");
-//		b.append("  } \n");
-//		b.append("  optional { \n");
-//		b.append("    ?f eco:chemicalFormula ?formula . \n");
-//		b.append("  } \n");
-//		b.append("bind (fn:string-length(str(?f)) as ?flowable_length) \n");
-//		b.append(" \n");
-//		b.append("  #--- FLOW CONTEXT \n");
-//		b.append("  ?f fasc:hasCompartment ?cat . \n");
-//		b.append("  ?cat fasc:flowContextSupplementalDescription ?context_specific . \n");
-//		b.append("  ?cat fasc:hasCompartment ?parentCat . \n");
-//		b.append("  ?parentCat rdfs:label ?context_general . \n");
-//		b.append("  bind (fn:string-length(str(?cat)) as ?cat_length) \n");
-//		b.append(" \n");
-//		b.append(" \n");
-//		b.append("  #--- FLOW PROPERTY \n");
-//		b.append("  ?f fedlca:hasFlowProperty ?fpf . \n");
-//		b.append("  ?fpf fedlca:hasFlowProperty ?fp . \n");
-//		b.append("  ?fp rdfs:label ?flow_property . \n");
-//		b.append("  bind (fn:string-length(str(?fp)) as ?fp_length) \n");
-//		b.append(" \n");
-//		b.append("  ?fp fedlca:flowPropertyUnitString ?ug . \n");
-//		b.append("  ?ug olca:referenceUnit ?ru . \n");
-//		b.append("  ?ru olca:name ?reference_unit . \n");
-//		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
-//		b.append(" \n");
-//		b.append("} \n");
-//		b.append("order by ?flowable  \n");
-		/* The above needs some serious work */
 
 		String query = b.toString();
 
@@ -437,6 +394,78 @@ public class ImportUserData implements IHandler {
 		return;
 	}
 
+	private static void buildUserDataTableFromLCAHTDataViaQuery() {
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct \n");
+		b.append("  ?flowable  \n");
+		b.append("  ?cas \n");
+		b.append("  ?formula \n");
+		b.append("  ?context_general \n");
+		b.append("  ?context_specific \n");
+		b.append("  ?reference_unit \n");
+		b.append("  ?flow_property \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append(" \n");
+		b.append("  #--- FLOW \n");
+		b.append("  ?f a eco:Flow . \n");
+		b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
+		b.append("  #--- FLOWABLE \n");
+		b.append("  ?f eco:hasFlowable ?flb . \n");
+		b.append("  ?flb a eco:Flowable . \n");
+		b.append("  ?flb rdfs:label ?flowable . \n");
+		b.append("  optional { \n");
+		b.append("    ?flb eco:casNumber ?cas . \n");
+		b.append("  } \n");
+		b.append("  optional { \n");
+		b.append("    ?flb eco:chemicalFormula ?formula . \n");
+		b.append("  } \n");
+		b.append(" \n");
+		b.append("  #--- FLOW CONTEXT \n");
+		b.append("  optional { \n");
+		b.append("    ?f fedlca:hasFlowContext ?cat . \n");
+		b.append("    ?cat fedlca:flowContextPrimaryDescription ?context_general . \n");
+		b.append("    ?cat fedlca:flowContextSupplementalDescription ?context_specific . \n");
+		b.append("  } \n");
+		b.append(" \n");
+		b.append("  #--- FLOW PROPERTY \n");
+		b.append("  optional { \n");
+		b.append("     ?f fedlca:hasFlowProperty ?fp . \n");
+		b.append("     ?fp fedlca:flowPropertyUnitString ?ug . \n");
+		b.append("     ?fp rdfs:label ?flow_property . \n");
+		b.append("  } \n");
+		b.append("} \n");
+		b.append("order by ?flowable  \n");
+
+		String query = b.toString();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+
+		tableProvider.createUserData((ResultSetRewindable) resultSet);
+
+		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
+												// COUNT FIELD TO TABLES
+
+		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
+		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.casString));
+		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
+		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap()
+				.get(FlowContext.flowContextGeneral));
+		tableProvider.setLCADataPropertyProvider(5,
+				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
+		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap()
+				.get(FlowProperty.flowPropertyUnit));
+		tableProvider.setLCADataPropertyProvider(7,
+				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
+		return;
+	}
+	
+	
 	private static String bufferToString(BufferedReader bufferedReader, boolean fixIDs) {
 		String pattern = "(\\@id\":)(\\d+)";
 		StringBuilder stringBuilder = new StringBuilder();

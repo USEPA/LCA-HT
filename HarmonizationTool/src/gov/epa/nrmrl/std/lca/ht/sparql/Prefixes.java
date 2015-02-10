@@ -44,6 +44,21 @@ public class Prefixes {
 		prefixMap.put("dcterms", DCTerms.NS); /* http://purl.org/dc/terms/ */
 		syncPrefixMapToTDBModel();
 	}
+	
+	public static String getPrefixForNS(String namespace){
+		if (prefixMap.containsValue(namespace)){
+			for (String key:prefixMap.keySet()){
+				if (prefixMap.get(key).equals(namespace)){
+					return key;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static String getNSForPrefix(String prefix){
+		return prefixMap.get(prefix);
+	}
 
 	public static void syncPrefixMapToTDBModel() {
 		if (prefixMap == null) {

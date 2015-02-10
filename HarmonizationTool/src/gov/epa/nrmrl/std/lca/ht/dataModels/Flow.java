@@ -57,7 +57,7 @@ public class Flow {
 			return;
 		}
 		this.flowContext = flowContext;
-		ActiveTDB.tsReplaceResource(tdbResource, FASC.hasCompartment, flowContext.getTdbResource());
+		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasFlowContext, flowContext.getTdbResource());
 	}
 
 	public FlowProperty getFlowProperty() {
@@ -99,7 +99,7 @@ public class Flow {
 		this.flowable = flowable2;
 		this.flowContext = flowContext2;
 		this.flowProperty = flowProperty2;
-		ActiveTDB.tsAddThree(tdbResource, ECO.hasFlowable, flowable2.getTdbResource(), FASC.hasCompartment,
+		ActiveTDB.tsAddThree(tdbResource, ECO.hasFlowable, flowable2.getTdbResource(), FedLCA.hasFlowContext,
 				flowContext2.getTdbResource(), FedLCA.hasFlowProperty, flowProperty2.getTdbResource());
 	}
 
@@ -125,7 +125,7 @@ public class Flow {
 				tdbModel.add(tdbResource, ECO.hasFlowable, flowable2.getTdbResource());
 			}
 			if (flowContext2 != null) {
-				tdbModel.add(tdbResource, FASC.hasCompartment, flowContext2.getTdbResource());
+				tdbModel.add(tdbResource, FedLCA.hasFlowContext, flowContext2.getTdbResource());
 			}
 			if (flowProperty2 != null) {
 				tdbModel.add(tdbResource, FedLCA.hasFlowProperty, flowProperty2.getTdbResource());
@@ -177,7 +177,7 @@ public class Flow {
 					tdbModel.add(tdbResource, ECO.hasFlowable, dataRow.getFlowable().getTdbResource());
 				}
 				if (dataRow.getFlowContext() != null) {
-					tdbModel.add(tdbResource, FASC.hasCompartment, dataRow.getFlowContext().getTdbResource());
+					tdbModel.add(tdbResource, FedLCA.hasFlowContext, dataRow.getFlowContext().getTdbResource());
 				}
 				if (dataRow.getFlowProperty() != null) {
 					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowProperty().getTdbResource());

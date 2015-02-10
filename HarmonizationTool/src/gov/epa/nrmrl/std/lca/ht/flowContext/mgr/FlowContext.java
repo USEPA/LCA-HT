@@ -33,7 +33,7 @@ public class FlowContext {
 	// CLASS VARIABLES
 	public static final String flowContextGeneral = "General";
 	public static final String flowContextSpecific = "Specific";
-	private static final Resource rdfClass = FASC.Compartment;
+	private static final Resource rdfClass = FedLCA.FlowContext;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";
 	
@@ -62,7 +62,7 @@ public class FlowContext {
 		lcaDataPropertyProvider.setUnique(true);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
-		lcaDataPropertyProvider.setTDBProperty(FASC.hasCompartment);
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextPrimaryDescription);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextSpecific);

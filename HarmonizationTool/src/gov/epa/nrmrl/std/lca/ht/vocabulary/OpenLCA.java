@@ -7,6 +7,8 @@ import java.util.Map;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -192,10 +194,10 @@ public class OpenLCA {
 		propertyMap.put(version, DCTerms.hasVersion);
 		propertyMap.put(synonyms, SKOS.altLabel);
 		propertyMap.put(flowProperty, FedLCA.hasFlowProperty);
-		propertyMap.put(category, FASC.hasCompartment);
+		propertyMap.put(category, FedLCA.hasFlowContext);
 
-		resourceMap.put(Category, FASC.Compartment);
-		resourceMap.put(FlowProperty, FedLCA.FlowProperty);
+		resourceMap.put(Category, FlowContext.getRdfclass());
+		resourceMap.put(FlowProperty, gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty.getRdfclass());
 		resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
 
 	}
