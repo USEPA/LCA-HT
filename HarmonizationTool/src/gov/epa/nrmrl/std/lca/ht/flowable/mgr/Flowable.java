@@ -739,6 +739,7 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
+			// TODO - Make sure that comparison is made.
 		}
 		if (count > 0) {
 			return count;

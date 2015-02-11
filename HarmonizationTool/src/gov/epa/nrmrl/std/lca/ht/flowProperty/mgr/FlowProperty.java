@@ -503,7 +503,7 @@ public class FlowProperty {
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		ResIterator resIterator = ActiveTDB.getModel(null).listSubjectsWithProperty(FedLCA.comparedSource, tdbResource);
 		// ActiveTDB.tdbDataset.end();
-		if (resIterator.hasNext()){
+		if (resIterator.hasNext()) {
 			matchingResource = resIterator.next();
 			ActiveTDB.tdbDataset.end();
 			return;
@@ -655,7 +655,8 @@ public class FlowProperty {
 		}
 		for (LCAUnit lcaUnit : lcaMasterUnits) {
 			if (lcaUnit.name.equals(unitStr)) {
-				matchingResource = lcaUnit.tdbResource;
+				setMatchingResource(lcaUnit.tdbResource);
+				// matchingResource = lcaUnit.tdbResource;
 				return true;
 			}
 		}

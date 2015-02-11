@@ -260,7 +260,7 @@ public class ImportUserData implements IHandler {
 		Resource existingDataSource = null;
 		boolean haveOLCAData = false;
 
-		new FlowContext(); /* This initiates and runs static methods */
+		new OpenLCA(); /* This initiates and runs static methods */
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
@@ -280,7 +280,6 @@ public class ImportUserData implements IHandler {
 		}
 		ActiveTDB.tdbDataset.end();
 		// ---- END SAFE -READ- TRANSACTION ---
-
 
 		if (haveOLCAData) {
 			OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
@@ -403,13 +402,13 @@ public class ImportUserData implements IHandler {
 		b.append("  ?formula \n");
 		b.append("  ?context_general \n");
 		b.append("  ?context_specific \n");
-		b.append("  ?reference_unit \n");
+		b.append("  ?unit \n");
 		b.append("  ?flow_property \n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");
 		b.append("  #--- FLOW \n");
-		b.append("  ?f a eco:Flow . \n");
+		b.append("  ?f a fedlca:Flow . \n");
 		b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
 		b.append("  #--- FLOWABLE \n");
 		b.append("  ?f eco:hasFlowable ?flb . \n");
@@ -432,11 +431,13 @@ public class ImportUserData implements IHandler {
 		b.append("  #--- FLOW PROPERTY \n");
 		b.append("  optional { \n");
 		b.append("     ?f fedlca:hasFlowProperty ?fp . \n");
-		b.append("     ?fp fedlca:flowPropertyUnitString ?ug . \n");
-		b.append("     ?fp rdfs:label ?flow_property . \n");
+		b.append("     ?fp fedlca:flowPropertyUnitString ?unit . \n");
 		b.append("  } \n");
+//		b.append("  optional { \n");
+//		b.append("     ?fp rdfs:label ?flow_property . \n");
+//		b.append("  } \n");
 		b.append("} \n");
-		b.append("order by ?flowable  \n");
+		b.append("order by ?rowNumber  \n");
 
 		String query = b.toString();
 
@@ -464,8 +465,7 @@ public class ImportUserData implements IHandler {
 				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
 		return;
 	}
-	
-	
+
 	private static String bufferToString(BufferedReader bufferedReader, boolean fixIDs) {
 		String pattern = "(\\@id\":)(\\d+)";
 		StringBuilder stringBuilder = new StringBuilder();

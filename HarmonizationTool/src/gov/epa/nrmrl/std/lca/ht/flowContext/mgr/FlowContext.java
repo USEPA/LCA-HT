@@ -334,7 +334,7 @@ public class FlowContext {
 					if (matcher2.find()) {
 						String masterSpecificString = flowContext.specificString;
 						if (udSpecificString.toLowerCase().equals(masterSpecificString)) {
-							matchingResource = flowContext.tdbResource;
+							setMatchingResource(flowContext.tdbResource);
 							return true;
 						}
 					}

@@ -187,19 +187,20 @@ public class OpenLCA {
 	private static final Map<Resource, Resource> resourceMap = new HashMap<Resource, Resource>();
 
 	static {
-		propertyMap.put(cas, ECO.casNumber);
-		propertyMap.put(formula, ECO.chemicalFormula);
-		propertyMap.put(name, RDFS.label);
-		propertyMap.put(description, RDFS.comment);
-		propertyMap.put(version, DCTerms.hasVersion);
-		propertyMap.put(synonyms, SKOS.altLabel);
-		propertyMap.put(flowProperty, FedLCA.hasFlowProperty);
-		propertyMap.put(category, FedLCA.hasFlowContext);
+		if (propertyMap.isEmpty()) {
+			propertyMap.put(cas, ECO.casNumber);
+			propertyMap.put(formula, ECO.chemicalFormula);
+			propertyMap.put(name, RDFS.label);
+			propertyMap.put(description, RDFS.comment);
+			propertyMap.put(version, DCTerms.hasVersion);
+			propertyMap.put(synonyms, SKOS.altLabel);
+			propertyMap.put(flowProperty, FedLCA.hasFlowProperty);
+			propertyMap.put(category, FedLCA.hasFlowContext);
 
-		resourceMap.put(Category, FlowContext.getRdfclass());
-		resourceMap.put(FlowProperty, gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty.getRdfclass());
-		resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
-
+			resourceMap.put(Category, FlowContext.getRdfclass());
+			resourceMap.put(FlowProperty, gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty.getRdfclass());
+			resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
+		}
 	}
 
 	public static int convertOpenLCAToLCAHT(String graphName) {
