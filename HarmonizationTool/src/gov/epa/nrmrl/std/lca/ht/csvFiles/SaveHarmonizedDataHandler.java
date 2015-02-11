@@ -144,10 +144,10 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			// prepare and write data
 			int row = 0;
 			for (DataRow dataRow : dataRows) {
-				System.out.println("Row: "+row++);
+//				System.out.println("Row: "+row++);
 				map.clear();
 				for (int i = 0; i < dataRow.getColumnValues().size(); i++) {
-					System.out.println("  Col: "+i);
+//					System.out.println("  Col: "+i);
 					String fieldName = headerRow.getColumnValues().get(i).trim();
 					String value = dataRow.getColumnValues().get(i);
 					map.put(fieldName, value);

@@ -9,12 +9,14 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -55,6 +57,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -500,6 +503,8 @@ public class MatchFlowables extends ViewPart {
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
 			candidateMap.put(matchingResource, newString);
+			// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
+
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = 0;
@@ -511,8 +516,10 @@ public class MatchFlowables extends ViewPart {
 			searchMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			if (colNumSelected > 0) {
 				candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
+				// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
 			} else {
 				candidateMap.remove(flowableTabRow.getFlowable().getTdbResource());
+				// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
 			}
 		}
 		tdbUpdateMatch(matchingResource, newString);
