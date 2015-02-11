@@ -397,10 +397,6 @@
             name="Show Logger">
       </command>
       <command
-            id="HarmonizationTool.command1"
-            name="About...">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.AboutHandler"
             id="harmonizationtool.handler.AboutHandler"
             name="HelpAbout">

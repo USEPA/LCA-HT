@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -21,8 +22,16 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 public class Prefixes {
 	private static final Map<String, String> prefixMap = new LinkedHashMap<String, String>();
+	private static final PrefixMapping prefixMapping = PrefixMapping.Factory.create();
 
 	// private static PrefixMapping prefixMapping = null;
+
+	public static PrefixMapping getPrefixmapping() {
+		if (prefixMap.isEmpty()) {
+			createMap();
+		}
+		return prefixMapping;
+	}
 
 	public static void createMap() {
 		prefixMap.put("fedlca", FedLCA.NS); /* http://epa.gov/nrmrl/std/lca/fedlca/1.0# */
@@ -42,44 +51,44 @@ public class Prefixes {
 
 		prefixMap.put("owl", OWL.NS); /* http://www.w3.org/2002/07/owl# */
 		prefixMap.put("dcterms", DCTerms.NS); /* http://purl.org/dc/terms/ */
-		syncPrefixMapToTDBModel();
+		prefixMapping.setNsPrefixes(prefixMap);
+
+//		syncPrefixMapToTDBModel();
 	}
-	
-	public static String getPrefixForNS(String namespace){
-		if (prefixMap.containsValue(namespace)){
-			for (String key:prefixMap.keySet()){
-				if (prefixMap.get(key).equals(namespace)){
+
+	public static String getPrefixForNS(String namespace) {
+		if (prefixMap.containsValue(namespace)) {
+			for (String key : prefixMap.keySet()) {
+				if (prefixMap.get(key).equals(namespace)) {
 					return key;
 				}
 			}
 		}
 		return null;
 	}
-	
-	public static String getNSForPrefix(String prefix){
+
+	public static String getNSForPrefix(String prefix) {
 		return prefixMap.get(prefix);
 	}
 
-	public static void syncPrefixMapToTDBModel() {
-		if (prefixMap == null) {
-			createMap();
-		}
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(null);
-		try {
-			for (String key : prefixMap.keySet()) {
-				String value = prefixMap.get(key);
-				tdbModel.setNsPrefix(key, value);
-			}
-		} catch (Exception e) {
-			System.out.println("Import failed with Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-	}
+//	public static void syncPrefixMapToTDBModel() {
+//		if (prefixMap == null) {
+//			createMap();
+//		}
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		try {
+//			tdbModel.setNsPrefixes(prefixMapping);
+//			ActiveTDB.tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("Prefix mapping sync from Prefixes failed with Exception: " + e);
+//			ActiveTDB.tdbDataset.abort();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
+//	}
 
 	public static Map<String, String> getPrefixmap() {
 		if (prefixMap == null) {

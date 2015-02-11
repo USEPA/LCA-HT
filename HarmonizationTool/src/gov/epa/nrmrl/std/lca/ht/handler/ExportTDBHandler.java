@@ -1,7 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import java.io.FileNotFoundException;
@@ -33,8 +32,6 @@ public class ExportTDBHandler implements IHandler {
 		if (ActiveTDB.getModel(null) == null) {
 			return null;
 		}
-		Prefixes.syncPrefixMapToTDBModel();
-
 		Logger runLogger = Logger.getLogger("run");
 
 		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.SAVE);
@@ -51,6 +48,7 @@ public class ExportTDBHandler implements IHandler {
 			fileDialog.setFilterPath(homeDir);
 		}
 		String path = fileDialog.open();
+
 		if (path != null) {
 			long startTime = System.currentTimeMillis();
 			String outType = ActiveTDB.getRDFTypeFromSuffix(path);
@@ -63,7 +61,6 @@ public class ExportTDBHandler implements IHandler {
 				}
 				runLogger.info("  # Writing RDF triples to " + path.toString());
 				FileOutputStream fout = new FileOutputStream(path);
-
 				// --- BEGIN SAFE -READ- TRANSACTION ---
 				ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 				Model tdbModel = ActiveTDB.getModel(null);
@@ -76,7 +73,7 @@ public class ExportTDBHandler implements IHandler {
 				} finally {
 					ActiveTDB.tdbDataset.end();
 				}
-				// ---- END SAFE -WRITE- TRANSACTION ---
+				// ---- END SAFE -READ- TRANSACTION ---
 
 				fout.close();
 			} catch (FileNotFoundException e1) {

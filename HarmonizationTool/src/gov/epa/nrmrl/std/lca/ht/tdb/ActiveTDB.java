@@ -15,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import org.eclipse.core.commands.Command;
@@ -44,6 +45,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
@@ -121,6 +123,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				new GenericMessageBox(shell, "Welcome!", b.toString());
 
 				redirectToPreferences();
+				return;
 			}
 
 			String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
@@ -135,6 +138,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				new GenericMessageBox(shell, "Alert", b.toString());
 
 				redirectToPreferences();
+				return;
 			} else {
 				System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 				try {
@@ -155,8 +159,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					graphStore = GraphStoreFactory.create(tdbDataset);
 					// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
 					// to the TDB that the session has started
-					Prefixes.syncPrefixMapToTDBModel();
-
+					// Prefixes.syncPrefixMapToTDBModel();
 				} catch (Exception e1) {
 					System.out.println("Exception: " + e1);
 					// TODO: Determine when this message might display and what the user and software shoul do about it.
@@ -167,9 +170,55 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					new GenericMessageBox(shell, "Error", b.toString());
 
 					redirectToPreferences();
+					return;
 				}
 			}
 		}
+		PrefixMapping prefixMapping = Prefixes.getPrefixmapping();
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = getModel(null);
+		try {
+			tdbModel.setNsPrefixes(prefixMapping);
+			System.out.println("Prefix mapping default" + Prefixes.getPrefixmapping());
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Prefix mapping sync ActiveTDB default failed with Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = getModel(importGraphName);
+		try {
+			tdbModel.setNsPrefixes(prefixMapping);
+			System.out.println("Prefix mapping import" + Prefixes.getPrefixmapping());
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Prefix mapping sync ActiveTDB import failed with Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = getModel(exportGraphName);
+		try {
+			tdbModel.setNsPrefixes(prefixMapping);
+			System.out.println("Prefix mapping export" + Prefixes.getPrefixmapping());
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Prefix mapping sync ActiveTDB export failed with Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public static void copyImportGraphContentsToDefault() {
@@ -216,7 +265,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			b.append("    }}  \n");
 			b.append("  }\n");
 			String query = b.toString();
-			System.out.println("\n"+query+"\n");
+			System.out.println("\n" + query + "\n");
 			UpdateRequest request = UpdateFactory.create(query);
 			UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
 			proc.execute();
@@ -444,7 +493,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	public static void replaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
 		if (noReadWrite) {
 			return;
@@ -465,7 +514,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral);
 	}
-	
+
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral, String graphName) {
 		if (tdbDataset.isInTransaction()) {
 			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
@@ -478,7 +527,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		tsReplaceLiteral(subject, predicate, rdfDatatype, thingLiteral, graphName);
 	}
-
 
 	private static void replaceResource(Resource subject, Property predicate, Resource object) {
 		if (noReadWrite) {
@@ -878,7 +926,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 	}
-	
+
 	public static void tsRemoveAllObjects(Resource resourceToRemove, String graphNameToUse) {
 		if (tdbDataset.isInTransaction()) {
 			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
@@ -1211,5 +1259,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		/* "RDF/JSON" RDFJSON */
 
 		return inputType;
+	}
+
+	public static void setModelPrefixMap(String exportgraphnameToUse) {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = getModel(exportgraphnameToUse);
+		try {
+			tdbModel.setNsPrefixes(Prefixes.getPrefixmapping());
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		System.out.println("Mapping = " + tdbModel.getNsPrefixMap());
 	}
 }
