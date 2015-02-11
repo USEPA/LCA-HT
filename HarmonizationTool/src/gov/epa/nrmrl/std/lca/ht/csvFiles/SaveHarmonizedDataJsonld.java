@@ -127,10 +127,11 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 		}
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
+		ActiveTDB.copyDatasetContentsToExportGraph(currentName);
+
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
 			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
-			ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 
 			// --- BEGIN SAFE -READ- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);

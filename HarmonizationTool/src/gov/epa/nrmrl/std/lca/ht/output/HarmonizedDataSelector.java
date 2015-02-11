@@ -685,7 +685,7 @@ public class HarmonizedDataSelector extends ViewPart {
 				// FIXME : WHAT DOES IT MEAN IF THERE ARE MULTIPLE HITS AND SOME ARE SUBSET OR PROXY?
 			}
 			if (hit == false) {
-				outputRow.add("");
+//				outputRow.add("");
 				for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
 					outputRow.add("");
 				}
