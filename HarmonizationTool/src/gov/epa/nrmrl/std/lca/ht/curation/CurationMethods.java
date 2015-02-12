@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.curration;
+package gov.epa.nrmrl.std.lca.ht.curation;
 
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -229,7 +229,7 @@ public class CurationMethods {
 			// System.out.println("updating existing comparison");
 			return comparison;
 		}
-		comparison = createNewComparison(tdbResource, matchResource, FedLCA.equivalenceCandidate);
+		comparison = createNewComparison(tdbResource, matchResource, FedLCA.EquivalenceCandidate);
 		// System.out.println("creating new comparison");
 		return comparison;
 	}

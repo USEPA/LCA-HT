@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;

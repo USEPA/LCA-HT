@@ -915,12 +915,12 @@ public class ResultsTreeEditor extends ViewPart {
 				Resource comparison = null;
 				System.out.println("got here");
 				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.equivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.Equivalent);
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 					// System.out.println("  eq");
 
 				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
-					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.nonEquivalent);
+					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.NonEquivalent);
 					// System.out.println("  non-eq");
 					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 

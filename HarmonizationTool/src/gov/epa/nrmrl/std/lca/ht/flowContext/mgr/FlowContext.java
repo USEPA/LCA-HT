@@ -150,8 +150,11 @@ public class FlowContext {
 		flowContext.tdbResource = tdbResource;
 		// THE ABOVE MUST BE DONE FIRST, SO THAT TRIPLES ARE ADDED PROPERLY
 		flowContext.generalString = generalString;
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextPrimaryDescription, generalString);
 		flowContext.specificString = specificString;
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, specificString);
 		flowContext.uuid = uuid;
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.hasOpenLCAUUID, uuid);
 		lcaMasterContexts.add(flowContext);
 	}
 

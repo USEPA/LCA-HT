@@ -38,6 +38,10 @@ public class Initializer extends AbstractPreferenceInitializer {
 		File projectDir = new File(projectPath);
 		projectDir.mkdirs();
 		
+		String resourcePath = projectDir + File.separator + "resource_files";
+		File resourceDir = new File(resourcePath);
+		resourceDir.mkdirs();
+		
 		String inputPath = projectDir + File.separator + "input_data";
 		File inputDir = new File(inputPath);
 		inputDir.mkdirs();

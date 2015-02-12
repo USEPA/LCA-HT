@@ -1,0 +1,853 @@
+#
+@prefix : <http://openlca.org/schema/v1.0/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### Enumeration types ###
+
+:Enumeration a rdfs:Class;
+  rdfs:comment "The super-class of all enumeration types."
+  .
+
+:AllocationType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "Types of allocation methods that can be applied on processes."
+  .
+
+:PHYSICAL_ALLOCATION a rdfs:Class;
+  rdfs:subClassOf :AllocationType;
+  .
+
+:ECONOMIC_ALLOCATION a rdfs:Class;
+  rdfs:subClassOf :AllocationType;
+  .
+
+:CAUSAL_ALLOCATION a rdfs:Class;
+  rdfs:subClassOf :AllocationType;
+  .
+
+:FlowPropertyType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "An enumeration of flow property types."
+  .
+
+:ECONOMIC_QUANTITY a rdfs:Class;
+  rdfs:subClassOf :FlowPropertyType;
+  .
+
+:PHYSICAL_QUANTITY a rdfs:Class;
+  rdfs:subClassOf :FlowPropertyType;
+  .
+
+:FlowType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "The basic flow types."
+  .
+
+:ELEMENTARY_FLOW a rdfs:Class;
+  rdfs:subClassOf :FlowType;
+  .
+
+:PRODUCT_FLOW a rdfs:Class;
+  rdfs:subClassOf :FlowType;
+  .
+
+:WASTE_FLOW a rdfs:Class;
+  rdfs:subClassOf :FlowType;
+  .
+
+:ModelType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "An enumeration of the root entity types."
+  .
+
+:PROJECT a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:IMPACT_METHOD a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:IMPACT_CATEGORY a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:PRODUCT_SYSTEM a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:PROCESS a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:FLOW a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:FLOW_PROPERTY a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:UNIT_GROUP a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:UNIT a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:ACTOR a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:SOURCE a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:CATEGORY a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:LOCATION a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:NW_SET a rdfs:Class;
+  rdfs:subClassOf :ModelType;
+  .
+
+:ParameterScope a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "The possible scopes of parameters."
+  .
+
+:PROCESS_SCOPE a rdfs:Class;
+  rdfs:subClassOf :ParameterScope;
+  .
+
+:LCIA_METHOD_SCOPE a rdfs:Class;
+  rdfs:subClassOf :ParameterScope;
+  .
+
+:GLOBAL_SCOPE a rdfs:Class;
+  rdfs:subClassOf :ParameterScope;
+  .
+
+:ProcessType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "None"
+  .
+
+:LCI_RESULT a rdfs:Class;
+  rdfs:subClassOf :ProcessType;
+  .
+
+:UNIT_PROCESS a rdfs:Class;
+  rdfs:subClassOf :ProcessType;
+  .
+
+:UncertaintyType a rdfs:Class;
+  rdfs:subClassOf :Enumeration;
+  rdfs:comment "Enumeration of uncertainty distribution types that can be used in exchanges, parameters, LCIA factors, etc.
+"
+  .
+
+:LOG_NORMAL_DISTRIBUTION a rdfs:Class;
+  rdfs:subClassOf :UncertaintyType;
+  .
+
+:NORMAL_DISTRIBUTION a rdfs:Class;
+  rdfs:subClassOf :UncertaintyType;
+  .
+
+:TRIANGLE_DISTRIBUTION a rdfs:Class;
+  rdfs:subClassOf :UncertaintyType;
+  .
+
+:UNIFORM_DISTRIBUTION a rdfs:Class;
+  rdfs:subClassOf :UncertaintyType;
+  .
+
+### Class types ###
+
+:Actor a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "An actor is a person or organisation."
+  .
+
+:AllocationFactor a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "A single allocation factor in a process."
+  .
+
+:CategorizedEntity a rdfs:Class;
+  rdfs:subClassOf :RootEntity;
+  rdfs:comment "A root entity which can have a category."
+  .
+
+:Category a rdfs:Class;
+  rdfs:subClassOf :RootEntity;
+  rdfs:comment "A category for the categorisation of types like processes, flows, etc."
+  .
+
+:Entity a rdfs:Class;
+  rdfs:comment "The most generic type of the openLCA model."
+  .
+
+:Exchange a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "An input or output of a process."
+  .
+
+:Flow a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service etc.)
+"
+  .
+
+:FlowProperty a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "A flow property is a quantity that can be used to express amounts of a flow."
+  .
+
+:FlowPropertyFactor a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "A conversion factor of a quantity to the reference flow property of a flow."
+  .
+
+:Location a rdfs:Class;
+  rdfs:subClassOf :RootEntity;
+  rdfs:comment "A location like a country, state, city, etc."
+  .
+
+:Parameter a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "None"
+  .
+
+:Process a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "None"
+  .
+
+:ProcessDocumentation a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "None"
+  .
+
+:RootEntity a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "A standalone item in a database like a location or unit"
+  .
+
+:Source a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "A source is a literature reference."
+  .
+
+:Uncertainty a rdfs:Class;
+  rdfs:subClassOf :Entity;
+  rdfs:comment "Defines the parameter values of an uncertainty distribution. Depending on the uncertainty distribution type different parameters could be used.
+"
+  .
+
+:Unit a rdfs:Class;
+  rdfs:subClassOf :RootEntity;
+  rdfs:comment "An unit of measure"
+  .
+
+:UnitGroup a rdfs:Class;
+  rdfs:subClassOf :CategorizedEntity;
+  rdfs:comment "A group of units that can be converted into each other."
+  .
+
+:sourceType a rdf:Property;
+  rdfs:domain :Parameter;
+  rdfs:range xsd:string;
+  rdfs:comment "Indicates the type of the source if an external source is defined for the parameter.
+"
+  .
+
+:dataDocumentor a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range :Actor;
+  .
+
+:synonyms a rdf:Property;
+  rdfs:domain :Unit;
+  rdfs:range rdf:List;
+  rdfs:comment "A list of synonyms for the unit."
+  .
+
+:category a rdf:Property;
+  rdfs:domain :CategorizedEntity;
+  rdfs:range :Category;
+  rdfs:comment "The category of the entity."
+  .
+
+:city a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:description a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Parameter :RootEntity)];
+  rdfs:range xsd:string;
+  .
+
+:modeFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the most likely value."
+  .
+
+:flowProperty a rdf:Property;
+  rdfs:domain :FlowPropertyFactor;
+  rdfs:range :FlowProperty;
+  rdfs:comment "The flow property (quantity) of the factor."
+  .
+
+:pedigreeUncertainty a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:longitude a rdf:Property;
+  rdfs:domain :Location;
+  rdfs:range xsd:double;
+  rdfs:comment "The average longitude of the location."
+  .
+
+:email a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:dataTreatmentDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:publication a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range :Source;
+  .
+
+:referenceFlowProperty a rdf:Property;
+  rdfs:domain :Flow;
+  rdfs:range :FlowProperty;
+  rdfs:comment "The flow property that should be normally used to express quantities of the flow (e.g. in results)."
+  .
+
+:maximum a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The maximum value (used for uniform and triangle distributions)."
+  .
+
+:allocationFactors a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range rdf:List;
+  .
+
+:validUntil a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:date;
+  .
+
+:country a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:code a rdf:Property;
+  rdfs:domain :Location;
+  rdfs:range xsd:string;
+  rdfs:comment "The code of the location (e.g. an ISO 2-letter country code)."
+  .
+
+:baseUncertainty a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:double;
+  rdfs:comment ""
+  .
+
+:latitude a rdf:Property;
+  rdfs:domain :Location;
+  rdfs:range xsd:double;
+  rdfs:comment "The average latitude of the location."
+  .
+
+:unit a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range :Unit;
+  rdfs:comment ""
+  .
+
+:quantitativeReference a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range :Exchange;
+  .
+
+:meanFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the arithmetic mean."
+  .
+
+:telephone a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:version a rdf:Property;
+  rdfs:domain :RootEntity;
+  rdfs:range xsd:string;
+  rdfs:comment "A version number in ILCD format (e.g. 1.0 or 1.0.1)."
+  .
+
+:creationDate a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:dateTime;
+  .
+
+:mode a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The most likely value (used for triangle distributions)."
+  .
+
+:externalSource a rdf:Property;
+  rdfs:domain :Parameter;
+  rdfs:range xsd:string;
+  rdfs:comment "A reference to an external source where the parameter is defined (e.g. an Excel table, shapefile, etc.).
+"
+  .
+
+:address a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:projectDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:dataSetOwner a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range :Actor;
+  .
+
+:modelingConstantsDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:geomMean a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The geometric mean value (used for log-normal distributions)."
+  .
+
+:year a rdf:Property;
+  rdfs:domain :Source;
+  rdfs:range xsd:integer;
+  rdfs:comment "The publication year of the source."
+  .
+
+:formula a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Flow :Parameter)];
+  rdfs:range xsd:string;
+  .
+
+:restrictionsDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:geographyDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:productExchange a rdf:Property;
+  rdfs:domain :AllocationFactor;
+  rdfs:range :Exchange;
+  rdfs:comment "The output product."
+  .
+
+:textReference a rdf:Property;
+  rdfs:domain :Source;
+  rdfs:range xsd:string;
+  rdfs:comment "The full text reference of the source."
+  .
+
+:flowPropertyFactor a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range :FlowPropertyFactor;
+  rdfs:comment "Contains the quantity in which the exchange amount is given and the conversion factor to the reference flow property of the exchange.
+"
+  .
+
+:processTyp a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range :ProcessType;
+  .
+
+:cas a rdf:Property;
+  rdfs:domain :Flow;
+  rdfs:range xsd:string;
+  rdfs:comment "A CAS number of the flow."
+  .
+
+:flow a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Exchange :FlowPropertyFactor)];
+  rdfs:range :Flow;
+  .
+
+:input a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:boolean;
+  rdfs:comment ""
+  .
+
+:dataGenerator a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range :Actor;
+  .
+
+:kml a rdf:Property;
+  rdfs:domain :Location;
+  rdfs:range xsd:string;
+  rdfs:comment "KML data of the location."
+  .
+
+:allocationType a rdf:Property;
+  rdfs:domain :AllocationFactor;
+  rdfs:range :AllocationType;
+  rdfs:comment "The type of allocation."
+  .
+
+:doi a rdf:Property;
+  rdfs:domain :Source;
+  rdfs:range xsd:string;
+  rdfs:comment "The digital object identifier of the source (see http://en.wikipedia.org/wiki/Digital_object_identifier)."
+  .
+
+:location a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Flow :Process)];
+  rdfs:range :Location;
+  .
+
+:reviewer a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range :Actor;
+  .
+
+:avoidedProduct a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:boolean;
+  rdfs:comment "Indicates whether this exchange is an avoided product."
+  .
+
+:childCategories a rdf:Property;
+  rdfs:domain :Category;
+  rdfs:range rdf:List;
+  rdfs:comment "A list of categories that are sub-categories of the category."
+  .
+
+:value a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:AllocationFactor :FlowPropertyFactor :Parameter)];
+  rdfs:range xsd:double;
+  .
+
+:inputParameter a rdf:Property;
+  rdfs:domain :Parameter;
+  rdfs:range xsd:boolean;
+  rdfs:comment "Indicates whether the parameter is an input parameter (true) or a dependent/calculated parameter (false). A parameter can have a formula if it is not an input parameter.
+"
+  .
+
+:units a rdf:Property;
+  rdfs:domain :UnitGroup;
+  rdfs:range rdf:List;
+  rdfs:comment "All units of the unit group."
+  .
+
+:validFrom a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:date;
+  .
+
+:flowPropertyType a rdf:Property;
+  rdfs:domain :FlowProperty;
+  rdfs:range :FlowPropertyType;
+  rdfs:comment "The type of the flow property"
+  .
+
+:lastChange a rdf:Property;
+  rdfs:domain :RootEntity;
+  rdfs:range xsd:dateTime;
+  rdfs:comment "The date when the entity was changed the last time. Together with the UUID and version this identifies an entity unambiguously."
+  .
+
+:unitGroup a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:FlowProperty :Unit)];
+  rdfs:range :UnitGroup;
+  .
+
+:minimum a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The minimum value (used for uniform and triangle distributions)."
+  .
+
+:amountFormula a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:telefax a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:name a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Parameter :RootEntity)];
+  rdfs:range xsd:string;
+  .
+
+:parameterScope a rdf:Property;
+  rdfs:domain :Parameter;
+  rdfs:range :ParameterScope;
+  rdfs:comment "The scope where the parameter is valid."
+  .
+
+:geomSd a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The geometric standard deviation (used for log-normal distributions)."
+  .
+
+:amount a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range xsd:double;
+  rdfs:comment ""
+  .
+
+:geomSdFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the geometric standard deviation."
+  .
+
+:reviewDetails a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:copyright a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:boolean;
+  .
+
+:sdFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the arithmetic standard deviation."
+  .
+
+:provider a rdf:Property;
+  rdfs:domain :Exchange;
+  rdfs:range :Process;
+  rdfs:comment ""
+  .
+
+:dataCollectionDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:sd a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The arithmetic standard deviation  (used for normal distributions)."
+  .
+
+:intendedApplication a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:technologyDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:processDocumentation a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range :ProcessDocumentation;
+  .
+
+:zipCode a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:website a rdf:Property;
+  rdfs:domain :Actor;
+  rdfs:range xsd:string;
+  rdfs:comment ""
+  .
+
+:conversionFactor a rdf:Property;
+  rdfs:domain :Unit;
+  rdfs:range xsd:double;
+  rdfs:comment "The conversion factor to the reference unit of the unit group to which this unit belongs."
+  .
+
+:defaultFlowProperty a rdf:Property;
+  rdfs:domain :UnitGroup;
+  rdfs:range :FlowProperty;
+  rdfs:comment "Some LCA data formats do not have the concept of flow properties or quantities. This field provides a default link to a flow property for units that are contained in this group.
+"
+  .
+
+:minimumFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the minimum value."
+  .
+
+:samplingDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:parameters a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range rdf:List;
+  .
+
+:distributionType a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range :UncertaintyType;
+  rdfs:comment "The uncertainty distribution type"
+  .
+
+:inventoryMethodDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:completenessDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:parentCategory a rdf:Property;
+  rdfs:domain :Category;
+  rdfs:range :Category;
+  rdfs:comment "The parent category of the category."
+  .
+
+:defaultAllocationMethod a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range :AllocationType;
+  .
+
+:referenceUnit a rdf:Property;
+  rdfs:domain :UnitGroup;
+  rdfs:range :Unit;
+  rdfs:comment "The reference unit of the group with the conversion factor 1.0."
+  .
+
+:geomMeanFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "A mathematical formula for the geometric mean."
+  .
+
+:modelType a rdf:Property;
+  rdfs:domain :Category;
+  rdfs:range :ModelType;
+  rdfs:comment "The type of models that can be linked to the category."
+  .
+
+:timeDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:exchanges a rdf:Property;
+  rdfs:domain :Process;
+  rdfs:range rdf:List;
+  .
+
+:uncertainty a rdf:Property;
+  rdfs:domain [ a owl:Class; owl:unionOf (:Exchange :Parameter)];
+  rdfs:range :Uncertainty;
+  .
+
+:externalFile a rdf:Property;
+  rdfs:domain :Source;
+  rdfs:range xsd:string;
+  rdfs:comment "A direct link (relative or absolute URL) to the source file."
+  .
+
+:dataSelectionDescription a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range xsd:string;
+  .
+
+:sources a rdf:Property;
+  rdfs:domain :ProcessDocumentation;
+  rdfs:range rdf:List;
+  .
+
+:flowPropertyFactors a rdf:Property;
+  rdfs:domain :Flow;
+  rdfs:range rdf:List;
+  rdfs:comment "Conversion factors between flow properties that can be used to express amounts of the flow.
+"
+  .
+
+:maximumFormula a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:string;
+  rdfs:comment "A mathematical formula for the maximum value."
+  .
+
+:allocatedExchange a rdf:Property;
+  rdfs:domain :AllocationFactor;
+  rdfs:range :Exchange;
+  rdfs:comment "An input product or elementary flow exchange which is allocated by this factor. This is only valid for causal allocation where allocation factors can be assigned to single exchanges.
+"
+  .
+
+:mean a rdf:Property;
+  rdfs:domain :Uncertainty;
+  rdfs:range xsd:double;
+  rdfs:comment "The arithmetic mean (used for normal distributions)."
+  .
+
+:flowType a rdf:Property;
+  rdfs:domain :Flow;
+  rdfs:range :FlowType;
+  rdfs:comment "The type of the flow. Note that this type is more a descriptor of how the flow is handled in calculations.
+"
+  .
+

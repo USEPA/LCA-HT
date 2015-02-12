@@ -66,14 +66,15 @@ public class FedLCA {
 	public static final Property comparedSource = m_model.createProperty(NS + "comparedSource");
 	public static final Property comparedMaster = m_model.createProperty(NS + "comparedMaster");
 	public static final Property comparedEquivalence = m_model.createProperty(NS + "comparedEquivalence");
-	public static final Resource Equivalence = m_model.createResource(NS + "Equivalence");
 	
-	public static final Resource equivalenceCandidate = m_model.createResource(NS + "equivalenceCandidate");
-	public static final Resource equivalent = m_model.createResource(NS + "equivalent");
-	public static final Resource equivalenceSubset = m_model.createResource(NS + "equivalenceSubset");
-	public static final Resource equivalenceSuperset = m_model.createResource(NS + "equivalenceSuperset");
-	public static final Resource equivalenceProxy = m_model.createResource(NS + "equivalenceProxy");
-	public static final Resource nonEquivalent = m_model.createResource(NS + "nonEquivalent");
+//	public static final Resource Equivalence = m_model.createResource(NS + "Equivalence");
+	
+	public static final Resource EquivalenceCandidate = m_model.createResource(NS + "EquivalenceCandidate");
+	public static final Resource Equivalent = m_model.createResource(NS + "Equivalent");
+	public static final Resource EquivalenceSubset = m_model.createResource(NS + "EquivalenceSubset");
+	public static final Resource EquivalenceSuperset = m_model.createResource(NS + "EquivalenceSuperset");
+	public static final Resource EquivalenceProxy = m_model.createResource(NS + "EquivalenceProxy");
+	public static final Resource NonEquivalent = m_model.createResource(NS + "NonEquivalent");
 
 	/**
 	 * <p>
@@ -90,6 +91,8 @@ public class FedLCA {
 	 */
 //	public static final Property hasCAS = m_model.createProperty(NS + "hasCAS");
 	public static final Property hasFormattedCAS = m_model.createProperty(NS + "hasFormattedCAS");
+	
+	public static final Property hasOpenLCAUUID = m_model.createProperty(NS + "hasOpenLCAUUID");
 
 	/**
 	 * <p>

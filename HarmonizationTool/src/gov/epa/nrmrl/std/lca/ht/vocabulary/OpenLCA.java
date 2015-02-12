@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
-import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -24,6 +20,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -34,12 +32,14 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 
 public class OpenLCA {
+	private static boolean tdbLoaded = false;
 	/**
 	 * <p>
 	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
 	private static Model m_model = ActiveTDB.getModel(null);
+	private static String generalComment = "Information added by the LCA Harmonization Tool";
 
 	/**
 	 * <p>
@@ -66,17 +66,18 @@ public class OpenLCA {
 	 */
 	public static final Resource NAMESPACE = m_model.createResource(NS);
 
-	/**
-	 * <p>
-	 * A class for CAS Numbers
-	 * </p>
-	 */
-	// public static final Resource CASRN = m_model.createResource(NS + "CASRN");
-	/*
-	 * Flow - Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service
-	 * etc.)
-	 */
+	/* The most generic type of the openLCA model. */
+	public static final Resource Entity = m_model.createResource(NS + "Entity");
+
+	/* The super-class of all enumeration types. */
+	public static final Resource Enumeration = m_model.createResource(NS + "Enumeration");
+
+	/* A root entity which can have a category. */
+	public static final Resource CategorizedEntity = m_model.createResource(NS + "CategorizedEntity");
+
+	/* Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service * etc.) */
 	public static final Resource Flow = m_model.createResource(NS + "Flow");
+
 	/*
 	 * flowType - The type of the flow. Note that this type is more a descriptor of how the flow is handled in
 	 * calculations.
@@ -156,20 +157,25 @@ public class OpenLCA {
 	/* ModelType - An enumeration of the root entity types. */
 	public static final Resource ModelType = m_model.createResource(NS + "ModelType");
 	/* Fourteen types of ModelType */
-	public static final Resource PROJECT = m_model.createResource(NS + "PROJECT");
-	public static final Resource IMPACT_METHOD = m_model.createResource(NS + "IMPACT_METHOD");
-	public static final Resource IMPACT_CATEGORY = m_model.createResource(NS + "IMPACT_CATEGORY");
-	public static final Resource PRODUCT_SYSTEM = m_model.createResource(NS + "PRODUCT_SYSTEM");
-	public static final Resource PROCESS = m_model.createResource(NS + "PROCESS");
+	/*
+	 * The following are modelTypes for the root level: Category
+	 */
+	public static final Resource ACTOR = m_model.createResource(NS + "ACTOR");
+	public static final Resource CATEGORY = m_model.createResource(NS + "CATEGORY");
 	public static final Resource FLOW = m_model.createResource(NS + "FLOW");
 	public static final Resource FLOW_PROPERTY = m_model.createResource(NS + "FLOW_PROPERTY");
-	public static final Resource UNIT_GROUP = m_model.createResource(NS + "UNIT_GROUP");
-	public static final Resource UNIT = m_model.createResource(NS + "UNIT");
-	public static final Resource ACTOR = m_model.createResource(NS + "ACTOR");
-	public static final Resource SOURCE = m_model.createResource(NS + "SOURCE");
-	public static final Resource CATEGORY = m_model.createResource(NS + "CATEGORY");
+	public static final Resource IMPACT_CATEGORY = m_model.createResource(NS + "IMPACT_CATEGORY");
+	public static final Resource IMPACT_METHOD = m_model.createResource(NS + "IMPACT_METHOD");
 	public static final Resource LOCATION = m_model.createResource(NS + "LOCATION");
 	public static final Resource NW_SET = m_model.createResource(NS + "NW_SET");
+
+	public static final Resource PROCESS = m_model.createResource(NS + "PROCESS");
+	public static final Resource PRODUCT_SYSTEM = m_model.createResource(NS + "PRODUCT_SYSTEM");
+	public static final Resource PROJECT = m_model.createResource(NS + "PROJECT");
+	public static final Resource SOURCE = m_model.createResource(NS + "SOURCE");
+	public static final Resource UNIT = m_model.createResource(NS + "UNIT");
+	public static final Resource UNIT_GROUP = m_model.createResource(NS + "UNIT_GROUP");
+	// public static final Resource UNKNOWN = m_model.createResource(NS + "UNKNOWN");
 
 	/* name - The name of the entity. */
 	public static final Property name = m_model.createProperty(NS + "name");
@@ -201,6 +207,37 @@ public class OpenLCA {
 			resourceMap.put(FlowProperty, gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty.getRdfclass());
 			resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
 		}
+		/* The things below would be superseded by just loading the .ttl file */
+//		if (!tdbLoaded) {
+//			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//
+//			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//			Model model = ActiveTDB.getModel(null);
+//			try {
+//				model.add(Flow, RDF.type, OWL.Class);
+//				model.add(Flow, RDFS.subClassOf, CategorizedEntity);
+//				model.add(Flow, RDFS.comment,
+//						"Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service, etc.");
+//				model.add(Flow, RDFS.label, "Flow");
+//				model.add(Flow, RDFS.comment, generalComment);
+//				
+//				model.add(FlowType, RDF.type, OWL.Class);
+//				model.add(FlowType, RDFS.subClassOf, Enumeration);
+//				model.add(FlowType, RDFS.comment,
+//						"The basic flow types. As of version 1.4, the types of FlowType include ELEMENTARY_FLOW, PRODUCT_FLOW, and WASTE_FLOW");
+//				model.add(FlowType, RDFS.label, "FlowType");
+//				model.add(FlowType, RDFS.comment, generalComment);
+//
+//				ActiveTDB.tdbDataset.commit();
+//			} catch (Exception e) {
+//				System.out.println("Adding OpenLCA ontology triples failed; see Exception: " + e);
+//				ActiveTDB.tdbDataset.abort();
+//			} finally {
+//				ActiveTDB.tdbDataset.end();
+//			}
+//			// ---- END SAFE -WRITE- TRANSACTION ---
+//			tdbLoaded = true;
+//		}
 	}
 
 	public static int convertOpenLCAToLCAHT(String graphName) {

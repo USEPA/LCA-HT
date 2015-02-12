@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.curration.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
@@ -652,12 +652,12 @@ public class Flowable {
 
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.equivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
 	}
 
 	public void addSearchResult(Resource resource) {
 		searchResults.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.equivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
 	}
 
 	public void removeMatchCandidate(Resource resource) {
@@ -739,7 +739,7 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
-			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
+			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
 		}
 		if (count > 0) {
 			return count;

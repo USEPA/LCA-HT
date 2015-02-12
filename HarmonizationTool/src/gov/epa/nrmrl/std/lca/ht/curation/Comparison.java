@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.curration;
+package gov.epa.nrmrl.std.lca.ht.curation;
 
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 

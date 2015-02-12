@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,6 +20,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -404,6 +406,13 @@ public class FlowProperty {
 		lcaUnit.unit_group = unitGroup;
 		lcaUnit.uuid = uuid;
 		lcaUnit.tdbResource = tdbResource;
+		
+		ActiveTDB.tsAddTriple(tdbResource, RDF.type , OpenLCA.FlowProperty);
+
+		ActiveTDB.tsAddLiteral(tdbResource, DCTerms.description , description);
+		ActiveTDB.tsAddLiteral(tdbResource, OpenLCA.description , description);
+
+		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.hasOpenLCAUUID, uuid);
 		lcaMasterUnits.add(lcaUnit);
 	}
 

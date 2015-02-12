@@ -7,6 +7,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -23,8 +25,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
+
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 public class SaveHarmonizedDataJsonld implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld";
@@ -91,6 +98,57 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		ActiveTDB.copyDatasetContentsToExportGraph(currentName);
+		/* Once data are copied into the export graph, info can be added / changed without affecting the default graph */
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		try {
+
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+			b.append("  ?flow a olca:Flow . \n");
+			b.append("  ?flow olca:name ?name . \n");
+			b.append("  ?flow olca:cas ?cas_fmt . \n");
+			b.append("  ?flow olca:formula ?formula . \n");
+			b.append("}} \n");
+			b.append("  where {\n");
+			b.append("    ?flow a fedlca:Flow . \n");
+			b.append("    ?flow eco:hasFlowable ?flowable . \n");
+			b.append("    #-- Flow must have a comparison with 'equivalent' \n");
+			b.append("    ?c fedlca:comparedSource ?flowable . \n");
+			b.append("    ?c fedlca:comparedMaster ?masterFlowable . \n");
+			b.append("    ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append("    ?masterFlowable rdfs:label ?masterLabel .  \n");
+			b.append("    optional { ?masterFlowable eco:casNumber ?cas . } \n");
+			b.append("    optional { ?masterFlowable eco:chemicalFormula ?formula . } \n");
+
+			b.append("    ?flow fedlca:hasFlowContext ?flowContext . \n");
+			b.append("    ?flowContext owl:sameAs ?masterFlowContext . \n");
+			b.append("    filter (?flowContext != ?masterFlowContext ) \n");
+			b.append("    ?masterFlowContext fedlca:flowContextPrimaryDescription ?generalContext . \n");
+			b.append("    ?masterFlowContext fedlca:flowContextSupplementaryDescription ?specificContext . \n");
+
+			b.append("    ?flow fedlca:hasFlowProperty ?flowProperty . \n");
+			b.append("    ?flowProperty owl:sameAs ?masterFlowProperty . \n");
+			b.append("    filter (?flowProperty != ?masterFlowProperty ) \n");
+
+			b.append("    ?c fedlca:comparedSource ?flowable . \n");
+
+			b.append("  }\n");
+			String query = b.toString();
+			System.out.println("\n" + query + "\n");
+			UpdateRequest request = UpdateFactory.create(query);
+			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
+			proc.execute();
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("01 TDB transaction failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
@@ -98,7 +156,7 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 
 			// --- BEGIN SAFE -READ- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-			Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+			tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 			tdbModel.write(fout, outType);
 			ActiveTDB.tdbDataset.end();
 			// ---- END SAFE -WRITE- TRANSACTION ---
