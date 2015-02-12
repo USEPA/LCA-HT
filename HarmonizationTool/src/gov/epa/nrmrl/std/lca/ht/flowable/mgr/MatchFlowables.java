@@ -503,8 +503,7 @@ public class MatchFlowables extends ViewPart {
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
 			candidateMap.put(matchingResource, newString);
-			// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
-
+//			CurationMethods.setComparison(flowableToMatch.getTdbResource(),matchingResource, FedLCA.equivalent);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = 0;
@@ -516,23 +515,22 @@ public class MatchFlowables extends ViewPart {
 			searchMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
 			if (colNumSelected > 0) {
 				candidateMap.put(flowableTabRow.getFlowable().getTdbResource(), newString);
-				// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
 			} else {
 				candidateMap.remove(flowableTabRow.getFlowable().getTdbResource());
-				// TODO: 			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
 			}
 		}
-		tdbUpdateMatch(matchingResource, newString);
-
+		Resource equivalenceResource = MatchStatus.getBySymbol(newString).getEquivalence();
+		CurationMethods.setComparison(flowableToMatch.getTdbResource(), matchingResource, equivalenceResource);
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 	}
 
-	private static void tdbUpdateMatch(Resource matchResource, String newString) {
-		Resource equivalenceResource = MatchStatus.getBySymbol(newString).getEquivalence();
-		Resource comparison = CurationMethods.getComparison(flowableToMatch.getTdbResource(), matchResource);
-		CurationMethods.updateComparison(comparison, equivalenceResource);
-	}
+//	private static void tdbUpdateMatch(Resource matchResource, String newString) {
+//		Resource equivalenceResource = MatchStatus.getBySymbol(newString).getEquivalence();
+//		CurationMethods.setComparison(flowableToMatch.getTdbResource(), matchResource, equivalenceResource)
+//		Resource comparison = CurationMethods.getComparison(flowableToMatch.getTdbResource(), matchResource);
+//		CurationMethods.updateComparison(comparison, equivalenceResource);
+//	}
 
 	@Override
 	public void setFocus() {

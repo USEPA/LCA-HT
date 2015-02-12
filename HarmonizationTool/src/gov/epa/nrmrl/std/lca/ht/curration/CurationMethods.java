@@ -5,14 +5,17 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
@@ -26,18 +29,18 @@ public class CurationMethods {
 	public static Resource getLatestAnnotation() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht:  <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?a  \n");
 		b.append("WHERE \n");
@@ -96,7 +99,22 @@ public class CurationMethods {
 		}
 	}
 
-	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
+	public static Resource findComparison(Resource querySource, Resource master) {
+		Resource comparisonResource = null;
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, querySource);
+		while (resIterator.hasNext()) {
+			comparisonResource = resIterator.next();
+			if (tdbModel.contains(comparisonResource, FedLCA.comparedMaster, master)) {
+				break;
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		return comparisonResource;
+	}
+
+	public static Resource setComparison(Resource querySource, Resource master, Resource equivalence) {
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
@@ -104,17 +122,21 @@ public class CurationMethods {
 		if (querySource.equals(master)) {
 			return null;
 		}
-		Resource comparison = ActiveTDB.tsCreateResource(FedLCA.Comparison);
 
-		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedSource, querySource);
-		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedMaster, master);
-		ActiveTDB.tsAddTriple(comparison, FedLCA.comparedEquivalence, equivalence);
-		ActiveTDB.tsAddTriple(currentAnnotation, FedLCA.hasComparison, comparison);
+		Resource comparisonResource = findComparison(querySource, master);
+		if (comparisonResource == null) {
+			comparisonResource = createNewComparison(querySource, master, equivalence);
+			return comparisonResource;
+		}
+		
+		ActiveTDB.tsReplaceObject(comparisonResource, FedLCA.comparedEquivalence, equivalence);
+		ActiveTDB.tsAddTriple(currentAnnotation, FedLCA.hasComparison, comparisonResource);
 		updateAnnotationModifiedDate();
-		return comparison;
+		return comparisonResource;
 	}
 
-	public static Resource nonTSCreateNewComparison(Resource querySource, Resource master, Resource equivalence) {
+	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
+		Resource newComparison = null;
 		if (querySource == null || master == null) {
 			System.out.println("querySource = " + querySource + " and master = " + master);
 			return null;
@@ -122,15 +144,45 @@ public class CurationMethods {
 		if (querySource.equals(master)) {
 			return null;
 		}
-		Resource comparison = ActiveTDB.createResource(FedLCA.Comparison);
+		
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			newComparison = tdbModel.createResource(FedLCA.Comparison);
+			tdbModel.add(newComparison, FedLCA.comparedSource, querySource);
+			tdbModel.add(newComparison, FedLCA.comparedMaster, master);
+			tdbModel.add(currentAnnotation, FedLCA.hasComparison, newComparison);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Creating new Comparison failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 
-		ActiveTDB.addTriple(comparison, FedLCA.comparedSource, querySource);
-		ActiveTDB.addTriple(comparison, FedLCA.comparedMaster, master);
-		ActiveTDB.addTriple(comparison, FedLCA.comparedEquivalence, equivalence);
-		ActiveTDB.addTriple(currentAnnotation, FedLCA.hasComparison, comparison);
-		nonTSUpdateAnnotationModifiedDate();
-		return comparison;
+		updateAnnotationModifiedDate();
+		return newComparison;
 	}
+
+//	public static Resource nonTSCreateNewComparison(Resource querySource, Resource master, Resource equivalence) {
+//		if (querySource == null || master == null) {
+//			System.out.println("querySource = " + querySource + " and master = " + master);
+//			return null;
+//		}
+//		if (querySource.equals(master)) {
+//			return null;
+//		}
+//		Resource comparison = ActiveTDB.createResource(FedLCA.Comparison);
+//
+//		ActiveTDB.addTriple(comparison, FedLCA.comparedSource, querySource);
+//		ActiveTDB.addTriple(comparison, FedLCA.comparedMaster, master);
+//		ActiveTDB.addTriple(comparison, FedLCA.comparedEquivalence, equivalence);
+//		ActiveTDB.addTriple(currentAnnotation, FedLCA.hasComparison, comparison);
+//		nonTSUpdateAnnotationModifiedDate();
+//		return comparison;
+//	}
 
 	public static void updateComparison(Resource comparison, Resource equivalence) {
 		if (comparison == null || equivalence == null) {
@@ -138,7 +190,7 @@ public class CurationMethods {
 			return;
 		}
 		updateAnnotationModifiedDate();
-		ActiveTDB.tsReplaceResource(comparison, FedLCA.comparedEquivalence, equivalence);
+		ActiveTDB.tsReplaceObject(comparison, FedLCA.comparedEquivalence, equivalence);
 	}
 
 	public static Resource getCurrentAnnotation() {

@@ -64,7 +64,7 @@ public class DataSourceProvider {
 		if (contactPerson == null) {
 			return;
 		}
-		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasContactPerson, contactPerson.getTdbResource());
+		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasContactPerson, contactPerson.getTdbResource());
 	}
 
 	public Resource getTdbResource() {

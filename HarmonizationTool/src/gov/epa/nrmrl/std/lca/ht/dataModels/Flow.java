@@ -45,7 +45,7 @@ public class Flow {
 			return;
 		}
 		this.flowable = flowable;
-		ActiveTDB.tsReplaceResource(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
+		ActiveTDB.tsReplaceObject(tdbResource, ECO.hasFlowable, flowable.getTdbResource());
 	}
 
 	public FlowContext getFlowContext() {
@@ -57,7 +57,7 @@ public class Flow {
 			return;
 		}
 		this.flowContext = flowContext;
-		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasFlowContext, flowContext.getTdbResource());
+		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowContext, flowContext.getTdbResource());
 	}
 
 	public FlowProperty getFlowProperty() {
@@ -69,7 +69,7 @@ public class Flow {
 			return;
 		}
 		this.flowProperty = flowProperty;
-		ActiveTDB.tsReplaceResource(tdbResource, FedLCA.hasFlowProperty, flowProperty.getTdbResource());
+		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowProperty, flowProperty.getTdbResource());
 	}
 
 	public Resource getTdbResource() {

@@ -307,7 +307,7 @@ public class FlowContext {
 			return;
 		}
 		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
+		ActiveTDB.tsReplaceObject(tdbResource, OWL.sameAs, matchingResource);
 	}
 
 	public int getFirstRow() {

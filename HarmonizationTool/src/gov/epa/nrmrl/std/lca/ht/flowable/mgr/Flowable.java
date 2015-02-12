@@ -739,7 +739,7 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
-			CurationMethods.createNewComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
+			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.equivalent);
 		}
 		if (count > 0) {
 			return count;

@@ -657,7 +657,7 @@ public class FlowProperty {
 			return;
 		}
 		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceResource(tdbResource, OWL.sameAs, matchingResource);
+		ActiveTDB.tsReplaceObject(tdbResource, OWL.sameAs, matchingResource);
 	}
 
 	public int getFirstRow() {

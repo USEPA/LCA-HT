@@ -167,7 +167,7 @@ public class AutoMatchJob extends Job {
 				flowable = new Flowable();
 				flowableMap.put(flowableConcatinated, flowable);
 
-				ActiveTDB.tsReplaceResource(flowable.getTdbResource(), ECO.hasDataSource,
+				ActiveTDB.tsReplaceObject(flowable.getTdbResource(), ECO.hasDataSource,
 						dataSourceProvider.getTdbResource());
 				for (int i : flowableCSVColumnNumbers) {
 					String dataValue = dataRow.get(i - 1);
@@ -211,7 +211,7 @@ public class AutoMatchJob extends Job {
 				if (flowContext == null) {
 					flowContext = new FlowContext();
 					flowContextMap.put(flowContextConcatinated, flowContext);
-					ActiveTDB.tsReplaceResource(flowContext.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceObject(flowContext.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowContextCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);
@@ -250,7 +250,7 @@ public class AutoMatchJob extends Job {
 				if (flowProperty == null) {
 					flowProperty = new FlowProperty();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
-					ActiveTDB.tsReplaceResource(flowProperty.getTdbResource(), ECO.hasDataSource,
+					ActiveTDB.tsReplaceObject(flowProperty.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowPropertyCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);

@@ -252,16 +252,28 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		try {
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("insert {graph <" + exportGraphName + "> {?s ?p ?o }} \n");
+			b.append("insert {graph <" + exportGraphName + "> {?s ?p ?o . ?c ?p1 ?o1 . ?m ?p2 ?o2 .}} \n");
 			b.append("  where {\n");
 			b.append("    ?s ?p ?o .  \n");
 			b.append("    {{  \n");
 			b.append("      ?s eco:hasDataSource ?ds .  \n");
 			b.append("      ?ds rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
+			b.append("      OPTIONAL {  \n");
+			b.append("        ?c fedlca:comparedSource ?s . \n");
+			b.append("        ?c fedlca:comparedMaster ?m . \n");
+			b.append("        ?c ?p1 ?o1 .  \n");
+			b.append("        ?m ?p2 ?o2 .  \n");
+			b.append("      }  \n");
 			b.append("    } UNION  \n");
 			b.append("    {  \n");
 			b.append("      ?s a eco:DataSource .  \n");
 			b.append("      ?s rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
+//			b.append("    } UNION  \n");
+//			b.append("    {  \n");
+//			b.append("      ?source a eco:DataSource .  \n");
+//			b.append("      ?source rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
+//			b.append("      ?source a eco:DataSource .  \n");
+//			b.append("      ?source a eco:DataSource .  \n");
 			b.append("    }}  \n");
 			b.append("  }\n");
 			String query = b.toString();
@@ -536,36 +548,36 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		subject.addProperty(predicate, object);
 	}
 
-	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
-		if (tdbDataset.isInTransaction()) {
-			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
-			System.out.println(new Object() {
-			}.getClass().getEnclosingMethod().getName());
-		}
-		if (noReadWrite) {
-			return;
-		}
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = tdbDataset.getDefaultModel();
-		try {
-			if (subject.hasProperty(predicate)) {
-				StmtIterator stmtIterator = subject.listProperties(predicate);
-				while (stmtIterator.hasNext()) {
-					Statement statement = stmtIterator.next();
-					tdbModel.remove(statement);
-				}
-			}
-			tdbModel.add(subject, predicate, object);
-			tdbDataset.commit();
-		} catch (Exception e) {
-			System.out.println("02 TDB transaction failed; see Exception: " + e);
-			tdbDataset.abort();
-		} finally {
-			tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-	}
+//	public static void tsReplaceResource(Resource subject, Property predicate, Resource object) {
+//		if (tdbDataset.isInTransaction()) {
+//			System.out.println("!!!!!!!!!!!!!!Transaction in transaction");
+//			System.out.println(new Object() {
+//			}.getClass().getEnclosingMethod().getName());
+//		}
+//		if (noReadWrite) {
+//			return;
+//		}
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		tdbDataset.begin(ReadWrite.WRITE);
+//		Model tdbModel = tdbDataset.getDefaultModel();
+//		try {
+//			if (subject.hasProperty(predicate)) {
+//				StmtIterator stmtIterator = subject.listProperties(predicate);
+//				while (stmtIterator.hasNext()) {
+//					Statement statement = stmtIterator.next();
+//					tdbModel.remove(statement);
+//				}
+//			}
+//			tdbModel.add(subject, predicate, object);
+//			tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("02 TDB transaction failed; see Exception: " + e);
+//			tdbDataset.abort();
+//		} finally {
+//			tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
+//	}
 
 	public static void tsReplaceResourceSameType(Resource subject, Property predicate, Resource object) {
 		if (tdbDataset.isInTransaction()) {
@@ -1276,5 +1288,30 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		System.out.println("Mapping = " + tdbModel.getNsPrefixMap());
+	}
+
+	public static void tsReplaceObject(Resource subject, Property predicate, Resource newObject) {
+		List<RDFNode> nodesToRemove;
+		tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = getModel(null);
+		NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(subject, predicate);
+		nodesToRemove = nodeIterator.toList();
+		tdbDataset.end();
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = getModel(null);
+		try {
+			for (RDFNode node : nodesToRemove) {
+				tdbModel.remove(subject, predicate, node);
+			}
+			tdbModel.add(subject, predicate, newObject);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 }
