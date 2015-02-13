@@ -40,6 +40,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -180,102 +182,104 @@ public class MatchFlowables extends ViewPart {
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
-		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
-			@Override
-			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-				justUpdated = false;
-				System.out.println("=================== Caught by isEditorActivationEvent");
-				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
-					System.out.println("======= MOUSE_CLICK_SELECTION ========");
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED) {
-					System.out.println("======= KEY_PRESSED ========");
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-					System.out.println("======= MOUSE_DOUBLE_CLICK_SELECTION ========");
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC) {
-					System.out.println("======= PROGRAMMATIC ========");
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL) {
-					System.out.println("======= TRAVERSAL ========");
-				} else {
-					System.out.println("======= something else. event.eventType = " + event.eventType);
-				}
-				ViewerCell viewerCell = (ViewerCell) event.getSource();
-				FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
-				int newRowNumSelected = flowableTableRow.getRowNumber();
-				int newColNumSelected = viewerCell.getColumnIndex();
-				if (newRowNumSelected == 0) {
-					table.deselect(rowNumSelected);
-					return false;
-				} else if (newColNumSelected < 6) {
-					rowNumSelected = newRowNumSelected;
-					colNumSelected = newColNumSelected;
-					assignMatch();
-					table.deselect(rowNumSelected);
-					return false;
-				}
-				return false;
-				// } else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
-				// // table.deselect(rowNumSelected);
-				// return false;
-				// } else if (newColNumSelected < 6) {
-				// // table.deselect(rowNumSelected);
-				// return false;
-				// } else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
-				// if (editingInProgress) {
-				// String textInEditor = "[editorText is still null]";
-				// if (editorText != null) {
-				// textInEditor = editorText.getText();
-				// }
-				// if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
-				// justUpdated = false;
-				// rowNumSelected = newRowNumSelected;
-				// colNumSelected = newColNumSelected;
-				// return true;
-				// }
-				// String textInLastCell = "[no previously selected cell]";
-				// if (rowNumSelected > 0 && colNumSelected > 0) {
-				// textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
-				// }
-				//
-				// String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
-				//
-				// System.out.println("textInEditor: " + textInEditor);
-				// System.out.println("textInLastCell: " + textInLastCell);
-				// System.out.println("textInNewCell: " + textInNewCell);
-				//
-				// // if (editingInProgress) {
-				// // table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
-				// flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
-				//
-				// // editorText
-				// // System.out.println("editorText.getText() = " + editorText.getText());
-				// editorText.setText(textInNewCell);
-				// justUpdated = true;
-				// }
-				// rowNumSelected = newRowNumSelected;
-				// colNumSelected = newColNumSelected;
-				// if (newColNumSelected == 6) {
-				// findMatches();
-				// justUpdated = false;
-				// editingInProgress = false;
-				// System.out.println("Setting editingInProgress to: " + editingInProgress);
-				// return false;
-				// } else {
-				// editingInProgress = true;
-				// System.out.println("Setting editingInProgress to: " + editingInProgress);
-				//
-				// return true;
-				// }
-				// }
-			}
-		};
-		activationSupport.setEnableEditorActivationWithKeyboard(true);
-
-		FocusCellHighlighter focusCellHighlighter = new FocusCellOwnerDrawHighlighter(tableViewer);
-		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
-				focusCellHighlighter);
-
-		TableViewerEditor.create(tableViewer, focusCellManager, activationSupport, ColumnViewerEditor.TABBING_VERTICAL
-				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+		// ColumnViewerEditorActivationStrategy activationSupport = new
+		// ColumnViewerEditorActivationStrategy(tableViewer) {
+		// // @Override
+		// // protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+		// // justUpdated = false;
+		// //// System.out.println("=================== Caught by isEditorActivationEvent");
+		// // if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
+		// //// System.out.println("======= MOUSE_CLICK_SELECTION ========");
+		// // } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED) {
+		// //// System.out.println("======= KEY_PRESSED ========");
+		// // } else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
+		// //// System.out.println("======= MOUSE_DOUBLE_CLICK_SELECTION ========");
+		// // } else if (event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC) {
+		// //// System.out.println("======= PROGRAMMATIC ========");
+		// // } else if (event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL) {
+		// //// System.out.println("======= TRAVERSAL ========");
+		// // } else {
+		// //// System.out.println("======= something else. event.eventType = " + event.eventType);
+		// // }
+		// // ViewerCell viewerCell = (ViewerCell) event.getSource();
+		// // FlowableTableRow flowableTableRow = (FlowableTableRow) viewerCell.getElement();
+		// // int newRowNumSelected = flowableTableRow.getRowNumber();
+		// // int newColNumSelected = viewerCell.getColumnIndex();
+		// // if (newRowNumSelected == 0) {
+		// // table.deselect(rowNumSelected);
+		// // return false;
+		// // } else if (newColNumSelected < 6) {
+		// // rowNumSelected = newRowNumSelected;
+		// // colNumSelected = newColNumSelected;
+		// // assignMatch();
+		// // table.deselect(rowNumSelected);
+		// // return false;
+		// // }
+		// // return false;
+		// // // } else if ((newRowNumSelected != searchRow) && (newColNumSelected > 5)) {
+		// // // // table.deselect(rowNumSelected);
+		// // // return false;
+		// // // } else if (newColNumSelected < 6) {
+		// // // // table.deselect(rowNumSelected);
+		// // // return false;
+		// // // } else { // BY NOW WE MUST BE IN AN ACTIVE PART OF SEARCH ROW
+		// // // if (editingInProgress) {
+		// // // String textInEditor = "[editorText is still null]";
+		// // // if (editorText != null) {
+		// // // textInEditor = editorText.getText();
+		// // // }
+		// // // if (textInEditor.equals(flowableTableRows.get(searchRow).get(6))) {
+		// // // justUpdated = false;
+		// // // rowNumSelected = newRowNumSelected;
+		// // // colNumSelected = newColNumSelected;
+		// // // return true;
+		// // // }
+		// // // String textInLastCell = "[no previously selected cell]";
+		// // // if (rowNumSelected > 0 && colNumSelected > 0) {
+		// // // textInLastCell = flowableTableRows.get(rowNumSelected).get(colNumSelected);
+		// // // }
+		// // //
+		// // // String textInNewCell = flowableTableRows.get(newRowNumSelected).get(newColNumSelected);
+		// // //
+		// // // System.out.println("textInEditor: " + textInEditor);
+		// // // System.out.println("textInLastCell: " + textInLastCell);
+		// // // System.out.println("textInNewCell: " + textInNewCell);
+		// // //
+		// // // // if (editingInProgress) {
+		// // // // table.getItem(rowNumSelected).setText(colNumSelected, textInEditor);
+		// // // flowableTableRows.get(rowNumSelected).set(colNumSelected, textInEditor);
+		// // //
+		// // // // editorText
+		// // // // System.out.println("editorText.getText() = " + editorText.getText());
+		// // // editorText.setText(textInNewCell);
+		// // // justUpdated = true;
+		// // // }
+		// // // rowNumSelected = newRowNumSelected;
+		// // // colNumSelected = newColNumSelected;
+		// // // if (newColNumSelected == 6) {
+		// // // findMatches();
+		// // // justUpdated = false;
+		// // // editingInProgress = false;
+		// // // System.out.println("Setting editingInProgress to: " + editingInProgress);
+		// // // return false;
+		// // // } else {
+		// // // editingInProgress = true;
+		// // // System.out.println("Setting editingInProgress to: " + editingInProgress);
+		// // //
+		// // // return true;
+		// // // }
+		// // // }
+		// // }
+		// };
+		// activationSupport.setEnableEditorActivationWithKeyboard(true);
+		//
+		// FocusCellHighlighter focusCellHighlighter = new FocusCellOwnerDrawHighlighter(tableViewer);
+		// TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
+		// focusCellHighlighter);
+		//
+		// TableViewerEditor.create(tableViewer, focusCellManager, activationSupport,
+		// ColumnViewerEditor.TABBING_VERTICAL
+		// | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
 	}
 
@@ -284,6 +288,42 @@ public class MatchFlowables extends ViewPart {
 		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.addListener(SWT.MouseUp, tableSelectionListener);
+	}
+
+	private static Listener tableSelectionListener = new Listener() {
+
+		private void doit(Event event) {
+			Point ptLeft = new Point(1, event.y);
+			Point ptClick = new Point(event.x, event.y);
+			TableItem tableItem = table.getItem(ptLeft);
+			if (tableItem == null) {
+				return;
+			}
+			rowNumSelected = table.indexOf(tableItem);
+			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
+
+			if ((rowNumSelected > 0) && (colNumSelected < 6) && (colNumSelected > -1)) {
+				assignMatch();
+			}
+			table.deselect(rowNumSelected);
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			doit(event);
+		}
+	};
+
+	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		TableItem item = table.getItem(row);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			Rectangle rect = item.getBounds(i);
+			if (rect.contains(pt)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public static void update(int rowNumber) {
@@ -502,7 +542,7 @@ public class MatchFlowables extends ViewPart {
 			tableItem.setText(curCol, "");
 			flowableTabRow.set(curCol, "");
 			candidateMap.put(matchingResource, newString);
-//			CurationMethods.setComparison(flowableToMatch.getTdbResource(),matchingResource, FedLCA.equivalent);
+			// CurationMethods.setComparison(flowableToMatch.getTdbResource(),matchingResource, FedLCA.equivalent);
 		} else {
 			String curSymbol = searchMap.get(flowableTabRow.getFlowable().getTdbResource());
 			int curCol = 0;
@@ -523,13 +563,6 @@ public class MatchFlowables extends ViewPart {
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 	}
-
-//	private static void tdbUpdateMatch(Resource matchResource, String newString) {
-//		Resource equivalenceResource = MatchStatus.getBySymbol(newString).getEquivalence();
-//		CurationMethods.setComparison(flowableToMatch.getTdbResource(), matchResource, equivalenceResource)
-//		Resource comparison = CurationMethods.getComparison(flowableToMatch.getTdbResource(), matchResource);
-//		CurationMethods.updateComparison(comparison, equivalenceResource);
-//	}
 
 	@Override
 	public void setFocus() {
@@ -597,19 +630,6 @@ public class MatchFlowables extends ViewPart {
 
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-
-		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?f  \n");
 		b.append("WHERE \n");
@@ -646,7 +666,6 @@ public class MatchFlowables extends ViewPart {
 			if (candidateMap.containsKey(rdfNode)) {
 				continue;
 			}
-			// Flowable flowable = new Flowable(rdfNode.asResource());
 			flowableToMatch.addSearchResult(rdfNode.asResource());
 		}
 		if (count > 99) {
@@ -666,129 +685,9 @@ public class MatchFlowables extends ViewPart {
 		searchButton.setText("Search:");
 	}
 
-	// private static void findMatchesold() {
-	// TableItem tableItem = table.getItem(flowableToMatch.getMatchCandidates().size() + 1);
-	// FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
-	//
-	// String nameSearch = flowableTableRow.get(7);
-	// String nameMatch = nameSearch.replaceAll("\"", "\\\\\"").toLowerCase();
-	// String casSearch = flowableTableRow.get(8);
-	// String otherSearch = flowableTableRow.get(10);
-	//
-	// if (!nameMatch.matches(".*[a-zA-Z0-9].*")) {
-	// System.out.println("nameMatch fails " + nameMatch);
-	// }
-	// if (!casSearch.matches(".*[0-9].*")) {
-	// System.out.println("casSearch fails " + casSearch);
-	// }
-	//
-	// if (!otherSearch.matches(".*[a-zA-Z0-9].*")) {
-	// System.out.println("otherSearch fails" + otherSearch);
-	// }
-	//
-	// if (!nameMatch.matches(".*[a-zA-Z0-9].*") && !casSearch.matches(".*[0-9].*")
-	// && !otherSearch.matches(".*[a-zA-Z0-9].*")) {
-	// Logger.getLogger("run").warn("Search cancelled since at least one field must contain an alpha-numeric");
-	// return;
-	// }
-	// StringBuilder b = new StringBuilder();
-	// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-	// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-	// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-	// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-	// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-	// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-	// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-	// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-	// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-	// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-	// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-	// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
-	// b.append(" \n");
-	// b.append("SELECT distinct ?f  \n");
-	// b.append("WHERE \n");
-	// b.append("  { \n");
-	// b.append("    ?f skos:altLabel ?syn . \n");
-	// b.append("    optional {?f eco:casNumber ?cas . }\n");
-	// b.append("    optional {?f ?p ?other . }\n");
-	// b.append("    ?f a eco:Flowable . \n");
-	// b.append("    ?f eco:hasDataSource ?ds . \n");
-	// // b.append("    ?ds a lcaht:MasterDataset . \n");
-	// b.append("    ?ds a ?masterTest . \n");
-	// b.append("    filter regex (str(?masterTest), \".*Dataset\") \n");
-	//
-	// // b.append("    {{ ?ds a lcaht:MasterDataset . } || \n");
-	// // b.append("     {?ds a lcaht:SupplementaryReferenceDataset . }} \n");
-	//
-	// if (!casSearch.matches("^\\s*$")) {
-	// String casRegex = star2regex(casSearch);
-	// b.append("    filter regex(str(?cas),\"" + casRegex + "\") \n");
-	// }
-	// if (!nameMatch.matches("^\\s*$")) {
-	// String nameRegex = star2regex(nameMatch);
-	// b.append("    filter regex(str(?syn),\"" + nameRegex + "\") \n");
-	// }
-	// if (!otherSearch.matches("^\\s*$")) {
-	// String otherRegex = star2regex(otherSearch);
-	// b.append("    filter regex(str(?other),\"" + otherRegex + "\",\"i\") \n");
-	// }
-	// b.append("   } order by ?masterTest \n");
-	// String query = b.toString();
-	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-	// harmonyQuery2Impl.setQuery(query);
-	// Logger.getLogger("run").info("Searching master list for matching flowables...");
-	//
-	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-	// System.out.println("resultSet = " + resultSet);
-	// flowableToMatch.clearSearchResults();
-	// // resetTable();
-	// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-	// int count = 0;
-	// while (resultSet.hasNext()) {
-	// count++;
-	// QuerySolution querySolution = resultSet.next();
-	// RDFNode rdfNode = querySolution.get("f");
-	// if (flowableToMatch.getTdbResource().equals(rdfNode)) {
-	// continue;
-	// }
-	// if (flowableToMatch.getTdbResource().equals(rdfNode)) {
-	// continue;
-	// }
-	// if (candidateMap.containsKey(rdfNode)) {
-	// continue;
-	// }
-	// // Flowable flowable = new Flowable(rdfNode.asResource());
-	// flowableToMatch.addSearchResult(rdfNode.asResource());
-	// }
-	// Logger.getLogger("run").info(
-	// "... search complete.  Below the search row, " + count + " matching field are shown.");
-	//
-	// displayNewSearchResults();
-	// // appendSearchResults(50);
-	// }
-
 	private static void resetTable() {
 		int i = table.getItemCount() - 1;
 		table.remove(flowableToMatch.getMatchCandidates().size() + 2, i);
-	}
-
-	private static String star2regexLeadTrailOnly(String typicalWildcards) {
-		String part1 = "";
-		if (typicalWildcards.substring(0, 1).equals("*")) {
-			part1 = typicalWildcards.substring(1);
-		} else {
-			part1 = "^" + typicalWildcards;
-		}
-
-		String part2 = "";
-		if (typicalWildcards.substring(typicalWildcards.length() - 1, typicalWildcards.length()).equals("*")) {
-			part2 = part1.substring(0, part1.length() - 1);
-		} else {
-			part2 = part1 + "$";
-		}
-		// TODO : ESCAPE VARIOUS CHARACTERS THAT MIGHT BE TREATED AS REGEX MATCHES
-
-		return part2;
 	}
 
 	private static String star2regex(String typicalWildcards) {
@@ -796,56 +695,7 @@ public class MatchFlowables extends ViewPart {
 		regexBuilder.append("^\\\\Q");
 		regexBuilder.append(typicalWildcards.replaceAll("\\*", "\\\\\\\\E.*\\\\\\\\Q"));
 		regexBuilder.append("\\\\E$");
-
-		//
-		// // CASE 1: NO STAR
-		// if (!typicalWildcards.contains("*")) {
-		// // ^^ FIXME: ABOVE DOESN'T WORK
-		// return "^\\\\Q" + typicalWildcards + "\\\\E$";
-		// }
-		// // CASE 2: STAR AT BEGINNING
-		// // CASE 3: STAR AT END
-		// System.out.println("looking for stars in " + typicalWildcards);
-		// StringBuilder regexBuilder = new StringBuilder();
-		// String[] parts = typicalWildcards.split("\\*");
-		// if (!parts[0].equals("")) {
-		// regexBuilder.append("^\\\\Q" + parts[0] + "\\\\E.*");
-		// }
-		// for (int i = 1; i < parts.length - 1; i++) {
-		// regexBuilder.append("\\\\Q" + parts[i] + "\\\\E.*");
-		// System.out.println("parts[i] = " + parts[i]);
-		// }
-		// if (!typicalWildcards.endsWith("\\*")) {
-		// regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E$");
-		// } else {
-		// regexBuilder.append("\\\\Q" + parts[parts.length - 1] + "\\\\E");
-		// }
-		// System.out.println("Regex would look like: " + regexBuilder.toString());
-		// // Matcher starMatcher = starPattern.matcher(typicalWildcards);
-		// // while (starMatcher.find()){
-		// // String part = starMatcher.group(1);
-		// // System.out.println("part " + part);
-		// // }
-		// // Matcher matcher = qaCheck.getPattern().matcher(startingText);
 		return regexBuilder.toString();
-		// return "Aint gonna match no how";
-		// Patttern.Compile("(?i)(\Q#strPhrase1#\E|\Q#strPhrase2#\E)");
-		// String part1 = "";
-		// if (typicalWildcards.substring(0, 1).equals("*")) {
-		// part1 = typicalWildcards.substring(1);
-		// } else {
-		// part1 = "^" + typicalWildcards;
-		// }
-		//
-		// String part2 = "";
-		// if (typicalWildcards.substring(typicalWildcards.length() - 1, typicalWildcards.length()).equals("*")) {
-		// part2 = part1.substring(0, part1.length() - 1);
-		// } else {
-		// part2 = part1 + "$";
-		// }
-		// // TODO : ESCAPE VARIOUS CHARACTERS THAT MIGHT BE TREATED AS REGEX MATCHES
-		//
-		// return part2;
 	}
 
 	private static class MyColumnLabelProvider extends ColumnLabelProvider {
@@ -855,10 +705,6 @@ public class MatchFlowables extends ViewPart {
 			this.dataColumnNumber = colNum;
 		}
 
-		// public void setText(Object element, String ){
-		//
-		// }
-
 		@Override
 		public String getText(Object element) {
 			FlowableTableRow flowableTableRow = null;
@@ -866,7 +712,6 @@ public class MatchFlowables extends ViewPart {
 				flowableTableRow = (FlowableTableRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-				// System.out.println("element= " + element);
 			}
 			String s = "";
 			try {
@@ -875,7 +720,6 @@ public class MatchFlowables extends ViewPart {
 					s = flowableTableRow.getColumnValues().get(dataColumnNumber);
 				}
 			} catch (Exception e) {
-				// System.out.println("dataRow=" + flowableTableRow);
 				e.printStackTrace();
 			}
 			return s;
@@ -890,15 +734,6 @@ public class MatchFlowables extends ViewPart {
 		tableColumn.setWidth(bound);
 		tableColumn.setResizable(true);
 		tableColumn.setMoveable(false);
-		// tableColumn.addSelectionListener(colSelectionListener);
-		// tableColumn.addListener(SWT.MouseDown, (Listener)
-		// columnMouseListener);
-
-		// if (colNumber > 0) {
-		// tableColumn.setToolTipText(csvColumnDefaultTooltip);
-		// }
-		tableViewerColumn.setEditingSupport(new CellEditingSupport(tableViewer));
-
 		return tableViewerColumn;
 	}
 
@@ -913,7 +748,6 @@ public class MatchFlowables extends ViewPart {
 		tableColumn.setToolTipText(matchStatus.getName() + " - " + matchStatus.getComment());
 		tableColumn.setAlignment(SWT.CENTER);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(matchStatus.getValue()));
-		// tableViewerColumn.getColumn().addSelectionListener(nextSelectionListener);
 	}
 
 	private static SelectionListener nextSelectionListener = new SelectionListener() {
@@ -945,38 +779,17 @@ public class MatchFlowables extends ViewPart {
 				return;
 			}
 			if (addToMaster.getText().equals("Add to Master")) {
-				// while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
-				ActiveTDB.tsAddGeneralTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster, null);
-				// Model junkModel = ActiveTDB.getFreshModel();
-				// if (junkModel.contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
-				// LCAHT.QCStatusAdHocMaster)){
-				// System.out.println("Got it now!");
-				// } else {
-				// System.out.println("Don't have it yet...");
-				// }
-				// // ActiveTDB.sync();
-				// count++;
-				// }
+				ActiveTDB.tsAddGeneralTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
+						LCAHT.QCStatusAdHocMaster, null);
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				addToMaster.setText("Remove from Master");
 			} else {
-				// while (flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
 				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 						LCAHT.QCStatusAdHocMaster);
-				// Model junkModel = ActiveTDB.getFreshModel();
-				// if (junkModel.contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
-				// LCAHT.QCStatusAdHocMaster)){
-				// System.out.println("Got it now!");
-				// } else {
-				// System.out.println("Don't have it yet...");
-				// }
-				// count++;
-				// }
 				updateMatchCounts();
 				addToMaster.setText("Add to Master");
 			}
-			// System.out.println("count: " + count);
 		}
 
 		@Override
@@ -1025,87 +838,6 @@ public class MatchFlowables extends ViewPart {
 
 	public static void setMaxSearchResults(int maxSearchResults) {
 		MatchFlowables.maxSearchResults = maxSearchResults;
-	}
-
-	// =====================================================
-	private static class CellEditingSupport extends EditingSupport {
-		public TextCellEditorMod1 cellEditor;
-
-		public CellEditingSupport(TableViewer viewer) {
-			super(viewer);
-
-			// IContentProposalProvider contentProposalProvider = new SimpleContentProposalProvider(new String[] {
-			// "red",
-			// "green", "blue" });
-			cellEditor = new TextCellEditorMod1(viewer.getTable(), null, null);
-		}
-
-		@Override
-		protected boolean canEdit(Object element) {
-			return (true);
-		}
-
-		@Override
-		protected CellEditor getCellEditor(Object element) {
-			return cellEditor;
-		}
-
-		@Override
-		protected Object getValue(Object element) {
-			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
-			// System.out.println("== GET ==");
-			editingInProgress = true;
-			// System.out.println("Setting editingInProgress to: " + editingInProgress);
-			return flowableTableRow.get(colNumSelected);
-		}
-
-		@Override
-		protected void setValue(Object element, Object value) {
-			FlowableTableRow flowableTableRow = (FlowableTableRow) element;
-
-			if (value == null) {
-				System.out.println("NO OVERWRITE!");
-				// tableViewer.refresh();
-			} else {
-
-				System.out.println("== SET ==");
-				if (editingInProgress && !justUpdated) {
-					// System.out.println("Still editing");
-					flowableTableRow.set(colNumSelected, (String) value);
-					editingInProgress = false;
-					// System.out.println("Setting editingInProgress to: " + editingInProgress);
-				} else {
-					// System.out.println("Not editing");
-					// flowableTableRow.set(colNumSelected, (String) value);
-				}
-				table.deselectAll();
-				tableViewer.refresh();
-				// getViewer().update(element, null);
-			}
-		}
-	}
-
-	public static class TextCellEditorMod1 extends TextCellEditor {
-		public TextCellEditorMod1(Composite parent, KeyStroke keyStroke, char[] autoActivationCharacters) {
-			super(parent);
-			editorText = this.text;
-			// System.out.println("keyStroke = " + keyStroke);
-			// System.out.println("autoActivationCharacters" + autoActivationCharacters.toString());
-		}
-
-		@Override
-		protected void focusLost() {
-			// System.out.println("Losing focus");
-			// System.out.println("keyStroke"+keyStroke);
-			editorText = this.text;
-
-			// System.out.println("this.text.getText() = " + this.text.getText());
-		}
-
-		@Override
-		protected boolean dependsOnExternalFocusListener() {
-			return false;
-		}
 	}
 
 	public static class FlowableTableRow extends DataRow {

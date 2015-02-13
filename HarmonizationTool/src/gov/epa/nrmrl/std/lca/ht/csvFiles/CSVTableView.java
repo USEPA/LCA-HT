@@ -309,7 +309,7 @@ public class CSVTableView extends ViewPart {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-			System.out.println("mouse down event :e =" + e);
+//			System.out.println("mouse down event :e =" + e);
 			if (e.button == 1) {
 				leftClick(e);
 			} else if (e.button == 3) {
@@ -320,7 +320,7 @@ public class CSVTableView extends ViewPart {
 
 		@Override
 		public void mouseUp(MouseEvent e) {
-			System.out.println("mouse up event :e =" + e);
+//			System.out.println("mouse up event :e =" + e);
 		}
 
 		private void leftClick(MouseEvent event) {
@@ -1148,7 +1148,7 @@ public class CSVTableView extends ViewPart {
 				dataRow = (DataRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("element= " + element);
+//				System.out.println("element= " + element);
 			}
 			String t = "";
 			try {
