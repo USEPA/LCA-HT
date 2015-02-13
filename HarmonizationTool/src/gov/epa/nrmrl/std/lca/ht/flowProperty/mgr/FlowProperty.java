@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.ReadWrite;
@@ -44,8 +42,8 @@ public class FlowProperty {
 			if (dataPropertyMap.isEmpty()) {
 
 				ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
-				ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
-				ActiveTDB.tsAddTriple(rdfClass, RDF.type, OWL.Class);
+				ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
+				ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
 				System.out.println("label assigned to Flow Property");
 
@@ -370,8 +368,7 @@ public class FlowProperty {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private Resource matchingResource; // THIS IS A SINGLE RDF Resource FOR THE MATCHING FLOW PROPERTY
-	// TODO: FIGURE OUT IF FLOW PROPERTY INDEPENDENT OF UNIT IS EVERY TO BE USED
+	private Resource matchingResource;
 	private int firstRow;
 
 	// CONSTRUCTORS
@@ -406,13 +403,13 @@ public class FlowProperty {
 		lcaUnit.unit_group = unitGroup;
 		lcaUnit.uuid = uuid;
 		lcaUnit.tdbResource = tdbResource;
-		
-		ActiveTDB.tsAddTriple(tdbResource, RDF.type , OpenLCA.FlowProperty);
 
-		ActiveTDB.tsAddLiteral(tdbResource, DCTerms.description , description);
-		ActiveTDB.tsAddLiteral(tdbResource, OpenLCA.description , description);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, OpenLCA.FlowProperty, null);
 
-		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.hasOpenLCAUUID, uuid);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, DCTerms.description, description, null);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, OpenLCA.description, description, null);
+
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.hasOpenLCAUUID, uuid, null);
 		lcaMasterUnits.add(lcaUnit);
 	}
 
@@ -420,11 +417,8 @@ public class FlowProperty {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
 		clearSyncDataFromTDB();
-		// TODO? SYNC THE MATCHING RESOURCE?
-
 	}
 
-	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
 			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
@@ -484,9 +478,9 @@ public class FlowProperty {
 
 		if (lcaDataPropertyProvider.isUnique()) {
 			removeValues(lcaDataPropertyProvider.getPropertyName());
-			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object);
 		} else {
-			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object, null);
 		}
 		lcaDataValues.add(newLCADataValue);
 	}
@@ -660,13 +654,8 @@ public class FlowProperty {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllObjects(tdbResource, OWL.sameAs);
-			this.matchingResource = null;
-			return;
-		}
 		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceObject(tdbResource, OWL.sameAs, matchingResource);
+		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
 	}
 
 	public int getFirstRow() {

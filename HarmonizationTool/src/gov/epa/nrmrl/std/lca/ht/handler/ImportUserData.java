@@ -2,7 +2,6 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
-import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -291,7 +290,7 @@ public class ImportUserData implements IHandler {
 					ActiveTDB.importGraphName);
 			Resource toRemove = dataSourceProvider.getTdbResource();
 			dataSourceProvider.setTdbResource(existingDataSource);
-			ActiveTDB.tsRemoveAllObjects(toRemove, ActiveTDB.importGraphName);
+			ActiveTDB.tsRemoveGenericTriple(toRemove, null, null, ActiveTDB.importGraphName);
 		}
 
 		if (haveOLCAData) {
@@ -433,9 +432,9 @@ public class ImportUserData implements IHandler {
 		b.append("     ?f fedlca:hasFlowProperty ?fp . \n");
 		b.append("     ?fp fedlca:flowPropertyUnitString ?unit . \n");
 		b.append("  } \n");
-//		b.append("  optional { \n");
-//		b.append("     ?fp rdfs:label ?flow_property . \n");
-//		b.append("  } \n");
+		// b.append("  optional { \n");
+		// b.append("     ?fp rdfs:label ?flow_property . \n");
+		// b.append("  } \n");
 		b.append("} \n");
 		b.append("order by ?rowNumber  \n");
 

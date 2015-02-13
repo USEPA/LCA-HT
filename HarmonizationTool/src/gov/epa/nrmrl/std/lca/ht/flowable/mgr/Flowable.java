@@ -51,8 +51,8 @@ public class Flowable {
 
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
-		ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
-		ActiveTDB.tsAddTriple(rdfClass, RDF.type, OWL.Class);
+		ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
+		ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
 		// ActiveTDB.replaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
 		// ActiveTDB.addLiteral(rdfClass, RDFS.comment, comment);
@@ -176,19 +176,19 @@ public class Flowable {
 		clearSyncDataFromTDB();
 	}
 
-	public Flowable(boolean transactionSafe) {
-		if (transactionSafe) {
-			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-			lcaDataValues = new ArrayList<LCADataValue>();
-			matchCandidates = new LinkedHashMap<Resource, String>();
-			searchResults = new LinkedHashMap<Resource, String>();
-		} else {
-			this.tdbResource = ActiveTDB.createResource(rdfClass);
-			lcaDataValues = new ArrayList<LCADataValue>();
-			matchCandidates = new LinkedHashMap<Resource, String>();
-			searchResults = new LinkedHashMap<Resource, String>();
-		}
-	}
+//	public Flowable(boolean transactionSafe) {
+//		if (transactionSafe) {
+//			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+//			lcaDataValues = new ArrayList<LCADataValue>();
+//			matchCandidates = new LinkedHashMap<Resource, String>();
+//			searchResults = new LinkedHashMap<Resource, String>();
+//		} else {
+//			this.tdbResource = ActiveTDB.createResource(rdfClass);
+//			lcaDataValues = new ArrayList<LCADataValue>();
+//			matchCandidates = new LinkedHashMap<Resource, String>();
+//			searchResults = new LinkedHashMap<Resource, String>();
+//		}
+//	}
 
 	// METHODS
 	public Object getOneProperty(String key) {
@@ -237,7 +237,7 @@ public class Flowable {
 			return;
 		}
 		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
-		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
+//		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
 		boolean found = false;
 		if (lcaDataPropertyProvider.isUnique()) {
@@ -246,18 +246,18 @@ public class Flowable {
 					lcaDataValue.setValueAsString(valueAsString);
 					found = true;
 					Object object = lcaDataValue.getValue();
-					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(),
 							object);
 					if (!valueAsString.equals(valueAsString.toLowerCase())) {
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 						if (key.equals(flowableNameString)) {
-							ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-									valueAsString.toLowerCase());
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
+									valueAsString.toLowerCase(), null);
 						}
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 						if (key.equals(flowableSynonymString)) {
-							ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-									valueAsString.toLowerCase());
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
+									valueAsString.toLowerCase() , null);
 						}
 					}
 					continue;
@@ -270,17 +270,17 @@ public class Flowable {
 			lcaDataValue.setValueAsString(valueAsString);
 			Object object = lcaDataValue.getValue();
 			lcaDataValues.add(lcaDataValue);
-			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object, null);
 			if (!valueAsString.equals(valueAsString.toLowerCase())) {
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableNameString)) {
-					ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-							valueAsString.toLowerCase());
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
+							valueAsString.toLowerCase(), null);
 				}
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableSynonymString)) {
-					ActiveTDB.tsAddLiteral(tdbResource, SKOS.altLabel, XSDDatatype.XSDstring,
-							valueAsString.toLowerCase());
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
+							valueAsString.toLowerCase(),null);
 				}
 			}
 		}
@@ -376,7 +376,7 @@ public class Flowable {
 		Set<Resource> results = new HashSet<Resource>();
 		Resource qResource = flowable.getTdbResource();
 		String qName = flowable.getName();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName);
+		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
 		// Model tdbModel = ActiveTDB.getModel();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(null);
@@ -399,7 +399,7 @@ public class Flowable {
 		}
 
 		for (String qSyn : flowable.getSynonyms()) {
-			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn);
+			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
 			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qSynLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
@@ -420,7 +420,7 @@ public class Flowable {
 		// CAS MATCHING
 		if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
 			String cas = flowable.getCas();
-			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas);
+			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
 
 			resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
 			while (resIterator.hasNext()) {

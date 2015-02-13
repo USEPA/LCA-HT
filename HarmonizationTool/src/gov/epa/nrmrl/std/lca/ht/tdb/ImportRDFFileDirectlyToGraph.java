@@ -19,18 +19,13 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class ImportRDFFileDirectlyToGraph {
 
-	public Object loadToDefaultGraph(String filePath, String graphName) {
+	public static Object loadToDefaultGraph(String filePath, String graphName) {
 
 		Logger runLogger = Logger.getLogger("run");
 		if (ActiveTDB.getModel(graphName) == null) {
 			return null;
 		}
-//
-//		String sep = File.separator;
-//		int filenameStart = filePath.lastIndexOf(sep);
-//		String fileName = filePath.substring(filenameStart);
-//		int dotPos = fileName.lastIndexOf('.');
-//		String fileRoot = filePath.substring(0, dotPos);
+
 		File file = new File(filePath);
 
 		long time0 = System.currentTimeMillis();
@@ -53,10 +48,6 @@ public class ImportRDFFileDirectlyToGraph {
 		runLogger.info("\nLOAD RDF " + path);
 
 		Map<String, String> fileContents = new HashMap<String, String>();
-		// List<String> fileContents = new ArrayList<String>();
-
-		// long was = ActiveTDB.getModel().size();
-		// long startTime = System.currentTimeMillis();
 		if (!fileName.matches(".*\\.zip")) {
 			String inputType = ActiveTDB.getRDFTypeFromSuffix(fileName);
 			if (inputType == null) {
@@ -96,7 +87,7 @@ public class ImportRDFFileDirectlyToGraph {
 				e.printStackTrace();
 			}
 		}
-		readStringsCountNewDataSources(fileContents);
+		readStringsCountNewDataSources(fileContents, graphName);
 	}
 
 
@@ -116,10 +107,10 @@ public class ImportRDFFileDirectlyToGraph {
 		return stringBuilder.toString();
 	}
 
-	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList) {
+	private static void readStringsCountNewDataSources(Map<String, String> fileContentsList, String graphName) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model importModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+		Model importModel = ActiveTDB.getModel(graphName);
 
 		String failedString = "";
 		try {

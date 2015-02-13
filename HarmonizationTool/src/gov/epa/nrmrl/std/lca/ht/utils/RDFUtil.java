@@ -2,15 +2,18 @@ package gov.epa.nrmrl.std.lca.ht.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.rdf.model.Literal;
 
 public class RDFUtil {
 
-		public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
+	public static RDFDatatype getRDFDatatypeFromJavaClass(Object object) {
 		if (object instanceof Float) {
 			return XSDDatatype.XSDfloat;
 		}
@@ -47,7 +50,6 @@ public class RDFUtil {
 		if (object instanceof Calendar) {
 			return XSDDatatype.XSDdateTime;
 		}
-	
 		return null;
 	}
 
@@ -117,7 +119,7 @@ public class RDFUtil {
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDstring)) {
 			try {
-//				System.out.println("String.class.getName() "+ String.class.getName());
+				// System.out.println("String.class.getName() "+ String.class.getName());
 				return Class.forName("java.lang.String");
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -131,6 +133,24 @@ public class RDFUtil {
 			}
 		}
 		return null;
+	}
+
+	public static Date getDateFromLiteral(Literal typedLiteralDate) {
+		Date resultingDate = null;
+		if (!typedLiteralDate.isLiteral()) {
+			return null;
+		}
+		Literal literalDate = typedLiteralDate.asLiteral();
+		String formattedDate = literalDate.getString();
+		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+
+		try {
+			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resultingDate;
 	}
 
 }

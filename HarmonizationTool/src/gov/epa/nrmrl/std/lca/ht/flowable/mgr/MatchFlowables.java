@@ -9,7 +9,6 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
@@ -947,7 +946,7 @@ public class MatchFlowables extends ViewPart {
 			}
 			if (addToMaster.getText().equals("Add to Master")) {
 				// while (!flowableToMatch.getTdbResource().hasProperty(LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster)) {
-				ActiveTDB.tsAddTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
+				ActiveTDB.tsAddGeneralTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster, null);
 				// Model junkModel = ActiveTDB.getFreshModel();
 				// if (junkModel.contains(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 				// LCAHT.QCStatusAdHocMaster)){

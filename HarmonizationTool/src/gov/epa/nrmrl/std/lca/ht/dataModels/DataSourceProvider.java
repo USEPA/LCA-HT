@@ -84,7 +84,7 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 		// Model tdbModel = ActiveTDB.getModel();
 		// if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-		ActiveTDB.tsAddTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource(), null);
 		// }
 	}
 
@@ -143,12 +143,12 @@ public class DataSourceProvider {
 
 	public void remove() {
 		removeFileMDList();
-		ActiveTDB.tsRemoveAllObjects(tdbResource, RDF.type);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.label);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, DCTerms.hasVersion);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, RDFS.comment);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, FedLCA.hasContactPerson);
-		ActiveTDB.tsRemoveAllObjects(tdbResource, LCAHT.containsFile);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDF.type, null, null);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDFS.label, null, null);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, DCTerms.hasVersion, null, null);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDFS.comment, null, null);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, FedLCA.hasContactPerson, null, null);
+		ActiveTDB.tsRemoveGenericTriple(tdbResource, LCAHT.containsFile, null, null);
 	}
 
 	public String getDataSourceName() {
@@ -289,9 +289,9 @@ public class DataSourceProvider {
 		ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
 		if (referenceDataStatus != null) {
 			if (referenceDataStatus == 2) {
-				ActiveTDB.tsAddTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+				ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
 			} else {
-				ActiveTDB.tsAddTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+				ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
 			}
 		}
 	}

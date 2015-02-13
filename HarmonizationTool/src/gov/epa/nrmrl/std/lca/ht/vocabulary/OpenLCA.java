@@ -20,8 +20,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -32,14 +30,12 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 
 public class OpenLCA {
-	private static boolean tdbLoaded = false;
 	/**
 	 * <p>
 	 * The RDF tdbModel that holds the vocabulary terms
 	 * </p>
 	 */
 	private static Model m_model = ActiveTDB.getModel(null);
-	private static String generalComment = "Information added by the LCA Harmonization Tool";
 
 	/**
 	 * <p>
@@ -207,37 +203,6 @@ public class OpenLCA {
 			resourceMap.put(FlowProperty, gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty.getRdfclass());
 			resourceMap.put(Flow, gov.epa.nrmrl.std.lca.ht.dataModels.Flow.getRdfclass());
 		}
-		/* The things below would be superseded by just loading the .ttl file */
-//		if (!tdbLoaded) {
-//			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//
-//			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//			Model model = ActiveTDB.getModel(null);
-//			try {
-//				model.add(Flow, RDF.type, OWL.Class);
-//				model.add(Flow, RDFS.subClassOf, CategorizedEntity);
-//				model.add(Flow, RDFS.comment,
-//						"Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service, etc.");
-//				model.add(Flow, RDFS.label, "Flow");
-//				model.add(Flow, RDFS.comment, generalComment);
-//				
-//				model.add(FlowType, RDF.type, OWL.Class);
-//				model.add(FlowType, RDFS.subClassOf, Enumeration);
-//				model.add(FlowType, RDFS.comment,
-//						"The basic flow types. As of version 1.4, the types of FlowType include ELEMENTARY_FLOW, PRODUCT_FLOW, and WASTE_FLOW");
-//				model.add(FlowType, RDFS.label, "FlowType");
-//				model.add(FlowType, RDFS.comment, generalComment);
-//
-//				ActiveTDB.tdbDataset.commit();
-//			} catch (Exception e) {
-//				System.out.println("Adding OpenLCA ontology triples failed; see Exception: " + e);
-//				ActiveTDB.tdbDataset.abort();
-//			} finally {
-//				ActiveTDB.tdbDataset.end();
-//			}
-//			// ---- END SAFE -WRITE- TRANSACTION ---
-//			tdbLoaded = true;
-//		}
 	}
 
 	public static int convertOpenLCAToLCAHT(String graphName) {

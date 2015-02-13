@@ -3,22 +3,16 @@ package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.LCAUnit;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FASC;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -51,8 +45,8 @@ public class FlowContext {
 			dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 			if (dataPropertyMap.isEmpty()) {
 				ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
-				ActiveTDB.tsAddLiteral(rdfClass, RDFS.comment, comment);
-				ActiveTDB.tsAddTriple(rdfClass, RDF.type, OWL.Class);
+				ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
+				ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
 				System.out.println("label assigned to Flow Context");
 
@@ -150,11 +144,11 @@ public class FlowContext {
 		flowContext.tdbResource = tdbResource;
 		// THE ABOVE MUST BE DONE FIRST, SO THAT TRIPLES ARE ADDED PROPERLY
 		flowContext.generalString = generalString;
-		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextPrimaryDescription, generalString);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextPrimaryDescription, generalString, null);
 		flowContext.specificString = specificString;
-		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.flowContextSupplementalDescription, specificString);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextSupplementalDescription, specificString, null);
 		flowContext.uuid = uuid;
-		ActiveTDB.tsAddLiteral(tdbResource, FedLCA.hasOpenLCAUUID, uuid);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.hasOpenLCAUUID, uuid, null);
 		lcaMasterContexts.add(flowContext);
 	}
 
@@ -162,10 +156,8 @@ public class FlowContext {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
 		clearSyncDataFromTDB();
-		// TODO? SYNC THE MATCHING RESOURCE?
 	}
 
-	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
 			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
@@ -224,9 +216,9 @@ public class FlowContext {
 
 		if (lcaDataPropertyProvider.isUnique()) {
 			removeValues(lcaDataPropertyProvider.getPropertyName());
-			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object);
 		} else {
-			ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, object);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object, null);
 		}
 		lcaDataValues.add(newLCADataValue);
 	}
@@ -304,13 +296,8 @@ public class FlowContext {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllObjects(tdbResource, OWL.sameAs);
-			this.matchingResource = null;
-			return;
-		}
 		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceObject(tdbResource, OWL.sameAs, matchingResource);
+		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
 	}
 
 	public int getFirstRow() {

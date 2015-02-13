@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
+import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
@@ -89,7 +90,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-		ActiveTDB.tsAddLiteral(tdbResource, LCAHT.fileReadDate, readDate);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.fileReadDate, readDate, null);
 	}
 
 	public String getEncoding() {
@@ -148,14 +149,14 @@ public class FileMD {
 		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
 			rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
 			if (rdfNode != null) {
-				modifiedDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+				modifiedDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
 			}
 		}
 
 		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
 			rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
 			if (rdfNode != null) {
-				readDate = ActiveTDB.getDateFromLiteral(rdfNode.asLiteral());
+				readDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
 			}
 		}
 

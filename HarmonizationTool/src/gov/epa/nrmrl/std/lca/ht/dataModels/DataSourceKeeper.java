@@ -287,10 +287,10 @@ public class DataSourceKeeper {
 	public static int placeOrphanDataInNewOrphanDataset() {
 		int nextOrphanNumber = DataSourceKeeper.getNextOrphanDataSetNumber();
 		Resource tempDataSource = ActiveTDB.tsCreateResource(LCAHT.NS + "tempDataSource_" + nextOrphanNumber);
-		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, ECO.DataSource);
-		ActiveTDB.tsAddTriple(tempDataSource, RDF.type, LCAHT.OrphanDataset);
-		ActiveTDB.tsAddLiteral(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
-				+ nextOrphanNumber);
+		ActiveTDB.tsAddGeneralTriple(tempDataSource, RDF.type, ECO.DataSource, null);
+		ActiveTDB.tsAddGeneralTriple(tempDataSource, RDF.type, LCAHT.OrphanDataset, null);
+		ActiveTDB.tsAddGeneralTriple(tempDataSource, RDFS.label, DataSourceKeeper.getOrphanDataDourceNameBase()
+				+ nextOrphanNumber, null);
 		new DataSourceProvider(tempDataSource);
 		return placeOrphanDataInDataset(tempDataSource);
 	}
@@ -343,9 +343,8 @@ public class DataSourceKeeper {
 			}
 			// ---- END SAFE -WRITE- TRANSACTION ---
 			new DataSourceProvider(dataSetResource);
-			// newDataSource.syncFromTDB();
 		} else {
-			ActiveTDB.tsRemoveAllObjects(dataSetResource);
+			ActiveTDB.tsRemoveGenericTriple(dataSetResource, null, null, null);
 		}
 		return count;
 	}
@@ -414,9 +413,9 @@ public class DataSourceKeeper {
 					ActiveTDB.addTriple(dataSourceProvider.getTdbResource(), RDF.type, ECO.DataSource);
 				} else {
 					String newDSName = getOrphanDataDourceNameBase() + getNextOrphanDataSetNumber();
-					Resource newDSResource = ActiveTDB.createResource(ECO.DataSource);
-					ActiveTDB.tsAddTriple(newDSResource, RDFS.label, ActiveTDB.tsCreateTypedLiteral(newDSName)
-							.asResource());
+					Resource newDSResource = ActiveTDB.tsCreateResource(ECO.DataSource);
+					ActiveTDB.tsAddGeneralTriple(newDSResource, RDFS.label, ActiveTDB.tsCreateTypedLiteral(newDSName, null)
+							.asResource(), null);
 				}
 			}
 		}
