@@ -157,6 +157,7 @@ public class Flowable {
 	private List<LCADataValue> lcaDataValues;
 	private LinkedHashMap<Resource, String> matchCandidates;
 	private LinkedHashMap<Resource, String> searchResults;
+	public boolean wasDoubleChedked = false;
 
 	private int firstRow;
 
@@ -176,19 +177,19 @@ public class Flowable {
 		clearSyncDataFromTDB();
 	}
 
-//	public Flowable(boolean transactionSafe) {
-//		if (transactionSafe) {
-//			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-//			lcaDataValues = new ArrayList<LCADataValue>();
-//			matchCandidates = new LinkedHashMap<Resource, String>();
-//			searchResults = new LinkedHashMap<Resource, String>();
-//		} else {
-//			this.tdbResource = ActiveTDB.createResource(rdfClass);
-//			lcaDataValues = new ArrayList<LCADataValue>();
-//			matchCandidates = new LinkedHashMap<Resource, String>();
-//			searchResults = new LinkedHashMap<Resource, String>();
-//		}
-//	}
+	// public Flowable(boolean transactionSafe) {
+	// if (transactionSafe) {
+	// this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+	// lcaDataValues = new ArrayList<LCADataValue>();
+	// matchCandidates = new LinkedHashMap<Resource, String>();
+	// searchResults = new LinkedHashMap<Resource, String>();
+	// } else {
+	// this.tdbResource = ActiveTDB.createResource(rdfClass);
+	// lcaDataValues = new ArrayList<LCADataValue>();
+	// matchCandidates = new LinkedHashMap<Resource, String>();
+	// searchResults = new LinkedHashMap<Resource, String>();
+	// }
+	// }
 
 	// METHODS
 	public Object getOneProperty(String key) {
@@ -237,7 +238,7 @@ public class Flowable {
 			return;
 		}
 		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
-//		RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
+		// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
 		boolean found = false;
 		if (lcaDataPropertyProvider.isUnique()) {
@@ -246,18 +247,15 @@ public class Flowable {
 					lcaDataValue.setValueAsString(valueAsString);
 					found = true;
 					Object object = lcaDataValue.getValue();
-					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(),
-							object);
+					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object);
 					if (!valueAsString.equals(valueAsString.toLowerCase())) {
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 						if (key.equals(flowableNameString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
-									valueAsString.toLowerCase(), null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 						}
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 						if (key.equals(flowableSynonymString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
-									valueAsString.toLowerCase() , null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 						}
 					}
 					continue;
@@ -274,13 +272,11 @@ public class Flowable {
 			if (!valueAsString.equals(valueAsString.toLowerCase())) {
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableNameString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
-							valueAsString.toLowerCase(), null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 				}
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableSynonymString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, 
-							valueAsString.toLowerCase(),null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 				}
 			}
 		}
@@ -726,7 +722,7 @@ public class Flowable {
 		b.append("   } \n");
 
 		String query = b.toString();
-//		System.out.println("Query = \n" + query);
+		// System.out.println("Query = \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -753,6 +749,7 @@ public class Flowable {
 	}
 
 	public int setCandidates() {
+		wasDoubleChedked = true;
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
 		lcQName.replaceAll("\"", "\\\\\"");
@@ -812,7 +809,9 @@ public class Flowable {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
-			matchCandidates.put(rdfNode.asResource(), "?");
+			if (!matchCandidates.containsKey(rdfNode.asResource())) {
+				matchCandidates.put(rdfNode.asResource(), "?");
+			}
 		}
 		return count;
 	}
@@ -840,6 +839,15 @@ public class Flowable {
 
 	public void clearSearchResults() {
 		searchResults.clear();
+	}
+
+	public void transferSearchResults() {
+		for (Resource resource : searchResults.keySet()) {
+			String value = searchResults.get(resource);
+			if (!value.equals(MatchStatus.UNKNOWN.getSymbol())) {
+				matchCandidates.put(resource, value);
+			}
+		}
 	}
 
 	public LinkedHashMap<Resource, String> getSearchResults() {
