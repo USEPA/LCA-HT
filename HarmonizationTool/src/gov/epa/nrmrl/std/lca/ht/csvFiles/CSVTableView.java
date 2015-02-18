@@ -49,6 +49,8 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -347,7 +349,6 @@ public class CSVTableView extends ViewPart {
 				table.deselectAll();
 				return;
 			}
-
 			String dataRowNumString = table.getItem(rowNumSelected).getText(0);
 			Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 			if (rowsToIgnore.contains(dataRowNum)) {
@@ -360,6 +361,18 @@ public class CSVTableView extends ViewPart {
 			// }
 			table.deselectAll();
 			table.setSelection(rowNumSelected);
+//			TableItem tableItem = table.getItem(rowNumSelected);
+//			Font font = tableItem.getFont();
+//			FontData[] thing = font.getFontData();
+//			FontData tx = thing[0];
+//			tx.setHeight(40);
+//			thing[0] = tx;
+////			font.
+//
+//			tableItem.setFont(font);
+//			System.out.println(tx);
+
+//			tableItem.setFont(new Font());
 			// table.getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
 			matchRowContents();
 			return;

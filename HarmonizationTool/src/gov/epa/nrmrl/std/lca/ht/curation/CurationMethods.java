@@ -126,6 +126,7 @@ public class CurationMethods {
 			newComparison = tdbModel.createResource(FedLCA.Comparison);
 			tdbModel.add(newComparison, FedLCA.comparedSource, querySource);
 			tdbModel.add(newComparison, FedLCA.comparedMaster, master);
+			tdbModel.add(newComparison, FedLCA.comparedEquivalence, equivalence);
 			tdbModel.add(currentAnnotation, FedLCA.hasComparison, newComparison);
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
