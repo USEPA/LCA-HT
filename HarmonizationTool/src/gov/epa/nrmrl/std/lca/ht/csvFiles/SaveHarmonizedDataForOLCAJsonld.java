@@ -33,8 +33,8 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class SaveHarmonizedDataJsonld implements IHandler {
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld";
+public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld";
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -98,7 +98,14 @@ public class SaveHarmonizedDataJsonld implements IHandler {
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		ActiveTDB.copyDatasetContentsToExportGraph(currentName);
-		/* Once data are copied into the export graph, info can be added / changed without affecting the default graph */
+		
+		/* Once data are copied into the export graph, data can be prepared for openLCA
+		 * 1) Determine which Flows have new information
+		 * 2) Create new UUIDs for those
+		 * 3) Move old info to an appropriate field name
+		 * 4) Place new info in the appropriate place
+		 * 5) Append to description info about what happened 
+		 * */
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);

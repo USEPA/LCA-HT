@@ -125,7 +125,7 @@
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
-                  label="Save Harmonized Data (json)"
+                  label="Save Harmonized Data For openLCA (json)"
                   style="push">
             </command>
             <command
@@ -432,7 +432,7 @@
             name="Show Results View">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
             name="Export Data to Jsonld">
       </command>

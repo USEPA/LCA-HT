@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
@@ -70,6 +71,11 @@ public class Util {
 		final Bundle bundle = product.getDefiningBundle();
 		final Version v = bundle.getVersion();
 		return v.toString();
+	}
+
+	public static String getRandomUUID() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
 	}
 
 	public static String escape(String s) {
