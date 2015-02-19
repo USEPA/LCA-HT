@@ -115,11 +115,11 @@ public class CSVTableView extends ViewPart {
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
 	}
-	
+
 	private static Font defaultFont = null;
 	private static Font boldFont = null;
 
-//	private static Font boldFont = new Font(Display.getCurrent(), new FontData("Lucida Grande", 11, SWT.BOLD));
+	// private static Font boldFont = new Font(Display.getCurrent(), new FontData("Lucida Grande", 11, SWT.BOLD));
 
 	// THESE 6 ARE MANAGED IN FlowsWorkflow, BUT BROUGHT OVER FOR CONVENIENCE
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
@@ -316,7 +316,7 @@ public class CSVTableView extends ViewPart {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-//			System.out.println("mouse down event :e =" + e);
+			// System.out.println("mouse down event :e =" + e);
 			if (e.button == 1) {
 				leftClick(e);
 			} else if (e.button == 3) {
@@ -327,7 +327,7 @@ public class CSVTableView extends ViewPart {
 
 		@Override
 		public void mouseUp(MouseEvent e) {
-//			System.out.println("mouse up event :e =" + e);
+			// System.out.println("mouse up event :e =" + e);
 		}
 
 		private void leftClick(MouseEvent event) {
@@ -335,45 +335,46 @@ public class CSVTableView extends ViewPart {
 			Point ptLeft = new Point(1, event.y);
 			Point ptClick = new Point(event.x, event.y);
 
-			TableItem item = table.getItem(ptLeft);
-			if (item == null) {
+			TableItem newTableItem = table.getItem(ptLeft);
+			if (newTableItem == null) {
 				return;
 			}
-			rowNumSelected = table.indexOf(item);
+			TableItem lastTableItem = null;
+			if (rowNumSelected > -1 && rowNumSelected < table.getItemCount()) {
+				lastTableItem = table.getItem(rowNumSelected);
+			}
+			int newRow = table.indexOf(newTableItem);
+			if (newRow == rowNumSelected) {
+				return;
+			}
+			rowNumSelected = newRow;
 			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
 
-			table.select(rowNumSelected);
-
 			if (preCommit && (colNumSelected == 0)) {
+				table.select(rowNumSelected);
 				rowMenu.setVisible(true);
 				return;
 			}
 
-			// if (colNumSelected > 0) {
+			table.deselectAll();
+
 			if (preCommit) {
-				table.deselectAll();
 				return;
 			}
-			String dataRowNumString = table.getItem(rowNumSelected).getText(0);
+			String dataRowNumString = newTableItem.getText(0);
 			Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
 			if (rowsToIgnore.contains(dataRowNum)) {
-				table.deselectAll();
 				return;
 			}
 
-			TableItem tableItem = table.getItem(rowNumSelected);
-			if (defaultFont == null){
-				defaultFont = tableItem.getFont();
-				FontData boldFontData = defaultFont.getFontData()[0];
-				boldFontData.setStyle(SWT.BOLD);
-				boldFont = new Font(Display.getCurrent(),boldFontData);
+			if (defaultFont == null) {
+				createFonts(newTableItem);
 			}
-			table.deselectAll();
-			for (TableItem ti:table.getItems()){
-				ti.setFont(defaultFont);
+			if (lastTableItem != null) {
+				lastTableItem.setFont(defaultFont);
 			}
-			table.setSelection(rowNumSelected);
-			tableItem.setFont(boldFont);
+			newTableItem.setFont(boldFont);
+
 			matchRowContents();
 			return;
 			// }
@@ -426,7 +427,15 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	};
-	
+
+	private static void createFonts(TableItem tableItem) {
+		defaultFont = tableItem.getFont();
+		FontData boldFontData = defaultFont.getFontData()[0];
+		boldFontData.setStyle(SWT.BOLD);
+		boldFont = new Font(Display.getCurrent(), boldFontData);
+
+	}
+
 	private static int getColumnNumSelected(Point point) {
 		int clickedRow = getRowNumSelected(point);
 		int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
@@ -1023,11 +1032,16 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void selectNext() {
-		// System.out.println("RowNumSelected = " + rowNumSelected);
-		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
 		if (rowNumSelected < (table.getItemCount() - 1)) {
+			TableItem lastTableItem = table.getItem(rowNumSelected);
 			rowNumSelected++;
-			table.setSelection(rowNumSelected);
+			TableItem tableItem = table.getItem(rowNumSelected);
+			table.deselectAll();
+			if (defaultFont == null) {
+				createFonts(tableItem);
+			}
+			lastTableItem.setFont(defaultFont);
+			tableItem.setFont(boldFont);
 			matchRowContents();
 		}
 	}
@@ -1036,8 +1050,15 @@ public class CSVTableView extends ViewPart {
 		// System.out.println("RowNumSelected = " + rowNumSelected);
 		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
 		if (rowNumSelected < (table.getItemCount() - 1)) {
+			TableItem lastTableItem = table.getItem(rowNumSelected);
 			rowNumSelected++;
-			table.setSelection(rowNumSelected);
+			TableItem tableItem = table.getItem(rowNumSelected);
+			table.deselectAll();
+			if (defaultFont == null) {
+				createFonts(tableItem);
+			}
+			lastTableItem.setFont(defaultFont);
+			tableItem.setFont(boldFont);
 			matchRowContents();
 		}
 		try {
@@ -1161,7 +1182,7 @@ public class CSVTableView extends ViewPart {
 				dataRow = (DataRow) element;
 			} catch (Exception e) {
 				e.printStackTrace();
-//				System.out.println("element= " + element);
+				// System.out.println("element= " + element);
 			}
 			String t = "";
 			try {
@@ -1942,74 +1963,25 @@ public class CSVTableView extends ViewPart {
 		matchRowContents();
 	}
 
-	// public static void selectNextFlowable() {
-	// int rowCount = table.getItemCount();
-	// if (rowCount == 1) {
-	// return;
-	// }
-	// int tableSelIndex = table.getSelectionIndex();
-	// // if (rowCount == (tableSelIndex + 1)) {
-	// // int firstNonExcludedRow = 0;
-	// // while (rowsToIgnore.contains(firstNonExcludedRow)){
-	// // firstNonExcludedRow++;
-	// // }
-	// // table.setSelection(firstNonExcludedRow);
-	// // MatchFlowables.update(firstNonExcludedRow);
-	// // return;
-	// // }
-	//
-	// for (int i = tableSelIndex + 1; i < rowCount; i++) {
-	// String rowNumString = table.getItem(i).getText(0);
-	// int newRowNumber = Integer.parseInt(rowNumString) - 1;
-	// if (uniqueFlowableRowNumbers.contains(newRowNumber)) {
-	// table.setSelection(i);
-	// MatchFlowables.update(newRowNumber);
-	// return;
-	// }
-	// }
-	// }
-	//
-	// public static void selectNextContext() {
-	// int rowCount = table.getItemCount();
-	// if (rowCount == 1) {
-	// return;
-	// }
-	// int tableSelIndex = table.getSelectionIndex();
-	// if (rowCount == (tableSelIndex + 1)) {
-	// return;
-	// }
-	//
-	// for (int i = tableSelIndex + 1; i < rowCount; i++) {
-	// String rowNumString = table.getItem(i).getText(0);
-	// int newRowNumber = Integer.parseInt(rowNumString) - 1;
-	// if (uniqueFlowContextRowNumbers.contains(newRowNumber)) {
-	// table.setSelection(i);
-	// // MatchContexts.update(newRowNumber);
-	// MatchContexts.update();
-	// return;
-	// }
-	// }
-	// }
-	//
-	// public static void selectNextProperty() {
-	// int rowCount = table.getItemCount();
-	// if (rowCount == 1) {
-	// return;
-	// }
-	// int tableSelIndex = table.getSelectionIndex();
-	// if (rowCount == (tableSelIndex + 1)) {
-	// return;
-	// }
-	//
-	// for (int i = tableSelIndex + 1; i < rowCount; i++) {
-	// String rowNumString = table.getItem(i).getText(0);
-	// int newRowNumber = Integer.parseInt(rowNumString) - 1;
-	// if (uniqueFlowPropertyRowNumbers.contains(newRowNumber)) {
-	// table.setSelection(i);
-	// // MatchProperties.update(newRowNumber);
-	// MatchProperties.update();
-	// return;
-	// }
-	// }
-	// }
+	public static void setRowNumSelected(int i) {
+		int oldRowNumSelected = rowNumSelected;
+		if (i < 0 || i >= table.getItemCount()) {
+			rowNumSelected = 0;
+		} else {
+			rowNumSelected = i;
+		}
+		TableItem tableItem = table.getItem(rowNumSelected);
+		if (defaultFont == null) {
+			createFonts(tableItem);
+		}
+		if (oldRowNumSelected >= 0 & oldRowNumSelected < table.getItemCount()) {
+			table.getItem(oldRowNumSelected).setFont(defaultFont);
+		}
+		tableItem.setFont(boldFont);
+	}
+
+	public static void setPostCommit() {
+		preCommit = false;
+//		tableViewer.
+	}
 }

@@ -491,9 +491,13 @@ public class FlowsWorkflow extends ViewPart {
 			}
 			btnCheckData.setEnabled(false);
 			btnMatchFlowables.setEnabled(true);
+			btnMatchFlowables.setGrayed(false);
 			btnMatchFlowContexts.setEnabled(true);
+			btnMatchFlowContexts.setGrayed(false);
 			btnMatchFlowProperties.setEnabled(true);
-			CSVTableView.preCommit = false;
+			btnMatchFlowProperties.setGrayed(false);
+//			CSVTableView.preCommit = false;
+			CSVTableView.setPostCommit();
 			CSVTableView.initializeRowMenu();
 			String jobKey = "autoMatch_01";
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
@@ -541,7 +545,8 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowContextRows();
 			}
-			CSVTableView.setSelection(0);
+//			CSVTableView.setSelection(0);
+			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 			// Util.setPerspective(FlowDataV4.ID);
 			// Util.setPerspective(LCIWorkflowPerspective.ID);
@@ -582,7 +587,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			CSVTableView.setSelection(0);
+			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 			// Util.setPerspective(FlowDataV4.ID);
 			// Util.setPerspective(LCIWorkflowPerspective.ID);
@@ -622,7 +627,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowProperties.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			CSVTableView.setSelection(0);
+			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 
 			try {
@@ -743,14 +748,17 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void disableFlowableBtn() {
+		btnMatchFlowables.setGrayed(true);
 		btnMatchFlowables.setEnabled(false);
 	}
 
 	public static void disableContextBtn() {
+		btnMatchFlowContexts.setGrayed(true);
 		btnMatchFlowContexts.setEnabled(false);
 	}
 
 	public static void disablePropertyBtn() {
+		btnMatchFlowProperties.setGrayed(true);
 		btnMatchFlowProperties.setEnabled(false);
 	}
 
