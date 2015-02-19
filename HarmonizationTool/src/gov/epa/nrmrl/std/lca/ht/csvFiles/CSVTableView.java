@@ -115,6 +115,11 @@ public class CSVTableView extends ViewPart {
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
 	}
+	
+	private static Font defaultFont = null;
+	private static Font boldFont = null;
+
+//	private static Font boldFont = new Font(Display.getCurrent(), new FontData("Lucida Grande", 11, SWT.BOLD));
 
 	// THESE 6 ARE MANAGED IN FlowsWorkflow, BUT BROUGHT OVER FOR CONVENIENCE
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
@@ -356,24 +361,19 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 
-			// for (TableItem tableItem : table.getItems()) {
-			// tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-			// }
+			TableItem tableItem = table.getItem(rowNumSelected);
+			if (defaultFont == null){
+				defaultFont = tableItem.getFont();
+				FontData boldFontData = defaultFont.getFontData()[0];
+				boldFontData.setStyle(SWT.BOLD);
+				boldFont = new Font(Display.getCurrent(),boldFontData);
+			}
 			table.deselectAll();
+			for (TableItem ti:table.getItems()){
+				ti.setFont(defaultFont);
+			}
 			table.setSelection(rowNumSelected);
-//			TableItem tableItem = table.getItem(rowNumSelected);
-//			Font font = tableItem.getFont();
-//			FontData[] thing = font.getFontData();
-//			FontData tx = thing[0];
-//			tx.setHeight(40);
-//			thing[0] = tx;
-////			font.
-//
-//			tableItem.setFont(font);
-//			System.out.println(tx);
-
-//			tableItem.setFont(new Font());
-			// table.getItem(rowNumSelected).setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+			tableItem.setFont(boldFont);
 			matchRowContents();
 			return;
 			// }
@@ -426,7 +426,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	};
-
+	
 	private static int getColumnNumSelected(Point point) {
 		int clickedRow = getRowNumSelected(point);
 		int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
