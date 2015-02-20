@@ -119,7 +119,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("  ?flow olca:cas ?cas_fmt . \n");
 			b.append("  ?flow olca:formula ?formula . \n");
 			b.append("}} \n");
-			b.append("  where {\n");
+			b.append("  where  {graph <" + ActiveTDB.exportGraphName + ">{\n");
 			b.append("    ?flow a fedlca:Flow . \n");
 			b.append("    ?flow eco:hasFlowable ?flowable . \n");
 			b.append("    #-- Flow must have a comparison with 'equivalent' \n");
@@ -142,7 +142,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 			b.append("    ?c fedlca:comparedSource ?flowable . \n");
 
-			b.append("  }\n");
+			b.append("  }}\n");
 			String query = b.toString();
 			System.out.println("\n" + query + "\n");
 			UpdateRequest request = UpdateFactory.create(query);

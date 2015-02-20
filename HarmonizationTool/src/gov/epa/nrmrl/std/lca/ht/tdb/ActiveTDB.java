@@ -852,4 +852,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
+	
+	public static void sync(){
+		TDB.sync(tdbDataset);
+	}
 }

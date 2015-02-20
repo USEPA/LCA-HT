@@ -212,8 +212,8 @@ public class OpenLCA {
 			Property propertyTo = propertyMap.get(propertyFrom);
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("INSERT { ?s <" + propertyTo.getURI() + "> ?to . } \n");
-			b.append("WHERE { ?s <" + propertyFrom.getURI() + "> ?to . } \n");
+			b.append("INSERT {graph <" + graphName + "> { ?s <" + propertyTo.getURI() + "> ?to . }} \n");
+			b.append("WHERE {graph <" + graphName + "> { ?s <" + propertyFrom.getURI() + "> ?to . }} \n");
 			String query = b.toString();
 			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();
@@ -226,8 +226,8 @@ public class OpenLCA {
 			Resource resourceTo = resourceMap.get(resourceFrom);
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("INSERT { ?s ?p <" + resourceTo.getURI() + "> . } \n");
-			b.append("WHERE { ?s ?p <" + resourceFrom.getURI() + "> . } \n");
+			b.append("INSERT {graph <" + graphName + "> { ?s ?p <" + resourceTo.getURI() + "> . }} \n");
+			b.append("WHERE {graph <" + graphName + "> { ?s ?p <" + resourceFrom.getURI() + "> . }} \n");
 			String query = b.toString();
 			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();
@@ -239,7 +239,7 @@ public class OpenLCA {
 		/* OpenLCA does not have Flowables, so we must create Flowables for distinct Flow name, cas, formula, dataset */
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct  ?name ?cas ?formula ?dataSource where { \n");
+		b.append("select distinct  ?flow ?name ?cas ?formula ?dataSource where { \n");
 		b.append("  ?flow a olca:Flow . \n");
 		b.append("  ?flow olca:name ?name . \n");
 		b.append("  optional { \n");
@@ -258,12 +258,14 @@ public class OpenLCA {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(graphName);
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<RDFNode> flows = new ArrayList<RDFNode>();
 		List<RDFNode> names = new ArrayList<RDFNode>();
 		List<RDFNode> cass = new ArrayList<RDFNode>();
 		List<RDFNode> formulae = new ArrayList<RDFNode>();
 		List<RDFNode> datasets = new ArrayList<RDFNode>();
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
+			flows.add(querySolution.get("flow"));
 			names.add(querySolution.get("name"));
 			formulae.add(querySolution.get("formula"));
 			cass.add(querySolution.get("cas"));
@@ -276,6 +278,7 @@ public class OpenLCA {
 			count += names.size();
 			for (int i = 0; i < names.size(); i++) {
 				Resource newFlowable = tdbModel.createResource(ECO.Flowable);
+				Resource flowResource = flows.get(i).asResource();
 				String nameString = names.get(i).asLiteral().getString();
 				Literal nameLiteral = tdbModel.createTypedLiteral(nameString);
 				Literal nameLiteralLC = tdbModel.createTypedLiteral(nameString.toLowerCase());
@@ -293,7 +296,10 @@ public class OpenLCA {
 					tdbModel.addLiteral(newFlowable, ECO.chemicalFormula, formulaLiteral);
 				}
 				if (datasets.get(i) != null) {
-					tdbModel.add(newFlowable, ECO.hasDataSource, datasets.get(i).asResource());
+					Resource dataset = datasets.get(i).asResource();
+					tdbModel.add(newFlowable, ECO.hasDataSource, dataset);
+					tdbModel.add(newFlowable, ECO.hasDataSource, dataset);
+					tdbModel.add(flowResource, ECO.hasDataSource, dataset);
 				} else {
 
 				}
@@ -316,8 +322,8 @@ public class OpenLCA {
 			Property propertyFrom = propertyMap.get(propertyTo);
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("INSERT { ?s <" + propertyTo.getURI() + "> ?to . } \n");
-			b.append("WHERE { ?s <" + propertyFrom.getURI() + "> ?to . } \n");
+			b.append("INSERT  {graph <" + graphName + "> { ?s <" + propertyTo.getURI() + "> ?to . }} \n");
+			b.append("WHERE {graph <" + graphName + "> { ?s <" + propertyFrom.getURI() + "> ?to . }} \n");
 			String query = b.toString();
 			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();
@@ -330,8 +336,8 @@ public class OpenLCA {
 			Resource resourceFrom = resourceMap.get(resourceTo);
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("INSERT { ?s ?p <" + resourceTo.getURI() + "> . } \n");
-			b.append("WHERE { ?s ?p <" + resourceFrom.getURI() + "> . } \n");
+			b.append("INSERT  {graph <" + graphName + "> { ?s ?p <" + resourceTo.getURI() + "> . }} \n");
+			b.append("WHERE {graph <" + graphName + "> { ?s ?p <" + resourceFrom.getURI() + "> . }} \n");
 			String query = b.toString();
 			GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", graphName);
 			iGenericUpdate.getData();

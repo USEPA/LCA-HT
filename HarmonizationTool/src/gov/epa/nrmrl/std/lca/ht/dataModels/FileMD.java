@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.Date;
+import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -174,9 +175,12 @@ public class FileMD {
 			}
 			for (int i = 0; i < DataSourceKeeper.size(); i++) {
 				DataSourceProvider dataSourceProvider = DataSourceKeeper.get(i);
-				for (FileMD fileMD : dataSourceProvider.getFileMDList()) {
-					if (fileMD.equals(this)) {
-						tdbModel.remove(dataSourceProvider.getTdbResource(), LCAHT.containsFile, tdbResource);
+				List<FileMD> fileMDs = dataSourceProvider.getFileMDList();
+				if (fileMDs != null) {
+					for (FileMD fileMD : fileMDs) {
+						if (fileMD.equals(this)) {
+							tdbModel.remove(dataSourceProvider.getTdbResource(), LCAHT.containsFile, tdbResource);
+						}
 					}
 				}
 			}

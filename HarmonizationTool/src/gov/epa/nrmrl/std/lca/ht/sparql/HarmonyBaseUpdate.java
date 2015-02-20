@@ -8,8 +8,11 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
@@ -59,7 +62,6 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		}
 
 		queryResults = new QueryResults();
-		GraphStore graphStore = ActiveTDB.graphStore;
 		DataRow columnHeaders = new DataRow();
 		queryResults.setColumnHeaders(columnHeaders);
 
@@ -90,6 +92,8 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		String sparqlUpdateString = queryStr;
 		System.out.println("query = " + sparqlUpdateString.toString());
 
+		GraphStore graphStore = ActiveTDB.graphStore;
+	
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 

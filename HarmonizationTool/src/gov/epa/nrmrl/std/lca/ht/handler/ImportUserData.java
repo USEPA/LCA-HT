@@ -10,6 +10,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -293,14 +294,19 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tsRemoveGenericTriple(toRemove, null, null, ActiveTDB.importGraphName);
 		}
 
+		ActiveTDB.syncTDBtoLCAHT();
+		
 		if (haveOLCAData) {
 			buildUserDataTableFromOLCADataViaQuery();
 		} else {
 			buildUserDataTableFromLCAHTDataViaQuery();
 		}
+
 		/* TRANSFER DATA TO DEFAULT GRAPH */
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
+
+		placeContentsInDataset();
 
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -312,6 +318,36 @@ public class ImportUserData implements IHandler {
 		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 
+	}
+
+	private static void placeContentsInDataset() {
+		DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
+		String datasetName = dataSourceProvider.getDataSourceName();
+
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+//		b.append("with graph <" + ActiveTDB.importGraphName + "> \n");
+		b.append("insert {?s eco:hasDataSource ?ds } \n");
+		b.append("where { \n");
+
+		b.append("{ \n");
+		b.append("  select ?s ?ds where { \n");
+		b.append("    ?ds a eco:DataSource . \n");
+		b.append("    ?ds rdfs:label ?name . \n");
+		b.append("    filter (str(?name) = \"" + datasetName + "\") \n");
+		b.append("    ?s a ?class .  \n");
+		b.append("    filter(!exists{?s eco:hasDataSource ?x }) \n ");
+		b.append("    filter regex (str(?class),\"^http://openlca\")   \n");
+		b.append("  } \n");
+		b.append("}} \n");
+
+		String query = b.toString();
+		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", null);
+		iGenericUpdate.getData();
+//		iGenericUpdate = new GenericUpdate(query, "Temp data source", ActiveTDB.importGraphName);
+//		iGenericUpdate.getData();
+		Long added = iGenericUpdate.getAddedTriples();
+		runLogger.info("  # openLCA items added to dataset: "+added);
 	}
 
 	private static void buildUserDataTableFromOLCADataViaQuery() {
