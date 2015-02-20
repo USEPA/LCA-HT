@@ -343,7 +343,7 @@ public class OpenLCA {
 		/* To convert LCAHT Flow data, determine how to create an openLCA Flow name */
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct  ?name ?cas ?formula ?dataSource where { \n");
+		b.append("select distinct  ?flow ?name ?cas ?formula ?dataSource where { \n");
 		b.append("  ?flow a olca:Flow . \n");
 		b.append("  ?flow olca:name ?name . \n");
 		b.append("  optional { \n");
@@ -362,12 +362,14 @@ public class OpenLCA {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(graphName);
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<RDFNode> flows = new ArrayList<RDFNode>();
 		List<RDFNode> names = new ArrayList<RDFNode>();
 		List<RDFNode> cass = new ArrayList<RDFNode>();
 		List<RDFNode> formulae = new ArrayList<RDFNode>();
 		List<RDFNode> datasets = new ArrayList<RDFNode>();
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
+			flows.add(querySolution.get("flow"));
 			names.add(querySolution.get("name"));
 			formulae.add(querySolution.get("formula"));
 			cass.add(querySolution.get("cas"));
@@ -384,6 +386,7 @@ public class OpenLCA {
 				Literal nameLiteralLC = tdbModel.createTypedLiteral(nameString.toLowerCase());
 				tdbModel.addLiteral(newFlowable, RDFS.label, nameLiteral);
 				tdbModel.addLiteral(newFlowable, SKOS.altLabel, nameLiteralLC);
+				tdbModel.add(flows.get(i).asResource(), ECO.hasFlowable, newFlowable);
 
 				if (cass.get(i) != null) {
 					String casString = cass.get(i).asLiteral().getString();
