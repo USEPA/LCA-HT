@@ -484,8 +484,8 @@ public class CSVTableView extends ViewPart {
 		MatchFlowables.update(dataRowNum);
 		// MatchContexts.update(dataRowNum);
 		// MatchProperties.update(dataRowNum);
-		MatchContexts.update();
-		MatchProperties.update();
+		MatchContexts.update(dataRowNum);
+		MatchProperties.update(dataRowNum);
 	}
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
@@ -1978,6 +1978,10 @@ public class CSVTableView extends ViewPart {
 			table.getItem(oldRowNumSelected).setFont(defaultFont);
 		}
 		tableItem.setFont(boldFont);
+	}
+	
+	public static int getRowNumSelected() {
+		return rowNumSelected;
 	}
 
 	public static void setPostCommit() {
