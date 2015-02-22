@@ -26,9 +26,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -295,7 +298,9 @@ public class ImportUserData implements IHandler {
 		}
 
 		ActiveTDB.syncTDBtoLCAHT();
-		
+
+		placeContentsInDataset();
+
 		if (haveOLCAData) {
 			buildUserDataTableFromOLCADataViaQuery();
 		} else {
@@ -305,8 +310,6 @@ public class ImportUserData implements IHandler {
 		/* TRANSFER DATA TO DEFAULT GRAPH */
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
-
-		placeContentsInDataset();
 
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -322,32 +325,62 @@ public class ImportUserData implements IHandler {
 
 	private static void placeContentsInDataset() {
 		DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
-		String datasetName = dataSourceProvider.getDataSourceName();
+		Resource datasetResource = dataSourceProvider.getTdbResource();
 
 		StringBuilder b = new StringBuilder();
+//		b.append(Prefixes.getPrefixesForQuery());
+//		b.append("insert {graph <" + ActiveTDB.importGraphName + "> {?s eco:hasDataSource ?ds }} \n");
+//		b.append("where { graph <" + ActiveTDB.importGraphName + "> { \n");
+//		b.append("  select ?s ?ds \n");
+////		b.append("  from <" + ActiveTDB.importGraphName + "> {\n");
+//		/* THE ABOVE LINE WORKS IN A SIMPLE QUERY, BUT NOT IN A SUBQUERY IN AN INSERT */
+//		b.append("  where { graph <" + ActiveTDB.importGraphName + "> {\n");
+//		b.append("    ?ds a eco:DataSource . \n");
+//		b.append("    ?ds rdfs:label ?name . \n");
+//		b.append("    filter (str(?name) = \"" + datasetName + "\") \n");
+//		b.append("    ?s a ?class .  \n");
+//		b.append("    filter(!exists{?s eco:hasDataSource ?x }) \n ");
+//		b.append("    filter regex (str(?class),\"^http://openlca\")   \n");
+//		b.append("  }}} \n");
+//		b.append("} \n");
+
 		b.append(Prefixes.getPrefixesForQuery());
-//		b.append("with graph <" + ActiveTDB.importGraphName + "> \n");
-		b.append("insert {?s eco:hasDataSource ?ds } \n");
-		b.append("where { \n");
-
-		b.append("{ \n");
-		b.append("  select ?s ?ds where { \n");
-		b.append("    ?ds a eco:DataSource . \n");
-		b.append("    ?ds rdfs:label ?name . \n");
-		b.append("    filter (str(?name) = \"" + datasetName + "\") \n");
-		b.append("    ?s a ?class .  \n");
-		b.append("    filter(!exists{?s eco:hasDataSource ?x }) \n ");
-		b.append("    filter regex (str(?class),\"^http://openlca\")   \n");
-		b.append("  } \n");
-		b.append("}} \n");
-
+		b.append("select ?s ?ds \n");
+		b.append("from <" + ActiveTDB.importGraphName + ">\n");
+		/* THE ABOVE LINE WORKS IN A SIMPLE QUERY, BUT NOT IN A SUBQUERY IN AN INSERT */
+		b.append("where {\n");
+		b.append("  ?s a ?class .  \n");
+		b.append("  filter(!exists{?s eco:hasDataSource ?x }) \n ");
+		b.append("  filter regex (str(?class),\"^http://openlca\")   \n");
+		b.append("} \n");
 		String query = b.toString();
-		GenericUpdate iGenericUpdate = new GenericUpdate(query, "Temp data source", null);
-		iGenericUpdate.getData();
-//		iGenericUpdate = new GenericUpdate(query, "Temp data source", ActiveTDB.importGraphName);
-//		iGenericUpdate.getData();
-		Long added = iGenericUpdate.getAddedTriples();
-		runLogger.info("  # openLCA items added to dataset: "+added);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+		while (resultSet.hasNext()){
+			 QuerySolution querySolution = resultSet.next();
+			 itemsToAddToDatasource.add(querySolution.get("s").asResource());
+		}
+		
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
+		try {
+			for (Resource itemToAdd : itemsToAddToDatasource) {
+				tdbModel.add(itemToAdd, ECO.hasDataSource, datasetResource);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+		runLogger.info("  # openLCA items added to dataset: " + itemsToAddToDatasource.size());
 	}
 
 	private static void buildUserDataTableFromOLCADataViaQuery() {

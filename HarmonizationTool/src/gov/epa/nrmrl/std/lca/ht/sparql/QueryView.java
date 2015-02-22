@@ -200,6 +200,7 @@ public class QueryView extends ViewPart {
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
+//		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 		ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
 		TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
@@ -216,6 +217,7 @@ public class QueryView extends ViewPart {
 		ResultsView resultsView = (ResultsView) Util.findView(ResultsView.ID);
 
 		String updateStr = windowQueryUpdate.getText();
+//		GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window", ActiveTDB.importGraphName);
 		GenericUpdate iGenericUpdate = new GenericUpdate(updateStr, "Update from window");
 
 		String title = resultsView.getTitle();
