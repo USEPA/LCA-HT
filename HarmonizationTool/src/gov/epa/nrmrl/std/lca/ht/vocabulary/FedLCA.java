@@ -412,6 +412,8 @@ public class FedLCA {
 	public static final Resource VolumeTime = m_model.createResource(NS + "VolumeTime");
 	// Mass*time
 	public static final Resource MassTime = m_model.createResource(NS + "MassTime");
+	// Mass/time
+	public static final Resource MassPerTime = m_model.createResource(NS + "MassPerTime");
 	// Mass*length
 	public static final Resource MassLength = m_model.createResource(NS + "MassLength");
 	// Volume*Length
@@ -635,6 +637,8 @@ public class FedLCA {
 	// Metric ton times day (1 year = 365 days)
 	public static final Resource ton_year = m_model.createResource(NS+"ton_year");
 	// Metric tonnes times year
+	public static final Resource kg_per_year = m_model.createResource(NS+"kg_per_year");
+	// Kilogram per year	
 	public static final Resource ton_km = m_model.createResource(NS+"ton_km");
 	// Metric ton-kilometer
 	public static final Resource lb_mi = m_model.createResource(NS+"lb_mi");

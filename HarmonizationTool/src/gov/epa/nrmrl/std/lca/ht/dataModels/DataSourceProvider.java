@@ -234,7 +234,7 @@ public class DataSourceProvider {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -READ- TRANSACTION ---
-		
+
 		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 
 		if (tdbResource.hasProperty(RDFS.comment)) {
@@ -285,14 +285,19 @@ public class DataSourceProvider {
 
 	public void setReferenceDataStatus(Integer referenceDataStatus) {
 		this.referenceDataStatus = referenceDataStatus;
-		ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
-		ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
-		if (referenceDataStatus != null) {
-			if (referenceDataStatus == 2) {
-				ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
-			} else {
-				ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
-			}
+		if (referenceDataStatus == null) {
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			return;
+		}
+		if (referenceDataStatus == 1) {
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.MasterDataset, null);
+			return;
+		}
+		if (referenceDataStatus == 1) {
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
 		}
 	}
 }

@@ -144,6 +144,7 @@ public class FlowProperty {
 				addUnit("Mass", "d4922696-9c95-4b5d-a876-425e98276978", 907.18, "Short ton", "sh tn", "", "kg",
 						FedLCA.sh_ton);
 				addUnit("Mass", "83192ffa-5990-490b-a23a-b45ca072db6f", 1000, "Ton", "t", "Mg", "kg", FedLCA.t);
+				/* ==================== */
 				addUnit("Length", "3d314eab-ef11-4ff3-a35e-9bc5cd858694", 1, "Meter", "m", "", "m", FedLCA.m);
 				addUnit("Length", "d018183e-ea8c-4a41-a303-627c9b9b173d", 0.01, "Centimeter", "cm", "", "m", FedLCA.cm);
 				addUnit("Length", "f7905d3f-904d-4fdb-829e-54a72fb4c98e", 0.3, "Foot (international)", "ft", "", "m",
@@ -158,6 +159,7 @@ public class FlowProperty {
 						FedLCA.nmi);
 				addUnit("Length", "a16960ba-31e2-4fe9-82fe-219013f4708f", 0.91, "Yard (international)", "yd", "", "m",
 						FedLCA.yd);
+				/* ==================== */
 				addUnit("Area", "3ce61faa-5716-41c1-aef6-b5920054acc9", 1, "Square meter", "m2", "m²", "m2", FedLCA.m2);
 				addUnit("Area", "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345", 4046.85, "Acre (US survey)", "ac", "acre (US)",
 						"m2", FedLCA.ac);
@@ -175,6 +177,7 @@ public class FlowProperty {
 						"m2", FedLCA.nmi2);
 				addUnit("Area", "6c4b1e4a-bf45-4385-a60c-12cc48ecbab5", 0.83, "Square yard (imperial/US)", "yd2", "",
 						"m2", FedLCA.yd2);
+				/* ==================== */
 				addUnit("Volume", "9bc2cfb2-fb43-42e6-9783-6c7479c78cce", 0.16, "Barrel (Imperial)", "bl (Imp)", "",
 						"m3", FedLCA.m3);
 				addUnit("Volume", "a681e9e5-6304-45f0-a5f4-df413eee0724", 0.11, "Barrel (US beer)", "bl (US beer)", "",
@@ -219,6 +222,7 @@ public class FlowProperty {
 						FedLCA.bsh_US);
 				addUnit("Volume", "2d64c7e0-1167-42ec-9988-c441c261a35c", 0.0000295735295625,
 						"US customary fluid ounce", "US fl oz", "", "m3", FedLCA.US_fl_oz);
+				/* ==================== */
 				addUnit("Time", "11074cfd-08a4-449b-adad-18ce24a1b275", 1, "Day", "d", "", "d", FedLCA.day);
 				addUnit("Time", "227a54d9-44e7-468c-b8bb-f2dd1ae68c7a", 0.04, "Hour", "h", "", "d", FedLCA.hour);
 				addUnit("Time", "9fa94e47-03bd-4ad1-8726-e10cfb6dbb7a", 0.000694444444, "Minute", "min", "", "d",
@@ -227,6 +231,7 @@ public class FlowProperty {
 						FedLCA.sec);
 				addUnit("Time", "9a87f840-752d-4863-b911-533f92ee5073", 365, "Year (rounded)", "a", "", "d",
 						FedLCA.year);
+				/* ==================== */
 				addUnit("Energy", "55244053-94ba-404e-9172-cb279d905e00", 0.001055056,
 						"British thermal unit (International table)", "btu", "", "MJ", FedLCA.MJ);
 				addUnit("Energy", "01e58eb9-0aba-4c76-ba0c-03f6f3be1353", 1000, "Gigajoule", "GJ", "", "MJ", FedLCA.btu);
@@ -248,6 +253,7 @@ public class FlowProperty {
 						FedLCA.TOE);
 				addUnit("Energy", "fc3604f7-aa93-4aa3-8ae9-8f822874da5f", 0.0036, "Watt times hour", "Wh", "", "MJ",
 						FedLCA.Wh);
+				/* ==================== */
 				addUnit("Radioactivity", "ac324d87-9961-463a-81a1-099bb0f7d89b", 0.001, "Bequerel, 1 event per second",
 						"Bq", "", "kBq", FedLCA.kBq);
 				addUnit("Radioactivity", "ef6d9358-a156-4c73-b678-320ddee7d2eb", 37000000, "Curie", "Ci", "", "kBq",
@@ -256,7 +262,7 @@ public class FlowProperty {
 						"Kilo-Bequerel, 1000 events per second", "kBq", "", "kBq", FedLCA.Ci);
 				addUnit("Radioactivity", "a45722ee-fc30-4bb1-aa95-5c8fb56c6bfb", 1000, "Rutherford", "Rutherford", "",
 						"kBq", FedLCA.Rutherford);
-
+				/* ==================== */
 				addUnit("Mass*time", "b2ad404c-3e4f-4a7a-a604-46fb36654823", 1, "Kilogram times year", "kg*a", "",
 						"kg*a", FedLCA.kg_year);
 				addUnit("Mass*time", "2fdc0039-6c5e-489a-af77-b225684fa337", 0.001, "Gram times year", "g*a", "",
@@ -265,8 +271,14 @@ public class FlowProperty {
 						"Kilogram times day (1 year = 365 days)", "kg*d", "", "kg*a", FedLCA.kg_day);
 				addUnit("Mass*time", "5209be3d-094e-4203-a074-06d7b75e9a38", 2.73,
 						"Metric ton times day (1 year = 365 days)", "t*d", "", "kg*a", FedLCA.ton_day);
+
 				addUnit("Mass*time", "23cc7a32-f08a-43df-a87c-66953eeeb3f5", 1000, "Metric tonnes times year", "t*a",
 						"", "kg*a", FedLCA.ton_year);
+				/* ==================== */
+				addUnit("Mass/time", "94b84332-8f2d-4592-b2a0-e19da33a69e9", 1, "Kilogram per year", "kg/a", "",
+						"kg/a", FedLCA.kg_per_year);
+
+				/* ==================== */
 				addUnit("Mass*length", "0dea4ed8-bb6b-4049-b2b4-b2c413ef2180", 1, "Metric ton-kilometer", "t*km",
 						"tkm", "t*km", FedLCA.ton_km);
 				addUnit("Mass*length", "5458351a-f6f7-4e0b-a449-823c9b6374db", 0.000729986,
@@ -279,8 +291,10 @@ public class FlowProperty {
 						"Metric ton times international mile", "t*mi", "", "t*km", FedLCA.ton_mi);
 				addUnit("Mass*length", "7dd57df4-c092-41aa-966e-c93a27797ea1", 1.85, "Metric ton times nautical mile",
 						"t*nmi", "", "t*km", FedLCA.ton_nautical_mi);
+				/* ==================== */
 				addUnit("Length*time", "f7fe0af2-e764-4984-bb9f-2cbff6cd2f18", 1, "Meter times year", "m*a", "ma",
 						"m*a", FedLCA.m_year);
+				/* ==================== */
 				addUnit("Area*time", "c7266b67-4ea2-457f-b391-9b94e26e195a", 1, "Square meter times year", "m2*a",
 						"m²*a;m2a;m²a", "m2*a", FedLCA.m2_year);
 				addUnit("Area*time", "efbbab8b-eb92-4e39-bd5f-99951ffda6c3", 0.09, "British square feet times year",
@@ -293,6 +307,7 @@ public class FlowProperty {
 						"km2*a", "km²*a;km2a;km²a", "m2*a", FedLCA.km2_year);
 				addUnit("Area*time", "00d8370e-2bf1-4f3b-81bb-f8f147e84819", 0.002739726, "Square metre times day",
 						"m2*d", "", "m2*a", FedLCA.m2_day);
+				/* ==================== */
 				addUnit("Volume*time", "ee5f2241-18af-4444-b457-b275660e5a20", 1, "Cubic meter times year", "m3*a",
 						"m³*a;m3a", "m3*a", FedLCA.m3_year);
 				addUnit("Volume*time", "f3a1ae74-9750-4199-acdc-2e7e0546e0a5", 0.002739726, "Cubic meter times day",
@@ -301,6 +316,7 @@ public class FlowProperty {
 						"l*d", "", "m3*a", FedLCA.l_day);
 				addUnit("Volume*time", "8c1fafa2-2b2e-4fef-9581-5de34ae87350", 0.001, "Liter times year", "l*a", "",
 						"m3*a", FedLCA.l_year);
+				/* ==================== */
 				addUnit("Volume*length", "5042a5e9-b8fd-40ca-b13e-cb9f1ce0357a", 1, "Cubic metre times kilometre",
 						"m3*km", "", "m3*km", FedLCA.m3_km);
 				addUnit("Volume*length", "de900fea-2536-4fe5-a92d-00ac9a28654b", 1.6,
@@ -313,24 +329,30 @@ public class FlowProperty {
 						"l*km", "", "m3*km", FedLCA.l_km);
 				addUnit("Volume*length", "0c62f887-da22-4b0a-999b-145c4b2ffe1e", 0.001852, "Litre times nautical mile",
 						"l*nmi", "", "m3*km", FedLCA.l_nautical_mi);
+				/* ==================== */
 				addUnit("Energy/mass*time", "94dcd768-ea3e-47da-ba1b-11fea4b5f4cc", 1,
 						"Megajoule per kilogram times day", "MJ/kg*d", "", "MJ/kg*d", FedLCA.MJ_per_kg_day);
+				/* ==================== */
 				addUnit("Energy/area*time", "aff60d84-007c-4f30-bfda-3853760f6954", 1,
 						"Kilowatthour per square meter times day", "kWh/m2*d", "kWh/m2*d;kWh/m2d;kWh/m²d", "kWh/m2*d",
 						FedLCA.kWh_per_m2_day);
 
+				/* ==================== */
 				addUnit("Number of items", "6dabe201-aaac-4509-92f0-d00c26cb72ab", 1, "Number of items", "Item(s)",
 						"unit;LU;pig place", "Item(s)", FedLCA.Item);
 				addUnit("Number of items", "3bd6c6c3-bb61-46f3-b19a-c87ac5502bb7", 12, "Dozen(s) of items", "Dozen(s)",
 						"", "Item(s)", FedLCA.DozenItems);
+				/* ==================== */
 				addUnit("Items*length", "2abb86b6-e71b-4de5-a766-a20e80e59b6d", 1, "Items times kilometre", "Items*km",
 						"", "Items*km", FedLCA.items_km);
 				addUnit("Items*length", "ce39138f-55f8-47bc-b55a-66027fc836d9", 1.6, "Items times international mile",
 						"Items*mi", "", "Items*km", FedLCA.items_mi);
 				addUnit("Items*length", "9bf0166c-fa76-47d0-95af-054ea9125f2c", 1.85, "Items times nautical mile",
 						"Items*nmi", "", "Items*km", FedLCA.items_nautical_mi);
+				/* ==================== */
 				addUnit("Person transport", "fe8da65d-f0ea-4496-b13e-1955aaa412d7", 1, "Person kilometer", "p*km",
 						"pkm", "p*km", FedLCA.person_km);
+				/* ==================== */
 				addUnit("Vehicle transport", "19a89180-e40c-4f6b-bcd3-d7347566d1e7", 1, "Vehicle-kilometer", "v*km",
 						"vkm", "v*km", FedLCA.vehicle_km);
 
@@ -357,7 +379,6 @@ public class FlowProperty {
 				// addUnit("Mole*area*time/mass","2e16ca4a-9f65-472f-b4cb-274050aaf328",1,"Centimole times square metre times year per kilogram","(cmol*m2*a)/kg","","(cmol*m2*a)/kg");
 				// addUnit("Mechanical filtration (occ.)","2f1b55fb-a432-447a-a0f5-9b02bf649724",1,"Centimeter times cubic meter","cm*m3","","cm*m3");
 				// addUnit("Mole*area/mass","691ae73c-3fc1-4157-85d0-2659bdc2380a",1,"Centimole times square metre per kilogram","(cmol*m2)/kg","","(cmol*m2)/kg");
-				// addUnit("Mass/time","94b84332-8f2d-4592-b2a0-e19da33a69e9",1,"Kilogram per year","kg/a","","kg/a");
 				// addUnit("Groundwater replenishment (transf.)","95e8feec-abc7-4eb0-bf39-2a6d411cba8d",1,"Millimetre times square metre per year","(mm*m2)/a","","(mm*m2)/a");
 				// addUnit("Length*area/time","aa14a795-2239-496a-81b0-ad7cb8bbe0d2",1,"Centimetre times square metre per day","cm*m2/d","","cm*m2/d");
 				// addUnit("Length*area","0dc79b8e-47a1-4ec7-96b1-c9b9da2769fa",1,"Millimetre times square metre","mm*m2","","mm*m2");
@@ -404,10 +425,9 @@ public class FlowProperty {
 		lcaUnit.uuid = uuid;
 		lcaUnit.tdbResource = tdbResource;
 
-		ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, OpenLCA.FlowProperty, null);
-
+		ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, rdfClass, null);
 		ActiveTDB.tsAddGeneralTriple(tdbResource, DCTerms.description, description, null);
-		ActiveTDB.tsAddGeneralTriple(tdbResource, OpenLCA.description, description, null);
+		// ActiveTDB.tsAddGeneralTriple(tdbResource, OpenLCA.description, description, null);
 
 		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.hasOpenLCAUUID, uuid, null);
 		lcaMasterUnits.add(lcaUnit);

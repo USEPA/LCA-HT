@@ -409,6 +409,14 @@ public class MatchProperties extends ViewPart {
 		massTime.referenceUnit = "kg*a";
 		createSubNodes(massTime);
 
+		TreeNode massPerTime = new TreeNode(physicalCombined);
+		massPerTime.nodeName = "Mass/time";
+		massPerTime.uri = FedLCA.MassPerTime;
+		massPerTime.uuid = "94b84332-8f2d-4592-b2a0-e19da33a69e9";
+		massPerTime.referenceDescription = "Kilogram per year";
+		massPerTime.referenceUnit = "kg/a";
+		createSubNodes(massPerTime);
+		
 		TreeNode massLength = new TreeNode(physicalCombined);
 		massLength.nodeName = "Mass*length";
 		massLength.uri = FedLCA.MassLength;

@@ -87,12 +87,12 @@ public class FlowContext {
 				Pattern waterGeneralRE = Pattern.compile("water", Pattern.CASE_INSENSITIVE);
 				regexGeneralString.add(waterGeneralRE);
 				addContext("water", "unspecified", FedLCA.waterUnspecified, "a7c280e9-d13a-43cf-9127-d3bbf4d0e256");
-				addContext("water", "fossil", FedLCA.waterFossil, "d0d05279-8621-404d-9878-218f04427fa6");
-				addContext("water", "fresh", FedLCA.waterFresh, "1657ede0-aec3-41d1-bf1d-eeada890bdce");
-				addContext("water", "fresh, long-term", FedLCA.waterFreshLong_term,
+				addContext("water", "fossil-", FedLCA.waterFossil, "d0d05279-8621-404d-9878-218f04427fa6");
+				addContext("water", "fresh-", FedLCA.waterFresh, "1657ede0-aec3-41d1-bf1d-eeada890bdce");
+				addContext("water", "fresh-, long-term", FedLCA.waterFreshLong_term,
 						"ed1e0813-ed99-4897-b20c-13ec90584825");
-				addContext("water", "ground", FedLCA.waterGround, "4f146a17-ae4a-487b-874b-5d3013b86f44");
-				addContext("water", "ground, long-term", FedLCA.waterGroundLong_term,
+				addContext("water", "ground-", FedLCA.waterGround, "4f146a17-ae4a-487b-874b-5d3013b86f44");
+				addContext("water", "ground-, long-term", FedLCA.waterGroundLong_term,
 						"eba77525-9745-4f4a-9182-91a67306ba1c");
 				addContext("water", "lake", FedLCA.waterLake, "c1069072-9923-48f6-821d-8fad6e0ace5b");
 				addContext("water", "ocean", FedLCA.waterOcean, "8b7c395f-60ef-4863-a7e6-3560b5ad1aae");
@@ -144,6 +144,7 @@ public class FlowContext {
 		flowContext.tdbResource = tdbResource;
 		// THE ABOVE MUST BE DONE FIRST, SO THAT TRIPLES ARE ADDED PROPERLY
 		flowContext.generalString = generalString;
+		ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, rdfClass, null);
 		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextPrimaryDescription, generalString, null);
 		flowContext.specificString = specificString;
 		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextSupplementalDescription, specificString, null);

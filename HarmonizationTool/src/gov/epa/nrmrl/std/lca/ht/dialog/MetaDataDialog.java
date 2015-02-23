@@ -198,6 +198,10 @@ public class MetaDataDialog extends TitleAreaDialog {
 		supplementaryButton.setText("Supplementary List");
 		supplementaryButton.addSelectionListener(radioListener);
 		if (curDataSourceProvider.getReferenceDataStatus() == null) {
+			masterButton.setEnabled(true);
+			supplementaryButton.setEnabled(true);
+			masterButton.setSelection(false);
+			supplementaryButton.setSelection(false);
 			masterButton.setEnabled(false);
 			supplementaryButton.setEnabled(false);
 		} else {
@@ -207,7 +211,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 				supplementaryButton.setSelection(true);
 				masterButton.setSelection(false);
 
-			} else {
+			} else if (curDataSourceProvider.getReferenceDataStatus() == 1) {
 				masterButton.setSelection(true);
 				supplementaryButton.setSelection(false);
 			}
@@ -402,16 +406,17 @@ public class MetaDataDialog extends TitleAreaDialog {
 		if (curDataSourceProvider.getReferenceDataStatus() == null) {
 			masterButton.setEnabled(false);
 			supplementaryButton.setEnabled(false);
+			masterButton.setSelection(false);
+			supplementaryButton.setSelection(false);
 		} else {
 			masterButton.setEnabled(true);
 			supplementaryButton.setEnabled(true);
-			if (curDataSourceProvider.getReferenceDataStatus() == 2) {
-				supplementaryButton.setSelection(true);
-				masterButton.setSelection(false);
-
-			} else {
+			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
 				masterButton.setSelection(true);
 				supplementaryButton.setSelection(false);
+			} else if (curDataSourceProvider.getReferenceDataStatus() == 2){
+				supplementaryButton.setSelection(true);
+				masterButton.setSelection(false);
 			}
 		}
 	}

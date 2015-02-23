@@ -254,7 +254,7 @@ public class HarmonizedDataSelector extends ViewPart {
 			treeItem.setText(propertyName);
 			treeItemProperty.setExpanded(true);
 		}
-		// update();
+		update();
 	}
 
 	public static void update() {
@@ -262,9 +262,11 @@ public class HarmonizedDataSelector extends ViewPart {
 		// textFlowableInfo.setText("");
 		// textContextInfo.setText("");
 		// textPropertyInfo.setText("");
-		comboDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
-		comboDataSource.addSelectionListener(new ComboDataSourceListener());
-
+		String[] names = DataSourceKeeper.getAlphabetizedNames();
+		if (names != null) {
+			comboDataSource.setItems(DataSourceKeeper.getAlphabetizedNames());
+			comboDataSource.addSelectionListener(new ComboDataSourceListener());
+		}
 	}
 
 	private static final class ComboDataSourceListener implements SelectionListener {
@@ -300,19 +302,19 @@ public class HarmonizedDataSelector extends ViewPart {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT (count(distinct ?flowable) as ?count)  \n");
 		b.append("WHERE \n");
@@ -355,19 +357,19 @@ public class HarmonizedDataSelector extends ViewPart {
 			b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
 
-//			b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//			b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//			b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//			b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//			b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//			b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//			b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//			b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//			b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//			b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//			b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//			b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//			b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+			// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+			// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+			// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+			// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+			// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+			// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+			// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+			// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+			// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+			// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+			// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+			// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+			// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 			b.append(" \n");
 			b.append("SELECT ?flowable \n");
 			b.append("WHERE \n");
@@ -415,19 +417,19 @@ public class HarmonizedDataSelector extends ViewPart {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT (count(distinct ?context) as ?count) \n");
 		b.append("WHERE \n");
@@ -450,19 +452,19 @@ public class HarmonizedDataSelector extends ViewPart {
 		b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?prop  \n");
 		b.append("WHERE \n");
@@ -499,19 +501,19 @@ public class HarmonizedDataSelector extends ViewPart {
 	private static void updateProperties() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT (count(distinct ?property) as ?count) \n");
 		b.append("WHERE \n");
@@ -534,19 +536,19 @@ public class HarmonizedDataSelector extends ViewPart {
 		b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 
-//		b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
-//		b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
-//		b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
-//		b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
-//		b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
-//		b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
-//		b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
-//		b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
-//		b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-//		b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
-//		b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
-//		b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
+		// b.append("PREFIX  eco:    <http://ontology.earthster.org/eco/core#> \n");
+		// b.append("PREFIX  fasc:   <http://ontology.earthster.org/eco/fasc#> \n");
+		// b.append("PREFIX  fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> \n");
+		// b.append("PREFIX  lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> \n");
+		// b.append("PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#> \n");
+		// b.append("PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#> \n");
+		// b.append("PREFIX  owl:    <http://www.w3.org/2002/07/owl#> \n");
+		// b.append("PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#> \n");
+		// b.append("PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		// b.append("PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n");
+		// b.append("PREFIX  xml:    <http://www.w3.org/XML/1998/namespace> \n");
+		// b.append("PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#> \n");
+		// b.append("PREFIX  dcterms: <http://purl.org/dc/terms/> \n");
 		b.append(" \n");
 		b.append("SELECT distinct ?prop  \n");
 		b.append("WHERE \n");
@@ -634,9 +636,9 @@ public class HarmonizedDataSelector extends ViewPart {
 		DataRow inputRow = tableProvider.getData().get(rowNumber);
 		// DataRow inputHeader = tableProvider.getHeaderRow();
 		for (int col = 0; col < inputRow.getSize(); col++) {
-//			System.out.println("Column " + col);
+			// System.out.println("Column " + col);
 			if (col == 0) {
-//				System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
+				// System.out.println("Is " + rowNumber + " equal to " + inputRow.getRowNumber() + " ?");
 			}
 			outputRow.add(inputRow.get(col));
 		}
@@ -685,7 +687,7 @@ public class HarmonizedDataSelector extends ViewPart {
 				// FIXME : WHAT DOES IT MEAN IF THERE ARE MULTIPLE HITS AND SOME ARE SUBSET OR PROXY?
 			}
 			if (hit == false) {
-//				outputRow.add("");
+				// outputRow.add("");
 				for (LCADataPropertyProvider lcaDataPropertyProvider : Flowable.getDataPropertyMap().values()) {
 					outputRow.add("");
 				}
