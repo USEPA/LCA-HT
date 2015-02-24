@@ -79,8 +79,10 @@ public class OpenLCA {
 	 * calculations.
 	 */
 	public static final Property flowType = m_model.createProperty(NS + "flowType");
+
 	/* FlowType - The basic flow types. The object of the flowType Property */
 	public static final Resource FlowType = m_model.createResource(NS + "FlowType");
+
 	/* Three types of FlowType: ELEMENTARY_FLOW, PRODUCT_FLOW, and WASTE_FLOW */
 	public static final Resource ELEMENTARY_FLOW = m_model.createResource(NS + "ELEMENTARY_FLOW");
 	public static final Resource PRODUCT_FLOW = m_model.createResource(NS + "PRODUCT_FLOW");
@@ -88,74 +90,120 @@ public class OpenLCA {
 
 	/* A CAS number of the flow. */
 	public static final Property cas = m_model.createProperty(NS + "cas");
+
 	/* A chemical formula of the flow. */
 	public static final Property formula = m_model.createProperty(NS + "formula");
 
-	/* Conversion factors between flow properties that can be used to express amounts of the flow. */
+	/*
+	 * Conversion factors between flow properties that can be used to express amounts of the flow. Deprecated as of
+	 * 2015-02-12
+	 */
 	public static final Property flowPropertyFactors = m_model.createProperty(NS + "flowPropertyFactors");
 
-	/*
-	 * FlowPropertyFactor - the object of flowPropertyFactors Property A FlowPropertyFactor is a conversion factor
-	 * between flow properties (quantities) of a flow. As an example the amount of the flow 'water' in a process could
-	 * be expressed in 'kg' mass or 'm3' volume. In this case the flow water would have two flow property factors: one
-	 * for the flow property 'mass' and one for 'volume'. Each of these flow properties has a reference to a unit group
-	 * which again has a reference unit. In the example the flow property 'mass' could reference the unit group 'units
-	 * of mass' with 'kg' as reference unit and volume could reference the unit group 'units of volume' with 'm3' as
-	 * reference unit. The flow property factor is now the conversion factor between these two reference units where the
-	 * factor of the reference flow property of the flow is 1. If the reference flow property of 'water' in the example
-	 * would be 'mass' the respective flow property factor would be 1 and the factor for 'volume' would be 0.001 (as 1
-	 * kg water is 0.001 m3). The amount of water in a process can now be also given in liter, tons, grams etc. For
-	 * this, the unit conversion factor of the respective unit group can be used to convert into the reference unit
-	 * (which then can be used to convert to the reference unit of another flow property). Another thing to note is that
-	 * different flow properties can refer to the same unit group (e.g. MJ upper calorific value and MJ lower calorific
-	 * value.)
+	/* Conversion factors between flow properties that can be used to express amounts of the flow. */
+	public static final Property flowProperties = m_model.createProperty(NS + "flowProperties");
+
+	/* 
+	 * A FlowPropertyFactor is a conversion factor between flow properties (quantities) of a flow. As an example the
+	 * amount of the flow 'water' in a process could be expressed in 'kg' mass or 'm3' volume. In this case the flow
+	 * water would have two flow property factors: one for the flow property 'mass' and one for 'volume'. Each of these
+	 * flow properties has a reference to a unit group which again has a reference unit. In the example the flow
+	 * property 'mass' could reference the unit group 'units of mass' with 'kg' as reference unit and volume could
+	 * reference the unit group 'units of volume' with 'm3' as reference unit. The flow property factor is now the
+	 * conversion factor between these two reference units where the factor of the reference flow property of the flow
+	 * is 1. If the reference flow property of 'water' in the example would be 'mass' the respective flow property
+	 * factor would be 1 and the factor for 'volume' would be 0.001 (as 1 kg water is 0.001 m3). The amount of water in
+	 * a process can now be also given in liter, tons, grams etc. For this, the unit conversion factor of the respective
+	 * unit group can be used to convert into the reference unit (which then can be used to convert to the reference
+	 * unit of another flow property). Another thing to note is that different flow properties can refer to the same
+	 * unit group (e.g. MJ upper calorific value and MJ lower calorific value.)
 	 */
 	public static final Resource FlowPropertyFactor = m_model.createResource(NS + "FlowPropertyFactor");
 
-	/* The flow property (quantity) of the factor. */
+	/*
+	 * referenceFlowProperty - Takes a boolean value - Indicates whether the flow property of the factor is the
+	 * reference flow property of the flow. The reference flow property must have a conversion factor of 1.0 and there
+	 * should be only one reference flow property. As of 2015-02-12 applies to a FlowPropertyFactor, not a Flow
+	 */
+	public static final Property referenceFlowProperty = m_model.createProperty(NS + "referenceFlowProperty");
+
+	/* The flow property (quantity) of the factor. As of 2015-02-12, applies to an Exchange or an Impact Factor */
 	public static final Property flowProperty = m_model.createProperty(NS + "flowProperty");
 
-	/* A flow property is a quantity that can be used to express amounts of a flow. */
+	/* A LCIA category of a LCIA method (see ImpactMethod) which groups a set of characterisation factors */
+	public static final Resource ImpactCategory = m_model.createResource(NS + "ImpactCategory");
+	
+	/*
+	 * A flow property is a quantity that can be used to express amounts of a flow. The flow property (quantity) of the
+	 * factor.
+	 */
 	public static final Resource FlowProperty = m_model.createResource(NS + "FlowProperty");
+
 	/* The type of the flow property */
 	public static final Property flowPropertyType = m_model.createProperty(NS + "flowPropertyType");
+
 	/* FlowPropertyType - An enumeration of flow property types. The object of a flowPropertyType Property */
 	public static final Resource FlowPropertyType = m_model.createResource(NS + "FlowPropertyType");
+
 	/* Three types of FlowType: ECONOMIC_QUANTITY, and PHYSICAL_QUANTITY */
 	public static final Resource ECONOMIC_QUANTITY = m_model.createResource(NS + "ECONOMIC_QUANTITY");
 	public static final Resource PHYSICAL_QUANTITY = m_model.createResource(NS + "PHYSICAL_QUANTITY");
 
 	/* unitGroup - The units of measure that can be used to express quantities of the flow property. */
 	public static final Property unitGroup = m_model.createProperty(NS + "unitGroup");
+
 	/* UnitGroup - A group of units that can be converted into each other. */
 	public static final Resource UnitGroup = m_model.createResource(NS + "UnitGroup");
-	/* referenceUnit - The reference unit of the group with the conversion factor 1.0. */
+
+	/*
+	 * referenceUnit - The reference unit of the group with the conversion factor 1.0. As of 2015-02-12, this applies to
+	 * things of class 'Unit', not 'UnitGroup'
+	 */
 	public static final Property referenceUnit = m_model.createProperty(NS + "referenceUnit");
+
+	/*
+	 * referenceUnit - takes a String value - The name of the reference unit of the LCIA category (e.g. kg CO2-eq.).'
+	 */
+	public static final Property referenceUnitName = m_model.createProperty(NS + "referenceUnitName");
+
 	/* Unit - A unit of measure */
 	public static final Resource Unit = m_model.createResource(NS + "Unit");
-	/* conversionFactor - The conversion factor to the reference unit of the unit group to which this unit belongs. */
+
+	/*
+	 * conversionFactor - The conversion factor to the reference unit of the unit group to which this unit belongs. As
+	 * of 2015-02-12 applies to a FlowPropertyFactor
+	 */
 	public static final Property conversionFactor = m_model.createProperty(NS + "conversionFactor");
+
 	/* synonyms - A list of synonyms for the unit. */
 	public static final Property synonyms = m_model.createProperty(NS + "synonyms");
+
 	/* units - All units of the unit group. */
 	public static final Property units = m_model.createProperty(NS + "units");
+
 	/* category - The category of the entity. */
 	public static final Property category = m_model.createProperty(NS + "category");
+
 	/* Category - A category for the categorisation of types like processes, flows, etc. */
 	public static final Resource Category = m_model.createResource(NS + "Category");
-	/* childCategories - A list of categories that are sub-categories of the category. */
+
+	/* childCategories - A list of categories that are sub-categories of the category. Deprecated as of 2015-02-12 */
 	public static final Property childCategories = m_model.createProperty(NS + "childCategories");
+
 	/* parentCategory - A list of categories that are sub-categories of the category. */
 	public static final Property parentCategory = m_model.createProperty(NS + "parentCategory");
+
 	/* modelType - The type of models that can be linked to the category. */
 	public static final Property modelType = m_model.createProperty(NS + "modelType");
 
 	/* ModelType - An enumeration of the root entity types. */
 	public static final Resource ModelType = m_model.createResource(NS + "ModelType");
+
 	/* Fourteen types of ModelType */
 	/*
 	 * The following are modelTypes for the root level: Category
 	 */
+
 	public static final Resource ACTOR = m_model.createResource(NS + "ACTOR");
 	public static final Resource CATEGORY = m_model.createResource(NS + "CATEGORY");
 	public static final Resource FLOW = m_model.createResource(NS + "FLOW");
@@ -197,6 +245,7 @@ public class OpenLCA {
 			propertyMap.put(version, DCTerms.hasVersion);
 			propertyMap.put(synonyms, SKOS.altLabel);
 			propertyMap.put(flowProperty, FedLCA.hasFlowProperty);
+			propertyMap.put(flowProperties, FedLCA.hasFlowProperty);
 			propertyMap.put(category, FedLCA.hasFlowContext);
 
 			resourceMap.put(Category, FlowContext.getRdfclass());

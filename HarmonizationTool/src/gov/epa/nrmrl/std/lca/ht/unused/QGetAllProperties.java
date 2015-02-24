@@ -1,4 +1,7 @@
-package gov.epa.nrmrl.std.lca.ht.sparql;
+package gov.epa.nrmrl.std.lca.ht.unused;
+
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;
 
 import com.hp.hpl.jena.query.ResultSet;
 

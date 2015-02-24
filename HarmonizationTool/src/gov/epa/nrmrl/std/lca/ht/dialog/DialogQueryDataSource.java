@@ -2,8 +2,8 @@ package gov.epa.nrmrl.std.lca.ht.dialog;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericQuery;
-import gov.epa.nrmrl.std.lca.ht.sparql.QListDataSources;
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryResults;
+import gov.epa.nrmrl.std.lca.ht.unused.QListDataSources;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;

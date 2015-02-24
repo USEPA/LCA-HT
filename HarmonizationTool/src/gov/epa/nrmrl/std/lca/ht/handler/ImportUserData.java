@@ -285,7 +285,8 @@ public class ImportUserData implements IHandler {
 		// ---- END SAFE -READ- TRANSACTION ---
 
 		if (haveOLCAData) {
-			OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
+			int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
+			runLogger.info("  # openLCA data items converted: " + olca_convert);
 		}
 
 		if (existingDataSource != null) {
@@ -351,7 +352,7 @@ public class ImportUserData implements IHandler {
 		b.append("where {\n");
 		b.append("  ?s a ?class .  \n");
 		b.append("  filter(!exists{?s eco:hasDataSource ?x }) \n ");
-		b.append("  filter regex (str(?class),\"^http://openlca\")   \n");
+//		b.append("  filter regex (str(?class),\"^http://openlca\")   \n");
 		b.append("} \n");
 		String query = b.toString();
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
@@ -380,7 +381,7 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		runLogger.info("  # openLCA items added to dataset: " + itemsToAddToDatasource.size());
+		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
 	}
 
 	private static void buildUserDataTableFromOLCADataViaQuery() {
@@ -398,6 +399,7 @@ public class ImportUserData implements IHandler {
 		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
 		b.append("  ?flow_property \n");
 		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
+		b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");
@@ -419,15 +421,17 @@ public class ImportUserData implements IHandler {
 		b.append("  ?parentCat olca:name ?context_general . \n");
 		b.append("  bind (fn:string-length(str(?cat)) as ?cat_length) \n");
 		b.append(" \n");
-		b.append(" \n");
 		b.append("  #--- FLOW PROPERTY \n");
-		b.append("  ?f olca:flowPropertyFactors ?fpf . \n");
+		b.append("  {{?f olca:flowPropertyFactors ?fpf } UNION \n"); // OLD SCHEMA
+		b.append("  {?f olca:flowProperties ?fpf }} \n"); // SCHEMA AS OF 2015-02-12
 		b.append("  ?fpf olca:flowProperty ?fp . \n");
 		b.append("  ?fp olca:name ?flow_property . \n");
 		b.append("  bind (fn:string-length(str(?fp)) as ?fp_length) \n");
 		b.append(" \n");
 		b.append("  ?fp olca:unitGroup ?ug . \n");
-		b.append("  ?ug olca:referenceUnit ?ru . \n");
+		b.append("  {{ ?ug olca:referenceUnit ?ru . } UNION \n"); // OLD SCHEMA
+		b.append("  { ?ug olca:units ?ru . \n"); // SCHEMA AS OF 2015-02-12
+		b.append("  ?ru olca:referenceUnit \"true\"^^xsd:boolean . }} \n");
 		b.append("  ?ru olca:name ?reference_unit . \n");
 		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
 		b.append(" \n");
@@ -435,6 +439,7 @@ public class ImportUserData implements IHandler {
 		b.append("order by ?flowable  \n");
 
 		String query = b.toString();
+		System.out.println("Query \n"+query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -472,6 +477,7 @@ public class ImportUserData implements IHandler {
 		b.append("  ?context_specific \n");
 		b.append("  ?unit \n");
 		b.append("  ?flow_property \n");
+		b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");

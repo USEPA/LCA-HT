@@ -1,6 +1,8 @@
-package gov.epa.nrmrl.std.lca.ht.sparql;
+package gov.epa.nrmrl.std.lca.ht.unused;
 
 import gov.epa.nrmrl.std.lca.ht.dialog.DialogQueryDataSource;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.LabeledQuery;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;

@@ -46,7 +46,7 @@ public class QDataSetContents extends HarmonyQuery2Impl implements LabeledQuery 
 		b.append("  } \n");
 		b.append("#group by ?label ?class_name \n");
 		b.append("group by ?referenceClass ?label ?class \n");
-		b.append("order by ?referenceClass \n");
+		b.append("order by ?referenceClass ?NameSpace ?Type\n");
 		setQuery(b.toString());
 	}
 

@@ -1,4 +1,6 @@
-package gov.epa.nrmrl.std.lca.ht.sparql;
+package gov.epa.nrmrl.std.lca.ht.unused;
+
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyBaseQuery;
 
 public class QDataSourcesSubCountB extends HarmonyBaseQuery {
 	{
