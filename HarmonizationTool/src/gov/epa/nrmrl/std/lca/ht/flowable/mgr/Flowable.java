@@ -758,12 +758,64 @@ public class Flowable {
 		if (lcQName.matches(".*;.*")) {
 			namesToMatch.add(lcQName.split(";")[0]);
 		}
+
+		if (lcQName.matches(".*, in water")) {
+			String firstPart = lcQName.split(", in water")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".* in water")) {
+			String firstPart = lcQName.split(" in water")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".*, in soil")) {
+			String firstPart = lcQName.split(", in soil")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".* in soil")) {
+			String firstPart = lcQName.split(" in soil")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".*, in air")) {
+			String firstPart = lcQName.split(", in air")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".* in air")) {
+			String firstPart = lcQName.split(" in air")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".*, in biomass")) {
+			String firstPart = lcQName.split(", in biomass")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".* in biomass")) {
+			String firstPart = lcQName.split(" in biomass")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".*, in ground")) {
+			String firstPart = lcQName.split(", in ground")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		} else if (lcQName.matches(".* in ground")) {
+			String firstPart = lcQName.split(" in ground")[0];
+			System.out.println("First part = " + firstPart);
+			namesToMatch.add(firstPart);
+		}
+
 		for (String syn : getSynonyms()) {
 			String lcSyn = syn.toLowerCase();
 			lcSyn.replaceAll("\"", "\\\\\"");
 			namesToMatch.add(lcSyn);
+			/* Special rule to attempt to match first part of a semi-colon delimited list */
 			if (lcSyn.matches(".*;.*")) {
 				namesToMatch.add(lcSyn.split(";")[0]);
+			}
+			System.out.println(lcSyn);
+
+			/* Special rule to attempt to match text prior to ", in ground" */
+			if (lcSyn.matches(".*, in ground")) {
+				String firstPart = lcSyn.split(", in ground")[0];
+				System.out.println("First part = " + firstPart);
+				namesToMatch.add(firstPart);
 			}
 		}
 

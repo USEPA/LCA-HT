@@ -356,7 +356,6 @@ public class MatchFlowables extends ViewPart {
 		for (int colNum = 0; colNum < 6; colNum++) {
 			rowZero.set(colNum, matchSummary[colNum].toString());
 		}
-		table.redraw();
 
 		Util.findView(FlowsWorkflow.ID);
 
@@ -380,6 +379,7 @@ public class MatchFlowables extends ViewPart {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(orange);
 		}
+		table.redraw();
 		tableViewer.refresh();
 	}
 
