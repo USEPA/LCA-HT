@@ -5,13 +5,18 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -20,6 +25,7 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class CurationMethods {
 	private static Resource currentAnnotation;
@@ -72,6 +78,92 @@ public class CurationMethods {
 		}
 	}
 
+	public static Resource compareSourceToMasterThing(Resource sourceResource, Resource masterResource) {
+		/*
+		 * Get attributes of each and compare to each other 1a) Everything the same -> keep source 1b) No differences
+		 * (all in source same as master), but source has additional -> return source 2a) No differences (all in source
+		 * same as master), but master has additional -> return master 3a) No differences, but each has additional ->
+		 * copy source info to special fields, update comment, make new uuid, return hybrid 3b) Differences -> copy
+		 * source info to special fields, update comment, make new uuid, return hybrid
+		 */
+		boolean keepSource = true;
+		boolean useMaster = true;
+		boolean updateMaster = false;
+
+		List<Statement> sourceStatements = new ArrayList<Statement>();
+		List<Statement> masterStatements = new ArrayList<Statement>();
+		List<Resource> sourceClasses = new ArrayList<Resource>();
+		List<Resource> masterClasses = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		StmtIterator masterStatementIterator = masterResource.listProperties();
+		while (masterStatementIterator.hasNext()) {
+			masterStatements.add(masterStatementIterator.next());
+		}
+		StmtIterator sourceStatementIterator = sourceResource.listProperties();
+		while (sourceStatementIterator.hasNext()) {
+			sourceStatements.add(sourceStatementIterator.next());
+		}
+
+		Resource commonClass = null;
+		masterStatementIterator = masterResource.listProperties(RDF.type);
+		while (masterStatementIterator.hasNext()) {
+			masterClasses.add(masterStatementIterator.next().getObject().asResource());
+		}
+		sourceStatementIterator = sourceResource.listProperties(RDF.type);
+		while (sourceStatementIterator.hasNext()) {
+			Resource sourceClass = sourceStatementIterator.next().getObject().asResource();
+			if (masterClasses.contains(sourceClass)){
+				if (commonClass == null){
+					commonClass = sourceClass;
+				} else {
+					// WHAT TO DO IF THERE ARE MULTIPLE SAME CLASSES?
+				}
+			}
+			sourceClasses.add(sourceStatementIterator.next().getObject().asResource());
+		}
+		
+		ActiveTDB.tdbDataset.end();
+
+		HashMap<Property, RDFNode> masterAttributes = new HashMap<Property, RDFNode>();
+		HashMap<Property, RDFNode> sourceAttributes = new HashMap<Property, RDFNode>();
+		for (Statement statement : sourceStatements) {
+			sourceAttributes.put(statement.getPredicate(), statement.getObject());
+		}
+		for (Statement statement : masterStatements) {
+			Property masterProperty = statement.getPredicate();
+			RDFNode masterRDFNode = statement.getObject();
+			masterAttributes.put(masterProperty, masterRDFNode);
+			if (sourceAttributes.containsKey(masterProperty)) {
+				RDFNode sourceObject = sourceAttributes.get(masterProperty);
+				if (!sourceObject.equals(masterRDFNode)) {
+					keepSource = false;
+					useMaster = false;
+					updateMaster = true;
+					break;
+				} else {
+					sourceAttributes.remove(masterProperty);
+				}
+			} else {
+				keepSource = false;
+			}
+		}
+		if (!sourceAttributes.isEmpty()) {
+			useMaster = false;
+		}
+		if (keepSource && !useMaster && !updateMaster) {
+			return sourceResource;
+		} else if (!keepSource && useMaster && !updateMaster) {
+			return masterResource;
+		} else if (!keepSource && !useMaster && updateMaster) {
+			Resource newResource = ActiveTDB.tsCreateResource(commonClass);
+			// WORK HERE: TODO == FIXME
+			return masterResource;
+		} else {
+			return null;
+		}
+
+	}
 
 	public static Resource findComparison(Resource querySource, Resource master) {
 		Resource comparisonResource = null;
@@ -102,7 +194,7 @@ public class CurationMethods {
 			comparisonResource = createNewComparison(querySource, master, equivalence);
 			return comparisonResource;
 		}
-		
+
 		ActiveTDB.tsReplaceObject(comparisonResource, FedLCA.comparedEquivalence, equivalence);
 		ActiveTDB.tsAddGeneralTriple(currentAnnotation, FedLCA.hasComparison, comparisonResource, null);
 		updateAnnotationModifiedDate();
@@ -118,7 +210,7 @@ public class CurationMethods {
 		if (querySource.equals(master)) {
 			return null;
 		}
-		
+
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(null);
@@ -165,18 +257,25 @@ public class CurationMethods {
 	}
 
 	public static void removeComparison(Resource comparedSource, Resource comparedMaster) {
-		Model model = ActiveTDB.getModel(null);
+		List<Resource> comparisonsToRemove = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		// Model model = ActiveTDB.getModel(null);
 		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, comparedSource);
-		StmtIterator stmtIterator = model.listStatements(selector);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
 			int count = 0;
-			while (model.contains(statement.getSubject(), FedLCA.comparedMaster, comparedMaster)) {
-				removeComparison(statement.getSubject());
+			while (tdbModel.contains(statement.getSubject(), FedLCA.comparedMaster, comparedMaster)) {
+				comparisonsToRemove.add(statement.getSubject());
 				count++;
 			}
 			System.out.println("count " + count);
 			break;
+		}
+		ActiveTDB.tdbDataset.end();
+		for (Resource toRemove : comparisonsToRemove) {
+			removeComparison(toRemove);
 		}
 	}
 
