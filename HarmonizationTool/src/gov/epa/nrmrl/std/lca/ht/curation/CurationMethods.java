@@ -1,5 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.curation;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -163,6 +167,15 @@ public class CurationMethods {
 			return null;
 		}
 
+	}
+	
+	public static List<Resource> getComparableClasses (){
+		List<Resource> result = new ArrayList<Resource>();
+		result.add(Flow.getRdfclass());
+		result.add(Flowable.getRdfclass());
+		result.add(FlowProperty.getRdfclass());
+		result.add(FlowContext.getRdfclass());
+		return result;
 	}
 
 	public static Resource findComparison(Resource querySource, Resource master) {
