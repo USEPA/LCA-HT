@@ -759,6 +759,9 @@ public class MatchContexts extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
+		if (contextToMatch == null) {
+			return;
+		}
 		// Util.findView(CSVTableView.ID);
 		// if (CSVTableView.getTable().getSelectionCount() == 0) {
 		// return;
@@ -801,50 +804,50 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-//	public static void update() {
-//		Util.findView(CSVTableView.ID);
-//		if (CSVTableView.getTable().getSelectionCount() == 0) {
-//			return;
-//		}
-//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		String rowNumString = tableItem.getText(0);
-//		int rowNumber = Integer.parseInt(rowNumString) - 1;
-//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//		contextToMatch = dataRow.getFlowContext();
-//		if (contextToMatch == null) {
-//			masterTree.deselectAll();
-//			setUserDataLabel("", false);
-//		} else {
-//
-//			String labelString = null;
-//
-//			String generalString = contextToMatch.getGeneralString();
-//			String specificString = contextToMatch.getSpecificString();
-//			if (specificString == null) {
-//				labelString = generalString;
-//			} else {
-//				labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
-//			}
-//
-//			Resource contextResource = dataRow.getFlowContext().getMatchingResource();
-//			if (contextResource != null) {
-//				TreeItem treeItem = getTreeItemByURI(contextResource);
-//				if (treeItem != null) {
-//					masterTree.setSelection(getTreeItemByURI(contextResource));
-//					setUserDataLabel(labelString, true);
-//
-//				} else {
-//					masterTree.deselectAll();
-//					setUserDataLabel(labelString, false);
-//
-//				}
-//			} else {
-//				masterTree.deselectAll();
-//				setUserDataLabel(labelString, false);
-//
-//			}
-//		}
-//	}
+	// public static void update() {
+	// Util.findView(CSVTableView.ID);
+	// if (CSVTableView.getTable().getSelectionCount() == 0) {
+	// return;
+	// }
+	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+	// String rowNumString = tableItem.getText(0);
+	// int rowNumber = Integer.parseInt(rowNumString) - 1;
+	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	// contextToMatch = dataRow.getFlowContext();
+	// if (contextToMatch == null) {
+	// masterTree.deselectAll();
+	// setUserDataLabel("", false);
+	// } else {
+	//
+	// String labelString = null;
+	//
+	// String generalString = contextToMatch.getGeneralString();
+	// String specificString = contextToMatch.getSpecificString();
+	// if (specificString == null) {
+	// labelString = generalString;
+	// } else {
+	// labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
+	// }
+	//
+	// Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+	// if (contextResource != null) {
+	// TreeItem treeItem = getTreeItemByURI(contextResource);
+	// if (treeItem != null) {
+	// masterTree.setSelection(getTreeItemByURI(contextResource));
+	// setUserDataLabel(labelString, true);
+	//
+	// } else {
+	// masterTree.deselectAll();
+	// setUserDataLabel(labelString, false);
+	//
+	// }
+	// } else {
+	// masterTree.deselectAll();
+	// setUserDataLabel(labelString, false);
+	//
+	// }
+	// }
+	// }
 
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {

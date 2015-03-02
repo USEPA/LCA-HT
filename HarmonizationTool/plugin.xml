@@ -432,7 +432,7 @@
             name="Show Results View">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
             name="Export Data to Jsonld">
       </command>

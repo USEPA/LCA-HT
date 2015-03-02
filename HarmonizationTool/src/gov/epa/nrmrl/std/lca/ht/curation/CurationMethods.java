@@ -98,8 +98,6 @@ public class CurationMethods {
 
 		List<Statement> sourceStatements = new ArrayList<Statement>();
 		List<Statement> masterStatements = new ArrayList<Statement>();
-		List<Resource> sourceClasses = new ArrayList<Resource>();
-		List<Resource> masterClasses = new ArrayList<Resource>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(null);
 		StmtIterator masterStatementIterator = masterResource.listProperties();
@@ -155,28 +153,49 @@ public class CurationMethods {
 		} else if (!keepSource && useMaster && !updateMaster) {
 			return masterResource;
 		} else if (!keepSource && !useMaster && updateMaster) {
-			String newUUID = Util.getRandomUUID();
-			String nameSpace = masterResource.getNameSpace();
-			Resource newResource = ActiveTDB.tsCreateResource(nameSpace + newUUID);
-			ActiveTDB.tsAddGeneralTriple(newResource, RDF.type, commonClass, null);
+
 			StringBuilder b = new StringBuilder();
 			if (masterAttributes.containsKey(OpenLCA.description)) {
+				b.append("Master description: \n");
 				b.append(masterAttributes.get(OpenLCA.description.asLiteral().getString()));
 			}
-			b.append("\nPrior information (oldest to newest): \n");
+			b.append("\nPrior description information (oldest to newest): \n");
 			for (Property key : sourceAttributes.keySet()) {
 				RDFNode value = sourceAttributes.get(key);
 				if (value.isLiteral()) {
-					b.append(key.getURI() + ":" + value.asLiteral().getValue() + "\n");
+					b.append(key.getURI() + " :" + value.asLiteral().getValue() + "\n");
 				} else if (value.isAnon()) {
-					// WORK HERE: TODO == FIXME
+					b.append(key.getURI() + " : (blank node value) \n");
+				} else if (value.isURIResource()) {
+					b.append(key.getURI() + " : " + value.asResource().getURI() + "\n");
 				}
 			}
-			return masterResource;
+			String newUUID = Util.getRandomUUID();
+			String nameSpace = masterResource.getNameSpace();
+			Resource newResource = null;
+			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+			tdbModel = ActiveTDB.getModel(null);
+			try {
+				newResource = tdbModel.createResource(nameSpace + newUUID);
+				tdbModel.add(newResource, RDF.type, commonClass);
+				tdbModel.add(newResource, OpenLCA.description, b.toString());
+				for (Property key : masterAttributes.keySet()) {
+					RDFNode value = masterAttributes.get(key);
+					tdbModel.add(newResource, key, value);
+				}
+				ActiveTDB.tdbDataset.commit();
+			} catch (Exception e) {
+				System.out.println("Creating new Comparison failed with Exception: " + e);
+				ActiveTDB.tdbDataset.abort();
+			} finally {
+				ActiveTDB.tdbDataset.end();
+			}
+			// ---- END SAFE -WRITE- TRANSACTION ----
+			return newResource;
 		} else {
 			return null;
 		}
-
 	}
 
 	public static List<Resource> getComparableClasses() {

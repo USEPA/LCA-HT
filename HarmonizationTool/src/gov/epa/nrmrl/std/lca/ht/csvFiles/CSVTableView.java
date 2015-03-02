@@ -1657,9 +1657,8 @@ public class CSVTableView extends ViewPart {
 
 	public static int countAssignedColumns() {
 		int colsAssigned = 0;
-		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
-		for (int i = 1; i < tableProvider.getColumnCount(); i++) {
-			if (tableProvider.getLCADataPropertyProvider(i) != null) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
+			if (lcaDataPropertyProvider != null) {
 				colsAssigned++;
 			}
 		}
@@ -1979,13 +1978,13 @@ public class CSVTableView extends ViewPart {
 		}
 		tableItem.setFont(boldFont);
 	}
-	
+
 	public static int getRowNumSelected() {
 		return rowNumSelected;
 	}
 
 	public static void setPostCommit() {
 		preCommit = false;
-//		tableViewer.
+		// tableViewer.
 	}
 }

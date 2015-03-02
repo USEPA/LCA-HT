@@ -8,13 +8,11 @@ import java.util.Map;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJob;
-import gov.epa.nrmrl.std.lca.ht.job.QueryViewJobChangeListener;
-//import gov.epa.nrmrl.std.lca.ht.tdb.IActiveTDBListener;
-import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QContentsWithoutDataset;
+import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QDataSetContents;
+import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QDataSources;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -30,7 +28,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -51,7 +48,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Label;
 
 //public class QueryView extends ViewPart implements IActiveTDBListener {
 public class QueryView extends ViewPart {
@@ -72,10 +68,7 @@ public class QueryView extends ViewPart {
 	private void createLabeledQueries() {
 		labeledQueries.add(new QDataSources());
 		labeledQueries.add(new QDataSetContents());
-		// labeledQueries.add(new QCountMatches());
-		// labeledQueries.add(new QMatchCAS());
-		// labeledQueries.add(new QMatchCASandName());
-		// labeledQueries.add(new HSubsSameCas());
+		labeledQueries.add(new QContentsWithoutDataset());
 	}
 
 	private LabeledQuery queryFromKey(String key) {
@@ -92,15 +85,13 @@ public class QueryView extends ViewPart {
 	}
 
 	public QueryView() {
-		// paramUpdates.add("Delete data set..."); // FIXME, SHOULD GET THE KEY
-		// // FROM THE QUERY FILE
 		createLabeledQueries();
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 
-		Device device = Display.getCurrent();
+//		Device device = Display.getCurrent();
 		parent.setLayout(new GridLayout(2, false));
 		// parent.setLayout(null);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -108,7 +99,6 @@ public class QueryView extends ViewPart {
 		table.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 		viewer.setContentProvider(new QueryViewContentProvider(viewer));
 
-		// queryWindow.append("Query Window");
 		viewer.setLabelProvider(new QueryViewLabelProvider());
 		viewer.setInput(getViewSite());
 
@@ -122,7 +112,6 @@ public class QueryView extends ViewPart {
 		windowQueryUpdate.setLayoutData(gd_windowQueryUpdate);
 		windowQueryUpdate.setToolTipText("Load, type, or cut and paste a query here.  Then hit \"Run Query\"");
 
-		// Color queryWindowColor = new Color(device, 255, 255, 200);
 		windowQueryUpdate.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
@@ -174,9 +163,6 @@ public class QueryView extends ViewPart {
 				runUpdate();
 			}
 		});
-
-		// Cursor cursor = new Cursor(device, 19);
-		// Color red = new Color (device, 255, 0, 0);
 
 		makeActions();
 		hookContextMenu();
