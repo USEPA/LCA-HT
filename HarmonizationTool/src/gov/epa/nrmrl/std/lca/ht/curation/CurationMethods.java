@@ -9,6 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,7 @@ import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.util.Utils;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -110,24 +112,17 @@ public class CurationMethods {
 		}
 
 		Resource commonClass = null;
-		masterStatementIterator = masterResource.listProperties(RDF.type);
-		while (masterStatementIterator.hasNext()) {
-			masterClasses.add(masterStatementIterator.next().getObject().asResource());
-		}
-		sourceStatementIterator = sourceResource.listProperties(RDF.type);
-		while (sourceStatementIterator.hasNext()) {
-			Resource sourceClass = sourceStatementIterator.next().getObject().asResource();
-			if (masterClasses.contains(sourceClass)){
-				if (commonClass == null){
-					commonClass = sourceClass;
-				} else {
-					// WHAT TO DO IF THERE ARE MULTIPLE SAME CLASSES?
-				}
+		for (Resource classResource : getComparableClasses()) {
+			if (tdbModel.contains(masterResource, RDF.type, classResource)
+					&& tdbModel.contains(sourceResource, RDF.type, classResource)) {
+				commonClass = classResource;
+				break;
 			}
-			sourceClasses.add(sourceStatementIterator.next().getObject().asResource());
 		}
-		
 		ActiveTDB.tdbDataset.end();
+		if (commonClass == null) {
+			return null;
+		}
 
 		HashMap<Property, RDFNode> masterAttributes = new HashMap<Property, RDFNode>();
 		HashMap<Property, RDFNode> sourceAttributes = new HashMap<Property, RDFNode>();
@@ -160,16 +155,31 @@ public class CurationMethods {
 		} else if (!keepSource && useMaster && !updateMaster) {
 			return masterResource;
 		} else if (!keepSource && !useMaster && updateMaster) {
-			Resource newResource = ActiveTDB.tsCreateResource(commonClass);
-			// WORK HERE: TODO == FIXME
+			String newUUID = Util.getRandomUUID();
+			String nameSpace = masterResource.getNameSpace();
+			Resource newResource = ActiveTDB.tsCreateResource(nameSpace + newUUID);
+			ActiveTDB.tsAddGeneralTriple(newResource, RDF.type, commonClass, null);
+			StringBuilder b = new StringBuilder();
+			if (masterAttributes.containsKey(OpenLCA.description)) {
+				b.append(masterAttributes.get(OpenLCA.description.asLiteral().getString()));
+			}
+			b.append("\nPrior information (oldest to newest): \n");
+			for (Property key : sourceAttributes.keySet()) {
+				RDFNode value = sourceAttributes.get(key);
+				if (value.isLiteral()) {
+					b.append(key.getURI() + ":" + value.asLiteral().getValue() + "\n");
+				} else if (value.isAnon()) {
+					// WORK HERE: TODO == FIXME
+				}
+			}
 			return masterResource;
 		} else {
 			return null;
 		}
 
 	}
-	
-	public static List<Resource> getComparableClasses (){
+
+	public static List<Resource> getComparableClasses() {
 		List<Resource> result = new ArrayList<Resource>();
 		result.add(Flow.getRdfclass());
 		result.add(Flowable.getRdfclass());
