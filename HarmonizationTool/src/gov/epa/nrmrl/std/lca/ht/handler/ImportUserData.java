@@ -309,8 +309,8 @@ public class ImportUserData implements IHandler {
 		}
 
 		/* TRANSFER DATA TO DEFAULT GRAPH */
-		ActiveTDB.copyImportGraphContentsToDefault();
-		ActiveTDB.clearImportGraphContents();
+//		ActiveTDB.copyImportGraphContentsToDefault();
+//		ActiveTDB.clearImportGraphContents();
 
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -498,8 +498,8 @@ public class ImportUserData implements IHandler {
 		b.append("  #--- FLOW CONTEXT \n");
 		b.append("  optional { \n");
 		b.append("    ?f fedlca:hasFlowContext ?cat . \n");
-		b.append("    ?cat fedlca:flowContextPrimaryDescription ?context_general . \n");
-		b.append("    ?cat fedlca:flowContextSupplementalDescription ?context_specific . \n");
+		b.append("    ?cat fedlca:flowContextGeneral ?context_general . \n");
+		b.append("    ?cat fedlca:flowContextSpecific ?context_specific . \n");
 		b.append("  } \n");
 		b.append(" \n");
 		b.append("  #--- FLOW PROPERTY \n");

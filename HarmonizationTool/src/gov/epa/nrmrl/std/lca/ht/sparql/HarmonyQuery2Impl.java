@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.sparql;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -8,6 +9,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class HarmonyQuery2Impl implements HarmonyQuery2 {
 	private String graphName = null;
@@ -22,8 +24,20 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if (query == null) {
 			throw new IllegalArgumentException("query cannot be null");
 		}
-
-		Model model = ActiveTDB.getModel(graphName);
+		Model model = null;
+		if (graphName == null) {
+			model = ActiveTDB.getModel(graphName);
+		} else {
+			if (graphName.startsWith(LCAHT.NS)) {
+				model = ActiveTDB.getModel(graphName);
+			} else if (graphName.equals(ActiveTDB.importPlusDefault)) {
+				model = ModelFactory.createUnion(ActiveTDB.getModel(ActiveTDB.importGraphName),
+						ActiveTDB.getModel(null));
+			}
+		}
+		if (model == null) {
+			return null;
+		}
 
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());

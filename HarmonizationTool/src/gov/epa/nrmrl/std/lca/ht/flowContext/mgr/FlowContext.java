@@ -59,7 +59,7 @@ public class FlowContext {
 				lcaDataPropertyProvider.setUnique(true);
 				lcaDataPropertyProvider.setLeftJustified(true);
 				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextPrimaryDescription);
+				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextGeneral);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextSpecific);
@@ -69,7 +69,7 @@ public class FlowContext {
 				lcaDataPropertyProvider.setUnique(false);
 				lcaDataPropertyProvider.setLeftJustified(true);
 				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSupplementalDescription);
+				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSpecific);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				Pattern airGeneralRE = Pattern.compile("air", Pattern.CASE_INSENSITIVE);
@@ -140,14 +140,16 @@ public class FlowContext {
 	}
 
 	private static void addContext(String generalString, String specificString, Resource tdbResource, String uuid) {
-		FlowContext flowContext = new FlowContext();
+//		FlowContext flowContext = new FlowContext();
+		FlowContext flowContext = new FlowContext(tdbResource);
+
 		flowContext.tdbResource = tdbResource;
 		// THE ABOVE MUST BE DONE FIRST, SO THAT TRIPLES ARE ADDED PROPERLY
 		flowContext.generalString = generalString;
 		ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, rdfClass, null);
-		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextPrimaryDescription, generalString, null);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextGeneral, generalString, null);
 		flowContext.specificString = specificString;
-		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextSupplementalDescription, specificString, null);
+		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.flowContextSpecific, specificString, null);
 		flowContext.uuid = uuid;
 		ActiveTDB.tsAddGeneralTriple(tdbResource, FedLCA.hasOpenLCAUUID, uuid, null);
 		lcaMasterContexts.add(flowContext);

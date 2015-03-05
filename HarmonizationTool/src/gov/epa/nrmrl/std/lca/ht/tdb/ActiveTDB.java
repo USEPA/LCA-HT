@@ -63,6 +63,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB";
 	public static final String importGraphName = LCAHT.NS + "importGraph";
 	public static final String exportGraphName = LCAHT.NS + "exportGraph";
+	public static final String importPlusDefault = "importPlusDefault";
+
 	private static DatasetAccessor datasetAccessor;
 
 	public ActiveTDB() {
@@ -226,6 +228,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
 		Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+		
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
 		System.out.println("unionModel: " + unionModel.size());

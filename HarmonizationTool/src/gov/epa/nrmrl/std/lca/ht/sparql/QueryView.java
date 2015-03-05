@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QContentsWithoutDataset;
 import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QDataSetContents;
 import gov.epa.nrmrl.std.lca.ht.sparqlQueries.QDataSources;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.jface.action.IMenuListener;
@@ -186,7 +187,7 @@ public class QueryView extends ViewPart {
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(windowQueryUpdate.getText());
-//		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
+		harmonyQuery2Impl.setGraphName(ActiveTDB.importPlusDefault);
 		ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
 		TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
