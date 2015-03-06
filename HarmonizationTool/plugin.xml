@@ -422,7 +422,7 @@
             name="Save Harmonized Data">
       </command>
       <command
-            defaultHandler="harmonizationtool.handler.ShowJobStatusHandler"
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.unused.ShowJobStatusHandler"
             id="harmonizationtool.handler.ShowJobStatusHandler"
             name="Show Job Status">
       </command>

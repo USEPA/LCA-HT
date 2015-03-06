@@ -71,6 +71,8 @@ public class Initializer extends AbstractPreferenceInitializer {
 		
 //		store.setDefault("workingDirectory", System.getProperty("user.home"));
 		store.setDefault("workingDirectory", projectPath);
+		store.setDefault("resourceDirectory", resourcePath);
+
 		
 		store.setDefault("inputDirectory", inputPath);
 
