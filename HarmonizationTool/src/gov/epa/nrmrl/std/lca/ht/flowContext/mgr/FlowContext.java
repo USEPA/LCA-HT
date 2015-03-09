@@ -397,6 +397,7 @@ public class FlowContext {
 	}
 
 	public String getGeneralString() {
+		// FIXME -- DECIDE IF JAVA OBJECT ASSOCIATED WITH PROPERTIES IS RIGHT
 		Object result = getOneProperty(flowContextGeneral);
 		if (result == null) {
 			return null;
@@ -466,7 +467,11 @@ public class FlowContext {
 		b.append("where {\n");
 		b.append("  ?fc a fedlca:FlowContext .  \n");
 		b.append("  ?fc a lcaht:MasterDataset .  \n");
+		b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
+		b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
+		b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
 		b.append("  ?fc fedlca:presentationSortIndex ?sort .  \n");
+
 		b.append("  optional { ?fc fedlca:flowContextNecessaryRegexPattern ?fc_nec_regex } \n");
 		b.append("  optional { ?fc fedlca:flowContextSufficientRegexPattern ?fc_suf_regex } \n");
 		b.append("  optional { ?fc fedlca:flowContextForbiddenRegexPattern ?fc_forbid_regex } \n");
@@ -480,14 +485,18 @@ public class FlowContext {
 		harmonyQuery2Impl.setGraphName(null);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+//		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			Resource fcResource = querySolution.get("fc").asResource();
 			FlowContext newFlowContext = new FlowContext(fcResource, false);
 			String uuid = querySolution.get("fc_uuid").asLiteral().getString();
+			newFlowContext.setOpenLCAUUIDValue(uuid);
 			String general = querySolution.get("fc_gen").asLiteral().getString();
+			newFlowContext.setGeneralString(general);
 			String specific = querySolution.get("fc_spec").asLiteral().getString();
+			newFlowContext.setSpecificString(specific);
+
 			RDFNode necNode = querySolution.get("fc_nec_regex");
 			if (necNode != null) {
 				String necessaryRegex = necNode.asLiteral().getString();
@@ -559,6 +568,14 @@ public class FlowContext {
 		sufficientMatchPatterns.add(sufficientMatchPattern);
 	}
 	
+	public void setGeneralString(String generalString) {
+		this.generalString = generalString;
+	}
+
+	public void setSpecificString(String specificString) {
+		this.specificString = specificString;
+	}
+
 	public static List<FlowContext> getLcaMasterContexts() {
 		return lcaMasterContexts;
 	}
