@@ -13,6 +13,13 @@ public class LCADataValue {
 	private Object value;
 	private String valueAsString;
 
+	public LCADataValue() {
+	}
+	
+	public LCADataValue(LCADataPropertyProvider lcaDataPropertyProvider) {
+		this.lcaDataPropertyProvider = lcaDataPropertyProvider;
+	}
+	
 	public LCADataPropertyProvider getLcaDataPropertyProvider() {
 		return lcaDataPropertyProvider;
 	}

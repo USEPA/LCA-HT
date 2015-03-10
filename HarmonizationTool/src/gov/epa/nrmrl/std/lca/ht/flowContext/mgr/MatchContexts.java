@@ -351,7 +351,7 @@ public class MatchContexts extends ViewPart {
 		String specific = "";
 		TreeNode tn = null;
 		for (FlowContext flowContext : FlowContext.getLcaMasterContexts()) {
-			String newGeneral = flowContext.getGeneralString();
+			String newGeneral = (String) flowContext.getOneProperty(FlowContext.flowContextGeneral);
 			if (!newGeneral.equals(general)) {
 				tn = new TreeNode(masterCompartmentTree);
 				if (newGeneral.matches("resource")) {
@@ -363,7 +363,7 @@ public class MatchContexts extends ViewPart {
 			}
 			TreeNode tn2 = new TreeNode(tn);
 			tn2.nodeName = flowContext.getSpecificString();
-			tn2.uuid = flowContext.getOpenLCAUUIDValue();
+			tn2.uuid = (String) flowContext.getOneProperty(FlowContext.openLCAUUID);
 			tn2.uri = flowContext.getTdbResource();
 		}
 
@@ -797,7 +797,7 @@ public class MatchContexts extends ViewPart {
 		}
 
 		String labelString = null;
-		String generalString = contextToMatch.getGeneralString();
+		String generalString = (String) contextToMatch.getOneProperty(FlowContext.flowContextGeneral);
 		String specificString = contextToMatch.getSpecificString();
 		if (specificString == null) {
 			labelString = generalString;

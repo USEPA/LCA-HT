@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,9 +162,9 @@ public class FlowContext {
 	private Resource matchingResource;
 	private int firstRow;
 	private String fullName = null;
-	private String generalString = null;
-	private String specificString = null;
-	private String openLCAUUIDValue = null;
+	// private String generalString = null;
+	// private String specificString = null;
+	// private String openLCAUUIDValue = null;
 
 	/* An object must match all required match patterns for automatic match */
 	private List<Pattern> requiredMatchPatterns = new ArrayList<Pattern>();
@@ -219,6 +220,15 @@ public class FlowContext {
 		}
 		return null;
 	}
+
+	// public void setOneProperty(String key, Object value) {
+	// if(dataPropertyMap.containsKey(key)) {
+	// LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+	// LCADataValue lcaDataValue = new LCADataValue(lcaDataPropertyProvider);
+	// lcaDataValues.add(lcaDataValue);
+	// }
+	// return;
+	// }
 
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
@@ -381,10 +391,10 @@ public class FlowContext {
 			Matcher matcher1 = pattern.matcher(generalString);
 			if (matcher1.find()) {
 				for (FlowContext flowContext : lcaMasterContexts) {
-					String masterGeneralString = flowContext.generalString;
+					String masterGeneralString = (String) flowContext.getOneProperty(flowContextGeneral);
 					Matcher matcher2 = pattern.matcher(masterGeneralString);
 					if (matcher2.find()) {
-						String masterSpecificString = flowContext.specificString;
+						String masterSpecificString = (String) flowContext.getOneProperty(flowContextSpecific);
 						if (udSpecificString.toLowerCase().equals(masterSpecificString)) {
 							setMatchingResource(flowContext.tdbResource);
 							return true;
@@ -396,14 +406,13 @@ public class FlowContext {
 		return false;
 	}
 
-	public String getGeneralString() {
-		// FIXME -- DECIDE IF JAVA OBJECT ASSOCIATED WITH PROPERTIES IS RIGHT
-		Object result = getOneProperty(flowContextGeneral);
-		if (result == null) {
-			return null;
-		}
-		return (String) result;
-	}
+	// public String getGeneralString() {
+	// Object result = getOneProperty(flowContextGeneral);
+	// if (result == null) {
+	// return null;
+	// }
+	// return (String) result;
+	// }
 
 	public String getSpecificString() {
 		Object[] result = getAllProperties(flowContextSpecific);
@@ -485,17 +494,25 @@ public class FlowContext {
 		harmonyQuery2Impl.setGraphName(null);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-//		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+		// List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+		Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			Resource fcResource = querySolution.get("fc").asResource();
-			FlowContext newFlowContext = new FlowContext(fcResource, false);
-			String uuid = querySolution.get("fc_uuid").asLiteral().getString();
-			newFlowContext.setOpenLCAUUIDValue(uuid);
-			String general = querySolution.get("fc_gen").asLiteral().getString();
-			newFlowContext.setGeneralString(general);
-			String specific = querySolution.get("fc_spec").asLiteral().getString();
-			newFlowContext.setSpecificString(specific);
+			FlowContext newFlowContext;
+			if (masterMapTemp.containsKey(fcResource)) {
+				newFlowContext = masterMapTemp.get(fcResource);
+			} else {
+				newFlowContext = new FlowContext(fcResource, false);
+				String uuid = querySolution.get("fc_uuid").asLiteral().getString();
+				newFlowContext.setProperty(openLCAUUID, uuid);
+				String general = querySolution.get("fc_gen").asLiteral().getString();
+				newFlowContext.setProperty(flowContextGeneral, general);
+				String specific = querySolution.get("fc_spec").asLiteral().getString();
+				newFlowContext.setProperty(flowContextSpecific, specific);
+				lcaMasterContexts.add(newFlowContext);
+				masterMapTemp.put(fcResource, newFlowContext);
+			}
 
 			RDFNode necNode = querySolution.get("fc_nec_regex");
 			if (necNode != null) {
@@ -512,7 +529,6 @@ public class FlowContext {
 				String forbiddenRegex = forbiddenNode.asLiteral().getString();
 				newFlowContext.addRequiredMatchPatterns(Pattern.compile(forbiddenRegex));
 			}
-			lcaMasterContexts.add(newFlowContext);
 		}
 	}
 
@@ -524,13 +540,13 @@ public class FlowContext {
 		this.fullName = fullName;
 	}
 
-	public String getOpenLCAUUIDValue() {
-		return openLCAUUIDValue;
-	}
-
-	public void setOpenLCAUUIDValue(String openLCAUUIDValue) {
-		this.openLCAUUIDValue = openLCAUUIDValue;
-	}
+	// public String getOpenLCAUUIDValue() {
+	// return openLCAUUIDValue;
+	// }
+	//
+	// public void setOpenLCAUUIDValue(String openLCAUUIDValue) {
+	// this.openLCAUUIDValue = openLCAUUIDValue;
+	// }
 
 	public List<Pattern> getRequiredMatchPatterns() {
 		return requiredMatchPatterns;
@@ -567,14 +583,14 @@ public class FlowContext {
 	public void addSufficientMatchPatterns(Pattern sufficientMatchPattern) {
 		sufficientMatchPatterns.add(sufficientMatchPattern);
 	}
-	
-	public void setGeneralString(String generalString) {
-		this.generalString = generalString;
-	}
 
-	public void setSpecificString(String specificString) {
-		this.specificString = specificString;
-	}
+	// public void setGeneralString(String generalString) {
+	// this.generalString = generalString;
+	// }
+	//
+	// public void setSpecificString(String specificString) {
+	// this.specificString = specificString;
+	// }
 
 	public static List<FlowContext> getLcaMasterContexts() {
 		return lcaMasterContexts;
