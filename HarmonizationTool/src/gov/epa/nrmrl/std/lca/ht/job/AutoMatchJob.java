@@ -221,7 +221,7 @@ public class AutoMatchJob extends Job {
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 						flowContext.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
 					}
-					final boolean hit = flowContext.setMatches();
+					final boolean hit = flowContext.setMatches(flowContextConcatinated);
 					flowContext.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {

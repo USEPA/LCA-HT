@@ -826,13 +826,6 @@ public class MatchProperties extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
-		// Util.findView(CSVTableView.ID);
-		// if (CSVTableView.getTable().getSelectionCount() == 0) {
-		// return;
-		// }
-		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-		// String rowNumString = tableItem.getText(0);
-		// int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		propertyToMatch = dataRow.getFlowProperty();
 		if (propertyToMatch == null) {

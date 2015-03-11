@@ -360,7 +360,11 @@ public class FlowContext {
 
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
+		if (matchingResource == null) {
+			ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, FedLCA.resourceUnspecified, null);
+		} else {
+			ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
+		}
 	}
 
 	public int getFirstRow() {
@@ -403,6 +407,59 @@ public class FlowContext {
 				}
 			}
 		}
+		return false;
+	}
+
+	public boolean setMatches(String fullText) {
+		fullText.replaceAll("\"", "\\\"");
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select ?mfc where { \n");
+		b.append("  { \n");
+		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
+		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
+		b.append("      filter regex (\"" + fullText + "\", str(?necessary), \"i\") \n");
+		b.append("    } \n");
+		b.append("  } \n");
+		b.append("  minus \n");
+		b.append("  { \n");
+		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
+		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
+		b.append("      filter (!regex (\"" + fullText + "\", str(?necessary), \"i\")) \n");
+		b.append("    } \n");
+		b.append("  } \n");
+		b.append("  minus \n");
+		b.append("  { \n");
+		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
+		b.append("      ?mfc fedlca:flowContextForbiddenRegexPattern ?forbidden . \n");
+		b.append("      filter regex (\"" + fullText + "\", str(?forbidden), \"i\") \n");
+		b.append("    } \n");
+		b.append("  } \n");
+		b.append("} \n");
+		String query = b.toString();
+		System.out.println("Query = \n" + query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(null);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		int count = 0;
+		while (resultSet.hasNext()) {
+			count++;
+			QuerySolution querySolution = resultSet.next();
+			Resource mfcResource = querySolution.get("mfc").asResource();
+			setMatchingResource(mfcResource);
+		}
+		if (count == 1) {
+			return true;
+		}
+		setMatchingResource(null);
 		return false;
 	}
 
@@ -451,7 +508,7 @@ public class FlowContext {
 
 		if (needToReadMasterFile) {
 			String resourceDirectory = Util.getPreferenceStore().getString("resourceDirectory");
-			String path = resourceDirectory + File.separator + "mc2_lcaht.n3";
+			String path = resourceDirectory + File.separator + "master_flow_contexts_lcaht.n3";
 			File file = null;
 			try {
 				file = new File(path);

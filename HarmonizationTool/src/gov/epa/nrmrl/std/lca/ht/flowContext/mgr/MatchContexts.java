@@ -779,16 +779,6 @@ public class MatchContexts extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
-		if (contextToMatch == null) {
-			return;
-		}
-		// Util.findView(CSVTableView.ID);
-		// if (CSVTableView.getTable().getSelectionCount() == 0) {
-		// return;
-		// }
-		// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-		// String rowNumString = tableItem.getText(0);
-		// int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {

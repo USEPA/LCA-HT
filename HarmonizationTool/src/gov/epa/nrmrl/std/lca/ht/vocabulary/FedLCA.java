@@ -197,93 +197,93 @@ public class FedLCA {
 	// public static final Property dataSourceContactPhone = m_model
 	// .createProperty(NS + "dataSourceContactPhone");
 
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource airHigh_population_density = m_model
-			.createResource(NS + "air-high_population_density");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource airLow_population_density = m_model.createResource(NS + "air-low_population_density");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource airLow_population_densityLong_term = m_model.createResource(NS
-			+ "air-low_population_density-_long-term");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource airLower_stratosphere_upper_troposphere = m_model.createResource(NS
-			+ "air-lower_stratosphere_upper_troposphere");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource airUnspecified = m_model.createResource(NS + "air-unspecified");
-
-	/**
-	 * <p>
-	 * implied from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource release = m_model.createResource(NS + "release");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resource = m_model.createResource(NS + "resource");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resourceBiotic = m_model.createResource(NS + "resource-biotic");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resourceIn_air = m_model.createResource(NS + "resource-in_air");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resourceIn_ground = m_model.createResource(NS + "resource-in_ground");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resourceIn_land = m_model.createResource(NS + "resource-in_land");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource resourceIn_water = m_model.createResource(NS + "resource-in_water");
-
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource airHigh_population_density = m_model
+//			.createResource(NS + "air-high_population_density");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource airLow_population_density = m_model.createResource(NS + "air-low_population_density");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource airLow_population_densityLong_term = m_model.createResource(NS
+//			+ "air-low_population_density-_long-term");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource airLower_stratosphere_upper_troposphere = m_model.createResource(NS
+//			+ "air-lower_stratosphere_upper_troposphere");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource airUnspecified = m_model.createResource(NS + "air-unspecified");
+//
+//	/**
+//	 * <p>
+//	 * implied from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource release = m_model.createResource(NS + "release");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resource = m_model.createResource(NS + "resource");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resourceBiotic = m_model.createResource(NS + "resource-biotic");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resourceIn_air = m_model.createResource(NS + "resource-in_air");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resourceIn_ground = m_model.createResource(NS + "resource-in_ground");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resourceIn_land = m_model.createResource(NS + "resource-in_land");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource resourceIn_water = m_model.createResource(NS + "resource-in_water");
+//
 	/**
 	 * <p>
 	 * from Category_Subcategory.xlsx
@@ -291,110 +291,110 @@ public class FedLCA {
 	 */
 	public static final Resource resourceUnspecified = m_model.createResource(NS + "resource-unspecified");
 
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource soilAgricultural = m_model.createResource(NS + "soil-agricultural");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource soilForestry = m_model.createResource(NS + "soil-forestry");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource soilIndustrial = m_model.createResource(NS + "soil-industrial");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource soilUnspecified = m_model.createResource(NS + "soil-unspecified");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterFossil = m_model.createResource(NS + "water-fossil");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterFresh = m_model.createResource(NS + "water-fresh");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterFreshLong_term = m_model.createResource(NS + "water-fresh-long_term");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterGround = m_model.createResource(NS + "water-ground");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterGroundLong_term = m_model.createResource(NS + "water-ground-long_term");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterLake = m_model.createResource(NS + "water-lake");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterOcean = m_model.createResource(NS + "water-ocean");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterRiver = m_model.createResource(NS + "water-river");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterRiverLong_term = m_model.createResource(NS + "water-river-long_term");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterSurface = m_model.createResource(NS + "water-surface");
-
-	/**
-	 * <p>
-	 * from Category_Subcategory.xlsx
-	 * </p>
-	 */
-	public static final Resource waterUnspecified = m_model.createResource(NS + "water-unspecified");
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource soilAgricultural = m_model.createResource(NS + "soil-agricultural");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource soilForestry = m_model.createResource(NS + "soil-forestry");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource soilIndustrial = m_model.createResource(NS + "soil-industrial");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource soilUnspecified = m_model.createResource(NS + "soil-unspecified");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterFossil = m_model.createResource(NS + "water-fossil");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterFresh = m_model.createResource(NS + "water-fresh");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterFreshLong_term = m_model.createResource(NS + "water-fresh-long_term");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterGround = m_model.createResource(NS + "water-ground");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterGroundLong_term = m_model.createResource(NS + "water-ground-long_term");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterLake = m_model.createResource(NS + "water-lake");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterOcean = m_model.createResource(NS + "water-ocean");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterRiver = m_model.createResource(NS + "water-river");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterRiverLong_term = m_model.createResource(NS + "water-river-long_term");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterSurface = m_model.createResource(NS + "water-surface");
+//
+//	/**
+//	 * <p>
+//	 * from Category_Subcategory.xlsx
+//	 * </p>
+//	 */
+//	public static final Resource waterUnspecified = m_model.createResource(NS + "water-unspecified");
 
 	// FROM OpenLCA:
 	// Number of items

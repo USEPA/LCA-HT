@@ -343,6 +343,7 @@ public class FlowsWorkflow extends ViewPart {
 				btnCheckData.setEnabled(true);
 				System.out.println("About to do setHeaderInfo()");
 			}
+			FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
 		}
 
 		@Override
@@ -496,7 +497,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setGrayed(false);
 			btnMatchFlowProperties.setEnabled(true);
 			btnMatchFlowProperties.setGrayed(false);
-//			CSVTableView.preCommit = false;
+			// CSVTableView.preCommit = false;
 			CSVTableView.setPostCommit();
 			CSVTableView.initializeRowMenu();
 			String jobKey = "autoMatch_01";
@@ -545,7 +546,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				// CSVTableView.colorFlowContextRows();
 			}
-//			CSVTableView.setSelection(0);
+			// CSVTableView.setSelection(0);
 			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 			// Util.setPerspective(FlowDataV4.ID);
