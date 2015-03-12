@@ -473,6 +473,9 @@ public class FlowContext {
 
 	public String getSpecificString() {
 		Object[] result = getAllProperties(flowContextSpecific);
+		if (result == null) {
+			return null;
+		}
 		if (result.length == 0) {
 			return null;
 		}
@@ -512,6 +515,11 @@ public class FlowContext {
 			File file = null;
 			try {
 				file = new File(path);
+				/* To allow Tom to get file during development */
+				if (!file.exists()) {
+					path = "/Users/transue/lca/master_contexts/master_flow_contexts_lcaht.n3";
+					file = new File(path);
+				}
 				System.out.println("We got the file!  It's at: " + file.getPath());
 			} catch (Exception e1) {
 				System.out.println("The Master Contexts file: " + path + " was not found.");
