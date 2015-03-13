@@ -309,8 +309,8 @@ public class ImportUserData implements IHandler {
 		}
 
 		/* TRANSFER DATA TO DEFAULT GRAPH */
-//		ActiveTDB.copyImportGraphContentsToDefault();
-//		ActiveTDB.clearImportGraphContents();
+		ActiveTDB.copyImportGraphContentsToDefault();
+		ActiveTDB.clearImportGraphContents();
 
 		ActiveTDB.syncTDBtoLCAHT();
 
