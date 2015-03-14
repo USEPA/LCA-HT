@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
@@ -417,7 +418,8 @@ public class FlowContext {
 		b.append("select ?mfc where { \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
-		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc eco:hasDataSource ?ds . \n");
+		b.append("      ?ds a lcaht:MasterDataset . \n");
 		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
 		b.append("      filter regex (\"" + fullText + "\", str(?necessary), \"i\") \n");
@@ -426,7 +428,8 @@ public class FlowContext {
 		b.append("  minus \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
-		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc eco:hasDataSource ?ds . \n");
+		b.append("      ?ds a lcaht:MasterDataset . \n");
 		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
 		b.append("      filter (!regex (\"" + fullText + "\", str(?necessary), \"i\")) \n");
@@ -435,7 +438,8 @@ public class FlowContext {
 		b.append("  minus \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
-		b.append("      ?mfc a lcaht:MasterDataset . \n");
+		b.append("      ?mfc eco:hasDataSource ?ds . \n");
+		b.append("      ?ds a lcaht:MasterDataset . \n");
 		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextForbiddenRegexPattern ?forbidden . \n");
 		b.append("      filter regex (\"" + fullText + "\", str(?forbidden), \"i\") \n");
@@ -520,6 +524,10 @@ public class FlowContext {
 					path = "/Users/transue/lca/master_contexts/master_flow_contexts_lcaht.n3";
 					file = new File(path);
 				}
+				if (!file.exists()) {
+					path = "C:\\Users\\Tom\\lca\\master_flow_contexts_lcaht.n3";
+					file = new File(path);
+				}
 				System.out.println("We got the file!  It's at: " + file.getPath());
 			} catch (Exception e1) {
 				System.out.println("The Master Contexts file: " + path + " was not found.");
@@ -527,6 +535,7 @@ public class FlowContext {
 				return;
 			}
 			ImportRDFFileDirectlyToGraph.loadToDefaultGraph(path, null);
+			DataSourceKeeper.syncFromTDB();
 		}
 
 		StringBuilder b = new StringBuilder();
@@ -540,7 +549,8 @@ public class FlowContext {
 		b.append("       ?fc_forbid_regex \n");
 		b.append("where {\n");
 		b.append("  ?fc a fedlca:FlowContext .  \n");
-		b.append("  ?fc a lcaht:MasterDataset .  \n");
+		b.append("  ?fc eco:hasDataSource ?ds . \n");
+		b.append("  ?ds a lcaht:MasterDataset .  \n");
 		b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
 		b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
 		b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
