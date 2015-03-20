@@ -514,18 +514,20 @@ public class FlowContext {
 		ActiveTDB.tdbDataset.end();
 
 		if (needToReadMasterFile) {
+			String flowContextFileName = "master_flow_contexts_lcaht.zip";
 			String resourceDirectory = Util.getPreferenceStore().getString("resourceDirectory");
-			String path = resourceDirectory + File.separator + "master_flow_contexts_lcaht.n3";
+			String path = resourceDirectory + File.separator + flowContextFileName;
 			File file = null;
 			try {
 				file = new File(path);
 				/* To allow Tom to get file during development */
 				if (!file.exists()) {
-					path = "/Users/transue/lca/master_contexts/master_flow_contexts_lcaht.n3";
+					path = "/Users/transue/lca/master_contexts/" + flowContextFileName;
 					file = new File(path);
 				}
-				if (!file.exists()) {
-					path = "C:\\Users\\Tom\\lca\\master_flow_contexts_lcaht.n3";
+				if (!file.exists() && Platform.getOS().matches("*win*")) {
+					// TODO - Check the above pattern
+					path = "C:\\Users\\Tom\\lca\\"+flowContextFileName;
 					file = new File(path);
 				}
 				System.out.println("We got the file!  It's at: " + file.getPath());
