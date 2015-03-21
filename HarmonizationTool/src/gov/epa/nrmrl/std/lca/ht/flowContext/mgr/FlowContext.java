@@ -525,12 +525,15 @@ public class FlowContext {
 					path = "/Users/transue/lca/master_contexts/" + flowContextFileName;
 					file = new File(path);
 				}
-				if (!file.exists() && Platform.getOS().matches("*win*")) {
+				System.out.println("Platform.getOS() = "+Platform.getOS());
+
+				if (!file.exists() && Platform.getOS().matches(".*win.*")) {
+					System.out.println("Platform.getOS() = "+Platform.getOS());
 					// TODO - Check the above pattern
 					path = "C:\\Users\\Tom\\lca\\"+flowContextFileName;
 					file = new File(path);
-				}
-				System.out.println("We got the file!  It's at: " + file.getPath());
+					System.out.println("We got the file!  It's at: " + file.getPath());
+				}				
 			} catch (Exception e1) {
 				System.out.println("The Master Contexts file: " + path + " was not found.");
 				runLogger.warn("The Master Contexts file: " + path + " was not found.");
