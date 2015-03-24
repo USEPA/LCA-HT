@@ -103,7 +103,7 @@ public class FlowContext {
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(false);
 				lcaDataPropertyProvider.setLeftJustified(true);
-				// lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
+				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 

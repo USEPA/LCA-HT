@@ -11,9 +11,9 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -106,5 +106,24 @@ public class Prefixes {
 			b.append("PREFIX " + key + ": <" + prefixMap.get(key) + ">\n");
 		}
 		return b.toString();
+	}
+	
+	public static void setBase(String basePrefix, String graphName){
+		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(graphName);
+		try {
+			Map<String, String> prefixMap = tdbModel.getNsPrefixMap();
+			prefixMap.put("",prefixMap.get(basePrefix));
+//			prefixMap.remove("olca");
+			tdbModel.setNsPrefixes(prefixMap);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Problem adding imported items to its dataset; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 }

@@ -67,6 +67,9 @@ public class ExportTDBHandler implements IHandler {
 
 				try {
 					tdbModel.write(fout, outType);
+//					The line below can be used to set the base, despite the Java Docs reversing the second two terms
+//					tdbModel.write(fout, outType, OpenLCA.NS);
+
 				} catch (Exception e) {
 					System.out.println("Export failed with Exception: " + e);
 					ActiveTDB.tdbDataset.abort();
