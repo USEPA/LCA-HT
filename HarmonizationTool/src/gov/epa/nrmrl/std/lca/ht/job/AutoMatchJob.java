@@ -272,7 +272,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				dataRow.setFlowProperty(flowProperty);
+				dataRow.setFlowUnit(flowProperty);
 			}
 //			stopWatch05.stop();
 		}

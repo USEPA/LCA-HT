@@ -51,6 +51,7 @@ public class Flowable {
 
 	static {
 		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.label, label, null);
 		ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
 		ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 

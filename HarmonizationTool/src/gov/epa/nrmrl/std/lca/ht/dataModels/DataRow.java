@@ -17,10 +17,11 @@ public class DataRow {
 
 	private Flowable flowable = null;
 	private FlowContext flowContext = null;
-	private FlowProperty flowProperty = null;
+	private FlowProperty flowUnit = null;
 
 	private int rowNumber;
 	private String rowToolTip;
+	private Resource openLCASourceURI = null;
 
 	public DataRow() {
 	}
@@ -147,11 +148,19 @@ public class DataRow {
 		this.flowContext = flowContext;
 	}
 
-	public FlowProperty getFlowProperty() {
-		return flowProperty;
+	public FlowProperty getFlowUnit() {
+		return flowUnit;
 	}
 
-	public void setFlowProperty(FlowProperty flowProperty) {
-		this.flowProperty = flowProperty;
+	public void setFlowUnit(FlowProperty flowUnit) {
+		this.flowUnit = flowUnit;
+	}
+
+	public Resource getSourceFlowTDBResource() {
+		return openLCASourceURI;
+	}
+
+	public void setSourceFlowTDBResource(Resource sourceFlowTDBResource) {
+		this.openLCASourceURI = sourceFlowTDBResource;
 	}
 }

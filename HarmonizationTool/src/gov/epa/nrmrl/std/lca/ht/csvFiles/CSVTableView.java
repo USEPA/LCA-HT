@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -125,10 +126,12 @@ public class CSVTableView extends ViewPart {
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
 	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers;
 	private static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers;
+	private static LinkedHashSet<Integer> uniqueFlowRowNumbers;
 
 	private static LinkedHashSet<Integer> matchedFlowableRowNumbers;
 	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers;
 	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers;
+	private static LinkedHashSet<Integer> matchedFlowRowNumbers;
 
 	public CSVTableView() {
 	}
@@ -260,6 +263,7 @@ public class CSVTableView extends ViewPart {
 			colorFlowableRows();
 			colorFlowContextRows();
 			colorFlowPropertyRows();
+			colorFlowRows();
 		}
 	}
 
@@ -1141,6 +1145,8 @@ public class CSVTableView extends ViewPart {
 					lcaDataPropertyProvider = FlowContext.getDataPropertyMap().get(menuItemName);
 				} else if (menuItemClass.equals(FlowProperty.label)) {
 					lcaDataPropertyProvider = FlowProperty.getDataPropertyMap().get(menuItemName);
+				} else if (menuItemClass.equals(Flow.label)) {
+					lcaDataPropertyProvider = Flow.getDataPropertyMap().get(menuItemName);
 				}
 
 				if (lcaDataPropertyProvider == null) {
@@ -1424,6 +1430,7 @@ public class CSVTableView extends ViewPart {
 		// System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
 		addFields(FlowProperty.getDataPropertyMap());
 		// System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
+		addFields(Flow.getDataPropertyMap());
 	}
 
 	private static void removeColumns() {
@@ -1825,14 +1832,14 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void colorFlowPropertyRows() {
-		List<Integer> contextColumns = new ArrayList<Integer>();
+		List<Integer> propertyColumns = new ArrayList<Integer>();
 		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
 				.getLcaDataProperties();
 		for (int i = 0; i < lcaDataProperties.length; i++) {
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider != null) {
 				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
-					contextColumns.add(i);
+					propertyColumns.add(i);
 				}
 			}
 		}
@@ -1861,7 +1868,7 @@ public class CSVTableView extends ViewPart {
 					} else {
 						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 					}
-					for (int j : contextColumns) {
+					for (int j : propertyColumns) {
 						colorCell(visibleRowNum, j, color);
 					}
 				}
@@ -1887,7 +1894,53 @@ public class CSVTableView extends ViewPart {
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 				}
-				for (int j : contextColumns) {
+				for (int j : propertyColumns) {
+					colorCell(i, j, color);
+				}
+			}
+		}
+	}
+
+	public static void colorFlowRows() {
+		List<Integer> flowColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(Flow.label)) {
+					flowColumns.add(i);
+				}
+			}
+		}
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+
+		if (filterRowNumbers.size() > 0) {
+			int visibleRowNum = 0;
+			for (int i : filterRowNumbers) {
+				if (uniqueFlowRowNumbers.contains(i)) {
+
+					Color color;
+					if (matchedFlowRowNumbers.contains(i)) {
+						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+					} else {
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+					}
+					for (int j : flowColumns) {
+						colorCell(visibleRowNum, j, color);
+					}
+				}
+				visibleRowNum++;
+			}
+		} else {
+			for (int i : uniqueFlowRowNumbers) {
+				Color color;
+				if (matchedFlowRowNumbers.contains(i)) {
+					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				} else {
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				}
+				for (int j : flowColumns) {
 					colorCell(i, j, color);
 				}
 			}
@@ -1918,10 +1971,20 @@ public class CSVTableView extends ViewPart {
 		CSVTableView.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
 	}
 
+	// public static Set<Integer> getUniqueFlowRowNumbers() {
+	// return uniqueFlowRowNumbers;
+	// }
+
+	public static void setUniqueFlowRowNumbers(LinkedHashSet<Integer> uniqueFlowRowNumbers) {
+		CSVTableView.uniqueFlowRowNumbers = uniqueFlowRowNumbers;
+	}
+
+	// --------
+
 	// public static Set<Integer> getMatchedFlowableRowNumbers() {
 	// return matchedFlowableRowNumbers;
 	// }
-
+	
 	public static void setMatchedFlowableRowNumbers(LinkedHashSet<Integer> matchedFlowableRowNumbers) {
 		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
 	}
@@ -1941,6 +2004,15 @@ public class CSVTableView extends ViewPart {
 	public static void setMatchedFlowPropertyRowNumbers(LinkedHashSet<Integer> matchedFlowPropertyRowNumbers) {
 		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;
 	}
+
+	// public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
+	// return matchedFlowPropertyRowNumbers;
+	// }
+	
+	public static void setMatchedFlowRowNumbers(LinkedHashSet<Integer> matchedFlowRowNumbers) {
+		CSVTableView.matchedFlowRowNumbers = matchedFlowRowNumbers;
+	}
+
 
 	public static void setSelection(int i) {
 		if (i < 0 || i >= table.getItemCount()) {

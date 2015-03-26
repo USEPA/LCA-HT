@@ -19,7 +19,8 @@ public class QACheck {
 		this.pattern = pattern;
 	}
 
-	public QACheck(String description, String explanation, String suggestion, Pattern pattern, String replacement, boolean patternMustMatch) {
+	public QACheck(String description, String explanation, String suggestion, Pattern pattern, String replacement,
+			boolean patternMustMatch) {
 		this.description = description;
 		this.explanation = explanation;
 		this.suggestion = suggestion;
@@ -77,6 +78,18 @@ public class QACheck {
 		Pattern p5 = Pattern.compile("[^ -~]");
 		String r5 = null;
 		qaCheckPack.add(new QACheck(d5, e5, s5, p5, r5, false));
+		return qaCheckPack;
+	}
+
+	public static List<QACheck> getUUIDCheck() {
+		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+		String d1 = "UUID format";
+		String e1 = "The text does not match a properly formatted UUID: hex digits separated by dashes: 8-4-4-4-12.";
+		String s1 = "Check format.  For example, sometimes leading zeros are removed.";
+		Pattern p1 = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
+		String r1 = null;
+		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, true));
+
 		return qaCheckPack;
 	}
 

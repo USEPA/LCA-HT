@@ -714,7 +714,7 @@ public class HarmonizedDataSelector extends ViewPart {
 		}
 
 		// PREPARE MASTER LIST OUTPUT FOR -- FLOW PROPERTIES --
-		FlowProperty flowProperty = inputRow.getFlowProperty();
+		FlowProperty flowProperty = inputRow.getFlowUnit();
 		if (flowProperty == null) {
 			outputRow.add("");
 			outputRow.add("");

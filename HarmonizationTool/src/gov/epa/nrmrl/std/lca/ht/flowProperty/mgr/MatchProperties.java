@@ -50,7 +50,7 @@ public class MatchProperties extends ViewPart {
 	private static Text userDataLabel;
 	private static int rowNumSelected;
 	private static int colNumSelected;
-	private static FlowProperty propertyToMatch;
+	private static FlowProperty unitToMatch;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -186,8 +186,8 @@ public class MatchProperties extends ViewPart {
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-			dataRow.getFlowProperty().setMatchingResource(null);
-			FlowsWorkflow.removeMatchPropertyRowNum(propertyToMatch.getFirstRow());
+			dataRow.getFlowUnit().setMatchingResource(null);
+			FlowsWorkflow.removeMatchPropertyRowNum(unitToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
@@ -230,8 +230,8 @@ public class MatchProperties extends ViewPart {
 		if (newResource == null) {
 			return;
 		}
-		dataRow.getFlowProperty().setMatchingResource(newResource);
-		FlowsWorkflow.addMatchPropertyRowNum(propertyToMatch.getFirstRow());
+		dataRow.getFlowUnit().setMatchingResource(newResource);
+		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 	}
@@ -827,15 +827,15 @@ public class MatchProperties extends ViewPart {
 
 	public static void update(int rowNumber) {
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		propertyToMatch = dataRow.getFlowProperty();
-		if (propertyToMatch == null) {
+		unitToMatch = dataRow.getFlowUnit();
+		if (unitToMatch == null) {
 			masterTree.deselectAll();
 			setUserDataLabel("", false);
 		} else {
 
 			String labelString = null;
-			String propertyString = propertyToMatch.getPropertyStr();
-			String unitString = propertyToMatch.getUnitStr();
+			String propertyString = unitToMatch.getPropertyStr();
+			String unitString = unitToMatch.getUnitStr();
 			if (propertyString == null) {
 				labelString = unitString;
 			} else {
@@ -845,7 +845,7 @@ public class MatchProperties extends ViewPart {
 			}
 
 			partialCollapse();
-			Resource propertyResource = propertyToMatch.getMatchingResource();
+			Resource propertyResource = unitToMatch.getMatchingResource();
 			if (propertyResource != null) {
 				TreeItem treeItem = getTreeItemByURI(propertyResource);
 				if (treeItem != null) {
@@ -872,15 +872,15 @@ public class MatchProperties extends ViewPart {
 //		String rowNumString = tableItem.getText(0);
 //		int rowNumber = Integer.parseInt(rowNumString) - 1;
 //		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//		propertyToMatch = dataRow.getFlowProperty();
-//		if (propertyToMatch == null) {
+//		unitToMatch = dataRow.getFlowProperty();
+//		if (unitToMatch == null) {
 //			masterTree.deselectAll();
 //			setUserDataLabel("", false);
 //		} else {
 //
 //			String labelString = null;
-//			String propertyString = propertyToMatch.getPropertyStr();
-//			String unitString = propertyToMatch.getUnitStr();
+//			String propertyString = unitToMatch.getPropertyStr();
+//			String unitString = unitToMatch.getUnitStr();
 //			if (propertyString == null) {
 //				labelString = unitString;
 //			} else {
@@ -890,7 +890,7 @@ public class MatchProperties extends ViewPart {
 //			}
 //
 //			partialCollapse();
-//			Resource propertyResource = propertyToMatch.getMatchingResource();
+//			Resource propertyResource = unitToMatch.getMatchingResource();
 //			if (propertyResource != null) {
 //				TreeItem treeItem = getTreeItemByURI(propertyResource);
 //				if (treeItem != null) {
@@ -917,11 +917,11 @@ public class MatchProperties extends ViewPart {
 	// String rowNumString = tableItem.getText(0);
 	// int rowNumber = Integer.parseInt(rowNumString) - 1;
 	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-	// propertyToMatch = dataRow.getFlowProperty();
-	// Resource propertyResource = propertyToMatch.getMatchingResource();
+	// unitToMatch = dataRow.getFlowProperty();
+	// Resource propertyResource = unitToMatch.getMatchingResource();
 	// String labelString = null;
-	// String propertyString = propertyToMatch.getPropertyStr();
-	// String unitString = propertyToMatch.getUnitStr();
+	// String propertyString = unitToMatch.getPropertyStr();
+	// String unitString = unitToMatch.getUnitStr();
 	// if (propertyString == null) {
 	// labelString = unitString;
 	// } else {

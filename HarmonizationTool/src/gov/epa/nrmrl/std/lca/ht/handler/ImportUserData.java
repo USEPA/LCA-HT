@@ -4,6 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
@@ -284,10 +285,10 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.tdbDataset.end();
 		// ---- END SAFE -READ- TRANSACTION ---
 
-		if (haveOLCAData) {
-			int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
-			runLogger.info("  # openLCA data items converted: " + olca_convert);
-		}
+//		if (haveOLCAData) {
+//			int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
+//			runLogger.info("  # openLCA data items converted: " + olca_convert);
+//		}
 
 		if (existingDataSource != null) {
 			DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
@@ -388,8 +389,8 @@ public class ImportUserData implements IHandler {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct \n");
+		b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?flowable  \n");
-		// b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?cas \n");
 		b.append("  ?formula \n");
 		b.append("  ?context_general \n");
@@ -436,7 +437,7 @@ public class ImportUserData implements IHandler {
 		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
 		b.append(" \n");
 		b.append("} \n");
-		b.append("order by ?flowable  \n");
+		b.append("order by ?flowable \n");
 
 		String query = b.toString();
 		System.out.println("Query \n"+query);
@@ -452,16 +453,17 @@ public class ImportUserData implements IHandler {
 		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
 												// COUNT FIELD TO TABLES
 
-		tableProvider.setLCADataPropertyProvider(1, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
-		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.casString));
-		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
-		tableProvider.setLCADataPropertyProvider(4, FlowContext.getDataPropertyMap()
+		tableProvider.setLCADataPropertyProvider(1, Flow.getDataPropertyMap().get(Flow.openLCAUUID));
+		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
+		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.casString));
+		tableProvider.setLCADataPropertyProvider(4, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
+		tableProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap()
 				.get(FlowContext.flowContextGeneral));
-		tableProvider.setLCADataPropertyProvider(5,
+		tableProvider.setLCADataPropertyProvider(6,
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap()
+		tableProvider.setLCADataPropertyProvider(7, FlowProperty.getDataPropertyMap()
 				.get(FlowProperty.flowPropertyUnit));
-		tableProvider.setLCADataPropertyProvider(7,
+		tableProvider.setLCADataPropertyProvider(8,
 				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
 		return;
 	}

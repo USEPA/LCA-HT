@@ -69,10 +69,13 @@ public class FlowsWorkflow extends ViewPart {
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
+	private static LinkedHashSet<Integer> uniqueFlowRowNumbers = new LinkedHashSet<Integer>();
 
 	private static LinkedHashSet<Integer> matchedFlowableRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
+	private static LinkedHashSet<Integer> matchedFlowRowNumbers = new LinkedHashSet<Integer>();
+
 
 	// private static FileMD fileMD;
 	// private static DataSourceProvider dataSourceProvider;
@@ -512,9 +515,13 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.setUniqueFlowableRowNumbers(uniqueFlowableRowNumbers);
 			CSVTableView.setUniqueFlowContextRowNumbers(uniqueFlowContextRowNumbers);
 			CSVTableView.setUniqueFlowPropertyRowNumbers(uniqueFlowPropertyRowNumbers);
+			CSVTableView.setUniqueFlowRowNumbers(uniqueFlowRowNumbers);
+
 			CSVTableView.setMatchedFlowableRowNumbers(matchedFlowableRowNumbers);
 			CSVTableView.setMatchedFlowContextRowNumbers(matchedFlowContextRowNumbers);
 			CSVTableView.setMatchedFlowPropertyRowNumbers(matchedFlowPropertyRowNumbers);
+			CSVTableView.setMatchedFlowRowNumbers(matchedFlowRowNumbers);
+
 		}
 
 		@Override
@@ -680,9 +687,13 @@ public class FlowsWorkflow extends ViewPart {
 			uniqueFlowContextRowNumbers.clear();
 			uniqueFlowPropertyRowNumbers.clear();
 			uniqueFlowableRowNumbers.clear();
+			uniqueFlowRowNumbers.clear();
+
+			
 			matchedFlowContextRowNumbers.clear();
 			matchedFlowPropertyRowNumbers.clear();
 			matchedFlowableRowNumbers.clear();
+			matchedFlowRowNumbers.clear();
 
 			if (btnConcludeFile.getText().equals("Export Harmonized Data")) {
 				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
@@ -783,7 +794,13 @@ public class FlowsWorkflow extends ViewPart {
 				+ " found.");
 		// CSVTableView.colorFlowableRows();
 		CSVTableView.colorOneFlowableRow(rowNumToSend);
-
+	}
+	
+	public static void addFlowRowNum(int rowNumToSend) {
+		uniqueFlowRowNumbers.add(rowNumToSend);
+//		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+//				+ uniqueFlowPropertyRowNumbers.size() + " found.");
+		CSVTableView.colorFlowRows();
 	}
 
 	public static void addMatchContextRowNum(int rowNumToSend) {
@@ -798,6 +815,13 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowPropertyRows();
+	}
+	
+	public static void addMatchFlowRowNum(int rowNumToSend) {
+		matchedFlowRowNumbers.add(rowNumToSend);
+//		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+//				+ uniqueFlowPropertyRowNumbers.size() + " found.");
+		CSVTableView.colorFlowRows();
 	}
 
 	public static void addMatchFlowableRowNum(int rowNumToSend) {
