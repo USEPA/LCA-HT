@@ -79,6 +79,7 @@ public class FlowContext {
 
 				lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextGeneral);
 				lcaDataPropertyProvider.setPropertyClass(label);
+				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 				lcaDataPropertyProvider.setRequired(true);
 				lcaDataPropertyProvider.setUnique(true);
@@ -89,6 +90,7 @@ public class FlowContext {
 
 				lcaDataPropertyProvider = new LCADataPropertyProvider(flowContextSpecific);
 				lcaDataPropertyProvider.setPropertyClass(label);
+				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(false);
@@ -98,6 +100,7 @@ public class FlowContext {
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
+				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setPropertyClass(label);
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 				lcaDataPropertyProvider.setRequired(false);

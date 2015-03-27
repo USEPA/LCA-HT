@@ -58,7 +58,7 @@ public class Flow {
 		lcaDataPropertyProvider.setUnique(true);
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(QACheck.getUUIDCheck());
-		lcaDataPropertyProvider.setTDBProperty(RDFS.label);
+		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}
 
@@ -196,6 +196,21 @@ public class Flow {
 			Util.showView(CSVTableView.ID);
 			TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 			Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
+			LCADataPropertyProvider[] lcaDataPropertyProviders = tableProvider.getLcaDataProperties();
+			int uuidRow = -1;
+			for (int col = 0; col < lcaDataPropertyProviders.length; col++) {
+				LCADataPropertyProvider lcaDataPropertyProvider = lcaDataPropertyProviders[col];
+				if (lcaDataPropertyProvider != null) {
+					if (lcaDataPropertyProvider.getRDFClass() != null) {
+						if (lcaDataPropertyProvider.getRDFClass().equals(rdfClass)) {
+							if (lcaDataPropertyProvider.getPropertyName().equals(openLCAUUID)) {
+								uuidRow = col;
+							}
+						}
+					}
+				}
+			}
+
 			List<Integer> rowsToIgnore = CSVTableView.getRowsToIgnore();
 			for (int i = 0; i < tableProvider.getData().size(); i++) {
 				if (rowsToIgnore.contains(i)) {
@@ -220,6 +235,12 @@ public class Flow {
 				}
 				if (dataSourceResource != null) {
 					tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
+				}
+				if (uuidRow > -1) {
+					String value = dataRow.get(uuidRow-1);
+					if (!value.equals("")) {
+						tdbModel.add(tdbResource, FedLCA.hasOpenLCAUUID, value);
+					}
 				}
 			}
 			ActiveTDB.tdbDataset.commit();
@@ -268,7 +289,7 @@ public class Flow {
 		b.append("  ?mf fedlca:hasFlowProperty ?flowProperty . \n");
 		b.append("  filter (str(?flowPropertyString) = str(afn:localname(?flowProperty)))  . \n");
 		b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
-		
+
 		b.append("} \n");
 		b.append("order by ?rowNumber \n");
 

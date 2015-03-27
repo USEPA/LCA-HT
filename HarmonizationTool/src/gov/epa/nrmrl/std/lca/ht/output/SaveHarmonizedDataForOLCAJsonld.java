@@ -55,12 +55,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 		System.out.println("headerRow " + headerRow);
 
-		List<DataRow> dataRows = new ArrayList<DataRow>();
-		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		for (int i = 0; i < tableProvider.getData().size(); i++) {
-			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
-			dataRows.add(dataRow);
-		}
+//		List<DataRow> dataRows = new ArrayList<DataRow>();
+//		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+//		for (int i = 0; i < tableProvider.getData().size(); i++) {
+//			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
+//			dataRows.add(dataRow);
+//		}
 
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
