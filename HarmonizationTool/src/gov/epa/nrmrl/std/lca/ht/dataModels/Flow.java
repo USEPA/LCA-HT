@@ -239,7 +239,8 @@ public class Flow {
 				if (uuidRow > -1) {
 					String value = dataRow.get(uuidRow-1);
 					if (!value.equals("")) {
-						tdbModel.add(tdbResource, FedLCA.hasOpenLCAUUID, value);
+						Literal valueAsLiteral = tdbModel.createTypedLiteral(value);
+						tdbModel.add(tdbResource, FedLCA.hasOpenLCAUUID, valueAsLiteral);
 					}
 				}
 			}
