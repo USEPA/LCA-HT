@@ -1,8 +1,15 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,7 +17,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DataRow {
 	private List<String> columnValues = new ArrayList<String>();
@@ -18,6 +33,7 @@ public class DataRow {
 	private Flowable flowable = null;
 	private FlowContext flowContext = null;
 	private FlowProperty flowUnit = null;
+	private Resource masterFlowResource = null;
 
 	private int rowNumber;
 	private String rowToolTip;
@@ -162,5 +178,109 @@ public class DataRow {
 
 	public void setSourceFlowTDBResource(Resource sourceFlowTDBResource) {
 		this.openLCASourceURI = sourceFlowTDBResource;
+	}
+
+	public boolean setMatches() {
+//		StringBuilder b = new StringBuilder();
+//		b.append(Prefixes.getPrefixesForQuery());
+//		b.append(" \n");
+//		b.append("SELECT distinct ?f ?masterTest \n");
+//		b.append("WHERE \n");
+//		b.append("  { \n");
+//		b.append("    { \n");
+//
+//		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
+//		for (int i = 1; i < namesToMatch.size(); i++) {
+//			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
+//		}
+//		b.append("    } \n");
+//
+//		if (checkCas) {
+//			b.append("    optional {?f eco:casNumber ?cas . }\n");
+//			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
+//		}
+//		b.append("    ?f eco:hasDataSource ?ds . \n");
+//		b.append("    ?ds a lcaht:MasterDataset . \n");
+//		b.append("    ?f a eco:Flowable . \n");
+//		b.append("   } \n");
+//		String query = b.toString();
+//		System.out.println("Query = \n" + query);
+//
+//		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+//		harmonyQuery2Impl.setQuery(query);
+//
+//		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+//
+//		int count = 0;
+//		while (resultSet.hasNext()) {
+//			QuerySolution querySolution = resultSet.next();
+//			RDFNode rdfNode = querySolution.get("f");
+//			count++;
+//			matchCandidates.put(rdfNode.asResource(), "=");
+//			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
+//		}
+//		
+//		Resource currentMasterFlowResource = masterFlowResource;
+//		Flowable flowable = getFlowable();
+//		FlowContext flowContext = getFlowContext();
+//		FlowProperty flowProperty = getFlowUnit();
+//		if (flowable == null || flowContext == null || flowProperty == null) {
+//			return false;
+//		}
+//		Resource flowableResource = flowable.getTdbResource();
+//		Resource flowContextResource = flowContext.getTdbResource();
+//		Resource flowPropertyResource = flowProperty.getTdbResource();
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, flowableResource);
+//
+//		while (resIterator.hasNext()) {
+//			Resource comparisonResource = resIterator.next();
+//			if (!tdbModel.contains(comparisonResource, FedLCA.comparedEquivalence, FedLCA.Equivalent)) {
+//				continue;
+//			}
+//			RDFNode masterNode = tdbModel.listObjectsOfProperty(comparisonResource, FedLCA.comparedMaster).next();
+//			Resource masterFlowableResource = masterNode.asResource();
+//
+//			ResIterator resIterator2 = tdbModel.listResourcesWithProperty(ECO.hasFlowable, masterFlowableResource);
+//			while (resIterator2.hasNext()) {
+//				Resource flowCandidateResource = resIterator2.next();
+//				if (!tdbModel.contains(flowCandidateResource, FedLCA.hasFlowContext, flowContextResource)) {
+//					continue;
+//				}
+//				if (!tdbModel.contains(flowCandidateResource, FedLCA.hasFlowProperty, flowPropertyResource)) {
+//					continue;
+//				}
+//				if (!tdbModel.contains(flowCandidateResource, RDF.type, FedLCA.Flow)) {
+//					continue;
+//				}
+//				RDFNode dataSourceResource = tdbModel.getProperty(flowCandidateResource, ECO.hasDataSource).getObject();
+//				if (dataSourceResource != null) {
+//					if (!tdbModel.contains(dataSourceResource.asResource(), RDF.type, LCAHT.MasterDataset)) {
+//						continue;
+//					}
+//				}
+//				if (masterFlowResource == null) {
+//					// NEW
+//					masterFlowResource = flowCandidateResource;
+//					return true;
+//				}
+//				if (flowCandidateResource.equals(masterFlowResource)) {
+//					// NO CHANGE
+//					return true;
+//				}
+//				// CHANGE
+//				masterFlowResource = flowCandidateResource;
+//				return true;
+//			}
+//		}
+		return false;
+	}
+
+	public Resource getFlowResource() {
+		return masterFlowResource;
+	}
+
+	public void setFlowResource(Resource flowResource) {
+		this.masterFlowResource = flowResource;
 	}
 }

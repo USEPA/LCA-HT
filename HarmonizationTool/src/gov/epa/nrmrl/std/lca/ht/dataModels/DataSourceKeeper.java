@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
@@ -424,7 +425,9 @@ public class DataSourceKeeper {
 	public static void syncFromTDB() {
 		Model tdbModel = ActiveTDB.getModel(null);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
+		boolean dataPresent = false;
 		while (iterator.hasNext()) {
+			dataPresent = true;
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
@@ -434,5 +437,15 @@ public class DataSourceKeeper {
 				new DataSourceProvider(dataSourceRDFResource);
 			}
 		}
+		if (!dataPresent) {
+			System.out.println("No data present, loading master flows and flowables");
+			String path = "classpath:/RDFResources";
+			String[] fileList = new String[] { "master_flowables_lcaht.zip", "master_flow_contexts_lcaht.n3" };
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flow_contexts_lcaht.n3", null);
+			System.out.println("Load finished");
+			syncFromTDB();
+		}
 	}
+
 }

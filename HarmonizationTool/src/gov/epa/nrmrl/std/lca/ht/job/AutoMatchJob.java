@@ -273,6 +273,16 @@ public class AutoMatchJob extends Job {
 					});
 				}
 				dataRow.setFlowUnit(flowProperty);
+				// NOW SEE IF THIS FLOW IS FOUND IN openLCA FLOWs
+				final boolean hit = dataRow.setMatches();
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.addFlowRowNum(rowNumToSend);
+						if (hit) {
+							FlowsWorkflow.addMatchFlowRowNum(rowNumToSend);
+						}
+					}
+				});
 			}
 //			stopWatch05.stop();
 		}
