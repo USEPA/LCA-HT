@@ -1,0 +1,1349 @@
+@prefix : <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions#> .
+@prefix afn: <http://jena.hpl.hp.com/ARQ/function#> .
+@prefix eco: <http://ontology.earthster.org/eco/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fasc: <http://ontology.earthster.org/eco/fasc#> .
+@prefix olca: <http://openlca.org/schema/v1.0/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#> .
+@prefix fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> .
+
+<http://epa.gov/nrmrl/std/lca/fedlca/1.0#> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Annotation properties
+#
+#################################################################
+
+
+###  http://ontology.earthster.org/eco/core#hasDataSource
+
+eco:hasDataSource rdf:type owl:AnnotationProperty .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextForbiddenRegexPattern
+
+:flowContextForbiddenRegexPattern rdf:type owl:DatatypeProperty ;
+                                  
+                                  rdfs:label "forbidden pattern:"@en ;
+                                  
+                                  rdfs:domain :FlowContext ;
+                                  
+                                  rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextGeneral
+
+:flowContextGeneral rdf:type owl:DatatypeProperty ,
+                             owl:FunctionalProperty ;
+                    
+                    rdfs:label "General"@en ;
+                    
+                    rdfs:domain :FlowContext ;
+                    
+                    rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextNecessaryRegexPattern
+
+:flowContextNecessaryRegexPattern rdf:type owl:DatatypeProperty ;
+                                  
+                                  rdfs:label "required pattern:"@en ;
+                                  
+                                  rdfs:comment "When user data are matched to master lists, regular expressions may aid in determining a match.  The string found in the user data must matches this \"flowContextNecessaryRegexPattern\" regular expression, for the given master Flow Context."@en ;
+                                  
+                                  rdfs:domain :FlowContext ;
+                                  
+                                  rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#flowContextSpecific
+
+:flowContextSpecific rdf:type owl:DatatypeProperty ;
+                     
+                     rdfs:label "Specific"@en ;
+                     
+                     rdfs:domain :FlowContext ;
+                     
+                     rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasOpenLCAUUID
+
+:hasOpenLCAUUID rdf:type owl:DatatypeProperty ;
+                
+                rdfs:comment "While openLCA and other software assigns Universally Unique IDentifiers (UUIDs) to various data objects, the LCA Harmonization Tool does not rely on these for data matching.  Still, UUIDs from openLCA are tracked when available for cross-referencing within openLCA and other software pacakges."@en ;
+                
+                rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#hasPreviousOpenLCAUUID
+
+:hasPreviousOpenLCAUUID rdf:type owl:DatatypeProperty ,
+                                 owl:FunctionalProperty ;
+                        
+                        rdfs:comment "It appears that an earlier version 1.4 of the Derby database contained different UUIDs for the categories, at least for Elementary Flows.  This may be some type of mis-interpretation, but these values are retained in case they become helpful later."@en ;
+                        
+                        rdfs:range xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#presentationSortIndex
+
+:presentationSortIndex rdf:type owl:DatatypeProperty ,
+                                owl:FunctionalProperty ;
+                       
+                       rdfs:domain :FlowContext ;
+                       
+                       rdfs:range xsd:integer ;
+                       
+                       rdfs:subPropertyOf owl:topDataProperty .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#Emission
+
+:Emission rdf:type owl:Class ;
+          
+          rdfs:label "Release to"@en ;
+          
+          rdfs:subClassOf :FlowContext ,
+                          [ rdf:type owl:Class ;
+                            owl:complementOf :Resource
+                          ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#FlowContext
+
+:FlowContext rdf:type owl:Class ;
+             
+             rdfs:label "Flow Context"^^xsd:string ;
+             
+             rdfs:subClassOf [ rdf:type owl:Class ;
+                               owl:unionOf ( :Emission
+                                             :Resource
+                                           )
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :presentationSortIndex ;
+                               owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                               owl:onDataRange xsd:int
+                             ] ;
+             
+             rdfs:comment "The Flow Context is a term developed for the LCA Harmonization Tool.  It encompases terms such as 'Category' or 'Compartment' and may have several descriptors including geological feature, population density, or land use.  A Flow has a hasFlowContext property with an object being a FlowContext.  This term is similar to fasc:Compartment.  Examples of Flow Contexts include emissions to urban air and resource consumption from water."^^xsd:string .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#Resource
+
+:Resource rdf:type owl:Class ;
+          
+          rdfs:label "Resource"@en ;
+          
+          rdfs:subClassOf :FlowContext ,
+                          [ rdf:type owl:Class ;
+                            owl:complementOf :Emission
+                          ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#ToAir
+
+:ToAir rdf:type owl:Class ;
+       
+       rdfs:label "air"@en ;
+       
+       rdfs:subClassOf :Emission ,
+                       :FlowContext .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#ToSoil
+
+:ToSoil rdf:type owl:Class ;
+        
+        rdfs:label "soil"@en ;
+        
+        rdfs:subClassOf :Emission ,
+                        :FlowContext .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#ToWater
+
+:ToWater rdf:type owl:Class ;
+         
+         rdfs:label "water"@en ;
+         
+         rdfs:subClassOf :Emission ,
+                         :FlowContext .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/ht/1.0#MasterDataset
+
+lcaht:MasterDataset rdf:type owl:Class .
+
+
+
+###  http://ontology.earthster.org/eco/core#DataSource
+
+eco:DataSource rdf:type owl:Class .
+
+
+
+###  http://www.w3.org/2002/07/owl#DataTypeProperty
+
+owl:DataTypeProperty rdf:type owl:Class .
+
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#air-high_population_density
+
+:air-high_population_density rdf:type :Emission ,
+                                      :FlowContext ,
+                                      :ToAir ,
+                                      owl:NamedIndividual ;
+                             
+                             rdfs:label "Release to air, high population density"@en ;
+                             
+                             :flowContextForbiddenRegexPattern "(?<!non-)rural"^^xsd:string ;
+                             
+                             :presentationSortIndex 3 ;
+                             
+                             :hasOpenLCAUUID "7c393da4-5f55-41d5-baa2-4216a299c21c"^^xsd:string ;
+                             
+                             :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                             
+                             :flowContextGeneral "air"^^xsd:string ;
+                             
+                             :hasPreviousOpenLCAUUID "e6e67f13-0bcb-4113-966b-023c3186b339"^^xsd:string ;
+                             
+                             :flowContextSpecific "high population density"^^xsd:string ;
+                             
+                             :flowContextNecessaryRegexPattern "high[^a-zA-Z]*population|urban"^^xsd:string ;
+                             
+                             :flowContextForbiddenRegexPattern "long[^a-zA-Z]*term"^^xsd:string ,
+                                                               "low[^a-zA-Z]*population"^^xsd:string ,
+                                                               "non[^a-zA-Z]*urban"^^xsd:string ,
+                                                               "resource"^^xsd:string ,
+                                                               "soil"^^xsd:string ,
+                                                               "unspecified"^^xsd:string ,
+                                                               "water"^^xsd:string ;
+                             
+                             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                          eco:DataSource ;
+                                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                               ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#air-low_population_density
+
+:air-low_population_density rdf:type :Emission ,
+                                     :FlowContext ,
+                                     :ToAir ,
+                                     owl:NamedIndividual ;
+                            
+                            rdfs:label "Release to air, low population density"@en ;
+                            
+                            :flowContextForbiddenRegexPattern "(?<!non-)urban"^^xsd:string ;
+                            
+                            :presentationSortIndex 2 ;
+                            
+                            :hasOpenLCAUUID "8291c777-3f1e-46be-a550-fe50fd677753"^^xsd:string ;
+                            
+                            :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                            
+                            :flowContextGeneral "air"^^xsd:string ;
+                            
+                            :hasPreviousOpenLCAUUID "ebcdff7a-b8c0-405b-8601-98a1ac3f26ef"^^xsd:string ;
+                            
+                            :flowContextForbiddenRegexPattern "high[^a-zA-Z]*population"^^xsd:string ,
+                                                              "long[^a-zA-Z]*term"^^xsd:string ;
+                            
+                            :flowContextSpecific "low population density"^^xsd:string ;
+                            
+                            :flowContextNecessaryRegexPattern "low[^a-zA-Z]*population|rural"^^xsd:string ;
+                            
+                            :flowContextForbiddenRegexPattern "non-rural"^^xsd:string ,
+                                                              "resource"^^xsd:string ,
+                                                              "soil"^^xsd:string ,
+                                                              "unspecified"^^xsd:string ,
+                                                              "water"^^xsd:string ;
+                            
+                            eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                         eco:DataSource ;
+                                                rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                                rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                              ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#air-low_population_density-_long-term
+
+:air-low_population_density-_long-term rdf:type :Emission ,
+                                                :FlowContext ,
+                                                :ToAir ,
+                                                owl:NamedIndividual ;
+                                       
+                                       rdfs:label "Release to air, low population density, long-term"@en ;
+                                       
+                                       :flowContextForbiddenRegexPattern "(?<!non-)urban"^^xsd:string ;
+                                       
+                                       :presentationSortIndex 4 ;
+                                       
+                                       :hasOpenLCAUUID "5757a050-d6aa-470a-b1fc-f8deb7410b5a"^^xsd:string ;
+                                       
+                                       :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                                       
+                                       :flowContextGeneral "air"^^xsd:string ;
+                                       
+                                       :hasPreviousOpenLCAUUID "f9ac762d-1403-4763-9aec-9b11ab79874b"^^xsd:string ;
+                                       
+                                       :flowContextForbiddenRegexPattern "high[^a-zA-Z]*population"^^xsd:string ;
+                                       
+                                       :flowContextNecessaryRegexPattern "long[^a-zA-Z]*term"^^xsd:string ;
+                                       
+                                       :flowContextSpecific "low population density, long-term"^^xsd:string ;
+                                       
+                                       :flowContextNecessaryRegexPattern "low[^a-zA-Z]*population|rural"^^xsd:string ;
+                                       
+                                       :flowContextForbiddenRegexPattern "non-rural"^^xsd:string ,
+                                                                         "resource"^^xsd:string ,
+                                                                         "soil"^^xsd:string ,
+                                                                         "unspecified"^^xsd:string ,
+                                                                         "water"^^xsd:string ;
+                                       
+                                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                                    eco:DataSource ;
+                                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                                         ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#air-lower_stratosphere_upper_troposphere
+
+:air-lower_stratosphere_upper_troposphere rdf:type :Emission ,
+                                                   :FlowContext ,
+                                                   :ToAir ,
+                                                   owl:NamedIndividual ;
+                                          
+                                          rdfs:label "Release to air, lower stratosphere + upper troposphere"@en ;
+                                          
+                                          :presentationSortIndex 5 ;
+                                          
+                                          :hasPreviousOpenLCAUUID "885ce78b-9872-4a59-8244-deebeb12caea"^^xsd:string ;
+                                          
+                                          :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                                          
+                                          :flowContextGeneral "air"^^xsd:string ;
+                                          
+                                          :hasOpenLCAUUID "e02cb1ea-727e-42fa-9ea1-65cfc8195452"^^xsd:string ;
+                                          
+                                          :flowContextForbiddenRegexPattern "long[^a-zA-Z]*term"^^xsd:string ;
+                                          
+                                          :flowContextNecessaryRegexPattern "low(er)?[^a-zA-Z]*stratosphere"^^xsd:string ;
+                                          
+                                          :flowContextSpecific "lower stratosphere + upper troposphere"^^xsd:string ;
+                                          
+                                          :flowContextForbiddenRegexPattern "population"^^xsd:string ,
+                                                                            "resource"^^xsd:string ,
+                                                                            "rural"^^xsd:string ,
+                                                                            "soil"^^xsd:string ,
+                                                                            "unspecified"^^xsd:string ,
+                                                                            "urban"^^xsd:string ,
+                                                                            "water"^^xsd:string ;
+                                          
+                                          eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                                       eco:DataSource ;
+                                                              rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                                              rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                                            ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#air-unspecified
+
+:air-unspecified rdf:type :Emission ,
+                          :FlowContext ,
+                          :ToAir ,
+                          owl:NamedIndividual ;
+                 
+                 rdfs:label "Release to air, unspecified"@en ;
+                 
+                 :presentationSortIndex 1 ;
+                 
+                 :hasOpenLCAUUID "2d9498c8-6873-45e1-af33-e1a298c119b9"^^xsd:string ;
+                 
+                 :hasPreviousOpenLCAUUID "5ea0e54a-d88d-4f7c-89a4-54f21c5791e7"^^xsd:string ;
+                 
+                 :flowContextGeneral "air"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "long[^a-zA-Z]*term"^^xsd:string ,
+                                                   "osphere"^^xsd:string ,
+                                                   "population"^^xsd:string ,
+                                                   "resource"^^xsd:string ,
+                                                   "rural"^^xsd:string ,
+                                                   "soil"^^xsd:string ;
+                 
+                 :flowContextSpecific "unspecified"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "unspecified"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "urban"^^xsd:string ,
+                                                   "water"^^xsd:string ;
+                 
+                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                              eco:DataSource ;
+                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                   ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-biotic
+
+:resource-biotic rdf:type :FlowContext ,
+                          :Resource ,
+                          owl:NamedIndividual ;
+                 
+                 rdfs:label "Resource, biotic"@en ;
+                 
+                 :hasPreviousOpenLCAUUID "26305d8d-591e-4927-8e19-ca7513edcee9"^^xsd:string ;
+                 
+                 :presentationSortIndex 52 ;
+                 
+                 :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                 
+                 :flowContextSpecific "biotic"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "biotic"^^xsd:string ;
+                 
+                 :hasOpenLCAUUID "e41f6688-ff59-4733-9d6f-8744095382c1"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "emission"^^xsd:string ,
+                                                   "population"^^xsd:string ,
+                                                   "release"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+                 
+                 :flowContextGeneral "resource"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "soil"^^xsd:string ,
+                                                   "water"^^xsd:string ;
+                 
+                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                              eco:DataSource ;
+                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                   ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-in_air
+
+:resource-in_air rdf:type :FlowContext ,
+                          :Resource ,
+                          owl:NamedIndividual ;
+                 
+                 rdfs:label "Resource, in air"@en ;
+                 
+                 :hasOpenLCAUUID "3779f888-b4cb-4503-81f0-e7f599277a89"^^xsd:string ;
+                 
+                 :presentationSortIndex 53 ;
+                 
+                 :hasPreviousOpenLCAUUID "965603be-3e94-42e6-9b2c-95eaf3b998c0"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "air"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "emission"^^xsd:string ;
+                 
+                 :flowContextSpecific "in air"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "population"^^xsd:string ,
+                                                   "release"^^xsd:string ;
+                 
+                 :flowContextGeneral "resource"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "soil"^^xsd:string ,
+                                                   "water"^^xsd:string ;
+                 
+                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                              eco:DataSource ;
+                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                   ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-in_ground
+
+:resource-in_ground rdf:type :FlowContext ,
+                             :Resource ,
+                             owl:NamedIndividual ;
+                    
+                    rdfs:label "Resource, in ground"@en ;
+                    
+                    :presentationSortIndex 54 ;
+                    
+                    :hasPreviousOpenLCAUUID "75c87bc3-468b-4d9f-b2c5-9d521fb4822e"^^xsd:string ;
+                    
+                    :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                    
+                    :hasOpenLCAUUID "d734414d-8bcf-497f-9896-b96761d6b488"^^xsd:string ;
+                    
+                    :flowContextForbiddenRegexPattern "emission"^^xsd:string ;
+                    
+                    :flowContextNecessaryRegexPattern "ground"^^xsd:string ;
+                    
+                    :flowContextSpecific "in ground"^^xsd:string ;
+                    
+                    :flowContextForbiddenRegexPattern "population"^^xsd:string ,
+                                                      "release"^^xsd:string ;
+                    
+                    :flowContextGeneral "resource"^^xsd:string ;
+                    
+                    :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+                    
+                    :flowContextForbiddenRegexPattern "water"^^xsd:string ;
+                    
+                    eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                 eco:DataSource ;
+                                        rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                        rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                      ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-in_water
+
+:resource-in_water rdf:type :FlowContext ,
+                            :Resource ,
+                            owl:NamedIndividual ;
+                   
+                   rdfs:label "Resource, in water"@en ;
+                   
+                   :presentationSortIndex 56 ;
+                   
+                   :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                   
+                   :hasPreviousOpenLCAUUID "bcfc6117-3461-4f85-a5c8-fe59a533cc29"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "emission"^^xsd:string ,
+                                                     "ground"^^xsd:string ;
+                   
+                   :flowContextSpecific "in water"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "land"^^xsd:string ,
+                                                     "population"^^xsd:string ,
+                                                     "release"^^xsd:string ;
+                   
+                   :flowContextGeneral "resource"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "soil"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+                   
+                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                eco:DataSource ;
+                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                     ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-land
+
+:resource-land rdf:type :FlowContext ,
+                        :Resource ,
+                        owl:NamedIndividual ;
+               
+               rdfs:label "Resource, land"@en ;
+               
+               :hasOpenLCAUUID "0b14d4cc-186e-4bab-a7fc-fffd448b0e2c"^^xsd:string ;
+               
+               :hasPreviousOpenLCAUUID "54f7604f-c04e-4404-a229-852ede4379dc"^^xsd:string ;
+               
+               :presentationSortIndex 55 ;
+               
+               :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                                 "emission"^^xsd:string ;
+               
+               :flowContextSpecific "in land"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "land"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "population"^^xsd:string ,
+                                                 "release"^^xsd:string ;
+               
+               :flowContextGeneral "resource"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "water"^^xsd:string ;
+               
+               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                            eco:DataSource ;
+                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                 ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#resource-unspecified
+
+:resource-unspecified rdf:type :FlowContext ,
+                               :Resource ,
+                               owl:NamedIndividual ;
+                      
+                      rdfs:label "Resource, unspecified"@en ;
+                      
+                      :hasPreviousOpenLCAUUID "0d557bab-d095-4142-912e-398fccb68240"^^xsd:string ;
+                      
+                      :presentationSortIndex 51 ;
+                      
+                      :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                      
+                      :hasOpenLCAUUID "d4e9a1fa-e2d0-44f1-9243-acc0db978d0f"^^xsd:string ;
+                      
+                      :flowContextForbiddenRegexPattern "emission"^^xsd:string ,
+                                                        "population"^^xsd:string ,
+                                                        "release"^^xsd:string ;
+                      
+                      :flowContextNecessaryRegexPattern "resource"^^xsd:string ;
+                      
+                      :flowContextGeneral "resource"^^xsd:string ;
+                      
+                      :flowContextForbiddenRegexPattern "soil"^^xsd:string ;
+                      
+                      :flowContextNecessaryRegexPattern "unspecified"^^xsd:string ;
+                      
+                      :flowContextSpecific "unspecified"^^xsd:string ;
+                      
+                      :flowContextForbiddenRegexPattern "water"^^xsd:string ;
+                      
+                      eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                   eco:DataSource ;
+                                          rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                          rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                        ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#soil-agricultural
+
+:soil-agricultural rdf:type :Emission ,
+                            :FlowContext ,
+                            :ToSoil ,
+                            owl:NamedIndividual ;
+                   
+                   rdfs:label "Release to soil, agricultural"@en ;
+                   
+                   :hasPreviousOpenLCAUUID "34efc703-6409-4acf-8f1d-dec646adca8c"^^xsd:string ;
+                   
+                   :presentationSortIndex 38 ;
+                   
+                   :hasOpenLCAUUID "3e34bea9-b96b-4a52-b0e9-2f117da18462"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "agricultur"^^xsd:string ;
+                   
+                   :flowContextSpecific "agricultural"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                                     "forest"^^xsd:string ,
+                                                     "industr"^^xsd:string ,
+                                                     "non[^a-zA-Z]*agricultur"^^xsd:string ,
+                                                     "resource"^^xsd:string ;
+                   
+                   :flowContextGeneral "soil"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "soil"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ,
+                                                     "water"^^xsd:string ;
+                   
+                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                eco:DataSource ;
+                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                     ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#soil-forestry
+
+:soil-forestry rdf:type :Emission ,
+                        :FlowContext ,
+                        :ToSoil ,
+                        owl:NamedIndividual ;
+               
+               rdfs:label "Release to soil, forestry"@en ;
+               
+               :presentationSortIndex 39 ;
+               
+               :hasOpenLCAUUID "a56b521d-ca6c-4d43-9876-7e944c78392d"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "agricultur"^^xsd:string ,
+                                                 "air"^^xsd:string ;
+               
+               :hasPreviousOpenLCAUUID "b50bb945-da42-49d2-a6e1-73544e36aaf2"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "forest"^^xsd:string ;
+               
+               :flowContextSpecific "forestry"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "industr"^^xsd:string ,
+                                                 "resource"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "soil"^^xsd:string ;
+               
+               :flowContextGeneral "soil"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ,
+                                                 "water"^^xsd:string ;
+               
+               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                            eco:DataSource ;
+                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                 ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#soil-industrial
+
+:soil-industrial rdf:type :Emission ,
+                          :FlowContext ,
+                          :ToSoil ,
+                          owl:NamedIndividual ;
+                 
+                 rdfs:label "Release to soil, industrial"@en ;
+                 
+                 :hasPreviousOpenLCAUUID "185a7592-e3ae-4c44-a124-9c700b76d33d"^^xsd:string ;
+                 
+                 :presentationSortIndex 40 ;
+                 
+                 :flowContextForbiddenRegexPattern "agricultur"^^xsd:string ,
+                                                   "air"^^xsd:string ;
+                 
+                 :hasOpenLCAUUID "c2f5c3a9-70a8-443e-972d-c0cdf5ef1f57"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "forest"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "industr"^^xsd:string ;
+                 
+                 :flowContextSpecific "industrial"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "resource"^^xsd:string ;
+                 
+                 :flowContextGeneral "soil"^^xsd:string ;
+                 
+                 :flowContextNecessaryRegexPattern "soil"^^xsd:string ;
+                 
+                 :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ,
+                                                   "water"^^xsd:string ,
+                                                   "non[^a-zA-Z]*indust" ;
+                 
+                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                              eco:DataSource ;
+                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                   ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#soil-unspecified
+
+:soil-unspecified rdf:type :Emission ,
+                           :FlowContext ,
+                           :ToSoil ,
+                           owl:NamedIndividual ;
+                  
+                  rdfs:label "Release to soil, unspecified"@en ;
+                  
+                  :presentationSortIndex 37 ;
+                  
+                  :flowContextForbiddenRegexPattern "agricultur"^^xsd:string ,
+                                                    "air"^^xsd:string ;
+                  
+                  :hasPreviousOpenLCAUUID "e97d11b5-78e4-4a93-9a63-14673f89f709"^^xsd:string ;
+                  
+                  :hasOpenLCAUUID "fbeac9d8-cfd7-49a5-bc43-0d7b39fa4345"^^xsd:string ;
+                  
+                  :flowContextForbiddenRegexPattern "forest"^^xsd:string ,
+                                                    "industr"^^xsd:string ,
+                                                    "resource"^^xsd:string ;
+                  
+                  :flowContextGeneral "soil"^^xsd:string ;
+                  
+                  :flowContextNecessaryRegexPattern "soil"^^xsd:string ;
+                  
+                  :flowContextSpecific "unspecified"^^xsd:string ;
+                  
+                  :flowContextNecessaryRegexPattern "unspecified"^^xsd:string ;
+                  
+                  :flowContextForbiddenRegexPattern "water"^^xsd:string ;
+                  
+                  eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                               eco:DataSource ;
+                                      rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                      rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                    ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-fossil
+
+:water-fossil rdf:type :Emission ,
+                       :FlowContext ,
+                       :ToWater ,
+                       owl:NamedIndividual ;
+              
+              rdfs:label "Release to fossil-water"@en ;
+              
+              :presentationSortIndex 17 ;
+              
+              :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+              
+              :hasOpenLCAUUID "c62956a1-36e2-472a-9d7b-76f6ed030501"^^xsd:string ;
+              
+              :hasPreviousOpenLCAUUID "d0d05279-8621-404d-9878-218f04427fa6"^^xsd:string ;
+              
+              :flowContextForbiddenRegexPattern "estuary"^^xsd:string ;
+              
+              :flowContextNecessaryRegexPattern "fossil"^^xsd:string ;
+              
+              :flowContextSpecific "fossil-"^^xsd:string ;
+              
+              :flowContextForbiddenRegexPattern "lake"^^xsd:string ,
+                                                "ocean"^^xsd:string ,
+                                                "resource"^^xsd:string ,
+                                                "river"^^xsd:string ,
+                                                "salt"^^xsd:string ,
+                                                "sea"^^xsd:string ,
+                                                "soil"^^xsd:string ,
+                                                "surface"^^xsd:string ,
+                                                "unspecified"^^xsd:string ;
+              
+              :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+              
+              :flowContextGeneral "water"^^xsd:string ;
+              
+              eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                           eco:DataSource ;
+                                  rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                  rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-fresh
+
+:water-fresh rdf:type :Emission ,
+                      :FlowContext ,
+                      :ToWater ,
+                      owl:NamedIndividual ;
+             
+             rdfs:label "Release to fresh-water"@en ;
+             
+             :hasPreviousOpenLCAUUID "1657ede0-aec3-41d1-bf1d-eeada890bdce"^^xsd:string ;
+             
+             :presentationSortIndex 18 ;
+             
+             :hasOpenLCAUUID "870110ab-6bbf-4149-beb6-ef0402b6ba6c"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                               "estuary"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "fresh"^^xsd:string ;
+             
+             :flowContextSpecific "fresh-"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "lake"^^xsd:string ,
+                                               "long[^a-zA-Z]*term"^^xsd:string ,
+                                               "ocean"^^xsd:string ,
+                                               "resource"^^xsd:string ,
+                                               "river"^^xsd:string ,
+                                               "salt"^^xsd:string ,
+                                               "sea"^^xsd:string ,
+                                               "soil"^^xsd:string ,
+                                               "surface"^^xsd:string ,
+                                               "unspecified"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+             
+             :flowContextGeneral "water"^^xsd:string ;
+             
+             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                          eco:DataSource ;
+                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                               ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-fresh-long_term
+
+:water-fresh-long_term rdf:type :Emission ,
+                                :FlowContext ,
+                                :ToWater ,
+                                owl:NamedIndividual ;
+                       
+                       rdfs:label "Release to fresh-water, long-term"@en ;
+                       
+                       :presentationSortIndex 19 ;
+                       
+                       :hasOpenLCAUUID "90b2f926-e261-4df0-b435-63b0c660101e"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                       
+                       :hasPreviousOpenLCAUUID "ed1e0813-ed99-4897-b20c-13ec90584825"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "estuary"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "fresh"^^xsd:string ;
+                       
+                       :flowContextSpecific "fresh-, long-term"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "lake"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "long[^a-zA-Z]*term"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "ocean"^^xsd:string ,
+                                                         "resource"^^xsd:string ,
+                                                         "river"^^xsd:string ,
+                                                         "salt"^^xsd:string ,
+                                                         "sea"^^xsd:string ,
+                                                         "soil"^^xsd:string ,
+                                                         "surface"^^xsd:string ,
+                                                         "unspecified"^^xsd:string ;
+                       
+                       :flowContextGeneral "water"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+                       
+                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                    eco:DataSource ;
+                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                         ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-ground
+
+:water-ground rdf:type :Emission ,
+                       :FlowContext ,
+                       :ToWater ,
+                       owl:NamedIndividual ;
+              
+              rdfs:label "Release to ground-water"@en ;
+              
+              :presentationSortIndex 20 ;
+              
+              :hasPreviousOpenLCAUUID "4f146a17-ae4a-487b-874b-5d3013b86f44"^^xsd:string ;
+              
+              :hasOpenLCAUUID "6e54f561-d63a-4a49-bec9-55468f56a698"^^xsd:string ;
+              
+              :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                                "estuary"^^xsd:string ;
+              
+              :flowContextNecessaryRegexPattern "ground"^^xsd:string ;
+              
+              :flowContextSpecific "ground-"^^xsd:string ;
+              
+              :flowContextForbiddenRegexPattern "lake"^^xsd:string ,
+                                                "long[^a-zA-Z]*term"^^xsd:string ,
+                                                "ocean"^^xsd:string ,
+                                                "resource"^^xsd:string ,
+                                                "river"^^xsd:string ,
+                                                "salt"^^xsd:string ,
+                                                "sea"^^xsd:string ,
+                                                "soil"^^xsd:string ,
+                                                "surface"^^xsd:string ,
+                                                "unspecified"^^xsd:string ;
+              
+              :flowContextGeneral "water"^^xsd:string ;
+              
+              :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+              
+              eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                           eco:DataSource ;
+                                  rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                  rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-ground-long_term
+
+:water-ground-long_term rdf:type :Emission ,
+                                 :FlowContext ,
+                                 :ToWater ,
+                                 owl:NamedIndividual ;
+                        
+                        rdfs:label "Release to ground-water, long-term"@en ;
+                        
+                        :presentationSortIndex 21 ;
+                        
+                        :hasOpenLCAUUID "a99b1904-6e54-4d02-983a-2b0ec1263a28"^^xsd:string ;
+                        
+                        :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                        
+                        :hasPreviousOpenLCAUUID "eba77525-9745-4f4a-9182-91a67306ba1c"^^xsd:string ;
+                        
+                        :flowContextForbiddenRegexPattern "estuary"^^xsd:string ;
+                        
+                        :flowContextNecessaryRegexPattern "ground"^^xsd:string ;
+                        
+                        :flowContextSpecific "ground-, long-term"^^xsd:string ;
+                        
+                        :flowContextForbiddenRegexPattern "lake"^^xsd:string ;
+                        
+                        :flowContextNecessaryRegexPattern "long[^a-zA-Z]*term"^^xsd:string ;
+                        
+                        :flowContextForbiddenRegexPattern "ocean"^^xsd:string ,
+                                                          "resource"^^xsd:string ,
+                                                          "river"^^xsd:string ,
+                                                          "salt"^^xsd:string ,
+                                                          "sea"^^xsd:string ,
+                                                          "soil"^^xsd:string ,
+                                                          "surface"^^xsd:string ,
+                                                          "unspecified"^^xsd:string ;
+                        
+                        :flowContextGeneral "water"^^xsd:string ;
+                        
+                        :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+                        
+                        eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                     eco:DataSource ;
+                                            rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                            rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                          ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-lake
+
+:water-lake rdf:type :Emission ,
+                     :FlowContext ,
+                     :ToWater ,
+                     owl:NamedIndividual ;
+            
+            rdfs:label "Release to lake water"@en ;
+            
+            :presentationSortIndex 22 ;
+            
+            :hasOpenLCAUUID "231bda25-8d18-48b2-b5ba-9b5795e30317"^^xsd:string ;
+            
+            :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+            
+            :hasPreviousOpenLCAUUID "c1069072-9923-48f6-821d-8fad6e0ace5b"^^xsd:string ;
+            
+            :flowContextForbiddenRegexPattern "estuary"^^xsd:string ,
+                                              "ground"^^xsd:string ;
+            
+            :flowContextSpecific "lake"^^xsd:string ;
+            
+            :flowContextNecessaryRegexPattern "lake"^^xsd:string ;
+            
+            :flowContextForbiddenRegexPattern "long[^a-zA-Z]*term"^^xsd:string ,
+                                              "ocean"^^xsd:string ,
+                                              "resource"^^xsd:string ,
+                                              "river"^^xsd:string ,
+                                              "salt"^^xsd:string ,
+                                              "sea"^^xsd:string ,
+                                              "soil"^^xsd:string ,
+                                              "surface"^^xsd:string ,
+                                              "unspecified"^^xsd:string ;
+            
+            :flowContextGeneral "water"^^xsd:string ;
+            
+            :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+            
+            eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                         eco:DataSource ;
+                                rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                              ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-ocean
+
+:water-ocean rdf:type :Emission ,
+                      :FlowContext ,
+                      :ToWater ,
+                      owl:NamedIndividual ;
+             
+             rdfs:label "Release to ocean water"@en ;
+             
+             :presentationSortIndex 23 ;
+             
+             :hasOpenLCAUUID "31a33ee5-e7c2-431e-990f-5ab1209cbc00"^^xsd:string ;
+             
+             :hasPreviousOpenLCAUUID "8b7c395f-60ef-4863-a7e6-3560b5ad1aae"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                               "estuary"^^xsd:string ,
+                                               "ground"^^xsd:string ,
+                                               "lake"^^xsd:string ,
+                                               "long[^a-zA-Z]*term"^^xsd:string ;
+             
+             :flowContextSpecific "ocean"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "resource"^^xsd:string ,
+                                               "river"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "sea|ocean"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "soil"^^xsd:string ,
+                                               "surface"^^xsd:string ,
+                                               "unspecified"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+             
+             :flowContextGeneral "water"^^xsd:string ;
+             
+             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                          eco:DataSource ;
+                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                               ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-river
+
+:water-river rdf:type :Emission ,
+                      :FlowContext ,
+                      :ToWater ,
+                      owl:NamedIndividual ;
+             
+             rdfs:label "Release to river water"@en ;
+             
+             :presentationSortIndex 24 ;
+             
+             :hasPreviousOpenLCAUUID "58ed0153-34aa-4d6f-babf-3cfb201eac1d"^^xsd:string ;
+             
+             :hasOpenLCAUUID "97f511b2-9031-438f-aa90-d514709cd109"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                               "estuary"^^xsd:string ,
+                                               "ground"^^xsd:string ,
+                                               "lake"^^xsd:string ,
+                                               "long[^a-zA-Z]*term"^^xsd:string ,
+                                               "ocean"^^xsd:string ,
+                                               "resource"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "river"^^xsd:string ;
+             
+             :flowContextSpecific "river"^^xsd:string ;
+             
+             :flowContextForbiddenRegexPattern "sea"^^xsd:string ,
+                                               "soil"^^xsd:string ,
+                                               "surface"^^xsd:string ,
+                                               "unspecified"^^xsd:string ;
+             
+             :flowContextGeneral "water"^^xsd:string ;
+             
+             :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+             
+             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                          eco:DataSource ;
+                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                               ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-river-long_term
+
+:water-river-long_term rdf:type :Emission ,
+                                :FlowContext ,
+                                :ToWater ,
+                                owl:NamedIndividual ;
+                       
+                       rdfs:label "Release to river water, long-term"@en ;
+                       
+                       :hasPreviousOpenLCAUUID "1df73ec9-e6b7-4f91-8f62-14b8ee2f7d93"^^xsd:string ;
+                       
+                       :presentationSortIndex 25 ;
+                       
+                       :hasOpenLCAUUID "87f48832-e550-458c-885a-d2a4c02e5543"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                                         "estuary"^^xsd:string ,
+                                                         "ground"^^xsd:string ,
+                                                         "lake"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "long[^a-zA-Z]*term"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "ocean"^^xsd:string ,
+                                                         "resource"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "river"^^xsd:string ;
+                       
+                       :flowContextSpecific "river, long-term"^^xsd:string ;
+                       
+                       :flowContextForbiddenRegexPattern "sea"^^xsd:string ,
+                                                         "soil"^^xsd:string ,
+                                                         "surface"^^xsd:string ,
+                                                         "unspecified"^^xsd:string ;
+                       
+                       :flowContextGeneral "water"^^xsd:string ;
+                       
+                       :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+                       
+                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                    eco:DataSource ;
+                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                         ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-surface
+
+:water-surface rdf:type :Emission ,
+                        :FlowContext ,
+                        :ToWater ,
+                        owl:NamedIndividual ;
+               
+               rdfs:label "Release to surface water"@en ;
+               
+               :presentationSortIndex 26 ;
+               
+               :hasPreviousOpenLCAUUID "782cf5cb-0a6b-44aa-8a87-e5997dd0d1ff"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "air"^^xsd:string ,
+                                                 "estuary"^^xsd:string ;
+               
+               :hasOpenLCAUUID "f5d93540-81ed-11e0-b278-0800200c9a66"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "ground"^^xsd:string ,
+                                                 "lake"^^xsd:string ,
+                                                 "long[^a-zA-Z]*term"^^xsd:string ,
+                                                 "ocean"^^xsd:string ,
+                                                 "resource"^^xsd:string ,
+                                                 "river"^^xsd:string ,
+                                                 "sea"^^xsd:string ,
+                                                 "soil"^^xsd:string ;
+               
+               :flowContextSpecific "surface"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "surface"^^xsd:string ;
+               
+               :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ;
+               
+               :flowContextGeneral "water"^^xsd:string ;
+               
+               :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+               
+               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                            eco:DataSource ;
+                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                 ] .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#water-unspecified
+
+:water-unspecified rdf:type :Emission ,
+                            :FlowContext ,
+                            :ToWater ,
+                            owl:NamedIndividual ;
+                   
+                   rdfs:label "Release to water, unspecified"@en ;
+                   
+                   :presentationSortIndex 16 ;
+                   
+                   :hasPreviousOpenLCAUUID "a7c280e9-d13a-43cf-9127-d3bbf4d0e256"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "air"^^xsd:string ;
+                   
+                   :hasOpenLCAUUID "b3834b67-5caf-41ea-bf50-0c8962ef9b6d"^^xsd:string ;
+                   
+                   :flowContextForbiddenRegexPattern "estuary"^^xsd:string ,
+                                                     "ground"^^xsd:string ,
+                                                     "lake"^^xsd:string ,
+                                                     "long[^a-zA-Z]*term"^^xsd:string ,
+                                                     "ocean"^^xsd:string ,
+                                                     "resource"^^xsd:string ,
+                                                     "river"^^xsd:string ,
+                                                     "sea"^^xsd:string ,
+                                                     "soil"^^xsd:string ,
+                                                     "surface"^^xsd:string ;
+                   
+                   :flowContextSpecific "unspecified"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "unspecified"^^xsd:string ;
+                   
+                   :flowContextGeneral "water"^^xsd:string ;
+                   
+                   :flowContextNecessaryRegexPattern "water"^^xsd:string ;
+                   
+                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
+                                                eco:DataSource ;
+                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
+                                     ] .
+
+
+
+
+###  Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net
+
