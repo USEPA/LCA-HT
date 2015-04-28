@@ -274,11 +274,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                                                                "unspecified"^^xsd:string ,
                                                                "water"^^xsd:string ;
                              
-                             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                          eco:DataSource ;
-                                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                               ] .
+                             eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -316,11 +312,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                                                               "unspecified"^^xsd:string ,
                                                               "water"^^xsd:string ;
                             
-                            eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                         eco:DataSource ;
-                                                rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                                rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                              ] .
+                            eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -359,11 +351,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                                                                          "unspecified"^^xsd:string ,
                                                                          "water"^^xsd:string ;
                                        
-                                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                                    eco:DataSource ;
-                                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                                         ] .
+                                       eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -400,11 +388,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                                                                             "urban"^^xsd:string ,
                                                                             "water"^^xsd:string ;
                                           
-                                          eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                                       eco:DataSource ;
-                                                              rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                                              rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                                            ] .
+                                          eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -441,11 +425,19 @@ owl:DataTypeProperty rdf:type owl:Class .
                  :flowContextForbiddenRegexPattern "urban"^^xsd:string ,
                                                    "water"^^xsd:string ;
                  
-                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                              eco:DataSource ;
-                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                   ] .
+                 eco:hasDataSource :master_contexts_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#master_contexts_v1.4a
+
+:master_contexts_v1.4a rdf:type lcaht:MasterDataset ,
+                                eco:DataSource ,
+                                owl:NamedIndividual ;
+                       
+                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
+                       
+                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Apr 28 14:02:05 EDT 2015"^^xsd:string .
 
 
 
@@ -480,11 +472,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                  :flowContextForbiddenRegexPattern "soil"^^xsd:string ,
                                                    "water"^^xsd:string ;
                  
-                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                              eco:DataSource ;
-                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                   ] .
+                 eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -518,11 +506,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                  :flowContextForbiddenRegexPattern "soil"^^xsd:string ,
                                                    "water"^^xsd:string ;
                  
-                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                              eco:DataSource ;
-                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                   ] .
+                 eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -557,11 +541,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                     
                     :flowContextForbiddenRegexPattern "water"^^xsd:string ;
                     
-                    eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                 eco:DataSource ;
-                                        rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                        rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                      ] .
+                    eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -596,11 +576,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                    
                    :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                    
-                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                eco:DataSource ;
-                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                     ] .
+                   eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -634,11 +610,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                
                :flowContextForbiddenRegexPattern "water"^^xsd:string ;
                
-               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                            eco:DataSource ;
-                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                 ] .
+               eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -674,11 +646,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                       
                       :flowContextForbiddenRegexPattern "water"^^xsd:string ;
                       
-                      eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                   eco:DataSource ;
-                                          rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                          rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                        ] .
+                      eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -714,11 +682,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                    :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ,
                                                      "water"^^xsd:string ;
                    
-                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                eco:DataSource ;
-                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                     ] .
+                   eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -754,11 +718,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                :flowContextForbiddenRegexPattern "unspecified"^^xsd:string ,
                                                  "water"^^xsd:string ;
                
-               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                            eco:DataSource ;
-                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                 ] .
+               eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -796,11 +756,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                                                    "water"^^xsd:string ,
                                                    "non[^a-zA-Z]*indust" ;
                  
-                 eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                              eco:DataSource ;
-                                     rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                     rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                   ] .
+                 eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -836,11 +792,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                   
                   :flowContextForbiddenRegexPattern "water"^^xsd:string ;
                   
-                  eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                               eco:DataSource ;
-                                      rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                      rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                    ] .
+                  eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -881,11 +833,7 @@ owl:DataTypeProperty rdf:type owl:Class .
               
               :flowContextGeneral "water"^^xsd:string ;
               
-              eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                           eco:DataSource ;
-                                  rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                  rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                ] .
+              eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -926,11 +874,7 @@ owl:DataTypeProperty rdf:type owl:Class .
              
              :flowContextGeneral "water"^^xsd:string ;
              
-             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                          eco:DataSource ;
-                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                               ] .
+             eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -974,11 +918,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                        
                        :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                        
-                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                    eco:DataSource ;
-                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                         ] .
+                       eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1019,11 +959,7 @@ owl:DataTypeProperty rdf:type owl:Class .
               
               :flowContextNecessaryRegexPattern "water"^^xsd:string ;
               
-              eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                           eco:DataSource ;
-                                  rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                  rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                ] .
+              eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1067,11 +1003,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                         
                         :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                         
-                        eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                     eco:DataSource ;
-                                            rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                            rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                          ] .
+                        eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1113,11 +1045,7 @@ owl:DataTypeProperty rdf:type owl:Class .
             
             :flowContextNecessaryRegexPattern "water"^^xsd:string ;
             
-            eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                         eco:DataSource ;
-                                rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                              ] .
+            eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1157,11 +1085,7 @@ owl:DataTypeProperty rdf:type owl:Class .
              
              :flowContextGeneral "water"^^xsd:string ;
              
-             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                          eco:DataSource ;
-                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                               ] .
+             eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1201,11 +1125,7 @@ owl:DataTypeProperty rdf:type owl:Class .
              
              :flowContextNecessaryRegexPattern "water"^^xsd:string ;
              
-             eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                          eco:DataSource ;
-                                 rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                 rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                               ] .
+             eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1247,11 +1167,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                        
                        :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                        
-                       eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                    eco:DataSource ;
-                                           rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                           rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                         ] .
+                       eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1292,11 +1208,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                
                :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                
-               eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                            eco:DataSource ;
-                                   rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                   rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                 ] .
+               eco:hasDataSource :master_contexts_v1.4a .
 
 
 
@@ -1336,11 +1248,7 @@ owl:DataTypeProperty rdf:type owl:Class .
                    
                    :flowContextNecessaryRegexPattern "water"^^xsd:string ;
                    
-                   eco:hasDataSource [ rdf:type lcaht:MasterDataset ,
-                                                eco:DataSource ;
-                                       rdfs:label "Master Contexts v1.4a"^^xsd:string ;
-                                       rdfs:comment "Created by Tom Transue based on openLCA v1.4 Flow Categories on Wed Mar 11 11:55:55 EDT 2015"^^xsd:string
-                                     ] .
+                   eco:hasDataSource :master_contexts_v1.4a .
 
 
 

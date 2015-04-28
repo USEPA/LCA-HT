@@ -425,6 +425,8 @@ public class DataSourceKeeper {
 
 	public static void syncFromTDB() {
 		Model tdbModel = ActiveTDB.getModel(null);
+		List<Resource> dataSourceResourcesToAdd = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		//TODO - Choose better ways of checking TDB for content
 		boolean dataPresent = false;
@@ -436,9 +438,16 @@ public class DataSourceKeeper {
 			System.out.println("another DataSource found in TDB");
 			if (dataSourceIndex < 0) {
 				System.out.println("... new one");
-				new DataSourceProvider(dataSourceRDFResource);
+				dataSourceResourcesToAdd.add(dataSourceRDFResource);
+//				new DataSourceProvider(dataSourceRDFResource);
 			}
 		}
+		ActiveTDB.tdbDataset.end();
+		for (Resource resource:dataSourceResourcesToAdd){
+			new DataSourceProvider(resource);
+		}
+		
+		
 		if (!dataPresent) {
 			System.out.println("No data present, loading master flows and flowables");
 			String path = "classpath:/RDFResources";

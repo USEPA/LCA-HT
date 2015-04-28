@@ -1,20 +1,33 @@
 package gov.epa.nrmrl.std.lca.ht.flowProperty.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -35,6 +48,8 @@ public class FlowProperty {
 	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
 	public static List<LCAUnit> lcaMasterUnits = new ArrayList<LCAUnit>();
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
+	private static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
+
 
 	static {
 		if (dataPropertyMap == null) {
@@ -566,6 +581,85 @@ public class FlowProperty {
 		lcaDataValues.clear();
 		updateSyncDataFromTDB();
 	}
+	
+//	public static void loadMasterFlowProperties() {
+//		Logger runLogger = Logger.getLogger("run");
+//		while (lcaMasterProperties.size() == 0) {
+//			runLogger.info("Creating Master Property list");
+//
+//			StringBuilder b = new StringBuilder();
+//			b.append(Prefixes.getPrefixesForQuery());
+//			b.append("select ?fp \n");
+//			b.append("       ?fp_uuid \n");
+//			b.append("       ?fp_gen \n");
+//			b.append("       ?fc_spec \n");
+//			b.append("       ?fc_nec_regex \n");
+//			b.append("       ?fc_suf_regex \n");
+//			b.append("       ?fc_forbid_regex \n");
+//			b.append("where {\n");
+//			b.append("  ?fc a fedlca:FlowContext .  \n");
+//			b.append("  ?fc eco:hasDataSource ?ds . \n");
+//			b.append("  ?ds a lcaht:MasterDataset .  \n");
+//			b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
+//			b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
+//			b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
+//			b.append("  ?fc fedlca:presentationSortIndex ?sort .  \n");
+//			b.append("} \n");
+//			b.append("order by ?sort \n");
+//
+//			String query = b.toString();
+//			System.out.println("Query = \n" + query);
+//			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+//			harmonyQuery2Impl.setQuery(query);
+//			harmonyQuery2Impl.setGraphName(null);
+//
+//			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+//			// List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+//			Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
+//			while (resultSet.hasNext()) {
+//				QuerySolution querySolution = resultSet.next();
+//				Resource fcResource = querySolution.get("fc").asResource();
+//				FlowContext newFlowContext;
+//				if (masterMapTemp.containsKey(fcResource)) {
+//					newFlowContext = masterMapTemp.get(fcResource);
+//				} else {
+//					newFlowContext = new FlowContext(fcResource, false);
+//					String uuid = querySolution.get("fc_uuid").asLiteral().getString();
+//					newFlowContext.setProperty(openLCAUUID, uuid);
+//					String general = querySolution.get("fc_gen").asLiteral().getString();
+//					newFlowContext.setProperty(flowContextGeneral, general);
+//					String specific = querySolution.get("fc_spec").asLiteral().getString();
+//					newFlowContext.setProperty(flowContextSpecific, specific);
+//					lcaMasterContexts.add(newFlowContext);
+//					masterMapTemp.put(fcResource, newFlowContext);
+//				}
+//
+//				RDFNode necNode = querySolution.get("fc_nec_regex");
+//				if (necNode != null) {
+//					String necessaryRegex = necNode.asLiteral().getString();
+//					newFlowContext.addRequiredMatchPatterns(Pattern.compile(necessaryRegex));
+//				}
+//				RDFNode sufNode = querySolution.get("fc_nec_regex");
+//				if (sufNode != null) {
+//					String sufficientRegex = sufNode.asLiteral().getString();
+//					newFlowContext.addRequiredMatchPatterns(Pattern.compile(sufficientRegex));
+//				}
+//				RDFNode forbiddenNode = querySolution.get("fc_nec_regex");
+//				if (forbiddenNode != null) {
+//					String forbiddenRegex = forbiddenNode.asLiteral().getString();
+//					newFlowContext.addRequiredMatchPatterns(Pattern.compile(forbiddenRegex));
+//				}
+//			}
+//			if (lcaMasterContexts.size() == 0) {
+////				String masterContextFile = "classpath:/RDFResources/master_properties_lcaht.n3";
+//				String masterContextFile = "classpath:/RDFResources/master_contexts_v1.4a_lcaht.n3";
+//
+//				runLogger.info("Need to load data: " + masterContextFile);
+//				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterContextFile, null);
+//				DataSourceKeeper.syncFromTDB();
+//			}
+//		}
+//	}
 
 	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
 	// CSVColumnInfo[] results = new CSVColumnInfo[2];
@@ -715,5 +809,13 @@ public class FlowProperty {
 
 	public String getPropertyStr() {
 		return (String) getOneProperty(flowPropertyString);
+	}
+
+	public static List<FlowProperty> getLcaMasterProperties() {
+		return lcaMasterProperties;
+	}
+
+	public static void setLcaMasterProperties(List<FlowProperty> lcaMasterProperties) {
+		FlowProperty.lcaMasterProperties = lcaMasterProperties;
 	}
 }

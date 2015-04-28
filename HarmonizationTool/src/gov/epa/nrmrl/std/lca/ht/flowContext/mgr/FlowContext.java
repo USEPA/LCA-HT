@@ -500,7 +500,7 @@ public class FlowContext {
 
 	public static void loadMasterFlowContexts() {
 		Logger runLogger = Logger.getLogger("run");
-//		while (lcaMasterContexts.size() == 0) {
+		while (lcaMasterContexts.size() == 0) {
 			runLogger.info("Creating Master Context list");
 			// boolean needToReadMasterFile = true;
 			// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
@@ -616,13 +616,15 @@ public class FlowContext {
 				}
 			}
 			if (lcaMasterContexts.size() == 0) {
-				String masterContextFile = "classpath:/RDFResources/master_properties_lcaht.n3";
+//				String masterContextFile = "classpath:/RDFResources/master_properties_lcaht.n3";
+				String masterContextFile = "classpath:/RDFResources/master_contexts_v1.4a_lcaht.n3";
+
 				runLogger.info("Need to load data: " + masterContextFile);
 				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterContextFile, null);
 				DataSourceKeeper.syncFromTDB();
 			}
 		}
-//	}
+	}
 
 	public String getFullName() {
 		return fullName;
