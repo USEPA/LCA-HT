@@ -28,6 +28,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Util {
+	
+	private static Object INIT_LOCK = new Object();
+	
 	private Util() {
 	}
 
@@ -158,4 +161,8 @@ public class Util {
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getV
 	// getViewSite().getActionBars().getStatusLineManager();
 	// }
+	
+	public static Object getInitLock() {
+		return INIT_LOCK;
+	}
 }

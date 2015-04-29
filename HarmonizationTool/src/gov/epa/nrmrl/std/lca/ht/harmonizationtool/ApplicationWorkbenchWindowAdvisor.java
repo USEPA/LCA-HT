@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,7 +19,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IServiceLocator;
 
-public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Runnable {
 
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
@@ -59,6 +61,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		} catch (NotHandledException e) {
 			e.printStackTrace();
 		}
+		new Thread(this).start();
 		super.postWindowOpen();
 	}
 
@@ -101,5 +104,19 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 //			e.printStackTrace();
 //		}
 		super.postWindowClose();
+	}
+
+	@Override
+	public void run() {
+		threadedAppInit();
+	}
+	
+	private void threadedAppInit() {
+		synchronized (Util.getInitLock()) {
+			long start = System.currentTimeMillis();
+			openLCAInstance = new OpenLCA();
+			long end = System.currentTimeMillis();
+			System.out.println("Finished threaded init in " + (end - start) + "ms");
+		}
 	}
 }

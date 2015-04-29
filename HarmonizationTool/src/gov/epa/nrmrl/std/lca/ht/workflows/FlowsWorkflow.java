@@ -27,6 +27,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,12 +40,12 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	private static Text textLoadUserData;
-	private static Text textCheckData;
-	private static Text textCommit;
-	private static Text textMatchFlowables;
-	private static Text textMatchFlowContexts;
-	private static Text textMatchFlowProperties;
+	public static Text textLoadUserData;
+	public static Text textCheckData;
+	public static Text textCommit;
+	public static Text textMatchFlowables;
+	public static Text textMatchFlowContexts;
+	public static Text textMatchFlowProperties;
 
 	private Label label_01;
 	private Label label_02;
@@ -58,13 +59,13 @@ public class FlowsWorkflow extends ViewPart {
 	private static String matchPropertiesString = "Match Properties";
 	private static String matchFlowablesString = "Match Flowables";
 
-	private static Button btnLoadUserData;
-	private static Button btnCheckData;
-	private static Button btnCommit;
-	private static Button btnMatchFlowables;
-	private static Button btnMatchFlowContexts;
-	private static Button btnMatchFlowProperties;
-	private static Button btnConcludeFile;
+	public static Button btnLoadUserData;
+	public static Button btnCheckData;
+	public static Button btnCommit;
+	public static Button btnMatchFlowables;
+	public static Button btnMatchFlowContexts;
+	public static Button btnMatchFlowProperties;
+	public static Button btnConcludeFile;
 
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers = new LinkedHashSet<Integer>();
@@ -91,6 +92,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		final Display display = Display.getDefault();
 		initializeOtherViews();
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -125,6 +127,8 @@ public class FlowsWorkflow extends ViewPart {
 		btnLoadUserData.addSelectionListener(loadUserDataListener);
 
 		textLoadUserData = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		//textLoadUserData.setEditable(false);
+		//textLoadUserData.setEnabled(false);
 		textLoadUserData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
 		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -149,6 +153,8 @@ public class FlowsWorkflow extends ViewPart {
 
 		textCheckData = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
 		textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		//textCheckData.setEnabled(false);
+		textCheckData.setEnabled(false);
 		// textCheckData.setText("0 issues");
 		GridData gd_textIssues = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textIssues.widthHint = 150;
@@ -332,21 +338,6 @@ public class FlowsWorkflow extends ViewPart {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			String key = CSVTableView.getTableProviderKey();
-			if (key == null) {
-				System.out.println("The CSVTableView does not have a table!");
-			} else {
-				btnLoadUserData.setEnabled(false);
-				btnConcludeFile.setEnabled(true);
-
-				textLoadUserData.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
-						.getFilename());
-				textLoadUserData.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-						.getFileMD().getPath());
-				btnCheckData.setEnabled(true);
-				System.out.println("About to do setHeaderInfo()");
-			}
-			FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
 		}
 
 		@Override
@@ -361,111 +352,136 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	// ------------------- CHECK LISTENER -------------------
+	//TODO - move whatever we need into ui threads
+	//TODO - disable buttons sensibly
 	SelectionListener checkDataListener = new SelectionListener() {
-		private void doit(SelectionEvent e) {
+		private void doit(final SelectionEvent e) {
 			CSVTableView.clearIssues();
 			textCheckData.setText(" ... checking data ...");
-			LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
+			btnCheckData.setEnabled(false);
+			btnLoadUserData.setEnabled(false);
+			
+			final LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
 					CSVTableView.getTableProviderKey()).getLcaDataProperties();
-			List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
-			boolean checkForRequiredFlowableFields = false;
-			boolean checkForRequiredFlowContextFields = false;
-			boolean checkForRequiredFlowPropertyFields = false;
-
-			int countOfAssignedFields = 0;
-			for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropreties) {
-				if (lcaDataPropertyProvider == null) {
-					continue;
-				}
-				countOfAssignedFields++;
-				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-					checkForRequiredFlowableFields = true;
-				}
-				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
-					checkForRequiredFlowContextFields = true;
-				}
-				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
-					checkForRequiredFlowPropertyFields = true;
-				}
-				if (lcaDataPropertyProvider.isRequired()) {
-					requiredLCADataPropertyProvider.add(lcaDataPropertyProvider);
-				}
-			}
-
-			if (checkForRequiredFlowableFields) {
-				for (LCADataPropertyProvider requiredLCADataProperty : Flowable.getDataPropertyMap().values()) {
-					if (requiredLCADataProperty.isRequired()) {
-						boolean found = false;
-						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
-							if (gotIt.sameAs(requiredLCADataProperty)) {
-								found = true;
-								continue;
-							}
+			final List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
+			//This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
+			final Display display = Display.getDefault();
+	
+			new Thread() {
+				public void run() {
+					
+					boolean checkForRequiredFlowableFields = false;
+					boolean checkForRequiredFlowContextFields = false;
+					boolean checkForRequiredFlowPropertyFields = false;
+					
+					int countOfAssignedFields = 0;
+					for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropreties) {
+						if (lcaDataPropertyProvider == null) {
+							continue;
 						}
-						if (found == false) {
-							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-									"For each flowable, the " + requiredLCADataProperty.getPropertyName()
-											+ " is required");
+						countOfAssignedFields++;
+						if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+							checkForRequiredFlowableFields = true;
+						}
+						if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+							checkForRequiredFlowContextFields = true;
+						}
+						if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+							checkForRequiredFlowPropertyFields = true;
+						}
+						if (lcaDataPropertyProvider.isRequired()) {
+							requiredLCADataPropertyProvider.add(lcaDataPropertyProvider);
 						}
 					}
-				}
-			}
-			if (checkForRequiredFlowContextFields) {
-				for (LCADataPropertyProvider requiredLCADataProperty : FlowContext.getDataPropertyMap().values()) {
-					if (requiredLCADataProperty.isRequired()) {
-						boolean found = false;
-						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
-							if (gotIt.sameAs(requiredLCADataProperty)) {
-								found = true;
-								continue;
+		
+					if (checkForRequiredFlowableFields) {
+						for (LCADataPropertyProvider requiredLCADataProperty : Flowable.getDataPropertyMap().values()) {
+							if (requiredLCADataProperty.isRequired()) {
+								boolean found = false;
+								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+									if (gotIt.sameAs(requiredLCADataProperty)) {
+										found = true;
+										continue;
+									}
+								}
+								if (found == false) {
+									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+											"For each flowable, the " + requiredLCADataProperty.getPropertyName()
+													+ " is required");
+								}
 							}
 						}
-						if (found == false) {
-							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-									"For each flow context, the " + requiredLCADataProperty.getPropertyName()
-											+ " is required");
-						}
 					}
-				}
-			}
-			if (checkForRequiredFlowPropertyFields) {
-				for (LCADataPropertyProvider requiredLCADataProperty : FlowProperty.getDataPropertyMap().values()) {
-					if (requiredLCADataProperty.isRequired()) {
-						boolean found = false;
-						for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
-							if (gotIt.sameAs(requiredLCADataProperty)) {
-								found = true;
-								continue;
+					if (checkForRequiredFlowContextFields) {
+						for (LCADataPropertyProvider requiredLCADataProperty : FlowContext.getDataPropertyMap().values()) {
+							if (requiredLCADataProperty.isRequired()) {
+								boolean found = false;
+								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+									if (gotIt.sameAs(requiredLCADataProperty)) {
+										found = true;
+										continue;
+									}
+								}
+								if (found == false) {
+									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+											"For each flow context, the " + requiredLCADataProperty.getPropertyName()
+													+ " is required");
+								}
 							}
 						}
-						if (found == false) {
-							new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-									"For each flow property, the " + requiredLCADataProperty.getPropertyName()
-											+ " is required");
+					}
+					if (checkForRequiredFlowPropertyFields) {
+						for (LCADataPropertyProvider requiredLCADataProperty : FlowProperty.getDataPropertyMap().values()) {
+							if (requiredLCADataProperty.isRequired()) {
+								boolean found = false;
+								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
+									if (gotIt.sameAs(requiredLCADataProperty)) {
+										found = true;
+										continue;
+									}
+								}
+								if (found == false) {
+									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+											"For each flow property, the " + requiredLCADataProperty.getPropertyName()
+													+ " is required");
+								}
+							}
 						}
 					}
+		
+					final int fieldCount = countOfAssignedFields;
+					/*ui start*/
+					new Thread() {
+						public void run() {
+							display.syncExec(new Runnable() {	
+								public void run() {
+									if (fieldCount == 0) {
+										textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+										textCheckData.setText("Assign at least one column first)");
+										btnMatchFlowables.setEnabled(false);
+										btnCommit.setEnabled(false);
+									} else {
+										int issueCount = CSVTableView.checkCols();
+										// int issueCount = 0;
+										textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+						
+										textCheckData.setText(issueCount + " issues. " + fieldCount + " columns checked");
+										if (issueCount == 0) {
+											// btnMatchFlowables.setEnabled(true);
+											btnCommit.setEnabled(true);
+										} else {
+											btnMatchFlowables.setEnabled(false);
+											btnCommit.setEnabled(false);
+										}
+									}
+									btnCheckData.setEnabled(true);
+									btnLoadUserData.setEnabled(true);
+								}
+							});
+						}
+					}.start();
 				}
-			}
-
-			if (countOfAssignedFields == 0) {
-				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-				textCheckData.setText("Assign at least one column first)");
-				btnMatchFlowables.setEnabled(false);
-				btnCommit.setEnabled(false);
-			} else {
-				int issueCount = CSVTableView.checkCols();
-				// int issueCount = 0;
-				textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-
-				textCheckData.setText(issueCount + " issues. " + countOfAssignedFields + " columns checked");
-				if (issueCount == 0) {
-					// btnMatchFlowables.setEnabled(true);
-					btnCommit.setEnabled(true);
-				} else {
-					btnMatchFlowables.setEnabled(false);
-					btnCommit.setEnabled(false);
-				}
-			}
+			}.start();
 		}
 
 		@Override
