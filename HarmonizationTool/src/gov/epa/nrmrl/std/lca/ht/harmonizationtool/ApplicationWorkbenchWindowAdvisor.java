@@ -20,7 +20,9 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IServiceLocator;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Runnable {
-
+	
+	private static OpenLCA openLCAInstance = null;
+	
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
 	}
