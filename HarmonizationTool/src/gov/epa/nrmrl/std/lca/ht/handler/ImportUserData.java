@@ -18,6 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -60,6 +61,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportUserData implements IHandler {
+	
+	boolean thing = false;
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -74,79 +77,80 @@ public class ImportUserData implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportUserData";
 	private static TableProvider tableProvider;
 	private static Logger runLogger = Logger.getLogger("run");
+	
+	class RunData implements Runnable {
+		boolean thing = false;
+		String path = null;
+		File file = null;
+		FileMD fileMD = null;
+		MetaDataDialog dialog = null;
+		Date readDate = null;
+		ImportUserData importCommand;
+		
+		public RunData(ImportUserData data) {
+			importCommand = data;
+		}
+		
+		@Override
+		public void run() {
+			importCommand.finishImport(this);
+			
+		}
+	}
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		tableProvider = new TableProvider();
-
-		FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
-		String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
-		if (inputDirectory.length() > 0) {
-			fileDialog.setFilterPath(inputDirectory);
-		} else {
-			String homeDir = System.getProperty("user.home");
-			fileDialog.setFilterPath(homeDir);
+		synchronized (Util.getInitLock()) {
+			RunData data = new RunData(this);
+			FlowsWorkflow.btnLoadUserData.setEnabled(false);
+			
+			tableProvider = new TableProvider();
+	
+			FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
+			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
+			String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
+			if (inputDirectory.length() > 0) {
+				fileDialog.setFilterPath(inputDirectory);
+			} else {
+				String homeDir = System.getProperty("user.home");
+				fileDialog.setFilterPath(homeDir);
+			}
+	
+			data.path = fileDialog.open();
+			if (data.path == null) {
+				FlowsWorkflow.btnLoadUserData.setEnabled(true);
+				runLogger.info("# Cancelling CSV file read");
+				return null;
+			}
+			data.file = new File(data.path);
+			data.fileMD = new FileMD();
+			data.fileMD.setFilename(data.file.getName());
+			data.fileMD.setPath(data.path);
+			data.fileMD.setByteCount(data.file.length());
+			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
+			data.readDate = new Date();
+			data.fileMD.setReadDate(data.readDate);
+			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
+			runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(data.file.lastModified())));
+			runLogger.info("# File size: " + data.file.length());
+	
+			System.out.println("All's fine before opening dialog");
+			data.dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), data.fileMD);
+			System.out.println("meta initialized");
+			data.dialog.create();
+			System.out.println("meta created");
+			boolean thing;
+			if (thing = data.dialog.open() == MetaDataDialog.CANCEL) { // FIXME
+				System.out.println("cancel!");
+				FlowsWorkflow.btnLoadUserData.setEnabled(true);
+	
+				data.fileMD.remove();
+				return null;
+			}
+			FlowsWorkflow.textLoadUserData.setText("... loading ...");
+			FlowsWorkflow.textLoadUserData.setToolTipText("... loading ...");
+			new Thread(data).start();
 		}
-
-		String path = fileDialog.open();
-		if (path == null) {
-			runLogger.info("# Cancelling CSV file read");
-			return null;
-		}
-		File file = new File(path);
-		FileMD fileMD = new FileMD();
-		fileMD.setFilename(file.getName());
-		fileMD.setPath(path);
-		fileMD.setByteCount(file.length());
-		fileMD.setModifiedDate(new Date(file.lastModified()));
-		Date readDate = new Date();
-		fileMD.setReadDate(readDate);
-		runLogger.info("# File read at: " + Util.getLocalDateFmt(readDate));
-		runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(file.lastModified())));
-		runLogger.info("# File size: " + file.length());
-
-		System.out.println("All's fine before opening dialog");
-		MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), fileMD);
-		System.out.println("meta initialized");
-		dialog.create();
-		System.out.println("meta created");
-		boolean thing;
-		if (thing = dialog.open() == MetaDataDialog.CANCEL) { // FIXME
-			System.out.println("cancel!");
-
-			fileMD.remove();
-			return null;
-		}
-		System.out.println("thing = " + thing);
-		System.out.println("Got past opening dialog");
-		tableProvider.setFileMD(fileMD);
-		System.out.println("FileMD set in tableProvider");
-
-		tableProvider.setDataSourceProvider(dialog.getCurDataSourceProvider());
-		System.out.println("DataSource set in tableProvider");
-
-		TableKeeper.saveTableProvider(path, tableProvider);
-		System.out.println("Save tableProvider in TableKeeper");
-
-		if (path.matches(".*\\.csv")) {
-			loadUserDataFromCSVFile(file);
-		} else {
-			loadUserDataFromRDFFile(file);
-		}
-
-		Date readEndDate = new Date();
-		int secondsRead = (int) ((readEndDate.getTime() - readDate.getTime()) / 1000);
-		runLogger.info("# File read time (in seconds): " + secondsRead);
-
-		try {
-			Util.showView(CSVTableView.ID);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-		System.out.println("About to update CSVTableView");
-		CSVTableView.update(path);
-
 		return null;
 	}
 
@@ -286,9 +290,9 @@ public class ImportUserData implements IHandler {
 		// ---- END SAFE -READ- TRANSACTION ---
 
 //		if (haveOLCAData) {
-//			int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
-//			runLogger.info("  # openLCA data items converted: " + olca_convert);
-//		}
+//		int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
+//		runLogger.info("  # openLCA data items converted: " + olca_convert);
+//	}
 
 		if (existingDataSource != null) {
 			DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
@@ -613,6 +617,67 @@ public class ImportUserData implements IHandler {
 
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
+	}
+
+	public void finishImport(final RunData data) {
+
+		System.out.println("thing = " +data.thing);
+		System.out.println("Got past opening dialog");
+		tableProvider.setFileMD(data.fileMD);
+		System.out.println("FileMD set in tableProvider");
+
+		tableProvider.setDataSourceProvider(data.dialog.getCurDataSourceProvider());
+		System.out.println("DataSource set in tableProvider");
+
+		TableKeeper.saveTableProvider(data.path, tableProvider);
+		System.out.println("Save tableProvider in TableKeeper");
+
+		if (data.path.matches(".*\\.csv")) {
+			loadUserDataFromCSVFile(data.file);
+		} else {
+			loadUserDataFromRDFFile(data.file);
+		}
+
+		Date readEndDate = new Date();
+		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
+		runLogger.info("# File read time (in seconds): " + secondsRead);
+
+		//This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
+		final Display display = Display.getDefault();
+		new Thread() {
+			public void run() {
+				display.syncExec(new Runnable() {	
+					public void run() {
+						try {
+							Util.showView(CSVTableView.ID);
+						} catch (PartInitException e) {
+							e.printStackTrace();
+						}
+						System.out.println("About to update CSVTableView");
+						CSVTableView.update(data.path);		
+						FlowsWorkflow.btnLoadUserData.setEnabled(true);
+						
+						String key = CSVTableView.getTableProviderKey();
+						if (key == null) {
+							System.out.println("The CSVTableView does not have a table!");
+							FlowsWorkflow.textLoadUserData.setText("");
+							FlowsWorkflow.textLoadUserData.setToolTipText("");
+							} else {
+							FlowsWorkflow.btnConcludeFile.setEnabled(true);
+
+							FlowsWorkflow.textLoadUserData.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
+									.getFilename());
+							FlowsWorkflow.textLoadUserData.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+									.getFileMD().getPath());
+							FlowsWorkflow.btnCheckData.setEnabled(true);
+							System.out.println("About to do setHeaderInfo()");
+						}
+						FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
+					}
+				});
+			}
+		}.start();
+
 	}
 
 }
