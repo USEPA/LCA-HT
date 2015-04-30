@@ -331,6 +331,8 @@ public class MatchProperties extends ViewPart {
 	}
 
 	private TreeNode createHarmonizeCompartments() {
+		//loadMasterFlowProperties
+		// TODO Maybe call this above?
 		TreeNode masterPropertyTree = new TreeNode(null);
 
 		TreeNode physicalIndividual = new TreeNode(masterPropertyTree);

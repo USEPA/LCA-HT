@@ -112,6 +112,8 @@ public class FedLCA {
 	public static final Property flowPropertyUnitString = m_model.createProperty(NS + "flowPropertyUnitString");
 
 	public static final Property flowPropertyString = m_model.createProperty(NS + "flowPropertyString");
+	
+	public static final Property unitConversionFactor = m_model.createProperty(NS + "unitConversionFactor");
 
 	public static final Property flowPropertyPrimaryDescription = m_model.createProperty(NS
 			+ "flowPropertyPrimaryDescription");

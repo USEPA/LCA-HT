@@ -36,6 +36,12 @@
 
 
 
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitConversionFactor
+
+:unitConversionFactor rdf:type owl:AnnotationProperty .
+
+
+
 ###  http://ontology.earthster.org/eco/core#hasDataSource
 
 eco:hasDataSource rdf:type owl:AnnotationProperty .
@@ -93,6 +99,24 @@ skos:altLabel rdf:type owl:AnnotationProperty .
 
 #################################################################
 #
+#    Data properties
+#
+#################################################################
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#displaySortIndex
+
+:displaySortIndex rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  
+                  rdfs:range xsd:integer .
+
+
+
+
+
+#################################################################
+#
 #    Classes
 #
 #################################################################
@@ -118,9 +142,31 @@ skos:altLabel rdf:type owl:AnnotationProperty .
 
 
 
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#PhysicalHybrid
+
+:PhysicalHybrid rdf:type owl:Class ;
+                
+                rdfs:label "Physical hybrid"@en ;
+                
+                rdfs:subClassOf :UnitGroup .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#PhysicalIndividual
+
+:PhysicalIndividual rdf:type owl:Class ;
+                    
+                    rdfs:label "Physical individual"@en ;
+                    
+                    rdfs:subClassOf :UnitGroup .
+
+
+
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#UnitGroup
 
-:UnitGroup rdf:type owl:Class .
+:UnitGroup rdf:type owl:Class ;
+           
+           rdfs:label "Unit Group"@en .
 
 
 
@@ -720,17 +766,20 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_area
 
-:unitGroup_area rdf:type :UnitGroup ,
+:unitGroup_area rdf:type :PhysicalIndividual ,
+                         :UnitGroup ,
                          owl:NamedIndividual ;
                 
                 rdfs:label "area"^^xsd:string ;
+                
+                :displaySortIndex 3 ;
                 
                 :hasOpenLCAUUID "93a60a57-a3c8-18da-a746-0800200c9a66"^^xsd:string ;
                 
                 eco:hasDataSource :master_properties_v1.4a ;
                 
-                :hasUnit :unit_a ,
-                         :unit_ac ,
+                :hasUnit :unit_ac ,
+                         :unit_are ,
                          :unit_cm2 ,
                          :unit_ha ,
                          :unit_km2 ,
@@ -746,10 +795,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_area_time
 
-:unitGroup_area_time rdf:type :UnitGroup ,
+:unitGroup_area_time rdf:type :PhysicalHybrid ,
+                              :UnitGroup ,
                               owl:NamedIndividual ;
                      
                      rdfs:label "area*time"^^xsd:string ;
+                     
+                     :displaySortIndex 15 ;
                      
                      :hasOpenLCAUUID "93a60a57-a3c8-20da-a746-0800200c9a66"^^xsd:string ;
                      
@@ -758,12 +810,12 @@ eco:DataSource rdf:type owl:Class .
                      :hasUnit :unit_ft2_year ,
                               :unit_ha_year ,
                               :unit_km2_year ,
-                              :unit_m2_day ;
+                              :unit_m2_day ,
+                              :unit_m2_year ;
                      
                      :hasReferenceUnit :unit_m2_year ;
                      
-                     :hasUnit :unit_m2_year ,
-                              :unit_mi2_year .
+                     :hasUnit :unit_mi2_year .
 
 
 
@@ -776,16 +828,41 @@ eco:DataSource rdf:type owl:Class .
                         
                         :hasOpenLCAUUID "da299c4d-1741-4da8-9fbd-5ccfb5e1d688"^^xsd:string ;
                         
-                        eco:hasDataSource :master_properties_v1.4a .
+                        eco:hasDataSource :master_properties_v1.4a ;
+                        
+                        :hasUnit :unit_currency_AUD ,
+                                 :unit_currency_CAD ,
+                                 :unit_currency_CHF ,
+                                 :unit_currency_CZK ,
+                                 :unit_currency_DKK ,
+                                 :unit_currency_EEK ;
+                        
+                        :hasReferenceUnit :unit_currency_EUR ;
+                        
+                        :hasUnit :unit_currency_EUR ,
+                                 :unit_currency_GBP ,
+                                 :unit_currency_HUF ,
+                                 :unit_currency_ISK ,
+                                 :unit_currency_JPY ,
+                                 :unit_currency_KRW ,
+                                 :unit_currency_LTL ,
+                                 :unit_currency_LVL ,
+                                 :unit_currency_NOK ,
+                                 :unit_currency_SEK ,
+                                 :unit_currency_USD ,
+                                 :unit_currency_ZAR .
 
 
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_energy
 
-:unitGroup_energy rdf:type :UnitGroup ,
+:unitGroup_energy rdf:type :PhysicalIndividual ,
+                           :UnitGroup ,
                            owl:NamedIndividual ;
                   
                   rdfs:label "energy"^^xsd:string ;
+                  
+                  :displaySortIndex 6 ;
                   
                   :hasOpenLCAUUID "93a60a57-a3c8-11da-a746-0800200c9a66"^^xsd:string ;
                   
@@ -811,10 +888,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_energyPerArea_time
 
-:unitGroup_energyPerArea_time rdf:type :UnitGroup ,
+:unitGroup_energyPerArea_time rdf:type :PhysicalHybrid ,
+                                       :UnitGroup ,
                                        owl:NamedIndividual ;
                               
                               rdfs:label "energy/area*time"^^xsd:string ;
+                              
+                              :displaySortIndex 19 ;
                               
                               :hasOpenLCAUUID "876adcd3-29e6-44e2-acdd-11be304ae654"^^xsd:string ;
                               
@@ -828,10 +908,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_energyPerMass_time
 
-:unitGroup_energyPerMass_time rdf:type :UnitGroup ,
+:unitGroup_energyPerMass_time rdf:type :PhysicalHybrid ,
+                                       :UnitGroup ,
                                        owl:NamedIndividual ;
                               
                               rdfs:label "energy/mass*time"^^xsd:string ;
+                              
+                              :displaySortIndex 18 ;
                               
                               :hasOpenLCAUUID "258d6abd-14f2-4484-956c-c88e8f6fd8ed"^^xsd:string ;
                               
@@ -852,7 +935,11 @@ eco:DataSource rdf:type owl:Class .
                                           
                                           :hasOpenLCAUUID "9e5a91be-b3d1-4268-8e7d-e5e93f6a75d4"^^xsd:string ;
                                           
-                                          eco:hasDataSource :master_properties_v1.4a .
+                                          eco:hasDataSource :master_properties_v1.4a ;
+                                          
+                                          :hasUnit :unit_mm_m2PerYear ;
+                                          
+                                          :hasReferenceUnit :unit_mm_m2PerYear .
 
 
 
@@ -863,6 +950,8 @@ eco:DataSource rdf:type owl:Class .
                  
                  rdfs:label "items"^^xsd:string ;
                  
+                 :displaySortIndex 31 ;
+                 
                  :hasOpenLCAUUID "5beb6eed-33a9-47b8-9ede-1dfe8f679159"^^xsd:string ;
                  
                  eco:hasDataSource :master_properties_v1.4a ;
@@ -870,7 +959,9 @@ eco:DataSource rdf:type owl:Class .
                  :hasUnit :unit_DozenItems ,
                           :unit_Item ;
                  
-                 :hasReferenceUnit :unit_Item .
+                 :hasReferenceUnit :unit_Item ;
+                 
+                 :hasUnit :unit_kt .
 
 
 
@@ -880,6 +971,8 @@ eco:DataSource rdf:type owl:Class .
                                  owl:NamedIndividual ;
                         
                         rdfs:label "items*length"^^xsd:string ;
+                        
+                        :displaySortIndex 32 ;
                         
                         :hasOpenLCAUUID "5454b231-270e-45e6-89b2-7f4f3e482245"^^xsd:string ;
                         
@@ -895,10 +988,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_length
 
-:unitGroup_length rdf:type :UnitGroup ,
+:unitGroup_length rdf:type :PhysicalIndividual ,
+                           :UnitGroup ,
                            owl:NamedIndividual ;
                   
                   rdfs:label "length"^^xsd:string ;
+                  
+                  :displaySortIndex 2 ;
                   
                   :hasOpenLCAUUID "838aaa22-0117-11db-92e3-0800200c9a66"^^xsd:string ;
                   
@@ -922,36 +1018,49 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_length_area
 
-:unitGroup_length_area rdf:type :UnitGroup ,
+:unitGroup_length_area rdf:type :PhysicalHybrid ,
+                                :UnitGroup ,
                                 owl:NamedIndividual ;
                        
                        rdfs:label "length*area"^^xsd:string ;
                        
                        :hasOpenLCAUUID "36932b14-ba61-417b-a80c-eb9935d193f1"^^xsd:string ;
                        
-                       eco:hasDataSource :master_properties_v1.4a .
+                       eco:hasDataSource :master_properties_v1.4a ;
+                       
+                       :hasReferenceUnit :unit_mm_m2 ;
+                       
+                       :hasUnit :unit_mm_m2 .
 
 
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_length_areaPerTime
 
-:unitGroup_length_areaPerTime rdf:type :UnitGroup ,
+:unitGroup_length_areaPerTime rdf:type :PhysicalHybrid ,
+                                       :UnitGroup ,
                                        owl:NamedIndividual ;
                               
                               rdfs:label "length*area/time"^^xsd:string ;
                               
                               :hasOpenLCAUUID "f2275057-f8be-4db9-bb78-5dfc276967a0"^^xsd:string ;
                               
-                              eco:hasDataSource :master_properties_v1.4a .
+                              eco:hasDataSource :master_properties_v1.4a ;
+                              
+                              :hasUnit :unit_cm_m2PerDay ;
+                              
+                              :hasReferenceUnit :unit_cm_m2PerDay .
 
 
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_length_time
 
-:unitGroup_length_time rdf:type :UnitGroup ,
+:unitGroup_length_time rdf:type :PhysicalHybrid ,
+                                :UnitGroup ,
                                 owl:NamedIndividual ;
                        
                        rdfs:label "length*time"^^xsd:string ;
+                       
+                       :displaySortIndex 14 ;
                        
                        :hasOpenLCAUUID "326eb58b-e5b3-4cea-b45a-2398c25109f8"^^xsd:string ;
                        
@@ -965,10 +1074,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_mass
 
-:unitGroup_mass rdf:type :UnitGroup ,
+:unitGroup_mass rdf:type :PhysicalIndividual ,
+                         :UnitGroup ,
                          owl:NamedIndividual ;
                 
                 rdfs:label "mass"^^xsd:string ;
+                
+                :displaySortIndex 1 ;
                 
                 :hasOpenLCAUUID "93a60a57-a4c8-11da-a746-0800200c9a66"^^xsd:string ;
                 
@@ -981,7 +1093,6 @@ eco:DataSource rdf:type owl:Class .
                 
                 :hasUnit :unit_kg ,
                          :unit_kg_SWU ,
-                         :unit_kt ,
                          :unit_lb ,
                          :unit_long_ton ,
                          :unit_mg ,
@@ -997,10 +1108,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_massPerTime
 
-:unitGroup_massPerTime rdf:type :UnitGroup ,
+:unitGroup_massPerTime rdf:type :PhysicalHybrid ,
+                                :UnitGroup ,
                                 owl:NamedIndividual ;
                        
                        rdfs:label "mass/time"^^xsd:string ;
+                       
+                       :displaySortIndex 12 ;
                        
                        :hasOpenLCAUUID "c28831de-8759-43da-98bd-05617cb1722d"^^xsd:string ;
                        
@@ -1014,10 +1128,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_mass_length
 
-:unitGroup_mass_length rdf:type :UnitGroup ,
+:unitGroup_mass_length rdf:type :PhysicalHybrid ,
+                                :UnitGroup ,
                                 owl:NamedIndividual ;
                        
                        rdfs:label "mass*length"^^xsd:string ;
+                       
+                       :displaySortIndex 13 ;
                        
                        :hasOpenLCAUUID "838aaa21-0117-11db-92e3-0800200c9a66"^^xsd:string ;
                        
@@ -1037,10 +1154,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_mass_time
 
-:unitGroup_mass_time rdf:type :UnitGroup ,
+:unitGroup_mass_time rdf:type :PhysicalHybrid ,
+                              :UnitGroup ,
                               owl:NamedIndividual ;
                      
                      rdfs:label "mass*time"^^xsd:string ;
+                     
+                     :displaySortIndex 11 ;
                      
                      :hasOpenLCAUUID "59f191d6-5dd3-4553-af88-1a32accfe308"^^xsd:string ;
                      
@@ -1066,33 +1186,51 @@ eco:DataSource rdf:type owl:Class .
                                    
                                    :hasOpenLCAUUID "59f6a0a2-731f-41c3-86df-d383dc673dfe"^^xsd:string ;
                                    
-                                   eco:hasDataSource :master_properties_v1.4a .
+                                   eco:hasDataSource :master_properties_v1.4a ;
+                                   
+                                   :hasReferenceUnit :unit_cm_m3 ;
+                                   
+                                   :hasUnit :unit_cm_m3 .
 
 
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_mole_areaPerMass
 
-:unitGroup_mole_areaPerMass rdf:type :UnitGroup ,
+:unitGroup_mole_areaPerMass rdf:type :PhysicalHybrid ,
+                                     :UnitGroup ,
                                      owl:NamedIndividual ;
                             
                             rdfs:label "mole*area/mass"^^xsd:string ;
                             
+                            :displaySortIndex 20 ;
+                            
                             :hasOpenLCAUUID "3dbb60e1-edde-49f7-b28d-f34b4af727b3"^^xsd:string ;
                             
-                            eco:hasDataSource :master_properties_v1.4a .
+                            eco:hasDataSource :master_properties_v1.4a ;
+                            
+                            :hasReferenceUnit :unit_cmol_m2Perkg ;
+                            
+                            :hasUnit :unit_cmol_m2Perkg .
 
 
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_mole_area_timePerMass
 
-:unitGroup_mole_area_timePerMass rdf:type :UnitGroup ,
+:unitGroup_mole_area_timePerMass rdf:type :PhysicalHybrid ,
+                                          :UnitGroup ,
                                           owl:NamedIndividual ;
                                  
                                  rdfs:label "mole*area*time/mass"^^xsd:string ;
                                  
+                                 :displaySortIndex 21 ;
+                                 
                                  :hasOpenLCAUUID "a6941776-ee4b-40fe-9a05-e19faac45240"^^xsd:string ;
                                  
-                                 eco:hasDataSource :master_properties_v1.4a .
+                                 eco:hasDataSource :master_properties_v1.4a ;
+                                 
+                                 :hasUnit :unit_cmol_m2_yearPerkg ;
+                                 
+                                 :hasReferenceUnit :unit_cmol_m2_yearPerkg .
 
 
 
@@ -1105,6 +1243,8 @@ eco:DataSource rdf:type owl:Class .
                            
                            :hasOpenLCAUUID "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7"^^xsd:string ;
                            
+                           :displaySortIndex 33 ;
+                           
                            eco:hasDataSource :master_properties_v1.4a ;
                            
                            :hasUnit :unit_person_km ;
@@ -1115,10 +1255,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_radioactivity
 
-:unitGroup_radioactivity rdf:type :UnitGroup ,
+:unitGroup_radioactivity rdf:type :PhysicalIndividual ,
+                                  :UnitGroup ,
                                   owl:NamedIndividual ;
                          
                          rdfs:label "radioactivity"^^xsd:string ;
+                         
+                         :displaySortIndex 7 ;
                          
                          :hasOpenLCAUUID "93a60a57-a3c8-16da-a746-0800200c9a66"^^xsd:string ;
                          
@@ -1136,10 +1279,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_time
 
-:unitGroup_time rdf:type :UnitGroup ,
+:unitGroup_time rdf:type :PhysicalIndividual ,
+                         :UnitGroup ,
                          owl:NamedIndividual ;
                 
                 rdfs:label "time"^^xsd:string ;
+                
+                :displaySortIndex 5 ;
                 
                 :hasOpenLCAUUID "af638906-3ec7-4314-8de7-f76039f2dd01"^^xsd:string ;
                 
@@ -1163,6 +1309,8 @@ eco:DataSource rdf:type owl:Class .
                             
                             rdfs:label "vehicle transport"^^xsd:string ;
                             
+                            :displaySortIndex 34 ;
+                            
                             :hasOpenLCAUUID "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9"^^xsd:string ;
                             
                             eco:hasDataSource :master_properties_v1.4a ;
@@ -1175,10 +1323,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_volume
 
-:unitGroup_volume rdf:type :UnitGroup ,
+:unitGroup_volume rdf:type :PhysicalIndividual ,
+                           :UnitGroup ,
                            owl:NamedIndividual ;
                   
                   rdfs:label "volume"^^xsd:string ;
+                  
+                  :displaySortIndex 4 ;
                   
                   :hasOpenLCAUUID "93a60a57-a3c8-12da-a746-0800200c9a66"^^xsd:string ;
                   
@@ -1214,10 +1365,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_volume_length
 
-:unitGroup_volume_length rdf:type :UnitGroup ,
+:unitGroup_volume_length rdf:type :PhysicalHybrid ,
+                                  :UnitGroup ,
                                   owl:NamedIndividual ;
                          
                          rdfs:label "volume*length"^^xsd:string ;
+                         
+                         :displaySortIndex 17 ;
                          
                          :hasOpenLCAUUID "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d"^^xsd:string ;
                          
@@ -1237,10 +1391,13 @@ eco:DataSource rdf:type owl:Class .
 
 ###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unitGroup_volume_time
 
-:unitGroup_volume_time rdf:type :UnitGroup ,
+:unitGroup_volume_time rdf:type :PhysicalHybrid ,
+                                :UnitGroup ,
                                 owl:NamedIndividual ;
                        
                        rdfs:label "volume*time"^^xsd:string ;
+                       
+                       :displaySortIndex 16 ;
                        
                        :hasOpenLCAUUID "93a60a57-a3c8-23da-a746-0800200c9a66"^^xsd:string ;
                        
@@ -1261,9 +1418,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_Bq rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Bequerel, 1 event per second"^^xsd:string ;
+         :unitConversionFactor 0.001 ;
+         
+         :displaySortIndex 82 ;
          
          :hasOpenLCAUUID "ac324d87-9961-463a-81a1-099bb0f7d89b"^^xsd:string ;
+         
+         dcterms:description "Bequerel, 1 event per second"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1274,9 +1435,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_Ci rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Curie"^^xsd:string ;
+         :unitConversionFactor "3.7E7"^^xsd:double ;
+         
+         :displaySortIndex 83 ;
          
          :hasOpenLCAUUID "ef6d9358-a156-4c73-b678-320ddee7d2eb"^^xsd:string ;
+         
+         dcterms:description "Curie"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1287,9 +1452,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_DozenItems rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
+                 :unitConversionFactor 12.0 ;
+                 
+                 :displaySortIndex 128 ;
+                 
                  :hasOpenLCAUUID "3bd6c6c3-bb61-46f3-b19a-c87ac5502bb7"^^xsd:string ;
                  
-                 dcterms:description "Dozen(s) of items"^^xsd:string ;
+                 dcterms:description "Dozen(s) of items"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1300,9 +1469,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_GJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor "1.0E-6"^^xsd:double ;
+         
          :hasOpenLCAUUID "469d61f1-3bc4-4841-8adf-873825c1bc11"^^xsd:string ;
          
-         dcterms:description "Joule"^^xsd:string ;
+         :displaySortIndex 71 ;
+         
+         dcterms:description "Joule"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1313,14 +1486,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_Item rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
+           :unitConversionFactor 1.0 ;
+           
+           :displaySortIndex 127 ;
+           
            :hasOpenLCAUUID "6dabe201-aaac-4509-92f0-d00c26cb72ab"^^xsd:string ;
            
-           skos:altLabel "LU"^^xsd:string ;
-           
-           dcterms:description "Number of items"^^xsd:string ;
-           
-           skos:altLabel "pig place"^^xsd:string ,
+           skos:altLabel "LU"^^xsd:string ,
+                         "pig place"^^xsd:string ,
                          "unit"^^xsd:string ;
+           
+           dcterms:description "Number of items"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -1331,9 +1507,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_J rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
+        :unitConversionFactor 0.0041867 ;
+        
         :hasOpenLCAUUID "010f811e-3cc2-4b14-a901-337da9b3e49c"^^xsd:string ;
         
-        dcterms:description "Kilocalorie (International table)"^^xsd:string ;
+        :displaySortIndex 72 ;
+        
+        dcterms:description "Kilocalorie (International table)"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -1344,9 +1524,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_MJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 0.001055056 ;
+         
          :hasOpenLCAUUID "55244053-94ba-404e-9172-cb279d905e00"^^xsd:string ;
          
-         dcterms:description "British thermal unit (International table)"^^xsd:string ;
+         :displaySortIndex 69 ;
+         
+         dcterms:description "British thermal unit (International table)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1357,9 +1541,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_MJ_per_kg_day rdf:type :FlowUnit ,
                              owl:NamedIndividual ;
                     
+                    :unitConversionFactor 1.0 ;
+                    
+                    :displaySortIndex 123 ;
+                    
                     :hasOpenLCAUUID "94dcd768-ea3e-47da-ba1b-11fea4b5f4cc"^^xsd:string ;
                     
-                    dcterms:description "Megajoule per kilogram times day"^^xsd:string ;
+                    dcterms:description "Megajoule per kilogram times day"@en ;
                     
                     eco:hasDataSource :master_properties_v1.4a .
 
@@ -1370,9 +1558,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_MWh rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 3600.0 ;
+          
+          :displaySortIndex 76 ;
+          
           :hasOpenLCAUUID "92e3bd49-8ed5-4885-9db6-fc88c7afcfcb"^^xsd:string ;
           
-          dcterms:description "Megawatt times hour"^^xsd:string ;
+          dcterms:description "Megawatt times hour"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1383,11 +1575,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_Mg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Megagram = 1 metric tonne"^^xsd:string ;
+         :unitConversionFactor 1000.0 ;
+         
+         :displaySortIndex 8 ;
          
          skos:altLabel "Mg"^^xsd:string ;
          
          :hasOpenLCAUUID "d022bf34-1162-4579-90ab-dcca9620ce54"^^xsd:string ;
+         
+         dcterms:description "Megagram = 1 metric tonne"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1398,9 +1594,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_Rutherford rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 dcterms:description "Rutherford"^^xsd:string ;
+                 :unitConversionFactor 1000.0 ;
+                 
+                 :displaySortIndex 85 ;
                  
                  :hasOpenLCAUUID "a45722ee-fc30-4bb1-aa95-5c8fb56c6bfb"^^xsd:string ;
+                 
+                 dcterms:description "Rutherford"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1411,9 +1611,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_TCE rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 29307.6 ;
+          
+          :displaySortIndex 78 ;
+          
           :hasOpenLCAUUID "787f2ac9-7bcd-4a91-9fab-55bfe414138f"^^xsd:string ;
           
-          dcterms:description "Ton coal equivalent"^^xsd:string ;
+          dcterms:description "Ton coal equivalent"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1424,9 +1628,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_TJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 1000000.0 ;
+         
          :hasOpenLCAUUID "57c492e7-d94b-4fcc-98df-cdc4163b754c"^^xsd:string ;
          
-         dcterms:description "Terajoule"^^xsd:string ;
+         :displaySortIndex 77 ;
+         
+         dcterms:description "Terajoule"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1437,9 +1645,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_TOE rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 41868.0 ;
+          
           :hasOpenLCAUUID "425aff51-b7e5-4561-aa5a-562ec103a79e"^^xsd:string ;
           
-          dcterms:description "Ton oil equivalent"^^xsd:string ;
+          :displaySortIndex 79 ;
+          
+          dcterms:description "Ton oil equivalent"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1450,9 +1662,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_US_fl_oz rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               :unitConversionFactor "2.95735295625E-5"^^xsd:double ;
+               
                :hasOpenLCAUUID "2d64c7e0-1167-42ec-9988-c441c261a35c"^^xsd:string ;
                
-               dcterms:description "US customary fluid ounce"^^xsd:string ;
+               :displaySortIndex 61 ;
+               
+               dcterms:description "US customary fluid ounce"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -1463,24 +1679,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_Wh rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Watt times hour"^^xsd:string ;
+         :unitConversionFactor 0.0036 ;
+         
+         :displaySortIndex 80 ;
          
          :hasOpenLCAUUID "fc3604f7-aa93-4aa3-8ae9-8f822874da5f"^^xsd:string ;
          
+         dcterms:description "Watt times hour"@en ;
+         
          eco:hasDataSource :master_properties_v1.4a .
-
-
-
-###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_a
-
-:unit_a rdf:type :FlowUnit ,
-                 owl:NamedIndividual ;
-        
-        dcterms:description "Are"^^xsd:string ;
-        
-        :hasOpenLCAUUID "e114cd83-3e7f-4466-8028-761c0469f7c7"^^xsd:string ;
-        
-        eco:hasDataSource :master_properties_v1.4a .
 
 
 
@@ -1489,14 +1696,35 @@ eco:DataSource rdf:type owl:Class .
 :unit_ac rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :hasOpenLCAUUID "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345"^^xsd:string ;
+         :displaySortIndex 30 ;
          
-         dcterms:description "Acre (US survey)"^^xsd:string ;
+         :unitConversionFactor 4046.85 ;
+         
+         :hasOpenLCAUUID "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345"^^xsd:string ;
          
          skos:altLabel "acre"^^xsd:string ,
                        "acre (US)"^^xsd:string ;
          
+         dcterms:description "Acre (US survey)"@en ;
+         
          eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_are
+
+:unit_are rdf:type :FlowUnit ,
+                   owl:NamedIndividual ;
+          
+          :unitConversionFactor 100.0 ;
+          
+          :displaySortIndex 31 ;
+          
+          :hasOpenLCAUUID "e114cd83-3e7f-4466-8028-761c0469f7c7"^^xsd:string ;
+          
+          dcterms:description "Are"@en ;
+          
+          eco:hasDataSource :master_properties_v1.4a .
 
 
 
@@ -1505,9 +1733,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bbl rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 0.15 ;
+          
+          :displaySortIndex 44 ;
+          
           :hasOpenLCAUUID "91995a9e-3cb4-4fc9-a93b-8c618ff9b948"^^xsd:string ;
           
-          dcterms:description "Barrel (petroleum)"^^xsd:string ;
+          dcterms:description "Barrel (petroleum)"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1518,9 +1750,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_Imp rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 0.16 ;
+             
+             :displaySortIndex 40 ;
+             
              :hasOpenLCAUUID "9bc2cfb2-fb43-42e6-9783-6c7479c78cce"^^xsd:string ;
              
-             dcterms:description "Barrel (Imperial)"^^xsd:string ;
+             dcterms:description "Barrel (Imperial)"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -1531,9 +1767,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_beer rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 dcterms:description "Barrel (US beer)"^^xsd:string ;
+                 :unitConversionFactor 0.11 ;
+                 
+                 :displaySortIndex 41 ;
                  
                  :hasOpenLCAUUID "a681e9e5-6304-45f0-a5f4-df413eee0724"^^xsd:string ;
+                 
+                 dcterms:description "Barrel (US beer)"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1544,9 +1784,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_dry rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                :unitConversionFactor 0.11 ;
+                
                 :hasOpenLCAUUID "1c4169d1-4fee-40e3-9868-953ee15e26ae"^^xsd:string ;
                 
-                dcterms:description "Barrel (US dry)"^^xsd:string ;
+                :displaySortIndex 42 ;
+                
+                dcterms:description "Barrel (US dry)"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -1557,9 +1801,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_fl rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               :unitConversionFactor 0.11 ;
+               
+               :displaySortIndex 43 ;
+               
                :hasOpenLCAUUID "89121cea-0d98-4466-9b0f-e33e448db7ec"^^xsd:string ;
                
-               dcterms:description "Barrel (US non-beer fluid)"^^xsd:string ;
+               dcterms:description "Barrel (US non-beer fluid)"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -1570,9 +1818,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bsh_US rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 0.03 ;
+             
              :hasOpenLCAUUID "5ec65531-6bb4-4990-a687-44e9ab8f3529"^^xsd:string ;
              
-             dcterms:description "US bushel"^^xsd:string ;
+             :displaySortIndex 60 ;
+             
+             dcterms:description "US bushel"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -1585,7 +1837,11 @@ eco:DataSource rdf:type owl:Class .
           
           :hasOpenLCAUUID "01e58eb9-0aba-4c76-ba0c-03f6f3be1353"^^xsd:string ;
           
-          dcterms:description "Gigajoule"^^xsd:string ;
+          :unitConversionFactor 1000.0 ;
+          
+          :displaySortIndex 70 ;
+          
+          dcterms:description "Gigajoule"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1596,9 +1852,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_bushel_Imp rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
+                 :unitConversionFactor 0.03 ;
+                 
+                 :displaySortIndex 52 ;
+                 
                  :hasOpenLCAUUID "90888d8d-3d57-497f-a3fa-12aefd2bc774"^^xsd:string ;
                  
-                 dcterms:description "Imperial bushel"^^xsd:string ;
+                 dcterms:description "Imperial bushel"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1609,9 +1869,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_carat rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            dcterms:description "Carat (metric)"^^xsd:string ;
+            :unitConversionFactor "2.0E-4"^^xsd:double ;
+            
+            :displaySortIndex 4 ;
             
             :hasOpenLCAUUID "bdd34bd7-7d0b-4be4-9aca-b231f4067388"^^xsd:string ;
+            
+            dcterms:description "Carat (metric)"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -1622,9 +1886,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_cm rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Centimeter"^^xsd:string ;
+         :unitConversionFactor 0.01 ;
+         
+         :displaySortIndex 19 ;
          
          :hasOpenLCAUUID "d018183e-ea8c-4a41-a303-627c9b9b173d"^^xsd:string ;
+         
+         dcterms:description "Centimeter"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1635,11 +1903,381 @@ eco:DataSource rdf:type owl:Class .
 :unit_cm2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor "1.0E-4"^^xsd:double ;
+          
+          :displaySortIndex 35 ;
+          
           :hasOpenLCAUUID "588613d5-6c8c-4ab6-8c69-ec5e20ef7881"^^xsd:string ;
           
-          dcterms:description "Square centimetre"^^xsd:string ;
+          dcterms:description "Square centimetre"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_cm_m2PerDay
+
+:unit_cm_m2PerDay rdf:type :FlowUnit ,
+                           owl:NamedIndividual ;
+                  
+                  :displaySortIndex 160 ;
+                  
+                  :hasOpenLCAUUID "aa14a795-2239-496a-81b0-ad7cb8bbe0d2"^^xsd:string ;
+                  
+                  dcterms:description "Centimetre times square metre per day"@en ;
+                  
+                  eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_cm_m3
+
+:unit_cm_m3 rdf:type :FlowUnit ,
+                     owl:NamedIndividual ;
+            
+            :displaySortIndex 157 ;
+            
+            :hasOpenLCAUUID "2f1b55fb-a432-447a-a0f5-9b02bf649724"^^xsd:string ;
+            
+            dcterms:description "Centimeter times cubic meter"@en ;
+            
+            eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_cmol_m2Perkg
+
+:unit_cmol_m2Perkg rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :displaySortIndex 158 ;
+                   
+                   :hasOpenLCAUUID "691ae73c-3fc1-4157-85d0-2659bdc2380a"^^xsd:string ;
+                   
+                   dcterms:description "Centimole times square metre per kilogram"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_cmol_m2_yearPerkg
+
+:unit_cmol_m2_yearPerkg rdf:type :FlowUnit ,
+                                 owl:NamedIndividual ;
+                        
+                        :displaySortIndex 156 ;
+                        
+                        :hasOpenLCAUUID "2e16ca4a-9f65-472f-b4cb-274050aaf328"^^xsd:string ;
+                        
+                        dcterms:description "Centimole times square metre times year per kilogram"@en ;
+                        
+                        eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_AUD
+
+:unit_currency_AUD rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.63 ;
+                   
+                   :displaySortIndex 138 ;
+                   
+                   :hasOpenLCAUUID "14ed0060-9198-48c1-b458-7fa4075c9811"^^xsd:string ;
+                   
+                   dcterms:description "Australian dollar"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_CAD
+
+:unit_currency_CAD rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.73 ;
+                   
+                   :displaySortIndex 139 ;
+                   
+                   :hasOpenLCAUUID "18b04307-98b7-4d9e-82ee-f11d1b9f0d28"^^xsd:string ;
+                   
+                   dcterms:description "Canadian dollar"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_CHF
+
+:unit_currency_CHF rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.64 ;
+                   
+                   :displaySortIndex 154 ;
+                   
+                   :hasOpenLCAUUID "8632c804-eed7-4a57-91e6-1798289c49e3"^^xsd:string ;
+                   
+                   dcterms:description "Swiss franc"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_CZK
+
+:unit_currency_CZK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.02 ;
+                   
+                   :displaySortIndex 140 ;
+                   
+                   :hasOpenLCAUUID "fd100082-4cdf-4932-9282-6bb7d7091bd4"^^xsd:string ;
+                   
+                   dcterms:description "Czech corun"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_DKK
+
+:unit_currency_DKK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.13 ;
+                   
+                   :displaySortIndex 141 ;
+                   
+                   :hasOpenLCAUUID "2f3cc326-da25-4086-b06d-3a7ef914aef6"^^xsd:string ;
+                   
+                   dcterms:description "Danish krone"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_EEK
+
+:unit_currency_EEK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.06 ;
+                   
+                   :hasOpenLCAUUID "0866bd06-77b3-41a2-8157-6d96ffb5666b"^^xsd:string ;
+                   
+                   :displaySortIndex 142 ;
+                   
+                   dcterms:description "Estonian kroon"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_EUR
+
+:unit_currency_EUR rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 1 ;
+                   
+                   :displaySortIndex 143 ;
+                   
+                   :hasOpenLCAUUID "a55b7fe7-fa09-47ef-be62-e07b8e6f4351"^^xsd:string ;
+                   
+                   dcterms:description "Euro"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_GBP
+
+:unit_currency_GBP rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 1.65 ;
+                   
+                   :displaySortIndex 150 ;
+                   
+                   :hasOpenLCAUUID "ae63f1fd-3679-443a-ad06-8d03e867351e"^^xsd:string ;
+                   
+                   dcterms:description "Pound sterling"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_HUF
+
+:unit_currency_HUF rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.0038 ;
+                   
+                   :displaySortIndex 144 ;
+                   
+                   :hasOpenLCAUUID "fb4258af-95b2-4359-af03-9687178df527"^^xsd:string ;
+                   
+                   dcterms:description "Hungarian forin"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_ISK
+
+:unit_currency_ISK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.01 ;
+                   
+                   :displaySortIndex 145 ;
+                   
+                   :hasOpenLCAUUID "28bb8ff6-79d1-4f97-b7c4-7fa3dd05bec8"^^xsd:string ;
+                   
+                   dcterms:description "Iceland krona"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_JPY
+
+:unit_currency_JPY rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.01 ;
+                   
+                   :displaySortIndex 146 ;
+                   
+                   :hasOpenLCAUUID "6c277db7-2784-4296-83bf-15c04a9d59b2"^^xsd:string ;
+                   
+                   dcterms:description "Japanese yen"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_KRW
+
+:unit_currency_KRW rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.00095 ;
+                   
+                   :displaySortIndex 152 ;
+                   
+                   :hasOpenLCAUUID "d246fd48-c363-4f0e-ab01-641325dd89eb"^^xsd:string ;
+                   
+                   dcterms:description "South Korean wo"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_LTL
+
+:unit_currency_LTL rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.27 ;
+                   
+                   :displaySortIndex 148 ;
+                   
+                   :hasOpenLCAUUID "dce13106-087c-4fea-bfaa-def214e3cecb"^^xsd:string ;
+                   
+                   dcterms:description "Lithuanian litas"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_LVL
+
+:unit_currency_LVL rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :hasOpenLCAUUID "007f0ce1-4a0b-4bb2-8f7c-1b2a0e6ef6b2"^^xsd:string ;
+                   
+                   :unitConversionFactor 1.78 ;
+                   
+                   :displaySortIndex 147 ;
+                   
+                   dcterms:description "Latvian lats"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_NOK
+
+:unit_currency_NOK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.12 ;
+                   
+                   :displaySortIndex 149 ;
+                   
+                   :hasOpenLCAUUID "97ee3997-137d-4d96-80bf-c4f106c743c4"^^xsd:string ;
+                   
+                   dcterms:description "Norwegian krone"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_SEK
+
+:unit_currency_SEK rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.12 ;
+                   
+                   :displaySortIndex 153 ;
+                   
+                   :hasOpenLCAUUID "594fb96f-0d06-4053-9263-826fcd4d0046"^^xsd:string ;
+                   
+                   dcterms:description "Swedish krona"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_USD
+
+:unit_currency_USD rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 1.1 ;
+                   
+                   :displaySortIndex 155 ;
+                   
+                   :hasOpenLCAUUID "3f838c0d-bf6c-49f1-a465-d256ab0d13eb"^^xsd:string ;
+                   
+                   dcterms:description "US dollar"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_currency_ZAR
+
+:unit_currency_ZAR rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :unitConversionFactor 0.15 ;
+                   
+                   :displaySortIndex 151 ;
+                   
+                   :hasOpenLCAUUID "71326000-165d-41fb-aea9-1bfbd9d7fc6c"^^xsd:string ;
+                   
+                   dcterms:description "South African rand"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
 
 
 
@@ -1648,9 +2286,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_day rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 1.0 ;
+          
           :hasOpenLCAUUID "11074cfd-08a4-449b-adad-18ce24a1b275"^^xsd:string ;
           
-          dcterms:description "Day"^^xsd:string ;
+          :displaySortIndex 63 ;
+          
+          dcterms:description "Day"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1661,9 +2303,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_fl_oz_Imp rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                :unitConversionFactor "2.84130625E-5"^^xsd:double ;
+                
+                :displaySortIndex 47 ;
+                
                 :hasOpenLCAUUID "806c64aa-8609-4ff6-a033-6714a3348f24"^^xsd:string ;
                 
-                dcterms:description "Fluid ounce (Imperial)"^^xsd:string ;
+                dcterms:description "Fluid ounce (Imperial)"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -1674,9 +2320,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Foot (international)"^^xsd:string ;
+         :unitConversionFactor 0.3048 ;
+         
+         :displaySortIndex 20 ;
          
          :hasOpenLCAUUID "f7905d3f-904d-4fdb-829e-54a72fb4c98e"^^xsd:string ;
+         
+         dcterms:description "Foot (international)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1687,11 +2337,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          dcterms:description "British square feet"^^xsd:string ;
+          :unitConversionFactor 0.09 ;
+          
+          :displaySortIndex 32 ;
           
           :hasOpenLCAUUID "c66d26f1-7946-4027-85f0-ac79222a59f1"^^xsd:string ;
           
           skos:altLabel "ft²"^^xsd:string ;
+          
+          dcterms:description "British square feet"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1702,13 +2356,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               dcterms:description "British square feet times year"^^xsd:string ;
+               :unitConversionFactor 0.09 ;
+               
+               :displaySortIndex 105 ;
                
                :hasOpenLCAUUID "efbbab8b-eb92-4e39-bd5f-99951ffda6c3"^^xsd:string ;
                
                skos:altLabel "ft2a"^^xsd:string ,
                              "ft²*a"^^xsd:string ,
                              "ft²a"^^xsd:string ;
+               
+               dcterms:description "British square feet times year"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -1719,9 +2377,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft3 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 0.02 ;
+          
           :hasOpenLCAUUID "07973a41-56b3-4e1b-a208-fd75a09fbd4b"^^xsd:string ;
           
-          dcterms:description "Cubic feet"^^xsd:string ;
+          :displaySortIndex 45 ;
+          
+          dcterms:description "Cubic feet"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1732,9 +2394,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_g rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        dcterms:description "Gram"^^xsd:string ;
+        :unitConversionFactor 0.001 ;
+        
+        :displaySortIndex 5 ;
         
         :hasOpenLCAUUID "e1317ffc-7f83-4a85-bc65-4fb229a25cf8"^^xsd:string ;
+        
+        dcterms:description "Gram"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -1745,9 +2411,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_g_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 0.001 ;
+             
              :hasOpenLCAUUID "2fdc0039-6c5e-489a-af77-b225684fa337"^^xsd:string ;
              
-             dcterms:description "Gram times year"^^xsd:string ;
+             :displaySortIndex 88 ;
+             
+             dcterms:description "Gram times year"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -1758,9 +2428,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_Imp rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
+              :unitConversionFactor 0.00454609 ;
+              
+              :displaySortIndex 48 ;
+              
               :hasOpenLCAUUID "8aa31dda-e324-469c-a29d-56476584f5ca"^^xsd:string ;
               
-              dcterms:description "Gallon (Imperial); used in UK, United Arab Emirates for fuels"^^xsd:string ;
+              dcterms:description "Gallon (Imperial); used in UK, United Arab Emirates for fuels"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -1771,9 +2445,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_dry rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 dcterms:description "Gallon (US dry)"^^xsd:string ;
+                 :unitConversionFactor 0.00440488377086 ;
+                 
+                 :displaySortIndex 49 ;
                  
                  :hasOpenLCAUUID "c530708d-be50-4207-b536-23d0857210bf"^^xsd:string ;
+                 
+                 dcterms:description "Gallon (US dry)"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1784,9 +2462,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_fl rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                :unitConversionFactor 0.003785411784 ;
+                
                 :hasOpenLCAUUID "431df202-da83-4baa-b576-5d17f59f0c8a"^^xsd:string ;
                 
-                dcterms:description "Gallon (US fluid); used in US e.g. for fuel"^^xsd:string ;
+                :displaySortIndex 50 ;
+                
+                dcterms:description "Gallon (US fluid); used in US e.g. for fuel"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -1797,9 +2479,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_liq rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
+                 :unitConversionFactor 0.003785412 ;
+                 
+                 :displaySortIndex 51 ;
+                 
                  :hasOpenLCAUUID "62eb6f51-0574-4489-ae1a-1bd806f6c2ac"^^xsd:string ;
                  
-                 dcterms:description "Gallon (US liquid)"^^xsd:string ;
+                 dcterms:description "Gallon (US liquid)"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -1810,9 +2496,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ha rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Hectare"^^xsd:string ;
+         :unitConversionFactor 10000.0 ;
+         
+         :displaySortIndex 34 ;
          
          :hasOpenLCAUUID "debee4d9-bc47-4e35-8624-4957ecb75386"^^xsd:string ;
+         
+         dcterms:description "Hectare"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1823,9 +2513,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ha_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
+              :unitConversionFactor 10000.0 ;
+              
+              :displaySortIndex 107 ;
+              
               :hasOpenLCAUUID "4866ec7b-6218-4783-87b4-cbd107280a85"^^xsd:string ;
               
-              dcterms:description "Hectare times year"^^xsd:string ;
+              dcterms:description "Hectare times year"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -1836,9 +2530,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_hour rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
+           :unitConversionFactor 0.04 ;
+           
            :hasOpenLCAUUID "227a54d9-44e7-468c-b8bb-f2dd1ae68c7a"^^xsd:string ;
            
-           dcterms:description "Hour"^^xsd:string ;
+           :displaySortIndex 64 ;
+           
+           dcterms:description "Hour"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -1849,9 +2547,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_in rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 0.02 ;
+         
          :hasOpenLCAUUID "030e99e1-2237-483c-8447-8b3a256d8b0d"^^xsd:string ;
          
-         dcterms:description "Inch"^^xsd:string ;
+         :displaySortIndex 21 ;
+         
+         dcterms:description "Inch"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1862,9 +2564,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_km rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               :unitConversionFactor 1.0 ;
+               
+               :displaySortIndex 130 ;
+               
                :hasOpenLCAUUID "2abb86b6-e71b-4de5-a766-a20e80e59b6d"^^xsd:string ;
                
-               dcterms:description "Items times kilometre"^^xsd:string ;
+               dcterms:description "Items times kilometre"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -1875,9 +2581,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_mi rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               dcterms:description "Items times international mile"^^xsd:string ;
+               :unitConversionFactor 1.6 ;
+               
+               :displaySortIndex 131 ;
                
                :hasOpenLCAUUID "ce39138f-55f8-47bc-b55a-66027fc836d9"^^xsd:string ;
+               
+               dcterms:description "Items times international mile"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -1888,9 +2598,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_nautical_mi rdf:type :FlowUnit ,
                                  owl:NamedIndividual ;
                         
+                        :unitConversionFactor 1.85 ;
+                        
+                        :displaySortIndex 132 ;
+                        
                         :hasOpenLCAUUID "9bf0166c-fa76-47d0-95af-054ea9125f2c"^^xsd:string ;
                         
-                        dcterms:description "Items times nautical mile"^^xsd:string ;
+                        dcterms:description "Items times nautical mile"@en ;
                         
                         eco:hasDataSource :master_properties_v1.4a .
 
@@ -1901,9 +2615,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kBq rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          dcterms:description "Kilo-Bequerel, 1000 events per second"^^xsd:string ;
+          :unitConversionFactor 1.0 ;
+          
+          :displaySortIndex 84 ;
           
           :hasOpenLCAUUID "e9773595-284e-46dd-9671-5fc9ff406833"^^xsd:string ;
+          
+          dcterms:description "Kilo-Bequerel, 1000 events per second"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1914,9 +2632,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 3.6 ;
+         
+         :displaySortIndex 74 ;
+         
          :hasOpenLCAUUID "86ad2244-1f0e-4912-af53-7865283103e4"^^xsd:string ;
          
-         dcterms:description "Kilowatt times hour"^^xsd:string ;
+         dcterms:description "Kilowatt times hour"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1927,9 +2649,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kWh rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 1.0 ;
+          
           :hasOpenLCAUUID "52765a6c-3896-43c2-b2f4-c679acf13efe"^^xsd:string ;
           
-          dcterms:description "Megajoule"^^xsd:string ;
+          :displaySortIndex 75 ;
+          
+          dcterms:description "Megajoule"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1940,13 +2666,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_kWh_per_m2_day rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
-                     dcterms:description "Kilowatthour per square meter times day"^^xsd:string ;
+                     :unitConversionFactor 1.0 ;
+                     
+                     :displaySortIndex 125 ;
                      
                      :hasOpenLCAUUID "aff60d84-007c-4f30-bfda-3853760f6954"^^xsd:string ;
                      
                      skos:altLabel "kWh/m2*d"^^xsd:string ,
                                    "kWh/m2d"^^xsd:string ,
                                    "kWh/m²d"^^xsd:string ;
+                     
+                     dcterms:description "Kilowatthour per square meter times day"@en ;
                      
                      eco:hasDataSource :master_properties_v1.4a .
 
@@ -1957,9 +2687,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kcal rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           dcterms:description "Kilojoule"^^xsd:string ;
+           :unitConversionFactor 0.001 ;
+           
+           :displaySortIndex 73 ;
            
            :hasOpenLCAUUID "f4119718-2d50-47fe-9154-cab6fd2d30eb"^^xsd:string ;
+           
+           dcterms:description "Kilojoule"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -1970,9 +2704,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :displaySortIndex 1 ;
+         
+         :unitConversionFactor 1.0 ;
+         
          :hasOpenLCAUUID "20aadc24-a391-41cf-b340-3e4529f44bde"^^xsd:string ;
          
-         dcterms:description "Kilogram"^^xsd:string ;
+         dcterms:description "Kilogram"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1983,9 +2721,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_SWU rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 1.0 ;
+             
+             :displaySortIndex 6 ;
+             
              :hasOpenLCAUUID "95dd50e9-c184-4412-9afc-9764b1ffcf8f"^^xsd:string ;
              
-             dcterms:description "Kilogram SWU"^^xsd:string ;
+             dcterms:description "Kilogram SWU"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -1996,9 +2738,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             dcterms:description "Kilogram times day (1 year = 365 days)"^^xsd:string ;
+             :unitConversionFactor 0.002739726 ;
+             
+             :displaySortIndex 89 ;
              
              :hasOpenLCAUUID "ab01fe47-d2c0-4308-adb1-e32df38d5a50"^^xsd:string ;
+             
+             dcterms:description "Kilogram times day (1 year = 365 days)"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2009,11 +2755,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_km rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            dcterms:description "Kilogram-kilometer"^^xsd:string ;
+            :unitConversionFactor 0.001 ;
+            
+            :displaySortIndex 98 ;
             
             :hasOpenLCAUUID "a40229e6-7275-42e3-a304-23d590044770"^^xsd:string ;
             
             skos:altLabel "kgkm"^^xsd:string ;
+            
+            dcterms:description "Kilogram-kilometer"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -2024,9 +2774,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_per_year rdf:type :FlowUnit ,
                            owl:NamedIndividual ;
                   
+                  :unitConversionFactor 1.0 ;
+                  
+                  :displaySortIndex 93 ;
+                  
                   :hasOpenLCAUUID "94b84332-8f2d-4592-b2a0-e19da33a69e9"^^xsd:string ;
                   
-                  dcterms:description "Kilogram per year"^^xsd:string ;
+                  dcterms:description "Kilogram per year"@en ;
                   
                   eco:hasDataSource :master_properties_v1.4a .
 
@@ -2037,9 +2791,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              dcterms:description "Kilogram times year"^^xsd:string ;
+              :unitConversionFactor 1.0 ;
+              
+              :displaySortIndex 87 ;
               
               :hasOpenLCAUUID "b2ad404c-3e4f-4a7a-a604-46fb36654823"^^xsd:string ;
+              
+              dcterms:description "Kilogram times year"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -2050,9 +2808,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_km rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 1000.0 ;
+         
+         :displaySortIndex 23 ;
+         
          :hasOpenLCAUUID "715ca68e-0ac5-4c4b-b557-fdc36623be88"^^xsd:string ;
          
-         dcterms:description "Kilometer"^^xsd:string ;
+         dcterms:description "Kilometer"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2063,11 +2825,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_km2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          dcterms:description "Square kilometer"^^xsd:string ;
+          :unitConversionFactor 1000000.0 ;
+          
+          :displaySortIndex 36 ;
           
           :hasOpenLCAUUID "b9a011a0-c9bf-459b-b105-2623d1b61ddf"^^xsd:string ;
           
           skos:altLabel "km²"^^xsd:string ;
+          
+          dcterms:description "Square kilometer"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2078,13 +2844,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_km2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               dcterms:description "Square kilometer times year"^^xsd:string ;
+               :unitConversionFactor 1000000.0 ;
+               
+               :displaySortIndex 108 ;
                
                :hasOpenLCAUUID "c8166ae2-b592-4eb9-b365-e384c8b79f3c"^^xsd:string ;
                
                skos:altLabel "km2a"^^xsd:string ,
                              "km²*a"^^xsd:string ,
                              "km²a"^^xsd:string ;
+               
+               dcterms:description "Square kilometer times year"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2095,9 +2865,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_kt rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Carat (metric)"^^xsd:string ;
+         :unitConversionFactor "0.041666667"^^xsd:double ;
+         
+         :displaySortIndex 3 ;
          
          :hasOpenLCAUUID "ae5cced9-f9f1-4719-bd37-837b36013d96"^^xsd:string ;
+         
+         dcterms:description "Karat (metric)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2108,9 +2882,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        dcterms:description "Liter"^^xsd:string ;
+        :unitConversionFactor 0.001 ;
+        
+        :displaySortIndex 53 ;
         
         :hasOpenLCAUUID "b80a512e-e402-4363-8ad0-7d02dcf4a459"^^xsd:string ;
+        
+        dcterms:description "Liter"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -2121,9 +2899,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_day rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
+            :displaySortIndex 113 ;
+            
+            :unitConversionFactor "2.739726E-6"^^xsd:double ;
+            
             :hasOpenLCAUUID "9942703a-5962-4823-8ea3-7af06af9a21e"^^xsd:string ;
             
-            dcterms:description "Liter times day"^^xsd:string ;
+            dcterms:description "Liter times day"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -2134,9 +2916,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_km rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           dcterms:description "Litre times kilometre"^^xsd:string ;
+           :unitConversionFactor 0.001 ;
+           
+           :displaySortIndex 120 ;
            
            :hasOpenLCAUUID "a0805221-ed1e-4177-9e2a-4b72ce2beb06"^^xsd:string ;
+           
+           dcterms:description "Litre times kilometre"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -2147,9 +2933,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_mi rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
+           :unitConversionFactor 0.001609344 ;
+           
            :hasOpenLCAUUID "112e9d4a-262d-4dcb-8003-c19204faedfb"^^xsd:string ;
            
-           dcterms:description "Litre times international mile"^^xsd:string ;
+           :displaySortIndex 119 ;
+           
+           dcterms:description "Litre times international mile"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -2160,9 +2950,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_nautical_mi rdf:type :FlowUnit ,
                              owl:NamedIndividual ;
                     
+                    :unitConversionFactor 0.001852 ;
+                    
                     :hasOpenLCAUUID "0c62f887-da22-4b0a-999b-145c4b2ffe1e"^^xsd:string ;
                     
-                    dcterms:description "Litre times nautical mile"^^xsd:string ;
+                    :displaySortIndex 121 ;
+                    
+                    dcterms:description "Litre times nautical mile"@en ;
                     
                     eco:hasDataSource :master_properties_v1.4a .
 
@@ -2173,9 +2967,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 0.001 ;
+             
+             :displaySortIndex 114 ;
+             
              :hasOpenLCAUUID "8c1fafa2-2b2e-4fef-9581-5de34ae87350"^^xsd:string ;
              
-             dcterms:description "Liter times year"^^xsd:string ;
+             dcterms:description "Liter times year"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2186,9 +2984,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_lb rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 0.45 ;
+         
          :hasOpenLCAUUID "0300ec69-ce1a-45f0-bcf0-7b33845dc53e"^^xsd:string ;
          
-         dcterms:description "British pound (avoirdupois)"^^xsd:string ;
+         :displaySortIndex 2 ;
+         
+         dcterms:description "British pound (avoirdupois)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2201,7 +3003,11 @@ eco:DataSource rdf:type owl:Class .
             
             :hasOpenLCAUUID "5458351a-f6f7-4e0b-a449-823c9b6374db"^^xsd:string ;
             
-            dcterms:description "British pound (avoirdupois) times international mile"^^xsd:string ;
+            :unitConversionFactor "7.29986E-4"^^xsd:double ;
+            
+            :displaySortIndex 96 ;
+            
+            dcterms:description "British pound (avoirdupois) times international mile"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -2212,9 +3018,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_lb_nautical_mi rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
-                     dcterms:description "British pound (avoirdupois) times nautical mile"^^xsd:string ;
+                     :unitConversionFactor "8.40053E-4"^^xsd:double ;
+                     
+                     :displaySortIndex 97 ;
                      
                      :hasOpenLCAUUID "d24270f0-c1f2-49ec-a6bf-e86a74177070"^^xsd:string ;
+                     
+                     dcterms:description "British pound (avoirdupois) times nautical mile"@en ;
                      
                      eco:hasDataSource :master_properties_v1.4a .
 
@@ -2225,9 +3035,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_long_ton rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               dcterms:description "Long ton"^^xsd:string ;
+               :unitConversionFactor 1016.04 ;
+               
+               :displaySortIndex 7 ;
                
                :hasOpenLCAUUID "e5ccc940-eb40-41f9-847e-5ee691ba8c2f"^^xsd:string ;
+               
+               dcterms:description "Long ton"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2238,9 +3052,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_m rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
+        :unitConversionFactor 1.0 ;
+        
+        :displaySortIndex 18 ;
+        
         :hasOpenLCAUUID "3d314eab-ef11-4ff3-a35e-9bc5cd858694"^^xsd:string ;
         
-        dcterms:description "Meter"^^xsd:string ;
+        dcterms:description "Meter"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -2251,11 +3069,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2 rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 1.0 ;
+         
+         :displaySortIndex 29 ;
+         
          :hasOpenLCAUUID "3ce61faa-5716-41c1-aef6-b5920054acc9"^^xsd:string ;
          
-         dcterms:description "Square meter"^^xsd:string ;
-         
          skos:altLabel "m²"^^xsd:string ;
+         
+         dcterms:description "Square meter"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2266,9 +3088,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             :unitConversionFactor 0.002739726 ;
+             
              :hasOpenLCAUUID "00d8370e-2bf1-4f3b-81bb-f8f147e84819"^^xsd:string ;
              
-             dcterms:description "Square metre times day"^^xsd:string ;
+             :displaySortIndex 109 ;
+             
+             dcterms:description "Square metre times day"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2279,13 +3105,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              dcterms:description "Square meter times year"^^xsd:string ;
+              :unitConversionFactor 1.0 ;
+              
+              :displaySortIndex 104 ;
               
               :hasOpenLCAUUID "c7266b67-4ea2-457f-b391-9b94e26e195a"^^xsd:string ;
               
               skos:altLabel "m2a"^^xsd:string ,
                             "m²*a"^^xsd:string ,
                             "m²a"^^xsd:string ;
+              
+              dcterms:description "Square meter times year"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -2296,11 +3126,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3 rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 1.0 ;
+         
          :hasOpenLCAUUID "1c3a9695-398d-4b1f-b07e-a8715b610f70"^^xsd:string ;
          
-         dcterms:description "Cubic meter"^^xsd:string ;
+         :displaySortIndex 46 ;
          
          skos:altLabel "m³"^^xsd:string ;
+         
+         dcterms:description "Cubic meter"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2311,12 +3145,16 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             dcterms:description "Cubic meter times day"^^xsd:string ;
+             :unitConversionFactor 0.002739726 ;
+             
+             :displaySortIndex 112 ;
              
              :hasOpenLCAUUID "f3a1ae74-9750-4199-acdc-2e7e0546e0a5"^^xsd:string ;
              
              skos:altLabel "m3d"^^xsd:string ,
                            "m³*d"^^xsd:string ;
+             
+             dcterms:description "Cubic meter times day"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2327,9 +3165,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_km rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
+            :unitConversionFactor 1.0 ;
+            
+            :displaySortIndex 116 ;
+            
             :hasOpenLCAUUID "5042a5e9-b8fd-40ca-b13e-cb9f1ce0357a"^^xsd:string ;
             
-            dcterms:description "Cubic metre times kilometre"^^xsd:string ;
+            dcterms:description "Cubic metre times kilometre"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -2340,9 +3182,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_mi rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            dcterms:description "Cubic metre times international mile"^^xsd:string ;
+            :unitConversionFactor 1.6 ;
+            
+            :displaySortIndex 117 ;
             
             :hasOpenLCAUUID "de900fea-2536-4fe5-a92d-00ac9a28654b"^^xsd:string ;
+            
+            dcterms:description "Cubic metre times international mile"@en ;
             
             eco:hasDataSource :master_properties_v1.4a .
 
@@ -2353,9 +3199,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_nautical_mi rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
-                     dcterms:description "Cubic metre times nautical mile"^^xsd:string ;
+                     :unitConversionFactor 1.85 ;
+                     
+                     :displaySortIndex 118 ;
                      
                      :hasOpenLCAUUID "fad23f5c-f841-4369-ba17-2dd297b5fadf"^^xsd:string ;
+                     
+                     dcterms:description "Cubic metre times nautical mile"@en ;
                      
                      eco:hasDataSource :master_properties_v1.4a .
 
@@ -2366,12 +3216,16 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              dcterms:description "Cubic meter times year"^^xsd:string ;
+              :unitConversionFactor 1.0 ;
+              
+              :displaySortIndex 111 ;
               
               :hasOpenLCAUUID "ee5f2241-18af-4444-b457-b275660e5a20"^^xsd:string ;
               
               skos:altLabel "m3a"^^xsd:string ,
                             "m³*a"^^xsd:string ;
+              
+              dcterms:description "Cubic meter times year"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -2382,11 +3236,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_m_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             dcterms:description "Meter times year"^^xsd:string ;
+             :unitConversionFactor 1.0 ;
+             
+             :displaySortIndex 102 ;
              
              :hasOpenLCAUUID "f7fe0af2-e764-4984-bb9f-2cbff6cd2f18"^^xsd:string ;
              
              skos:altLabel "ma"^^xsd:string ;
+             
+             dcterms:description "Meter times year"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2397,9 +3255,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_mg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Milligram"^^xsd:string ;
+         :unitConversionFactor "1.0E-6"^^xsd:double ;
+         
+         :displaySortIndex 10 ;
          
          :hasOpenLCAUUID "b872a063-0500-42b7-9e5d-441642d84417"^^xsd:string ;
+         
+         dcterms:description "Milligram"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2410,9 +3272,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_mi rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor 1609.34 ;
+         
+         :displaySortIndex 22 ;
+         
          :hasOpenLCAUUID "4a51d52b-f94f-4168-a38c-c612f14b8a2d"^^xsd:string ;
          
-         dcterms:description "International mile"^^xsd:string ;
+         dcterms:description "International mile"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2425,9 +3291,13 @@ eco:DataSource rdf:type owl:Class .
           
           :hasOpenLCAUUID "20ce5f57-69b1-438b-a8e8-23089854d058"^^xsd:string ;
           
-          dcterms:description "British square mile"^^xsd:string ;
+          :unitConversionFactor 2589988.11 ;
+          
+          :displaySortIndex 33 ;
           
           skos:altLabel "mi²"^^xsd:string ;
+          
+          dcterms:description "British square mile"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2438,13 +3308,17 @@ eco:DataSource rdf:type owl:Class .
 :unit_mi2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               :displaySortIndex 106 ;
+               
                :hasOpenLCAUUID "1c43f336-c84b-4f42-bbf7-b1b6f89e121a"^^xsd:string ;
                
-               dcterms:description "British square mile times year"^^xsd:string ;
+               :unitConversionFactor 2589988.1 ;
                
                skos:altLabel "mi2a"^^xsd:string ,
                              "mi²*a"^^xsd:string ,
                              "mi²a"^^xsd:string ;
+               
+               dcterms:description "British square mile times year"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2455,9 +3329,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_micro_l rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              dcterms:description "Microlitre"^^xsd:string ;
+              :unitConversionFactor "1.0E-9"^^xsd:double ;
+              
+              :displaySortIndex 54 ;
               
               :hasOpenLCAUUID "df6987d7-afcc-4c92-ae2c-3ce3bc6f5578"^^xsd:string ;
+              
+              dcterms:description "Microlitre"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -2468,9 +3346,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_min rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor "6.94444444E-4"^^xsd:double ;
+          
+          :displaySortIndex 65 ;
+          
           :hasOpenLCAUUID "9fa94e47-03bd-4ad1-8726-e10cfb6dbb7a"^^xsd:string ;
           
-          dcterms:description "Minute"^^xsd:string ;
+          dcterms:description "Minute"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2481,9 +3363,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ml rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor "1.0E-6"^^xsd:double ;
+         
+         :displaySortIndex 55 ;
+         
          :hasOpenLCAUUID "81696a66-6919-4bbb-a3ab-c79b2900de7d"^^xsd:string ;
          
-         dcterms:description "Milliliter"^^xsd:string ;
+         dcterms:description "Milliliter"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2494,11 +3380,45 @@ eco:DataSource rdf:type owl:Class .
 :unit_mm rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Millimetre"^^xsd:string ;
+         :unitConversionFactor 0.001 ;
+         
+         :displaySortIndex 25 ;
          
          :hasOpenLCAUUID "cc44768b-c0ce-4bc9-804a-c59b67d22e39"^^xsd:string ;
          
+         dcterms:description "Millimetre"@en ;
+         
          eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_mm_m2
+
+:unit_mm_m2 rdf:type :FlowUnit ,
+                     owl:NamedIndividual ;
+            
+            :hasOpenLCAUUID "0dc79b8e-47a1-4ec7-96b1-c9b9da2769fa"^^xsd:string ;
+            
+            :displaySortIndex 161 ;
+            
+            dcterms:description "Millimetre times square metre"@en ;
+            
+            eco:hasDataSource :master_properties_v1.4a .
+
+
+
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_mm_m2PerYear
+
+:unit_mm_m2PerYear rdf:type :FlowUnit ,
+                            owl:NamedIndividual ;
+                   
+                   :displaySortIndex 159 ;
+                   
+                   :hasOpenLCAUUID "95e8feec-abc7-4eb0-bf39-2a6d411cba8d"^^xsd:string ;
+                   
+                   dcterms:description "Millimetre times square metre per year"@en ;
+                   
+                   eco:hasDataSource :master_properties_v1.4a .
 
 
 
@@ -2507,9 +3427,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_ng rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor "1.0E-12"^^xsd:double ;
+         
+         :displaySortIndex 11 ;
+         
          :hasOpenLCAUUID "63214902-17d4-41a0-be10-d1cad375c32e"^^xsd:string ;
          
-         dcterms:description "Nanogram"^^xsd:string ;
+         dcterms:description "Nanogram"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2520,9 +3444,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_nmi rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 1852.0 ;
+          
           :hasOpenLCAUUID "1f112940-6c27-4c75-828a-46d548d71cff"^^xsd:string ;
           
-          dcterms:description "Nautical mile"^^xsd:string ;
+          :displaySortIndex 26 ;
+          
+          dcterms:description "Nautical mile"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2533,9 +3461,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_nmi2 rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
+           :unitConversionFactor 3429904.0 ;
+           
+           :displaySortIndex 37 ;
+           
            :hasOpenLCAUUID "4689d28c-29f6-4f0a-ad03-0276f7070edd"^^xsd:string ;
            
-           dcterms:description "Square nautical mile"^^xsd:string ;
+           dcterms:description "Square nautical mile"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -2546,11 +3478,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_normal_m3 rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                :unitConversionFactor 1.0 ;
+                
                 :hasOpenLCAUUID "4669b8ce-894d-405a-95d1-3211accaa739"^^xsd:string ;
+                
+                :displaySortIndex 56 ;
                 
                 skos:altLabel "Nm³"^^xsd:string ;
                 
-                dcterms:description "Normal cubic meters"^^xsd:string ;
+                dcterms:description "Normal cubic meters"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -2561,9 +3497,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_oz rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Ounce (avoirdupois); commonly used, but NOT for gold, platinum etc. (see \"Ounce (troy)\")"^^xsd:string ;
+         :unitConversionFactor 0.02 ;
+         
+         :displaySortIndex 12 ;
          
          :hasOpenLCAUUID "fa44e424-f37b-419d-8475-723429d63c08"^^xsd:string ;
+         
+         dcterms:description "Ounce (avoirdupois); commonly used, but NOT for gold, platinum etc. (see \"Ounce (troy)\")"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2574,9 +3514,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_oz_troy rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
+              :unitConversionFactor 0.03 ;
+              
+              :displaySortIndex 13 ;
+              
               :hasOpenLCAUUID "2457aee5-c7ee-4416-a65a-5be4ff2b2976"^^xsd:string ;
               
-              dcterms:description "Ounce (troy)"^^xsd:string ;
+              dcterms:description "Ounce (troy)"@en ;
               
               eco:hasDataSource :master_properties_v1.4a .
 
@@ -2587,11 +3531,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_person_km rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                dcterms:description "Person kilometer"^^xsd:string ;
+                :unitConversionFactor 1.0 ;
+                
+                :displaySortIndex 134 ;
                 
                 :hasOpenLCAUUID "fe8da65d-f0ea-4496-b13e-1955aaa412d7"^^xsd:string ;
                 
                 skos:altLabel "pkm"^^xsd:string ;
+                
+                dcterms:description "Person kilometer"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -2602,9 +3550,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_pg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         :unitConversionFactor "1.0E-15"^^xsd:double ;
+         
+         :displaySortIndex 14 ;
+         
          :hasOpenLCAUUID "68c83ad3-bc5b-414a-81f7-5b47af2c8a23"^^xsd:string ;
          
-         dcterms:description "Picogram; 10^-12 g"^^xsd:string ;
+         dcterms:description "Picogram; 10^-12 g"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2615,9 +3567,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_pt_Imp rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             dcterms:description "Pint (Imperial)"^^xsd:string ;
+             :unitConversionFactor "5.6826125E-4"^^xsd:double ;
+             
+             :displaySortIndex 57 ;
              
              :hasOpenLCAUUID "c026770b-5b4f-467d-8fdb-15dfb8e52913"^^xsd:string ;
+             
+             dcterms:description "Pint (Imperial)"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2628,9 +3584,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_pt_US_dry rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                dcterms:description "Pint (US dry)"^^xsd:string ;
+                :unitConversionFactor "5.506104713575E-4"^^xsd:double ;
+                
+                :displaySortIndex 58 ;
                 
                 :hasOpenLCAUUID "a19bcd84-e836-4764-8367-419dac3d2434"^^xsd:string ;
+                
+                dcterms:description "Pint (US dry)"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -2643,7 +3603,11 @@ eco:DataSource rdf:type owl:Class .
                
                :hasOpenLCAUUID "2df86f1f-293e-4e07-9cde-34eebc6d2c5f"^^xsd:string ;
                
-               dcterms:description "Pint (US fluid)"^^xsd:string ;
+               :unitConversionFactor "4.73176473E-4"^^xsd:double ;
+               
+               :displaySortIndex 59 ;
+               
+               dcterms:description "Pint (US fluid)"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2654,9 +3618,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_sec rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor "1.1574074E-5"^^xsd:double ;
+          
+          :displaySortIndex 66 ;
+          
           :hasOpenLCAUUID "845178d8-3f2c-497f-9ca6-3c5657c2823c"^^xsd:string ;
           
-          dcterms:description "Second"^^xsd:string ;
+          dcterms:description "Second"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2667,9 +3635,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_sh_ton rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             dcterms:description "Short ton"^^xsd:string ;
+             :displaySortIndex 15 ;
+             
+             :unitConversionFactor 907.18 ;
              
              :hasOpenLCAUUID "d4922696-9c95-4b5d-a876-425e98276978"^^xsd:string ;
+             
+             dcterms:description "Short ton"@en ;
              
              eco:hasDataSource :master_properties_v1.4a .
 
@@ -2680,9 +3652,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_t rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
+        :unitConversionFactor 1000.0 ;
+        
+        :displaySortIndex 16 ;
+        
         :hasOpenLCAUUID "83192ffa-5990-490b-a23a-b45ca072db6f"^^xsd:string ;
         
-        dcterms:description "Ton"^^xsd:string ;
+        dcterms:description "Ton"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -2693,9 +3669,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_day rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                :unitConversionFactor 2.73 ;
+                
                 :hasOpenLCAUUID "5209be3d-094e-4203-a074-06d7b75e9a38"^^xsd:string ;
                 
-                dcterms:description "Metric tonnes times day (1 year = 365 days)"^^xsd:string ;
+                :displaySortIndex 90 ;
+                
+                dcterms:description "Metric tonnes times day (1 year = 365 days)"@en ;
                 
                 eco:hasDataSource :master_properties_v1.4a .
 
@@ -2708,9 +3688,13 @@ eco:DataSource rdf:type owl:Class .
                
                :hasOpenLCAUUID "0dea4ed8-bb6b-4049-b2b4-b2c413ef2180"^^xsd:string ;
                
-               dcterms:description "Metric tonne-kilometer"^^xsd:string ;
+               :unitConversionFactor 1.0 ;
+               
+               :displaySortIndex 95 ;
                
                skos:altLabel "tkm"^^xsd:string ;
+               
+               dcterms:description "Metric tonne-kilometer"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2721,9 +3705,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_mi rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               :unitConversionFactor 1.6 ;
+               
                :hasOpenLCAUUID "3cc51ae9-b993-4a3d-964e-0aed8d7f3966"^^xsd:string ;
                
-               dcterms:description "Metric tonne times international mile"^^xsd:string ;
+               :displaySortIndex 99 ;
+               
+               dcterms:description "Metric tonne times international mile"@en ;
                
                eco:hasDataSource :master_properties_v1.4a .
 
@@ -2734,9 +3722,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_nautical_mi rdf:type :FlowUnit ,
                                  owl:NamedIndividual ;
                         
+                        :unitConversionFactor 1.85 ;
+                        
+                        :displaySortIndex 100 ;
+                        
                         :hasOpenLCAUUID "7dd57df4-c092-41aa-966e-c93a27797ea1"^^xsd:string ;
                         
-                        dcterms:description "Metric tonne times nautical mile"^^xsd:string ;
+                        dcterms:description "Metric tonne times nautical mile"@en ;
                         
                         eco:hasDataSource :master_properties_v1.4a .
 
@@ -2747,9 +3739,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_year rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
+                 :unitConversionFactor 1000.0 ;
+                 
                  :hasOpenLCAUUID "23cc7a32-f08a-43df-a87c-66953eeeb3f5"^^xsd:string ;
                  
-                 dcterms:description "Metric tonnes times year"^^xsd:string ;
+                 :displaySortIndex 91 ;
+                 
+                 dcterms:description "Metric tonnes times year"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -2760,9 +3756,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_u rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
+        :unitConversionFactor "1.0E-6"^^xsd:double ;
+        
+        :displaySortIndex 24 ;
+        
         :hasOpenLCAUUID "9003179a-bf17-4e89-8fd7-a0c1c91ac189"^^xsd:string ;
         
-        dcterms:description "Micron"^^xsd:string ;
+        dcterms:description "Micron"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -2773,11 +3773,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_ug rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Microgram"^^xsd:string ;
+         :unitConversionFactor "1.0E-9"^^xsd:double ;
+         
+         :displaySortIndex 9 ;
          
          :hasOpenLCAUUID "d01259b2-24c2-46af-a7fe-36dd025ead15"^^xsd:string ;
          
          skos:altLabel "µg"^^xsd:string ;
+         
+         dcterms:description "Microgram"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2788,11 +3792,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_vehicle_km rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
+                 :unitConversionFactor 1.0 ;
+                 
+                 :displaySortIndex 136 ;
+                 
                  :hasOpenLCAUUID "19a89180-e40c-4f6b-bcd3-d7347566d1e7"^^xsd:string ;
                  
-                 dcterms:description "Vehicle-kilometer"^^xsd:string ;
-                 
                  skos:altLabel "vkm"^^xsd:string ;
+                 
+                 dcterms:description "Vehicle-kilometer"@en ;
                  
                  eco:hasDataSource :master_properties_v1.4a .
 
@@ -2803,9 +3811,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_yd rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         dcterms:description "Yard (international)"^^xsd:string ;
+         :unitConversionFactor 0.9144 ;
+         
+         :displaySortIndex 27 ;
          
          :hasOpenLCAUUID "a16960ba-31e2-4fe9-82fe-219013f4708f"^^xsd:string ;
+         
+         dcterms:description "Yard (international)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2816,9 +3828,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_yd2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          :unitConversionFactor 0.83 ;
+          
+          :displaySortIndex 38 ;
+          
           :hasOpenLCAUUID "6c4b1e4a-bf45-4385-a60c-12cc48ecbab5"^^xsd:string ;
           
-          dcterms:description "Square yard (imperial/US)"^^xsd:string ;
+          dcterms:description "Square yard (imperial/US)"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2829,9 +3845,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_year rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
+           :unitConversionFactor 365.0 ;
+           
+           :displaySortIndex 67 ;
+           
            :hasOpenLCAUUID "9a87f840-752d-4863-b911-533f92ee5073"^^xsd:string ;
            
-           dcterms:description "Year (rounded)"^^xsd:string ;
+           dcterms:description "Year (rounded)"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
