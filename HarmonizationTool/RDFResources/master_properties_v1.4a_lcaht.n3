@@ -778,7 +778,7 @@ eco:DataSource rdf:type owl:Class .
                 
                 eco:hasDataSource :master_properties_v1.4a ;
                 
-                :hasUnit :unit_ac ,
+                :hasUnit :unit_acre ,
                          :unit_are ,
                          :unit_cm2 ,
                          :unit_ha ,
@@ -1418,7 +1418,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_Bq rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.001 ;
+         rdfs:label "Bq"^^xsd:string ;
+         
+         :unitConversionFactor "0.0010"^^xsd:double ;
          
          :displaySortIndex 82 ;
          
@@ -1434,6 +1436,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_Ci rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
+         
+         rdfs:label "Ci"^^xsd:string ;
          
          :unitConversionFactor "3.7E7"^^xsd:double ;
          
@@ -1452,7 +1456,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_DozenItems rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 12.0 ;
+                 rdfs:label "Dozen(s)"^^xsd:string ;
+                 
+                 :unitConversionFactor "12.0"^^xsd:double ;
                  
                  :displaySortIndex 128 ;
                  
@@ -1469,13 +1475,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_GJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor "1.0E-6"^^xsd:double ;
+         rdfs:label "GJ"^^xsd:string ;
          
-         :hasOpenLCAUUID "469d61f1-3bc4-4841-8adf-873825c1bc11"^^xsd:string ;
+         :hasOpenLCAUUID "01e58eb9-0aba-4c76-ba0c-03f6f3be1353"^^xsd:string ;
+         
+         :unitConversionFactor "1000.0"^^xsd:double ;
          
          :displaySortIndex 71 ;
          
-         dcterms:description "Joule"@en ;
+         dcterms:description "Gigajoule"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1486,7 +1494,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_Item rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 1.0 ;
+           rdfs:label "Item(s)"^^xsd:string ;
+           
+           :unitConversionFactor "1.0"^^xsd:double ;
            
            :displaySortIndex 127 ;
            
@@ -1507,13 +1517,16 @@ eco:DataSource rdf:type owl:Class .
 :unit_J rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        :unitConversionFactor 0.0041867 ;
+        rdfs:label "J"^^xsd:string ;
         
-        :hasOpenLCAUUID "010f811e-3cc2-4b14-a901-337da9b3e49c"^^xsd:string ;
+        :unitConversionFactor "1.0E-6"^^xsd:double ;
+        
+        :hasOpenLCAUUID """469d61f1-3bc4-4841-8adf-873825c1bc11
+"""^^xsd:string ;
         
         :displaySortIndex 72 ;
         
-        dcterms:description "Kilocalorie (International table)"@en ;
+        dcterms:description "Joule"@en ;
         
         eco:hasDataSource :master_properties_v1.4a .
 
@@ -1524,13 +1537,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_MJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.001055056 ;
+         rdfs:label "MJ"^^xsd:string ;
          
-         :hasOpenLCAUUID "55244053-94ba-404e-9172-cb279d905e00"^^xsd:string ;
+         :unitConversionFactor "1.0"^^xsd:double ;
+         
+         :hasOpenLCAUUID "52765a6c-3896-43c2-b2f4-c679acf13efe"^^xsd:string ;
          
          :displaySortIndex 69 ;
          
-         dcterms:description "British thermal unit (International table)"@en ;
+         dcterms:description "Megajoule"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -1541,7 +1556,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_MJ_per_kg_day rdf:type :FlowUnit ,
                              owl:NamedIndividual ;
                     
-                    :unitConversionFactor 1.0 ;
+                    rdfs:label "MJ/kg*d"^^xsd:string ;
+                    
+                    :unitConversionFactor "1.0"^^xsd:double ;
                     
                     :displaySortIndex 123 ;
                     
@@ -1558,7 +1575,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_MWh rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 3600.0 ;
+          rdfs:label "MWh"^^xsd:string ;
+          
+          :unitConversionFactor "3600.0"^^xsd:double ;
           
           :displaySortIndex 76 ;
           
@@ -1575,7 +1594,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_Mg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1000.0 ;
+         rdfs:label "Mg"^^xsd:string ;
+         
+         :unitConversionFactor "1000.0"^^xsd:double ;
          
          :displaySortIndex 8 ;
          
@@ -1594,7 +1615,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_Rutherford rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 1000.0 ;
+                 rdfs:label "Rutherford"^^xsd:string ;
+                 
+                 :unitConversionFactor "1000.0"^^xsd:double ;
                  
                  :displaySortIndex 85 ;
                  
@@ -1611,7 +1634,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_TCE rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 29307.6 ;
+          rdfs:label "TCE"^^xsd:string ;
+          
+          :unitConversionFactor "29307.6"^^xsd:double ;
           
           :displaySortIndex 78 ;
           
@@ -1628,7 +1653,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_TJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1000000.0 ;
+         rdfs:label "TJ"^^xsd:string ;
+         
+         :unitConversionFactor "1000000.0"^^xsd:double ;
          
          :hasOpenLCAUUID "57c492e7-d94b-4fcc-98df-cdc4163b754c"^^xsd:string ;
          
@@ -1645,7 +1672,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_TOE rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 41868.0 ;
+          rdfs:label "TOE"^^xsd:string ;
+          
+          :unitConversionFactor "41868.0"^^xsd:double ;
           
           :hasOpenLCAUUID "425aff51-b7e5-4561-aa5a-562ec103a79e"^^xsd:string ;
           
@@ -1661,6 +1690,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_US_fl_oz rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
+               
+               rdfs:label "US fl oz"^^xsd:string ;
                
                :unitConversionFactor "2.95735295625E-5"^^xsd:double ;
                
@@ -1679,7 +1710,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_Wh rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.0036 ;
+         rdfs:label "Wh"^^xsd:string ;
+         
+         :unitConversionFactor "0.0036"^^xsd:double ;
          
          :displaySortIndex 80 ;
          
@@ -1691,23 +1724,25 @@ eco:DataSource rdf:type owl:Class .
 
 
 
-###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_ac
+###  http://epa.gov/nrmrl/std/lca/fedlca/1.0#unit_acre
 
-:unit_ac rdf:type :FlowUnit ,
-                  owl:NamedIndividual ;
-         
-         :displaySortIndex 30 ;
-         
-         :unitConversionFactor 4046.85 ;
-         
-         :hasOpenLCAUUID "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345"^^xsd:string ;
-         
-         skos:altLabel "acre"^^xsd:string ,
-                       "acre (US)"^^xsd:string ;
-         
-         dcterms:description "Acre (US survey)"@en ;
-         
-         eco:hasDataSource :master_properties_v1.4a .
+:unit_acre rdf:type :FlowUnit ,
+                    owl:NamedIndividual ;
+           
+           rdfs:label "ac"^^xsd:string ;
+           
+           :displaySortIndex 30 ;
+           
+           :unitConversionFactor "4046.85"^^xsd:double ;
+           
+           :hasOpenLCAUUID "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345"^^xsd:string ;
+           
+           skos:altLabel "acre"^^xsd:string ,
+                         "acre (US)"^^xsd:string ;
+           
+           dcterms:description "Acre (US survey)"@en ;
+           
+           eco:hasDataSource :master_properties_v1.4a .
 
 
 
@@ -1716,7 +1751,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_are rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 100.0 ;
+          rdfs:label "a"^^xsd:string ;
+          
+          :unitConversionFactor "100.0"^^xsd:double ;
           
           :displaySortIndex 31 ;
           
@@ -1733,7 +1770,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bbl rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 0.15 ;
+          rdfs:label "bbl"^^xsd:string ;
+          
+          :unitConversionFactor "0.15"^^xsd:double ;
           
           :displaySortIndex 44 ;
           
@@ -1750,7 +1789,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_Imp rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.16 ;
+             rdfs:label "bl (Imp)"^^xsd:string ;
+             
+             :unitConversionFactor "0.16"^^xsd:double ;
              
              :displaySortIndex 40 ;
              
@@ -1767,7 +1808,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_beer rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 0.11 ;
+                 rdfs:label "bl (US beer)"^^xsd:string ;
+                 
+                 :unitConversionFactor "0.11"^^xsd:double ;
                  
                  :displaySortIndex 41 ;
                  
@@ -1784,7 +1827,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_dry rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                :unitConversionFactor 0.11 ;
+                rdfs:label "bl (US dry)"^^xsd:string ;
+                
+                :unitConversionFactor "0.11"^^xsd:double ;
                 
                 :hasOpenLCAUUID "1c4169d1-4fee-40e3-9868-953ee15e26ae"^^xsd:string ;
                 
@@ -1801,7 +1846,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bl_US_fl rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 0.11 ;
+               rdfs:label "bl (US fl)"^^xsd:string ;
+               
+               :unitConversionFactor "0.11"^^xsd:double ;
                
                :displaySortIndex 43 ;
                
@@ -1818,7 +1865,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bsh_US rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.03 ;
+             rdfs:label "bsh (US)"^^xsd:string ;
+             
+             :unitConversionFactor "0.03"^^xsd:double ;
              
              :hasOpenLCAUUID "5ec65531-6bb4-4990-a687-44e9ab8f3529"^^xsd:string ;
              
@@ -1835,13 +1884,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_btu rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :hasOpenLCAUUID "01e58eb9-0aba-4c76-ba0c-03f6f3be1353"^^xsd:string ;
+          rdfs:label "btu"^^xsd:string ;
           
-          :unitConversionFactor 1000.0 ;
+          :unitConversionFactor "0.001055056"^^xsd:double ;
+          
+          :hasOpenLCAUUID "55244053-94ba-404e-9172-cb279d905e00"^^xsd:string ;
           
           :displaySortIndex 70 ;
           
-          dcterms:description "Gigajoule"@en ;
+          dcterms:description "British thermal unit (International table)"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -1852,7 +1903,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_bushel_Imp rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 0.03 ;
+                 rdfs:label "bsh (Imp)"^^xsd:string ;
+                 
+                 :unitConversionFactor "0.03"^^xsd:double ;
                  
                  :displaySortIndex 52 ;
                  
@@ -1868,6 +1921,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_carat rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
+            
+            rdfs:label "carat"^^xsd:string ;
             
             :unitConversionFactor "2.0E-4"^^xsd:double ;
             
@@ -1886,7 +1941,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_cm rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.01 ;
+         rdfs:label "cm"^^xsd:string ;
+         
+         :unitConversionFactor "0.01"^^xsd:double ;
          
          :displaySortIndex 19 ;
          
@@ -1902,6 +1959,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_cm2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
+          
+          rdfs:label "cm2"^^xsd:string ;
           
           :unitConversionFactor "1.0E-4"^^xsd:double ;
           
@@ -1920,6 +1979,10 @@ eco:DataSource rdf:type owl:Class .
 :unit_cm_m2PerDay rdf:type :FlowUnit ,
                            owl:NamedIndividual ;
                   
+                  rdfs:label "cm*m2/d"^^xsd:string ;
+                  
+                  :unitConversionFactor "1.0"^^xsd:double ;
+                  
                   :displaySortIndex 160 ;
                   
                   :hasOpenLCAUUID "aa14a795-2239-496a-81b0-ad7cb8bbe0d2"^^xsd:string ;
@@ -1934,6 +1997,10 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_cm_m3 rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
+            
+            rdfs:label "cm*m3"^^xsd:string ;
+            
+            :unitConversionFactor "1.0"^^xsd:double ;
             
             :displaySortIndex 157 ;
             
@@ -1950,6 +2017,10 @@ eco:DataSource rdf:type owl:Class .
 :unit_cmol_m2Perkg rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
+                   rdfs:label "(cmol*m2)/kg"^^xsd:string ;
+                   
+                   :unitConversionFactor "1.0"^^xsd:double ;
+                   
                    :displaySortIndex 158 ;
                    
                    :hasOpenLCAUUID "691ae73c-3fc1-4157-85d0-2659bdc2380a"^^xsd:string ;
@@ -1964,6 +2035,10 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_cmol_m2_yearPerkg rdf:type :FlowUnit ,
                                  owl:NamedIndividual ;
+                        
+                        rdfs:label "(cmol*m2*a)/kg"^^xsd:string ;
+                        
+                        :unitConversionFactor "1.0"^^xsd:double ;
                         
                         :displaySortIndex 156 ;
                         
@@ -1980,7 +2055,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_AUD rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.63 ;
+                   rdfs:label "AUD"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.63"^^xsd:double ;
                    
                    :displaySortIndex 138 ;
                    
@@ -1997,7 +2074,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_CAD rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.73 ;
+                   rdfs:label "CAD"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.73"^^xsd:double ;
                    
                    :displaySortIndex 139 ;
                    
@@ -2014,7 +2093,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_CHF rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.64 ;
+                   rdfs:label "CHF"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.64"^^xsd:double ;
                    
                    :displaySortIndex 154 ;
                    
@@ -2031,7 +2112,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_CZK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.02 ;
+                   rdfs:label "CZK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.02"^^xsd:double ;
                    
                    :displaySortIndex 140 ;
                    
@@ -2048,7 +2131,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_DKK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.13 ;
+                   rdfs:label "DKK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.13"^^xsd:double ;
                    
                    :displaySortIndex 141 ;
                    
@@ -2065,7 +2150,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_EEK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.06 ;
+                   rdfs:label "EEK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.06"^^xsd:double ;
                    
                    :hasOpenLCAUUID "0866bd06-77b3-41a2-8157-6d96ffb5666b"^^xsd:string ;
                    
@@ -2082,7 +2169,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_EUR rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 1 ;
+                   rdfs:label "EUR"^^xsd:string ;
+                   
+                   :unitConversionFactor "1.0"^^xsd:double ;
                    
                    :displaySortIndex 143 ;
                    
@@ -2099,7 +2188,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_GBP rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 1.65 ;
+                   rdfs:label "GBP"^^xsd:string ;
+                   
+                   :unitConversionFactor "1.65"^^xsd:double ;
                    
                    :displaySortIndex 150 ;
                    
@@ -2116,7 +2207,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_HUF rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.0038 ;
+                   rdfs:label "HUF"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.0038"^^xsd:double ;
                    
                    :displaySortIndex 144 ;
                    
@@ -2133,7 +2226,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_ISK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.01 ;
+                   rdfs:label "ISK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.01"^^xsd:double ;
                    
                    :displaySortIndex 145 ;
                    
@@ -2150,7 +2245,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_JPY rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.01 ;
+                   rdfs:label "JPY"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.01"^^xsd:double ;
                    
                    :displaySortIndex 146 ;
                    
@@ -2167,9 +2264,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_KRW rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.00095 ;
+                   rdfs:label "KRW"^^xsd:string ;
                    
                    :displaySortIndex 152 ;
+                   
+                   :unitConversionFactor "9.5E-4"^^xsd:double ;
                    
                    :hasOpenLCAUUID "d246fd48-c363-4f0e-ab01-641325dd89eb"^^xsd:string ;
                    
@@ -2184,7 +2283,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_LTL rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.27 ;
+                   rdfs:label "LTL"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.27"^^xsd:double ;
                    
                    :displaySortIndex 148 ;
                    
@@ -2201,9 +2302,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_LVL rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
+                   rdfs:label "LVL"^^xsd:string ;
+                   
                    :hasOpenLCAUUID "007f0ce1-4a0b-4bb2-8f7c-1b2a0e6ef6b2"^^xsd:string ;
                    
-                   :unitConversionFactor 1.78 ;
+                   :unitConversionFactor "1.78"^^xsd:double ;
                    
                    :displaySortIndex 147 ;
                    
@@ -2218,7 +2321,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_NOK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.12 ;
+                   rdfs:label "NOK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.12"^^xsd:double ;
                    
                    :displaySortIndex 149 ;
                    
@@ -2235,7 +2340,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_SEK rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.12 ;
+                   rdfs:label "SEK"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.12"^^xsd:double ;
                    
                    :displaySortIndex 153 ;
                    
@@ -2252,7 +2359,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_USD rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 1.1 ;
+                   rdfs:label "USD"^^xsd:string ;
+                   
+                   :unitConversionFactor "1.1"^^xsd:double ;
                    
                    :displaySortIndex 155 ;
                    
@@ -2269,7 +2378,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_currency_ZAR rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
-                   :unitConversionFactor 0.15 ;
+                   rdfs:label "ZAR"^^xsd:string ;
+                   
+                   :unitConversionFactor "0.15"^^xsd:double ;
                    
                    :displaySortIndex 151 ;
                    
@@ -2286,7 +2397,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_day rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 1.0 ;
+          rdfs:label "d"^^xsd:string ;
+          
+          :unitConversionFactor "1.0"^^xsd:double ;
           
           :hasOpenLCAUUID "11074cfd-08a4-449b-adad-18ce24a1b275"^^xsd:string ;
           
@@ -2302,6 +2415,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_fl_oz_Imp rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
+                
+                rdfs:label "fl oz (Imp)"^^xsd:string ;
                 
                 :unitConversionFactor "2.84130625E-5"^^xsd:double ;
                 
@@ -2320,7 +2435,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.3048 ;
+         rdfs:label "ft"^^xsd:string ;
+         
+         :unitConversionFactor "0.3048"^^xsd:double ;
          
          :displaySortIndex 20 ;
          
@@ -2337,7 +2454,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 0.09 ;
+          rdfs:label "ft2"^^xsd:string ;
+          
+          :unitConversionFactor "0.09"^^xsd:double ;
           
           :displaySortIndex 32 ;
           
@@ -2356,7 +2475,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 0.09 ;
+               rdfs:label "ft2*a"^^xsd:string ;
+               
+               :unitConversionFactor "0.09"^^xsd:double ;
                
                :displaySortIndex 105 ;
                
@@ -2377,7 +2498,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ft3 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 0.02 ;
+          rdfs:label "cu ft"^^xsd:string ;
+          
+          :unitConversionFactor "0.02"^^xsd:double ;
           
           :hasOpenLCAUUID "07973a41-56b3-4e1b-a208-fd75a09fbd4b"^^xsd:string ;
           
@@ -2394,7 +2517,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_g rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        :unitConversionFactor 0.001 ;
+        rdfs:label "g"^^xsd:string ;
+        
+        :unitConversionFactor "0.0010"^^xsd:double ;
         
         :displaySortIndex 5 ;
         
@@ -2411,7 +2536,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_g_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.001 ;
+             rdfs:label "g*a"^^xsd:string ;
+             
+             :unitConversionFactor "0.0010"^^xsd:double ;
              
              :hasOpenLCAUUID "2fdc0039-6c5e-489a-af77-b225684fa337"^^xsd:string ;
              
@@ -2428,7 +2555,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_Imp rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 0.00454609 ;
+              rdfs:label "gal (Imp)"^^xsd:string ;
+              
+              :unitConversionFactor "0.00454609"^^xsd:double ;
               
               :displaySortIndex 48 ;
               
@@ -2445,7 +2574,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_dry rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 0.00440488377086 ;
+                 rdfs:label "gal (US dry)"^^xsd:string ;
+                 
+                 :unitConversionFactor "0.00440488377086"^^xsd:double ;
                  
                  :displaySortIndex 49 ;
                  
@@ -2462,7 +2593,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_fl rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                :unitConversionFactor 0.003785411784 ;
+                rdfs:label "gal (US fl)"^^xsd:string ;
+                
+                :unitConversionFactor "0.003785411784"^^xsd:double ;
                 
                 :hasOpenLCAUUID "431df202-da83-4baa-b576-5d17f59f0c8a"^^xsd:string ;
                 
@@ -2479,7 +2612,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_gal_US_liq rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 0.003785412 ;
+                 rdfs:label "gal (US liq)"^^xsd:string ;
+                 
+                 :unitConversionFactor "0.003785412"^^xsd:double ;
                  
                  :displaySortIndex 51 ;
                  
@@ -2496,7 +2631,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ha rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 10000.0 ;
+         rdfs:label "ha"^^xsd:string ;
+         
+         :unitConversionFactor "10000.0"^^xsd:double ;
          
          :displaySortIndex 34 ;
          
@@ -2513,7 +2650,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_ha_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 10000.0 ;
+              rdfs:label "ha*a"^^xsd:string ;
+              
+              :unitConversionFactor "10000.0"^^xsd:double ;
               
               :displaySortIndex 107 ;
               
@@ -2530,7 +2669,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_hour rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 0.04 ;
+           rdfs:label "h"^^xsd:string ;
+           
+           :unitConversionFactor "0.04"^^xsd:double ;
            
            :hasOpenLCAUUID "227a54d9-44e7-468c-b8bb-f2dd1ae68c7a"^^xsd:string ;
            
@@ -2547,7 +2688,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_in rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.02 ;
+         rdfs:label "in"^^xsd:string ;
+         
+         :unitConversionFactor "0.02"^^xsd:double ;
          
          :hasOpenLCAUUID "030e99e1-2237-483c-8447-8b3a256d8b0d"^^xsd:string ;
          
@@ -2564,7 +2707,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_km rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 1.0 ;
+               rdfs:label "Items*km"^^xsd:string ;
+               
+               :unitConversionFactor "1.0"^^xsd:double ;
                
                :displaySortIndex 130 ;
                
@@ -2581,7 +2726,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_mi rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 1.6 ;
+               rdfs:label "Items*mi"^^xsd:string ;
+               
+               :unitConversionFactor "1.6"^^xsd:double ;
                
                :displaySortIndex 131 ;
                
@@ -2598,7 +2745,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_items_nautical_mi rdf:type :FlowUnit ,
                                  owl:NamedIndividual ;
                         
-                        :unitConversionFactor 1.85 ;
+                        rdfs:label "Items*nmi"^^xsd:string ;
+                        
+                        :unitConversionFactor "1.85"^^xsd:double ;
                         
                         :displaySortIndex 132 ;
                         
@@ -2615,7 +2764,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kBq rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 1.0 ;
+          rdfs:label "kBq"^^xsd:string ;
+          
+          :unitConversionFactor "1.0"^^xsd:double ;
           
           :displaySortIndex 84 ;
           
@@ -2632,13 +2783,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_kJ rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 3.6 ;
+         rdfs:label "kJ"^^xsd:string ;
+         
+         :unitConversionFactor "0.0010"^^xsd:double ;
          
          :displaySortIndex 74 ;
          
-         :hasOpenLCAUUID "86ad2244-1f0e-4912-af53-7865283103e4"^^xsd:string ;
+         :hasOpenLCAUUID "f4119718-2d50-47fe-9154-cab6fd2d30eb"^^xsd:string ;
          
-         dcterms:description "Kilowatt times hour"@en ;
+         dcterms:description "Kilojoule"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2649,13 +2802,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_kWh rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 1.0 ;
+          rdfs:label "kWh"^^xsd:string ;
           
-          :hasOpenLCAUUID "52765a6c-3896-43c2-b2f4-c679acf13efe"^^xsd:string ;
+          :unitConversionFactor "3.6"^^xsd:double ;
           
           :displaySortIndex 75 ;
           
-          dcterms:description "Megajoule"@en ;
+          :hasOpenLCAUUID "86ad2244-1f0e-4912-af53-7865283103e4"^^xsd:string ;
+          
+          dcterms:description "Kilowatt times hour"@en ;
           
           eco:hasDataSource :master_properties_v1.4a .
 
@@ -2666,7 +2821,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kWh_per_m2_day rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
-                     :unitConversionFactor 1.0 ;
+                     rdfs:label "kWh/m2*d"^^xsd:string ;
+                     
+                     :unitConversionFactor "1.0"^^xsd:double ;
                      
                      :displaySortIndex 125 ;
                      
@@ -2687,13 +2844,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_kcal rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 0.001 ;
+           rdfs:label "kcal"^^xsd:string ;
+           
+           :unitConversionFactor "0.0041867"^^xsd:double ;
+           
+           :hasOpenLCAUUID "010f811e-3cc2-4b14-a901-337da9b3e49c"^^xsd:string ;
            
            :displaySortIndex 73 ;
            
-           :hasOpenLCAUUID "f4119718-2d50-47fe-9154-cab6fd2d30eb"^^xsd:string ;
-           
-           dcterms:description "Kilojoule"@en ;
+           dcterms:description "Kilocalorie (International table)"@en ;
            
            eco:hasDataSource :master_properties_v1.4a .
 
@@ -2704,9 +2863,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         rdfs:label "kg"^^xsd:string ;
+         
          :displaySortIndex 1 ;
          
-         :unitConversionFactor 1.0 ;
+         :unitConversionFactor "1.0"^^xsd:double ;
          
          :hasOpenLCAUUID "20aadc24-a391-41cf-b340-3e4529f44bde"^^xsd:string ;
          
@@ -2721,7 +2882,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_SWU rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 1.0 ;
+             rdfs:label "kg SWU"^^xsd:string ;
+             
+             :unitConversionFactor "1.0"^^xsd:double ;
              
              :displaySortIndex 6 ;
              
@@ -2738,7 +2901,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.002739726 ;
+             rdfs:label "kg*d"^^xsd:string ;
+             
+             :unitConversionFactor "0.002739726"^^xsd:double ;
              
              :displaySortIndex 89 ;
              
@@ -2755,7 +2920,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_km rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            :unitConversionFactor 0.001 ;
+            rdfs:label "kg*km"^^xsd:string ;
+            
+            :unitConversionFactor "0.0010"^^xsd:double ;
             
             :displaySortIndex 98 ;
             
@@ -2774,7 +2941,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_per_year rdf:type :FlowUnit ,
                            owl:NamedIndividual ;
                   
-                  :unitConversionFactor 1.0 ;
+                  rdfs:label "kg/a"^^xsd:string ;
+                  
+                  :unitConversionFactor "1.0"^^xsd:double ;
                   
                   :displaySortIndex 93 ;
                   
@@ -2791,7 +2960,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_kg_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 1.0 ;
+              rdfs:label "kg*a"^^xsd:string ;
+              
+              :unitConversionFactor "1.0"^^xsd:double ;
               
               :displaySortIndex 87 ;
               
@@ -2808,7 +2979,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_km rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1000.0 ;
+         rdfs:label "km"^^xsd:string ;
+         
+         :unitConversionFactor "1000.0"^^xsd:double ;
          
          :displaySortIndex 23 ;
          
@@ -2825,7 +2998,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_km2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 1000000.0 ;
+          rdfs:label "km2"^^xsd:string ;
+          
+          :unitConversionFactor "1000000.0"^^xsd:double ;
           
           :displaySortIndex 36 ;
           
@@ -2844,7 +3019,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_km2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 1000000.0 ;
+               rdfs:label "km2*a"^^xsd:string ;
+               
+               :unitConversionFactor "1000000.0"^^xsd:double ;
                
                :displaySortIndex 108 ;
                
@@ -2865,13 +3042,15 @@ eco:DataSource rdf:type owl:Class .
 :unit_kt rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         rdfs:label "kt"^^xsd:string ;
+         
          :unitConversionFactor "0.041666667"^^xsd:double ;
          
-         :displaySortIndex 3 ;
+         :displaySortIndex 129 ;
          
          :hasOpenLCAUUID "ae5cced9-f9f1-4719-bd37-837b36013d96"^^xsd:string ;
          
-         dcterms:description "Karat (metric)"@en ;
+         dcterms:description "Karat (1/24th)"@en ;
          
          eco:hasDataSource :master_properties_v1.4a .
 
@@ -2882,7 +3061,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_l rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        :unitConversionFactor 0.001 ;
+        rdfs:label "l"^^xsd:string ;
+        
+        :unitConversionFactor "0.0010"^^xsd:double ;
         
         :displaySortIndex 53 ;
         
@@ -2898,6 +3079,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_l_day rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
+            
+            rdfs:label "l*d"^^xsd:string ;
             
             :displaySortIndex 113 ;
             
@@ -2916,7 +3099,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_km rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 0.001 ;
+           rdfs:label "l*km"^^xsd:string ;
+           
+           :unitConversionFactor "0.0010"^^xsd:double ;
            
            :displaySortIndex 120 ;
            
@@ -2933,7 +3118,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_mi rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 0.001609344 ;
+           rdfs:label "l*mi"^^xsd:string ;
+           
+           :unitConversionFactor "0.001609344"^^xsd:double ;
            
            :hasOpenLCAUUID "112e9d4a-262d-4dcb-8003-c19204faedfb"^^xsd:string ;
            
@@ -2950,7 +3137,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_nautical_mi rdf:type :FlowUnit ,
                              owl:NamedIndividual ;
                     
-                    :unitConversionFactor 0.001852 ;
+                    rdfs:label "l*nmi"^^xsd:string ;
+                    
+                    :unitConversionFactor "0.001852"^^xsd:double ;
                     
                     :hasOpenLCAUUID "0c62f887-da22-4b0a-999b-145c4b2ffe1e"^^xsd:string ;
                     
@@ -2967,7 +3156,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_l_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.001 ;
+             rdfs:label "l*a"^^xsd:string ;
+             
+             :unitConversionFactor "0.0010"^^xsd:double ;
              
              :displaySortIndex 114 ;
              
@@ -2984,7 +3175,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_lb rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.45 ;
+         rdfs:label "lb av"^^xsd:string ;
+         
+         :unitConversionFactor "0.45"^^xsd:double ;
          
          :hasOpenLCAUUID "0300ec69-ce1a-45f0-bcf0-7b33845dc53e"^^xsd:string ;
          
@@ -3000,6 +3193,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_lb_mi rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
+            
+            rdfs:label "lb*mi"^^xsd:string ;
             
             :hasOpenLCAUUID "5458351a-f6f7-4e0b-a449-823c9b6374db"^^xsd:string ;
             
@@ -3018,6 +3213,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_lb_nautical_mi rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
+                     rdfs:label "lb*nmi"^^xsd:string ;
+                     
                      :unitConversionFactor "8.40053E-4"^^xsd:double ;
                      
                      :displaySortIndex 97 ;
@@ -3035,7 +3232,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_long_ton rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 1016.04 ;
+               rdfs:label "long tn"^^xsd:string ;
+               
+               :unitConversionFactor "1016.04"^^xsd:double ;
                
                :displaySortIndex 7 ;
                
@@ -3052,7 +3251,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        :unitConversionFactor 1.0 ;
+        rdfs:label "m"^^xsd:string ;
+        
+        :unitConversionFactor "1.0"^^xsd:double ;
         
         :displaySortIndex 18 ;
         
@@ -3069,7 +3270,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2 rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1.0 ;
+         rdfs:label "m2"^^xsd:string ;
+         
+         :unitConversionFactor "1.0"^^xsd:double ;
          
          :displaySortIndex 29 ;
          
@@ -3088,7 +3291,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.002739726 ;
+             rdfs:label "m2*d"^^xsd:string ;
+             
+             :unitConversionFactor "0.002739726"^^xsd:double ;
              
              :hasOpenLCAUUID "00d8370e-2bf1-4f3b-81bb-f8f147e84819"^^xsd:string ;
              
@@ -3105,7 +3310,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m2_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 1.0 ;
+              rdfs:label "m2*a"^^xsd:string ;
+              
+              :unitConversionFactor "1.0"^^xsd:double ;
               
               :displaySortIndex 104 ;
               
@@ -3126,7 +3333,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3 rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1.0 ;
+         rdfs:label "m3"^^xsd:string ;
+         
+         :unitConversionFactor "1.0"^^xsd:double ;
          
          :hasOpenLCAUUID "1c3a9695-398d-4b1f-b07e-a8715b610f70"^^xsd:string ;
          
@@ -3145,7 +3354,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_day rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 0.002739726 ;
+             rdfs:label "m3*d"^^xsd:string ;
+             
+             :unitConversionFactor "0.002739726"^^xsd:double ;
              
              :displaySortIndex 112 ;
              
@@ -3165,7 +3376,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_km rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            :unitConversionFactor 1.0 ;
+            rdfs:label "m3*km"^^xsd:string ;
+            
+            :unitConversionFactor "1.0"^^xsd:double ;
             
             :displaySortIndex 116 ;
             
@@ -3182,7 +3395,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_mi rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
-            :unitConversionFactor 1.6 ;
+            rdfs:label "m3*mi"^^xsd:string ;
+            
+            :unitConversionFactor "1.6"^^xsd:double ;
             
             :displaySortIndex 117 ;
             
@@ -3199,7 +3414,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_nautical_mi rdf:type :FlowUnit ,
                               owl:NamedIndividual ;
                      
-                     :unitConversionFactor 1.85 ;
+                     rdfs:label "m3*nmi"^^xsd:string ;
+                     
+                     :unitConversionFactor "1.85"^^xsd:double ;
                      
                      :displaySortIndex 118 ;
                      
@@ -3216,7 +3433,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m3_year rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 1.0 ;
+              rdfs:label "m3*a"^^xsd:string ;
+              
+              :unitConversionFactor "1.0"^^xsd:double ;
               
               :displaySortIndex 111 ;
               
@@ -3236,7 +3455,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_m_year rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
-             :unitConversionFactor 1.0 ;
+             rdfs:label "m*a"^^xsd:string ;
+             
+             :unitConversionFactor "1.0"^^xsd:double ;
              
              :displaySortIndex 102 ;
              
@@ -3255,6 +3476,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_mg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         rdfs:label "mg"^^xsd:string ;
+         
          :unitConversionFactor "1.0E-6"^^xsd:double ;
          
          :displaySortIndex 10 ;
@@ -3272,7 +3495,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_mi rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 1609.34 ;
+         rdfs:label "mi"^^xsd:string ;
+         
+         :unitConversionFactor "1609.34"^^xsd:double ;
          
          :displaySortIndex 22 ;
          
@@ -3289,9 +3514,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_mi2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          rdfs:label "mi2"^^xsd:string ;
+          
           :hasOpenLCAUUID "20ce5f57-69b1-438b-a8e8-23089854d058"^^xsd:string ;
           
-          :unitConversionFactor 2589988.11 ;
+          :unitConversionFactor "2589988.11"^^xsd:double ;
           
           :displaySortIndex 33 ;
           
@@ -3308,11 +3535,13 @@ eco:DataSource rdf:type owl:Class .
 :unit_mi2_year rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               rdfs:label "mi2*a"^^xsd:string ;
+               
                :displaySortIndex 106 ;
                
                :hasOpenLCAUUID "1c43f336-c84b-4f42-bbf7-b1b6f89e121a"^^xsd:string ;
                
-               :unitConversionFactor 2589988.1 ;
+               :unitConversionFactor "2589988.1"^^xsd:double ;
                
                skos:altLabel "mi2a"^^xsd:string ,
                              "mi²*a"^^xsd:string ,
@@ -3328,6 +3557,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_micro_l rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
+              
+              rdfs:label "ul"^^xsd:string ;
               
               :unitConversionFactor "1.0E-9"^^xsd:double ;
               
@@ -3346,6 +3577,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_min rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          rdfs:label "min"^^xsd:string ;
+          
           :unitConversionFactor "6.94444444E-4"^^xsd:double ;
           
           :displaySortIndex 65 ;
@@ -3362,6 +3595,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_ml rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
+         
+         rdfs:label "ml"^^xsd:string ;
          
          :unitConversionFactor "1.0E-6"^^xsd:double ;
          
@@ -3380,7 +3615,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_mm rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.001 ;
+         rdfs:label "mm"^^xsd:string ;
+         
+         :unitConversionFactor "0.0010"^^xsd:double ;
          
          :displaySortIndex 25 ;
          
@@ -3397,6 +3634,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_mm_m2 rdf:type :FlowUnit ,
                      owl:NamedIndividual ;
             
+            rdfs:label "mm*m2"^^xsd:string ;
+            
             :hasOpenLCAUUID "0dc79b8e-47a1-4ec7-96b1-c9b9da2769fa"^^xsd:string ;
             
             :displaySortIndex 161 ;
@@ -3412,6 +3651,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_mm_m2PerYear rdf:type :FlowUnit ,
                             owl:NamedIndividual ;
                    
+                   rdfs:label "(mm*m2)/a"^^xsd:string ;
+                   
                    :displaySortIndex 159 ;
                    
                    :hasOpenLCAUUID "95e8feec-abc7-4eb0-bf39-2a6d411cba8d"^^xsd:string ;
@@ -3426,6 +3667,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_ng rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
+         
+         rdfs:label "ng"^^xsd:string ;
          
          :unitConversionFactor "1.0E-12"^^xsd:double ;
          
@@ -3444,7 +3687,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_nmi rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 1852.0 ;
+          rdfs:label "nmi"^^xsd:string ;
+          
+          :unitConversionFactor "1852.0"^^xsd:double ;
           
           :hasOpenLCAUUID "1f112940-6c27-4c75-828a-46d548d71cff"^^xsd:string ;
           
@@ -3461,7 +3706,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_nmi2 rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 3429904.0 ;
+           rdfs:label "nmi2"^^xsd:string ;
+           
+           :unitConversionFactor "3429904.0"^^xsd:double ;
            
            :displaySortIndex 37 ;
            
@@ -3478,7 +3725,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_normal_m3 rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                :unitConversionFactor 1.0 ;
+                rdfs:label "Nm3"^^xsd:string ;
+                
+                :unitConversionFactor "1.0"^^xsd:double ;
                 
                 :hasOpenLCAUUID "4669b8ce-894d-405a-95d1-3211accaa739"^^xsd:string ;
                 
@@ -3497,7 +3746,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_oz rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.02 ;
+         rdfs:label "oz av"^^xsd:string ;
+         
+         :unitConversionFactor "0.02"^^xsd:double ;
          
          :displaySortIndex 12 ;
          
@@ -3514,7 +3765,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_oz_troy rdf:type :FlowUnit ,
                        owl:NamedIndividual ;
               
-              :unitConversionFactor 0.03 ;
+              rdfs:label "oz t"^^xsd:string ;
+              
+              :unitConversionFactor "0.03"^^xsd:double ;
               
               :displaySortIndex 13 ;
               
@@ -3531,7 +3784,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_person_km rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                :unitConversionFactor 1.0 ;
+                rdfs:label "p*km"^^xsd:string ;
+                
+                :unitConversionFactor "1.0"^^xsd:double ;
                 
                 :displaySortIndex 134 ;
                 
@@ -3550,6 +3805,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_pg rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
+         rdfs:label "pg"^^xsd:string ;
+         
          :unitConversionFactor "1.0E-15"^^xsd:double ;
          
          :displaySortIndex 14 ;
@@ -3566,6 +3823,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_pt_Imp rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
+             
+             rdfs:label "pt (Imp)"^^xsd:string ;
              
              :unitConversionFactor "5.6826125E-4"^^xsd:double ;
              
@@ -3584,6 +3843,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_pt_US_dry rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
+                rdfs:label "pt (US dry)"^^xsd:string ;
+                
                 :unitConversionFactor "5.506104713575E-4"^^xsd:double ;
                 
                 :displaySortIndex 58 ;
@@ -3600,6 +3861,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_pt_US_fl rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
+               
+               rdfs:label "pt (US fl)"^^xsd:string ;
                
                :hasOpenLCAUUID "2df86f1f-293e-4e07-9cde-34eebc6d2c5f"^^xsd:string ;
                
@@ -3618,6 +3881,8 @@ eco:DataSource rdf:type owl:Class .
 :unit_sec rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
+          rdfs:label "s"^^xsd:string ;
+          
           :unitConversionFactor "1.1574074E-5"^^xsd:double ;
           
           :displaySortIndex 66 ;
@@ -3635,9 +3900,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_sh_ton rdf:type :FlowUnit ,
                       owl:NamedIndividual ;
              
+             rdfs:label "sh tn"^^xsd:string ;
+             
              :displaySortIndex 15 ;
              
-             :unitConversionFactor 907.18 ;
+             :unitConversionFactor "907.18"^^xsd:double ;
              
              :hasOpenLCAUUID "d4922696-9c95-4b5d-a876-425e98276978"^^xsd:string ;
              
@@ -3652,7 +3919,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_t rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
         
-        :unitConversionFactor 1000.0 ;
+        rdfs:label "t"^^xsd:string ;
+        
+        :unitConversionFactor "1000.0"^^xsd:double ;
         
         :displaySortIndex 16 ;
         
@@ -3669,7 +3938,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_day rdf:type :FlowUnit ,
                          owl:NamedIndividual ;
                 
-                :unitConversionFactor 2.73 ;
+                rdfs:label "t*d"^^xsd:string ;
+                
+                :unitConversionFactor "2.73"^^xsd:double ;
                 
                 :hasOpenLCAUUID "5209be3d-094e-4203-a074-06d7b75e9a38"^^xsd:string ;
                 
@@ -3686,9 +3957,11 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_km rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
+               rdfs:label "t*km"^^xsd:string ;
+               
                :hasOpenLCAUUID "0dea4ed8-bb6b-4049-b2b4-b2c413ef2180"^^xsd:string ;
                
-               :unitConversionFactor 1.0 ;
+               :unitConversionFactor "1.0"^^xsd:double ;
                
                :displaySortIndex 95 ;
                
@@ -3705,7 +3978,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_mi rdf:type :FlowUnit ,
                         owl:NamedIndividual ;
                
-               :unitConversionFactor 1.6 ;
+               rdfs:label "t*mi"^^xsd:string ;
+               
+               :unitConversionFactor "1.6"^^xsd:double ;
                
                :hasOpenLCAUUID "3cc51ae9-b993-4a3d-964e-0aed8d7f3966"^^xsd:string ;
                
@@ -3722,7 +3997,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_nautical_mi rdf:type :FlowUnit ,
                                  owl:NamedIndividual ;
                         
-                        :unitConversionFactor 1.85 ;
+                        rdfs:label "t*nmi"^^xsd:string ;
+                        
+                        :unitConversionFactor "1.85"^^xsd:double ;
                         
                         :displaySortIndex 100 ;
                         
@@ -3739,7 +4016,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_tonne_year rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 1000.0 ;
+                 rdfs:label "t*a"^^xsd:string ;
+                 
+                 :unitConversionFactor "1000.0"^^xsd:double ;
                  
                  :hasOpenLCAUUID "23cc7a32-f08a-43df-a87c-66953eeeb3f5"^^xsd:string ;
                  
@@ -3755,6 +4034,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_u rdf:type :FlowUnit ,
                  owl:NamedIndividual ;
+        
+        rdfs:label "u"^^xsd:string ;
         
         :unitConversionFactor "1.0E-6"^^xsd:double ;
         
@@ -3772,6 +4053,8 @@ eco:DataSource rdf:type owl:Class .
 
 :unit_ug rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
+         
+         rdfs:label "ug"^^xsd:string ;
          
          :unitConversionFactor "1.0E-9"^^xsd:double ;
          
@@ -3792,7 +4075,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_vehicle_km rdf:type :FlowUnit ,
                           owl:NamedIndividual ;
                  
-                 :unitConversionFactor 1.0 ;
+                 rdfs:label "v*km"^^xsd:string ;
+                 
+                 :unitConversionFactor "1.0"^^xsd:double ;
                  
                  :displaySortIndex 136 ;
                  
@@ -3811,7 +4096,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_yd rdf:type :FlowUnit ,
                   owl:NamedIndividual ;
          
-         :unitConversionFactor 0.9144 ;
+         rdfs:label "yd"^^xsd:string ;
+         
+         :unitConversionFactor "0.9144"^^xsd:double ;
          
          :displaySortIndex 27 ;
          
@@ -3828,7 +4115,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_yd2 rdf:type :FlowUnit ,
                    owl:NamedIndividual ;
           
-          :unitConversionFactor 0.83 ;
+          rdfs:label "yd2"^^xsd:string ;
+          
+          :unitConversionFactor "0.83"^^xsd:double ;
           
           :displaySortIndex 38 ;
           
@@ -3845,7 +4134,9 @@ eco:DataSource rdf:type owl:Class .
 :unit_year rdf:type :FlowUnit ,
                     owl:NamedIndividual ;
            
-           :unitConversionFactor 365.0 ;
+           rdfs:label "a"^^xsd:string ;
+           
+           :unitConversionFactor "365.0"^^xsd:double ;
            
            :displaySortIndex 67 ;
            
