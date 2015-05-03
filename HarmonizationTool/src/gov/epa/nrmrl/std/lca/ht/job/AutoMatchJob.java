@@ -272,7 +272,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				dataRow.setFlowUnit(flowProperty);
+				dataRow.setFlowProperty(flowProperty);
 				// NOW SEE IF THIS FLOW IS FOUND IN openLCA FLOWs
 				final boolean hit = dataRow.setMatches();
 				Display.getDefault().asyncExec(new Runnable() {

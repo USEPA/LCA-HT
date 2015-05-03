@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.LCAUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -25,6 +27,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DataRow {
@@ -32,7 +35,9 @@ public class DataRow {
 
 	private Flowable flowable = null;
 	private FlowContext flowContext = null;
-	private FlowProperty flowUnit = null;
+	private FlowProperty flowProperty = null;
+	private LCAUnit flowUnit = null;
+
 	private Resource masterFlowResource = null;
 
 	private int rowNumber;
@@ -46,7 +51,43 @@ public class DataRow {
 	public String toString() {
 		return "DataRow [columnValues=" + columnValues + "]";
 	}
+	
+	public Resource getMatchingMasterContext(){
+		if (flowContext == null){return null;}
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		Statement statement = tdbModel.getProperty(flowContext.getTdbResource(), OWL.sameAs);
+		ActiveTDB.tdbDataset.end();
+		if (statement != null){
+			return statement.getObject().asResource();
+		}
+		return null;
+	}
+	
+	public Resource getMatchingMasterProperty(){
+		if (flowProperty == null){return null;}
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		Statement statement = tdbModel.getProperty(flowProperty.getTdbResource(), OWL.sameAs);
+		ActiveTDB.tdbDataset.end();
+		if (statement != null){
+			return statement.getObject().asResource();
+		}
+		return null;
+	}
 
+	public Resource getMatchingMasterFlowUnit(){
+		if (flowUnit == null){return null;}
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		Statement statement = tdbModel.getProperty(flowUnit.getTdbResource(), OWL.sameAs);
+		ActiveTDB.tdbDataset.end();
+		if (statement != null){
+			return statement.getObject().asResource();
+		}
+		return null;
+	}
+	
 	public Iterator<String> getIterator() {
 		return columnValues.iterator();
 	}
@@ -164,12 +205,12 @@ public class DataRow {
 		this.flowContext = flowContext;
 	}
 
-	public FlowProperty getFlowUnit() {
-		return flowUnit;
+	public FlowProperty getFlowProperty() {
+		return flowProperty;
 	}
 
-	public void setFlowUnit(FlowProperty flowUnit) {
-		this.flowUnit = flowUnit;
+	public void setFlowProperty(FlowProperty flowProperty) {
+		this.flowProperty = flowProperty;
 	}
 
 	public Resource getSourceFlowTDBResource() {
@@ -282,5 +323,13 @@ public class DataRow {
 
 	public void setFlowResource(Resource flowResource) {
 		this.masterFlowResource = flowResource;
+	}
+
+	public LCAUnit getFlowUnit() {
+		return flowUnit;
+	}
+
+	public void setFlowUnit(LCAUnit flowUnit) {
+		this.flowUnit = flowUnit;
 	}
 }

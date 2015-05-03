@@ -44,7 +44,7 @@ public class FlowProperty {
 	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
 	public static List<LCAUnit> lcaMasterUnits = new ArrayList<LCAUnit>();
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
-	private static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
+//	private static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
 
 	static {
 		if (dataPropertyMap == null) {
@@ -722,7 +722,7 @@ public class FlowProperty {
 				currentLCAUnit.referenceUnit = refUnit;
 				currentLCAUnit.unit_group = masterUnitGroupResource;
 				currentLCAUnit.uuid = unitUUID;
-				currentLCAUnit.tdbResource = masterUnitResource;
+				currentLCAUnit.setTdbResource(masterUnitResource);
 				currentLCAUnit.superGroup = specialClassLabel;
 				if (!currentLCAUnit.equals(previousLCAUnit)) {
 					lcaMasterUnits.add(currentLCAUnit);
@@ -848,6 +848,11 @@ public class FlowProperty {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
+		if (matchingResource == null){
+			ActiveTDB.tsRemoveAllLikeObjects(matchingResource, OWL.sameAs, null, null);
+			this.matchingResource = null;
+			return;
+		}
 		this.matchingResource = matchingResource;
 		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
 	}
@@ -872,7 +877,7 @@ public class FlowProperty {
 		}
 		for (LCAUnit lcaUnit : lcaMasterUnits) {
 			if (lcaUnit.name.equals(unitStr)) {
-				setMatchingResource(lcaUnit.tdbResource);
+				setMatchingResource(lcaUnit.getTdbResource());
 				// matchingResource = lcaUnit.tdbResource;
 				return true;
 			}
@@ -888,11 +893,11 @@ public class FlowProperty {
 		return (String) getOneProperty(flowPropertyString);
 	}
 
-	public static List<FlowProperty> getLcaMasterProperties() {
-		return lcaMasterProperties;
-	}
-
-	public static void setLcaMasterProperties(List<FlowProperty> lcaMasterProperties) {
-		FlowProperty.lcaMasterProperties = lcaMasterProperties;
-	}
+//	public static List<FlowProperty> getLcaMasterProperties() {
+//		return lcaMasterProperties;
+//	}
+//
+//	public static void setLcaMasterProperties(List<FlowProperty> lcaMasterProperties) {
+//		FlowProperty.lcaMasterProperties = lcaMasterProperties;
+//	}
 }

@@ -350,7 +350,7 @@ public class FlowContext {
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
 		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, FedLCA.resourceUnspecified, null);
+			ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, null, null);
 		} else {
 			ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
 		}

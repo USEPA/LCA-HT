@@ -187,7 +187,7 @@ public class MatchProperties extends ViewPart {
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-			dataRow.getFlowUnit().setMatchingResource(null);
+			dataRow.getFlowProperty().setMatchingResource(null);
 			FlowsWorkflow.removeMatchPropertyRowNum(unitToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
@@ -221,17 +221,89 @@ public class MatchProperties extends ViewPart {
 		String rowNumString = tableItem.getText(0);
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		Resource rowMasterFlowProperty = dataRow.getMatchingMasterProperty();
+		Resource rowMasterFlowUnit = dataRow.getMatchingMasterFlowUnit();
 
 		if (masterTree.getSelectionCount() == 0) {
 			return;
 		}
-		TreeItem treeItem = masterTree.getSelection()[0];
-		TreeNode treeNode = (TreeNode) treeItem.getData();
-		Resource newResource = treeNode.getUri();
-		if (newResource == null) {
-			return;
+		if (rowMasterFlowProperty == null) {
+			if (masterTree.getSelectionCount() == 1) { // HOW COULD THERE BE SELECTIONS IF NO MATCHING MASTER PROPERTY?
+				TreeItem treeItem = masterTree.getSelection()[0];
+				TreeNode treeNode = (TreeNode) treeItem.getData();
+				if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
+					dataRow.getFlowProperty().setMatchingResource(treeNode.uri);
+					dataRow.getFlowUnit().setMatchingResource(null);
+				} else if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
+					dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
+					TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
+					dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
+				}
+			}
+		} else {
+			for (TreeItem treeItem : masterTree.getSelection()) {
+				TreeNode treeNode = (TreeNode) treeItem.getData();
+				if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
+					Resource masterFlowProperty = treeNode.getUri();
+					if (!rowMasterFlowProperty.equals(masterFlowProperty)) {
+						// dataRow.getFlowProperty().setMatchingResource(masterFlowProperty);
+						rowMasterFlowProperty = masterFlowProperty;
+						// dataRow.getFlowUnit().setMatchingResource(null);
+						rowMasterFlowUnit = null;
+					}
+				} else if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
+					Resource masterFlowUnit = treeNode.getUri();
+					if (rowMasterFlowUnit == null) {
+						// dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
+						rowMasterFlowUnit = treeNode.uri;
+						TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
+						// dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
+						rowMasterFlowProperty = parentTreeNode.uri;
+					} else {
+						if (!masterFlowUnit.equals(rowMasterFlowUnit)) {
+							// dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
+							rowMasterFlowUnit = treeNode.uri;
+							TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
+							rowMasterFlowProperty = parentTreeNode.uri;
+
+							// dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
+						}
+					}
+				}
+			}
 		}
-		dataRow.getFlowUnit().setMatchingResource(newResource);
+		// TreeItem treeItem = masterTree.getSelection()[0];
+		// TreeNode treeNode = (TreeNode) treeItem.getData();
+		// // if (treeNode.nodeClass.equals(FedLCA.UnitGroup)){
+		// //
+		// // }
+		// Resource newResource = treeNode.getUri();
+		// if (newResource == null) {
+		// return;
+		// }
+		// dataRow.getFlowProperty().setMatchingResource(newResource);
+		masterTree.deselectAll();
+		dataRow.getFlowProperty().setMatchingResource(rowMasterFlowProperty);
+		dataRow.getFlowUnit().setMatchingResource(rowMasterFlowUnit);
+
+		for (TreeItem treeItem : masterTree.getItems()) {
+			TreeNode treeNode = (TreeNode) treeItem.getData();
+			if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
+				if (rowMasterFlowProperty.equals(treeNode.uri)) {
+					masterTree.select(treeItem);
+					;
+				}
+			} else {
+				if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
+					if (rowMasterFlowUnit != null) {
+						if (rowMasterFlowUnit.equals(treeNode.uri)) {
+							masterTree.select(treeItem);
+							;
+						}
+					}
+				}
+			}
+		}
 		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -304,7 +376,7 @@ public class MatchProperties extends ViewPart {
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 
 		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (lcaUnit.tdbResource.equals(resource)) {
+			if (lcaUnit.getTdbResource().equals(resource)) {
 				resultStrings[0] = lcaUnit.getUnitGroupName();
 				resultStrings[1] = lcaUnit.getReferenceUnitName();
 				resultStrings[2] = "" + lcaUnit.conversionFactor;
@@ -321,7 +393,7 @@ public class MatchProperties extends ViewPart {
 		resultStrings[3] = ""; // Master List Flow Property Reference Factor
 
 		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (lcaUnit.tdbResource.equals(resource)) {
+			if (lcaUnit.getTdbResource().equals(resource)) {
 				resultStrings[0] = lcaUnit.getUnitGroupName();
 				resultStrings[1] = lcaUnit.name;
 				resultStrings[2] = "" + lcaUnit.conversionFactor;
@@ -340,272 +412,275 @@ public class MatchProperties extends ViewPart {
 		TreeNode curSuperGroupNode = null;
 		TreeNode curGroupNode = null;
 
-		for (LCAUnit lcaUnit:FlowProperty.lcaMasterUnits){
-			if (!superGroup.equals(lcaUnit.superGroup)){
+		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
+			if (!superGroup.equals(lcaUnit.superGroup)) {
 				superGroup = lcaUnit.superGroup;
 				curSuperGroupNode = new TreeNode(masterPropertyTree);
 				curSuperGroupNode.nodeName = superGroup;
 			}
-			if (!unitGroup.equals(lcaUnit.getUnitGroupName())){
+			if (!unitGroup.equals(lcaUnit.getUnitGroupName())) {
 				unitGroup = lcaUnit.getUnitGroupName();
 				curGroupNode = new TreeNode(curSuperGroupNode);
 				curGroupNode.nodeName = unitGroup;
 				curGroupNode.uri = lcaUnit.unit_group;
 				curGroupNode.uuid = lcaUnit.getUnitGroupUUID();
+				curGroupNode.nodeClass = FedLCA.UnitGroup;
 			}
 			TreeNode curNode = new TreeNode(curGroupNode);
 
-			curNode.nodeName = lcaUnit.name+" ("+lcaUnit.description+")";
-			curNode.uri = lcaUnit.tdbResource;
+			curNode.nodeName = lcaUnit.name + " (" + lcaUnit.description + ")";
+			curNode.uri = lcaUnit.getTdbResource();
+			curGroupNode.nodeClass = FedLCA.FlowUnit;
+
 			curNode.uuid = lcaUnit.uuid;
 			curNode.referenceDescription = lcaUnit.description;
-//			treeNode.referenceUnit = lcaUnit.name;
-//			createSubNodes(curGroupNode);
+			// treeNode.referenceUnit = lcaUnit.name;
+			// createSubNodes(curGroupNode);
 		}
-//		partialCollapse();
+		// partialCollapse();
 
-//		TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
-//		physicalIndividual.nodeName = "Physical individual";
-//
-//		TreeNode physicalCombined = new TreeNode(masterPropertyTree);
-//		physicalCombined.nodeName = "Physical hybrid";
-//
-//		TreeNode other = new TreeNode(masterPropertyTree);
-//		other.nodeName = "Other";
+		// TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
+		// physicalIndividual.nodeName = "Physical individual";
+		//
+		// TreeNode physicalCombined = new TreeNode(masterPropertyTree);
+		// physicalCombined.nodeName = "Physical hybrid";
+		//
+		// TreeNode other = new TreeNode(masterPropertyTree);
+		// other.nodeName = "Other";
 
-//		// -------- PHYSICAL
-//		TreeNode mass = new TreeNode(physicalIndividual);
-//		mass.nodeName = "Mass";
-//		mass.uri = FedLCA.Mass;
-//		mass.uuid = "93a60a57-a4c8-11da-a746-0800200c9a66";
-//		mass.referenceDescription = "Kilogram";
-//		mass.referenceUnit = "kg";
-//		createSubNodes(mass);
-//
-//		TreeNode length = new TreeNode(physicalIndividual);
-//		length.nodeName = "Length";
-//		length.uri = FedLCA.Length;
-//		length.uuid = "838aaa22-0117-11db-92e3-0800200c9a66";
-//		length.referenceDescription = "Meter";
-//		length.referenceUnit = "m";
-//		createSubNodes(length);
-//
-//		TreeNode area = new TreeNode(physicalIndividual);
-//		area.nodeName = "Area";
-//		area.uri = FedLCA.Area;
-//		area.uuid = "93a60a57-a3c8-18da-a746-0800200c9a66";
-//		area.referenceDescription = "Square meter";
-//		area.referenceUnit = "m2";
-//		createSubNodes(area);
-//
-//		TreeNode volume = new TreeNode(physicalIndividual);
-//		volume.nodeName = "Volume";
-//		volume.uri = FedLCA.Volume;
-//		volume.uuid = "93a60a57-a3c8-12da-a746-0800200c9a66";
-//		volume.referenceDescription = "Cubic meter";
-//		volume.referenceUnit = "m3";
-//		createSubNodes(volume);
-//
-//		TreeNode duration = new TreeNode(physicalIndividual);
-//		duration.nodeName = "Time";
-//		// duration.nodeName = "Duration";
-//		duration.uri = FedLCA.Duration;
-//		duration.uuid = "af638906-3ec7-4314-8de7-f76039f2dd01";
-//		duration.referenceDescription = "Day";
-//		duration.referenceUnit = "d";
-//		createSubNodes(duration);
-//
-//		TreeNode energy = new TreeNode(physicalIndividual);
-//		energy.nodeName = "Energy";
-//		energy.uri = FedLCA.Energy;
-//		energy.uuid = "93a60a57-a3c8-11da-a746-0800200c9a66";
-//		energy.referenceDescription = "Megajoule";
-//		energy.referenceUnit = "MJ";
-//		createSubNodes(energy);
-//
-//		TreeNode radioactivity = new TreeNode(physicalIndividual);
-//		radioactivity.nodeName = "Radioactivity";
-//		radioactivity.uri = FedLCA.Radioactivity;
-//		radioactivity.uuid = "93a60a57-a3c8-16da-a746-0800200c9a66";
-//		radioactivity.referenceDescription = "Kilo-Bequerel, 1000 events per second";
-//		radioactivity.referenceUnit = "kBq";
-//		createSubNodes(radioactivity);
-//
-//		// -------- PHYSICAL HYBRID
-//		TreeNode massTime = new TreeNode(physicalCombined);
-//		massTime.nodeName = "Mass*time";
-//		massTime.uri = FedLCA.MassTime;
-//		massTime.uuid = "59f191d6-5dd3-4553-af88-1a32accfe308";
-//		massTime.referenceDescription = "Kilogram times year";
-//		massTime.referenceUnit = "kg*a";
-//		createSubNodes(massTime);
-//
-//		TreeNode massPerTime = new TreeNode(physicalCombined);
-//		massPerTime.nodeName = "Mass/time";
-//		massPerTime.uri = FedLCA.MassPerTime;
-//		massPerTime.uuid = "94b84332-8f2d-4592-b2a0-e19da33a69e9";
-//		massPerTime.referenceDescription = "Kilogram per year";
-//		massPerTime.referenceUnit = "kg/a";
-//		createSubNodes(massPerTime);
-//		
-//		TreeNode massLength = new TreeNode(physicalCombined);
-//		massLength.nodeName = "Mass*length";
-//		massLength.uri = FedLCA.MassLength;
-//		massLength.uuid = "838aaa21-0117-11db-92e3-0800200c9a66";
-//		massLength.referenceDescription = "Metric ton-kilometer";
-//		massLength.referenceUnit = "t*km";
-//		createSubNodes(massLength);
-//
-//		TreeNode lengthTime = new TreeNode(physicalCombined);
-//		lengthTime.nodeName = "Length*time";
-//		lengthTime.uri = FedLCA.LengthTime;
-//		lengthTime.uuid = "326eb58b-e5b3-4cea-b45a-2398c25109f8";
-//		lengthTime.referenceDescription = "Meter times year";
-//		lengthTime.referenceUnit = "m*a";
-//		createSubNodes(lengthTime);
-//
-//		TreeNode areaTime = new TreeNode(physicalCombined);
-//		areaTime.nodeName = "Area*time";
-//		areaTime.uri = FedLCA.AreaTime;
-//		areaTime.uuid = "93a60a57-a3c8-20da-a746-0800200c9a66";
-//		areaTime.referenceDescription = "Square meter times year";
-//		areaTime.referenceUnit = "m2*a";
-//		createSubNodes(areaTime);
-//
-//		TreeNode volumeTime = new TreeNode(physicalCombined);
-//		volumeTime.nodeName = "Volume*time";
-//		volumeTime.uri = FedLCA.VolumeTime;
-//		volumeTime.uuid = "93a60a57-a3c8-23da-a746-0800200c9a66";
-//		volumeTime.referenceDescription = "Cubic meter times year";
-//		volumeTime.referenceUnit = "m3*a";
-//		createSubNodes(volumeTime);
-//
-//		TreeNode volumeLength = new TreeNode(physicalCombined);
-//		volumeLength.nodeName = "Volume*length";
-//		volumeLength.uri = FedLCA.VolumeLength;
-//		volumeLength.uuid = "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d";
-//		volumeLength.referenceDescription = "Cubic metre times kilometre";
-//		volumeLength.referenceUnit = "m3*km";
-//		createSubNodes(volumeLength);
-//
-//		TreeNode energyPerMassTime = new TreeNode(physicalCombined);
-//		energyPerMassTime.nodeName = "Energy/mass*time";
-//		energyPerMassTime.uri = FedLCA.EnergyPerMassTime;
-//		energyPerMassTime.uuid = "258d6abd-14f2-4484-956c-c88e8f6fd8ed";
-//		energyPerMassTime.referenceDescription = "Megajoule per kilogram times day";
-//		energyPerMassTime.referenceUnit = "MJ/kg*d";
-//		createSubNodes(energyPerMassTime);
-//
-//		TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
-//		energyPerAreaTime.nodeName = "Energy/area*time";
-//		energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
-//		energyPerAreaTime.uuid = "876adcd3-29e6-44e2-acdd-11be304ae654";
-//		energyPerAreaTime.referenceDescription = "Kilowatthour per square meter times day";
-//		energyPerAreaTime.referenceUnit = "kWh/m2*d";
-//		createSubNodes(energyPerAreaTime);
-//
-//		// -------- OTHER
-//		TreeNode itemCount = new TreeNode(other);
-//		itemCount.nodeName = "Number of items";
-//		itemCount.uri = FedLCA.ItemCount;
-//		itemCount.uuid = "5beb6eed-33a9-47b8-9ede-1dfe8f679159";
-//		itemCount.referenceDescription = "Number of items";
-//		itemCount.referenceUnit = "Item(s)";
-//		createSubNodes(itemCount);
-//
-//		TreeNode itemsLength = new TreeNode(other);
-//		itemsLength.nodeName = "Items*length";
-//		itemsLength.uri = FedLCA.ItemsLength;
-//		itemsLength.uuid = "5454b231-270e-45e6-89b2-7f4f3e482245";
-//		itemsLength.referenceDescription = "Items times kilometre";
-//		itemsLength.referenceUnit = "Items*km";
-//		createSubNodes(itemsLength);
-//
-//		TreeNode goodsTransportMassDistance = new TreeNode(other);
-//		goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
-//		goodsTransportMassDistance.uri = FedLCA.GoodsTransportMassDistance;
-//		goodsTransportMassDistance.uuid = "";
-//		goodsTransportMassDistance.referenceDescription = "";
-//		goodsTransportMassDistance.referenceUnit = "";
-//		createSubNodes(goodsTransportMassDistance);
-//
-//		TreeNode personTransport = new TreeNode(other);
-//		personTransport.nodeName = "Person transport";
-//		personTransport.uri = FedLCA.PersonTransport;
-//		personTransport.uuid = "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7";
-//		personTransport.referenceDescription = "Person kilometer";
-//		personTransport.referenceUnit = "p*km";
-//		createSubNodes(personTransport);
-//
-//		TreeNode vehicleTransport = new TreeNode(other);
-//		vehicleTransport.nodeName = "Vehicle transport";
-//		vehicleTransport.uri = FedLCA.VehicleTransport;
-//		vehicleTransport.uuid = "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9";
-//		vehicleTransport.referenceDescription = "Vehicle-kilometer";
-//		vehicleTransport.referenceUnit = "v*km";
-//		createSubNodes(vehicleTransport);
-//
-//		TreeNode netCalorificValue = new TreeNode(other);
-//		netCalorificValue.nodeName = "Net calorific value";
-//		netCalorificValue.uri = FedLCA.NetCalorificValue;
-//		netCalorificValue.uuid = "";
-//		netCalorificValue.referenceDescription = "";
-//		netCalorificValue.referenceUnit = "";
-//		createSubNodes(netCalorificValue);
-//
-//		TreeNode grossCalorificValue = new TreeNode(other);
-//		grossCalorificValue.nodeName = "Gross calorific value";
-//		grossCalorificValue.uri = FedLCA.GrossCalorificValue;
-//		grossCalorificValue.uuid = "";
-//		grossCalorificValue.referenceDescription = "";
-//		grossCalorificValue.referenceUnit = "";
-//		createSubNodes(grossCalorificValue);
-//
-//		TreeNode normalVolume = new TreeNode(other);
-//		normalVolume.nodeName = "Normal Volume";
-//		normalVolume.uri = FedLCA.NormalVolume;
-//		normalVolume.uuid = "";
-//		normalVolume.referenceDescription = "";
-//		normalVolume.referenceUnit = "";
-//		createSubNodes(normalVolume);
-//
-//		TreeNode valueUS2000BulkPrices = new TreeNode(other);
-//		valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
-//		valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
-//		valueUS2000BulkPrices.uuid = "";
-//		valueUS2000BulkPrices.referenceDescription = "";
-//		valueUS2000BulkPrices.referenceUnit = "";
-//		createSubNodes(valueUS2000BulkPrices);
+		// // -------- PHYSICAL
+		// TreeNode mass = new TreeNode(physicalIndividual);
+		// mass.nodeName = "Mass";
+		// mass.uri = FedLCA.Mass;
+		// mass.uuid = "93a60a57-a4c8-11da-a746-0800200c9a66";
+		// mass.referenceDescription = "Kilogram";
+		// mass.referenceUnit = "kg";
+		// createSubNodes(mass);
+		//
+		// TreeNode length = new TreeNode(physicalIndividual);
+		// length.nodeName = "Length";
+		// length.uri = FedLCA.Length;
+		// length.uuid = "838aaa22-0117-11db-92e3-0800200c9a66";
+		// length.referenceDescription = "Meter";
+		// length.referenceUnit = "m";
+		// createSubNodes(length);
+		//
+		// TreeNode area = new TreeNode(physicalIndividual);
+		// area.nodeName = "Area";
+		// area.uri = FedLCA.Area;
+		// area.uuid = "93a60a57-a3c8-18da-a746-0800200c9a66";
+		// area.referenceDescription = "Square meter";
+		// area.referenceUnit = "m2";
+		// createSubNodes(area);
+		//
+		// TreeNode volume = new TreeNode(physicalIndividual);
+		// volume.nodeName = "Volume";
+		// volume.uri = FedLCA.Volume;
+		// volume.uuid = "93a60a57-a3c8-12da-a746-0800200c9a66";
+		// volume.referenceDescription = "Cubic meter";
+		// volume.referenceUnit = "m3";
+		// createSubNodes(volume);
+		//
+		// TreeNode duration = new TreeNode(physicalIndividual);
+		// duration.nodeName = "Time";
+		// // duration.nodeName = "Duration";
+		// duration.uri = FedLCA.Duration;
+		// duration.uuid = "af638906-3ec7-4314-8de7-f76039f2dd01";
+		// duration.referenceDescription = "Day";
+		// duration.referenceUnit = "d";
+		// createSubNodes(duration);
+		//
+		// TreeNode energy = new TreeNode(physicalIndividual);
+		// energy.nodeName = "Energy";
+		// energy.uri = FedLCA.Energy;
+		// energy.uuid = "93a60a57-a3c8-11da-a746-0800200c9a66";
+		// energy.referenceDescription = "Megajoule";
+		// energy.referenceUnit = "MJ";
+		// createSubNodes(energy);
+		//
+		// TreeNode radioactivity = new TreeNode(physicalIndividual);
+		// radioactivity.nodeName = "Radioactivity";
+		// radioactivity.uri = FedLCA.Radioactivity;
+		// radioactivity.uuid = "93a60a57-a3c8-16da-a746-0800200c9a66";
+		// radioactivity.referenceDescription = "Kilo-Bequerel, 1000 events per second";
+		// radioactivity.referenceUnit = "kBq";
+		// createSubNodes(radioactivity);
+		//
+		// // -------- PHYSICAL HYBRID
+		// TreeNode massTime = new TreeNode(physicalCombined);
+		// massTime.nodeName = "Mass*time";
+		// massTime.uri = FedLCA.MassTime;
+		// massTime.uuid = "59f191d6-5dd3-4553-af88-1a32accfe308";
+		// massTime.referenceDescription = "Kilogram times year";
+		// massTime.referenceUnit = "kg*a";
+		// createSubNodes(massTime);
+		//
+		// TreeNode massPerTime = new TreeNode(physicalCombined);
+		// massPerTime.nodeName = "Mass/time";
+		// massPerTime.uri = FedLCA.MassPerTime;
+		// massPerTime.uuid = "94b84332-8f2d-4592-b2a0-e19da33a69e9";
+		// massPerTime.referenceDescription = "Kilogram per year";
+		// massPerTime.referenceUnit = "kg/a";
+		// createSubNodes(massPerTime);
+		//
+		// TreeNode massLength = new TreeNode(physicalCombined);
+		// massLength.nodeName = "Mass*length";
+		// massLength.uri = FedLCA.MassLength;
+		// massLength.uuid = "838aaa21-0117-11db-92e3-0800200c9a66";
+		// massLength.referenceDescription = "Metric ton-kilometer";
+		// massLength.referenceUnit = "t*km";
+		// createSubNodes(massLength);
+		//
+		// TreeNode lengthTime = new TreeNode(physicalCombined);
+		// lengthTime.nodeName = "Length*time";
+		// lengthTime.uri = FedLCA.LengthTime;
+		// lengthTime.uuid = "326eb58b-e5b3-4cea-b45a-2398c25109f8";
+		// lengthTime.referenceDescription = "Meter times year";
+		// lengthTime.referenceUnit = "m*a";
+		// createSubNodes(lengthTime);
+		//
+		// TreeNode areaTime = new TreeNode(physicalCombined);
+		// areaTime.nodeName = "Area*time";
+		// areaTime.uri = FedLCA.AreaTime;
+		// areaTime.uuid = "93a60a57-a3c8-20da-a746-0800200c9a66";
+		// areaTime.referenceDescription = "Square meter times year";
+		// areaTime.referenceUnit = "m2*a";
+		// createSubNodes(areaTime);
+		//
+		// TreeNode volumeTime = new TreeNode(physicalCombined);
+		// volumeTime.nodeName = "Volume*time";
+		// volumeTime.uri = FedLCA.VolumeTime;
+		// volumeTime.uuid = "93a60a57-a3c8-23da-a746-0800200c9a66";
+		// volumeTime.referenceDescription = "Cubic meter times year";
+		// volumeTime.referenceUnit = "m3*a";
+		// createSubNodes(volumeTime);
+		//
+		// TreeNode volumeLength = new TreeNode(physicalCombined);
+		// volumeLength.nodeName = "Volume*length";
+		// volumeLength.uri = FedLCA.VolumeLength;
+		// volumeLength.uuid = "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d";
+		// volumeLength.referenceDescription = "Cubic metre times kilometre";
+		// volumeLength.referenceUnit = "m3*km";
+		// createSubNodes(volumeLength);
+		//
+		// TreeNode energyPerMassTime = new TreeNode(physicalCombined);
+		// energyPerMassTime.nodeName = "Energy/mass*time";
+		// energyPerMassTime.uri = FedLCA.EnergyPerMassTime;
+		// energyPerMassTime.uuid = "258d6abd-14f2-4484-956c-c88e8f6fd8ed";
+		// energyPerMassTime.referenceDescription = "Megajoule per kilogram times day";
+		// energyPerMassTime.referenceUnit = "MJ/kg*d";
+		// createSubNodes(energyPerMassTime);
+		//
+		// TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
+		// energyPerAreaTime.nodeName = "Energy/area*time";
+		// energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
+		// energyPerAreaTime.uuid = "876adcd3-29e6-44e2-acdd-11be304ae654";
+		// energyPerAreaTime.referenceDescription = "Kilowatthour per square meter times day";
+		// energyPerAreaTime.referenceUnit = "kWh/m2*d";
+		// createSubNodes(energyPerAreaTime);
+		//
+		// // -------- OTHER
+		// TreeNode itemCount = new TreeNode(other);
+		// itemCount.nodeName = "Number of items";
+		// itemCount.uri = FedLCA.ItemCount;
+		// itemCount.uuid = "5beb6eed-33a9-47b8-9ede-1dfe8f679159";
+		// itemCount.referenceDescription = "Number of items";
+		// itemCount.referenceUnit = "Item(s)";
+		// createSubNodes(itemCount);
+		//
+		// TreeNode itemsLength = new TreeNode(other);
+		// itemsLength.nodeName = "Items*length";
+		// itemsLength.uri = FedLCA.ItemsLength;
+		// itemsLength.uuid = "5454b231-270e-45e6-89b2-7f4f3e482245";
+		// itemsLength.referenceDescription = "Items times kilometre";
+		// itemsLength.referenceUnit = "Items*km";
+		// createSubNodes(itemsLength);
+		//
+		// TreeNode goodsTransportMassDistance = new TreeNode(other);
+		// goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
+		// goodsTransportMassDistance.uri = FedLCA.GoodsTransportMassDistance;
+		// goodsTransportMassDistance.uuid = "";
+		// goodsTransportMassDistance.referenceDescription = "";
+		// goodsTransportMassDistance.referenceUnit = "";
+		// createSubNodes(goodsTransportMassDistance);
+		//
+		// TreeNode personTransport = new TreeNode(other);
+		// personTransport.nodeName = "Person transport";
+		// personTransport.uri = FedLCA.PersonTransport;
+		// personTransport.uuid = "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7";
+		// personTransport.referenceDescription = "Person kilometer";
+		// personTransport.referenceUnit = "p*km";
+		// createSubNodes(personTransport);
+		//
+		// TreeNode vehicleTransport = new TreeNode(other);
+		// vehicleTransport.nodeName = "Vehicle transport";
+		// vehicleTransport.uri = FedLCA.VehicleTransport;
+		// vehicleTransport.uuid = "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9";
+		// vehicleTransport.referenceDescription = "Vehicle-kilometer";
+		// vehicleTransport.referenceUnit = "v*km";
+		// createSubNodes(vehicleTransport);
+		//
+		// TreeNode netCalorificValue = new TreeNode(other);
+		// netCalorificValue.nodeName = "Net calorific value";
+		// netCalorificValue.uri = FedLCA.NetCalorificValue;
+		// netCalorificValue.uuid = "";
+		// netCalorificValue.referenceDescription = "";
+		// netCalorificValue.referenceUnit = "";
+		// createSubNodes(netCalorificValue);
+		//
+		// TreeNode grossCalorificValue = new TreeNode(other);
+		// grossCalorificValue.nodeName = "Gross calorific value";
+		// grossCalorificValue.uri = FedLCA.GrossCalorificValue;
+		// grossCalorificValue.uuid = "";
+		// grossCalorificValue.referenceDescription = "";
+		// grossCalorificValue.referenceUnit = "";
+		// createSubNodes(grossCalorificValue);
+		//
+		// TreeNode normalVolume = new TreeNode(other);
+		// normalVolume.nodeName = "Normal Volume";
+		// normalVolume.uri = FedLCA.NormalVolume;
+		// normalVolume.uuid = "";
+		// normalVolume.referenceDescription = "";
+		// normalVolume.referenceUnit = "";
+		// createSubNodes(normalVolume);
+		//
+		// TreeNode valueUS2000BulkPrices = new TreeNode(other);
+		// valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
+		// valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
+		// valueUS2000BulkPrices.uuid = "";
+		// valueUS2000BulkPrices.referenceDescription = "";
+		// valueUS2000BulkPrices.referenceUnit = "";
+		// createSubNodes(valueUS2000BulkPrices);
 
 		return masterPropertyTree;
 	}
 
-	private void createSubNodes(TreeNode flowPropertyNode) {
-		String propertyName = flowPropertyNode.getNodeName();
-		String propertyReferenceUnit = flowPropertyNode.getReferenceUnit();
-		List<LCAUnit> units = new ArrayList<LCAUnit>();
-		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (lcaUnit.unit_group.equals(propertyName)) {
-				if (lcaUnit.name.equals(propertyReferenceUnit)) {
-					units.add(0, lcaUnit);
-				} else {
-					units.add(lcaUnit);
-				}
-			}
-		}
-		for (LCAUnit lcaUnit : units) {
-			System.out.println(lcaUnit.name);
-			System.out.println("// " + lcaUnit.description);
-
-			TreeNode subNode = new TreeNode(flowPropertyNode);
-			subNode.nodeName = lcaUnit.description + "(" + lcaUnit.name + ")";
-			// subNode.uri = FedLCA.[pssh];
-			subNode.uuid = lcaUnit.uuid;
-			subNode.uri = lcaUnit.tdbResource;
-			subNode.referenceDescription = lcaUnit.description;
-			subNode.referenceUnit = flowPropertyNode.referenceUnit;
-		}
-	}
+	// private void createSubNodes(TreeNode flowPropertyNode) {
+	// String propertyName = flowPropertyNode.getNodeName();
+	// String propertyReferenceUnit = flowPropertyNode.getReferenceUnit();
+	// List<LCAUnit> units = new ArrayList<LCAUnit>();
+	// for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
+	// if (lcaUnit.unit_group.equals(propertyName)) {
+	// if (lcaUnit.name.equals(propertyReferenceUnit)) {
+	// units.add(0, lcaUnit);
+	// } else {
+	// units.add(lcaUnit);
+	// }
+	// }
+	// }
+	// for (LCAUnit lcaUnit : units) {
+	// System.out.println(lcaUnit.name);
+	// System.out.println("// " + lcaUnit.description);
+	//
+	// TreeNode subNode = new TreeNode(flowPropertyNode);
+	// subNode.nodeName = lcaUnit.description + "(" + lcaUnit.name + ")";
+	// // subNode.uri = FedLCA.[pssh];
+	// subNode.uuid = lcaUnit.uuid;
+	// subNode.uri = lcaUnit.tdbResource;
+	// subNode.referenceDescription = lcaUnit.description;
+	// subNode.referenceUnit = flowPropertyNode.referenceUnit;
+	// }
+	// }
 
 	private class MyContentProvider implements ITreeContentProvider {
 
@@ -763,76 +838,76 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-	private MouseListener columnMouseListener = new MouseListener() {
-
-		@Override
-		public void mouseDoubleClick(MouseEvent e) {
-			System.out.println("double click event :e =" + e);
-		}
-
-		@Override
-		public void mouseDown(MouseEvent e) {
-			System.out.println("mouse down event :e =" + e);
-			if (e.button == 1) {
-				leftClick(e);
-			} else if (e.button == 3) {
-				// queryTbl.deselectAll();
-				rightClick(e);
-			}
-		}
-
-		@Override
-		public void mouseUp(MouseEvent e) {
-			System.out.println("mouse up event :e =" + e);
-		}
-
-		private void leftClick(MouseEvent event) {
-			System.out.println("cellSelectionMouseDownListener event " + event);
-			Point ptLeft = new Point(1, event.y);
-			Point ptClick = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
-			// TableItem item = queryTbl.getItem(ptLeft);
-			// if (item == null) {
-			// return;
-			// }
-			// clickedRow = queryTbl.indexOf(item);
-			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// if (clickedCol > 0) {
-			// queryTbl.deselectAll();
-			// return;
-			// }
-			// queryTbl.select(clickedRow);
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = " + rowNumSelected);
-			System.out.println("colNumSelected = " + colNumSelected);
-			// rowMenu.setVisible(true);
-		}
-
-		private void rightClick(MouseEvent event) {
-			System.out.println("cellSelectionMouseDownListener event " + event);
-			Point ptLeft = new Point(1, event.y);
-			Point ptClick = new Point(event.x, event.y);
-			int clickedRow = 0;
-			int clickedCol = 0;
-			// TableItem item = queryTbl.getItem(ptLeft);
-			// if (item == null) {
-			// return;
-			// }
-			// clickedRow = queryTbl.indexOf(item);
-			// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// int dataClickedCol = clickedCol - 1;
-			if (clickedCol < 0) {
-				return;
-			}
-
-			rowNumSelected = clickedRow;
-			colNumSelected = clickedCol;
-			System.out.println("rowNumSelected = " + rowNumSelected);
-			System.out.println("colNumSelected = " + colNumSelected);
-		}
-	};
+	// private MouseListener columnMouseListener = new MouseListener() {
+	//
+	// @Override
+	// public void mouseDoubleClick(MouseEvent e) {
+	// System.out.println("double click event :e =" + e);
+	// }
+	//
+	// @Override
+	// public void mouseDown(MouseEvent e) {
+	// System.out.println("mouse down event :e =" + e);
+	// if (e.button == 1) {
+	// leftClick(e);
+	// } else if (e.button == 3) {
+	// // queryTbl.deselectAll();
+	// rightClick(e);
+	// }
+	// }
+	//
+	// @Override
+	// public void mouseUp(MouseEvent e) {
+	// System.out.println("mouse up event :e =" + e);
+	// }
+	//
+	// private void leftClick(MouseEvent event) {
+	// System.out.println("cellSelectionMouseDownListener event " + event);
+	// Point ptLeft = new Point(1, event.y);
+	// Point ptClick = new Point(event.x, event.y);
+	// int clickedRow = 0;
+	// int clickedCol = 0;
+	// // TableItem item = queryTbl.getItem(ptLeft);
+	// // if (item == null) {
+	// // return;
+	// // }
+	// // clickedRow = queryTbl.indexOf(item);
+	// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// // if (clickedCol > 0) {
+	// // queryTbl.deselectAll();
+	// // return;
+	// // }
+	// // queryTbl.select(clickedRow);
+	// rowNumSelected = clickedRow;
+	// colNumSelected = clickedCol;
+	// System.out.println("rowNumSelected = " + rowNumSelected);
+	// System.out.println("colNumSelected = " + colNumSelected);
+	// // rowMenu.setVisible(true);
+	// }
+	//
+	// private void rightClick(MouseEvent event) {
+	// System.out.println("cellSelectionMouseDownListener event " + event);
+	// Point ptLeft = new Point(1, event.y);
+	// Point ptClick = new Point(event.x, event.y);
+	// int clickedRow = 0;
+	// int clickedCol = 0;
+	// // TableItem item = queryTbl.getItem(ptLeft);
+	// // if (item == null) {
+	// // return;
+	// // }
+	// // clickedRow = queryTbl.indexOf(item);
+	// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// // int dataClickedCol = clickedCol - 1;
+	// if (clickedCol < 0) {
+	// return;
+	// }
+	//
+	// rowNumSelected = clickedRow;
+	// colNumSelected = clickedCol;
+	// System.out.println("rowNumSelected = " + rowNumSelected);
+	// System.out.println("colNumSelected = " + colNumSelected);
+	// }
+	// };
 	private Composite outerComposite;
 	private Button unAssignButton;
 	private Button nextButton;
@@ -858,7 +933,7 @@ public class MatchProperties extends ViewPart {
 
 	public static void update(int rowNumber) {
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		unitToMatch = dataRow.getFlowUnit();
+		unitToMatch = dataRow.getFlowProperty();
 		if (unitToMatch == null) {
 			masterTree.deselectAll();
 			setUserDataLabel("", false);
@@ -894,50 +969,50 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-//	public static void update() {
-//		Util.findView(CSVTableView.ID);
-//		if (CSVTableView.getTable().getSelectionCount() == 0) {
-//			return;
-//		}
-//		TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-//		String rowNumString = tableItem.getText(0);
-//		int rowNumber = Integer.parseInt(rowNumString) - 1;
-//		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-//		unitToMatch = dataRow.getFlowProperty();
-//		if (unitToMatch == null) {
-//			masterTree.deselectAll();
-//			setUserDataLabel("", false);
-//		} else {
-//
-//			String labelString = null;
-//			String propertyString = unitToMatch.getPropertyStr();
-//			String unitString = unitToMatch.getUnitStr();
-//			if (propertyString == null) {
-//				labelString = unitString;
-//			} else {
-//				// labelString = propertyString + ": " + unitString;
-//
-//				labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
-//			}
-//
-//			partialCollapse();
-//			Resource propertyResource = unitToMatch.getMatchingResource();
-//			if (propertyResource != null) {
-//				TreeItem treeItem = getTreeItemByURI(propertyResource);
-//				if (treeItem != null) {
-//					masterTree.setSelection(treeItem);
-//					setUserDataLabel(labelString, true);
-//
-//				} else {
-//					masterTree.deselectAll();
-//					setUserDataLabel(labelString, false);
-//				}
-//			} else {
-//				masterTree.deselectAll();
-//				setUserDataLabel(labelString, false);
-//			}
-//		}
-//	}
+	// public static void update() {
+	// Util.findView(CSVTableView.ID);
+	// if (CSVTableView.getTable().getSelectionCount() == 0) {
+	// return;
+	// }
+	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
+	// String rowNumString = tableItem.getText(0);
+	// int rowNumber = Integer.parseInt(rowNumString) - 1;
+	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+	// unitToMatch = dataRow.getFlowProperty();
+	// if (unitToMatch == null) {
+	// masterTree.deselectAll();
+	// setUserDataLabel("", false);
+	// } else {
+	//
+	// String labelString = null;
+	// String propertyString = unitToMatch.getPropertyStr();
+	// String unitString = unitToMatch.getUnitStr();
+	// if (propertyString == null) {
+	// labelString = unitString;
+	// } else {
+	// // labelString = propertyString + ": " + unitString;
+	//
+	// labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
+	// }
+	//
+	// partialCollapse();
+	// Resource propertyResource = unitToMatch.getMatchingResource();
+	// if (propertyResource != null) {
+	// TreeItem treeItem = getTreeItemByURI(propertyResource);
+	// if (treeItem != null) {
+	// masterTree.setSelection(treeItem);
+	// setUserDataLabel(labelString, true);
+	//
+	// } else {
+	// masterTree.deselectAll();
+	// setUserDataLabel(labelString, false);
+	// }
+	// } else {
+	// masterTree.deselectAll();
+	// setUserDataLabel(labelString, false);
+	// }
+	// }
+	// }
 
 	// public static void update(Integer dataRowNum) {
 	// Util.findView(CSVTableView.ID);
