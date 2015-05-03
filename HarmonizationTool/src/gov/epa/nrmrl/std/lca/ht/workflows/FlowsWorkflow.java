@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -30,9 +31,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 //import org.eclipse.swt.events.SelectionAdapter;
@@ -40,12 +41,12 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
-	public static Text textLoadUserData;
-	public static Text textCheckData;
-	public static Text textCommit;
-	public static Text textMatchFlowables;
-	public static Text textMatchFlowContexts;
-	public static Text textMatchFlowProperties;
+	public static StyledText textLoadUserData;
+	public static StyledText textCheckData;
+	public static StyledText textCommit;
+	public static StyledText textMatchFlowables;
+	public static StyledText textMatchFlowContexts;
+	public static StyledText textMatchFlowProperties;
 
 	private Label label_01;
 	private Label label_02;
@@ -78,6 +79,7 @@ public class FlowsWorkflow extends ViewPart {
 	private static LinkedHashSet<Integer> matchedFlowRowNumbers = new LinkedHashSet<Integer>();
 
 
+
 	// private static FileMD fileMD;
 	// private static DataSourceProvider dataSourceProvider;
 
@@ -92,7 +94,6 @@ public class FlowsWorkflow extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		final Display display = Display.getDefault();
 		initializeOtherViews();
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -126,9 +127,8 @@ public class FlowsWorkflow extends ViewPart {
 
 		btnLoadUserData.addSelectionListener(loadUserDataListener);
 
-		textLoadUserData = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-		//textLoadUserData.setEditable(false);
-		//textLoadUserData.setEnabled(false);
+		textLoadUserData = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
+		textLoadUserData.setEnabled(false);
 		textLoadUserData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 
 		GridData gd_textFileInfo = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -151,9 +151,8 @@ public class FlowsWorkflow extends ViewPart {
 		btnCheckData.setEnabled(false);
 		btnCheckData.addSelectionListener(checkDataListener);
 
-		textCheckData = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textCheckData = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-		//textCheckData.setEnabled(false);
 		textCheckData.setEnabled(false);
 		// textCheckData.setText("0 issues");
 		GridData gd_textIssues = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -176,9 +175,10 @@ public class FlowsWorkflow extends ViewPart {
 		btnCommit.setText("Commit");
 		btnCommit.addSelectionListener(commitListener);
 
-		textCommit = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textCommit = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		textCommit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		textCommit.setEnabled(false);
 
 		// ======== ROW 4 =======================
 
@@ -197,8 +197,9 @@ public class FlowsWorkflow extends ViewPart {
 		btnMatchFlowContexts.setText(matchContextsString);
 		btnMatchFlowContexts.setEnabled(false);
 
-		textMatchFlowContexts = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowContexts = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		textMatchFlowContexts.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textMatchFlowContexts.setEnabled(false);
 		GridData gd_textMatchFlowContexts = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textMatchFlowContexts.widthHint = 150;
 		textMatchFlowContexts.setLayoutData(gd_textMatchFlowContexts);
@@ -220,8 +221,9 @@ public class FlowsWorkflow extends ViewPart {
 		btnMatchFlowProperties.setText(matchPropertiesString);
 		btnMatchFlowProperties.setEnabled(false);
 
-		textMatchFlowProperties = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowProperties = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		textMatchFlowProperties.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textMatchFlowProperties.setEnabled(false);
 		GridData gd_textMatchFlowProperties = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textMatchFlowProperties.widthHint = 150;
 		textMatchFlowProperties.setLayoutData(gd_textMatchFlowProperties);
@@ -243,8 +245,9 @@ public class FlowsWorkflow extends ViewPart {
 		btnMatchFlowables.setEnabled(false);
 		btnMatchFlowables.addSelectionListener(matchFlowablesListener);
 
-		textMatchFlowables = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		textMatchFlowables = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		textMatchFlowables.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textMatchFlowables.setEnabled(false);
 		GridData gd_textMatchFlowables = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_textMatchFlowables.widthHint = 120;
 		textMatchFlowables.setLayoutData(gd_textMatchFlowables);
