@@ -78,6 +78,8 @@ public class ImportUserData implements IHandler {
 	private static TableProvider tableProvider;
 	private static Logger runLogger = Logger.getLogger("run");
 	
+	private Display display = null;
+	
 	class RunData implements Runnable {
 		boolean thing = false;
 		String path = null;
@@ -102,6 +104,7 @@ public class ImportUserData implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
 			RunData data = new RunData(this);
+			display = Display.getCurrent();
 			FlowsWorkflow.btnLoadUserData.setEnabled(false);
 			
 			tableProvider = new TableProvider();
@@ -209,7 +212,7 @@ public class ImportUserData implements IHandler {
 		String path = file.getPath();
 		Logger runLogger = Logger.getLogger("run");
 
-		runLogger.info("LOAD RDF " + path);
+		//runLogger.info("LOAD RDF " + path + " " + new Date());
 
 		Map<String, String> fileContents = new HashMap<String, String>();
 		// List<String> fileContents = new ArrayList<String>();
@@ -228,7 +231,7 @@ public class ImportUserData implements IHandler {
 					fixIDs = true;
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
-				runLogger.info("LOAD RDF " + fileName);
+				runLogger.info("LOAD RDF " + fileName + " " + new Date());
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -238,11 +241,14 @@ public class ImportUserData implements IHandler {
 			try {
 				@SuppressWarnings("resource")
 				ZipFile zf = new ZipFile(path);
-				runLogger.info("LOAD RDF (zip file)" + fileName);
+				runLogger.info("LOAD RDF (zip file)" + fileName + " " + new Date());
+				int size = zf.size();
+				int i = 0;
 
 				Enumeration<?> entries = zf.entries();
 
 				while (entries.hasMoreElements()) {
+					runLogger.info("Loading entry " + ++i + " of " + size + " " + new Date());
 					ZipEntry ze = (ZipEntry) entries.nextElement();
 					String zipFileName = ze.getName();
 					String inputType = ActiveTDB.getRDFTypeFromSuffix(zipFileName);
@@ -317,6 +323,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 
+		runLogger.info("Syncing TDB to LCAHT " + new Date());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
@@ -364,6 +371,7 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
+		runLogger.info("Adding new items to datasource. " + new Date());
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
 		while (resultSet.hasNext()){
@@ -379,6 +387,7 @@ public class ImportUserData implements IHandler {
 				tdbModel.add(itemToAdd, ECO.hasDataSource, datasetResource);
 			}
 			ActiveTDB.tdbDataset.commit();
+			runLogger.info(" Finished adding items to datasource " + new Date());
 		} catch (Exception e) {
 			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -450,8 +459,10 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
+		runLogger.info("querying current user data " + new Date());
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
+		runLogger.info("adding user data to table " + new Date());
 		tableProvider.createUserData((ResultSetRewindable) resultSet);
 
 		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
@@ -573,8 +584,11 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 		String failedString = "";
+		int size = fileContentsList.size();
+		int i = 0;
 		try {
 			for (String fileContents : fileContentsList.keySet()) {
+				runLogger.info("Importing entry " + ++i + " of " + size + " into model " + new Date());
 				failedString = fileContents;
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
@@ -641,13 +655,16 @@ public class ImportUserData implements IHandler {
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
+		runLogger.info("Waiting for UI Thread " + new Date());
 
 		//This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
-		final Display display = Display.getDefault();
-		new Thread() {
+		//final Display display = ImportUserData.currentDisplay;
+		/*new Thread() {
 			public void run() {
+				//display.async*/
 				display.syncExec(new Runnable() {	
 					public void run() {
+						runLogger.info("Showing CSTableView " + new Date());
 						try {
 							Util.showView(CSVTableView.ID);
 						} catch (PartInitException e) {
@@ -675,8 +692,8 @@ public class ImportUserData implements IHandler {
 						FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
 					}
 				});
-			}
-		}.start();
+			//}
+		//}.start();
 
 	}
 
