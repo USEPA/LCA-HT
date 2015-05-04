@@ -114,6 +114,9 @@ public class FedLCA {
 	public static final Property flowPropertyString = m_model.createProperty(NS + "flowPropertyString");
 
 	public static final Property unitConversionFactor = m_model.createProperty(NS + "unitConversionFactor");
+	
+	public static final Property displaySortIndex = m_model.createProperty(NS + "displaySortIndex");
+
 
 	public static final Property flowPropertyPrimaryDescription = m_model.createProperty(NS
 			+ "flowPropertyPrimaryDescription");
@@ -123,6 +126,8 @@ public class FedLCA {
 
 	public static final Property hasFlowProperty = m_model.createProperty(NS + "hasFlowProperty");
 
+	public static final Resource UnitSuperGroup = m_model.createResource(NS + "UnitSuperGroup");
+	
 	public static final Resource UnitGroup = m_model.createResource(NS + "UnitGroup");
 
 	public static final Resource FlowUnit = m_model.createResource(NS + "FlowUnit");

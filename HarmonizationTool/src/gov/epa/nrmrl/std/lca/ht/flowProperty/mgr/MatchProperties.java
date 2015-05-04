@@ -40,6 +40,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class MatchProperties extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties";
@@ -51,6 +52,8 @@ public class MatchProperties extends ViewPart {
 	private static int rowNumSelected;
 	private static int colNumSelected;
 	private static FlowProperty unitToMatch;
+	private static TreeItem currentFlowPropertySelection;
+	private static TreeItem currentFlowUnitSelection;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -143,7 +146,7 @@ public class MatchProperties extends ViewPart {
 		});
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
-		masterTreeViewer.setInput(createHarmonizeCompartments());
+		masterTreeViewer.setInput(createPropertyTree());
 		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
 
 			private void doit(SelectionEvent e) {
@@ -208,102 +211,71 @@ public class MatchProperties extends ViewPart {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
 		if (CSVTableView.getTableProviderKey() == null) {
+			masterTree.deselectAll();
 			return;
 		}
 		if (CSVTableView.preCommit) {
+			masterTree.deselectAll();
 			return;
 		}
 		int csvRowNumSelected = CSVTableView.getRowNumSelected();
 		if (csvRowNumSelected < 0) {
+			masterTree.deselectAll();
 			return;
 		}
+
 		TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 		String rowNumString = tableItem.getText(0);
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		Resource rowMasterFlowProperty = dataRow.getMatchingMasterProperty();
-		Resource rowMasterFlowUnit = dataRow.getMatchingMasterFlowUnit();
-
-		if (masterTree.getSelectionCount() == 0) {
+		if (CSVTableView.getRowsToIgnore().contains(rowNumber)) {
+			masterTree.deselectAll();
 			return;
 		}
-		if (rowMasterFlowProperty == null) {
-			if (masterTree.getSelectionCount() == 1) { // HOW COULD THERE BE SELECTIONS IF NO MATCHING MASTER PROPERTY?
-				TreeItem treeItem = masterTree.getSelection()[0];
+
+		Resource newMasterFlowProperty = null;
+		Resource newMasterFlowUnit = null;
+		TreeItem newTreeItem = null;
+
+		for (TreeItem treeItem : masterTree.getSelection()) {
+			if (!treeItem.equals(currentFlowPropertySelection) && !treeItem.equals(currentFlowUnitSelection)) {
+				newTreeItem = treeItem;
 				TreeNode treeNode = (TreeNode) treeItem.getData();
 				if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
-					dataRow.getFlowProperty().setMatchingResource(treeNode.uri);
-					dataRow.getFlowUnit().setMatchingResource(null);
+					newMasterFlowProperty = treeNode.uri;
 				} else if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
-					dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
-					TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
-					dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
+					newMasterFlowUnit = treeNode.uri;
+					TreeNode parentNode = (TreeNode) treeNode.getParent();
+					newMasterFlowProperty = parentNode.uri;
 				}
+			}
+		}
+
+		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		FlowProperty flowProperty = dataRow.getFlowProperty();
+		flowProperty.setMatchingResource(newMasterFlowProperty);
+
+		FlowUnit flowUnit = flowProperty.getUserDataFlowUnit();
+		if (flowUnit == null) {
+			if (newMasterFlowUnit != null) {
+				flowUnit = new FlowUnit(newMasterFlowUnit);
+				flowProperty.setUserDataFlowUnit(flowUnit);
 			}
 		} else {
-			for (TreeItem treeItem : masterTree.getSelection()) {
-				TreeNode treeNode = (TreeNode) treeItem.getData();
-				if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
-					Resource masterFlowProperty = treeNode.getUri();
-					if (!rowMasterFlowProperty.equals(masterFlowProperty)) {
-						// dataRow.getFlowProperty().setMatchingResource(masterFlowProperty);
-						rowMasterFlowProperty = masterFlowProperty;
-						// dataRow.getFlowUnit().setMatchingResource(null);
-						rowMasterFlowUnit = null;
-					}
-				} else if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
-					Resource masterFlowUnit = treeNode.getUri();
-					if (rowMasterFlowUnit == null) {
-						// dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
-						rowMasterFlowUnit = treeNode.uri;
-						TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
-						// dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
-						rowMasterFlowProperty = parentTreeNode.uri;
-					} else {
-						if (!masterFlowUnit.equals(rowMasterFlowUnit)) {
-							// dataRow.getFlowUnit().setMatchingResource(treeNode.uri);
-							rowMasterFlowUnit = treeNode.uri;
-							TreeNode parentTreeNode = (TreeNode) treeNode.getParent();
-							rowMasterFlowProperty = parentTreeNode.uri;
-
-							// dataRow.getFlowProperty().setMatchingResource(parentTreeNode.uri);
-						}
-					}
-				}
-			}
+			flowUnit.setMatchingResource(newMasterFlowUnit);
 		}
-		// TreeItem treeItem = masterTree.getSelection()[0];
-		// TreeNode treeNode = (TreeNode) treeItem.getData();
-		// // if (treeNode.nodeClass.equals(FedLCA.UnitGroup)){
-		// //
-		// // }
-		// Resource newResource = treeNode.getUri();
-		// if (newResource == null) {
-		// return;
-		// }
-		// dataRow.getFlowProperty().setMatchingResource(newResource);
+		
 		masterTree.deselectAll();
-		dataRow.getFlowProperty().setMatchingResource(rowMasterFlowProperty);
-		dataRow.getFlowUnit().setMatchingResource(rowMasterFlowUnit);
+		if (newMasterFlowUnit != null){
+			currentFlowPropertySelection = newTreeItem.getParentItem();
+			masterTree.select(currentFlowPropertySelection);
+			currentFlowUnitSelection = newTreeItem;
 
-		for (TreeItem treeItem : masterTree.getItems()) {
-			TreeNode treeNode = (TreeNode) treeItem.getData();
-			if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
-				if (rowMasterFlowProperty.equals(treeNode.uri)) {
-					masterTree.select(treeItem);
-					;
-				}
-			} else {
-				if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
-					if (rowMasterFlowUnit != null) {
-						if (rowMasterFlowUnit.equals(treeNode.uri)) {
-							masterTree.select(treeItem);
-							;
-						}
-					}
-				}
-			}
+		} else {
+			currentFlowPropertySelection = newTreeItem;
+			currentFlowUnitSelection = null;
 		}
+		masterTree.select(newTreeItem);
+
 		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -375,11 +347,13 @@ public class MatchProperties extends ViewPart {
 		resultStrings[1] = ""; // Master List Flow Property Reference Unit
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 
-		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (lcaUnit.getTdbResource().equals(resource)) {
-				resultStrings[0] = lcaUnit.getUnitGroupName();
-				resultStrings[1] = lcaUnit.getReferenceUnitName();
-				resultStrings[2] = "" + lcaUnit.conversionFactor;
+		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
+			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
+				if (flowUnit.getTdbResource().equals(resource)) {
+					resultStrings[0] = flowUnit.getUnitGroupName();
+					resultStrings[1] = flowUnit.getReferenceUnitName();
+					resultStrings[2] = "" + flowUnit.conversionFactor;
+				}
 			}
 		}
 		return resultStrings;
@@ -392,50 +366,55 @@ public class MatchProperties extends ViewPart {
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 		resultStrings[3] = ""; // Master List Flow Property Reference Factor
 
-		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (lcaUnit.getTdbResource().equals(resource)) {
-				resultStrings[0] = lcaUnit.getUnitGroupName();
-				resultStrings[1] = lcaUnit.name;
-				resultStrings[2] = "" + lcaUnit.conversionFactor;
-				resultStrings[3] = lcaUnit.getReferenceUnitName();
+		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
+			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
+				if (flowUnit.getTdbResource().equals(resource)) {
+					resultStrings[0] = flowUnit.getUnitGroupName();
+					resultStrings[1] = flowUnit.name;
+					resultStrings[2] = "" + flowUnit.conversionFactor;
+					resultStrings[3] = flowUnit.getReferenceUnitName();
+				}
 			}
 		}
 		return resultStrings;
 	}
 
-	private TreeNode createHarmonizeCompartments() {
+	private TreeNode createPropertyTree() {
 		FlowProperty.loadMasterFlowProperties();
 		TreeNode masterPropertyTree = new TreeNode(null);
 
 		String superGroup = "";
-		String unitGroup = "";
 		TreeNode curSuperGroupNode = null;
 		TreeNode curGroupNode = null;
 
-		for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
-			if (!superGroup.equals(lcaUnit.superGroup)) {
-				superGroup = lcaUnit.superGroup;
+		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
+
+			// for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
+			if (!superGroup.equals(flowProperty.superGroup)) {
+				superGroup = flowProperty.superGroup;
 				curSuperGroupNode = new TreeNode(masterPropertyTree);
 				curSuperGroupNode.nodeName = superGroup;
+				curSuperGroupNode.nodeClass = FedLCA.UnitSuperGroup;
 			}
-			if (!unitGroup.equals(lcaUnit.getUnitGroupName())) {
-				unitGroup = lcaUnit.getUnitGroupName();
-				curGroupNode = new TreeNode(curSuperGroupNode);
-				curGroupNode.nodeName = unitGroup;
-				curGroupNode.uri = lcaUnit.unit_group;
-				curGroupNode.uuid = lcaUnit.getUnitGroupUUID();
-				curGroupNode.nodeClass = FedLCA.UnitGroup;
+
+			curGroupNode = new TreeNode(curSuperGroupNode);
+			curGroupNode.uri = flowProperty.getTdbResource();
+			curGroupNode.nodeName = flowProperty.getTdbResource().getProperty(RDFS.label).getObject().asLiteral()
+					.getString();
+			curGroupNode.uuid = flowProperty.getTdbResource().getProperty(FedLCA.hasOpenLCAUUID).getObject()
+					.asLiteral().getString();
+
+			curGroupNode.nodeClass = FedLCA.UnitGroup;
+			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
+				TreeNode curNode = new TreeNode(curGroupNode);
+
+				curNode.nodeName = flowUnit.name + " (" + flowUnit.description + ")";
+				curNode.uri = flowUnit.getTdbResource();
+				curNode.nodeClass = FedLCA.FlowUnit;
+				curNode.uuid = flowUnit.uuid;
+				curNode.referenceDescription = flowUnit.description;
+
 			}
-			TreeNode curNode = new TreeNode(curGroupNode);
-
-			curNode.nodeName = lcaUnit.name + " (" + lcaUnit.description + ")";
-			curNode.uri = lcaUnit.getTdbResource();
-			curGroupNode.nodeClass = FedLCA.FlowUnit;
-
-			curNode.uuid = lcaUnit.uuid;
-			curNode.referenceDescription = lcaUnit.description;
-			// treeNode.referenceUnit = lcaUnit.name;
-			// createSubNodes(curGroupNode);
 		}
 		// partialCollapse();
 
@@ -658,8 +637,8 @@ public class MatchProperties extends ViewPart {
 	// private void createSubNodes(TreeNode flowPropertyNode) {
 	// String propertyName = flowPropertyNode.getNodeName();
 	// String propertyReferenceUnit = flowPropertyNode.getReferenceUnit();
-	// List<LCAUnit> units = new ArrayList<LCAUnit>();
-	// for (LCAUnit lcaUnit : FlowProperty.lcaMasterUnits) {
+	// List<FlowUnit> units = new ArrayList<FlowUnit>();
+	// for (FlowUnit lcaUnit : FlowProperty.lcaMasterUnits) {
 	// if (lcaUnit.unit_group.equals(propertyName)) {
 	// if (lcaUnit.name.equals(propertyReferenceUnit)) {
 	// units.add(0, lcaUnit);
@@ -668,7 +647,7 @@ public class MatchProperties extends ViewPart {
 	// }
 	// }
 	// }
-	// for (LCAUnit lcaUnit : units) {
+	// for (FlowUnit lcaUnit : units) {
 	// System.out.println(lcaUnit.name);
 	// System.out.println("// " + lcaUnit.description);
 	//

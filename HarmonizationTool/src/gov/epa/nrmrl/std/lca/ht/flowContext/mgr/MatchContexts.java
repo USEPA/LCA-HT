@@ -209,18 +209,27 @@ public class MatchContexts extends ViewPart {
 		Util.findView(CSVTableView.ID);
 		Util.findView(FlowsWorkflow.ID);
 		if (CSVTableView.getTableProviderKey() == null) {
+			masterTree.deselectAll();
 			return;
 		}
 		if (CSVTableView.preCommit) {
+			masterTree.deselectAll();
 			return;
 		}
 		int csvRowNumSelected = CSVTableView.getRowNumSelected();
 		if (csvRowNumSelected < 0) {
+			masterTree.deselectAll();
 			return;
 		}
+
+
 		TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 		String rowNumString = tableItem.getText(0);
 		int rowNumber = Integer.parseInt(rowNumString) - 1;
+		if (CSVTableView.getRowsToIgnore().contains(rowNumber)){
+			masterTree.deselectAll();
+			return;
+		}
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
 		if (masterTree.getSelectionCount() == 0) {
