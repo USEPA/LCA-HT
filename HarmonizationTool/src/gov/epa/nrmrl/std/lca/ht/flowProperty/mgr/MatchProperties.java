@@ -51,8 +51,8 @@ public class MatchProperties extends ViewPart {
 	private static Text userDataLabel;
 	private static int rowNumSelected;
 	private static int colNumSelected;
-	private static FlowProperty unitToMatch;
-	private static TreeItem currentFlowPropertySelection;
+	private static FlowUnit unitToMatch;
+	// private static TreeItem currentFlowPropertySelection;
 	private static TreeItem currentFlowUnitSelection;
 
 	private class ContentProvider implements IStructuredContentProvider {
@@ -190,7 +190,8 @@ public class MatchProperties extends ViewPart {
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-			dataRow.getFlowProperty().setMatchingResource(null);
+			// dataRow.getFlowProperty().setMatchingResource(null);
+			dataRow.getFlowUnit().setMatchingResource(null);
 			FlowsWorkflow.removeMatchPropertyRowNum(unitToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
@@ -223,6 +224,10 @@ public class MatchProperties extends ViewPart {
 			masterTree.deselectAll();
 			return;
 		}
+		if (unitToMatch == null) {
+			masterTree.deselectAll();
+			return;
+		}
 
 		TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 		String rowNumString = tableItem.getText(0);
@@ -232,49 +237,37 @@ public class MatchProperties extends ViewPart {
 			return;
 		}
 
-		Resource newMasterFlowProperty = null;
+		// Resource newMasterFlowProperty = null;
 		Resource newMasterFlowUnit = null;
-		TreeItem newTreeItem = null;
 
-		for (TreeItem treeItem : masterTree.getSelection()) {
-			if (!treeItem.equals(currentFlowPropertySelection) && !treeItem.equals(currentFlowUnitSelection)) {
-				newTreeItem = treeItem;
-				TreeNode treeNode = (TreeNode) treeItem.getData();
-				if (treeNode.nodeClass.equals(FedLCA.UnitGroup)) {
-					newMasterFlowProperty = treeNode.uri;
-				} else if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
-					newMasterFlowUnit = treeNode.uri;
-					TreeNode parentNode = (TreeNode) treeNode.getParent();
-					newMasterFlowProperty = parentNode.uri;
-				}
-			}
+		/*
+		 * The Tree will be always left with zero selections, so that when a user does select, that is the "new" choice.
+		 * If that choice is identical to the current choice, there will simply be a deselectAll() If the choice is a
+		 * SuperGroup there will be no effect except deselectAll() If that choice is a FlowProperty (only), the FlowUnit
+		 * will be set to "none" and all other fields changed to white If that choice is a FlowUnit, the corresponding
+		 * FlowProperty will be selected as well.
+		 */
+		TreeItem selectedTreeItem = masterTree.getSelection()[0];
+		TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+		if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
+			currentFlowUnitSelection = selectedTreeItem;
+			currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+			unitToMatch.setMatchingResource(selectedTreeNode.uri);
 		}
 
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		FlowProperty flowProperty = dataRow.getFlowProperty();
-		flowProperty.setMatchingResource(newMasterFlowProperty);
-
-		FlowUnit flowUnit = flowProperty.getUserDataFlowUnit();
-		if (flowUnit == null) {
-			if (newMasterFlowUnit != null) {
-				flowUnit = new FlowUnit(newMasterFlowUnit);
-				flowProperty.setUserDataFlowUnit(flowUnit);
-			}
-		} else {
-			flowUnit.setMatchingResource(newMasterFlowUnit);
-		}
-		
 		masterTree.deselectAll();
-		if (newMasterFlowUnit != null){
-			currentFlowPropertySelection = newTreeItem.getParentItem();
-			masterTree.select(currentFlowPropertySelection);
-			currentFlowUnitSelection = newTreeItem;
 
-		} else {
-			currentFlowPropertySelection = newTreeItem;
-			currentFlowUnitSelection = null;
-		}
-		masterTree.select(newTreeItem);
+		// unitToMatch.setMatchingResource(newMasterFlowProperty);
+
+		// FlowUnit flowUnit = unitToMatch.getUserDataFlowUnit();
+		// if (flowUnit == null) {
+		// if (newMasterFlowUnit != null) {
+		// flowUnit = new FlowUnit(newMasterFlowUnit);
+		// unitToMatch.setUserDataFlowUnit(flowUnit);
+		// }
+		// } else {
+		// flowUnit.setMatchingResource(newMasterFlowUnit);
+		// }
 
 		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
@@ -347,14 +340,14 @@ public class MatchProperties extends ViewPart {
 		resultStrings[1] = ""; // Master List Flow Property Reference Unit
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 
-		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
-			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
-				if (flowUnit.getTdbResource().equals(resource)) {
-					resultStrings[0] = flowUnit.getUnitGroupName();
-					resultStrings[1] = flowUnit.getReferenceUnitName();
-					resultStrings[2] = "" + flowUnit.conversionFactor;
-				}
+		// for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
+		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
+			if (flowUnit.getTdbResource().equals(resource)) {
+				resultStrings[0] = flowUnit.getUnitGroupName();
+				resultStrings[1] = flowUnit.getReferenceUnitName();
+				resultStrings[2] = "" + flowUnit.conversionFactor;
 			}
+			// }
 		}
 		return resultStrings;
 	}
@@ -366,55 +359,65 @@ public class MatchProperties extends ViewPart {
 		resultStrings[2] = ""; // Master List Flow Property Conversion Factor
 		resultStrings[3] = ""; // Master List Flow Property Reference Factor
 
-		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
-			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
-				if (flowUnit.getTdbResource().equals(resource)) {
-					resultStrings[0] = flowUnit.getUnitGroupName();
-					resultStrings[1] = flowUnit.name;
-					resultStrings[2] = "" + flowUnit.conversionFactor;
-					resultStrings[3] = flowUnit.getReferenceUnitName();
-				}
+		// for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
+		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
+			if (flowUnit.getTdbResource().equals(resource)) {
+				resultStrings[0] = flowUnit.getUnitGroupName();
+				resultStrings[1] = flowUnit.name;
+				resultStrings[2] = "" + flowUnit.conversionFactor;
+				resultStrings[3] = flowUnit.getReferenceUnitName();
 			}
+			// }
 		}
 		return resultStrings;
 	}
 
 	private TreeNode createPropertyTree() {
-		FlowProperty.loadMasterFlowProperties();
+		FlowProperty.loadMasterFlowUnits();
 		TreeNode masterPropertyTree = new TreeNode(null);
 
-		String superGroup = "";
 		TreeNode curSuperGroupNode = null;
 		TreeNode curGroupNode = null;
-
-		for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
-
+		String lastSuperGroupString = "";
+		Resource lastUnitGroup = null;
+		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
+			String superGroupString = flowUnit.superGroupName;
 			// for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
-			if (!superGroup.equals(flowProperty.superGroup)) {
-				superGroup = flowProperty.superGroup;
+			if (!superGroupString.equals(lastSuperGroupString)) {
+				lastSuperGroupString = superGroupString;
 				curSuperGroupNode = new TreeNode(masterPropertyTree);
-				curSuperGroupNode.nodeName = superGroup;
+				curSuperGroupNode.nodeName = superGroupString;
 				curSuperGroupNode.nodeClass = FedLCA.UnitSuperGroup;
 			}
+			Resource unitGroup = flowUnit.unitGroup;
+			if (lastUnitGroup == null) {
+				lastUnitGroup = unitGroup;
+				curGroupNode = new TreeNode(curSuperGroupNode);
+				curGroupNode.uri = unitGroup;
+				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
+				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
 
-			curGroupNode = new TreeNode(curSuperGroupNode);
-			curGroupNode.uri = flowProperty.getTdbResource();
-			curGroupNode.nodeName = flowProperty.getTdbResource().getProperty(RDFS.label).getObject().asLiteral()
-					.getString();
-			curGroupNode.uuid = flowProperty.getTdbResource().getProperty(FedLCA.hasOpenLCAUUID).getObject()
-					.asLiteral().getString();
+				curGroupNode.nodeClass = FedLCA.UnitGroup;
+				// curGroupNode.relatedObject = flowProperty;
+			} else if (!lastUnitGroup.equals(unitGroup)) {
+				lastUnitGroup = unitGroup;
+				curGroupNode = new TreeNode(curSuperGroupNode);
+				curGroupNode.uri = unitGroup;
+				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
+				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
 
-			curGroupNode.nodeClass = FedLCA.UnitGroup;
-			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
-				TreeNode curNode = new TreeNode(curGroupNode);
-
-				curNode.nodeName = flowUnit.name + " (" + flowUnit.description + ")";
-				curNode.uri = flowUnit.getTdbResource();
-				curNode.nodeClass = FedLCA.FlowUnit;
-				curNode.uuid = flowUnit.uuid;
-				curNode.referenceDescription = flowUnit.description;
-
+				curGroupNode.nodeClass = FedLCA.UnitGroup;
 			}
+
+			TreeNode curNode = new TreeNode(curGroupNode);
+
+			curNode.nodeName = flowUnit.name + " (" + flowUnit.description + ")";
+			curNode.uri = flowUnit.getTdbResource();
+			curNode.nodeClass = FedLCA.FlowUnit;
+			curNode.uuid = flowUnit.uuid;
+			curNode.referenceDescription = flowUnit.description;
+			curNode.relatedObject = flowUnit;
+			// }
 		}
 		// partialCollapse();
 
@@ -912,29 +915,52 @@ public class MatchProperties extends ViewPart {
 
 	public static void update(int rowNumber) {
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-		unitToMatch = dataRow.getFlowProperty();
+		unitToMatch = dataRow.getFlowUnit();
 		if (unitToMatch == null) {
 			masterTree.deselectAll();
+			// if (currentFlowPropertySelection != null) {
+			// currentFlowPropertySelection.setBackground(null);
+			// currentFlowPropertySelection = null;
+			// }
+			if (currentFlowUnitSelection != null) {
+				currentFlowUnitSelection.setBackground(null);
+				currentFlowUnitSelection = null;
+			}
 			setUserDataLabel("", false);
 		} else {
-
-			String labelString = null;
-			String propertyString = unitToMatch.getPropertyStr();
-			String unitString = unitToMatch.getUnitStr();
-			if (propertyString == null) {
-				labelString = unitString;
-			} else {
-				// labelString = propertyString + ": " + unitString;
-
-				labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
+			// if (currentFlowPropertySelection != null) {
+			// currentFlowPropertySelection.setBackground(null);
+			// }
+			if (currentFlowUnitSelection != null) {
+				currentFlowUnitSelection.setBackground(null);
 			}
+			// String labelString = null;
+			// String propertyString = unitToMatch.getPropertyStr();
+			// System.out.println("We got propertyString" + propertyString);
+			// String unitString = unitToMatch.getUnitStr();
+			// System.out.println("... and we got unitString" + unitString);
+
+			// if (propertyString == null) {
+			// labelString = unitString;
+			// } else {
+			// // labelString = propertyString + ": " + unitString;
+
+			String labelString = unitToMatch.unitGroup.getProperty(RDFS.label).getString()
+					+ System.getProperty("line.separator") + "   " + unitToMatch.name;
+			// }
 
 			partialCollapse();
 			Resource propertyResource = unitToMatch.getMatchingResource();
 			if (propertyResource != null) {
 				TreeItem treeItem = getTreeItemByURI(propertyResource);
 				if (treeItem != null) {
-					masterTree.setSelection(treeItem);
+					TreeNode treeNode = (TreeNode) treeItem.getData();
+					if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
+						TreeItem parentItem = treeItem.getParentItem();
+						parentItem.setExpanded(true);
+						currentFlowUnitSelection = treeItem;
+						treeItem.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					}
 					setUserDataLabel(labelString, true);
 
 				} else {

@@ -42,8 +42,8 @@ public class FlowProperty {
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Property";
 	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
-	// public static List<FlowUnit> lcaMasterUnits = new ArrayList<FlowUnit>();
-	public static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
+	public static List<FlowUnit> lcaMasterUnits = new ArrayList<FlowUnit>();
+	// public static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 	// private static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
 
@@ -296,34 +296,22 @@ public class FlowProperty {
 		updateSyncDataFromTDB();
 	}
 
-	public static void loadMasterFlowProperties() {
+	public static void loadMasterFlowUnits() {
 		Logger runLogger = Logger.getLogger("run");
-		while (lcaMasterProperties.size() == 0) {
+		List<Resource> flowUnitResources = new ArrayList<Resource>();
+		while (flowUnitResources.size() == 0) {
 			runLogger.info("Creating Master Property list");
 			//
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("select  ?mu ?mug ?ug_name ?u_name ?ug_index ?ug_uuid ?u_uuid ?desc ?altLabel ?convFactor ?ru ?specialClassName where { \n");
-			b.append("  ?mug a fedlca:UnitGroup . \n");
-			b.append("  ?mug fedlca:hasUnit ?mu . \n");
-			b.append("  ?mug fedlca:displaySortIndex ?ug_index . \n");
-			b.append("  ?mug rdfs:label ?ug_name . \n");
-			b.append("  ?mug fedlca:hasReferenceUnit ?ru . \n");
-			b.append("  ?mug fedlca:hasOpenLCAUUID ?ug_uuid . \n");
-			// b.append("  ?ru fedlca:hasOpenLCAUUID ?ru_uuid . \n");
+			b.append("select  ?mu where { \n");
 			b.append("  ?mu a fedlca:FlowUnit . \n");
-			b.append("  ?mu dcterms:description ?desc . \n");
-			b.append("  ?mu rdfs:label ?u_name . \n");
-			b.append("  ?mu fedlca:hasOpenLCAUUID ?u_uuid . \n");
 			b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
-			b.append("  optional {?mug a ?specialClass . \n");
-			b.append("            ?specialClass rdfs:label ?specialClassName . \n");
-			b.append("            filter ((?specialClass != fedlca:UnitGroup ) && (?specialClass != owl:NamedIndividual )) \n");
-			b.append("  } \n");
-			b.append("  optional {?mu fedlca:unitConversionFactor ?convFactor } \n");
-			b.append("  optional {?mu skos:altLabel  ?altLabel } \n");
+			b.append("  ?mu eco:hasDataSource ?ds . \n");
+			b.append("  ?ds a lcaht:MasterDataSet . \n");
+
 			b.append("} \n");
-			b.append("order by ?ug_index ?u_index  \n");
+			b.append("order by ?u_index  \n");
 
 			String query = b.toString();
 			System.out.println("Query = \n" + query);
@@ -332,96 +320,151 @@ public class FlowProperty {
 			harmonyQuery2Impl.setGraphName(null);
 
 			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-			// // List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
-			// Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
-
-			FlowProperty previousUnitGroup = null;
-			FlowUnit previousFlowUnit = null;
-			FlowProperty currentUnitGroup = null;
-			FlowUnit currentFlowUnit = null;
 
 			while (resultSet.hasNext()) {
 				QuerySolution querySolution = resultSet.next();
-
-				Resource masterUnitGroupResource = querySolution.get("mug").asResource();
-				String unitGroupName = querySolution.get("ug_name").asLiteral().getString();
-				int unitGroupIndex = querySolution.get("ug_index").asLiteral().getInt();
-				String unitGroupUUID = querySolution.get("ug_uuid").asLiteral().getString();
-				RDFNode specialClassCandidate = querySolution.get("specialClassName");
-				String specialClassLabel = "(other)";
-				if (specialClassCandidate != null) {
-					specialClassLabel = specialClassCandidate.asLiteral().getString();
-				}
 				Resource refUnit = querySolution.get("ru").asResource();
-
-				Resource masterFlowUnitResource = querySolution.get("mu").asResource();
-				String unitName = querySolution.get("u_name").asLiteral().getString();
-				String unitUUID = querySolution.get("u_uuid").asLiteral().getString();
-				String unitDescription = querySolution.get("desc").asLiteral().getString();
-				RDFNode altLabelCandidate = querySolution.get("altLabel");
-				String unitAltLabel = null;
-				if (altLabelCandidate != null) {
-					unitAltLabel = altLabelCandidate.asLiteral().getString();
-				}
-				RDFNode conversionFactorCandidate = querySolution.get("convFactor");
-				double unitConversionFactor = 0;
-				if (conversionFactorCandidate != null) {
-					unitConversionFactor = conversionFactorCandidate.asLiteral().getDouble();
-				}
-
-				if (previousFlowUnit == null) {
-					currentFlowUnit = new FlowUnit();
-				} else {
-					if (previousFlowUnit.getTdbResource().equals(masterFlowUnitResource)) {
-						currentFlowUnit = previousFlowUnit;
-					} else {
-						currentFlowUnit = new FlowUnit();
-					}
-				}
-				currentFlowUnit.setTdbResource(masterFlowUnitResource);
-
-				currentFlowUnit.conversionFactor = unitConversionFactor;
-				currentFlowUnit.description = unitDescription;
-				currentFlowUnit.name = unitName;
-				currentFlowUnit.referenceUnit = refUnit;
-				currentFlowUnit.unit_group = masterUnitGroupResource;
-				currentFlowUnit.uuid = unitUUID;
-				if (unitAltLabel != null) {
-					currentFlowUnit.synonyms.add(unitAltLabel);
-				}
-
-				if (previousUnitGroup == null) {
-					currentUnitGroup = new FlowProperty();
-					lcaMasterProperties.add(currentUnitGroup);
-				} else {
-					if (previousUnitGroup.tdbResource.equals(masterUnitGroupResource)) {
-						currentUnitGroup = previousUnitGroup;
-					} else {
-						currentUnitGroup = new FlowProperty();
-						lcaMasterProperties.add(currentUnitGroup);
-					}
-				}
-				previousUnitGroup = currentUnitGroup;
-
-				currentUnitGroup.setTdbResource(masterUnitGroupResource);
-				// currentUnitGroup.setProperty("Property", unitGroupName);
-				// currentUnitGroup.setProperty("UUID", unitGroupUUID);
-				// currentUnitGroup.setProperty("index", unitGroupIndex);
-				currentUnitGroup.superGroup = specialClassLabel;
-				currentUnitGroup.addFlowUnit(currentFlowUnit);
-//				lcaMasterProperties.add(currentUnitGroup);
-				previousUnitGroup = currentUnitGroup;
-				previousFlowUnit = currentFlowUnit;
+				flowUnitResources.add(refUnit);
 			}
 
-			if (lcaMasterProperties.size() == 0) {
+			if (flowUnitResources.size() == 0) {
 				String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
 				runLogger.info("Need to load data: " + masterPropertiesFile);
 				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterPropertiesFile, null);
-				DataSourceKeeper.syncFromTDB();
+				// DataSourceKeeper.syncFromTDB();
 			}
 		}
+		for (Resource resource : flowUnitResources) {
+			lcaMasterUnits.add(new FlowUnit(resource));
+		}
 	}
+
+	// public static void loadMasterFlowProperties() {
+	// Logger runLogger = Logger.getLogger("run");
+	// while (lcaMasterProperties.size() == 0) {
+	// runLogger.info("Creating Master Property list");
+	// //
+	// StringBuilder b = new StringBuilder();
+	// b.append(Prefixes.getPrefixesForQuery());
+	// b.append("select  ?mu ?mug ?ug_name ?u_name ?ug_index ?ug_uuid ?u_uuid ?desc ?altLabel ?convFactor ?ru ?specialClassName where { \n");
+	// b.append("  ?mug a fedlca:UnitGroup . \n");
+	// b.append("  ?mug fedlca:hasUnit ?mu . \n");
+	// b.append("  ?mug fedlca:displaySortIndex ?ug_index . \n");
+	// b.append("  ?mug rdfs:label ?ug_name . \n");
+	// b.append("  ?mug fedlca:hasReferenceUnit ?ru . \n");
+	// b.append("  ?mug fedlca:hasOpenLCAUUID ?ug_uuid . \n");
+	// // b.append("  ?ru fedlca:hasOpenLCAUUID ?ru_uuid . \n");
+	// b.append("  ?mu a fedlca:FlowUnit . \n");
+	// b.append("  ?mu dcterms:description ?desc . \n");
+	// b.append("  ?mu rdfs:label ?u_name . \n");
+	// b.append("  ?mu fedlca:hasOpenLCAUUID ?u_uuid . \n");
+	// b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
+	// b.append("  optional {?mug a ?specialClass . \n");
+	// b.append("            ?specialClass rdfs:label ?specialClassName . \n");
+	// b.append("            filter ((?specialClass != fedlca:UnitGroup ) && (?specialClass != owl:NamedIndividual )) \n");
+	// b.append("  } \n");
+	// b.append("  optional {?mu fedlca:unitConversionFactor ?convFactor } \n");
+	// b.append("  optional {?mu skos:altLabel  ?altLabel } \n");
+	// b.append("} \n");
+	// b.append("order by ?ug_index ?u_index  \n");
+	//
+	// String query = b.toString();
+	// System.out.println("Query = \n" + query);
+	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+	// harmonyQuery2Impl.setQuery(query);
+	// harmonyQuery2Impl.setGraphName(null);
+	//
+	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+	// // // List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+	// // Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
+	//
+	// FlowProperty previousUnitGroup = null;
+	// FlowUnit previousFlowUnit = null;
+	// FlowProperty currentUnitGroup = null;
+	// FlowUnit currentFlowUnit = null;
+	//
+	// while (resultSet.hasNext()) {
+	// QuerySolution querySolution = resultSet.next();
+	//
+	// Resource masterUnitGroupResource = querySolution.get("mug").asResource();
+	// String unitGroupName = querySolution.get("ug_name").asLiteral().getString();
+	// int unitGroupIndex = querySolution.get("ug_index").asLiteral().getInt();
+	// String unitGroupUUID = querySolution.get("ug_uuid").asLiteral().getString();
+	// RDFNode specialClassCandidate = querySolution.get("specialClassName");
+	// String specialClassLabel = "(other)";
+	// if (specialClassCandidate != null) {
+	// specialClassLabel = specialClassCandidate.asLiteral().getString();
+	// }
+	// Resource refUnit = querySolution.get("ru").asResource();
+	//
+	// Resource masterFlowUnitResource = querySolution.get("mu").asResource();
+	// String unitName = querySolution.get("u_name").asLiteral().getString();
+	// String unitUUID = querySolution.get("u_uuid").asLiteral().getString();
+	// String unitDescription = querySolution.get("desc").asLiteral().getString();
+	// RDFNode altLabelCandidate = querySolution.get("altLabel");
+	// String unitAltLabel = null;
+	// if (altLabelCandidate != null) {
+	// unitAltLabel = altLabelCandidate.asLiteral().getString();
+	// }
+	// RDFNode conversionFactorCandidate = querySolution.get("convFactor");
+	// double unitConversionFactor = 0;
+	// if (conversionFactorCandidate != null) {
+	// unitConversionFactor = conversionFactorCandidate.asLiteral().getDouble();
+	// }
+	//
+	// if (previousFlowUnit == null) {
+	// currentFlowUnit = new FlowUnit();
+	// } else {
+	// if (previousFlowUnit.getTdbResource().equals(masterFlowUnitResource)) {
+	// currentFlowUnit = previousFlowUnit;
+	// } else {
+	// currentFlowUnit = new FlowUnit();
+	// }
+	// }
+	// currentFlowUnit.setTdbResource(masterFlowUnitResource);
+	//
+	// currentFlowUnit.conversionFactor = unitConversionFactor;
+	// currentFlowUnit.description = unitDescription;
+	// currentFlowUnit.name = unitName;
+	// currentFlowUnit.referenceUnit = refUnit;
+	// currentFlowUnit.unit_group = masterUnitGroupResource;
+	// currentFlowUnit.uuid = unitUUID;
+	// if (unitAltLabel != null) {
+	// currentFlowUnit.synonyms.add(unitAltLabel);
+	// }
+	//
+	// if (previousUnitGroup == null) {
+	// currentUnitGroup = new FlowProperty();
+	// lcaMasterProperties.add(currentUnitGroup);
+	// } else {
+	// if (previousUnitGroup.tdbResource.equals(masterUnitGroupResource)) {
+	// currentUnitGroup = previousUnitGroup;
+	// } else {
+	// currentUnitGroup = new FlowProperty();
+	// lcaMasterProperties.add(currentUnitGroup);
+	// }
+	// }
+	// previousUnitGroup = currentUnitGroup;
+	//
+	// currentUnitGroup.setTdbResource(masterUnitGroupResource);
+	// // currentUnitGroup.setProperty("Property", unitGroupName);
+	// // currentUnitGroup.setProperty("UUID", unitGroupUUID);
+	// // currentUnitGroup.setProperty("index", unitGroupIndex);
+	// currentUnitGroup.superGroup = specialClassLabel;
+	// currentUnitGroup.addFlowUnit(currentFlowUnit);
+	// // lcaMasterProperties.add(currentUnitGroup);
+	// previousUnitGroup = currentUnitGroup;
+	// previousFlowUnit = currentFlowUnit;
+	// }
+	//
+	// if (lcaMasterProperties.size() == 0) {
+	// String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
+	// runLogger.info("Need to load data: " + masterPropertiesFile);
+	// ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterPropertiesFile, null);
+	// DataSourceKeeper.syncFromTDB();
+	// }
+	// }
+	// }
 
 	// public static final CSVColumnInfo[] getHeaderMenuObjects() {
 	// CSVColumnInfo[] results = new CSVColumnInfo[2];
@@ -560,13 +603,10 @@ public class FlowProperty {
 		if (unitStr == null) {
 			return false;
 		}
-		for (FlowProperty flowProperty : lcaMasterProperties) {
-			for (FlowUnit flowUnit : flowProperty.getflowUnits()) {
-				if (flowUnit.name.equals(unitStr)) {
-					setMatchingResource(flowUnit.getTdbResource());
-					// matchingResource = flowUnit.tdbResource;
-					return true;
-				}
+		for (FlowUnit flowUnit : lcaMasterUnits) {
+			if (flowUnit.name.equals(unitStr)) {
+				setMatchingResource(flowUnit.getTdbResource());
+				return true;
 			}
 		}
 		return false;

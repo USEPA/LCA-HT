@@ -230,8 +230,8 @@ public class Flow {
 				if (dataRow.getFlowContext() != null) {
 					tdbModel.add(tdbResource, FedLCA.hasFlowContext, dataRow.getFlowContext().getTdbResource());
 				}
-				if (dataRow.getFlowProperty() != null) {
-					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowProperty().getTdbResource());
+				if (dataRow.getFlowUnit() != null) {
+					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowUnit().getTdbResource());
 				}
 				if (dataSourceResource != null) {
 					tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);

@@ -19,6 +19,7 @@ public class TreeNode extends Node {
 	protected String referenceDescription = null;
 	protected String referenceUnit = null;
 	protected Resource nodeClass = null;
+	public Object relatedObject = null;
 	
 	public String getNodeName() {
 		return nodeName;

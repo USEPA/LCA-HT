@@ -21,7 +21,8 @@ public class DataRow {
 
 	private Flowable flowable = null;
 	private FlowContext flowContext = null;
-	private FlowProperty flowProperty = null;
+//	private FlowProperty flowProperty = null;
+	private FlowUnit flowUnit = null;
 
 	private Resource masterFlowResource = null;
 
@@ -51,25 +52,25 @@ public class DataRow {
 		return null;
 	}
 
-	public Resource getMatchingMasterProperty() {
-		if (flowProperty == null) {
-			return null;
-		}
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		Statement statement = tdbModel.getProperty(flowProperty.getTdbResource(), OWL.sameAs);
-		ActiveTDB.tdbDataset.end();
-		if (statement != null) {
-			return statement.getObject().asResource();
-		}
-		return null;
-	}
+//	public Resource getMatchingMasterProperty() {
+//		if (flowProperty == null) {
+//			return null;
+//		}
+//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		Statement statement = tdbModel.getProperty(flowProperty.getTdbResource(), OWL.sameAs);
+//		ActiveTDB.tdbDataset.end();
+//		if (statement != null) {
+//			return statement.getObject().asResource();
+//		}
+//		return null;
+//	}
 
 	public Resource getMatchingMasterFlowUnit() {
-		if (flowProperty == null) {
-			return null;
-		}
-		FlowUnit flowUnit = flowProperty.getUserDataFlowUnit();
+//		if (flowProperty == null) {
+//			return null;
+//		}
+//		FlowUnit flowUnit = flowProperty.getUserDataFlowUnit();
 		if (flowUnit == null) {
 			return null;
 		}
@@ -200,13 +201,13 @@ public class DataRow {
 		this.flowContext = flowContext;
 	}
 
-	public FlowProperty getFlowProperty() {
-		return flowProperty;
-	}
-
-	public void setFlowProperty(FlowProperty flowProperty) {
-		this.flowProperty = flowProperty;
-	}
+//	public FlowProperty getFlowProperty() {
+//		return flowProperty;
+//	}
+//
+//	public void setFlowProperty(FlowProperty flowProperty) {
+//		this.flowProperty = flowProperty;
+//	}
 
 	public Resource getSourceFlowTDBResource() {
 		return openLCASourceURI;
@@ -318,5 +319,13 @@ public class DataRow {
 
 	public void setFlowResource(Resource flowResource) {
 		this.masterFlowResource = flowResource;
+	}
+
+	public FlowUnit getFlowUnit() {
+		return flowUnit;
+	}
+
+	public void setFlowUnit(FlowUnit flowUnit) {
+		this.flowUnit = flowUnit;
 	}
 }

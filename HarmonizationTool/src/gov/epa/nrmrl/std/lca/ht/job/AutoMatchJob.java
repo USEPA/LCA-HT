@@ -15,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.StopWatch;
@@ -67,7 +68,7 @@ public class AutoMatchJob extends Job {
 
 		Map<String, Flowable> flowableMap = new HashMap<String, Flowable>();
 		Map<String, FlowContext> flowContextMap = new HashMap<String, FlowContext>();
-		Map<String, FlowProperty> flowPropertyMap = new HashMap<String, FlowProperty>();
+		Map<String, FlowUnit> flowPropertyMap = new HashMap<String, FlowUnit>();
 
 		LCADataPropertyProvider[] lcaDataProperties = tableProvider.getLcaDataProperties();
 
@@ -142,7 +143,7 @@ public class AutoMatchJob extends Job {
 			}
 			Flowable flowable = null;
 			FlowContext flowContext = null;
-			FlowProperty flowProperty = null;
+			FlowUnit flowProperty = null;
 
 			final int rowNumToSend = rowNumber;
 			DataRow dataRow = tableProvider.getData().get(rowNumber);
@@ -248,7 +249,7 @@ public class AutoMatchJob extends Job {
 			if (!flowPropertyConcatinated.matches("^\\s*$")) {
 				flowProperty = flowPropertyMap.get(flowPropertyConcatinated);
 				if (flowProperty == null) {
-					flowProperty = new FlowProperty();
+					flowProperty = new FlowUnit();
 					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
 					ActiveTDB.tsReplaceObject(flowProperty.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
@@ -258,7 +259,7 @@ public class AutoMatchJob extends Job {
 							continue;
 						}
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						flowProperty.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+						flowProperty.name =  dataValue;
 					}
 
 					final boolean hit = flowProperty.setMatches();
@@ -272,8 +273,8 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				dataRow.setFlowProperty(flowProperty);
-				// NOW SEE IF THIS FLOW IS FOUND IN openLCA FLOWs
+				dataRow.setFlowUnit(flowProperty);
+				// NOW SEE IF THIS FLOW UNIT IS FOUND IN openLCA FLOWs
 				final boolean hit = dataRow.setMatches();
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
