@@ -21,6 +21,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
@@ -714,14 +715,14 @@ public class HarmonizedDataSelector extends ViewPart {
 		}
 
 		// PREPARE MASTER LIST OUTPUT FOR -- FLOW PROPERTIES --
-		FlowProperty flowProperty = inputRow.getFlowProperty();
-		if (flowProperty == null) {
+		FlowUnit flowUnit = inputRow.getFlowUnit();
+		if (flowUnit == null) {
 			outputRow.add("");
 			outputRow.add("");
 			outputRow.add("");
 			outputRow.add("");
 		} else {
-			Resource matchingResource = flowProperty.getMatchingResource();
+			Resource matchingResource = flowUnit.getMatchingResource();
 			if (matchingResource == null) {
 				outputRow.add("");
 				outputRow.add("");
