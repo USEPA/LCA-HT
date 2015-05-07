@@ -308,7 +308,7 @@ public class FlowProperty {
 			b.append("  ?mu a fedlca:FlowUnit . \n");
 			b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
 			b.append("  ?mu eco:hasDataSource ?ds . \n");
-			b.append("  ?ds a lcaht:MasterDataSet . \n");
+			b.append("  ?ds a lcaht:MasterDataset . \n");
 
 			b.append("} \n");
 			b.append("order by ?u_index  \n");
@@ -323,7 +323,7 @@ public class FlowProperty {
 
 			while (resultSet.hasNext()) {
 				QuerySolution querySolution = resultSet.next();
-				Resource refUnit = querySolution.get("ru").asResource();
+				Resource refUnit = querySolution.get("mu").asResource();
 				flowUnitResources.add(refUnit);
 			}
 
@@ -331,11 +331,12 @@ public class FlowProperty {
 				String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
 				runLogger.info("Need to load data: " + masterPropertiesFile);
 				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterPropertiesFile, null);
-				// DataSourceKeeper.syncFromTDB();
+				DataSourceKeeper.syncFromTDB();
 			}
 		}
 		for (Resource resource : flowUnitResources) {
-			lcaMasterUnits.add(new FlowUnit(resource));
+			FlowUnit unitToAdd = new FlowUnit(resource);
+			lcaMasterUnits.add(unitToAdd);
 		}
 	}
 
