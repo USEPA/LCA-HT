@@ -195,7 +195,7 @@ public class FedLCA {
 
 	public static final Resource ContactPerson = m_model.createResource(NS + "ContactPerson");
 
-	public static final Resource FlowProperty = m_model.createResource(NS + "FlowProperty");
+//	public static final Resource FlowProperty = m_model.createResource(NS + "FlowProperty");
 
 	// public static final Resource Curator = m_model
 	// .createResource(NS + "Curator");

@@ -290,9 +290,9 @@ public class Flow {
 		b.append("  ?mf eco:hasFlowable ?flowable . \n");
 		b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
 		b.append("  ?mf fedlca:hasFlowContext ?flowContext . \n");
-		b.append("  ?f fedlca:hasFlowUnit ?flowPropertyUnit . \n");
-		b.append("  ?flowPropertyUnit fedlca:flowPropertyString ?flowPropertyString . \n");
-		b.append("  ?mf fedlca:hasFlowProperty ?flowProperty . \n");
+		b.append("  ?f fedlca:hasFlowUnit ?flowUnitString . \n");
+		b.append("  ?flowUnitString fedlca:flowPropertyString ?flowPropertyString . \n");
+		b.append("  ?mf fedlca:hasFlowUnit ?flowProperty . \n");
 		b.append("  filter (str(?flowPropertyString) = str(afn:localname(?flowProperty)))  . \n");
 		b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
 

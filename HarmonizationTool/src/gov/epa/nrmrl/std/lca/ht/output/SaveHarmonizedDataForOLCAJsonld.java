@@ -136,9 +136,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    ?masterFlowContext fedlca:flowContextGeneral ?generalContext . \n");
 			b.append("    ?masterFlowContext fedlca:flowContextSupplementaryDescription ?specificContext . \n");
 
-			b.append("    ?flow fedlca:hasFlowProperty ?flowProperty . \n");
-			b.append("    ?flowProperty owl:sameAs ?masterFlowProperty . \n");
-			b.append("    filter (?flowProperty != ?masterFlowProperty ) \n");
+			b.append("    ?flow fedlca:hasFlowUnit ?flowUnit . \n");
+			b.append("    ?flowUnit owl:sameAs ?masterFlowUnit . \n");
+			b.append("    filter (?flowUnit != ?masterFlowUnit ) \n");
 
 			b.append("    ?c fedlca:comparedSource ?flowable . \n");
 

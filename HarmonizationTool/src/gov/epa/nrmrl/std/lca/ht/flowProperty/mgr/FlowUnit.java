@@ -32,7 +32,7 @@ public class FlowUnit {
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 	public static final Resource rdfClass = FedLCA.FlowUnit;
 	public static final String label = "Flow Unit";
-	public static final String flowPropertyUnit = "Unit";
+	public static final String flowUnitString = "Unit";
 	public static final String flowPropertyUnitDescription = "Description";
 
 	public static final String flowPropertyString = "Property";
@@ -42,6 +42,7 @@ public class FlowUnit {
 	// - name
 	// - description
 	// synonyms
+	
 	// - uuid
 	// referenceUnit
 	// - conversionFactor
@@ -57,7 +58,7 @@ public class FlowUnit {
 				dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 				LCADataPropertyProvider lcaDataPropertyProvider;
 
-				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnit);
+				lcaDataPropertyProvider = new LCADataPropertyProvider(flowUnitString);
 				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setPropertyClass(label);
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -307,13 +308,13 @@ public class FlowUnit {
 	}
 
 	public boolean setMatches() {
-		String unitStr = (String) getOneProperty(flowPropertyUnit);
+		String unitStr = (String) getOneProperty(flowUnitString);
 
 		if (unitStr == null) {
 			return false;
 		}
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
-			if (flowUnit.getOneProperty(flowPropertyUnit).equals(unitStr)) {
+			if (flowUnit.getOneProperty(flowUnitString).equals(unitStr)) {
 				setMatchingResource(flowUnit.getTdbResource());
 				return true;
 			}

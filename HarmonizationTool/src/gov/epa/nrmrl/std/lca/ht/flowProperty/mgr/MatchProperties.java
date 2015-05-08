@@ -380,7 +380,7 @@ public class MatchProperties extends ViewPart {
 			if (flowUnit.getTdbResource().equals(resource)) {
 
 				resultStrings[0] = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyString);
-				resultStrings[1] = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyUnit);
+				resultStrings[1] = (String) flowUnit.getOneProperty(FlowUnit.flowUnitString);
 				resultStrings[2] = "" + (Double) flowUnit.getOneProperty(FlowUnit.conversionFactor);
 				resultStrings[3] = flowUnit.getReferenceFlowUnit().getProperty(RDFS.label).getString();
 				// resultStrings[0] = flowUnit.getUnitGroupName();
@@ -439,7 +439,7 @@ public class MatchProperties extends ViewPart {
 
 			TreeNode curNode = new TreeNode(curGroupNode);
 
-			curNode.nodeName = flowUnit.getOneProperty(FlowUnit.flowPropertyUnit) + " ("
+			curNode.nodeName = flowUnit.getOneProperty(FlowUnit.flowUnitString) + " ("
 					+ flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription) + ")";
 			curNode.uri = flowUnit.getTdbResource();
 			curNode.nodeClass = FedLCA.FlowUnit;
@@ -977,9 +977,9 @@ public class MatchProperties extends ViewPart {
 			if (unitToMatch.getUnitGroup() != null) {
 				labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
 						+ System.getProperty("line.separator") + "   "
-						+ (String) unitToMatch.getOneProperty(FlowUnit.flowPropertyUnit);
+						+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 			} else {
-				labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowPropertyUnit);
+				labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 
 			}
 

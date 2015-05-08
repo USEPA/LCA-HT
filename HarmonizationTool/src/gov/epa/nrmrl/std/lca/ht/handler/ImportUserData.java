@@ -10,6 +10,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -61,7 +62,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportUserData implements IHandler {
-	
+
 	boolean thing = false;
 
 	@Override
@@ -77,9 +78,9 @@ public class ImportUserData implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportUserData";
 	private static TableProvider tableProvider;
 	private static Logger runLogger = Logger.getLogger("run");
-	
+
 	private Display display = null;
-	
+
 	class RunData implements Runnable {
 		boolean thing = false;
 		String path = null;
@@ -88,15 +89,15 @@ public class ImportUserData implements IHandler {
 		MetaDataDialog dialog = null;
 		Date readDate = null;
 		ImportUserData importCommand;
-		
+
 		public RunData(ImportUserData data) {
 			importCommand = data;
 		}
-		
+
 		@Override
 		public void run() {
 			importCommand.finishImport(this);
-			
+
 		}
 	}
 
@@ -106,9 +107,9 @@ public class ImportUserData implements IHandler {
 			RunData data = new RunData(this);
 			display = Display.getCurrent();
 			FlowsWorkflow.btnLoadUserData.setEnabled(false);
-			
+
 			tableProvider = new TableProvider();
-	
+
 			FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
 			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
 			String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
@@ -118,7 +119,7 @@ public class ImportUserData implements IHandler {
 				String homeDir = System.getProperty("user.home");
 				fileDialog.setFilterPath(homeDir);
 			}
-	
+
 			data.path = fileDialog.open();
 			if (data.path == null) {
 				FlowsWorkflow.btnLoadUserData.setEnabled(true);
@@ -136,7 +137,7 @@ public class ImportUserData implements IHandler {
 			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
 			runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(data.file.lastModified())));
 			runLogger.info("# File size: " + data.file.length());
-	
+
 			System.out.println("All's fine before opening dialog");
 			data.dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), data.fileMD);
 			System.out.println("meta initialized");
@@ -146,7 +147,7 @@ public class ImportUserData implements IHandler {
 			if (thing = data.dialog.open() == MetaDataDialog.CANCEL) { // FIXME
 				System.out.println("cancel!");
 				FlowsWorkflow.btnLoadUserData.setEnabled(true);
-	
+
 				data.fileMD.remove();
 				return null;
 			}
@@ -212,7 +213,7 @@ public class ImportUserData implements IHandler {
 		String path = file.getPath();
 		Logger runLogger = Logger.getLogger("run");
 
-		//runLogger.info("LOAD RDF " + path + " " + new Date());
+		// runLogger.info("LOAD RDF " + path + " " + new Date());
 
 		Map<String, String> fileContents = new HashMap<String, String>();
 		// List<String> fileContents = new ArrayList<String>();
@@ -295,10 +296,10 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.tdbDataset.end();
 		// ---- END SAFE -READ- TRANSACTION ---
 
-//		if (haveOLCAData) {
-//		int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
-//		runLogger.info("  # openLCA data items converted: " + olca_convert);
-//	}
+		// if (haveOLCAData) {
+		// int olca_convert = OpenLCA.convertOpenLCAToLCAHT(ActiveTDB.importGraphName);
+		// runLogger.info("  # openLCA data items converted: " + olca_convert);
+		// }
 
 		if (existingDataSource != null) {
 			DataSourceProvider dataSourceProvider = tableProvider.getDataSourceProvider();
@@ -341,21 +342,21 @@ public class ImportUserData implements IHandler {
 		Resource datasetResource = dataSourceProvider.getTdbResource();
 
 		StringBuilder b = new StringBuilder();
-//		b.append(Prefixes.getPrefixesForQuery());
-//		b.append("insert {graph <" + ActiveTDB.importGraphName + "> {?s eco:hasDataSource ?ds }} \n");
-//		b.append("where { graph <" + ActiveTDB.importGraphName + "> { \n");
-//		b.append("  select ?s ?ds \n");
-////		b.append("  from <" + ActiveTDB.importGraphName + "> {\n");
-//		/* THE ABOVE LINE WORKS IN A SIMPLE QUERY, BUT NOT IN A SUBQUERY IN AN INSERT */
-//		b.append("  where { graph <" + ActiveTDB.importGraphName + "> {\n");
-//		b.append("    ?ds a eco:DataSource . \n");
-//		b.append("    ?ds rdfs:label ?name . \n");
-//		b.append("    filter (str(?name) = \"" + datasetName + "\") \n");
-//		b.append("    ?s a ?class .  \n");
-//		b.append("    filter(!exists{?s eco:hasDataSource ?x }) \n ");
-//		b.append("    filter regex (str(?class),\"^http://openlca\")   \n");
-//		b.append("  }}} \n");
-//		b.append("} \n");
+		// b.append(Prefixes.getPrefixesForQuery());
+		// b.append("insert {graph <" + ActiveTDB.importGraphName + "> {?s eco:hasDataSource ?ds }} \n");
+		// b.append("where { graph <" + ActiveTDB.importGraphName + "> { \n");
+		// b.append("  select ?s ?ds \n");
+		// // b.append("  from <" + ActiveTDB.importGraphName + "> {\n");
+		// /* THE ABOVE LINE WORKS IN A SIMPLE QUERY, BUT NOT IN A SUBQUERY IN AN INSERT */
+		// b.append("  where { graph <" + ActiveTDB.importGraphName + "> {\n");
+		// b.append("    ?ds a eco:DataSource . \n");
+		// b.append("    ?ds rdfs:label ?name . \n");
+		// b.append("    filter (str(?name) = \"" + datasetName + "\") \n");
+		// b.append("    ?s a ?class .  \n");
+		// b.append("    filter(!exists{?s eco:hasDataSource ?x }) \n ");
+		// b.append("    filter regex (str(?class),\"^http://openlca\")   \n");
+		// b.append("  }}} \n");
+		// b.append("} \n");
 
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select ?s ?ds \n");
@@ -364,7 +365,7 @@ public class ImportUserData implements IHandler {
 		b.append("where {\n");
 		b.append("  ?s a ?class .  \n");
 		b.append("  filter(!exists{?s eco:hasDataSource ?x }) \n ");
-//		b.append("  filter regex (str(?class),\"^http://openlca\")   \n");
+		// b.append("  filter regex (str(?class),\"^http://openlca\")   \n");
 		b.append("} \n");
 		String query = b.toString();
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
@@ -374,11 +375,11 @@ public class ImportUserData implements IHandler {
 		runLogger.info("Adding new items to datasource. " + new Date());
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
-		while (resultSet.hasNext()){
-			 QuerySolution querySolution = resultSet.next();
-			 itemsToAddToDatasource.add(querySolution.get("s").asResource());
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			itemsToAddToDatasource.add(querySolution.get("s").asResource());
 		}
-		
+
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
@@ -453,7 +454,7 @@ public class ImportUserData implements IHandler {
 		b.append("order by ?flowable \n");
 
 		String query = b.toString();
-		System.out.println("Query \n"+query);
+		System.out.println("Query \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -476,10 +477,8 @@ public class ImportUserData implements IHandler {
 				.get(FlowContext.flowContextGeneral));
 		tableProvider.setLCADataPropertyProvider(6,
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(7, FlowProperty.getDataPropertyMap()
-				.get(FlowProperty.flowPropertyUnit));
-		tableProvider.setLCADataPropertyProvider(8,
-				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
+		tableProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
+		tableProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
 		return;
 	}
 
@@ -521,8 +520,10 @@ public class ImportUserData implements IHandler {
 		b.append(" \n");
 		b.append("  #--- FLOW PROPERTY \n");
 		b.append("  optional { \n");
-		b.append("     ?f fedlca:hasFlowProperty ?fp . \n");
-		b.append("     ?fp fedlca:flowPropertyUnitString ?unit . \n");
+		b.append("     ?f fedlca:hasFlowUnit ?fu . \n");
+		b.append("     ?fu fedlca:flowPropertyUnitString ?unit . \n");
+		b.append("     ?fp fedlca:hasFlowUnit ?fu . \n");
+		b.append("     ?fp rdfs:label ?flow_property . \n");
 		b.append("  } \n");
 		// b.append("  optional { \n");
 		// b.append("     ?fp rdfs:label ?flow_property . \n");
@@ -550,10 +551,8 @@ public class ImportUserData implements IHandler {
 				.get(FlowContext.flowContextGeneral));
 		tableProvider.setLCADataPropertyProvider(5,
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(6, FlowProperty.getDataPropertyMap()
-				.get(FlowProperty.flowPropertyUnit));
-		tableProvider.setLCADataPropertyProvider(7,
-				FlowProperty.getDataPropertyMap().get(FlowProperty.flowPropertyString));
+		tableProvider.setLCADataPropertyProvider(6, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
+		tableProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
 		return;
 	}
 
@@ -635,7 +634,7 @@ public class ImportUserData implements IHandler {
 
 	public void finishImport(final RunData data) {
 
-		System.out.println("thing = " +data.thing);
+		System.out.println("thing = " + data.thing);
 		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(data.fileMD);
 		System.out.println("FileMD set in tableProvider");
@@ -657,43 +656,43 @@ public class ImportUserData implements IHandler {
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		runLogger.info("Waiting for UI Thread " + new Date());
 
-		//This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
-		//final Display display = ImportUserData.currentDisplay;
-		/*new Thread() {
+		// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
+		// final Display display = ImportUserData.currentDisplay;
+		/*
+		 * new Thread() { public void run() { //display.async
+		 */
+		display.syncExec(new Runnable() {
 			public void run() {
-				//display.async*/
-				display.syncExec(new Runnable() {	
-					public void run() {
-						runLogger.info("Showing CSTableView " + new Date());
-						try {
-							Util.showView(CSVTableView.ID);
-						} catch (PartInitException e) {
-							e.printStackTrace();
-						}
-						System.out.println("About to update CSVTableView");
-						CSVTableView.update(data.path);		
-						FlowsWorkflow.btnLoadUserData.setEnabled(true);
-						
-						String key = CSVTableView.getTableProviderKey();
-						if (key == null) {
-							System.out.println("The CSVTableView does not have a table!");
-							FlowsWorkflow.textLoadUserData.setText("");
-							FlowsWorkflow.textLoadUserData.setToolTipText("");
-							} else {
-							FlowsWorkflow.btnConcludeFile.setEnabled(true);
+				runLogger.info("Showing CSTableView " + new Date());
+				try {
+					Util.showView(CSVTableView.ID);
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				}
+				System.out.println("About to update CSVTableView");
+				CSVTableView.update(data.path);
+				FlowsWorkflow.btnLoadUserData.setEnabled(true);
 
-							FlowsWorkflow.textLoadUserData.setText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD()
-									.getFilename());
-							FlowsWorkflow.textLoadUserData.setToolTipText(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-									.getFileMD().getPath());
-							FlowsWorkflow.btnCheckData.setEnabled(true);
-							System.out.println("About to do setHeaderInfo()");
-						}
-						FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
-					}
-				});
-			//}
-		//}.start();
+				String key = CSVTableView.getTableProviderKey();
+				if (key == null) {
+					System.out.println("The CSVTableView does not have a table!");
+					FlowsWorkflow.textLoadUserData.setText("");
+					FlowsWorkflow.textLoadUserData.setToolTipText("");
+				} else {
+					FlowsWorkflow.btnConcludeFile.setEnabled(true);
+
+					FlowsWorkflow.textLoadUserData.setText(TableKeeper
+							.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+					FlowsWorkflow.textLoadUserData.setToolTipText(TableKeeper
+							.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+					FlowsWorkflow.btnCheckData.setEnabled(true);
+					System.out.println("About to do setHeaderInfo()");
+				}
+				FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
+			}
+		});
+		// }
+		// }.start();
 
 	}
 
