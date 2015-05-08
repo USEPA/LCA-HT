@@ -20,7 +20,9 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
@@ -39,6 +41,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
 
+import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -146,8 +150,17 @@ public class MatchProperties extends ViewPart {
 		});
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)) {
+			System.out.println("Hey!");
+		}
+		ActiveTDB.tdbDataset.end();
+
 		masterTreeViewer.setInput(createPropertyTree());
-		masterTreeViewer.getTree().addSelectionListener(new SelectionListener() {
+		masterTree = masterTreeViewer.getTree();
+
+		masterTree.addSelectionListener(new SelectionListener() {
 
 			private void doit(SelectionEvent e) {
 				assign();
@@ -237,9 +250,6 @@ public class MatchProperties extends ViewPart {
 			return;
 		}
 
-		// Resource newMasterFlowProperty = null;
-		Resource newMasterFlowUnit = null;
-
 		/*
 		 * The Tree will be always left with zero selections, so that when a user does select, that is the "new" choice.
 		 * If that choice is identical to the current choice, there will simply be a deselectAll() If the choice is a
@@ -247,14 +257,20 @@ public class MatchProperties extends ViewPart {
 		 * will be set to "none" and all other fields changed to white If that choice is a FlowUnit, the corresponding
 		 * FlowProperty will be selected as well.
 		 */
-		TreeItem selectedTreeItem = masterTree.getSelection()[0];
-		TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
-		if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
-			currentFlowUnitSelection = selectedTreeItem;
-			currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-			unitToMatch.setMatchingResource(selectedTreeNode.uri);
-		}
+		int thing = masterTree.getSelectionCount();
+		if (thing > 0) {
+			TreeItem selectedTreeItem = masterTree.getSelection()[0];
+			TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+			if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
+				if (currentFlowUnitSelection != null) {
+					currentFlowUnitSelection.setBackground(null);
 
+				}
+				currentFlowUnitSelection = selectedTreeItem;
+				currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				unitToMatch.setMatchingResource(selectedTreeNode.uri);
+			}
+		}
 		masterTree.deselectAll();
 
 		// unitToMatch.setMatchingResource(newMasterFlowProperty);
@@ -343,9 +359,9 @@ public class MatchProperties extends ViewPart {
 		// for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			if (flowUnit.getTdbResource().equals(resource)) {
-				resultStrings[0] = flowUnit.getUnitGroupName();
-				resultStrings[1] = flowUnit.getReferenceUnitName();
-				resultStrings[2] = "" + flowUnit.conversionFactor;
+				resultStrings[0] = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyString);
+				resultStrings[1] = flowUnit.getReferenceFlowUnit().getProperty(RDFS.label).getString();
+				resultStrings[2] = "" + (Double) flowUnit.getOneProperty(FlowUnit.conversionFactor);
 			}
 			// }
 		}
@@ -362,10 +378,15 @@ public class MatchProperties extends ViewPart {
 		// for (FlowProperty flowProperty : FlowProperty.lcaMasterProperties) {
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			if (flowUnit.getTdbResource().equals(resource)) {
-				resultStrings[0] = flowUnit.getUnitGroupName();
-				resultStrings[1] = flowUnit.name;
-				resultStrings[2] = "" + flowUnit.conversionFactor;
-				resultStrings[3] = flowUnit.getReferenceUnitName();
+
+				resultStrings[0] = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyString);
+				resultStrings[1] = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyUnit);
+				resultStrings[2] = "" + (Double) flowUnit.getOneProperty(FlowUnit.conversionFactor);
+				resultStrings[3] = flowUnit.getReferenceFlowUnit().getProperty(RDFS.label).getString();
+				// resultStrings[0] = flowUnit.getUnitGroupName();
+				// resultStrings[1] = flowUnit.name;
+				// resultStrings[2] = "" + flowUnit.conversionFactor;
+				// resultStrings[3] = flowUnit.getReferenceUnitName();
 			}
 			// }
 		}
@@ -373,6 +394,13 @@ public class MatchProperties extends ViewPart {
 	}
 
 	private TreeNode createPropertyTree() {
+		// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		// Model model = ActiveTDB.getModel(null);
+		// if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)) {
+		// System.out.println("Hey!");
+		// }
+		// ActiveTDB.tdbDataset.end();
+
 		FlowProperty.loadMasterFlowUnits();
 		TreeNode masterPropertyTree = new TreeNode(null);
 
@@ -381,7 +409,7 @@ public class MatchProperties extends ViewPart {
 		String lastSuperGroupString = "";
 		Resource lastUnitGroup = null;
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
-			String superGroupString = flowUnit.superGroupName;
+			String superGroupString = flowUnit.getUnitSuperGroup();
 			// for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			if (!superGroupString.equals(lastSuperGroupString)) {
 				lastSuperGroupString = superGroupString;
@@ -389,7 +417,7 @@ public class MatchProperties extends ViewPart {
 				curSuperGroupNode.nodeName = superGroupString;
 				curSuperGroupNode.nodeClass = FedLCA.UnitSuperGroup;
 			}
-			Resource unitGroup = flowUnit.unitGroup;
+			Resource unitGroup = flowUnit.getUnitGroup();
 			if (lastUnitGroup == null) {
 				lastUnitGroup = unitGroup;
 				curGroupNode = new TreeNode(curSuperGroupNode);
@@ -411,11 +439,12 @@ public class MatchProperties extends ViewPart {
 
 			TreeNode curNode = new TreeNode(curGroupNode);
 
-			curNode.nodeName = flowUnit.name + " (" + flowUnit.description + ")";
+			curNode.nodeName = flowUnit.getOneProperty(FlowUnit.flowPropertyUnit) + " ("
+					+ flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription) + ")";
 			curNode.uri = flowUnit.getTdbResource();
 			curNode.nodeClass = FedLCA.FlowUnit;
-			curNode.uuid = flowUnit.uuid;
-			curNode.referenceDescription = flowUnit.description;
+			curNode.uuid = (String) flowUnit.getOneProperty(FlowUnit.openLCAUUID);
+			curNode.referenceDescription = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription);
 			curNode.relatedObject = flowUnit;
 			// }
 		}
@@ -944,10 +973,15 @@ public class MatchProperties extends ViewPart {
 			// labelString = unitString;
 			// } else {
 			// // labelString = propertyString + ": " + unitString;
+			String labelString;
+			if (unitToMatch.getUnitGroup() != null) {
+				labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
+						+ System.getProperty("line.separator") + "   "
+						+ (String) unitToMatch.getOneProperty(FlowUnit.flowPropertyUnit);
+			} else {
+				labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowPropertyUnit);
 
-			String labelString = unitToMatch.unitGroup.getProperty(RDFS.label).getString()
-					+ System.getProperty("line.separator") + "   " + unitToMatch.name;
-			// }
+			}
 
 			partialCollapse();
 			Resource propertyResource = unitToMatch.getMatchingResource();

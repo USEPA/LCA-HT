@@ -86,7 +86,7 @@ public class AutoMatchJob extends Job {
 				flowableCSVColumnNumbers.add(i);
 			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 				flowContextCSVColumnNumbers.add(i);
-			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
 				flowPropertyCSVColumnNumbers.add(i);
 			}
 		}
@@ -143,7 +143,7 @@ public class AutoMatchJob extends Job {
 			}
 			Flowable flowable = null;
 			FlowContext flowContext = null;
-			FlowUnit flowProperty = null;
+			FlowUnit flowUnit = null;
 
 			final int rowNumToSend = rowNumber;
 			DataRow dataRow = tableProvider.getData().get(rowNumber);
@@ -247,11 +247,11 @@ public class AutoMatchJob extends Job {
 				flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
 			}
 			if (!flowPropertyConcatinated.matches("^\\s*$")) {
-				flowProperty = flowPropertyMap.get(flowPropertyConcatinated);
-				if (flowProperty == null) {
-					flowProperty = new FlowUnit();
-					flowPropertyMap.put(flowPropertyConcatinated, flowProperty);
-					ActiveTDB.tsReplaceObject(flowProperty.getTdbResource(), ECO.hasDataSource,
+				flowUnit = flowPropertyMap.get(flowPropertyConcatinated);
+				if (flowUnit == null) {
+					flowUnit = new FlowUnit();
+					flowPropertyMap.put(flowPropertyConcatinated, flowUnit);
+					ActiveTDB.tsReplaceObject(flowUnit.getTdbResource(), ECO.hasDataSource,
 							dataSourceProvider.getTdbResource());
 					for (int i : flowPropertyCSVColumnNumbers) {
 						String dataValue = dataRow.get(i - 1);
@@ -259,11 +259,12 @@ public class AutoMatchJob extends Job {
 							continue;
 						}
 						LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-						flowProperty.name =  dataValue;
+						flowUnit.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+//						flowUnit.name =  dataValue;
 					}
 
-					final boolean hit = flowProperty.setMatches();
-					flowProperty.setFirstRow(rowNumToSend);
+					final boolean hit = flowUnit.setMatches();
+					flowUnit.setFirstRow(rowNumToSend);
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.addPropertyRowNum(rowNumToSend);
@@ -273,7 +274,7 @@ public class AutoMatchJob extends Job {
 						}
 					});
 				}
-				dataRow.setFlowUnit(flowProperty);
+				dataRow.setFlowUnit(flowUnit);
 				// NOW SEE IF THIS FLOW UNIT IS FOUND IN openLCA FLOWs
 				final boolean hit = dataRow.setMatches();
 				Display.getDefault().asyncExec(new Runnable() {

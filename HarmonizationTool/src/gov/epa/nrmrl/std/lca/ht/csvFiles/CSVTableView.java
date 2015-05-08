@@ -11,7 +11,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
+//import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
@@ -476,7 +477,7 @@ public class CSVTableView extends ViewPart {
 			e1.printStackTrace();
 		}
 		if (lcaDataPropertyProvider != null) {
-			if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+			if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
 				try {
 					Util.showView(MatchProperties.ID);
 				} catch (PartInitException e1) {
@@ -1143,8 +1144,8 @@ public class CSVTableView extends ViewPart {
 					lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(menuItemName);
 				} else if (menuItemClass.equals(FlowContext.label)) {
 					lcaDataPropertyProvider = FlowContext.getDataPropertyMap().get(menuItemName);
-				} else if (menuItemClass.equals(FlowProperty.label)) {
-					lcaDataPropertyProvider = FlowProperty.getDataPropertyMap().get(menuItemName);
+				} else if (menuItemClass.equals(FlowUnit.label)) {
+					lcaDataPropertyProvider = FlowUnit.getDataPropertyMap().get(menuItemName);
 				} else if (menuItemClass.equals(Flow.label)) {
 					lcaDataPropertyProvider = Flow.getDataPropertyMap().get(menuItemName);
 				}
@@ -1428,7 +1429,7 @@ public class CSVTableView extends ViewPart {
 		// System.out.println("Workflow telling CSVTableView to add header menu stuff 2");
 		addFields(FlowContext.getDataPropertyMap());
 		// System.out.println("Workflow telling CSVTableView to add header menu stuff 3");
-		addFields(FlowProperty.getDataPropertyMap());
+		addFields(FlowUnit.getDataPropertyMap());
 		// System.out.println("lcaDataPropertyProviders.size() = " + lcaDataPropertyProviders.size());
 		addFields(Flow.getDataPropertyMap());
 	}
@@ -1838,7 +1839,7 @@ public class CSVTableView extends ViewPart {
 		for (int i = 0; i < lcaDataProperties.length; i++) {
 			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
 					propertyColumns.add(i);
 				}
 			}

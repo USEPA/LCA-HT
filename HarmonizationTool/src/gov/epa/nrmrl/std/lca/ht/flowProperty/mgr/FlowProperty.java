@@ -9,6 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -41,7 +43,7 @@ public class FlowProperty {
 	public static final Resource rdfClass = FedLCA.FlowProperty;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Property";
-	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
+//	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
 	public static List<FlowUnit> lcaMasterUnits = new ArrayList<FlowUnit>();
 	// public static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
@@ -51,28 +53,6 @@ public class FlowProperty {
 		if (dataPropertyMap == null) {
 			dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 			if (dataPropertyMap.isEmpty()) {
-
-				ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);
-				ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
-				ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
-
-				System.out.println("label assigned to Flow Property");
-
-				// dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
-				// LCADataPropertyProvider lcaDataPropertyProvider;
-				//
-				// lcaDataPropertyProvider = new LCADataPropertyProvider(
-				// flowPropertyPrimaryIdentifier);
-				// lcaDataPropertyProvider.setPropertyClass(label);
-				// lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				// lcaDataPropertyProvider.setRequired(true);
-				// lcaDataPropertyProvider.setUnique(true);
-				// lcaDataPropertyProvider.setLeftJustified(true);
-				// lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-				// lcaDataPropertyProvider
-				// .setTDBProperty(FedLCA.flowPropertyPrimaryDescription);
-				// dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				// lcaDataPropertyProvider);
 
 				dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 				LCADataPropertyProvider lcaDataPropertyProvider;
@@ -118,10 +98,10 @@ public class FlowProperty {
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
 	private int firstRow;
-	private List<FlowUnit> flowUnits;
-	private FlowUnit userDataFlowUnit;
-	private FlowUnit referenceFlowUnit;
-	public String superGroup;
+//	private List<FlowUnit> flowUnits;
+//	private FlowUnit userDataFlowUnit;
+//	private FlowUnit referenceFlowUnit;
+//	public String superGroup;
 
 	// CONSTRUCTORS
 	public FlowProperty() {
@@ -298,6 +278,12 @@ public class FlowProperty {
 
 	public static void loadMasterFlowUnits() {
 		Logger runLogger = Logger.getLogger("run");
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)){
+			System.out.println("Hey!");
+		}
+		ActiveTDB.tdbDataset.end();
 		List<Resource> flowUnitResources = new ArrayList<Resource>();
 		while (flowUnitResources.size() == 0) {
 			runLogger.info("Creating Master Property list");
@@ -315,6 +301,7 @@ public class FlowProperty {
 
 			String query = b.toString();
 			System.out.println("Query = \n" + query);
+			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 			harmonyQuery2Impl.setQuery(query);
 			harmonyQuery2Impl.setGraphName(null);
@@ -326,6 +313,8 @@ public class FlowProperty {
 				Resource refUnit = querySolution.get("mu").asResource();
 				flowUnitResources.add(refUnit);
 			}
+			ActiveTDB.tdbDataset.end();
+
 
 			if (flowUnitResources.size() == 0) {
 				String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
@@ -334,6 +323,14 @@ public class FlowProperty {
 				DataSourceKeeper.syncFromTDB();
 			}
 		}
+		
+//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//		model = ActiveTDB.getModel(null);
+//		if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)){
+//			System.out.println("Hey!");
+//		}
+//		ActiveTDB.tdbDataset.end();
+		
 		for (Resource resource : flowUnitResources) {
 			FlowUnit unitToAdd = new FlowUnit(resource);
 			lcaMasterUnits.add(unitToAdd);
@@ -598,20 +595,20 @@ public class FlowProperty {
 		return "Master List";
 	}
 
-	public boolean setMatches() {
-		String unitStr = (String) getOneProperty(flowPropertyUnit);
-
-		if (unitStr == null) {
-			return false;
-		}
-		for (FlowUnit flowUnit : lcaMasterUnits) {
-			if (flowUnit.name.equals(unitStr)) {
-				setMatchingResource(flowUnit.getTdbResource());
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean setMatches() {
+//		String unitStr = (String) getOneProperty(flowPropertyUnit);
+//
+//		if (unitStr == null) {
+//			return false;
+//		}
+//		for (FlowUnit flowUnit : lcaMasterUnits) {
+//			if (flowUnit.name.equals(unitStr)) {
+//				setMatchingResource(flowUnit.getTdbResource());
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 	public String getUnitStr() {
 		return (String) getOneProperty(flowPropertyUnit);
@@ -621,39 +618,39 @@ public class FlowProperty {
 		return (String) getOneProperty(flowPropertyString);
 	}
 
-	public List<FlowUnit> getflowUnits() {
-		if (flowUnits == null) {
-			flowUnits = new ArrayList<FlowUnit>();
-		}
-		return flowUnits;
-	}
-
-	public void setflowUnits(List<FlowUnit> flowUnits) {
-		this.flowUnits = flowUnits;
-	}
-
-	public void addFlowUnit(FlowUnit flowUnit) {
-		if (flowUnits == null) {
-			flowUnits = new ArrayList<FlowUnit>();
-		}
-		flowUnits.add(flowUnit);
-	}
-
-	public FlowUnit getUserDataFlowUnit() {
-		return userDataFlowUnit;
-	}
-
-	public void setUserDataFlowUnit(FlowUnit userDataFlowUnit) {
-		this.userDataFlowUnit = userDataFlowUnit;
-	}
-
-	public FlowUnit getReferenceFlowUnit() {
-		return referenceFlowUnit;
-	}
-
-	public void setReferenceFlowUnit(FlowUnit referenceFlowUnit) {
-		this.referenceFlowUnit = referenceFlowUnit;
-	}
+//	public List<FlowUnit> getflowUnits() {
+//		if (flowUnits == null) {
+//			flowUnits = new ArrayList<FlowUnit>();
+//		}
+//		return flowUnits;
+//	}
+//
+//	public void setflowUnits(List<FlowUnit> flowUnits) {
+//		this.flowUnits = flowUnits;
+//	}
+//
+//	public void addFlowUnit(FlowUnit flowUnit) {
+//		if (flowUnits == null) {
+//			flowUnits = new ArrayList<FlowUnit>();
+//		}
+//		flowUnits.add(flowUnit);
+//	}
+//
+//	public FlowUnit getUserDataFlowUnit() {
+//		return userDataFlowUnit;
+//	}
+//
+//	public void setUserDataFlowUnit(FlowUnit userDataFlowUnit) {
+//		this.userDataFlowUnit = userDataFlowUnit;
+//	}
+//
+//	public FlowUnit getReferenceFlowUnit() {
+//		return referenceFlowUnit;
+//	}
+//
+//	public void setReferenceFlowUnit(FlowUnit referenceFlowUnit) {
+//		this.referenceFlowUnit = referenceFlowUnit;
+//	}
 
 	// public static List<FlowProperty> getLcaMasterProperties() {
 	// return lcaMasterProperties;

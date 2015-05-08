@@ -85,7 +85,7 @@ public class QACheck {
 		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
 		String d1 = "UUID format";
 		String e1 = "The text does not match a properly formatted UUID: hex digits separated by dashes: 8-4-4-4-12.";
-		String s1 = "Check format.  For example, sometimes leading zeros are removed.";
+		String s1 = "Check format.  For example, sometimes leading zeros get removed.";
 		Pattern p1 = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
 		String r1 = null;
 		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, true));
@@ -140,4 +140,17 @@ public class QACheck {
 	public void setHandlerMethod(Object handlerMethod) {
 		this.handlerMethod = handlerMethod;
 	}
+
+	public static List<QACheck> getFloatCheck() {
+		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+		String d1 = "Float format";
+		String e1 = "The text does not match a properly formatted floating point number.";
+		String s1 = "Check format.";
+		Pattern p1 = Pattern.compile("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$");
+		String r1 = null;
+		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, true));
+
+		return qaCheckPack;
+	}
+
 }

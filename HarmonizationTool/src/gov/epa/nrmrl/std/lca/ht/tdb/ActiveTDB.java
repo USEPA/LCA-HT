@@ -622,6 +622,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static int tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) {
+		if (subject == null){
+			return -1;
+		}
 		if (object == null) {
 			return tsRemoveAllNonLiteralObjects(subject, predicate, graphName);
 		}
@@ -848,7 +851,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.add(subject, predicate, newObject);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+			System.out.println("tsReplaceObject from ActiveTDB failed with Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();

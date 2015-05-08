@@ -22,6 +22,7 @@ public class FedLCA {
 	// private static Model m_model = ModelFactory.createDefaultModel();
 	private static Model m_model = ActiveTDB.getModel(null);
 
+
 	/**
 	 * <p>
 	 * The namespace of the vocabulary as a string
@@ -112,6 +113,8 @@ public class FedLCA {
 	public static final Property flowPropertyUnitString = m_model.createProperty(NS + "flowPropertyUnitString");
 
 	public static final Property flowPropertyString = m_model.createProperty(NS + "flowPropertyString");
+	
+	public static final Property hasReferenceUnit = m_model.createProperty(NS + "hasReferenceUnit");
 
 	public static final Property unitConversionFactor = m_model.createProperty(NS + "unitConversionFactor");
 	
@@ -124,7 +127,7 @@ public class FedLCA {
 	public static final Property flowPropertySupplementalDescription = m_model.createProperty(NS
 			+ "flowPropertySupplementalDescription");
 
-	public static final Property hasFlowProperty = m_model.createProperty(NS + "hasFlowProperty");
+//	public static final Property hasFlowProperty = m_model.createProperty(NS + "hasFlowProperty");
 
 	public static final Resource UnitSuperGroup = m_model.createResource(NS + "UnitSuperGroup");
 	
@@ -143,6 +146,9 @@ public class FedLCA {
 	 * </p>
 	 */
 	public static final Property hasFlowUnit = m_model.createProperty(NS + "hasFlowUnit");
+	public static final Property hasUnit = m_model.createProperty(NS + "hasFlowUnit");
+	// THE ABOVE IS A DUPLICATE OF THE SAME PROPERTY!!  FIXME AT SOME POINT!!
+
 
 	/**
 	 * <p>

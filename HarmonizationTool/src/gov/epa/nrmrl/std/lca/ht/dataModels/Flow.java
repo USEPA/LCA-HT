@@ -9,6 +9,7 @@ import org.eclipse.ui.PartInitException;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -37,7 +38,8 @@ public class Flow {
 
 	private Flowable flowable;
 	private FlowContext flowContext;
-	private FlowProperty flowProperty;
+//	private FlowProperty flowProperty;
+	private FlowUnit flowUnit;
 	private Resource tdbResource;
 	private static final Resource rdfClass = FedLCA.Flow;
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
@@ -96,16 +98,17 @@ public class Flow {
 		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowContext, flowContext.getTdbResource());
 	}
 
-	public FlowProperty getFlowProperty() {
-		return flowProperty;
+	public FlowUnit getFlowUnit() {
+		return flowUnit;
 	}
 
-	public void setFlowProperty(FlowProperty flowProperty) {
-		if (flowProperty == null) {
+	public void setFlowUnit(FlowUnit flowUnit) {
+		if (flowUnit == null) {
 			return;
 		}
-		this.flowProperty = flowProperty;
-		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowProperty, flowProperty.getTdbResource());
+		this.flowUnit = flowUnit;
+//		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowProperty, flowUnit.getTdbResource());
+		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasFlowUnit, flowUnit.getTdbResource());
 	}
 
 	public Resource getTdbResource() {
@@ -231,7 +234,9 @@ public class Flow {
 					tdbModel.add(tdbResource, FedLCA.hasFlowContext, dataRow.getFlowContext().getTdbResource());
 				}
 				if (dataRow.getFlowUnit() != null) {
-					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowUnit().getTdbResource());
+//					tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowUnit().getTdbResource());
+					tdbModel.add(tdbResource, FedLCA.hasFlowUnit, dataRow.getFlowUnit().getTdbResource());
+
 				}
 				if (dataSourceResource != null) {
 					tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
@@ -285,7 +290,7 @@ public class Flow {
 		b.append("  ?mf eco:hasFlowable ?flowable . \n");
 		b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
 		b.append("  ?mf fedlca:hasFlowContext ?flowContext . \n");
-		b.append("  ?f fedlca:hasFlowProperty ?flowPropertyUnit . \n");
+		b.append("  ?f fedlca:hasFlowUnit ?flowPropertyUnit . \n");
 		b.append("  ?flowPropertyUnit fedlca:flowPropertyString ?flowPropertyString . \n");
 		b.append("  ?mf fedlca:hasFlowProperty ?flowProperty . \n");
 		b.append("  filter (str(?flowPropertyString) = str(afn:localname(?flowProperty)))  . \n");

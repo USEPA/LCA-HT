@@ -244,8 +244,8 @@ public class OpenLCA {
 			propertyMap.put(description, RDFS.comment);
 			propertyMap.put(version, DCTerms.hasVersion);
 			propertyMap.put(synonyms, SKOS.altLabel);
-			propertyMap.put(flowProperty, FedLCA.hasFlowProperty);
-			propertyMap.put(flowProperties, FedLCA.hasFlowProperty);
+			propertyMap.put(flowProperty, FedLCA.hasFlowUnit);
+			propertyMap.put(flowProperties, FedLCA.hasFlowUnit);
 			propertyMap.put(category, FedLCA.hasFlowContext);
 
 			resourceMap.put(Category, FlowContext.getRdfclass());
