@@ -8,6 +8,8 @@ public class LoggerWriter extends StringWriter {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.log.LoggerWriter";
 
 	private Text loggerArea;
+	
+	private int lastWrite = 0;
 
 	public LoggerWriter(Text area) {
 		super();
@@ -41,8 +43,12 @@ public class LoggerWriter extends StringWriter {
 	private void update() {
 		loggerArea.getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				loggerArea.append(LoggerWriter.this.getBuffer().substring(loggerArea.getText().length()));
+				int newWrite = LoggerWriter.this.getBuffer().length();
+				if (lastWrite <= newWrite)
+					return;
+				loggerArea.append(LoggerWriter.this.getBuffer().substring(lastWrite, newWrite));
 				loggerArea.setSelection(loggerArea.getText().length());
+				lastWrite = newWrite;
 			}
 		});
 	}
