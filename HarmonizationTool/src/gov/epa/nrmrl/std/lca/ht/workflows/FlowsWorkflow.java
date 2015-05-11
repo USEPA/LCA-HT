@@ -78,8 +78,6 @@ public class FlowsWorkflow extends ViewPart {
 	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> matchedFlowRowNumbers = new LinkedHashSet<Integer>();
 
-
-
 	// private static FileMD fileMD;
 	// private static DataSourceProvider dataSourceProvider;
 
@@ -355,28 +353,28 @@ public class FlowsWorkflow extends ViewPart {
 	};
 
 	// ------------------- CHECK LISTENER -------------------
-	//TODO - move whatever we need into ui threads
-	//TODO - disable buttons sensibly
+	// TODO - move whatever we need into ui threads
+	// TODO - disable buttons sensibly
 	SelectionListener checkDataListener = new SelectionListener() {
 		private void doit(final SelectionEvent e) {
 			CSVTableView.clearIssues();
 			textCheckData.setText(" ... checking data ...");
 			btnCheckData.setEnabled(false);
 			btnLoadUserData.setEnabled(false);
-			
+
 			final LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
 					CSVTableView.getTableProviderKey()).getLcaDataProperties();
 			final List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
-			//This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
+			// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
 			final Display display = Display.getDefault();
-	
+
 			new Thread() {
 				public void run() {
-					
+
 					boolean checkForRequiredFlowableFields = false;
 					boolean checkForRequiredFlowContextFields = false;
 					boolean checkForRequiredFlowPropertyFields = false;
-					
+
 					int countOfAssignedFields = 0;
 					for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropreties) {
 						if (lcaDataPropertyProvider == null) {
@@ -396,7 +394,7 @@ public class FlowsWorkflow extends ViewPart {
 							requiredLCADataPropertyProvider.add(lcaDataPropertyProvider);
 						}
 					}
-		
+
 					if (checkForRequiredFlowableFields) {
 						for (LCADataPropertyProvider requiredLCADataProperty : Flowable.getDataPropertyMap().values()) {
 							if (requiredLCADataProperty.isRequired()) {
@@ -416,7 +414,8 @@ public class FlowsWorkflow extends ViewPart {
 						}
 					}
 					if (checkForRequiredFlowContextFields) {
-						for (LCADataPropertyProvider requiredLCADataProperty : FlowContext.getDataPropertyMap().values()) {
+						for (LCADataPropertyProvider requiredLCADataProperty : FlowContext.getDataPropertyMap()
+								.values()) {
 							if (requiredLCADataProperty.isRequired()) {
 								boolean found = false;
 								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
@@ -434,7 +433,8 @@ public class FlowsWorkflow extends ViewPart {
 						}
 					}
 					if (checkForRequiredFlowPropertyFields) {
-						for (LCADataPropertyProvider requiredLCADataProperty : FlowProperty.getDataPropertyMap().values()) {
+						for (LCADataPropertyProvider requiredLCADataProperty : FlowProperty.getDataPropertyMap()
+								.values()) {
 							if (requiredLCADataProperty.isRequired()) {
 								boolean found = false;
 								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
@@ -451,12 +451,12 @@ public class FlowsWorkflow extends ViewPart {
 							}
 						}
 					}
-		
+
 					final int fieldCount = countOfAssignedFields;
-					/*ui start*/
+					/* ui start */
 					new Thread() {
 						public void run() {
-							display.syncExec(new Runnable() {	
+							display.syncExec(new Runnable() {
 								public void run() {
 									if (fieldCount == 0) {
 										textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -466,9 +466,11 @@ public class FlowsWorkflow extends ViewPart {
 									} else {
 										int issueCount = CSVTableView.checkCols();
 										// int issueCount = 0;
-										textCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
-						
-										textCheckData.setText(issueCount + " issues. " + fieldCount + " columns checked");
+										textCheckData.setBackground(SWTResourceManager
+												.getColor(SWT.COLOR_INFO_BACKGROUND));
+
+										textCheckData.setText(issueCount + " issues. " + fieldCount
+												+ " columns checked");
 										if (issueCount == 0) {
 											// btnMatchFlowables.setEnabled(true);
 											btnCommit.setEnabled(true);
@@ -708,7 +710,6 @@ public class FlowsWorkflow extends ViewPart {
 			uniqueFlowableRowNumbers.clear();
 			uniqueFlowRowNumbers.clear();
 
-			
 			matchedFlowContextRowNumbers.clear();
 			matchedFlowPropertyRowNumbers.clear();
 			matchedFlowableRowNumbers.clear();
@@ -814,12 +815,17 @@ public class FlowsWorkflow extends ViewPart {
 		// CSVTableView.colorFlowableRows();
 		CSVTableView.colorOneFlowableRow(rowNumToSend);
 	}
-	
+
 	public static void addFlowRowNum(int rowNumToSend) {
 		uniqueFlowRowNumbers.add(rowNumToSend);
-//		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
-//				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowRows();
+	}
+
+	public static void addFlowRowNum(int rowNumToSend, boolean colorNow) {
+		uniqueFlowRowNumbers.add(rowNumToSend);
+		if (colorNow) {
+			CSVTableView.colorFlowRows();
+		}
 	}
 
 	public static void addMatchContextRowNum(int rowNumToSend) {
@@ -835,11 +841,11 @@ public class FlowsWorkflow extends ViewPart {
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowPropertyRows();
 	}
-	
+
 	public static void addMatchFlowRowNum(int rowNumToSend) {
 		matchedFlowRowNumbers.add(rowNumToSend);
-//		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
-//				+ uniqueFlowPropertyRowNumbers.size() + " found.");
+		// textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+		// + uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowRows();
 	}
 
@@ -902,6 +908,11 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 		// CSVTableView.colorFlowableRows();
+		CSVTableView.colorOneFlowableRow(rowNumber);
+	}
+
+	public static void removeMatchFlowRowNum(int rowNumber) {
+		matchedFlowRowNumbers.remove(rowNumber);
 		CSVTableView.colorOneFlowableRow(rowNumber);
 	}
 
