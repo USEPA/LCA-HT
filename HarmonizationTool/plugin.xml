@@ -318,7 +318,7 @@
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData.rdf"
             name="Import User Data RDF">
       </command>
       <command
