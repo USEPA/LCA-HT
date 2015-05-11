@@ -12,6 +12,7 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.log.LoggerWriter;
 import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -46,8 +47,10 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Synchronizer;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -98,6 +101,21 @@ public class ImportUserData implements IHandler {
 		public void run() {
 			importCommand.finishImport(this);
 
+		}
+	}
+	
+	private static void updateText(final StyledText target, final String message) {
+		try {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				target.setText(message);
+
+			}
+		});
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+			throw t;
 		}
 	}
 
@@ -245,11 +263,17 @@ public class ImportUserData implements IHandler {
 				runLogger.info("LOAD RDF (zip file)" + fileName + " " + new Date());
 				int size = zf.size();
 				int i = 0;
+				int percent = 0;
 
 				Enumeration<?> entries = zf.entries();
 
 				while (entries.hasMoreElements()) {
-					runLogger.info("Loading entry " + ++i + " of " + size + " " + new Date());
+					int newPercent = ++i * 100 / size;
+					if (percent != newPercent) {
+						percent = newPercent;
+						updateText(FlowsWorkflow.textLoadUserData, "Loading entries: " + percent + "%");
+
+					}
 					ZipEntry ze = (ZipEntry) entries.nextElement();
 					String zipFileName = ze.getName();
 					String inputType = ActiveTDB.getRDFTypeFromSuffix(zipFileName);
@@ -264,7 +288,7 @@ public class ImportUserData implements IHandler {
 					// fileContents.add(bufferToString(zipStream, fixIDs));
 					fileContents.put(bufferToString(zipStream, fixIDs), inputType);
 
-					runLogger.info("LOAD RDF " + ze.getName());
+					//runLogger.info("LOAD RDF " + ze.getName());
 				}
 
 			} catch (IOException e) {
@@ -372,7 +396,7 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
-		runLogger.info("Adding new items to datasource. " + new Date());
+		updateText(FlowsWorkflow.textLoadUserData, "Adding to datasource");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
 		while (resultSet.hasNext()) {
@@ -388,7 +412,7 @@ public class ImportUserData implements IHandler {
 				tdbModel.add(itemToAdd, ECO.hasDataSource, datasetResource);
 			}
 			ActiveTDB.tdbDataset.commit();
-			runLogger.info(" Finished adding items to datasource " + new Date());
+			//runLogger.info(" Finished adding items to datasource " + new Date());
 		} catch (Exception e) {
 			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -460,10 +484,11 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
-		runLogger.info("querying current user data " + new Date());
+		//runLogger.info("querying current user data " + new Date());
+		updateText(FlowsWorkflow.textLoadUserData, "Adding user data");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
-		runLogger.info("adding user data to table " + new Date());
+		//runLogger.info("adding user data to table " + new Date());
 		tableProvider.createUserData((ResultSetRewindable) resultSet);
 
 		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
@@ -585,9 +610,15 @@ public class ImportUserData implements IHandler {
 		String failedString = "";
 		int size = fileContentsList.size();
 		int i = 0;
+		int percent = 0;
 		try {
 			for (String fileContents : fileContentsList.keySet()) {
-				runLogger.info("Importing entry " + ++i + " of " + size + " into model " + new Date());
+				int newPercent = ++i * 100 / size;
+				if (percent != newPercent) {
+					percent = newPercent;
+					updateText(FlowsWorkflow.textLoadUserData, "Importing entries: " + percent + "%");
+
+				}
 				failedString = fileContents;
 				String inputType = fileContentsList.get(fileContents);
 				ByteArrayInputStream stream = new ByteArrayInputStream(fileContents.getBytes());
@@ -654,7 +685,9 @@ public class ImportUserData implements IHandler {
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
-		runLogger.info("Waiting for UI Thread " + new Date());
+		//display.readAndDispatch();
+		display.wake();
+		
 
 		// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
 		// final Display display = ImportUserData.currentDisplay;
@@ -663,7 +696,6 @@ public class ImportUserData implements IHandler {
 		 */
 		display.syncExec(new Runnable() {
 			public void run() {
-				runLogger.info("Showing CSTableView " + new Date());
 				try {
 					Util.showView(CSVTableView.ID);
 				} catch (PartInitException e) {
