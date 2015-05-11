@@ -81,7 +81,7 @@ public class LoggerViewer extends ViewPart {
 	}
 
 	public static void clear() {
-		loggerWriter.getBuffer().setLength(0);
+		loggerWriter.clear();
 		loggerArea.setText("");		
 	}
 }

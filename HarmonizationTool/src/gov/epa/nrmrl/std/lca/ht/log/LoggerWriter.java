@@ -44,12 +44,17 @@ public class LoggerWriter extends StringWriter {
 		loggerArea.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				int newWrite = LoggerWriter.this.getBuffer().length();
-				if (lastWrite <= newWrite)
+				if (lastWrite > newWrite)
 					return;
 				loggerArea.append(LoggerWriter.this.getBuffer().substring(lastWrite, newWrite));
 				loggerArea.setSelection(loggerArea.getText().length());
 				lastWrite = newWrite;
 			}
 		});
+	}
+	
+	public void clear() {
+		getBuffer().setLength(0);
+		lastWrite = 0;
 	}
 }
