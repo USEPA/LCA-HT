@@ -228,7 +228,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
 		Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
-		
+
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
 		System.out.println("unionModel: " + unionModel.size());
@@ -622,7 +622,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static int tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) {
-		if (subject == null){
+		if (subject == null) {
 			return -1;
 		}
 		if (object == null) {
@@ -781,7 +781,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void addTriple(Resource s, Property p, Resource o) {
-		s.addProperty(p, o);
+		if (s != null && p != null && o != null) {
+			s.addProperty(p, o);
+		}
 	}
 
 	public static String getRDFTypeFromSuffix(String fileName) {
@@ -858,8 +860,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
-	public static void sync(){
+
+	public static void sync() {
 		TDB.sync(tdbDataset);
 	}
 }

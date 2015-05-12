@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -198,6 +200,13 @@ public class MatchFlowables extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
+		try {
+			Util.showView(CSVTableView.ID);
+			Util.showView(FlowsWorkflow.ID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		removeColumns();
 		createColumns();
 		dataTableRowNum = rowNumber;
@@ -419,6 +428,28 @@ public class MatchFlowables extends ViewPart {
 		CurationMethods.setComparison(flowableToMatch.getTdbResource(), flowableResource, equivalenceResource);
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
+		rematchFlows();
+	}
+	
+	private static void rematchFlows(){
+		List<Integer> flowsToReMatchRows = new ArrayList<Integer>();
+		try {
+			Util.showView(CSVTableView.ID);
+			Util.showView(FlowsWorkflow.ID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		for (DataRow dataRow: tableProvider.getData()){
+			Flowable flowable = dataRow.getFlowable();
+			if (flowable != null){
+				if (flowable.equals(flowableToMatch)){
+					flowsToReMatchRows.add(dataRow.getRowNumber());
+				}
+			}
+		}
+		Flow.matchFlows(flowsToReMatchRows);
 	}
 
 	@Override

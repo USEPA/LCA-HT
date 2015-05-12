@@ -339,6 +339,8 @@ public class Flow {
 				Resource masterFlowResource = querySolution.get("mf").asResource();
 				flowMap.put(userFlowResource, masterFlowResource);
 				FlowsWorkflow.addMatchFlowRowNum(i);
+			} else {
+				FlowsWorkflow.removeMatchFlowRowNum(i);
 			}
 		}
 
@@ -361,64 +363,64 @@ public class Flow {
 		return flowMap.size();
 	}
 
-	public static int matchFlows() {
-		try {
-			Util.showView(CSVTableView.ID);
-			Util.showView(FlowsWorkflow.ID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
-		StringBuilder b = new StringBuilder();
-		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct \n");
-		b.append("  ?rowNumber ?mf ?f\n");
-		b.append(" \n");
-		b.append("where { \n");
-		b.append(" \n");
-		b.append("  #--- FLOWABLE \n");
-		b.append("  ?f a fedlca:Flow . \n");
-		b.append("  ?f eco:hasDataSource ?ds . \n");
-		b.append("  ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string . \n");
-		b.append("  ?f eco:hasFlowable ?flowable . \n");
-		b.append("  ?c a fedlca:Comparison . \n");
-		b.append("  ?c fedlca:comparedSource ?flowable . \n");
-		b.append("  ?c fedlca:comparedMaster ?mflowable . \n");
-		b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
-		b.append("  ?mf eco:hasFlowable ?mflowable . \n");
-		b.append("  ?mf a fedlca:Flow . \n");
-		b.append("  ?mf eco:hasDataSource ?mds . \n");
-		b.append("  ?mds a lcaht:MasterDataset . \n");
-		b.append("  ?mf fedlca:hasFlowContext ?mflowContext . \n");
-		b.append("  ?mf fedlca:hasFlowUnit ?mflowUnit . \n");
-
-		b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
-		b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
-		b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
-		b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
-		b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
-		b.append("} \n");
-		b.append("order by ?rowNumber \n");
-
-		String query = b.toString();
-		System.out.println("Flow matching query \n" + query);
-
-		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-		harmonyQuery2Impl.setQuery(query);
-		harmonyQuery2Impl.setGraphName(null);
-
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-		int hits = 0;
-		while (resultSet.hasNext()) {
-			QuerySolution querySolution = resultSet.next();
-			int matchedRowNumber = querySolution.get("rowNumber").asLiteral().getInt();
-			FlowsWorkflow.addFlowRowNum(matchedRowNumber);
-			hits++;
-		}
-		return hits;
-	}
+	// public static int matchFlows() {
+	// try {
+	// Util.showView(CSVTableView.ID);
+	// Util.showView(FlowsWorkflow.ID);
+	// } catch (PartInitException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+	// String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
+	// StringBuilder b = new StringBuilder();
+	// b.append(Prefixes.getPrefixesForQuery());
+	// b.append("select distinct \n");
+	// b.append("  ?rowNumber ?mf ?f\n");
+	// b.append(" \n");
+	// b.append("where { \n");
+	// b.append(" \n");
+	// b.append("  #--- FLOWABLE \n");
+	// b.append("  ?f a fedlca:Flow . \n");
+	// b.append("  ?f eco:hasDataSource ?ds . \n");
+	// b.append("  ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string . \n");
+	// b.append("  ?f eco:hasFlowable ?flowable . \n");
+	// b.append("  ?c a fedlca:Comparison . \n");
+	// b.append("  ?c fedlca:comparedSource ?flowable . \n");
+	// b.append("  ?c fedlca:comparedMaster ?mflowable . \n");
+	// b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
+	// b.append("  ?mf eco:hasFlowable ?mflowable . \n");
+	// b.append("  ?mf a fedlca:Flow . \n");
+	// b.append("  ?mf eco:hasDataSource ?mds . \n");
+	// b.append("  ?mds a lcaht:MasterDataset . \n");
+	// b.append("  ?mf fedlca:hasFlowContext ?mflowContext . \n");
+	// b.append("  ?mf fedlca:hasFlowUnit ?mflowUnit . \n");
+	//
+	// b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
+	// b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+	// b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
+	// b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+	// b.append("  ?f fedlca:sourceTableRowNumber ?rowNumber . \n");
+	// b.append("} \n");
+	// b.append("order by ?rowNumber \n");
+	//
+	// String query = b.toString();
+	// System.out.println("Flow matching query \n" + query);
+	//
+	// HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+	// harmonyQuery2Impl.setQuery(query);
+	// harmonyQuery2Impl.setGraphName(null);
+	//
+	// ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+	// int hits = 0;
+	// while (resultSet.hasNext()) {
+	// QuerySolution querySolution = resultSet.next();
+	// int matchedRowNumber = querySolution.get("rowNumber").asLiteral().getInt();
+	// FlowsWorkflow.addFlowRowNum(matchedRowNumber);
+	// hits++;
+	// }
+	// return hits;
+	// }
 
 	public static boolean matchFlow(int rowNumber) {
 		try {
@@ -483,7 +485,7 @@ public class Flow {
 			FlowsWorkflow.removeMatchFlowRowNum(rowNumber);
 		}
 
-		ActiveTDB.addTriple(userFlowResource, OWL2.sameAs, masterFlowResource);
+		ActiveTDB.tsAddGeneralTriple(userFlowResource, OWL2.sameAs, masterFlowResource, null);
 
 		return false;
 	}

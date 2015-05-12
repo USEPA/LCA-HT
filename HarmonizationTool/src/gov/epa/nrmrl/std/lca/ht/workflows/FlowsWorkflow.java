@@ -913,7 +913,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void removeMatchFlowRowNum(int rowNumber) {
 		matchedFlowRowNumbers.remove(rowNumber);
-		CSVTableView.colorOneFlowableRow(rowNumber);
+		CSVTableView.colorFlowRows();
 	}
 
 	public static void updateFlowableCount() {

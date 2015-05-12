@@ -12,12 +12,15 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.Node;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -200,6 +203,12 @@ public class MatchProperties extends ViewPart {
 			}
 			TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 			masterTree.deselectAll();
+			if (currentFlowUnitSelection != null) {
+				currentFlowUnitSelection.setBackground(null);
+
+			}
+			currentFlowUnitSelection = null;
+
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
@@ -208,6 +217,7 @@ public class MatchProperties extends ViewPart {
 			FlowsWorkflow.removeMatchPropertyRowNum(unitToMatch.getFirstRow());
 			CSVTableView.colorFlowPropertyRows();
 			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			rematchFlows();
 		}
 
 		@Override
@@ -288,6 +298,28 @@ public class MatchProperties extends ViewPart {
 		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		rematchFlows();
+	}
+
+	private static void rematchFlows() {
+		List<Integer> flowsToReMatchRows = new ArrayList<Integer>();
+		try {
+			Util.showView(CSVTableView.ID);
+			Util.showView(FlowsWorkflow.ID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		for (DataRow dataRow : tableProvider.getData()) {
+			FlowUnit flowUnit = dataRow.getFlowUnit();
+			if (flowUnit != null) {
+				if (flowUnit.equals(unitToMatch)) {
+					flowsToReMatchRows.add(dataRow.getRowNumber());
+				}
+			}
+		}
+		Flow.matchFlows(flowsToReMatchRows);
 	}
 
 	private SelectionListener nextListener = new SelectionListener() {
@@ -956,55 +988,55 @@ public class MatchProperties extends ViewPart {
 				currentFlowUnitSelection = null;
 			}
 			setUserDataLabel("", false);
+			return;
+		}
+		// if (currentFlowPropertySelection != null) {
+		// currentFlowPropertySelection.setBackground(null);
+		// }
+		if (currentFlowUnitSelection != null) {
+			currentFlowUnitSelection.setBackground(null);
+		}
+		// String labelString = null;
+		// String propertyString = unitToMatch.getPropertyStr();
+		// System.out.println("We got propertyString" + propertyString);
+		// String unitString = unitToMatch.getUnitStr();
+		// System.out.println("... and we got unitString" + unitString);
+
+		// if (propertyString == null) {
+		// labelString = unitString;
+		// } else {
+		// // labelString = propertyString + ": " + unitString;
+		String labelString;
+		if (unitToMatch.getUnitGroup() != null) {
+			labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
+					+ System.getProperty("line.separator") + "   "
+					+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 		} else {
-			// if (currentFlowPropertySelection != null) {
-			// currentFlowPropertySelection.setBackground(null);
-			// }
-			if (currentFlowUnitSelection != null) {
-				currentFlowUnitSelection.setBackground(null);
-			}
-			// String labelString = null;
-			// String propertyString = unitToMatch.getPropertyStr();
-			// System.out.println("We got propertyString" + propertyString);
-			// String unitString = unitToMatch.getUnitStr();
-			// System.out.println("... and we got unitString" + unitString);
+			labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 
-			// if (propertyString == null) {
-			// labelString = unitString;
-			// } else {
-			// // labelString = propertyString + ": " + unitString;
-			String labelString;
-			if (unitToMatch.getUnitGroup() != null) {
-				labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
-						+ System.getProperty("line.separator") + "   "
-						+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
-			} else {
-				labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
+		}
 
-			}
-
-			partialCollapse();
-			Resource propertyResource = unitToMatch.getMatchingResource();
-			if (propertyResource != null) {
-				TreeItem treeItem = getTreeItemByURI(propertyResource);
-				if (treeItem != null) {
-					TreeNode treeNode = (TreeNode) treeItem.getData();
-					if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
-						TreeItem parentItem = treeItem.getParentItem();
-						parentItem.setExpanded(true);
-						currentFlowUnitSelection = treeItem;
-						treeItem.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-					}
-					setUserDataLabel(labelString, true);
-
-				} else {
-					masterTree.deselectAll();
-					setUserDataLabel(labelString, false);
+		partialCollapse();
+		Resource propertyResource = unitToMatch.getMatchingResource();
+		if (propertyResource != null) {
+			TreeItem treeItem = getTreeItemByURI(propertyResource);
+			if (treeItem != null) {
+				TreeNode treeNode = (TreeNode) treeItem.getData();
+				if (treeNode.nodeClass.equals(FedLCA.FlowUnit)) {
+					TreeItem parentItem = treeItem.getParentItem();
+					parentItem.setExpanded(true);
+					currentFlowUnitSelection = treeItem;
+					treeItem.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 				}
+				setUserDataLabel(labelString, true);
+
 			} else {
 				masterTree.deselectAll();
 				setUserDataLabel(labelString, false);
 			}
+		} else {
+			masterTree.deselectAll();
+			setUserDataLabel(labelString, false);
 		}
 	}
 
