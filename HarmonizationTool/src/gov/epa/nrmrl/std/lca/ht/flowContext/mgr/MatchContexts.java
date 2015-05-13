@@ -814,7 +814,8 @@ public class MatchContexts extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		List<DataRow> data = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData();
+		DataRow dataRow = data.get(rowNumber);
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {
 			masterTree.deselectAll();
@@ -822,14 +823,28 @@ public class MatchContexts extends ViewPart {
 			return;
 		}
 
-		String labelString = null;
 		String generalString = (String) contextToMatch.getOneProperty(FlowContext.flowContextGeneral);
 		String specificString = contextToMatch.getSpecificString();
+
+
+		int rowCount = 0;
+		for (int i = contextToMatch.getFirstRow();i<data.size();i++){
+			FlowContext flowContextOfRow = data.get(i).getFlowContext();
+			if (flowContextOfRow != null){
+				if (flowContextOfRow.equals(contextToMatch)){
+					rowCount++;
+				}
+			}
+		}
+		
+		String labelString = null;
+
 		if (specificString == null) {
 			labelString = generalString;
 		} else {
 			labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
 		}
+		labelString+=System.getProperty("line.separator") + rowCount + " rows";
 
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {

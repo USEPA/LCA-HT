@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -52,6 +53,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -72,7 +74,12 @@ public class MatchFlowables extends ViewPart {
 
 	private static int maxSearchResults = 100;
 	private static int nextStartResult = 0;
+	private static Text rowCountText;
 	public static Text editorText;
+	private static Composite outerComposite;
+	private static Combo chooseSearchFieldCombo;
+	private static Text chooseSearchFieldText;
+	private static Button searchButton;
 
 	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
@@ -93,7 +100,7 @@ public class MatchFlowables extends ViewPart {
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayout(new GridLayout(6, false));
+		innerComposite.setLayout(new GridLayout(7, false));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gridData.heightHint = 30;
 		innerComposite.setLayoutData(gridData);
@@ -115,6 +122,12 @@ public class MatchFlowables extends ViewPart {
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
+
+		rowCountText = new Text(innerComposite, SWT.BORDER);
+		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_text.minimumWidth = 70;
+		rowCountText.setEditable(false);
+		rowCountText.setLayoutData(gd_text);
 
 		searchButton = new Button(innerComposite, SWT.NONE);
 		searchButton.setText("Search:");
@@ -142,6 +155,7 @@ public class MatchFlowables extends ViewPart {
 		GridData gd_chooseSearchFieldText = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_chooseSearchFieldText.widthHint = 6000;
 		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
+		new Label(innerComposite, SWT.NONE);
 		chooseSearchFieldText.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -210,10 +224,12 @@ public class MatchFlowables extends ViewPart {
 		removeColumns();
 		createColumns();
 		dataTableRowNum = rowNumber;
+
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		DataRow dataRow = tableProvider.getData().get(rowNumber);
+		List<DataRow> data = tableProvider.getData();
+		DataRow dataRow = data.get(rowNumber);
 		flowableToMatch = dataRow.getFlowable();
-		
+
 		if (flowableToMatch == null) {
 			return;
 		}
@@ -225,8 +241,8 @@ public class MatchFlowables extends ViewPart {
 		resetSearchButton();
 		chooseSearchFieldCombo.select(0);
 		chooseSearchFieldText.setText("");
-		
-//		flowableToMatch.transferSearchResults();
+
+		// flowableToMatch.transferSearchResults();
 		flowableToMatch.clearSearchResults();
 
 		boolean adHoc = false;
@@ -239,6 +255,18 @@ public class MatchFlowables extends ViewPart {
 		} else {
 			addToMaster.setText("Add to Master");
 		}
+
+		int rowCount = 0;
+		for (int i = flowableToMatch.getFirstRow(); i < data.size(); i++) {
+			Flowable flowableOfRow = data.get(i).getFlowable();
+			if (flowableOfRow != null) {
+				if (flowableOfRow.equals(flowableToMatch)) {
+					rowCount++;
+				}
+			}
+		}
+		rowCountText.setText(rowCount + " rows");
+		System.out.println("got rows:" + rowCount);
 
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
 		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
@@ -349,7 +377,7 @@ public class MatchFlowables extends ViewPart {
 			return;
 		}
 		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
-//		int tableRow = 1;
+		// int tableRow = 1;
 		for (String value : candidateMap.values()) {
 			int col = MatchStatus.getNumberBySymbol(value);
 			if (col > 0 && col < 5) {
@@ -430,8 +458,8 @@ public class MatchFlowables extends ViewPart {
 		updateMatchCounts();
 		rematchFlows();
 	}
-	
-	private static void rematchFlows(){
+
+	private static void rematchFlows() {
 		List<Integer> flowsToReMatchRows = new ArrayList<Integer>();
 		try {
 			Util.showView(CSVTableView.ID);
@@ -441,10 +469,10 @@ public class MatchFlowables extends ViewPart {
 			e.printStackTrace();
 		}
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		for (DataRow dataRow: tableProvider.getData()){
+		for (DataRow dataRow : tableProvider.getData()) {
 			Flowable flowable = dataRow.getFlowable();
-			if (flowable != null){
-				if (flowable.equals(flowableToMatch)){
+			if (flowable != null) {
+				if (flowable.equals(flowableToMatch)) {
 					flowsToReMatchRows.add(dataRow.getRowNumber());
 				}
 			}
@@ -461,7 +489,7 @@ public class MatchFlowables extends ViewPart {
 		for (int i = totalRows - 1; i > flowableToMatch.getMatchCandidates().size() + 1; i--) {
 			flowableTableRows.remove(i);
 		}
-//		flowableToMatch.clearSearchResults();
+		// flowableToMatch.clearSearchResults();
 	}
 
 	private static SelectionListener searchListener = new SelectionListener() {
@@ -525,13 +553,13 @@ public class MatchFlowables extends ViewPart {
 		b.append("   } order by afn:localname(?masterTest) \n");
 		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
-		 System.out.println("query = \n" + query);
+		System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		Logger.getLogger("run").info("Searching master list for matching flowables...");
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-//		flowableToMatch.transferSearchResults();
+		// flowableToMatch.transferSearchResults();
 		flowableToMatch.clearSearchResults();
 
 		// resetTable();
@@ -644,7 +672,7 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener addToMasterListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-//			int count = 0;
+			// int count = 0;
 			if (CSVTableView.getTableProviderKey() == null) {
 				return;
 			}
@@ -675,11 +703,6 @@ public class MatchFlowables extends ViewPart {
 			doit(e);
 		}
 	};
-
-	private static Composite outerComposite;
-	private static Combo chooseSearchFieldCombo;
-	private static Text chooseSearchFieldText;
-	private static Button searchButton;
 
 	public static void initialize() {
 		initializeTable();
@@ -766,7 +789,7 @@ public class MatchFlowables extends ViewPart {
 				getColumnValues().add(i, "");
 			}
 		}
-		
+
 		private void clearMatchColumns() {
 			for (int i = 0; i < 6; i++) {
 				getColumnValues().set(i, "");

@@ -975,14 +975,11 @@ public class MatchProperties extends ViewPart {
 	}
 
 	public static void update(int rowNumber) {
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
+		List<DataRow> data = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData();
+		DataRow dataRow = data.get(rowNumber);
 		unitToMatch = dataRow.getFlowUnit();
 		if (unitToMatch == null) {
 			masterTree.deselectAll();
-			// if (currentFlowPropertySelection != null) {
-			// currentFlowPropertySelection.setBackground(null);
-			// currentFlowPropertySelection = null;
-			// }
 			if (currentFlowUnitSelection != null) {
 				currentFlowUnitSelection.setBackground(null);
 				currentFlowUnitSelection = null;
@@ -990,22 +987,18 @@ public class MatchProperties extends ViewPart {
 			setUserDataLabel("", false);
 			return;
 		}
-		// if (currentFlowPropertySelection != null) {
-		// currentFlowPropertySelection.setBackground(null);
-		// }
+		int rowCount = 0;
+		for (int i = unitToMatch.getFirstRow();i<data.size();i++){
+			FlowUnit flowUnitOfRow = data.get(i).getFlowUnit();
+			if (flowUnitOfRow != null){
+				if (flowUnitOfRow.equals(unitToMatch)){
+					rowCount++;
+				}
+			}
+		}
 		if (currentFlowUnitSelection != null) {
 			currentFlowUnitSelection.setBackground(null);
 		}
-		// String labelString = null;
-		// String propertyString = unitToMatch.getPropertyStr();
-		// System.out.println("We got propertyString" + propertyString);
-		// String unitString = unitToMatch.getUnitStr();
-		// System.out.println("... and we got unitString" + unitString);
-
-		// if (propertyString == null) {
-		// labelString = unitString;
-		// } else {
-		// // labelString = propertyString + ": " + unitString;
 		String labelString;
 		if (unitToMatch.getUnitGroup() != null) {
 			labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
@@ -1013,8 +1006,8 @@ public class MatchProperties extends ViewPart {
 					+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 		} else {
 			labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
-
 		}
+		labelString+=System.getProperty("line.separator") + rowCount + " rows";
 
 		partialCollapse();
 		Resource propertyResource = unitToMatch.getMatchingResource();
