@@ -846,6 +846,8 @@ public class FlowsWorkflow extends ViewPart {
 		matchedFlowRowNumbers.add(rowNumToSend);
 		// textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
 		// + uniqueFlowPropertyRowNumbers.size() + " found.");
+		
+		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
 		CSVTableView.colorFlowRows();
 	}
 
@@ -913,6 +915,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void removeMatchFlowRowNum(int rowNumber) {
 		matchedFlowRowNumbers.remove(rowNumber);
+		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
 		CSVTableView.colorFlowRows();
 	}
 
