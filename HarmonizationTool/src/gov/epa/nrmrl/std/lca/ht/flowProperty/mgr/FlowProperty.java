@@ -257,14 +257,18 @@ public class FlowProperty {
 			//
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("select  ?mu where { \n");
+			b.append("select  distinct ?mu where { \n");
+			b.append("  ?mug a fedlca:UnitGroup . \n");
+			b.append("  ?mug fedlca:displaySortIndex ?ug_index . \n");
+			b.append("  ?mug eco:hasDataSource ?ds . \n");
+			b.append("  ?mug fedlca:hasFlowUnit ?mu . \n");
 			b.append("  ?mu a fedlca:FlowUnit . \n");
 			b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
 			b.append("  ?mu eco:hasDataSource ?ds . \n");
 			b.append("  ?ds a lcaht:MasterDataset . \n");
 
 			b.append("} \n");
-			b.append("order by ?u_index  \n");
+			b.append("order by ?ug_index ?u_index\n");
 
 			String query = b.toString();
 			System.out.println("Query = \n" + query);

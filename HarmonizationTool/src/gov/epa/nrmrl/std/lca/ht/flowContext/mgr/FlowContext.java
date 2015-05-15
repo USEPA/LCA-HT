@@ -406,9 +406,9 @@ public class FlowContext {
 		b.append("select ?mfc where { \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc eco:hasDataSource ?ds . \n");
 		b.append("      ?ds a lcaht:MasterDataset . \n");
-		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
 		b.append("      filter regex (\"" + fullText + "\", str(?necessary), \"i\") \n");
 		b.append("    } \n");
@@ -416,9 +416,9 @@ public class FlowContext {
 		b.append("  minus \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc eco:hasDataSource ?ds . \n");
 		b.append("      ?ds a lcaht:MasterDataset . \n");
-		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextNecessaryRegexPattern ?necessary . \n");
 		b.append("      filter (!regex (\"" + fullText + "\", str(?necessary), \"i\")) \n");
 		b.append("    } \n");
@@ -426,9 +426,9 @@ public class FlowContext {
 		b.append("  minus \n");
 		b.append("  { \n");
 		b.append("    select distinct ?mfc where { \n");
+		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc eco:hasDataSource ?ds . \n");
 		b.append("      ?ds a lcaht:MasterDataset . \n");
-		b.append("      ?mfc a fedlca:FlowContext . \n");
 		b.append("      ?mfc fedlca:flowContextForbiddenRegexPattern ?forbidden . \n");
 		b.append("      filter regex (\"" + fullText + "\", str(?forbidden), \"i\") \n");
 		b.append("    } \n");
