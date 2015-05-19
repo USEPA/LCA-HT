@@ -915,7 +915,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void removeMatchFlowRowNum(int rowNumber) {
 		matchedFlowRowNumbers.remove(rowNumber);
-		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
+//		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
 		CSVTableView.colorFlowRows();
 	}
 
