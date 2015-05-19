@@ -19,6 +19,7 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
@@ -30,6 +31,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class Util {
 	
 	private static Object INIT_LOCK = new Object();
+	
+	public static final String EMPTY_STRING = "";
 	
 	private Util() {
 	}
@@ -128,8 +131,8 @@ public class Util {
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewID);
 	}
 
-	public static IPreferenceStore getPreferenceStore() {
-		return Activator.getDefault().getPreferenceStore();
+	public static ScopedPreferenceStore getPreferenceStore() {
+		return (ScopedPreferenceStore)Activator.getDefault().getPreferenceStore();
 	}
 
 	public static Resource getResourceFromString(String uriString) {

@@ -106,60 +106,76 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static void openTDB() {
 		if (tdbDataset == null) {
-			if ((Util.getPreferenceStore().getString("defaultTDB") == null)
-					|| (Util.getPreferenceStore().getString("defaultTDB") == "")) {
-				// TODO: Determine when this message might display and what the user and software should do about it.
+			String activeTDB = Util.getPreferenceStore().getString("activeTDB");
+			if (Util.EMPTY_STRING.equals(activeTDB)) {
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				StringBuilder b = new StringBuilder();
-				b.append("The Harmonization Tool (HT) requires the user to specify a directory for the Triplestore DataBase (TDB). ");
-				b.append("Please pick an existing TDB directory, or an empty one where the HT can create a new TDB.");
+				b.append("The Harmonization Tool (HT) requires the user to specify directories for local storage.  ");
+				b.append("Please pick existing directories, or an empty ones where the HT can store data.");
 				new GenericMessageBox(shell, "Welcome!", b.toString());
-
 				redirectToPreferences();
-				return;
 			}
 
-			String defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
-			File defaultTDBFile = new File(defaultTDB);
-			if (!defaultTDBFile.isDirectory()) {
-				// ask user for TDB directory
-				// TODO: Determine when this message might display and what the user and software shoul do about it.
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				StringBuilder b = new StringBuilder();
-				b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
-				b.append("Please select an existing TDB directory, or an accessible directory for a new TDB.");
-				new GenericMessageBox(shell, "Alert", b.toString());
+			String defaultTDB = null;
+			File defaultTDBFile = null;
+			String errMsg = null;
+			boolean tdbCreated = false;
+			while (!tdbCreated) {
+				defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
+				defaultTDBFile = new File(defaultTDB);
 
-				redirectToPreferences();
-				return;
-			} else {
-				System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
-				try {
-					tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
-					assert tdbDataset != null : "tdbDataset cannot be null";
-					Model importModel = GraphFactory.makePlainModel();
-					Model exportModel = GraphFactory.makePlainModel();
+				if (defaultTDBFile.isDirectory()) {		
+					System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
+					try {
+						tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
+						assert tdbDataset != null : "tdbDataset cannot be null";
+						Model importModel = GraphFactory.makePlainModel();
+						Model exportModel = GraphFactory.makePlainModel();
+		
+						datasetAccessor = DatasetAccessorFactory.create(tdbDataset);
+						datasetAccessor.putModel(importGraphName, importModel);
+						datasetAccessor.putModel(exportGraphName, exportModel);
+						graphStore = GraphStoreFactory.create(tdbDataset);
+						Util.getPreferenceStore().putValue("activeTDB", defaultTDB);
+						Util.getPreferenceStore().save();
 
-					datasetAccessor = DatasetAccessorFactory.create(tdbDataset);
-					datasetAccessor.putModel(importGraphName, importModel);
-					datasetAccessor.putModel(exportGraphName, exportModel);
-					graphStore = GraphStoreFactory.create(tdbDataset);
-					// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
-					// to the TDB that the session has started
-					// Prefixes.syncPrefixMapToTDBModel();
-				} catch (Exception e1) {
-					System.out.println("Exception: " + e1);
+						tdbCreated = true;
+						// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
+						// to the TDB that the session has started
+						// Prefixes.syncPrefixMapToTDBModel();
+					} catch (Exception e1) {
+						System.out.println("Exception: " + e1);
+						if (!prefsCanceled) {
+							// TODO: Determine when this message might display and what the user and software shoul do about it.
+							StringBuilder b = new StringBuilder();
+							b.append("It appears that the HT can not create a TDB in the default directory. ");
+							b.append("You may need to create a new TDB.");
+							errMsg = b.toString();
+						}
+					}
+				}
+				else {
+					StringBuilder b = new StringBuilder();
+					b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
+					b.append("Please select an existing TDB directory, or an accessible directory for a new TDB.");
+					errMsg = b.toString();
+				}
+				if (!tdbCreated) {
+					// ask user for TDB directory
 					// TODO: Determine when this message might display and what the user and software shoul do about it.
 					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-					StringBuilder b = new StringBuilder();
-					b.append("It appears that the HT can not create a TDB in the default directory. ");
-					b.append("You may need to create a new TDB.");
-					new GenericMessageBox(shell, "Error", b.toString());
-
+					new GenericMessageBox(shell, "Error", errMsg);
+					//If user has previously canceled with invalid data, quit.
+					if (prefsCanceled) {
+						errMsg = "The selected directory is not accessible - exiting now.";
+						new GenericMessageBox(shell, "Error", errMsg);
+						System.exit(1);
+					}
 					redirectToPreferences();
-					return;
+
 				}
 			}
+			
 		}
 		PrefixMapping prefixMapping = Prefixes.getPrefixmapping();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
@@ -228,7 +244,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
 		Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
-
+		
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
 		System.out.println("unionModel: " + unionModel.size());
@@ -297,8 +313,15 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
+	
+	private static boolean prefsCanceled = false;
+	
+	public static void markPrefsCanceled() {
+		prefsCanceled = true;
+	}
 
 	private static void redirectToPreferences() {
+		prefsCanceled = false;
 		try {
 			IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 			ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
@@ -622,7 +645,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static int tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) {
-		if (subject == null) {
+		if (subject == null){
 			return -1;
 		}
 		if (object == null) {
@@ -781,9 +804,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void addTriple(Resource s, Property p, Resource o) {
-		if (s != null && p != null && o != null) {
-			s.addProperty(p, o);
-		}
+		s.addProperty(p, o);
 	}
 
 	public static String getRDFTypeFromSuffix(String fileName) {
@@ -860,8 +881,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-
-	public static void sync() {
+	
+	public static void sync(){
 		TDB.sync(tdbDataset);
 	}
 }

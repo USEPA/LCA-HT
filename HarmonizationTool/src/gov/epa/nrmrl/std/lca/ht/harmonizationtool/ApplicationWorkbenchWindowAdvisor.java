@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
@@ -117,6 +118,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		synchronized (Util.getInitLock()) {
 			long start = System.currentTimeMillis();
 			openLCAInstance = new OpenLCA();
+			//Run static initialization
+			new Flowable();
 			long end = System.currentTimeMillis();
 			System.out.println("Finished threaded init in " + (end - start) + "ms");
 		}
