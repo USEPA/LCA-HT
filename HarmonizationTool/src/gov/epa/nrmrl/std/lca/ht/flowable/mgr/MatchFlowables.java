@@ -655,7 +655,8 @@ public class MatchFlowables extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			System.out.println("event e = " + e);
-			CSVTableView.selectNext(ID);
+//			CSVTableView.selectNext(ID);
+			CSVTableView.selectNextFlowable();
 		}
 
 		@Override

@@ -172,9 +172,63 @@ public class CSVTableView extends ViewPart {
 		table.setLinesVisible(true);
 		table.addListener(SWT.MouseHover, cellSelectionMouseHoverListener);
 		table.addListener(SWT.MouseExit, cellSelectionMouseExitListener);
+		// table.addSelectionListener(tableSelectionListener);
 		table.addMouseListener(tableMouseListener);
 		// table.setSize(10, 10);
 	}
+
+	private static SelectionListener tableSelectionListener = new SelectionListener() {
+
+		private void doit(SelectionEvent e) {
+			System.out.println("SelectionEvent e = " + e);
+			Point ptClick = new Point(e.x, e.y);
+			TableItem ti = (TableItem) e.item;
+			ti.setBackground(0, orange);
+			int newRow = table.indexOf(ti);
+			rowNumSelected = newRow;
+			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
+
+			if (preCommit && (colNumSelected == 0)) {
+				table.select(rowNumSelected);
+				rowMenu.setVisible(true);
+				return;
+			}
+
+			table.deselectAll();
+
+			if (preCommit) {
+				return;
+			}
+			String dataRowNumString = ti.getText(0);
+			Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
+			if (rowsToIgnore.contains(dataRowNum)) {
+				return;
+			}
+
+			if (defaultFont == null) {
+				createFonts(ti);
+			}
+			if (ti != null) {
+				ti.setFont(defaultFont);
+			}
+			ti.setFont(boldFont);
+			table.deselectAll();
+
+			matchRowContents();
+			return;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			doit(e);
+		}
+
+	};
 
 	private static Listener cellSelectionMouseHoverListener = new Listener() {
 		@Override
@@ -720,7 +774,7 @@ public class CSVTableView extends ViewPart {
 			// System.out.println("Adding columns");
 
 			// COLUMN ZERO
-			TableViewerColumn tableViewerColumn = createTableViewerColumn("", 50, 0);
+			TableViewerColumn tableViewerColumn = createTableViewerColumn("", 200, 0);
 			tableViewerColumn.getColumn().setAlignment(SWT.RIGHT); // DOESN'T
 																	// WORK ON
 																	// COL
@@ -1071,6 +1125,39 @@ public class CSVTableView extends ViewPart {
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public static void selectNextFlowable() {
+		// System.out.println("RowNumSelected = " + rowNumSelected);
+		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+		if (rowNumSelected < (table.getItemCount() - 1)) {
+			TableItem lastTableItem = table.getItem(rowNumSelected);
+			String rowNumString = lastTableItem.getText(0);
+			int rowNum = Integer.parseInt(rowNumString) - 1;
+			int nextUnmatchedFlowableNum = -1;
+			for (int i : uniqueFlowableRowNumbers) {
+				if (i > rowNum) {
+					if (!matchedFlowableRowNumbers.contains(i)) {
+						nextUnmatchedFlowableNum = i;
+						break;
+					}
+				}
+			}
+			for (int i = rowNumSelected; i < table.getItems().length; i++) {
+				TableItem tableItem = table.getItem(i);
+				String nextRowNumString = tableItem.getText(0);
+				int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
+				if (nextRowNum == nextUnmatchedFlowableNum) {
+					lastTableItem = table.getItem(rowNumSelected);
+					lastTableItem.setFont(defaultFont);
+					rowNumSelected = table.indexOf(tableItem);
+					tableItem.setFont(boldFont);
+					table.setTopIndex(rowNumSelected);
+					break;
+				}
+			}
+			matchRowContents();
 		}
 	}
 
@@ -1929,6 +2016,7 @@ public class CSVTableView extends ViewPart {
 					}
 					for (int j : flowColumns) {
 						colorCell(visibleRowNum, j, color);
+						colorCell(visibleRowNum, 0, color);
 					}
 				}
 				visibleRowNum++;
@@ -1943,9 +2031,13 @@ public class CSVTableView extends ViewPart {
 				}
 				for (int j : flowColumns) {
 					colorCell(i, j, color);
+					colorCell(i, 0, color);
 				}
 			}
 		}
+		TableColumn tc = table.getColumn(0);
+		tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
+		table.getColumn(0).pack();
 	}
 
 	// public static Set<Integer> getUniqueFlowableRowNumbers() {
@@ -1985,7 +2077,7 @@ public class CSVTableView extends ViewPart {
 	// public static Set<Integer> getMatchedFlowableRowNumbers() {
 	// return matchedFlowableRowNumbers;
 	// }
-	
+
 	public static void setMatchedFlowableRowNumbers(LinkedHashSet<Integer> matchedFlowableRowNumbers) {
 		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
 	}
@@ -2009,11 +2101,10 @@ public class CSVTableView extends ViewPart {
 	// public static Set<Integer> getMatchedFlowPropertyRowNumbers() {
 	// return matchedFlowPropertyRowNumbers;
 	// }
-	
+
 	public static void setMatchedFlowRowNumbers(LinkedHashSet<Integer> matchedFlowRowNumbers) {
 		CSVTableView.matchedFlowRowNumbers = matchedFlowRowNumbers;
 	}
-
 
 	public static void setSelection(int i) {
 		if (i < 0 || i >= table.getItemCount()) {

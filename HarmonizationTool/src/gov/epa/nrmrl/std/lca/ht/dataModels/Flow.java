@@ -10,7 +10,6 @@ import org.eclipse.ui.PartInitException;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -19,6 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -27,6 +27,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -300,6 +301,7 @@ public class Flow {
 			b.append(" \n");
 			b.append("  ?f fedlca:sourceTableRowNumber " + iPlusOne + " . \n");
 			b.append("  ?f eco:hasFlowable ?flowable . \n");
+			b.append("  optional {?f fedlca:hasOpenLCAUUID ?uuid } \n");
 			b.append("  ?c fedlca:comparedSource ?flowable . \n");
 			b.append("  ?c fedlca:comparedMaster ?mflowable . \n");
 			b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
@@ -337,6 +339,12 @@ public class Flow {
 				QuerySolution querySolution = resultSet.next();
 				Resource userFlowResource = querySolution.get("f").asResource();
 				Resource masterFlowResource = querySolution.get("mf").asResource();
+//				RDFNode uuidNode = querySolution.get("uuid");
+//				if (uuidNode != null){
+//					String uuidString = uuidNode.asLiteral().getString();
+//					ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
+//				}
+
 				flowMap.put(userFlowResource, masterFlowResource);
 				FlowsWorkflow.addMatchFlowRowNum(i);
 			} else {
