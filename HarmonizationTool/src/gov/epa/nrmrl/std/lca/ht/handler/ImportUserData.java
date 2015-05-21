@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
@@ -19,6 +20,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
@@ -36,6 +38,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -58,6 +62,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -103,17 +108,16 @@ public class ImportUserData implements IHandler {
 
 		}
 	}
-	
+
 	private static void updateText(final StyledText target, final String message) {
 		try {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				target.setText(message);
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					target.setText(message);
 
-			}
-		});
-		}
-		catch (Throwable t) {
+				}
+			});
+		} catch (Throwable t) {
 			t.printStackTrace();
 			throw t;
 		}
@@ -271,7 +275,7 @@ public class ImportUserData implements IHandler {
 					int newPercent = ++i * 100 / size;
 					if (percent != newPercent) {
 						percent = newPercent;
-						updateText(FlowsWorkflow.textLoadUserData, "Loading entries: " + percent + "%");
+						updateText(FlowsWorkflow.textLoadUserData, "1/4 Loading: " + percent + "%");
 
 					}
 					ZipEntry ze = (ZipEntry) entries.nextElement();
@@ -288,7 +292,7 @@ public class ImportUserData implements IHandler {
 					// fileContents.add(bufferToString(zipStream, fixIDs));
 					fileContents.put(bufferToString(zipStream, fixIDs), inputType);
 
-					//runLogger.info("LOAD RDF " + ze.getName());
+					// runLogger.info("LOAD RDF " + ze.getName());
 				}
 
 			} catch (IOException e) {
@@ -383,7 +387,7 @@ public class ImportUserData implements IHandler {
 		// b.append("} \n");
 
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select ?s ?ds \n");
+		b.append("select ?s ?class\n");
 		b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		/* THE ABOVE LINE WORKS IN A SIMPLE QUERY, BUT NOT IN A SUBQUERY IN AN INSERT */
 		b.append("where {\n");
@@ -396,14 +400,22 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
-		updateText(FlowsWorkflow.textLoadUserData, "Adding to datasource");
+		updateText(FlowsWorkflow.textLoadUserData, "3/4 Dataset");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
+		List<Resource> flowsToTagWithUUID = new ArrayList<Resource>();
+
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
-			itemsToAddToDatasource.add(querySolution.get("s").asResource());
+			Resource item = querySolution.get("s").asResource();
+			itemsToAddToDatasource.add(item);
+			Resource rdfClass = querySolution.get("class").asResource();
+			if (rdfClass.equals(OpenLCA.Flow)) {
+				flowsToTagWithUUID.add(item);
+			}
 		}
 
+		Pattern uuidCheckPattern = QACheck.getUUIDCheck().get(0).getPattern();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
@@ -411,8 +423,19 @@ public class ImportUserData implements IHandler {
 			for (Resource itemToAdd : itemsToAddToDatasource) {
 				tdbModel.add(itemToAdd, ECO.hasDataSource, datasetResource);
 			}
+			for (Resource flowResource : flowsToTagWithUUID) {
+				String uriFull = flowResource.getURI();
+				String uuidCandidate = uriFull.substring(uriFull.length() - 36);
+				Matcher uuidCheck = uuidCheckPattern.matcher(uuidCandidate);
+				if (uuidCheck.find()) {
+					Literal uuidLiteral = tdbModel.createTypedLiteral(uuidCandidate);
+					tdbModel.add(flowResource, FedLCA.hasOpenLCAUUID, uuidLiteral);
+				} else {
+					System.out.println("No match for " + uuidCandidate);
+				}
+			}
 			ActiveTDB.tdbDataset.commit();
-			//runLogger.info(" Finished adding items to datasource " + new Date());
+			// runLogger.info(" Finished adding items to datasource " + new Date());
 		} catch (Exception e) {
 			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
@@ -484,11 +507,11 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
-		//runLogger.info("querying current user data " + new Date());
-		updateText(FlowsWorkflow.textLoadUserData, "Adding user data");
+		// runLogger.info("querying current user data " + new Date());
+		updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
-		//runLogger.info("adding user data to table " + new Date());
+		// runLogger.info("adding user data to table " + new Date());
 		tableProvider.createUserData((ResultSetRewindable) resultSet);
 
 		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
@@ -616,7 +639,7 @@ public class ImportUserData implements IHandler {
 				int newPercent = ++i * 100 / size;
 				if (percent != newPercent) {
 					percent = newPercent;
-					updateText(FlowsWorkflow.textLoadUserData, "Importing entries: " + percent + "%");
+					updateText(FlowsWorkflow.textLoadUserData, "2/4 Importing: " + percent + "%");
 
 				}
 				failedString = fileContents;
@@ -685,9 +708,8 @@ public class ImportUserData implements IHandler {
 		Date readEndDate = new Date();
 		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
-		//display.readAndDispatch();
+		// display.readAndDispatch();
 		display.wake();
-		
 
 		// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
 		// final Display display = ImportUserData.currentDisplay;
