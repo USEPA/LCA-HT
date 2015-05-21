@@ -4,7 +4,15 @@
 
 3. Add a new row at the top of MatchFlowables for the "Frankenstein" combination of components the user wishes to include in the output.
 
-4. Allow copy from most text fields
+4. Allow copy from most text fields in the HT
+
+5. Initialization: if first time, menu is "work directory: __________", and "Click for full options (which is now the default)"
+                   if return: show "work directory: _C:\Users\Tom " with option to change and "OK" to keep
+                   
+6. Slight clumsiness with "Auto-resolve", especially with CAS
+
+7. Allow any form of CAS, map to standard
+                   
 
 -- Below is all older stuff
 

@@ -450,9 +450,9 @@ public class DataSourceKeeper {
 		
 		if (!dataPresent) {
 			System.out.println("No data present, loading master flows and flowables");
-			String path = "classpath:/RDFResources";
-			String[] fileList = new String[] { "master_flowables_lcaht.zip", "master_flow_contexts_lcaht.n3",
-					"master_properties_lcaht.n3" };
+//			String path = "classpath:/RDFResources";
+//			String[] fileList = new String[] { "master_flowables_lcaht.zip", "master_flow_contexts_lcaht.n3",
+//					"master_properties_lcaht.n3" };
 			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
 //			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flow_contexts_lcaht.n3",
 //					null);
