@@ -201,6 +201,11 @@
                      style="push">
                </command>
             </menu>
+            <command
+                  commandId="org.eclipse.ui.window.resetPerspective"
+                  label="Reset Views"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="SPARQL">
