@@ -313,9 +313,9 @@ public class FlowUnit {
 		if (unitStr == null) {
 			return false;
 		}
-		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
-			if (flowUnit.getOneProperty(flowUnitString).equals(unitStr)) {
-				setMatchingResource(flowUnit.getTdbResource());
+		for (FlowUnit masterFlowUnit : FlowProperty.lcaMasterUnits) {
+			if (masterFlowUnit.getOneProperty(flowUnitString).equals(unitStr)) {
+				setMatchingResource(masterFlowUnit.getTdbResource());
 				return true;
 			}
 		}

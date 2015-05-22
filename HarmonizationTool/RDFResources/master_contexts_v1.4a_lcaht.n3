@@ -153,15 +153,15 @@ eco:hasDataSource rdf:type owl:AnnotationProperty .
              
              rdfs:label "Flow Context"^^xsd:string ;
              
-             rdfs:subClassOf [ rdf:type owl:Class ;
-                               owl:unionOf ( :Emission
-                                             :Resource
-                                           )
-                             ] ,
-                             [ rdf:type owl:Restriction ;
+             rdfs:subClassOf [ rdf:type owl:Restriction ;
                                owl:onProperty :presentationSortIndex ;
                                owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
                                owl:onDataRange xsd:int
+                             ] ,
+                             [ rdf:type owl:Class ;
+                               owl:unionOf ( :Emission
+                                             :Resource
+                                           )
                              ] ;
              
              rdfs:comment "The Flow Context is a term developed for the LCA Harmonization Tool.  It encompases terms such as 'Category' or 'Compartment' and may have several descriptors including geological feature, population density, or land use.  A Flow has a hasFlowContext property with an object being a FlowContext.  This term is similar to fasc:Compartment.  Examples of Flow Contexts include emissions to urban air and resource consumption from water."^^xsd:string .
@@ -552,6 +552,8 @@ owl:DataTypeProperty rdf:type owl:Class .
                             owl:NamedIndividual ;
                    
                    rdfs:label "Resource, in water"@en ;
+                   
+                   :hasOpenLCAUUID "3095c63c-7962-4086-a0d7-df4fd38c2e68"^^xsd:string ;
                    
                    :presentationSortIndex 56 ;
                    
