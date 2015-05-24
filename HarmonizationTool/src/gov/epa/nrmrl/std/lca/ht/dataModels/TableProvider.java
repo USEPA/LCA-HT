@@ -40,7 +40,9 @@ public class TableProvider {
 	}
 
 	public int getColumnCount() {
-		return data.get(0).getSize();
+		if (data.size() > 0)
+			return data.get(0).getSize();
+		return 0;
 	}
 
 	public String checkColumnCountConsistency() {

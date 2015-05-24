@@ -3,6 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-Name: CSV-tools
 Bundle-SymbolicName: CSV-tools
 Bundle-Version: 1.0.0
-Bundle-ClassPath: commons-csv-20070724.jar
-Export-Package: org.apache.commons.csv,
- org.apache.commons.csv.writer
+Bundle-ClassPath: commons-csv-1.1.jar
+Export-Package: org.apache.commons.csv

@@ -13,13 +13,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.csv.writer.CSVConfig;
-import org.apache.commons.csv.writer.CSVWriter;
-import org.apache.commons.csv.writer.CSVField;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -83,9 +80,6 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		}
 
 		try {
-			CSVWriter csvWriter = new CSVWriter();
-			CSVConfig csvConfig = new CSVConfig();
-			csvConfig.setDelimiter('\t');
 			// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
 			// csvConfig.setIgnoreValueDelimiter(true);
 			// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
@@ -96,35 +90,26 @@ public class SaveHarmonizedDataHandler implements IHandler {
 				file.createNewFile();
 			}
 			Writer fileWriter = new FileWriter(file);
-			csvWriter.setWriter(fileWriter);
+			CSVFormat format = CSVFormat.newFormat('\t');
 
 			// configure fields
+			String[] headers = new String[headerRow.getColumnValues().size()];
+			int i = 0;
 			for (String header : headerRow.getColumnValues()) {
-				csvConfig.addField(new CSVField(header.trim()));
+				headers[i++] = header;
 			}
-			csvWriter.setConfig(csvConfig);
-
-			// prepare and write headers
-			Map<String, String> map = new HashMap<String, String>();
-			for (String header : headerRow.getColumnValues()) {
-				map.put(header.trim(), header.trim());
-			}
-			csvWriter.writeRecord(map);
+			format.withHeader(headers);
+			CSVPrinter csvPrinter = new CSVPrinter(fileWriter, format);
 
 			// prepare and write data
-			int row = 0;
 			for (DataRow dataRow : dataRows) {
 //				System.out.println("Row: "+row++);
-				map.clear();
-				for (int i = 0; i < dataRow.getColumnValues().size(); i++) {
-//					System.out.println("  Col: "+i);
-					String fieldName = headerRow.getColumnValues().get(i).trim();
-					String value = dataRow.getColumnValues().get(i);
-					map.put(fieldName, value);
+				for (i = 0; i < dataRow.getColumnValues().size(); i++) {
+					csvPrinter.printRecord(dataRow.getColumnValues());
 				}
-				csvWriter.writeRecord(map);
 			}
 
+			csvPrinter.close();
 			// flush and close writer
 			fileWriter.flush();
 			fileWriter.close();

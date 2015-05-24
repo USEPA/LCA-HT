@@ -43,8 +43,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -199,29 +200,34 @@ public class ImportUserData implements IHandler {
 			return;
 		}
 
-		CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
-		// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
-		// COLUMNS
-		String[] values = null;
 		try {
-			values = parser.getLine();
-		} catch (IOException e) {
+			CSVParser parser = new CSVParser(fileReader, CSVFormat.EXCEL);
+			//CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
+			// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
+			// COLUMNS
+			/*String[] values = null;
+			try {
+				parser.getRecordNumber();
+				values = parser.getLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
+	
+			}*/
+			
+			 for (CSVRecord csvRecord : parser) {		 
+					DataRow dataRow = initDataRow(csvRecord);
+					tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
+			}
+			parser.close();
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
+		if (tableProvider.getData().size() == 0) {
 			runLogger.warn("# No content in CSV file!");
 			return;
-		}
-
-		// READ THE FILE NOW
-		try {
-			while (values != null) {
-				DataRow dataRow = initDataRow(values);
-				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
-				values = parser.getLine();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return;
 	}
@@ -664,9 +670,9 @@ public class ImportUserData implements IHandler {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
-	private static DataRow initDataRow(String[] values) {
+	private static DataRow initDataRow(CSVRecord record) {
 		DataRow dataRow = new DataRow();
-		for (String s : values) {
+		for (String s : record) {
 			dataRow.add(s);
 		}
 		return dataRow;
