@@ -50,20 +50,27 @@ public class Flowable {
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
 	static {
-		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		ActiveTDB.tsReplaceLiteral(rdfClass, RDFS.label, label);// <-- THIS
+																// FAILS TO DO
+																// THE
+																// ASSIGNMENT
 		ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.label, label, null);
 		ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
 		ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
-		// ActiveTDB.replaceLiteral(rdfClass, RDFS.label, label);// <-- THIS FAILS TO DO THE ASSIGNMENT
+		// ActiveTDB.replaceLiteral(rdfClass, RDFS.label, label);// <-- THIS
+		// FAILS TO DO THE ASSIGNMENT
 		// ActiveTDB.addLiteral(rdfClass, RDFS.comment, comment);
 
-		// JUNO: UNCOMMENTING THE LINES BELOW SUGGEST SOMETHING VERY ODD ABOUT THE TDB:
+		// JUNO: UNCOMMENTING THE LINES BELOW SUGGEST SOMETHING VERY ODD ABOUT
+		// THE TDB:
 		//
-		// rdfClass.addProperty(RDFS.label, label); // <-- THIS SUCCEEDS IN THE ASSIGNMENT
+		// rdfClass.addProperty(RDFS.label, label); // <-- THIS SUCCEEDS IN THE
+		// ASSIGNMENT
 		// Literal literal = ActiveTDB.tdbModel.createLiteral(label);
 
-		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT THIS?
+		// ActiveTDB.tdbModel.add(rdfClass, RDFS.label, literal); // WHAT ABOUT
+		// THIS?
 		Model tdbModel = ActiveTDB.getModel(null);
 		StmtIterator stmtIterator = tdbModel.listStatements();
 		// System.out.println("rdfClass = " + rdfClass);
@@ -71,20 +78,24 @@ public class Flowable {
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
 			if (!statement.getSubject().isAnon()) {
-				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
+				if (statement.getSubject().getLocalName()
+						.equals(Flowable.getRdfclass().getLocalName())) {
 					// Resource thing = statement.getSubject();
 					// Resource thing2 = statement.getResource();
-					// System.out.println("Flowable.getRdfclass() = " +Flowable.getRdfclass());
+					// System.out.println("Flowable.getRdfclass() = "
+					// +Flowable.getRdfclass());
 					// System.out.println("statement.getSubject().getLocalName() = "
 					// + statement.getSubject().getLocalName());
 					//
-					// System.out.println("Statement: " + statement.getSubject() + " -- " + statement.getPredicate()
+					// System.out.println("Statement: " + statement.getSubject()
+					// + " -- " + statement.getPredicate()
 					// + " -- " + statement.getObject());
 				}
 			}
 		}
 
-		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK THE ASSIGNMENT
+		if (rdfClass.hasProperty(RDFS.label)) { // <-- THIS IS SUPPOSED TO CHECK
+												// THE ASSIGNMENT
 			// System.out.println(rdfClass.getProperty(RDFS.label).getString());
 		} else {
 			// System.out.println("wtf");
@@ -96,7 +107,8 @@ public class Flowable {
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableNameString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(
+				flowableNameString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -106,9 +118,11 @@ public class Flowable {
 		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
 		lcaDataPropertyProvider.setTDBProperty(RDFS.label);
 
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableSynonymString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(
+				flowableSynonymString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -117,7 +131,8 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
 		lcaDataPropertyProvider.setTDBProperty(SKOS.altLabel);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(casString);
 		lcaDataPropertyProvider.setPropertyClass(label);
@@ -128,9 +143,11 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(false);
 		lcaDataPropertyProvider.setCheckLists(getCASCheckList());
 		lcaDataPropertyProvider.setTDBProperty(ECO.casNumber);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(chemicalFormulaString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(
+				chemicalFormulaString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -139,7 +156,8 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getFormulaCheckList());
 		lcaDataPropertyProvider.setTDBProperty(ECO.chemicalFormula);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
 		lcaDataPropertyProvider.setPropertyClass(label);
@@ -150,7 +168,8 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
+				lcaDataPropertyProvider);
 	}
 
 	// INSTANCE VARIABLES
@@ -195,7 +214,8 @@ public class Flowable {
 	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				return lcaDataValue.getValue();
 			}
 		}
@@ -205,7 +225,8 @@ public class Flowable {
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				resultList.add(lcaDataValue.getValue());
 			}
 		}
@@ -223,7 +244,8 @@ public class Flowable {
 		List<LCADataValue> results = new ArrayList<LCADataValue>();
 		for (String key : dataPropertyMap.keySet()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+						.equals(key)) {
 					results.add(lcaDataValue);
 				}
 			}
@@ -238,25 +260,34 @@ public class Flowable {
 		if (!dataPropertyMap.containsKey(key)) {
 			return;
 		}
-		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap
+				.get(key);
 		// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
 		boolean found = false;
 		if (lcaDataPropertyProvider.isUnique()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().equals(
+						lcaDataPropertyProvider)) {
 					lcaDataValue.setValueAsString(valueAsString);
 					found = true;
 					Object object = lcaDataValue.getValue();
-					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object);
+					ActiveTDB.tsReplaceLiteral(tdbResource,
+							lcaDataPropertyProvider.getTDBProperty(), object);
 					if (!valueAsString.equals(valueAsString.toLowerCase())) {
-						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER
+						// CASE FORM
 						if (key.equals(flowableNameString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource,
+									SKOS.altLabel, valueAsString.toLowerCase(),
+									null);
 						}
-						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
+						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER
+						// CASE FORM
 						if (key.equals(flowableSynonymString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource,
+									SKOS.altLabel, valueAsString.toLowerCase(),
+									null);
 						}
 					}
 					continue;
@@ -269,19 +300,24 @@ public class Flowable {
 			lcaDataValue.setValueAsString(valueAsString);
 			Object object = lcaDataValue.getValue();
 			lcaDataValues.add(lcaDataValue);
-			ActiveTDB.tsAddGeneralTriple(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object, null);
+			ActiveTDB.tsAddGeneralTriple(tdbResource,
+					lcaDataPropertyProvider.getTDBProperty(), object, null);
 			if (!valueAsString.equals(valueAsString.toLowerCase())) {
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableNameString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel,
+							valueAsString.toLowerCase(), null);
 				}
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableSynonymString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel,
+							valueAsString.toLowerCase(), null);
 				}
 			}
 		}
-		// ActiveTDB.tsAddLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), rdfDatatype, valueAsString);
+		// ActiveTDB.tsAddLiteral(tdbResource,
+		// lcaDataPropertyProvider.getTDBProperty(), rdfDatatype,
+		// valueAsString);
 	}
 
 	public String getName() {
@@ -307,7 +343,8 @@ public class Flowable {
 
 	private void removeValues(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
+					.equals(key)) {
 				lcaDataValues.remove(lcaDataValue);
 			}
 		}
@@ -318,36 +355,51 @@ public class Flowable {
 			return;
 		}
 		// LCADataPropertyProvider LIST IS ALL LITERALS
-		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap
+				.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider
+					.getTDBProperty())) {
 				continue;
 			}
 			if (lcaDataPropertyProvider.isUnique()) {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
-						.getValue();
-				if (value.getClass().equals(
-						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+				Object value = tdbResource
+						.getProperty(lcaDataPropertyProvider.getTDBProperty())
+						.getLiteral().getValue();
+				if (value
+						.getClass()
+						.equals(RDFUtil
+								.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
+										.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue
+							.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 					lcaDataValue.setValue(value);
 					lcaDataValues.add(lcaDataValue);
 				}
 			} else {
-				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
+				StmtIterator stmtIterator = tdbResource
+						.listProperties(lcaDataPropertyProvider
+								.getTDBProperty());
 				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.nextStatement().getLiteral().getValue();
-					if (value.getClass().equals(
-							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+					Object value = stmtIterator.nextStatement().getLiteral()
+							.getValue();
+					if (value
+							.getClass()
+							.equals(RDFUtil
+									.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
+											.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();
-						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue
+								.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
 				}
 			}
 		}
-		// Resource dataSourceResource = tdbResource.getProperty(ECO.hasDataSource).getResource();
+		// Resource dataSourceResource =
+		// tdbResource.getProperty(ECO.hasDataSource).getResource();
 	}
 
 	public void clearSyncDataFromTDB() {
@@ -377,7 +429,8 @@ public class Flowable {
 		// Model tdbModel = ActiveTDB.getModel();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(null);
-		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qNameLiteral);
+		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+				qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 
@@ -386,7 +439,8 @@ public class Flowable {
 			}
 		}
 
-		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qNameLiteral);
+		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+				qNameLiteral);
 		while (resIterator.hasNext()) {
 			Resource flowableMatchCandidate = resIterator.next();
 
@@ -397,7 +451,8 @@ public class Flowable {
 
 		for (String qSyn : flowable.getSynonyms()) {
 			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
-			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label, qSynLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+					qSynLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -405,7 +460,8 @@ public class Flowable {
 				}
 			}
 
-			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel, qSynLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+					qSynLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -419,7 +475,8 @@ public class Flowable {
 			String cas = flowable.getCas();
 			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
 
-			resIterator = tdbModel.listSubjectsWithProperty(FedLCA.hasFormattedCAS, qCASLiteral);
+			resIterator = tdbModel.listSubjectsWithProperty(
+					FedLCA.hasFormattedCAS, qCASLiteral);
 			while (resIterator.hasNext()) {
 				Resource flowableMatchCandidate = resIterator.next();
 				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
@@ -431,7 +488,8 @@ public class Flowable {
 		return results;
 	}
 
-	public static String compareFlowables(Flowable queryFlowable, Flowable referenceFlowable) {
+	public static String compareFlowables(Flowable queryFlowable,
+			Flowable referenceFlowable) {
 		// INFO TO SHARE FOR JUST NAME AND CAS:
 		// ++++.+ (BOTH MATCH, BEST)
 		// ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
@@ -440,16 +498,22 @@ public class Flowable {
 
 		// NAME MATCH SCORES:
 		// "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
-		// " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT PRESENT FOR ONE
-		// "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT PRESENT FOR ONE
-		// "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT PRESENT FOR ONE
+		// " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
+		// PRESENT FOR ONE
+		// "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
+		// PRESENT FOR ONE
+		// "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
+		// PRESENT FOR ONE
 
 		String nameFlag = "-";
 		String qName = queryFlowable.getName();
 		String rName = referenceFlowable.getName();
-		if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH REQUIRED "name"
+		if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
+												// REQUIRED "name"
 			nameFlag = "0";
-		} else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO HAPPEN WITH REQUIRED "name"
+		} else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
+															// HAPPEN WITH
+															// REQUIRED "name"
 			nameFlag = "0";
 		} else if (qName.equals(rName)) {
 			nameFlag = "+";
@@ -531,14 +595,23 @@ public class Flowable {
 		// String e2 =
 		// "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
 		String s2 = "Standardize CAS";
-		// Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
-		Pattern acceptableCASFormat = Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
-//		Pattern acceptableCASFormat = Pattern.compile("^$|^\\d{2,}-?\\d\\d-?\\d$");
-// TODO CFowler: fix the above
+		// Pattern acceptableCASFormat =
+		// Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
+		// Pattern acceptableCASFormat =
+		// Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
+		Pattern acceptableCASFormat = Pattern
+				.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
+		// TODO CFowler: fix the above
 
 		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
-		//TODO: CFowler -  using | (regex or) allow for either two dashes or none
+		// TODO: CFowler - using | (regex or) allow for either two dashes or
+		// none
+
+		/*
+		 * CFowler: COMPLETE. Changed d{2,} to d{2-7} and added |^\\d{5-10}$
+		 * This is based on what I think Tom wanted.
+		 */
 
 		return qaChecks;
 	}
@@ -591,30 +664,56 @@ public class Flowable {
 		if (Integer.parseInt(noLeadingZeros) < 50000) {
 			return null;
 		}
-		standardizedCas = noLeadingZeros.substring(0, noLeadingZeros.length() - 3);
+		standardizedCas = noLeadingZeros.substring(0,
+				noLeadingZeros.length() - 3);
 		standardizedCas += "-";
-		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 3, noLeadingZeros.length() - 1);
+		standardizedCas += noLeadingZeros.substring(
+				noLeadingZeros.length() - 3, noLeadingZeros.length() - 1);
 		standardizedCas += "-";
-		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 1, noLeadingZeros.length());
+		standardizedCas += noLeadingZeros.substring(
+				noLeadingZeros.length() - 1, noLeadingZeros.length());
 		return standardizedCas;
 	}
 
 	public static boolean correctCASCheckSum(String casNumber) {
-		// TODO: CFowler - determine when to use this and if it is too slow for some cas
+		// CFowler: The only CAS numbers that should come through the door (this
+		// function) are those that
+		// are properly formatted (with or without both dashes or empty strings)
+		// so I will work from there.
+
+		// TODO: CFowler - CHECKSUM ~ determine when to use this and if it is
+		// too slow for some cas
+		/*
+		 * CFowler: I guess I need to plug this function into the checkOneColumn
+		 * function.
+		 */
+
+		// Stripping CAS down to digits only
 		String strippedCas = stripCASdigits(casNumber);
 		if (strippedCas == null) {
 			return false;
 		}
-		int multiplier = 0;
-		int checksum = -Integer.parseInt(strippedCas.substring(strippedCas.length() - 1, 1));
-		for (int i = strippedCas.length() - 2; i >= 0; i--) {
-			multiplier++;
-			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, 1));
+		
+		// The cas number should only be 5 to 10 digits now.
+		
+		// Correct code for checksum calculator
+		int multiplier = strippedCas.length() -1;
+		int checksum = 0;
+		for (int i = 0; i < strippedCas.length() -1; i++)
+		{
+			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, i+1));
+			multiplier--;
 		}
-		if (checksum % 10 == 0) {
+		checksum = checksum % 10;
+		
+		if (checksum == Integer.parseInt(strippedCas.substring(strippedCas.length()-1,strippedCas.length())))
+		{
 			return true;
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 	public Resource getTdbResource() {
@@ -648,18 +747,21 @@ public class Flowable {
 		return matchCandidates;
 	}
 
-	public void setMatchCandidates(LinkedHashMap<Resource, String> matchCandidates) {
+	public void setMatchCandidates(
+			LinkedHashMap<Resource, String> matchCandidates) {
 		this.matchCandidates = matchCandidates;
 	}
 
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource,
+				FedLCA.EquivalenceCandidate);
 	}
 
 	public void addSearchResult(Resource resource) {
 		searchResults.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource,
+				FedLCA.EquivalenceCandidate);
 	}
 
 	public void removeMatchCandidate(Resource resource) {
@@ -669,7 +771,8 @@ public class Flowable {
 	}
 
 	public void setMatchCandidateStatus(int matchCandidateIndex, int statusCol) {
-		Resource dFlowableResource = (Resource) matchCandidates.keySet().toArray()[matchCandidateIndex];
+		Resource dFlowableResource = (Resource) matchCandidates.keySet()
+				.toArray()[matchCandidateIndex];
 		MatchStatus matchStatus = MatchStatus.getByValue(statusCol);
 		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
@@ -712,9 +815,11 @@ public class Flowable {
 		b.append("  { \n");
 		b.append("    { \n");
 
-		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0)
+				+ "\"^^xsd:string  . } \n");
 		for (int i = 1; i < namesToMatch.size(); i++) {
-			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i)
+					+ "\"^^xsd:string . } \n");
 		}
 		b.append("    } \n");
 
@@ -740,7 +845,8 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
-			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
+			CurationMethods.setComparison(tdbResource, rdfNode.asResource(),
+					FedLCA.Equivalent);
 		}
 		if (count > 0) {
 			return count;
@@ -810,7 +916,10 @@ public class Flowable {
 			String lcSyn = syn.toLowerCase();
 			lcSyn.replaceAll("\"", "\\\\\"");
 			namesToMatch.add(lcSyn);
-			/* Special rule to attempt to match first part of a semi-colon delimited list */
+			/*
+			 * Special rule to attempt to match first part of a semi-colon
+			 * delimited list
+			 */
 			if (lcSyn.matches(".*;.*")) {
 				namesToMatch.add(lcSyn.split(";")[0]);
 			}
@@ -885,9 +994,11 @@ public class Flowable {
 			b.append("      {?f eco:casNumber ?cas . \n");
 			b.append("        filter (str(?cas) = \"" + qCAS + "\") } UNION \n");
 		}
-		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0)
+				+ "\"^^xsd:string  . } \n");
 		for (int i = 1; i < namesToMatch.size(); i++) {
-			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i)
+					+ "\"^^xsd:string . } \n");
 
 		}
 		b.append("    } \n");
@@ -917,7 +1028,8 @@ public class Flowable {
 
 	public String getDataSource() {
 		if (tdbResource.hasProperty(ECO.hasDataSource)) {
-			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
+			Resource qDataSource = tdbResource
+					.getPropertyResourceValue(ECO.hasDataSource);
 			if (qDataSource.hasProperty(RDFS.label)) {
 				String value = qDataSource.getProperty(RDFS.label).getString();
 				return value;

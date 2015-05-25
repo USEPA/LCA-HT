@@ -1641,6 +1641,8 @@ public class CSVTableView extends ViewPart {
 		// clearIssues
 		// csvColumnInfo.clearIssues();
 		List<String> columnValues = getColumnValues(colIndex);
+		
+		
 		for (QACheck qaCheck : lcaDataPropertyProvider.getCheckLists()) {
 			for (int i = 0; i < columnValues.size(); i++) {
 				if (rowsToIgnore.contains(i)) {
@@ -1660,10 +1662,23 @@ public class CSVTableView extends ViewPart {
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
 					}
-//					} else {
+				 else {
 						// TODO: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
 						// in Flowable.  If you fail the check sum, come up with some new "Issue" I guess.
-//					}
+					
+					if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label) && lcaDataPropertyProvider.getPropertyName().equals(Flowable.casString))
+					{
+							if (Flowable.correctCASCheckSum(val) == false) {
+								Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.NOTABLE);		//??
+								Logger.getLogger("run").warn(qaCheck.getDescription());
+								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
+								Logger.getLogger("run").warn("  ->Column " + colIndex);
+								Logger.getLogger("run").warn("  ->Checksum failed");
+								assignIssue(issue);
+								issueCount++;
+							}
+					}
+				}
 				} else {
 					while (matcher.find()) {
 						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
