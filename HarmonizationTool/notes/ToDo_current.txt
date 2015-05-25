@@ -1,0 +1,480 @@
+1. TTransue or THoward: AutoMatchJob should keep the functionality of Flow.addAllFlowData() in the thread with status update for user.  Because of transaction, user could not do any transaction work
+
+2. TTransue or THoward: Allow user to interrupt queries in SPARQL Query (QueryView).  This probably means threading it
+
+3. TTransue or CFowler: Add a new row at the top of MatchFlowables for the "Frankenstein" combination of components the user wishes to include in the output.
+
+4. CFowler? Allow copy from most text fields in the HT (like in Eclipse).  This means systematically looking at "editors" and "read_only" or other access flags.  If done systematically, one might understand SWT widgets better, and be able to advise other the rest of us.
+
+5. THoward (and now Github issue #12) Initialization: if first time, menu is "work directory: __________", and "Click for full options (which is now the default)"
+                   if return: show "work directory: _C:\Users\Tom " with option to change and "OK" to keep
+                   
+6. CFowler and TTransue: Slight clumsiness with "Auto-resolve", especially with CAS
+
+7. CFowler: Allow any form of CAS, map to standard
+                   
+
+-- Below is all older stuff
+
+#==========================================================================
+#====  ITEMS WITH "A" - DO BELOW BEFORE 2015-02-20   ======================
+#==========================================================================
+#
+#==== CAT 3: RE-BUILD MANUAL FLOWABLE SEARCH / MATCHING ====
+G6 - GitHub issue #6 "Click to search causes a crash".
+   Status (Tom) The use of wild cards is only somewhat functional.  Better handling of them is necessary.
+     Also, user should be warned of broad searches that will take a while.
+     STATUS: (Tom, 1-16-2015) This is pretty much done.  
+
+B10 FEATURE REQUEST: In the 'Match Flowables' panel, show an index for the row as well as the
+  rank (in mouse over info, perhaps)
+  Status: Tom thinks an index is not necessary, but prioritization is.  Sorting on column header, maybe?
+
+#==== CAT 3: PERFORMANCE ====
+4 - Improve program performance. In general, we shouldn't ever stop improving performance but should reach a level of
+    performance acceptable for Tuesday.
+  SOLN: Better data management.  At a minimum, users must be notified prior to slow processes
+  STATUS: (Tom, 1-16-2015) AutoMatch speed is less than half after not creating Flow objects (just populating TDB)
+      
+#==== CAT 3: TDB => TABLE ====
+A35 - Create LCIA Workflow and fields
+      
+#==== CAT 2: DOC, STYLE, UI DESIGN, LOOK & FEEL ====
+3 - A17 FEATURE REQUEST:  What are "issues"  - designate them
+  SOLN: Document this.  Eventually add new issues with or without auto-resolve.
+  Status (chris): Yes, we need to catalog all of these issues and write them down somewhere.
+
+B1  FEATURE REQUEST / ISSUE: Help File? Help tab? This could be one of the biggest and most important things to 
+  implement before Oct 1... If we write this file, we will definitely come across more bugs.
+  Honestly, I don't remember how to get started on using this tool, so maybe we should start 
+  with the help file... documentation or w/e we need to get the user going.   Perhaps some
+  introductory dialogue boxes upon first startup
+  SOLN: Provide some kind of help somewhere, really! A .pdf of the manual could be bundled and accessible in the HT.
+
+B2 ISSUE: No README.TXT file in the installation directory 
+  SOLN: Provide some kind of help somewhere, really!
+  Status: (Tom) We must produce a brief item which displays license info upon initial splash.  Other "README" contents To Be Determined
+
+B3 ISSUE: The zipped file is completely non-descript... "win64.zip" isn't useful information. 
+  Instead, use something like "LCA_Harmonization_v1.8.zip" with a win64 subdirectory
+  SOLN: Better name for zip file and better name for the folders that it produces
+
+B11 ISSUE: The Harmonization tool icon in the install directory should not have the same icon as eclipse
+  SOLN: Pick a few icons, let PI decide how much effort to put into this.
+
+B12 FEATURE REQUEST: Add working directory in application window border
+  SOLN: Just add it
+
+B22 (copied from A3)
+  FEATURE REQUEST:  Startup allows user to choose project directory
+  SOLN: Have user select a working directory
+      include a checkbox: use as default working directory and do not show this dialogue box again
+
+B28 (was A2)  BUG: If you try to open two instances of the application, the issue of selecting a TDB will occur.  Only way
+  out of it is to go to Task Manager and manually close the application
+  SOLN:  You can't open two at the same time?!?
+  STATUS: Probably platform dependent.  On Mac 64bit, trying a second time just puts focus on first instance.
+          Test on Windows and document issues.
+  UPDATE (from Chris): As of 9:14 - opening a second instance requires that a second TDB be created which is okay.
+          The next thing to do is to allow the creation of new project files and TDB files so that a second instance
+          can be opened if desired.  In short the dialogue box for all of the paths needs to allow files to be created.                     
+C10 FEATURE REQUEST:  A dialogue box or something that explains how a search is run and what is required
+  SOLN: Document and eventually allow user input for criteria for match
+
+C13 FEATURE REQUEST:  Minimize std.err std.out output file 
+  SOLN: See if there is a way to do this systematically instead of removing every freaking System.out.println("") line!
+  Status: (Tom) We should probably just systematically comment out System.out.println lines in favor of meaningful Logger items.
+
+C14 Need a save button - need something to keep these preferences... Is the log supposed to do this?
+  SOLN: Make a system of logging (to tell what happened), and a re-run script created during user run.
+  Status: (Tom) Mike Brown to confirm that Logger shows helpful status.  No re-run script now
+
+#==== CAT 2: WINDOW FUNCTIONALITY: RESIZING, SCROLLING, LAYOUT, ETC. ====
+B29 (was A12) ISSUE: Some windows don't have vertical scrollbars which could be helpful depending on the
+  size of the window
+  SOLN: For QueryView, make auto scroll in both directions (but don't spend too much time on QueryView)
+  STATUS: Got the query view to fill, but no scroll bars and all on one line (at least in Windows)
+  NEXT: Try again to get this right.
+  NEXT: Chris document which others.
+  UPDATE (from Chris): Okay so under the SPARQL Query view, if you drag the window up you can eventually see the left-right scroll for the left panel that contains
+         "show data sets" "Show DataSet Contents" etc... the issue is that when this window is small, the scroll bar doesn't show up.  Also, when the window is small the
+         vertical scrollbar still doesn't show up for the actual SPARQL Query window (the yellow background with the query text).  
+  UPDATE (Tom): Scrollbar in Match Flowables does not work and is flaky.
+
+C3 BUG: The empty CSV table whitespace doesn't extend the whole window for some reason.
+  SOLN: Fix resizing
+
+#==== CAT 2: MODERATE FEATURE REQUEST ====
+7 - A25 FEATURE REQUEST: Allow for sorting of issues and 'tagged rows' to top of CSV table.  No sorting options = sad day.
+    Status (chris): Instead of sorting - do filtering of issues, 'tagged rows', perhaps a filter that shows nothing in a
+      row to clean things up...
+
+G5 - GitHub issue #5 Once "commit" has been done, it should be possible to recover the CSVTableView (aka User Data) from the TDB
+   Status: (Tom) The process of generating a table from the TDB will require some focus, especially for .jsonld data which may
+      have many fields
+
+G7 - GitHub issue #7 "canned" SPARQL queries not functioning
+  Status (Tom) Most of these should be removed.  PI should specifiy which he wants to have working again.
+  See: B5, B6, B7
+    B5 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS Matches' shouldn't error out as 
+      "'Query' has encountered a problem.", instead notify the user that there are no CAS's to
+      match (when no data input)
+      SOLN: Deprecate most buttons, decide the value of others
+
+    B6 ISSUE: 'SPARQL' -> 'Show Query View' -> dbl 'Show CAS and Name Matches' shouldn't error out as 
+      "'Query' has encountered a problem.", instead notify the user that there are no CAS's or 
+      Names to match (when no data input)
+      SOLN: Deprecate most buttons, decide the value of others
+    
+    B7 BUG: 'SPARQL' -> 'Show Query View' -> dbl 'Harmonize Compartments' if I hit the X button on
+      the dialogue box that appears, the entire Query panel dissapears.  This does not happen with
+      any other button in the Query panel
+      SOLN: Deprecate most buttons, decide the value of others
+    
+G8 - GitHub issue #8 "Need a button or command to show existing data info in TDB"
+  Status (Tom) A basic query of "DataSources" and their contents could be revived and presented
+    a) upon return to the TDB and
+    b) upon request.  
+
+#==== CAT 1: SMALL BUG FIX ==== 
+1 - A14 BUG:  Haha!  If I close the CSV file (step 7) the match flowables thing keeps running 
+   0/445  0/446  0/447...
+  SOLN: Make "Cancel" quit the other thread.
+  Status: Just do it.
+    A15 BUG:  Can't stop a commit part of the way through it
+      SOLN: Make it possible to "Cancel" the commit (see A14)
+      Status: Just do it.
+
+11 - A31 BUG (WINDOWS platform) -  hovering over a row # "un-highlights" the row (including issues) in CSVTableView
+    Status (chris): Super annoying in windows...must fix this.
+    Note: This does not appear to happen in Win7 (64-bit).
+    Status: (Tom) Windows and Mac have different styles and highlighting.  Make sure it looks intuitive in Windows.
+
+12 - A32 IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY COLUMNS
+    SOLN: At least detect the issue and tell the user.  Better, read it anyway.
+    ---> GitHub issue #3 <---
+#==========================================================================
+#====  ITEMS WITH "A" - DO ABOVE BEFORE 2015-02-20   ======================
+#==========================================================================
+
+#==========================================================================
+#====  ITEMS WITH "B" - MAYBE DO BELOW BEFORE 2015-02-20   ================
+#==========================================================================
+
+B4 ISSUE: Under 'SPARQL' -> 'Show Query View' the 'Run Query' and 'Update Query' buttons look
+  poorly positioned
+  SOLN: Check position in Win8 and Win7
+
+B8 FEATURE REQUEST: Unique icons for different functionality in the tool
+  SOLN: Figure out how to get built-in (eclipse or RCP) icons and use them.  Try to match with OpenLCA icons
+  NOTE: harmonization.product in the Branding tab
+
+B9 BUG: No check mark or any indication that a window is shown under 'Window Manager'
+  SOLN: Change menu in Harmoniation Tool (Manifest) extensions and make the handler toggle
+
+B13 FEATURE REQUEST:  Designate sections of checking data and loading data vs. an actual search
+  SOLN: Consider phases with sections for the workflow. Add "Step" above the steps, and "Phase" above the phases
+
+B14 FEATURE REQUEST:  Allow for "un-commit" - removing things from TDB after commit
+  SOLN: Shouldn't be too hard, but requires a little thought
+
+B15 BUG:  Change color of "fixed stuff" to something different than green
+  SOLN: Avoid use of color in general (though gray is nice, don't you think?).  GET ICONS
+
+B16 FEATURE REQUEST:  If we know that our data has some junk in it, ignore some of the errors
+  SOLN: Add a column action for "ignore remaining issues".  This means keep the row, but substitute bad text for "" (empty string).
+
+B18 When I load in my data for the first time, assuming I don't know to assign any columns, I will
+  immediately hit Check Data.  Fortunately, you already tell the person to assign a column, but 
+  that is not obvious from the UI.  There needs to be a visual queue to tell the user to assign those
+  columns and the rules for how to assign them. Again, this goes back to the readme thing...but maybe
+  we're holding off on that...  In the mean time, add some wording above the column assignment
+  that directs the user to assign the information where those blank dashes are.  Also, instead of 
+  using dashes, have the steps triggered in the headers...
+  SOLN: Disable "Check Data" until at least one column is assigned
+  Staus: (Tom) In fact, Check Data should check for required fields, and let user know.
+
+B26 FEATURE REQUEST: Middle mouse button scroll.
+
+B27 FEATURE REQUEST: Allow user to save columns which are not otherwise assigned:
+                     1) User selects a pull down: "user defined field"
+                     2) User chooses data type (string, float, int, etc.)
+                        a) Ideally the tool would parse the column looking for invalid data
+                        b) If not, the data could be stored as strings?!?
+                     3) User assigns field name
+                     4) HT adds triples like
+                     _:b0 a lcaht:UserDefinedDataField .
+                     _:b0 lcaht:validValueRange xsd:string .
+                     _:b0 eco:hasDataSource [the data source] .
+                     _:b0 lcaht:hasUserDefinedName "My excellent field data storage spot"^^xsd:string .
+                     _:b1 a lcaht:UserDefinedEntry .
+                     _:b1 lcaht:hasUserDefinedValue "42 lbs."^^xsd:string .
+                     _:b1 fedlca.sourceTableRowNumber 33^^xsd:integer .
+                     _:b1 lcaht:hasDataField _:b0 .
+   Status: Check the priority with PI.
+
+B30 FEATURE REQUEST - Make the default Data Source name increment as follows file.csv -> file ... then file.csv -> file(1) ... then file.csv -> file(2) ... and so on
+  Status (Tom): should not be hard to do.  Check with PI for priority.
+
+B31 -> A19 BUG: Allow for deletion of data set... can make infinitely many 
+  ... and ISSUE:  Every time a particular data set is loaded (for example: test.csv) the tool will
+  load test_1 then test_2 then test_3 etc etc... It's not really clear why this happens.
+
+  SOLN: 1) Make delete easier (confirm)
+        2) Delete the data
+        3) When you read a new file and assign to existing data set, don't create new data set!
+  Status (chris): Probably not super easy to do or high priority for Tuesday...moving to B
+  Status (Tom): There is a delete.  I'm not sure how much data it really deletes....
+
+C9 FEATURE REQUEST:  Automatically detect row 1 for column headers
+  SOLN: Maybe later.  It would only be a suggestion, and the user could change it.
+  SOLN: During "check data", if Row 1 has unique strings (perhaps regex match some frequent ones), ask user if it is header?
+
+#==========================================================================
+#====  ITEMS WITH "B" - MAYBE DO ABOVE BEFORE 2015-02-20   ================
+#==========================================================================
+
+#==========================================================================
+#====  ITEMS WITH "C" - DO BELOW AFTER 2015-02-20   =======================
+#==========================================================================
+
+U5: Add changes from flowWorkflowUI.png
+   Interesting design changes.  This is worth considering, but not before 2015-02-20
+   
+U6: Add changes from ToolUI.png?
+   The solution we have now is pretty good, most likely.
+
+C1 FEATURE REQUEST:  The 'Match Flowables' panel is completely uncustomizable.  I would want to
+  be able to view my data in whatever way I want.  I should at least be able to center the 
+  headers in the columns and reorganize the headers to have CASRN first or Synonyms first or 
+  w/e... 
+  SOLN: Do nothing.  The query can be changed for different output configuration.  Style doesn't matter.
+  SOLN: Allow user to choose fields to show (like e-mail field choices).  For now, each choice would change the query.
+
+C2 BUG: The borders for a lot of windows are interrupted by the minimize and maximize buttons
+  SOLN: Consider turning off access to some buttons?!?
+
+C5 ISSUE: Can hide all of a column when the name should still appear
+  SOLN: Perhaps find a minimum size based on text or something - or defined min. for each View
+  Status: Columns auto-size based on data content (with a min and a max).  Put icons in header.
+  SOLN: Provide mouse-over for cells that are cut off.  Check if Mac and/or Windows do some of this automagically.
+
+C6 QUESTION:  Should the CSV Table panel give an indication of what imported data is expected?
+  I honestly don't know what data I should be giving the thing...
+  SOLN: Consider adding info about the Workflow in the workflow window (a tooltip, maybe)
+  Status: (Tom) I'm not sure what all this means, but it should be easy for the User Data table to say what is in it.
+ 
+C7 ISSUE: Can I only import a CSV or can I import an xls or xlsx file?
+  SOLN: No Excel now.  Later? Yes!
+
+C8 QUESTION:  What format should my input file be in?  How will I know if I imported garbage?
+  SOLN: Do nothing new.  Garbage data is user's problem
+
+C11 FEATURE REQUEST: Instantiate:  Flowable Resource Object With Name / Synonym (FROWNS) :-(
+  SOLN: The world is ready for FROWNS
+  Status: This is too funny to remove!
+ 
+C12 FEATURE REQUEST: Instantiate:  Data Unique meta-block system (DUMBS) %^{
+  SOLN: The world is ready for DUMBS
+  Status: This is too funny to remove!
+  
+#==========================================================================
+#====  ITEMS WITH "C" - DO ABOVE AFTER 2014-10-01   =======================
+#==========================================================================
+
+               
+#==========================================================================
+#====  DONE   =============================================================
+#==========================================================================
+A1  BUG: Can't get out of selecting a TDB on install.  An infinite loop of dialogue boxes occurs
+  SOLN:  Just fix it.
+  STATUS: Done? Now that a default TDB exists on startup, the only option is to change it in preferences, but there *seems* to be no infinite loop
+    
+A4  ISSUE: No way to tell what version the Harmonization Tool is inside the program (about Harmonization Tool)
+  SOLN: Indicate version number (in Help -> About... pull down?!?)
+  STATUS: DONE
+  
+A5  BUG: When "Saving Results" with no input, nothing happens
+  SOLN: Just fix it.
+  STATUS: Done.  Message appears if the SPARQL Results window is not open or does not contain results.  If cancel pressed, tool behaves.
+
+A6  FEATURE REQUEST: Set some standard perspectives for people to choose from 
+  SOLN: Make the menu item do SOMETHING.
+  STATUS: "Perspective switcher" cycles through three "sample" perspectives
+  NEXT: Decide what perspectives the user might want.  Also restore views necessary to perspectives.
+  NOTE: Look in gov.epa.nrmrl.std.lca.ht.harmonizationtool -> ApplicationWorkbenchWindowAdvisor line 33 for startup size
+ 
+A7  BUG: When selecting 'Window Manager' -> 'Work Flows' -> 'Show Perspectives' with no file
+  loaded, nothing happens
+  SOLN: Critical: allow restore original perspective.  Desired (later): save your favorite perspective(s)
+  STATUS: Done for now.  See A6
+
+A8  ISSUE (document):Can right click the Query window and import an .rq file
+  SOLN: Document this
+  STATUS: I think this is gone
+  NEXT: Confirm current status, please.  Determine if it is desired....
+  UPDATE (from Chris):  I think you're right.  We should be good to move this to 'done'
+  
+A9  ISSUE: In 'Window Manager' -> 'Results' -> 'Results Tree Control' the use of "Un Matched" 
+  seems bad
+  SOLN: Remove unused Views (windows)
+  STATUS: Removed anyway
+  
+A10 BUG: 'File' -> 'Import CSV' does nothing
+  SOLN: Remove from File menu
+
+A11 BUG: 'Advanced' -> 'Open TDB' and 'Close TDB' do nothing with no data loaded...apparently it 
+  is doing something?
+  SOLN: Remove from menu
+  
+A26 BUG: Two De-assign columns showing up still...
+    STATUS: resolved
+        
+U1: Under Window Manager the only "perspectives" option should be to restore the 
+Original perspective that the user sees on first startup.  For now, let's not deal with any other perspectives.
+STATUS: Done.
+
+U4: Instead of -'s in the csv table, label each column with a number (1...n) so
+That the user to look at a column and know where he/she is positioned.  
+  STATUS: Done
+  
+U7: Change Query Context in Match Properties Tool to Query Properties
+    STATUS: Done
+    
+B19 Why allow people to even look at a 'standardize CAS' option if CAS hasn't even been assigned... 
+  What if I didn't even include CAS.  Remove functionalities that are impossible.  
+  ... and  Issue: Some functionalities shouldn't show up if they aren't possible.  For example, auto-resolve
+  CAS shouldn't show up if that field has not been assigned a CAS.  Also, auto-resolve field shouldn't
+  be possible if the data hasn't been checked via the Check Data button (2).
+  SOLN: Change menu options to include only possible ones
+  STATUS: Done, and much easier to customizee menus
+ 
+B21 FEATURE REQUEST:  Allow me to select multiple rows to ignore or w/e I want to do
+  SOLN: Turn select multiple back on (Tom turned it off for some crazy reason) - maybe sometimes it should be off?!?
+  STATUS: Changed CSVTableView around line 111 (see note).  Check it next time things work.
+  STATUS: Resolved.  Chris, check it, maybe?
+
+A13 ISSUE:  What does Commit mean?  How is a user supposed to know that Commit is starting to 
+  form some sort of structure by which to search through?  I don't know what it even means to commit.
+  SOLN: Document to the user that before "Commit" nothing in the TDB changes and if they quit and return, they will have to start over.
+  STATUS (CHRIS): Not necessary... supremely nit-picky.
+
+U14: Still not sure about what to do to navigate the use through the annotation windows other than to grey out impossible options.  This will require us to actually 
+Think about the logic but I think we need to start there... See below for ideas...
+  Status (chris): I think Tom has cleaned this up enough....
+
+U9: Switch the second and third columns.
+   Status (chris): I think we decided not to do this...
+
+#====================
+CHANGE CSVTable UI: 
+
+  1 | 2 | 3 | 4 | 5                 (grey out impossible options)
+                                                  
+ 1 | 2 | 3 | Flowable Field | 5     (grey out impossible options)
+
+ 1 | Context Field | 3 | Flowable Field | 5 (grey out impossible options)
+
+ Whatever your rules are - indicate to the user the steps for assigning these
+  things.  
+
+Guide me!  :)
+ #====================
+
+Status (chris): I think we've essentially taken care of this with the 'numbers' and the annotation windows having only a few options at a time.
+
+U10: What does Auto Advance checkbox do??
+Status (chris): Got it.
+
+U8: Under Query Properties/Context Tools, have primary in regular text and additional in parenthesis.
+Status (chris): More or less took care of this.
+   
+8 - A27 BUG: Remove the Logger WARN, INFO, etc..
+    Status (chris): Just do it...
+    Status (Tom): Done.  I also modified the command line arguments to make the text appear on the logger (on Mac during run in Eclipse) from:
+       -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog
+           -- to --
+       -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}
+    Note: It appears that this change results in NOT seeing the Logger text in the console -- as the name implies?
+    
+9 - A28 BUG: When closing a CSV file, the Match flowables tool as well as match contexts tool and match properties tool remains populated.
+    SOLN: Add methods to reset these, then call it when a CSV file is closed
+    Status (chris): I'll check this tomorrow to see if it's fixed...
+    Status: (Tom): Done as of 9/24
+
+U11: Always have Flows Workflow, Match Flowables Tool, Match Properties Tool, and Match Context Tool on the LHS of the application screen.  Always have the CSVTable show up on the RHS of the application screen.
+ Status (chris): TOM: Did we decide to make this final or no?  When you read this, move this somewhere (either to complete or just delete it)
+ Status (Tom): Done with the new single perspective.  Flowables is at bottom (not left), but always visible.
+
+  
+5 - A23 BUG: Match flowables doesn't work (no commit / assign)
+  SOLN:  complete match flowable functionality including the following: CHRIS work here vvv
+         1) UI design features that allow the user to annotate each of the match candidates as
+            a) same (=)
+            b) subset (subset symbol)
+            c) superset (superset symbol)
+            d) proxy (~, or double squiggle equal sign)
+            e) explicit non-equal (not equal symbol)
+         2) NEW window allowing user to search (or perhaps a blank row with text entry fields for searching
+         3) If time, a way to establish the criteria under which a candidate should be accepted as same (e.g. If name and cas match, but name does not match other flowables)
+         4) UI feature that tells user the status of each row / flowable
+         5) UI design so that user can change assignments
+ NOTE: Still working on this - stay tuned.  May come back with some questions tomorrow after work...
+ Status (chris):  I think if we apply the general idea of using the keyboard to all of these windows the user will feel less annoyed by all the clicking (or at least I will 
+be less annoyed and I'm special so you should cater to my needs).
+ Status (Tom): Done.  Some details of the Annotation date, and Comparison to work out.
+         
+6 - A24 BUG: Transaction work not complete.
+    SOLN:  Fix them, but ideally create larger, more efficient transactions
+        STATUS: Added to ActiveTDB two versions of each routine that writes to the TDB:
+        Regular and transaction safe (ts)
+        Changed all calls to use the transaction safe ones.  There seem to be a glitch in AutoMatch so that
+        Flowable name does not get assigned...  fix this, then move ahead
+    Status: (Tom) Looking pretty good, but we should revisit when to use transactions and when to not used them.
+
+10 - A30 BUG: Both primary and additional contexts don't show up, only primary context (in the Match Context Tool)
+    Status (chris): If we can come up with an alternative to primary and additional I'll be really happy but that may be a bit extreme to do before Tuesday.
+    Stauts: (Tom) Done.
+    
+13 - A33: Document functionality of program before Tuesday in some succinct txt format ~ Readme.
+   Status: (Tom) Done, and Mike Brown working on new version
+   
+   
+B17 FEATURE REQUEST:  Somehow reorganize the green/yellow selecting things... 
+  SOLN: Create "jump to next" or (better) add a toggle function "show only issue rows"
+  Stuats: (Tom) Done, I think.
+
+
+B23 (was A18) BUG:  CASRN should be CAS, Name should be Flowable name in results
+  Synonyms should be Flowable Synonyms 
+  SOLN: Standardize words, names, etc.  Some of this should be on the object level: avoid duplicating strings in the code.
+  STATUS: Used a hack to standardize.  Works for now.
+  NEXT: Carefully develop the CSVColumnInfo model so that properties of objects can be defined generally
+  Status: (Tom) Done.
+
+  
+B25 (was A21) FEATURE REQUEST: Need to be able to match Flow Properties
+  SOLN: Connecting to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome.  CHRIS consider simplest UI changes and perhaps grouping of units
+        Also, consider UI design so that user can change assignments
+  STATUS: Done
+
+
+B24 (was A20) FEATURE REQUEST: Need to be able to match Flow Contexts
+  SOLN: Finish reconnecting old interface to new data structure
+  STATUS: Done.
+  NEXT: New suggestions welcome. CHRIS consider simplest UI changes, then consider separating pop. density
+        Also, consider UI design so that user can change assignments
+  STATUS: Done.
+  
+
+C4 QUESTION: The TDB files created are messy, shouldn't they be buried a litle bit so the user
+  doesn't have to stare at them?
+  SOLN: Now in separate folder.  Tell user they don't have to look there.
+  Status: Done because they're in a separate folder.
+  
+  #==== CAT 3: TDB => TABLE ====
+A34 - Once data from .jsonld has been read, create a table in "User Data" space
+
+  
