@@ -1660,6 +1660,10 @@ public class CSVTableView extends ViewPart {
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
 					}
+//					} else {
+						// TODO: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
+						// in Flowable.  If you fail the check sum, come up with some new "Issue" I guess.
+//					}
 				} else {
 					while (matcher.find()) {
 						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
