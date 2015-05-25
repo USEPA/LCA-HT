@@ -31,12 +31,14 @@ public class LCIWorkflowPerspective implements IPerspectiveFactory {
 		IFolderLayout dataLayout = layout.createFolder("Data", IPageLayout.RIGHT, 0.25f, "Workflow");
 		// FLOAT AFTER IPageLayout.RIGHT ABOVE IS THE WIDTH OF THE FIRST Workflow and Logger WINDOWS
 		dataLayout.addView(CSVTableView.ID);
+		dataLayout.addView(QueryView.ID);
 		dataLayout.addView(HarmonizedDataSelector.ID);
 
 //		addPerspectiveShortcuts(layout);
 
 		IFolderLayout dataMatchFlowables = layout.createFolder("Flowables", IPageLayout.BOTTOM, 0.70f, "Data");
 		dataMatchFlowables.addView(MatchFlowables.ID);
+		dataMatchFlowables.addView(ResultsView.ID);
 
 		IFolderLayout matchToolLayout = layout.createFolder("Match Tools", IPageLayout.BOTTOM, 0.35f, "Workflow");
 		matchToolLayout.addView(LoggerViewer.ID);
