@@ -80,6 +80,8 @@ public class CurationMethods {
 			createNewAnnotation();
 		} else {
 			Date calendar = new Date();
+			// FIXME -- ISSUE: GET DATE / TIME FUNCTIONS CORRECT!
+//			Calendar calendar = Calendar.getInstance();
 			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);
 		}
 	}
