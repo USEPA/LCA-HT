@@ -5,7 +5,8 @@ import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
-import java.util.Date;
+import java.util.Calendar;
+//import java.util.Date;
 import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
@@ -13,14 +14,17 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 public class FileMD {
 	private String filename;
 	private String path;
 	private String encoding;
 	private long byteCount;
-	private Date modifiedDate;
-	private Date readDate;
+//	private Date modifiedDate;
+//	private Date readDate;
+	private Calendar modifiedDate;
+	private Calendar readDate;
 	private Resource tdbResource;
 	private static final Resource rdfClass = LCAHT.dataFile;
 
@@ -76,20 +80,20 @@ public class FileMD {
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.byteCount, size);
 	}
 
-	public Date getModifiedDate() {
+	public Calendar getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(Calendar modifiedDate) {
 		this.modifiedDate = modifiedDate;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileModifiedDate, modifiedDate);
+		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, modifiedDate);
 	}
 
-	public Date getReadDate() {
+	public Calendar getReadDate() {
 		return readDate;
 	}
 
-	public void setReadDate(Date readDate) {
+	public void setReadDate(Calendar readDate) {
 		this.readDate = readDate;
 		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.fileReadDate, readDate, null);
 	}
@@ -147,14 +151,14 @@ public class FileMD {
 			}
 		}
 
-		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
-			rdfNode = tdbResource.getProperty(LCAHT.fileModifiedDate).getObject();
+		if (tdbResource.hasProperty(DCTerms.modified)) {
+			rdfNode = tdbResource.getProperty(DCTerms.modified).getObject();
 			if (rdfNode != null) {
 				modifiedDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
 			}
 		}
 
-		if (tdbResource.hasProperty(LCAHT.fileModifiedDate)) {
+		if (tdbResource.hasProperty(LCAHT.fileReadDate)) {
 			rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
 			if (rdfNode != null) {
 				readDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());

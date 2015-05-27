@@ -1,7 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.preferences;
 
 import java.io.File;
-import java.util.Date;
+//import java.util.Date;
+
+import java.util.Calendar;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -82,7 +84,6 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("logDirectory", logPath);
 
 		store.setDefault("runfileRoot", "LCAHT");
-		Date startupDate = new Date();
-		store.setDefault("startTimestamp", Util.getLocalDateFmt(startupDate));
+		store.setDefault("startTimestamp", Util.getLocalDateFmt(Calendar.getInstance()));
 	}
 }

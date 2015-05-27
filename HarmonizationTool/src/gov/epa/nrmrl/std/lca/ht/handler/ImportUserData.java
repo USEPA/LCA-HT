@@ -33,7 +33,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
+//import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +97,7 @@ public class ImportUserData implements IHandler {
 		File file = null;
 		FileMD fileMD = null;
 		MetaDataDialog dialog = null;
-		Date readDate = null;
+		Calendar readDate = null;
 		ImportUserData importCommand;
 
 		public RunData(ImportUserData data) {
@@ -154,11 +155,20 @@ public class ImportUserData implements IHandler {
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
 			data.fileMD.setByteCount(data.file.length());
-			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
-			data.readDate = new Date();
-			data.fileMD.setReadDate(data.readDate);
+			Calendar modifiedDate = Calendar.getInstance();
+			modifiedDate.setTimeInMillis(data.file.lastModified());
+			data.fileMD.setModifiedDate(modifiedDate);
+			Calendar readDate = Calendar.getInstance();
+			data.fileMD.setReadDate(readDate);
+
+//			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
+//			data.readDate = new Date();
+//			data.fileMD.setReadDate(data.readDate);
 			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
-			runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(data.file.lastModified())));
+			long time = data.file.lastModified();
+			Calendar calednar = Calendar.getInstance();
+			calednar.setTimeInMillis(time);
+			runLogger.info("# File last modified: " + Util.getLocalDateFmt(calednar));
 			runLogger.info("# File size: " + data.file.length());
 
 			System.out.println("All's fine before opening dialog");
@@ -260,7 +270,7 @@ public class ImportUserData implements IHandler {
 					fixIDs = true;
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
-				runLogger.info("LOAD RDF " + fileName + " " + new Date());
+				runLogger.info("LOAD RDF " + fileName + " " + Calendar.getInstance());
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -270,7 +280,7 @@ public class ImportUserData implements IHandler {
 			try {
 				@SuppressWarnings("resource")
 				ZipFile zf = new ZipFile(path);
-				runLogger.info("LOAD RDF (zip file)" + fileName + " " + new Date());
+				runLogger.info("LOAD RDF (zip file)" + fileName + " " + Calendar.getInstance());
 				int size = zf.size();
 				int i = 0;
 				int percent = 0;
@@ -358,7 +368,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 
-		runLogger.info("Syncing TDB to LCAHT " + new Date());
+		runLogger.info("Syncing TDB to LCAHT " + Calendar.getInstance());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
@@ -711,8 +721,9 @@ public class ImportUserData implements IHandler {
 			loadUserDataFromRDFFile(data.file);
 		}
 
-		Date readEndDate = new Date();
-		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
+		Calendar readEndDate = Calendar.getInstance();
+		long secondsRead = (readEndDate.getTimeInMillis() - data.readDate.getTimeInMillis())/1000 ; 
+//				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		display.wake();

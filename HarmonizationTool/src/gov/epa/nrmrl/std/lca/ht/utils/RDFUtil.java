@@ -2,8 +2,6 @@ package gov.epa.nrmrl.std.lca.ht.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -135,18 +133,19 @@ public class RDFUtil {
 		return null;
 	}
 
-	public static Date getDateFromLiteral(Literal typedLiteralDate) {
-		Date resultingDate = null;
+	public static Calendar getDateFromLiteral(Literal typedLiteralDate) {
+		Calendar resultingDate = null;
 		if (!typedLiteralDate.isLiteral()) {
 			return null;
 		}
 		Literal literalDate = typedLiteralDate.asLiteral();
-		String formattedDate = literalDate.getString();
-		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+//		String formattedDate = literalDate.getString();
+//		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
 
 		try {
-			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
-		} catch (ParseException e) {
+			resultingDate = ((Calendar) literalDate.getValue());
+//			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
