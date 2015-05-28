@@ -9,7 +9,6 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -23,9 +22,6 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -113,12 +109,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			String activeTDB = Util.getPreferenceStore().getString("activeTDB");
 			if (Util.EMPTY_STRING.equals(activeTDB)) {
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				StorageLocationDialog dialog = new StorageLocationDialog(shell);
-				shell.setVisible(false);
-				dialog.open();
-				if (dialog.getReturnCode() == StorageLocationDialog.RET_SHOW_PREFS)
-					redirectToPreferences();
-				shell.setVisible(true);
+				StringBuilder b = new StringBuilder();
+				b.append("The Harmonization Tool (HT) requires the user to specify directories for local storage.  ");
+				b.append("Please pick existing directories, or an empty ones where the HT can store data.");
+				new GenericMessageBox(shell, "Welcome!", b.toString());
+				redirectToPreferences();
 			}
 
 			String defaultTDB = null;
