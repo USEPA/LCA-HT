@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.utils;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -151,6 +152,16 @@ public class Util {
 			}
 		}
 		return null;
+	}
+	
+	private static String initialStorageLocation = Platform.getLocation().toFile().getPath();
+	
+	public static String getInitialStorageLocation() {
+		return initialStorageLocation;
+	}
+	
+	public static void setInitialStorageLocation(String location) {
+		initialStorageLocation = location;
 	}
 
 	public static void setPerspective(String perspectiveID) {
