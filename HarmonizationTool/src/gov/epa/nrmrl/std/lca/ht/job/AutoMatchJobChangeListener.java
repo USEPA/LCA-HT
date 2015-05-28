@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
-import java.util.Date;
+//import java.util.Date;
+
+import java.util.Calendar;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -28,7 +30,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	}
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		Date startDate = new Date();
+		Calendar startDate = Calendar.getInstance();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -46,7 +48,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	@Override
 	public void done(IJobChangeEvent event) {
 
-		Date endDate = new Date();
+		Calendar endDate = Calendar.getInstance();
 
 		Logger.getLogger("run").info("Job: " + key + " ended: " + endDate);
 

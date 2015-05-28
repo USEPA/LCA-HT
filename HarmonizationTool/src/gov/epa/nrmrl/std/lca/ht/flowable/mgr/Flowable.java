@@ -38,14 +38,14 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Flowable {
 	// CLASS VARIABLES
+	private static final Resource rdfClass = ECO.Flowable;
+	public static final String label = "Flowable";
 	public static final String flowableNameString = "Name";
 	public static final String flowableSynonymString = "Synonym";
 	public static final String casString = "CAS";
 	public static final String chemicalFormulaString = "Chemical formula";
 	public static final String smilesString = "SMILES";
-	private static final Resource rdfClass = ECO.Flowable;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
-	public static final String label = "Flowable";
 	public static final String comment = "A flowable is the entity that flows in an elementary flow.  It can be a substance or energy.  Examples of flowables include CO2 and waste heat. No identity conditions are specified for flowables.";
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
 
@@ -533,9 +533,13 @@ public class Flowable {
 		String s2 = "Standardize CAS";
 		// Pattern acceptableCASFormat = Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
 		Pattern acceptableCASFormat = Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
+//		Pattern acceptableCASFormat = Pattern.compile("^$|^\\d{2,}-?\\d\\d-?\\d$");
+// TODO CFowler: fix the above
 
 		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
+		//TODO: CFowler -  using | (regex or) allow for either two dashes or none
+
 		return qaChecks;
 	}
 
@@ -596,6 +600,7 @@ public class Flowable {
 	}
 
 	public static boolean correctCASCheckSum(String casNumber) {
+		// TODO: CFowler - determine when to use this and if it is too slow for some cas
 		String strippedCas = stripCASdigits(casNumber);
 		if (strippedCas == null) {
 			return false;
@@ -722,7 +727,7 @@ public class Flowable {
 		b.append("    ?f a eco:Flowable . \n");
 		b.append("   } \n");
 		String query = b.toString();
-		System.out.println("Query = \n" + query);
+//		System.out.println("Query = \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);

@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.preferences;
 
 import java.io.File;
-import java.util.Date;
+import java.util.Calendar;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -16,7 +16,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 	public Initializer() {
 		System.out.println("gov.epa.nrmrl.std.lca.ht.preferences.Initializer() constructor");
 	}
-
+	
 	@Override
 	public void initializeDefaultPreferences() {
 		Logger logger = Logger.getLogger("run");
@@ -26,35 +26,50 @@ public class Initializer extends AbstractPreferenceInitializer {
 		System.out.println("Platform.getInstallLocation().getURL().getFile(): "
 				+ Platform.getInstallLocation().getURL().getFile());
 		// logger.warn("Platform.getInstallLocation().getURL().getFile() "+Platform.getInstallLocation().getURL().getFile());
-		File workspaceDir = Platform.getLocation().toFile();
 //		if (!workspaceDir.exists()) {
 //			workspaceDir.mkdirs();
 //		}
-		String tdbPath = workspaceDir.getPath() + File.separator + "TDB";
+		initializeDefaultPreferences(Util.getInitialStorageLocation());
+	}
+
+	public static boolean initializeDefaultPreferences(String defaultPath) {
+		String tdbPath = defaultPath + File.separator + "TDB";
 		File tdbDir = new File(tdbPath);
 		tdbDir.mkdirs();
+		if (!tdbDir.exists())
+			return false;
 		
-		String projectPath = workspaceDir.getPath() + File.separator + "project_01";
+		String projectPath = defaultPath + File.separator + "project_01";
 		File projectDir = new File(projectPath);
 		projectDir.mkdirs();
+		if (!projectDir.exists())
+			return false;
 		
 		String resourcePath = projectDir + File.separator + "resource_files";
 		File resourceDir = new File(resourcePath);
 		resourceDir.mkdirs();
+		if (!resourceDir.exists())
+			return false;
 		
 		String inputPath = projectDir + File.separator + "input_data";
 		File inputDir = new File(inputPath);
 		inputDir.mkdirs();
+		if (!inputDir.exists())
+			return false;
 		
 		String outputPath = projectDir + File.separator + "output_data";
 		File outputDir = new File(outputPath);
 		outputDir.mkdirs();
+		if (!outputDir.exists())
+			return false;
 		
 		String logPath = projectDir + File.separator + "log";
 		File logDir = new File(logPath);
 		logDir.mkdirs();
+		if (!logDir.exists())
+			return false;
               
-		System.out.println("workspaceDir.getPath(): " + workspaceDir.getPath());
+		System.out.println("workspaceDir.getPath(): " + defaultPath);
 		// if (!fred.exists()){
 		// fred.mkdirs();
 		// }
@@ -82,7 +97,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("logDirectory", logPath);
 
 		store.setDefault("runfileRoot", "LCAHT");
-		Date startupDate = new Date();
-		store.setDefault("startTimestamp", Util.getLocalDateFmt(startupDate));
+		store.setDefault("startTimestamp", Util.getLocalDateFmt(Calendar.getInstance()));
+		return true;
 	}
 }

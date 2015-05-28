@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.job;
 
-import java.util.Date;
+//import java.util.Date;
+
+import java.util.Calendar;
 
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -21,8 +23,8 @@ import org.eclipse.ui.PartInitException;
 public class QueryViewJobChangeListener implements IJobChangeListener {
 	private String key;
 	private Job job = null;
-	private Date jobStartDate;
-	private Date jobEndDate;
+	private Calendar jobStartDate;
+	private Calendar jobEndDate;
 
 	public QueryViewJobChangeListener(QueryView queryView, String key) {
 		this.key = key;
@@ -30,7 +32,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		Date startDate = new Date();
+		Calendar startDate = Calendar.getInstance();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		// String message = "Job: =>" + key + "<= started: " + startDate;
 	}
@@ -46,7 +48,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// when the job is done check that is of the correct instance
 		// if so then sync up with the default display. find the queryView and
 		// call its queryCallback method
-		Date endDate = new Date();
+		Calendar endDate = Calendar.getInstance();
 
 		// System.out.println("End date / time: " + endDate);
 		// String message = "Job: =>" + key + "<= ended: " + endDate;

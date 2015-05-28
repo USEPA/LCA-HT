@@ -1,19 +1,19 @@
 package gov.epa.nrmrl.std.lca.ht.utils;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -55,6 +55,15 @@ public class Util {
 		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatLocal.setTimeZone(TimeZone.getDefault());
 		return dateFormatLocal.format(date);
+	}
+
+	public static String getLocalDateFmt(Calendar calendar) {
+		if (calendar == null) {
+			return null;
+		}
+		long time = calendar.getTimeInMillis();
+		Date date = new Date(time);
+		return getLocalDateFmt(date);
 	}
 
 	public static Date setDateFmt(String string) throws ParseException {
@@ -151,6 +160,16 @@ public class Util {
 			}
 		}
 		return null;
+	}
+	
+	private static String initialStorageLocation = Platform.getLocation().toFile().getPath();
+	
+	public static String getInitialStorageLocation() {
+		return initialStorageLocation;
+	}
+	
+	public static void setInitialStorageLocation(String location) {
+		initialStorageLocation = location;
 	}
 
 	public static void setPerspective(String perspectiveID) {

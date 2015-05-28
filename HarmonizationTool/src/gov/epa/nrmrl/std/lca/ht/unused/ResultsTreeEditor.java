@@ -15,7 +15,8 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
+//import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -896,7 +897,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// USE Annotation CLASS FIXME
 		model.add(annotationResource, RDF.type, FedLCA.Annotation);
 		// 2) Assign to it a date and creator
-		Date calendar = new Date();
+		Calendar calendar = Calendar.getInstance();
 		Literal dateLiteral = model.createTypedLiteral(calendar);
 		model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
 		if (Util.getPreferenceStore().getString("userName") != null) {

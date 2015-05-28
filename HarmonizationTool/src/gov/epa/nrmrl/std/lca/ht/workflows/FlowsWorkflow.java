@@ -365,7 +365,8 @@ public class FlowsWorkflow extends ViewPart {
 			final LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
 					CSVTableView.getTableProviderKey()).getLcaDataProperties();
 			final List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
-			// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
+			// This has to be done in a UI thread, otherwise we get NPEs when we
+			// try to access the active window
 			final Display display = Display.getDefault();
 
 			new Thread() {
@@ -406,6 +407,12 @@ public class FlowsWorkflow extends ViewPart {
 									}
 								}
 								if (found == false) {
+									// TODO: THoward: The bit below fails due to
+									// Invalid thread access. Please fix this.
+									// To see the error, try loading .csv data,
+									// then assigning a Flowable -> CAS number,
+									// but no Flowable-> Name. Then doing
+									// "check data"
 									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
 											"For each flowable, the " + requiredLCADataProperty.getPropertyName()
 													+ " is required");
@@ -465,6 +472,7 @@ public class FlowsWorkflow extends ViewPart {
 										btnCommit.setEnabled(false);
 									} else {
 										int issueCount = CSVTableView.checkCols();
+										/* The above function tells CSVTableView to do all the data checking */
 										// int issueCount = 0;
 										textCheckData.setBackground(SWTResourceManager
 												.getColor(SWT.COLOR_INFO_BACKGROUND));
@@ -844,10 +852,11 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void addMatchFlowRowNum(int rowNumToSend) {
 		matchedFlowRowNumbers.add(rowNumToSend);
-		// textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+		// textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size()
+		// + " matched. "
 		// + uniqueFlowPropertyRowNumbers.size() + " found.");
-		
-		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
+
+		textCommit.setText(matchedFlowRowNumbers.size() + " of " + uniqueFlowRowNumbers.size() + " flows matched");
 		CSVTableView.colorFlowRows();
 	}
 
@@ -915,7 +924,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void removeMatchFlowRowNum(int rowNumber) {
 		matchedFlowRowNumbers.remove(rowNumber);
-//		textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
+		// textCommit.setText(matchedFlowRowNumbers.size()+" of "+uniqueFlowRowNumbers.size()+" flows matched");
 		CSVTableView.colorFlowRows();
 	}
 
