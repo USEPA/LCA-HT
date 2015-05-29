@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -636,9 +637,12 @@ public class CSVTableView extends ViewPart {
 		if (auto) {
 			menuItem.addListener(SWT.Selection, new FixCellMenuSelectionListener());
 			menuItem.setText("Auto-resolve issue");
-		} else {
-			menuItem.addListener(SWT.Selection, new EditCellMenuSelectionListener());
-			menuItem.setText("Edit this cell");
+//		} else {
+			//menuItem.addListener(SWT.Selection, new EditCellMenuSelectionListener());
+			//menuItem.setText("Edit this cell");
+			//menuItem.setText("Ignore this cell");
+			
+		
 		}
 	}
 
@@ -648,7 +652,7 @@ public class CSVTableView extends ViewPart {
 			if (!(event.widget instanceof MenuItem)) {
 				return;
 			}
-			fixCurrentlySelectedCell();
+			//ignoreCurrentlySelectedCell();
 		}
 	}
 
@@ -658,8 +662,9 @@ public class CSVTableView extends ViewPart {
 			if (!(event.widget instanceof MenuItem)) {
 				return;
 			}
-			TableColumn tableColumn = table.getColumn(colNumSelected);
-			TableItem tableItem = table.getItem(rowNumSelected);
+			fixCurrentlySelectedCell();
+			//TableColumn tableColumn = table.getColumn(colNumSelected);
+			//TableItem tableItem = table.getItem(rowNumSelected);
 			// tableItem.get
 
 		}
@@ -695,6 +700,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
+	
 
 	// WHAT IS THIS THING BELOW?
 	protected CellEditor getCellEditor(Object element) {
@@ -887,9 +893,10 @@ public class CSVTableView extends ViewPart {
 						menuItem.addListener(SWT.Selection, new AutoResolveColumnListener());
 					}
 
-					menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-					menuItem.setText("Standardize CAS");
-					menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
+					// DONE CFowler: Standardize CAS functionality disabled with the following three comments.
+					//menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+					//menuItem.setText("Standardize CAS");
+					//menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
 
 				} else {
 
@@ -1663,13 +1670,13 @@ public class CSVTableView extends ViewPart {
 						// csvColumnInfo.addIssue(issue);
 					}
 				 else {
-						// TODO: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
+						// DONE: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
 						// in Flowable.  If you fail the check sum, come up with some new "Issue" I guess.
 					
 					if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label) && lcaDataPropertyProvider.getPropertyName().equals(Flowable.casString))
 					{
-							if (Flowable.correctCASCheckSum(val) == false) {
-								Issue issue = new Issue(qaCheck, i, colIndex, 0, Status.NOTABLE);		//??
+							if (val != null && val.length() != 0 && Flowable.correctCASCheckSum(val) == false) {
+								Issue issue = new Issue(Flowable.createBadCheckSumQACheck(), i, colIndex, 0, Status.WARNING);
 								Logger.getLogger("run").warn(qaCheck.getDescription());
 								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
 								Logger.getLogger("run").warn("  ->Column " + colIndex);

@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.Issue;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.Status;
 import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
@@ -590,7 +592,7 @@ public class Flowable {
 		// qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
 
 		String d2 = "Non-standard CAS format";
-		String e2 = "CAS numbers must be either blank or formatted propertly";
+		String e2 = "CAS fields must be either blank or formatted propertly.  Data will be ignored.";
 
 		// String e2 =
 		// "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
@@ -601,11 +603,11 @@ public class Flowable {
 		// Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
 		Pattern acceptableCASFormat = Pattern
 				.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
-		// TODO CFowler: fix the above
+		// DONE CFowler: fix the above
 
 		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
-		// TODO: CFowler - using | (regex or) allow for either two dashes or
+		// DONE: CFowler - using | (regex or) allow for either two dashes or
 		// none
 
 		/*
@@ -710,12 +712,29 @@ public class Flowable {
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
+	public static QACheck createBadCheckSumQACheck() {
+	
+		String d = "Invalid CAS";
+		String e = "A bad checksum has been detected.  Data will be used but flagged in TDB for bad checksum.";
+		String s = "Select ignore row or change CAS in data file.";
+		Pattern p = null;
+		String r = null;
+		return new QACheck(d, e, s, p, r, false);
+
+		// TODO CFowler: Change the color of the issues
+		// DONE: Associated with the Notable issue
+		// DONE: Change text in d, e, s	
+		
+		// Make sure that the workflow accepts notable issues
+		
+		// DONE: Remove Standardize CAS functionality
+		
+	 }
+	
+	
 	public Resource getTdbResource() {
 		return tdbResource;
 	}
