@@ -95,6 +95,10 @@ public class FileMD {
 
 	public void setReadDate(Calendar readDate) {
 		this.readDate = readDate;
+		//TODO: THoward - figure out what the correct object / value is here.
+		// The code seems to allow getting values in, but trying to get a Calendar back out is the issue
+		// Literal thing = literal.getValue() fails if you put in a Calendar or GregorianCalendar, but returns text if you put in a Date.
+		// Either way, it seems a problem to get a Calendar back out.
 		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.fileReadDate, readDate, null);
 	}
 

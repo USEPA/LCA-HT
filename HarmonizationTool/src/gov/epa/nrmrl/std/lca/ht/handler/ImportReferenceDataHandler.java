@@ -21,6 +21,7 @@ import java.text.NumberFormat;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,10 +196,10 @@ public class ImportReferenceDataHandler implements IHandler {
 				fileMD.setPath(path);
 				fileMD.setByteCount(file.length());
 				
-				Calendar modifiedDate = Calendar.getInstance();
+				Calendar modifiedDate = GregorianCalendar.getInstance();
 				modifiedDate.setTimeInMillis(file.lastModified());
 				fileMD.setModifiedDate(modifiedDate);
-				Calendar readDate = Calendar.getInstance();
+				Calendar readDate = GregorianCalendar.getInstance();
 				fileMD.setReadDate(readDate);
 				dataSourceProvider.addFileMD(fileMD);
 				long time3 = System.currentTimeMillis();

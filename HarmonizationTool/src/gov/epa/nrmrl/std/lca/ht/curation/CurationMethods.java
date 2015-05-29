@@ -13,6 +13,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 //import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class CurationMethods {
 
 	public static Resource createNewAnnotation() {
 		Resource annotationResource = ActiveTDB.tsCreateResource(FedLCA.Annotation);
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = GregorianCalendar.getInstance();
 		Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(calendar, null);
 		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.created, dateLiteral, null);
 		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.modified, dateLiteral, null);
@@ -80,7 +81,7 @@ public class CurationMethods {
 		if (currentAnnotation == null) {
 			createNewAnnotation();
 		} else {
-			Calendar calendar = Calendar.getInstance();
+			Calendar calendar = GregorianCalendar.getInstance();
 			// FIXME -- ISSUE: GET DATE / TIME FUNCTIONS CORRECT!
 //			Calendar calendar = Calendar.getInstance();
 			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, calendar);

@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 //import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -63,8 +64,8 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ResultsTreeEditor extends ViewPart {
-//	public ResultsTreeEditor() {
-//	}
+	// public ResultsTreeEditor() {
+	// }
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowable.mgr.ResultsTreeEditor";
 	private TreeViewer treeViewer;
 
@@ -75,8 +76,7 @@ public class ResultsTreeEditor extends ViewPart {
 	// private QueryResults queryResults = null;
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 
 	TreeViewerColumn firstColumn = null;
@@ -110,17 +110,20 @@ public class ResultsTreeEditor extends ViewPart {
 			}
 
 		});
-		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(treeViewer, new FocusCellOwnerDrawHighlighter(treeViewer));
+		final TreeViewerFocusCellManager mgr = new TreeViewerFocusCellManager(treeViewer,
+				new FocusCellOwnerDrawHighlighter(treeViewer));
 		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(treeViewer) {
 			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
 						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && (event.keyCode == SWT.CR || event.character == ' '))
 						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
 			}
 		};
 
-		TreeViewerEditor.create(treeViewer, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-				| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+		TreeViewerEditor.create(treeViewer, mgr, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.TABBING_VERTICAL
+				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
 		final TextCellEditor textCellEditor = new TextCellEditor(treeViewer.getTree());
 		final CheckboxCellEditor checkboxCellEditor = new CheckboxCellEditor(treeViewer.getTree());
@@ -248,12 +251,14 @@ public class ResultsTreeEditor extends ViewPart {
 		treeViewer.getControl().addTraverseListener(new TraverseListener() {
 
 			public void keyTraversed(TraverseEvent e) {
-				if ((e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) && mgr.getFocusCell().getColumnIndex() == 2) {
+				if ((e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS)
+						&& mgr.getFocusCell().getColumnIndex() == 2) {
 					ColumnViewerEditor editor = treeViewer.getColumnViewerEditor();
 					ViewerCell cell = mgr.getFocusCell();
 
 					try {
-						Method m = ColumnViewerEditor.class.getDeclaredMethod("processTraverseEvent", new Class[] { int.class, ViewerRow.class, TraverseEvent.class });
+						Method m = ColumnViewerEditor.class.getDeclaredMethod("processTraverseEvent", new Class[] {
+								int.class, ViewerRow.class, TraverseEvent.class });
 						m.setAccessible(true);
 						m.invoke(editor, new Object[] { new Integer(cell.getColumnIndex()), cell.getViewerRow(), e });
 					} catch (SecurityException e1) {
@@ -482,47 +487,47 @@ public class ResultsTreeEditor extends ViewPart {
 	// TableProvider.createTransform0(resultSetRewindable);
 	// resultSetRewindable.reset();
 	//
-//	 List<DataRow> data = tableProvider.getData();
-//	 DataRow firstRow = data.get(0);
-//	 QuerySolution resultSetRow = resultSetRewindable.next();
-//	 String keyDataSource = firstRow.get(0);
-//	 // THE ROW BELOW WOULD DO THE SAME THING
-//	 // String keyDataSource =
-//	 //
-//	 resultSetRow.get(TableProvider.SUBROW_PREFIX+"1_"+TableProvider.SUBROW_NAMEHEADER).asLiteral().getString();
-//	
-//	 TreeNodeRoot trunk = new TreeNodeRoot();
-//	 TreeNodeRow treeRow = new TreeNodeRow(trunk);
-//	 int subRowIndex = 1;
-//	 treeRow.rowSubURI = resultSetRow.get(TableProvider.SUBROW_PREFIX +
-//	 subRowIndex + "_" + TableProvider.SUBROW_SUB_URI).asResource();
-//	
-//	 int sourceTableRow = -1;
-//	 if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
-//	 sourceTableRow = resultSetRow.get(TableProvider.SUBROW_PREFIX +
-//	 subRowIndex + "_" +
-//	 TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
-//	 }
-//	 treeRow.sourceTableRow = sourceTableRow;
-//	
-//	 for (int col = 0; col < firstRow.getSize(); col++) {
-//	 treeRow.colLabels.add(firstRow.get(col));
-//	 treeRow.addMatchStatus(MatchStatus.UNKNOWN);
-//	 }
-//	 // trunk.children.add(treeRow);
-//	 // trunk.child.add(treeRow);
-//	 TreeNodeSubRow treeSubRow;
-//	
-//	 for (int i = 1; i < data.size(); i++) {
-//	 DataRow dataRow = data.get(i);
-//	 resultSetRow = resultSetRewindable.next();
-//	 Resource rowURI =
-//	 resultSetRow.get(TableProvider.SUBROW_SUB_URI).asResource();
-//	 sourceTableRow = -1;
-//	 if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
-//	 sourceTableRow =
-//	 resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
-//	 }
+	// List<DataRow> data = tableProvider.getData();
+	// DataRow firstRow = data.get(0);
+	// QuerySolution resultSetRow = resultSetRewindable.next();
+	// String keyDataSource = firstRow.get(0);
+	// // THE ROW BELOW WOULD DO THE SAME THING
+	// // String keyDataSource =
+	// //
+	// resultSetRow.get(TableProvider.SUBROW_PREFIX+"1_"+TableProvider.SUBROW_NAMEHEADER).asLiteral().getString();
+	//
+	// TreeNodeRoot trunk = new TreeNodeRoot();
+	// TreeNodeRow treeRow = new TreeNodeRow(trunk);
+	// int subRowIndex = 1;
+	// treeRow.rowSubURI = resultSetRow.get(TableProvider.SUBROW_PREFIX +
+	// subRowIndex + "_" + TableProvider.SUBROW_SUB_URI).asResource();
+	//
+	// int sourceTableRow = -1;
+	// if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
+	// sourceTableRow = resultSetRow.get(TableProvider.SUBROW_PREFIX +
+	// subRowIndex + "_" +
+	// TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
+	// }
+	// treeRow.sourceTableRow = sourceTableRow;
+	//
+	// for (int col = 0; col < firstRow.getSize(); col++) {
+	// treeRow.colLabels.add(firstRow.get(col));
+	// treeRow.addMatchStatus(MatchStatus.UNKNOWN);
+	// }
+	// // trunk.children.add(treeRow);
+	// // trunk.child.add(treeRow);
+	// TreeNodeSubRow treeSubRow;
+	//
+	// for (int i = 1; i < data.size(); i++) {
+	// DataRow dataRow = data.get(i);
+	// resultSetRow = resultSetRewindable.next();
+	// Resource rowURI =
+	// resultSetRow.get(TableProvider.SUBROW_SUB_URI).asResource();
+	// sourceTableRow = -1;
+	// if (resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW) != null) {
+	// sourceTableRow =
+	// resultSetRow.get(TableProvider.SUBROW_SOURCE_TAB_ROW).asLiteral().getInt();
+	// }
 	//
 	// if (keyDataSource.equals(dataRow.get(0))) {
 	// subRowIndex = 1;
@@ -564,7 +569,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// treeViewer.getTree().clearAll(true);
 		DataRow header = tableProvider.getHeaderRow();
 		List<DataRow> data = tableProvider.getData();
-//		List<Resource> uriList = tableProvider.getUriList();
+		// List<Resource> uriList = tableProvider.getUriList();
 		DataRow firstRow = data.get(0);
 		String keyDataSource = firstRow.get(0);
 		// if (trunk == null) {
@@ -572,7 +577,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// }
 		// new TreeNodeRow(trunk);
 		TreeNodeRow treeNodeRow = new TreeNodeRow(trunk);
-//		treeNodeRow.setUri(uriList.get(0));
+		// treeNodeRow.setUri(uriList.get(0));
 		int uriCol = -1;
 		for (int col = 0; col < firstRow.getSize(); col++) {
 
@@ -584,10 +589,10 @@ public class ResultsTreeEditor extends ViewPart {
 
 		for (int i = 1; i < data.size(); i++) {
 			DataRow dataRow = data.get(i);
-//			Resource uri = uriList.get(i);
+			// Resource uri = uriList.get(i);
 			if (keyDataSource.equals(dataRow.get(0))) {
 				treeNodeRow = new TreeNodeRow(trunk);
-//				treeNodeRow.setUri(uri);
+				// treeNodeRow.setUri(uri);
 				for (int col = 0; col < dataRow.getSize(); col++) {
 
 					treeNodeRow.addColumnLabel(dataRow.get(col));
@@ -598,9 +603,10 @@ public class ResultsTreeEditor extends ViewPart {
 				treeNodeSubRow = new TreeNodeSubRow(treeNodeRow);
 				for (int col = 0; col < dataRow.getSize(); col++) {
 					treeNodeSubRow.addColumnLabel(dataRow.get(col));
-//					treeNodeSubRow.setUri(uri);
+					// treeNodeSubRow.setUri(uri);
 
-					if (treeNodeSubRow.getColumnLabel(col).toUpperCase().equals(treeNodeRow.getColumnLabel(col).toUpperCase())) {
+					if (treeNodeSubRow.getColumnLabel(col).toUpperCase()
+							.equals(treeNodeRow.getColumnLabel(col).toUpperCase())) {
 						treeNodeSubRow.addMatchStatus(MatchStatus.EQUIVALENT);
 						// treeRow.updateMatchStatus(col,
 						// MatchStatus.EQUIVALENT); // WHY DOES THIS GET
@@ -897,7 +903,7 @@ public class ResultsTreeEditor extends ViewPart {
 		// USE Annotation CLASS FIXME
 		model.add(annotationResource, RDF.type, FedLCA.Annotation);
 		// 2) Assign to it a date and creator
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = GregorianCalendar.getInstance();
 		Literal dateLiteral = model.createTypedLiteral(calendar);
 		model.add(annotationResource, DCTerms.dateSubmitted, dateLiteral);
 		if (Util.getPreferenceStore().getString("userName") != null) {
@@ -917,13 +923,15 @@ public class ResultsTreeEditor extends ViewPart {
 				System.out.println("got here");
 				if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.EQUIVALENT)) {
 					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.Equivalent);
-					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
+					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " same as Master (row "
+							+ counter + "): " + treeNodeSubRow.getColumnLabel(1));
 					// System.out.println("  eq");
 
 				} else if (treeNodeSubRow.getMatchStatus(1).equals(MatchStatus.NONEQUIVALENT)) {
 					comparison = addComparison(treeNodeRow.getUri(), treeNodeSubRow.getUri(), FedLCA.NonEquivalent);
 					// System.out.println("  non-eq");
-					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1) + " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
+					System.out.println("QuerySource = " + treeNodeRow.getColumnLabel(1)
+							+ " DIFFERENT from Master (row " + counter + "): " + treeNodeSubRow.getColumnLabel(1));
 
 				}
 				if (comparison != null) {

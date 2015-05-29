@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.job;
 //import java.util.Date;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import gov.epa.nrmrl.std.lca.ht.sparql.QueryView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -32,7 +33,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		Calendar startDate = Calendar.getInstance();
+		Calendar startDate = GregorianCalendar.getInstance();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		// String message = "Job: =>" + key + "<= started: " + startDate;
 	}
@@ -48,7 +49,7 @@ public class QueryViewJobChangeListener implements IJobChangeListener {
 		// when the job is done check that is of the correct instance
 		// if so then sync up with the default display. find the queryView and
 		// call its queryCallback method
-		Calendar endDate = Calendar.getInstance();
+		Calendar endDate = GregorianCalendar.getInstance();
 
 		// System.out.println("End date / time: " + endDate);
 		// String message = "Job: =>" + key + "<= ended: " + endDate;

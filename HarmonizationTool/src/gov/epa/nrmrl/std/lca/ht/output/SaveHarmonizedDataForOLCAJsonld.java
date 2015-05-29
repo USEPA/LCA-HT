@@ -109,9 +109,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// FIXME -- ISSUES ARE BELOW WITH DATE TIME FUNCTIONS
 		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
 		Literal modLiteral = modNode.asLiteral();
+		//HACKS !!
+		Object thingg = modLiteral.getValue();
 		XSDDateTime modObject = (XSDDateTime) modLiteral.getValue();
 		Calendar modCalendar = modObject.asCalendar();
 		String modString = modCalendar.getTime().toGMTString();
+		//TODO: THoward - figure out how to get a properly formatted string for a timestamp to be used below in "modString".  I believe this is iso-8601 format.
 		
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);

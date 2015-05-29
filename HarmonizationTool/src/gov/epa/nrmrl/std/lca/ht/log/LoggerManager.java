@@ -7,6 +7,7 @@ import java.io.IOException;
 //import java.util.Date;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
@@ -41,7 +42,7 @@ public class LoggerManager {
 		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
 		rootLogger.addAppender(new ConsoleAppender(layout));
-		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(Calendar.getInstance()));
+		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(GregorianCalendar.getInstance()));
 	}
 
 	private static void setUpRunLogger() {
