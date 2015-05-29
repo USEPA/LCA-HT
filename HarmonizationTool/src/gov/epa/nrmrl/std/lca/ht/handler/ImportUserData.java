@@ -10,11 +10,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
-import gov.epa.nrmrl.std.lca.ht.log.LoggerWriter;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -56,7 +53,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Synchronizer;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -92,12 +88,12 @@ public class ImportUserData implements IHandler {
 	private Display display = null;
 
 	class RunData implements Runnable {
-		boolean thing = false;
+//		boolean thing = false;
 		String path = null;
 		File file = null;
 		FileMD fileMD = null;
 		MetaDataDialog dialog = null;
-		Calendar readDate = null;
+		Calendar readDate = Calendar.getInstance();
 		ImportUserData importCommand;
 
 		public RunData(ImportUserData data) {
@@ -704,7 +700,7 @@ public class ImportUserData implements IHandler {
 
 	public void finishImport(final RunData data) {
 
-		System.out.println("thing = " + data.thing);
+//		System.out.println("thing = " + data.thing);
 		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(data.fileMD);
 		System.out.println("FileMD set in tableProvider");
@@ -722,6 +718,10 @@ public class ImportUserData implements IHandler {
 		}
 
 		Calendar readEndDate = Calendar.getInstance();
+		System.out.println("readEndDate.getTimeInMillis() "+readEndDate.getTimeInMillis());
+		Calendar thing = data.fileMD.getReadDate();
+		System.out.println("data.readDate.getTimeInMillis() "+thing.getTimeInMillis());
+
 		long secondsRead = (readEndDate.getTimeInMillis() - data.readDate.getTimeInMillis())/1000 ; 
 //				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);

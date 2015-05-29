@@ -569,20 +569,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		/* JUST A PLACE HOLDER SO THAT OUTLINE SHOWS A DIVIDER */
 	}
 
-	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object thingLiteral, String graphName) {
-		if (thingLiteral == null) {
+	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object objectNodeOrLiteral, String graphName) {
+		if (objectNodeOrLiteral == null) {
 			return;
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = getModel(graphName);
 		try {
-			if (thingLiteral instanceof RDFNode) {
-				tdbModel.add(subject, predicate, (RDFNode) thingLiteral);
+			if (objectNodeOrLiteral instanceof RDFNode) {
+				tdbModel.add(subject, predicate, (RDFNode) objectNodeOrLiteral);
 
 			} else {
-				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-				Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
+				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(objectNodeOrLiteral);
+				Literal newRDFNode = tdbModel.createTypedLiteral(objectNodeOrLiteral, rdfDatatype);
 				tdbModel.add(subject, predicate, newRDFNode);
 			}
 			tdbDataset.commit();

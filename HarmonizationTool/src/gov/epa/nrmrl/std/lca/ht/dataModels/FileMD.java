@@ -154,6 +154,8 @@ public class FileMD {
 		if (tdbResource.hasProperty(DCTerms.modified)) {
 			rdfNode = tdbResource.getProperty(DCTerms.modified).getObject();
 			if (rdfNode != null) {
+				String thing = rdfNode.toString();
+				System.out.println("thing = "+thing);
 				modifiedDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
 			}
 		}

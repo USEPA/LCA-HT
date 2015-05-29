@@ -138,12 +138,15 @@ public class RDFUtil {
 		if (!typedLiteralDate.isLiteral()) {
 			return null;
 		}
-		Literal literalDate = typedLiteralDate.asLiteral();
+//		Literal literalDate = typedLiteralDate.asLiteral();
 //		String formattedDate = literalDate.getString();
 //		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
 
 		try {
-			resultingDate = ((Calendar) literalDate.getValue());
+			Object thing = typedLiteralDate.getDatatype();
+			Object thing2 = typedLiteralDate.getValue();
+			System.out.println("thing2 = "+thing2);
+//			resultingDate = ((Calendar) typedLiteralDate;
 //			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
 		} catch (Exception e) {
 			e.printStackTrace();
