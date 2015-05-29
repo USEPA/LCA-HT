@@ -17,8 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.jface.window.Window;
-import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
@@ -459,6 +459,10 @@ public class DataSourceKeeper {
 //			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_properties_lcaht.n3", null);
 			System.out.println("Load finished");
 			syncFromTDB();
+			ActiveTDB.getInstance().creationMessage.close();
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			shell.setVisible(true);
+			shell.getDisplay().update();
 		}
 	}
 

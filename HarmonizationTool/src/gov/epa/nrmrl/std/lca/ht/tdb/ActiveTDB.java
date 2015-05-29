@@ -23,9 +23,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -61,6 +59,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
+	public static MessageDialog creationMessage;
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
@@ -110,15 +109,19 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	private static void openTDB() {
 		if (tdbDataset == null) {
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			String activeTDB = Util.getPreferenceStore().getString("activeTDB");
 			if (Util.EMPTY_STRING.equals(activeTDB)) {
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				StorageLocationDialog dialog = new StorageLocationDialog(shell);
 				shell.setVisible(false);
 				dialog.open();
 				if (dialog.getReturnCode() == StorageLocationDialog.RET_SHOW_PREFS)
 					redirectToPreferences();
-				shell.setVisible(true);
+				String infoMessage = "Initializing TDB Data - please wait...";
+				creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION, new String[] {}, 0);
+				creationMessage.setBlockOnOpen(false);
+				creationMessage.open();
+				creationMessage.getShell().getDisplay().update();
 			}
 
 			String defaultTDB = null;
@@ -145,6 +148,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 						Util.getPreferenceStore().save();
 
 						tdbCreated = true;
+						if (creationMessage != null)
+							creationMessage.close();
 						// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
 						// to the TDB that the session has started
 						// Prefixes.syncPrefixMapToTDBModel();
@@ -168,7 +173,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				if (!tdbCreated) {
 					// ask user for TDB directory
 					// TODO: Determine when this message might display and what the user and software shoul do about it.
-					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 					new GenericMessageBox(shell, "Error", errMsg);
 					//If user has previously canceled with invalid data, quit.
 					if (prefsCanceled) {
@@ -569,20 +573,20 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		/* JUST A PLACE HOLDER SO THAT OUTLINE SHOWS A DIVIDER */
 	}
 
-	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object objectNodeOrLiteral, String graphName) {
-		if (objectNodeOrLiteral == null) {
+	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object thingLiteral, String graphName) {
+		if (thingLiteral == null) {
 			return;
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = getModel(graphName);
 		try {
-			if (objectNodeOrLiteral instanceof RDFNode) {
-				tdbModel.add(subject, predicate, (RDFNode) objectNodeOrLiteral);
+			if (thingLiteral instanceof RDFNode) {
+				tdbModel.add(subject, predicate, (RDFNode) thingLiteral);
 
 			} else {
-				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(objectNodeOrLiteral);
-				Literal newRDFNode = tdbModel.createTypedLiteral(objectNodeOrLiteral, rdfDatatype);
+				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
+				Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 				tdbModel.add(subject, predicate, newRDFNode);
 			}
 			tdbDataset.commit();

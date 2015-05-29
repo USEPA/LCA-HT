@@ -30,45 +30,49 @@ public class Initializer extends AbstractPreferenceInitializer {
 //		if (!workspaceDir.exists()) {
 //			workspaceDir.mkdirs();
 //		}
-		initializeDefaultPreferences(Util.getInitialStorageLocation());
+		initializeDefaultPreferences(Util.getInitialStorageLocation(), true);
+	}
+		
+	public static boolean initializeDefaultPreferences(String defaultPath) {
+		return initializeDefaultPreferences(defaultPath, false);
 	}
 
-	public static boolean initializeDefaultPreferences(String defaultPath) {
-		String tdbPath = defaultPath + File.separator + "TDB";
-		File tdbDir = new File(tdbPath);
-		tdbDir.mkdirs();
-		if (!tdbDir.exists())
-			return false;
+	//On the first run with no input from the user and no active TDB in the prefs, don't create filesystem directories.  Wait until explicitly given a path
+	public static boolean initializeDefaultPreferences(String defaultPath, boolean disableFolderCreation) {
+		String activeTDB = Util.getPreferenceStore().getString("activeTDB");
+		if (!Util.EMPTY_STRING.equals(activeTDB)) {
+			disableFolderCreation = false;
+		}
+		String tdbPath = defaultPath + File.separator + "TDB";		
+		String projectPath = defaultPath + File.separator + "project_01";		
+		String resourcePath = projectPath + File.separator + "resource_files";
+		String inputPath = projectPath + File.separator + "input_data";
+		String outputPath = projectPath + File.separator + "output_data";
+		String logPath = projectPath + File.separator + "log";
 		
-		String projectPath = defaultPath + File.separator + "project_01";
-		File projectDir = new File(projectPath);
-		projectDir.mkdirs();
-		if (!projectDir.exists())
-			return false;
-		
-		String resourcePath = projectDir + File.separator + "resource_files";
-		File resourceDir = new File(resourcePath);
-		resourceDir.mkdirs();
-		if (!resourceDir.exists())
-			return false;
-		
-		String inputPath = projectDir + File.separator + "input_data";
-		File inputDir = new File(inputPath);
-		inputDir.mkdirs();
-		if (!inputDir.exists())
-			return false;
-		
-		String outputPath = projectDir + File.separator + "output_data";
-		File outputDir = new File(outputPath);
-		outputDir.mkdirs();
-		if (!outputDir.exists())
-			return false;
-		
-		String logPath = projectDir + File.separator + "log";
-		File logDir = new File(logPath);
-		logDir.mkdirs();
-		if (!logDir.exists())
-			return false;
+		if (!disableFolderCreation) {
+			File tdbDir = new File(tdbPath);
+			tdbDir.mkdirs();
+			File projectDir = new File(projectPath);
+			projectDir.mkdirs();
+			File resourceDir = new File(resourcePath);
+			resourceDir.mkdirs();
+			File inputDir = new File(inputPath);
+			inputDir.mkdirs();
+			File outputDir = new File(outputPath);
+			outputDir.mkdirs();
+			File logDir = new File(logPath);
+			logDir.mkdirs();
+
+
+			if (!tdbDir.exists() ||
+				!projectDir.exists() ||
+				!resourceDir.exists() ||
+				!inputDir.exists() ||
+				!outputDir.exists() ||
+				!logDir.exists())
+				return false;
+		}
               
 		System.out.println("workspaceDir.getPath(): " + defaultPath);
 		// if (!fred.exists()){
