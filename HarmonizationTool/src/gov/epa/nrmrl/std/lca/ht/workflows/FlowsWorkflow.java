@@ -385,10 +385,10 @@ public class FlowsWorkflow extends ViewPart {
 						if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 							checkForRequiredFlowableFields = true;
 						}
-						if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+						else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 							checkForRequiredFlowContextFields = true;
 						}
-						if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
+						else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowProperty.label)) {
 							checkForRequiredFlowPropertyFields = true;
 						}
 						if (lcaDataPropertyProvider.isRequired()) {
@@ -403,7 +403,7 @@ public class FlowsWorkflow extends ViewPart {
 								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
 									if (gotIt.sameAs(requiredLCADataProperty)) {
 										found = true;
-										continue;
+										break;
 									}
 								}
 								if (found == false) {
@@ -426,13 +426,17 @@ public class FlowsWorkflow extends ViewPart {
 								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
 									if (gotIt.sameAs(requiredLCADataProperty)) {
 										found = true;
-										continue;
+										break;
 									}
 								}
 								if (found == false) {
-									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-											"For each flow context, the " + requiredLCADataProperty.getPropertyName()
-													+ " is required");
+									final String missingProp = requiredLCADataProperty.getPropertyName();
+									Display.getDefault().syncExec(new Runnable() {
+										public void run() {					
+											new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+													"For each flow context, the " + missingProp
+															+ " is required");
+										}});
 								}
 							}
 						}
@@ -445,13 +449,17 @@ public class FlowsWorkflow extends ViewPart {
 								for (LCADataPropertyProvider gotIt : requiredLCADataPropertyProvider) {
 									if (gotIt.sameAs(requiredLCADataProperty)) {
 										found = true;
-										continue;
+										break;
 									}
 								}
 								if (found == false) {
-									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-											"For each flow property, the " + requiredLCADataProperty.getPropertyName()
-													+ " is required");
+									final String missingProp = requiredLCADataProperty.getPropertyName();
+									Display.getDefault().syncExec(new Runnable() {
+										public void run() {					
+											new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+													"For each flow property, the " + missingProp
+															+ " is required");
+										}});
 								}
 							}
 						}
