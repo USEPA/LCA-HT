@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -658,12 +657,11 @@ public class CSVTableView extends ViewPart {
 		if (auto) {
 			menuItem.addListener(SWT.Selection, new FixCellMenuSelectionListener());
 			menuItem.setText("Auto-resolve issue");
-//		} else {
-			//menuItem.addListener(SWT.Selection, new EditCellMenuSelectionListener());
-			//menuItem.setText("Edit this cell");
-			//menuItem.setText("Ignore this cell");
-			
-		
+			// } else {
+			// menuItem.addListener(SWT.Selection, new EditCellMenuSelectionListener());
+			// menuItem.setText("Edit this cell");
+			// menuItem.setText("Ignore this cell");
+
 		}
 	}
 
@@ -673,7 +671,7 @@ public class CSVTableView extends ViewPart {
 			if (!(event.widget instanceof MenuItem)) {
 				return;
 			}
-			//ignoreCurrentlySelectedCell();
+			// ignoreCurrentlySelectedCell();
 		}
 	}
 
@@ -684,8 +682,8 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			fixCurrentlySelectedCell();
-			//TableColumn tableColumn = table.getColumn(colNumSelected);
-			//TableItem tableItem = table.getItem(rowNumSelected);
+			// TableColumn tableColumn = table.getColumn(colNumSelected);
+			// TableItem tableItem = table.getItem(rowNumSelected);
 			// tableItem.get
 
 		}
@@ -721,7 +719,6 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	
 
 	// WHAT IS THIS THING BELOW?
 	protected CellEditor getCellEditor(Object element) {
@@ -749,7 +746,7 @@ public class CSVTableView extends ViewPart {
 		Calendar loadEndDate = GregorianCalendar.getInstance();
 
 		long secondsRead = ((loadEndDate.getTimeInMillis() - loadStartDate.getTimeInMillis()) / 1000);
-		
+
 		// System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 
 		table.setSize(table.getParent().getSize());
@@ -917,9 +914,9 @@ public class CSVTableView extends ViewPart {
 					}
 
 					// DONE CFowler: Standardize CAS functionality disabled with the following three comments.
-					//menuItem = new MenuItem(headerMenu, SWT.NORMAL);
-					//menuItem.setText("Standardize CAS");
-					//menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
+					// menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+					// menuItem.setText("Standardize CAS");
+					// menuItem.addListener(SWT.Selection, new StandardizeAllCASListener());
 
 				} else {
 
@@ -1671,8 +1668,7 @@ public class CSVTableView extends ViewPart {
 		// clearIssues
 		// csvColumnInfo.clearIssues();
 		List<String> columnValues = getColumnValues(colIndex);
-		
-		
+
 		for (QACheck qaCheck : lcaDataPropertyProvider.getCheckLists()) {
 			for (int i = 0; i < columnValues.size(); i++) {
 				if (rowsToIgnore.contains(i)) {
@@ -1691,30 +1687,21 @@ public class CSVTableView extends ViewPart {
 						assignIssue(issue);
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
+					} else if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)
+							&& lcaDataPropertyProvider.getPropertyName().equals(Flowable.casString) && val != null
+							&& val.length() != 0) {
+						// TODO - Java question, does each boolean in a list joined with && get evaluated, or does it
+						// quit when one is false? See above and below.
+						if (Flowable.correctCASCheckSum(val) == false) {
+							Issue issue = new Issue(Flowable.createBadCheckSumQACheck(), i, colIndex, 0, Status.WARNING);
+							Logger.getLogger("run").warn(qaCheck.getDescription());
+							Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
+							Logger.getLogger("run").warn("  ->Column " + colIndex);
+							Logger.getLogger("run").warn("  ->Checksum failed");
+							assignIssue(issue);
+							issueCount++;
+						}
 					}
-				}else {
-						// DONE: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
-						// in Flowable.  If you fail the check sum, come up with some new "Issue" I guess.
-					
-					if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label) && lcaDataPropertyProvider.getPropertyName().equals(Flowable.casString))
-					{
-							if (val != null && val.length() != 0 && Flowable.correctCASCheckSum(val) == false) {
-								Issue issue = new Issue(Flowable.createBadCheckSumQACheck(), i, colIndex, 0, Status.WARNING);
-								Logger.getLogger("run").warn(qaCheck.getDescription());
-								Logger.getLogger("run").warn("  ->Row " + issue.getRowNumber());
-								Logger.getLogger("run").warn("  ->Column " + colIndex);
-								Logger.getLogger("run").warn("  ->Checksum failed");
-								assignIssue(issue);
-								issueCount++;
-							}
-					}
-				}
-=======
-					// } else {
-					// TODO: CFowler: add logic to see if you are a CAS LCADataPropertyProvider. Then run the checksum:
-					// in Flowable. If you fail the check sum, come up with some new "Issue" I guess.
-					// }
->>>>>>> refs/remotes/origin/dev
 				} else {
 					while (matcher.find()) {
 						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
