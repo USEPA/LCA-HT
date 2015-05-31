@@ -407,15 +407,13 @@ public class FlowsWorkflow extends ViewPart {
 									}
 								}
 								if (found == false) {
-									// TODO: THoward: The bit below fails due to
-									// Invalid thread access. Please fix this.
-									// To see the error, try loading .csv data,
-									// then assigning a Flowable -> CAS number,
-									// but no Flowable-> Name. Then doing
-									// "check data"
-									new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
-											"For each flowable, the " + requiredLCADataProperty.getPropertyName()
-													+ " is required");
+									final String missingProp = requiredLCADataProperty.getPropertyName();
+									Display.getDefault().syncExec(new Runnable() {
+										public void run() {					
+											new GenericMessageBox(e.display.getActiveShell(), "Missing Assignment",
+													"For each flowable, the " + missingProp
+															+ " is required");
+										}});
 								}
 							}
 						}
