@@ -1,7 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.preferences;
 
 import java.io.File;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -16,7 +17,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 	public Initializer() {
 		System.out.println("gov.epa.nrmrl.std.lca.ht.preferences.Initializer() constructor");
 	}
-
+	
 	@Override
 	public void initializeDefaultPreferences() {
 		Logger logger = Logger.getLogger("run");
@@ -26,35 +27,54 @@ public class Initializer extends AbstractPreferenceInitializer {
 		System.out.println("Platform.getInstallLocation().getURL().getFile(): "
 				+ Platform.getInstallLocation().getURL().getFile());
 		// logger.warn("Platform.getInstallLocation().getURL().getFile() "+Platform.getInstallLocation().getURL().getFile());
-		File workspaceDir = Platform.getLocation().toFile();
 //		if (!workspaceDir.exists()) {
 //			workspaceDir.mkdirs();
 //		}
-		String tdbPath = workspaceDir.getPath() + File.separator + "TDB";
-		File tdbDir = new File(tdbPath);
-		tdbDir.mkdirs();
+		initializeDefaultPreferences(Util.getInitialStorageLocation(), true);
+	}
 		
-		String projectPath = workspaceDir.getPath() + File.separator + "project_01";
-		File projectDir = new File(projectPath);
-		projectDir.mkdirs();
+	public static boolean initializeDefaultPreferences(String defaultPath) {
+		return initializeDefaultPreferences(defaultPath, false);
+	}
+
+	//On the first run with no input from the user and no active TDB in the prefs, don't create filesystem directories.  Wait until explicitly given a path
+	public static boolean initializeDefaultPreferences(String defaultPath, boolean disableFolderCreation) {
+		String activeTDB = Util.getPreferenceStore().getString("activeTDB");
+		if (!Util.EMPTY_STRING.equals(activeTDB)) {
+			disableFolderCreation = false;
+		}
+		String tdbPath = defaultPath + File.separator + "TDB";		
+		String projectPath = defaultPath + File.separator + "project_01";		
+		String resourcePath = projectPath + File.separator + "resource_files";
+		String inputPath = projectPath + File.separator + "input_data";
+		String outputPath = projectPath + File.separator + "output_data";
+		String logPath = projectPath + File.separator + "log";
 		
-		String resourcePath = projectDir + File.separator + "resource_files";
-		File resourceDir = new File(resourcePath);
-		resourceDir.mkdirs();
-		
-		String inputPath = projectDir + File.separator + "input_data";
-		File inputDir = new File(inputPath);
-		inputDir.mkdirs();
-		
-		String outputPath = projectDir + File.separator + "output_data";
-		File outputDir = new File(outputPath);
-		outputDir.mkdirs();
-		
-		String logPath = projectDir + File.separator + "log";
-		File logDir = new File(logPath);
-		logDir.mkdirs();
+		if (!disableFolderCreation) {
+			File tdbDir = new File(tdbPath);
+			tdbDir.mkdirs();
+			File projectDir = new File(projectPath);
+			projectDir.mkdirs();
+			File resourceDir = new File(resourcePath);
+			resourceDir.mkdirs();
+			File inputDir = new File(inputPath);
+			inputDir.mkdirs();
+			File outputDir = new File(outputPath);
+			outputDir.mkdirs();
+			File logDir = new File(logPath);
+			logDir.mkdirs();
+
+
+			if (!tdbDir.exists() ||
+				!projectDir.exists() ||
+				!resourceDir.exists() ||
+				!inputDir.exists() ||
+				!outputDir.exists() ||
+				!logDir.exists())
+				return false;
+		}
               
-		System.out.println("workspaceDir.getPath(): " + workspaceDir.getPath());
+		System.out.println("workspaceDir.getPath(): " + defaultPath);
 		// if (!fred.exists()){
 		// fred.mkdirs();
 		// }
@@ -82,7 +102,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("logDirectory", logPath);
 
 		store.setDefault("runfileRoot", "LCAHT");
-		Date startupDate = new Date();
-		store.setDefault("startTimestamp", Util.getLocalDateFmt(startupDate));
+		store.setDefault("startTimestamp", Util.getLocalDateFmt(GregorianCalendar.getInstance()));
+		return true;
 	}
 }

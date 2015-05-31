@@ -34,7 +34,7 @@ public class LCAHT {
     public static final Property fileName = m_model.createProperty( NS + "fileName" );
     public static final Property filePath = m_model.createProperty( NS + "filePath" );
     public static final Property fileEncoding = m_model.createProperty( NS + "fileEncoding" );
-    public static final Property fileModifiedDate = m_model.createProperty( NS + "fileModifiedDate" );
+//    public static final Property fileModifiedDate = m_model.createProperty( NS + "fileModifiedDate" );
     public static final Property fileReadDate = m_model.createProperty( NS + "fileReadDate" );
     
     public static final Property containsFile = m_model.createProperty( NS + "containsFile" );

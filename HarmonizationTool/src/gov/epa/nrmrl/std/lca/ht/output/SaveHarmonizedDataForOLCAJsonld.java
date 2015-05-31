@@ -1,10 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.output;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
-import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
@@ -13,9 +13,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -26,12 +24,16 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld";
@@ -55,12 +57,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 		System.out.println("headerRow " + headerRow);
 
-//		List<DataRow> dataRows = new ArrayList<DataRow>();
-//		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-//		for (int i = 0; i < tableProvider.getData().size(); i++) {
-//			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
-//			dataRows.add(dataRow);
-//		}
+		// List<DataRow> dataRows = new ArrayList<DataRow>();
+		// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		// for (int i = 0; i < tableProvider.getData().size(); i++) {
+		// DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
+		// dataRows.add(dataRow);
+		// }
 
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
@@ -98,51 +100,116 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		ActiveTDB.copyDatasetContentsToExportGraph(currentName);
+
+		/*
+		 * Once data are copied into the export graph, data can be prepared for openLCA 1) Determine which Flows have
+		 * new information 2) Create new UUIDs for those 3) Move old info to an appropriate field name 4) Place new info
+		 * in the appropriate place 5) Append to description info about what happened
+		 */
+		// FIXME -- ISSUES ARE BELOW WITH DATE TIME FUNCTIONS
+		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
+		Literal modLiteral = modNode.asLiteral();
+		//HACKS !!
+		Object thingg = modLiteral.getValue();
+		XSDDateTime modObject = (XSDDateTime) modLiteral.getValue();
+		Calendar modCalendar = modObject.asCalendar();
+		String modString = modCalendar.getTime().toGMTString();
+		//TODO: THoward - figure out how to get a properly formatted string for a timestamp to be used below in "modString".  I believe this is iso-8601 format.
 		
-		/* Once data are copied into the export graph, data can be prepared for openLCA
-		 * 1) Determine which Flows have new information
-		 * 2) Create new UUIDs for those
-		 * 3) Move old info to an appropriate field name
-		 * 4) Place new info in the appropriate place
-		 * 5) Append to description info about what happened 
-		 * */
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		// nothing
+//		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
+//		Literal modLiteral = modNode.asLiteral();
+//		Calendar cal = ((XSDDateTime) literalDate).;
+//		Object thing = literalDate.getValue();
+//		System.out.println("it is a :"+modString.getClass());
+//		Date annotatationDate = new Date(CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified)
+//				.getObject().asLiteral().getLong());
+//		String dateString = Util.getLocalDateFmt(annotatationDate);
 		try {
 
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
-			b.append("  ?flow a olca:Flow . \n");
-			b.append("  ?flow olca:name ?name . \n");
-			b.append("  ?flow olca:cas ?cas_fmt . \n");
-			b.append("  ?flow olca:formula ?formula . \n");
-			b.append("}} \n");
-			b.append("  where  {graph <" + ActiveTDB.exportGraphName + ">{\n");
-			b.append("    ?flow a fedlca:Flow . \n");
-			b.append("    ?flow eco:hasFlowable ?flowable . \n");
-			b.append("    #-- Flow must have a comparison with 'equivalent' \n");
-			b.append("    ?c fedlca:comparedSource ?flowable . \n");
-			b.append("    ?c fedlca:comparedMaster ?masterFlowable . \n");
-			b.append("    ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
-			b.append("    ?masterFlowable rdfs:label ?masterLabel .  \n");
-			b.append("    optional { ?masterFlowable eco:casNumber ?cas . } \n");
-			b.append("    optional { ?masterFlowable eco:chemicalFormula ?formula . } \n");
-
-			b.append("    ?flow fedlca:hasFlowContext ?flowContext . \n");
-			b.append("    ?flowContext owl:sameAs ?masterFlowContext . \n");
-			b.append("    filter (?flowContext != ?masterFlowContext ) \n");
-			b.append("    ?masterFlowContext fedlca:flowContextGeneral ?generalContext . \n");
-			b.append("    ?masterFlowContext fedlca:flowContextSupplementaryDescription ?specificContext . \n");
-
-			b.append("    ?flow fedlca:hasFlowUnit ?flowUnit . \n");
-			b.append("    ?flowUnit owl:sameAs ?masterFlowUnit . \n");
-			b.append("    filter (?flowUnit != ?masterFlowUnit ) \n");
-
-			b.append("    ?c fedlca:comparedSource ?flowable . \n");
-
-			b.append("  }}\n");
+			b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+			b.append("    ?of olca:description ?oDescription ; \n");
+			b.append("        olca:lastChange ?oLastChange ; \n");
+			b.append("        olca:cas ?oCas ; \n");
+			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
+			b.append("  }} \n");
+			b.append("   \n");
+			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+			b.append("    ?of olca:description ?newDescription ; \n");
+			b.append("        olca:lastChange ?newLastChange ; \n");
+			b.append("        olca:cas ?newCas ; \n");
+			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
+			b.append("  }} \n");
+			b.append("   \n");
+			b.append("  where { \n");
+			b.append("    #-- olca:Flow \n");
+			b.append("    ?of a olca:Flow . \n");
+			b.append("    ?of fedlca:hasOpenLCAUUID ?oUUID . \n");
+			b.append("    ?pf a fedlca:Flow . \n");
+			b.append("   \n");
+			b.append("    #-- fedlca:Flow (parsed) \n");
+			b.append("    ?pf fedlca:hasOpenLCAUUID ?oUUID . \n");
+			b.append("    ?pf fedlca:sourceTableRowNumber ?row . \n");
+			b.append("   \n");
+			b.append("    ?pf owl:sameAs ?mf . \n");
+			b.append("    #-- fedlca:Flow (master) \n");
+			b.append("    ?mf a fedlca:Flow . \n");
+			b.append("    ?mf eco:hasFlowable ?mflowable . \n");
+			b.append("    ?mds a lcaht:MasterDataset . \n");
+			b.append("    ?mf eco:hasDataSource ?mds . \n");
+			b.append("   \n");
+			b.append("    #-- olca:name == rdfs:label -- 1 CONDITION NEEDING ACTION \n");
+			b.append("    ?of olca:name ?oName . \n");
+			b.append("    ?mflowable rdfs:label ?mName . \n");
+			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: master = \", ?mName) , \"\") as ?cName) \n");
+			b.append("   \n");
+			b.append("    #-- olca:cas == eco:casNumber -- 3 CONDITIONS NEEDING ACTION \n");
+			b.append("    optional { ?of olca:cas ?oCas . } \n");
+			b.append("    optional { ?mflowable eco:casNumber ?mCas . } \n");
+			b.append("    bind (IF (( bound(?oCas) &&  bound(?mCas) && str(?oCas) != str(?mCas)) , concat(\"; cas: original = \",?oCas),\"\") as ?c1Cas) \n");
+			b.append("    bind (IF ((!bound(?oCas) &&  bound(?mCas)) , \"; cas: original not defined\",\"\") as ?c2Cas) \n");
+			b.append("    bind (IF (( bound(?oCas) && !bound(?mCas)) , \"; cas: master not defined\",\"\") as ?c3Cas) \n");
+			b.append("    bind (concat(?c1Cas,?c2Cas,?c3Cas) as ?cCas) \n");
+			b.append("    bind (IF ((?c1Cas != \"\" || ?c2Cas != \"\" || ?c3Cas != \"\"),?mCas, ?oCas) as ?newCas) \n");
+			b.append("    #-- ABOVE, THE USE OF ?oCas IS TO ENSURE THAT IT GETS PUT BACK SINCE IT WILL BE DELETED \n");
+			b.append("   \n");
+			b.append("    #-- olca:formula == eco:chemicalFormula -- 3 CONDITIONS NEEDING ACTION \n");
+			b.append("    optional { ?of olca:formula ?oFormula . } \n");
+			b.append("    optional { ?mflowable eco:chemicalFormula ?mFormula . } \n");
+			b.append("    bind (IF (( bound(?oFormula) &&  bound(?mFormula) && str(?oFormula) != str(?mFormula)) , concat(\"; formula: original = \",?oFormula),\"\") as ?c1Formula) \n");
+			b.append("    bind (IF ((!bound(?oFormula) &&  bound(?mFormula)) , \"; formula: original not defined\",\"\") as ?c2Formula) \n");
+			b.append("    bind (IF (( bound(?oFormula) && !bound(?mFormula)) , \"; formula: master not defined\",\"\") as ?c3Formula) \n");
+			b.append("    bind (concat(?c1Formula,?c2Formula,?c3Formula) as ?cFormula) \n");
+			b.append("   \n");
+			b.append("    #-- fedlca:hasOpenLCAUUID (for both) -- 4 CONDITIONS NEEDING ACTION \n");
+			b.append("    optional { ?mf fedlca:hasOpenLCAUUID ?mUUID . } \n");
+			b.append("    bind (IF (( bound(?oUUID) &&  bound(?mUUID) && str(?oUUID) != str(?mUUID)) , concat(\"; UUID: original = \",?oUUID),\"\") as ?c1UUID) \n");
+			b.append("    bind (IF ((!bound(?oUUID) &&  bound(?mUUID)) , \"; UUID: original not defined\",\"\") as ?c2UUID) \n");
+			b.append("    #-- ABOVE NOT NEEDED UNLESS WE MAKE THE oUUID OPTIONAL \n");
+			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , \"; UUID: master not defined\",\"\") as ?c3UUID) \n");
+			b.append("    bind (IF ((!bound(?oUUID) && !bound(?mUUID)) , \"; UUID: new value created\",\"\") as ?c4UUID) \n");
+			b.append("    bind (concat(?c1UUID,?c2UUID,?c3UUID,?c4UUID) as ?cUUID) \n");
+			b.append("    bind (IF (( bound(?oUUID) &&  bound(?mUUID)) , str(?mUUID),\"\") as ?new1UUID) \n");
+			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) ,str(?oUUID),\"\") as ?new2UUID) \n");
+			b.append("    bind (concat(?new1UUID,?new2UUID) as ?newUUID) \n");
+			b.append("   \n");
+			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
+			b.append("    optional {?of olca:lastChange ?oLastChange } \n");
+			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
+			b.append("    bind (\""+ modString +"\"^^xsd:dataTime as ?newLastChange) \n");
+			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
+			b.append("   \n");
+			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");
+			b.append("    optional {?of olca:description ?oDescription } \n");
+			b.append("    bind (IF (!bound(?oDescription) , concat(\"Description created:\",str(now())),?oDescription) as ?cDescription)  \n");
+			b.append("    bind (concat(?cDescription , ?cUUID, ?cName, ?cCas, ?cFormula , ?cLastChange) as ?newDescription) \n");
+			b.append("  } \n");
+			b.append("   \n");
 			String query = b.toString();
 			System.out.println("\n" + query + "\n");
 			UpdateRequest request = UpdateFactory.create(query);

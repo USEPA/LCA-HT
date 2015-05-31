@@ -10,11 +10,8 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowProperty;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
-import gov.epa.nrmrl.std.lca.ht.log.LoggerWriter;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -33,8 +30,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
+//import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Synchronizer;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -91,12 +89,12 @@ public class ImportUserData implements IHandler {
 	private Display display = null;
 
 	class RunData implements Runnable {
-		boolean thing = false;
+//		boolean thing = false;
 		String path = null;
 		File file = null;
 		FileMD fileMD = null;
 		MetaDataDialog dialog = null;
-		Date readDate = null;
+		Calendar readDate = GregorianCalendar.getInstance();
 		ImportUserData importCommand;
 
 		public RunData(ImportUserData data) {
@@ -154,11 +152,20 @@ public class ImportUserData implements IHandler {
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
 			data.fileMD.setByteCount(data.file.length());
-			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
-			data.readDate = new Date();
-			data.fileMD.setReadDate(data.readDate);
+			Calendar modifiedDate = GregorianCalendar.getInstance();
+			modifiedDate.setTimeInMillis(data.file.lastModified());
+			data.fileMD.setModifiedDate(modifiedDate);
+			Calendar readDate = GregorianCalendar.getInstance();
+			data.fileMD.setReadDate(readDate);
+
+//			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
+//			data.readDate = new Date();
+//			data.fileMD.setReadDate(data.readDate);
 			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
-			runLogger.info("# File last modified: " + Util.getLocalDateFmt(new Date(data.file.lastModified())));
+			long time = data.file.lastModified();
+			Calendar calednar = GregorianCalendar.getInstance();
+			calednar.setTimeInMillis(time);
+			runLogger.info("# File last modified: " + Util.getLocalDateFmt(calednar));
 			runLogger.info("# File size: " + data.file.length());
 
 			System.out.println("All's fine before opening dialog");
@@ -260,7 +267,7 @@ public class ImportUserData implements IHandler {
 					fixIDs = true;
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
-				runLogger.info("LOAD RDF " + fileName + " " + new Date());
+				runLogger.info("LOAD RDF " + fileName + " " + GregorianCalendar.getInstance());
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -270,7 +277,7 @@ public class ImportUserData implements IHandler {
 			try {
 				@SuppressWarnings("resource")
 				ZipFile zf = new ZipFile(path);
-				runLogger.info("LOAD RDF (zip file)" + fileName + " " + new Date());
+				runLogger.info("LOAD RDF (zip file)" + fileName + " " + GregorianCalendar.getInstance());
 				int size = zf.size();
 				int i = 0;
 				int percent = 0;
@@ -358,7 +365,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 
-		runLogger.info("Syncing TDB to LCAHT " + new Date());
+		runLogger.info("Syncing TDB to LCAHT " + GregorianCalendar.getInstance());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
@@ -694,7 +701,7 @@ public class ImportUserData implements IHandler {
 
 	public void finishImport(final RunData data) {
 
-		System.out.println("thing = " + data.thing);
+//		System.out.println("thing = " + data.thing);
 		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(data.fileMD);
 		System.out.println("FileMD set in tableProvider");
@@ -711,8 +718,13 @@ public class ImportUserData implements IHandler {
 			loadUserDataFromRDFFile(data.file);
 		}
 
-		Date readEndDate = new Date();
-		int secondsRead = (int) ((readEndDate.getTime() - data.readDate.getTime()) / 1000);
+		Calendar readEndDate = GregorianCalendar.getInstance();
+		System.out.println("readEndDate.getTimeInMillis() "+readEndDate.getTimeInMillis());
+		Calendar thing = data.fileMD.getReadDate();
+		System.out.println("data.readDate.getTimeInMillis() "+thing.getTimeInMillis());
+
+		long secondsRead = (readEndDate.getTimeInMillis() - data.readDate.getTimeInMillis())/1000 ; 
+//				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		display.wake();

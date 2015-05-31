@@ -22,8 +22,10 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.GregorianCalendar;
+//import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -70,8 +72,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -508,6 +515,20 @@ public class CSVTableView extends ViewPart {
 	public static void matchRowContents() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
+		Resource fileResource = tableProvider.getFileMD().getTdbResource();
+		Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
+		RDFNode modifiedObject = modifiedStatement.getObject();
+		Literal modifiedLiteral = modifiedObject.asLiteral();
+		RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
+		String thing = modifiedLiteral.getString();
+		if (modifiedLiteral instanceof Literal) {
+			Object thing2 = modifiedLiteral.getValue();
+		}
+
+		// Object thing = modifiedLiteral.getValue();
+
+		// Long thing = modifiedLiteral.getLong();
+
 		// if (lcaDataPropertyProvider == null) {
 		// return;
 		// }
@@ -721,12 +742,14 @@ public class CSVTableView extends ViewPart {
 		setHeaderMenu(1);
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		Date loadStartDate = new Date();
+		Calendar loadStartDate = GregorianCalendar.getInstance();
 
 		tableViewer.setInput(tableProvider.getData());
 
-		Date loadEndDate = new Date();
-		int secondsRead = (int) ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
+		Calendar loadEndDate = GregorianCalendar.getInstance();
+
+		long secondsRead = ((loadEndDate.getTimeInMillis() - loadStartDate.getTimeInMillis()) / 1000);
+		
 		// System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 
 		table.setSize(table.getParent().getSize());
@@ -1669,7 +1692,7 @@ public class CSVTableView extends ViewPart {
 						issueCount++;
 						// csvColumnInfo.addIssue(issue);
 					}
-				 else {
+				}else {
 						// DONE: CFowler: add logic to see if you are a CAS LCADataPropertyProvider.  Then run the checksum:
 						// in Flowable.  If you fail the check sum, come up with some new "Issue" I guess.
 					
@@ -1686,6 +1709,12 @@ public class CSVTableView extends ViewPart {
 							}
 					}
 				}
+=======
+					// } else {
+					// TODO: CFowler: add logic to see if you are a CAS LCADataPropertyProvider. Then run the checksum:
+					// in Flowable. If you fail the check sum, come up with some new "Issue" I guess.
+					// }
+>>>>>>> refs/remotes/origin/dev
 				} else {
 					while (matcher.find()) {
 						Issue issue = new Issue(qaCheck, i, colIndex, matcher.end(), Status.WARNING);
