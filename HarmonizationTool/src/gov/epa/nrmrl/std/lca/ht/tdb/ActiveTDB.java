@@ -1,7 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.tdb;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
@@ -30,6 +33,7 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IServiceLocator;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.query.DatasetAccessorFactory;
@@ -60,6 +64,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
 	public static MessageDialog creationMessage;
+	
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
@@ -585,6 +591,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				tdbModel.add(subject, predicate, (RDFNode) thingLiteral);
 
 			} else {
+				if (thingLiteral instanceof Calendar || thingLiteral instanceof Date) {
+					if (thingLiteral instanceof Calendar)
+						thingLiteral = ((Calendar)thingLiteral).getTime();
+					thingLiteral = dateFormatter.format(thingLiteral);
+				}
 				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 				Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 				tdbModel.add(subject, predicate, newRDFNode);
@@ -720,6 +731,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = getModel(graphName);
 		try {
+			if (XSDDatatype.XSDdateTime.equals(rdfDatatype)) {
+				if (thingLiteral instanceof Calendar)
+					thingLiteral = ((Calendar)thingLiteral).getTime();
+				if (thingLiteral instanceof Date)
+					thingLiteral = dateFormatter.format(thingLiteral);
+			}
 			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
 		} catch (Exception e) {
