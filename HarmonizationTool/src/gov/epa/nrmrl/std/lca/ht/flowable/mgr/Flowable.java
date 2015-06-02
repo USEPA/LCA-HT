@@ -46,7 +46,7 @@ public class Flowable {
 	public static final String flowableNameString = "Name";
 	public static final String flowableSynonymString = "Synonym";
 	public static final String casString = "CAS";
-//	public static final String stdCASString = "Standard CAS";
+	// public static final String stdCASString = "Standard CAS";
 	public static final String chemicalFormulaString = "Chemical formula";
 	public static final String smilesString = "SMILES";
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
@@ -82,8 +82,7 @@ public class Flowable {
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.nextStatement();
 			if (!statement.getSubject().isAnon()) {
-				if (statement.getSubject().getLocalName()
-						.equals(Flowable.getRdfclass().getLocalName())) {
+				if (statement.getSubject().getLocalName().equals(Flowable.getRdfclass().getLocalName())) {
 					// Resource thing = statement.getSubject();
 					// Resource thing2 = statement.getResource();
 					// System.out.println("Flowable.getRdfclass() = "
@@ -111,8 +110,7 @@ public class Flowable {
 		dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 		LCADataPropertyProvider lcaDataPropertyProvider;
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(
-				flowableNameString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableNameString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -122,11 +120,9 @@ public class Flowable {
 		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
 		lcaDataPropertyProvider.setTDBProperty(RDFS.label);
 
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(
-				flowableSynonymString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(flowableSynonymString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -135,8 +131,7 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getFlowablesNameCheckList());
 		lcaDataPropertyProvider.setTDBProperty(SKOS.altLabel);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(casString);
 		lcaDataPropertyProvider.setPropertyClass(label);
@@ -147,11 +142,9 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(false);
 		lcaDataPropertyProvider.setCheckLists(getCASCheckList());
 		lcaDataPropertyProvider.setTDBProperty(ECO.casNumber);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(
-				chemicalFormulaString);
+		lcaDataPropertyProvider = new LCADataPropertyProvider(chemicalFormulaString);
 		lcaDataPropertyProvider.setPropertyClass(label);
 		lcaDataPropertyProvider.setRDFClass(rdfClass);
 		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
@@ -160,8 +153,7 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getFormulaCheckList());
 		lcaDataPropertyProvider.setTDBProperty(ECO.chemicalFormula);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
 		lcaDataPropertyProvider.setPropertyClass(label);
@@ -172,8 +164,7 @@ public class Flowable {
 		lcaDataPropertyProvider.setLeftJustified(true);
 		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(),
-				lcaDataPropertyProvider);
+		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}
 
 	// INSTANCE VARIABLES
@@ -218,18 +209,17 @@ public class Flowable {
 	// METHODS
 	public Object getOneProperty(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				return lcaDataValue.getValue();
 			}
 		}
 		return null;
 	}
-	
+
 	public Object getOneProperty(Property predicate) {
-		if (tdbResource.hasProperty(predicate)){
+		if (tdbResource.hasProperty(predicate)) {
 			try {
-				return  tdbResource.getProperty(predicate).getObject().asLiteral().getValue();
+				return tdbResource.getProperty(predicate).getObject().asLiteral().getValue();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -238,12 +228,10 @@ public class Flowable {
 		return null;
 	}
 
-
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				resultList.add(lcaDataValue.getValue());
 			}
 		}
@@ -261,8 +249,7 @@ public class Flowable {
 		List<LCADataValue> results = new ArrayList<LCADataValue>();
 		for (String key : dataPropertyMap.keySet()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-						.equals(key)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 					results.add(lcaDataValue);
 				}
 			}
@@ -277,34 +264,27 @@ public class Flowable {
 		if (!dataPropertyMap.containsKey(key)) {
 			return;
 		}
-		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap
-				.get(key);
+		LCADataPropertyProvider lcaDataPropertyProvider = dataPropertyMap.get(key);
 		// RDFDatatype rdfDatatype = lcaDataPropertyProvider.getRdfDatatype();
 
 		boolean found = false;
 		if (lcaDataPropertyProvider.isUnique()) {
 			for (LCADataValue lcaDataValue : lcaDataValues) {
-				if (lcaDataValue.getLcaDataPropertyProvider().equals(
-						lcaDataPropertyProvider)) {
+				if (lcaDataValue.getLcaDataPropertyProvider().equals(lcaDataPropertyProvider)) {
 					lcaDataValue.setValueAsString(valueAsString);
 					found = true;
 					Object object = lcaDataValue.getValue();
-					ActiveTDB.tsReplaceLiteral(tdbResource,
-							lcaDataPropertyProvider.getTDBProperty(), object);
+					ActiveTDB.tsReplaceLiteral(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object);
 					if (!valueAsString.equals(valueAsString.toLowerCase())) {
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER
 						// CASE FORM
 						if (key.equals(flowableNameString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource,
-									SKOS.altLabel, valueAsString.toLowerCase(),
-									null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 						}
 						// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER
 						// CASE FORM
 						if (key.equals(flowableSynonymString)) {
-							ActiveTDB.tsAddGeneralTriple(tdbResource,
-									SKOS.altLabel, valueAsString.toLowerCase(),
-									null);
+							ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 						}
 					}
 					continue;
@@ -317,18 +297,15 @@ public class Flowable {
 			lcaDataValue.setValueAsString(valueAsString);
 			Object object = lcaDataValue.getValue();
 			lcaDataValues.add(lcaDataValue);
-			ActiveTDB.tsAddGeneralTriple(tdbResource,
-					lcaDataPropertyProvider.getTDBProperty(), object, null);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, lcaDataPropertyProvider.getTDBProperty(), object, null);
 			if (!valueAsString.equals(valueAsString.toLowerCase())) {
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableNameString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel,
-							valueAsString.toLowerCase(), null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 				}
 				// SPECIAL CASE: NAME GETS ADDED TO SYNONYMS IN LOWER CASE FORM
 				if (key.equals(flowableSynonymString)) {
-					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel,
-							valueAsString.toLowerCase(), null);
+					ActiveTDB.tsAddGeneralTriple(tdbResource, SKOS.altLabel, valueAsString.toLowerCase(), null);
 				}
 			}
 		}
@@ -354,18 +331,17 @@ public class Flowable {
 		return results;
 	}
 
-	public String getCas() {
-		return (String) getOneProperty(casString);
-	}
-	
+	// public String getCas() {
+	// return (String) getOneProperty(casString);
+	// }
+
 	public String getFormattedCas() {
 		return (String) getOneProperty(FedLCA.hasFormattedCAS);
 	}
 
 	private void removeValues(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
-			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName()
-					.equals(key)) {
+			if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
 				lcaDataValues.remove(lcaDataValue);
 			}
 		}
@@ -376,43 +352,29 @@ public class Flowable {
 			return;
 		}
 		// LCADataPropertyProvider LIST IS ALL LITERALS
-		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap
-				.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider
-					.getTDBProperty())) {
+		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
+			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
 				continue;
 			}
 			if (lcaDataPropertyProvider.isUnique()) {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource
-						.getProperty(lcaDataPropertyProvider.getTDBProperty())
-						.getLiteral().getValue();
-				if (value
-						.getClass()
-						.equals(RDFUtil
-								.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
-										.getRdfDatatype()))) {
+				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
+						.getValue();
+				if (value.getClass().equals(
+						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue
-							.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 					lcaDataValue.setValue(value);
 					lcaDataValues.add(lcaDataValue);
 				}
 			} else {
-				StmtIterator stmtIterator = tdbResource
-						.listProperties(lcaDataPropertyProvider
-								.getTDBProperty());
+				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
 				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.nextStatement().getLiteral()
-							.getValue();
-					if (value
-							.getClass()
-							.equals(RDFUtil
-									.getJavaClassFromRDFDatatype(lcaDataPropertyProvider
-											.getRdfDatatype()))) {
+					Object value = stmtIterator.nextStatement().getLiteral().getValue();
+					if (value.getClass().equals(
+							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 						LCADataValue lcaDataValue = new LCADataValue();
-						lcaDataValue
-								.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
@@ -442,151 +404,151 @@ public class Flowable {
 		return true;
 	}
 
-//	public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
-//		Set<Resource> results = new HashSet<Resource>();
-//		Resource qResource = flowable.getTdbResource();
-//		String qName = flowable.getName();
-//		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
-//		// Model tdbModel = ActiveTDB.getModel();
-//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-//		Model tdbModel = ActiveTDB.getModel(null);
-//		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-//				qNameLiteral);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//
-//			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				results.add(flowableMatchCandidate);
-//			}
-//		}
-//
-//		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-//				qNameLiteral);
-//		while (resIterator.hasNext()) {
-//			Resource flowableMatchCandidate = resIterator.next();
-//
-//			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//				results.add(flowableMatchCandidate);
-//			}
-//		}
-//
-//		for (String qSyn : flowable.getSynonyms()) {
-//			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
-//			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-//					qSynLiteral);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					results.add(flowableMatchCandidate);
-//				}
-//			}
-//
-//			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-//					qSynLiteral);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					results.add(flowableMatchCandidate);
-//				}
-//			}
-//		}
-//
-//		// CAS MATCHING
-//		if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
-//			String cas = flowable.getCas();
-//			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
-//
-//			resIterator = tdbModel.listSubjectsWithProperty(
-//					FedLCA.hasFormattedCAS, qCASLiteral);
-//			while (resIterator.hasNext()) {
-//				Resource flowableMatchCandidate = resIterator.next();
-//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-//					results.add(flowableMatchCandidate);
-//				}
-//			}
-//		}
-//		ActiveTDB.tdbDataset.end();
-//		return results;
-//	}
+	// public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
+	// Set<Resource> results = new HashSet<Resource>();
+	// Resource qResource = flowable.getTdbResource();
+	// String qName = flowable.getName();
+	// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
+	// // Model tdbModel = ActiveTDB.getModel();
+	// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+	// Model tdbModel = ActiveTDB.getModel(null);
+	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+	// qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// results.add(flowableMatchCandidate);
+	// }
+	// }
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+	// qNameLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	//
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// results.add(flowableMatchCandidate);
+	// }
+	// }
+	//
+	// for (String qSyn : flowable.getSynonyms()) {
+	// Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
+	// resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+	// qSynLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// results.add(flowableMatchCandidate);
+	// }
+	// }
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+	// qSynLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// results.add(flowableMatchCandidate);
+	// }
+	// }
+	// }
+	//
+	// // CAS MATCHING
+	// if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
+	// String cas = flowable.getCas();
+	// Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
+	//
+	// resIterator = tdbModel.listSubjectsWithProperty(
+	// FedLCA.hasFormattedCAS, qCASLiteral);
+	// while (resIterator.hasNext()) {
+	// Resource flowableMatchCandidate = resIterator.next();
+	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+	// results.add(flowableMatchCandidate);
+	// }
+	// }
+	// }
+	// ActiveTDB.tdbDataset.end();
+	// return results;
+	// }
 
-//	public static String compareFlowables(Flowable queryFlowable,
-//			Flowable referenceFlowable) {
-//		// INFO TO SHARE FOR JUST NAME AND CAS:
-//		// ++++.+ (BOTH MATCH, BEST)
-//		// ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
-//		// ++++.0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
-//		// ++++.- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
-//
-//		// NAME MATCH SCORES:
-//		// "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
-//		// " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
-//		// PRESENT FOR ONE
-//		// "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
-//		// PRESENT FOR ONE
-//		// "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
-//		// PRESENT FOR ONE
-//
-//		String nameFlag = "-";
-//		String qName = queryFlowable.getName();
-//		String rName = referenceFlowable.getName();
-//		if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
-//												// REQUIRED "name"
-//			nameFlag = "0";
-//		} else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
-//															// HAPPEN WITH
-//															// REQUIRED "name"
-//			nameFlag = "0";
-//		} else if (qName.equals(rName)) {
-//			nameFlag = "+";
-//		}
-//
-//		String synName = "0";
-//		String nameSyn = "0";
-//		String synSyn = "0";
-//		for (String qSynonym : queryFlowable.getSynonyms()) {
-//			if (synName.equals("0")) {
-//				synName = "-";
-//			}
-//			if (qSynonym.equals(rName)) {
-//				synName = "+";
-//			}
-//			for (String rSynonym : referenceFlowable.getSynonyms()) {
-//				if (nameSyn.equals("0")) {
-//					nameSyn = "-";
-//				}
-//				if (synSyn.equals("0")) {
-//					synSyn = "-";
-//				}
-//				if (qName.equals(rSynonym)) {
-//					nameSyn = "+";
-//				}
-//				if (qSynonym.equals(rSynonym)) {
-//					synSyn = "+";
-//				}
-//			}
-//		}
-//
-//		for (String rSynonym : referenceFlowable.getSynonyms()) {
-//			if (nameSyn.equals("0")) {
-//				nameSyn = "-";
-//			}
-//			if (qName.equals(rSynonym)) {
-//				nameSyn = "+";
-//			}
-//		}
-//
-//		String casFlag = "-";
-//		String qCas = queryFlowable.getCas();
-//		String rCas = referenceFlowable.getCas();
-//		if (qCas == null || rCas == null) {
-//			casFlag = "0";
-//		} else if (qCas.equals("") || rCas.equals("")) {
-//			casFlag = "0";
-//		} else if (qCas.equals(rCas)) {
-//			casFlag = "+";
-//		}
-//		return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
-//	}
+	// public static String compareFlowables(Flowable queryFlowable,
+	// Flowable referenceFlowable) {
+	// // INFO TO SHARE FOR JUST NAME AND CAS:
+	// // ++++.+ (BOTH MATCH, BEST)
+	// // ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
+	// // ++++.0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
+	// // ++++.- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
+	//
+	// // NAME MATCH SCORES:
+	// // "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
+	// // " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
+	// // PRESENT FOR ONE
+	// // "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
+	// // PRESENT FOR ONE
+	// // "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
+	// // PRESENT FOR ONE
+	//
+	// String nameFlag = "-";
+	// String qName = queryFlowable.getName();
+	// String rName = referenceFlowable.getName();
+	// if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
+	// // REQUIRED "name"
+	// nameFlag = "0";
+	// } else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
+	// // HAPPEN WITH
+	// // REQUIRED "name"
+	// nameFlag = "0";
+	// } else if (qName.equals(rName)) {
+	// nameFlag = "+";
+	// }
+	//
+	// String synName = "0";
+	// String nameSyn = "0";
+	// String synSyn = "0";
+	// for (String qSynonym : queryFlowable.getSynonyms()) {
+	// if (synName.equals("0")) {
+	// synName = "-";
+	// }
+	// if (qSynonym.equals(rName)) {
+	// synName = "+";
+	// }
+	// for (String rSynonym : referenceFlowable.getSynonyms()) {
+	// if (nameSyn.equals("0")) {
+	// nameSyn = "-";
+	// }
+	// if (synSyn.equals("0")) {
+	// synSyn = "-";
+	// }
+	// if (qName.equals(rSynonym)) {
+	// nameSyn = "+";
+	// }
+	// if (qSynonym.equals(rSynonym)) {
+	// synSyn = "+";
+	// }
+	// }
+	// }
+	//
+	// for (String rSynonym : referenceFlowable.getSynonyms()) {
+	// if (nameSyn.equals("0")) {
+	// nameSyn = "-";
+	// }
+	// if (qName.equals(rSynonym)) {
+	// nameSyn = "+";
+	// }
+	// }
+	//
+	// String casFlag = "-";
+	// String qCas = queryFlowable.getCas();
+	// String rCas = referenceFlowable.getCas();
+	// if (qCas == null || rCas == null) {
+	// casFlag = "0";
+	// } else if (qCas.equals("") || rCas.equals("")) {
+	// casFlag = "0";
+	// } else if (qCas.equals(rCas)) {
+	// casFlag = "+";
+	// }
+	// return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
+	// }
 
 	private static List<QACheck> getFormulaCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
@@ -620,8 +582,7 @@ public class Flowable {
 		// Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
 		// Pattern acceptableCASFormat =
 		// Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
-		Pattern acceptableCASFormat = Pattern
-				.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
+		Pattern acceptableCASFormat = Pattern.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
 		// DONE CFowler: fix the above
 
 		// String r2 = "$1-$2-$3";
@@ -630,8 +591,7 @@ public class Flowable {
 		// none
 
 		/*
-		 * CFowler: COMPLETE. Changed d{2,} to d{2-7} and added |^\\d{5-10}$
-		 * This is based on what I think Tom wanted.
+		 * CFowler: COMPLETE. Changed d{2,} to d{2-7} and added |^\\d{5-10}$ This is based on what I think Tom wanted.
 		 */
 
 		return qaChecks;
@@ -685,14 +645,11 @@ public class Flowable {
 		if (Integer.parseInt(noLeadingZeros) < 50000) {
 			return null;
 		}
-		standardizedCas = noLeadingZeros.substring(0,
-				noLeadingZeros.length() - 3);
+		standardizedCas = noLeadingZeros.substring(0, noLeadingZeros.length() - 3);
 		standardizedCas += "-";
-		standardizedCas += noLeadingZeros.substring(
-				noLeadingZeros.length() - 3, noLeadingZeros.length() - 1);
+		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 3, noLeadingZeros.length() - 1);
 		standardizedCas += "-";
-		standardizedCas += noLeadingZeros.substring(
-				noLeadingZeros.length() - 1, noLeadingZeros.length());
+		standardizedCas += noLeadingZeros.substring(noLeadingZeros.length() - 1, noLeadingZeros.length());
 		return standardizedCas;
 	}
 
@@ -705,8 +662,7 @@ public class Flowable {
 		// TODO: CFowler - CHECKSUM ~ determine when to use this and if it is
 		// too slow for some cas
 		/*
-		 * CFowler: I guess I need to plug this function into the checkOneColumn
-		 * function.
+		 * CFowler: I guess I need to plug this function into the checkOneColumn function.
 		 */
 
 		// Stripping CAS down to digits only
@@ -714,28 +670,26 @@ public class Flowable {
 		if (strippedCas == null) {
 			return false;
 		}
-		
+
 		// The cas number should only be 5 to 10 digits now.
-		
+
 		// Correct code for checksum calculator
-		int multiplier = strippedCas.length() -1;
+		int multiplier = strippedCas.length() - 1;
 		int checksum = 0;
-		for (int i = 0; i < strippedCas.length() -1; i++)
-		{
-			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, i+1));
+		for (int i = 0; i < strippedCas.length() - 1; i++) {
+			checksum += multiplier * Integer.parseInt(strippedCas.substring(i, i + 1));
 			multiplier--;
 		}
 		checksum = checksum % 10;
-		
-		if (checksum == Integer.parseInt(strippedCas.substring(strippedCas.length()-1,strippedCas.length())))
-		{
+
+		if (checksum == Integer.parseInt(strippedCas.substring(strippedCas.length() - 1, strippedCas.length()))) {
 			return true;
 		}
 		return false;
 	}
 
 	public static QACheck createBadCheckSumQACheck() {
-	
+
 		String d = "Invalid CAS";
 		String e = "A bad checksum has been detected.  Data will be used but flagged in TDB for bad checksum.";
 		String s = "Select ignore row or change CAS in data file.";
@@ -745,15 +699,14 @@ public class Flowable {
 
 		// TODO CFowler: Change the color of the issues
 		// DONE: Associated with the Notable issue
-		// DONE: Change text in d, e, s	
-		
+		// DONE: Change text in d, e, s
+
 		// Make sure that the workflow accepts notable issues
-		
+
 		// DONE: Remove Standardize CAS functionality
-		
-	 }
-	
-	
+
+	}
+
 	public Resource getTdbResource() {
 		return tdbResource;
 	}
@@ -785,21 +738,18 @@ public class Flowable {
 		return matchCandidates;
 	}
 
-	public void setMatchCandidates(
-			LinkedHashMap<Resource, String> matchCandidates) {
+	public void setMatchCandidates(LinkedHashMap<Resource, String> matchCandidates) {
 		this.matchCandidates = matchCandidates;
 	}
 
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource,
-				FedLCA.EquivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
 	}
 
 	public void addSearchResult(Resource resource) {
 		searchResults.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource,
-				FedLCA.EquivalenceCandidate);
+		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
 	}
 
 	public void removeMatchCandidate(Resource resource) {
@@ -809,8 +759,7 @@ public class Flowable {
 	}
 
 	public void setMatchCandidateStatus(int matchCandidateIndex, int statusCol) {
-		Resource dFlowableResource = (Resource) matchCandidates.keySet()
-				.toArray()[matchCandidateIndex];
+		Resource dFlowableResource = (Resource) matchCandidates.keySet().toArray()[matchCandidateIndex];
 		MatchStatus matchStatus = MatchStatus.getByValue(statusCol);
 		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
@@ -853,24 +802,22 @@ public class Flowable {
 		b.append("  { \n");
 		b.append("    { \n");
 
-		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0)
-				+ "\"^^xsd:string  . } \n");
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
 		for (int i = 1; i < namesToMatch.size(); i++) {
-			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i)
-					+ "\"^^xsd:string . } \n");
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
 		}
 		b.append("    } \n");
 
 		if (checkCas) {
-			b.append("    optional {?f fedlca:hasFormattedCAS \""+ qCAS +"\"^^xsd:string . }\n");
-//			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
+			b.append("    optional {?f fedlca:hasFormattedCAS \"" + qCAS + "\"^^xsd:string . }\n");
+			// b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
 		}
 		b.append("    ?f eco:hasDataSource ?ds . \n");
 		b.append("    ?ds a lcaht:MasterDataset . \n");
 		b.append("    ?f a eco:Flowable . \n");
 		b.append("   } \n");
 		String query = b.toString();
-//		System.out.println("Query = \n" + query);
+		// System.out.println("Query = \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -883,8 +830,7 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
-			CurationMethods.setComparison(tdbResource, rdfNode.asResource(),
-					FedLCA.Equivalent);
+			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
 		}
 		if (count > 0) {
 			return count;
@@ -955,8 +901,7 @@ public class Flowable {
 			lcSyn.replaceAll("\"", "\\\\\"");
 			namesToMatch.add(lcSyn);
 			/*
-			 * Special rule to attempt to match first part of a semi-colon
-			 * delimited list
+			 * Special rule to attempt to match first part of a semi-colon delimited list
 			 */
 			if (lcSyn.matches(".*;.*")) {
 				namesToMatch.add(lcSyn.split(";")[0]);
@@ -1014,7 +959,7 @@ public class Flowable {
 		}
 
 		boolean checkCas = false;
-		String qCAS = getCas();
+		String qCAS = getFormattedCas();
 		if (qCAS != null) {
 			if (!qCAS.equals("")) {
 				checkCas = true;
@@ -1029,15 +974,11 @@ public class Flowable {
 		b.append("  { \n");
 		b.append("    { \n");
 		if (checkCas) {
-			b.append("      {?f eco:casNumber ?cas . \n");
-			b.append("        filter (str(?cas) = \"" + qCAS + "\") } UNION \n");
+			b.append("      {?f fedlca:hasFormattedCAS \"" + qCAS + "\"^^xsd:string . } UNION \n");
 		}
-		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0)
-				+ "\"^^xsd:string  . } \n");
+		b.append("      { ?f skos:altLabel \"" + namesToMatch.get(0) + "\"^^xsd:string  . } \n");
 		for (int i = 1; i < namesToMatch.size(); i++) {
-			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i)
-					+ "\"^^xsd:string . } \n");
-
+			b.append("   UNION { ?f skos:altLabel \"" + namesToMatch.get(i) + "\"^^xsd:string . } \n");
 		}
 		b.append("    } \n");
 		b.append("    ?f eco:hasDataSource ?ds . \n");
@@ -1066,8 +1007,7 @@ public class Flowable {
 
 	public String getDataSource() {
 		if (tdbResource.hasProperty(ECO.hasDataSource)) {
-			Resource qDataSource = tdbResource
-					.getPropertyResourceValue(ECO.hasDataSource);
+			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
 			if (qDataSource.hasProperty(RDFS.label)) {
 				String value = qDataSource.getProperty(RDFS.label).getString();
 				return value;

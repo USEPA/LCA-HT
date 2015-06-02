@@ -238,7 +238,7 @@ public class OpenLCA {
 
 	static {
 		if (propertyMap.isEmpty()) {
-			propertyMap.put(cas, ECO.casNumber);
+			propertyMap.put(cas, FedLCA.hasFormattedCAS);
 			propertyMap.put(formula, ECO.chemicalFormula);
 			propertyMap.put(name, RDFS.label);
 			propertyMap.put(description, RDFS.comment);
@@ -337,7 +337,7 @@ public class OpenLCA {
 				if (cass.get(i) != null) {
 					String casString = cass.get(i).asLiteral().getString();
 					Literal casLiteral = tdbModel.createTypedLiteral(casString);
-					tdbModel.addLiteral(newFlowable, ECO.casNumber, casLiteral);
+					tdbModel.addLiteral(newFlowable, FedLCA.hasFormattedCAS, casLiteral);
 				}
 				if (formulae.get(i) != null) {
 					String formulaString = formulae.get(i).asLiteral().getString();
@@ -446,7 +446,7 @@ public class OpenLCA {
 				if (cass.get(i) != null) {
 					String casString = cass.get(i).asLiteral().getString();
 					Literal casLiteral = tdbModel.createTypedLiteral(casString);
-					tdbModel.addLiteral(newFlowable, ECO.casNumber, casLiteral);
+					tdbModel.addLiteral(newFlowable, FedLCA.hasFormattedCAS, casLiteral);
 				}
 				if (formulae.get(i) != null) {
 					String formulaString = formulae.get(i).asLiteral().getString();

@@ -92,7 +92,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("      OPTIONAL {?sub1 fedlca:sourceTableRowNumber ?qRow . } \n");
 		b.append("      ?ds1 rdfs:label ?ds1_name . \n");
 		b.append("      filter regex(str(?ds1_name),\"" + param1 + "\") \n");
-		b.append("      ?sub1 eco:casNumber ?cas .  \n");
+		b.append("      ?sub1 fedlca:hasFormattedCas ?cas .  \n");
 		b.append("      ?sub1 rdfs:label ?name1 .  \n");
 
 		for (int i = 0; i < referenceDataSources.length; i++) {
@@ -105,7 +105,7 @@ public class HSubsSameCas extends HarmonyQuery2Impl implements LabeledQuery {
 					+ "_name . \n");
 			b.append("      filter regex(str(?ds" + iPlusTwo + "_name),\""
 					+ refDataSource + "\") \n");
-			b.append("      ?sub" + iPlusTwo + " eco:casNumber ?cas . \n");
+			b.append("      ?sub" + iPlusTwo + " fedlca:hasFormattedCas ?cas . \n");
 			b.append("      ?sub" + iPlusTwo + " rdfs:label ?name" + iPlusTwo
 					+ " .  \n");
 

@@ -45,7 +45,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		b.append("ds:flowable_" + this.rowNumber + " a eco:Flowable , \n"); 
 		b.append("                         owl:NamedIndividual ; \n");
 		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
-			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ; \n");
+			b.append("                fedlca:hasFormattedCas \"" + this.casrn + "\"^^xsd:string ; \n");
 		}
 		if ((this.name != null) && (!this.name.isEmpty())) {
 			b.append("                rdfs:label \"" + this.name + "\"^^xsd:string ;  \n");
@@ -117,7 +117,7 @@ public class IdsRowQuery extends HarmonyBaseUpdate {
 		b.append("ds:flowable_" + this.rowNumber + " a eco:Flowable , \n"); 
 		b.append("                         owl:NamedIndividual ; \n");
 		if ((this.casrn != null) && (!this.casrn.isEmpty())) {
-			b.append("                eco:casNumber \"" + this.casrn + "\"^^xsd:string ; \n");
+			b.append("                fedlca:hasFormattedCas \"" + this.casrn + "\"^^xsd:string ; \n");
 		}
 		if ((this.name != null) && (!this.name.isEmpty())) {
 			b.append("                rdfs:label \"" + this.name + "\"^^xsd:string ;  \n");

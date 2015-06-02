@@ -232,7 +232,7 @@ public class DataRow {
 		// b.append("    } \n");
 		//
 		// if (checkCas) {
-		// b.append("    optional {?f eco:casNumber ?cas . }\n");
+		// b.append("    optional {?f fedlca:hasFormattedCas ?cas . }\n");
 		// b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
 		// }
 		// b.append("    ?f eco:hasDataSource ?ds . \n");

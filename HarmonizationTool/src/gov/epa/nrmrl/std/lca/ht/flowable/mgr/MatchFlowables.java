@@ -530,7 +530,7 @@ public class MatchFlowables extends ViewPart {
 			if (!uneditedParam.matches(".*[0-9].*")) {
 				return;
 			}
-			whereClause = "?f eco:casNumber ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
+			whereClause = "?f fedlca:hasFormattedCas ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
 		}
 		if (chooseSearchFieldCombo.getSelectionIndex() == 2) {
 			// if (!uneditedParam.matches(".*[0-9].*")) {
@@ -756,7 +756,7 @@ public class MatchFlowables extends ViewPart {
 			Flowable flowable = this.getFlowable();
 			getColumnValues().set(6, flowable.getDataSource());
 			getColumnValues().set(7, flowable.getName());
-			getColumnValues().set(8, flowable.getCas());
+			getColumnValues().set(8, flowable.getFormattedCas());
 			String[] syns = flowable.getSynonyms();
 			if (syns.length == 0) {
 				getColumnValues().set(9, "");

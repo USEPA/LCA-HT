@@ -2,11 +2,13 @@ package gov.epa.nrmrl.std.lca.ht.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 public class RDFUtil {
@@ -98,14 +100,19 @@ public class RDFUtil {
 		// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
 
 		try {
-			Object thing = typedLiteralDate.getDatatype();
-			Object thing2 = typedLiteralDate.getValue();
-			System.out.println("thing2 = " + thing2);
-			// resultingDate = ((Calendar) typedLiteralDate;
-			// resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+			RDFDatatype dataType = typedLiteralDate.getDatatype();
+			if (dataType.equals(XSDDatatype.XSDdateTime)){
+				
+				XSDDateTime xsdDateTime = (XSDDateTime) typedLiteralDate.getValue();
+				Calendar calendar = xsdDateTime.asCalendar();
+				Long milliseconds = calendar.getTimeInMillis();
+				resultingDate = new Date(milliseconds);
+//				String lexicalValue = typedLiteralDate.getLexicalForm();
+//				resultingDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(lexicalValue);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
 		return resultingDate;
 	}

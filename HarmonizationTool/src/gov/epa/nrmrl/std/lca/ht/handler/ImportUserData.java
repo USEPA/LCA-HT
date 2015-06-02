@@ -566,7 +566,7 @@ public class ImportUserData implements IHandler {
 		b.append("  ?flb a eco:Flowable . \n");
 		b.append("  ?flb rdfs:label ?flowable . \n");
 		b.append("  optional { \n");
-		b.append("    ?flb eco:casNumber ?cas . \n");
+		b.append("    ?flb fedlca:hasFormattedCas ?cas . \n");
 		b.append("  } \n");
 		b.append("  optional { \n");
 		b.append("    ?flb eco:chemicalFormula ?formula . \n");

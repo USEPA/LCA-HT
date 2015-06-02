@@ -79,8 +79,8 @@ public class QMatchFlowableLabel extends HarmonyQuery2Impl implements LabeledQue
 		b.append("      ?s2 eco:hasDataSource ?ds_match . \n");
 		b.append("      ?ds_match rdfs:label ?match_label . \n");
 		b.append("      filter (?ds_prim != ?ds_match) \n");
-		b.append("      ?s1 eco:casNumber ?cas .  \n");
-		b.append("      ?s2 eco:casNumber ?cas .   \n");
+		b.append("      ?s1 fedlca:hasFormattedCas ?cas .  \n");
+		b.append("      ?s2 fedlca:hasFormattedCas ?cas .   \n");
 		b.append("      ?s1 rdfs:label ?name1 . \n");
 		b.append("      ?s2 rdfs:label ?name2 .  \n");
 		b.append("      {{?s1 a eco:Flowable .  } UNION {?s1 a eco:Substance . }} \n");

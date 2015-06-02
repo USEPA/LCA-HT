@@ -179,9 +179,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    ?mflowable rdfs:label ?mName . \n");
 			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: master = \", ?mName) , \"\") as ?cName) \n");
 			b.append("   \n");
-			b.append("    #-- olca:cas == eco:casNumber -- 3 CONDITIONS NEEDING ACTION \n");
+			b.append("    #-- olca:cas == fedlca:hasFormattedCas -- 3 CONDITIONS NEEDING ACTION \n");
 			b.append("    optional { ?of olca:cas ?oCas . } \n");
-			b.append("    optional { ?mflowable eco:casNumber ?mCas . } \n");
+			b.append("    optional { ?mflowable fedlca:hasFormattedCas ?mCas . } \n");
 			b.append("    bind (IF (( bound(?oCas) &&  bound(?mCas) && str(?oCas) != str(?mCas)) , concat(\"; cas: original = \",?oCas),\"\") as ?c1Cas) \n");
 			b.append("    bind (IF ((!bound(?oCas) &&  bound(?mCas)) , \"; cas: original not defined\",\"\") as ?c2Cas) \n");
 			b.append("    bind (IF (( bound(?oCas) && !bound(?mCas)) , \"; cas: master not defined\",\"\") as ?c3Cas) \n");
