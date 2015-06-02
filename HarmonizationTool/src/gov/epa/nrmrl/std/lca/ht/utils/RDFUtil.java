@@ -133,8 +133,8 @@ public class RDFUtil {
 		return null;
 	}
 
-	public static Calendar getDateFromLiteral(Literal typedLiteralDate) {
-		Calendar resultingDate = null;
+	public static Date getDateFromLiteral(Literal typedLiteralDate) {
+		Date resultingDate = null;
 		if (!typedLiteralDate.isLiteral()) {
 			return null;
 		}

@@ -13,7 +13,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Calendar;
+//import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -111,9 +111,10 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		Literal modLiteral = modNode.asLiteral();
 		//HACKS !!
 		Object thingg = modLiteral.getValue();
+		Object thinggg = ((XSDDateTime) thingg).asCalendar();
 		XSDDateTime modObject = (XSDDateTime) modLiteral.getValue();
-		Calendar modCalendar = modObject.asCalendar();
-		String modString = modCalendar.getTime().toGMTString();
+//		Calendar modCalendar = modObject.asCalendar();
+		String modString = "broken";
 		//TODO: THoward - figure out how to get a properly formatted string for a timestamp to be used below in "modString".  I believe this is iso-8601 format.
 		
 

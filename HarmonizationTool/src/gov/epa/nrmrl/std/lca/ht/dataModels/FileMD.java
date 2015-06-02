@@ -5,8 +5,8 @@ import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
-import java.util.Calendar;
-//import java.util.Date;
+//import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
@@ -23,8 +23,8 @@ public class FileMD {
 	private long byteCount;
 //	private Date modifiedDate;
 //	private Date readDate;
-	private Calendar modifiedDate;
-	private Calendar readDate;
+	private Date modifiedDate;
+	private Date readDate;
 	private Resource tdbResource;
 	private static final Resource rdfClass = LCAHT.dataFile;
 
@@ -80,20 +80,20 @@ public class FileMD {
 		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.byteCount, size);
 	}
 
-	public Calendar getModifiedDate() {
+	public Date getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(Calendar modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, modifiedDate);
 	}
 
-	public Calendar getReadDate() {
+	public Date getReadDate() {
 		return readDate;
 	}
 
-	public void setReadDate(Calendar readDate) {
+	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
 		//TODO: THoward - figure out what the correct object / value is here.
 		// The code seems to allow getting values in, but trying to get a Calendar back out is the issue

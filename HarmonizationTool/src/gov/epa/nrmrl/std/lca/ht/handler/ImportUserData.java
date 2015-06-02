@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-//import java.util.Date;
+//import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -94,7 +94,8 @@ public class ImportUserData implements IHandler {
 		File file = null;
 		FileMD fileMD = null;
 		MetaDataDialog dialog = null;
-		Calendar readDate = GregorianCalendar.getInstance();
+//		Calendar readDate = GregorianCalendar.getInstance();
+		Date readDate = new Date();
 		ImportUserData importCommand;
 
 		public RunData(ImportUserData data) {
@@ -152,10 +153,9 @@ public class ImportUserData implements IHandler {
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
 			data.fileMD.setByteCount(data.file.length());
-			Calendar modifiedDate = GregorianCalendar.getInstance();
-			modifiedDate.setTimeInMillis(data.file.lastModified());
+			Date modifiedDate = new Date(data.file.lastModified());
 			data.fileMD.setModifiedDate(modifiedDate);
-			Calendar readDate = GregorianCalendar.getInstance();
+			Date readDate = new Date();
 			data.fileMD.setReadDate(readDate);
 
 //			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
@@ -163,9 +163,9 @@ public class ImportUserData implements IHandler {
 //			data.fileMD.setReadDate(data.readDate);
 			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
 			long time = data.file.lastModified();
-			Calendar calednar = GregorianCalendar.getInstance();
-			calednar.setTimeInMillis(time);
-			runLogger.info("# File last modified: " + Util.getLocalDateFmt(calednar));
+			Date date = new Date(time);
+//			calednar.setTimeInMillis(time);
+			runLogger.info("# File last modified: " + Util.getLocalDateFmt(date));
 			runLogger.info("# File size: " + data.file.length());
 
 			System.out.println("All's fine before opening dialog");
@@ -718,12 +718,12 @@ public class ImportUserData implements IHandler {
 			loadUserDataFromRDFFile(data.file);
 		}
 
-		Calendar readEndDate = GregorianCalendar.getInstance();
-		System.out.println("readEndDate.getTimeInMillis() "+readEndDate.getTimeInMillis());
-		Calendar thing = data.fileMD.getReadDate();
-		System.out.println("data.readDate.getTimeInMillis() "+thing.getTimeInMillis());
+		Date readEndDate = new Date();
+		System.out.println("readEndDate.getTime() "+readEndDate.getTime());
+		Date thing = data.fileMD.getReadDate();
+		System.out.println("data.readDate.getTime() "+thing.getTime());
 
-		long secondsRead = (readEndDate.getTimeInMillis() - data.readDate.getTimeInMillis())/1000 ; 
+		long secondsRead = (readEndDate.getTime() - data.readDate.getTime())/1000 ; 
 //				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();

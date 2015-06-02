@@ -6,8 +6,10 @@ import java.io.File;
 import java.io.IOException;
 //import java.util.Date;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+//import java.util.Calendar;
+//import java.util.GregorianCalendar;
+
+import java.util.Date;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
@@ -42,7 +44,7 @@ public class LoggerManager {
 		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
 		rootLogger.addAppender(new ConsoleAppender(layout));
-		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(GregorianCalendar.getInstance()));
+		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
 	private static void setUpRunLogger() {
@@ -55,7 +57,9 @@ public class LoggerManager {
 					"logDirectory")
 					+ File.separator
 					+ Util.getPreferenceStore().getString("runfileRoot")
-					+ "_" + timestampValidFmt + ".txt");
+					+ "_"
+					+ timestampValidFmt
+					+ ".txt");
 
 			// Add the appender to root logger
 			runLogger.addAppender(fileAppender);
@@ -65,8 +69,8 @@ public class LoggerManager {
 		}
 		runLogger.setLevel(Level.INFO);
 		// JUNO : TODO: TRY TO SET UP THE Logger.getLogger("run") TO SEND MORE VERBOSE OUTPUT TO THE FILE
-//		runLogger.setLevel(Level.DEBUG);		
-		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(Calendar.getInstance()));
+		// runLogger.setLevel(Level.DEBUG);
+		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
 	private static void setUpTDBLogger() {

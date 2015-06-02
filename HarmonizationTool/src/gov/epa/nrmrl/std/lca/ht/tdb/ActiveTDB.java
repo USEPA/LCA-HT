@@ -64,8 +64,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
 	public static MessageDialog creationMessage;
-	
-	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
@@ -124,7 +124,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				if (dialog.getReturnCode() == StorageLocationDialog.RET_SHOW_PREFS)
 					redirectToPreferences();
 				String infoMessage = "Initializing TDB Data - please wait...";
-				creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION, new String[] {}, 0);
+				creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION,
+						new String[] {}, 0);
 				creationMessage.setBlockOnOpen(false);
 				creationMessage.open();
 				creationMessage.getShell().getDisplay().update();
@@ -138,14 +139,14 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				defaultTDB = Util.getPreferenceStore().getString("defaultTDB");
 				defaultTDBFile = new File(defaultTDB);
 
-				if (defaultTDBFile.isDirectory()) {		
+				if (defaultTDBFile.isDirectory()) {
 					System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 					try {
 						tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 						assert tdbDataset != null : "tdbDataset cannot be null";
 						Model importModel = GraphFactory.makePlainModel();
 						Model exportModel = GraphFactory.makePlainModel();
-		
+
 						datasetAccessor = DatasetAccessorFactory.create(tdbDataset);
 						datasetAccessor.putModel(importGraphName, importModel);
 						datasetAccessor.putModel(exportGraphName, exportModel);
@@ -156,21 +157,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 						tdbCreated = true;
 						if (creationMessage != null)
 							creationMessage.close();
-						// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also write
+						// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also
+						// write
 						// to the TDB that the session has started
 						// Prefixes.syncPrefixMapToTDBModel();
 					} catch (Exception e1) {
 						System.out.println("Exception: " + e1);
 						if (!prefsCanceled) {
-							// TODO: Determine when this message might display and what the user and software shoul do about it.
+							// TODO: Determine when this message might display and what the user and software shoul do
+							// about it.
 							StringBuilder b = new StringBuilder();
 							b.append("It appears that the HT can not create a TDB in the default directory. ");
 							b.append("You may need to create a new TDB.");
 							errMsg = b.toString();
 						}
 					}
-				}
-				else {
+				} else {
 					StringBuilder b = new StringBuilder();
 					b.append("Sorry, but the Default TDB set in your preferences is not an accessible directory. ");
 					b.append("Please select an existing TDB directory, or an accessible directory for a new TDB.");
@@ -180,7 +182,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					// ask user for TDB directory
 					// TODO: Determine when this message might display and what the user and software shoul do about it.
 					new GenericMessageBox(shell, "Error", errMsg);
-					//If user has previously canceled with invalid data, quit.
+					// If user has previously canceled with invalid data, quit.
 					if (prefsCanceled) {
 						errMsg = "The selected directory is not accessible - exiting now.";
 						new GenericMessageBox(shell, "Error", errMsg);
@@ -190,7 +192,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 				}
 			}
-			
+
 		}
 		PrefixMapping prefixMapping = Prefixes.getPrefixmapping();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
@@ -259,7 +261,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
 		Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
-		
+
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
 		System.out.println("unionModel: " + unionModel.size());
@@ -328,9 +330,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	private static boolean prefsCanceled = false;
-	
+
 	public static void markPrefsCanceled() {
 		prefsCanceled = true;
 	}
@@ -579,26 +581,34 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		/* JUST A PLACE HOLDER SO THAT OUTLINE SHOWS A DIVIDER */
 	}
 
-	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object thingLiteral, String graphName) {
-		if (thingLiteral == null) {
+	public static void tsAddGeneralTriple(Resource subject, Property predicate, Object thingToAdd, String graphName) {
+		if (thingToAdd == null) {
 			return;
 		}
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = getModel(graphName);
 		try {
-			if (thingLiteral instanceof RDFNode) {
-				tdbModel.add(subject, predicate, (RDFNode) thingLiteral);
+			if (thingToAdd instanceof RDFNode) {
+				tdbModel.add(subject, predicate, (RDFNode) thingToAdd);
 
 			} else {
-				if (thingLiteral instanceof Calendar || thingLiteral instanceof Date) {
-					if (thingLiteral instanceof Calendar)
-						thingLiteral = ((Calendar)thingLiteral).getTime();
-					thingLiteral = dateFormatter.format(thingLiteral);
+				if (thingToAdd instanceof Calendar || thingToAdd instanceof Date) {
+					String formattedDate = null;
+					if (thingToAdd instanceof Date) {
+						formattedDate = dateFormatter.format(thingToAdd);
+					} else {
+						long milliseconds = ((Calendar) thingToAdd).getTimeInMillis();
+						Date dateConvertedFromCalendar = new Date(milliseconds);
+						formattedDate = dateFormatter.format(dateConvertedFromCalendar);
+					}
+					Literal literalToAdd = tdbModel.createTypedLiteral(formattedDate, XSDDatatype.XSDdateTime);
+					tdbModel.add(subject, predicate, literalToAdd);
+				} else {
+					RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingToAdd);
+					Literal newRDFNode = tdbModel.createTypedLiteral(thingToAdd, rdfDatatype);
+					tdbModel.add(subject, predicate, newRDFNode);
 				}
-				RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
-				Literal newRDFNode = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
-				tdbModel.add(subject, predicate, newRDFNode);
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
@@ -665,7 +675,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static int tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) {
-		if (subject == null){
+		if (subject == null) {
 			return -1;
 		}
 		if (object == null) {
@@ -733,7 +743,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		try {
 			if (XSDDatatype.XSDdateTime.equals(rdfDatatype)) {
 				if (thingLiteral instanceof Calendar)
-					thingLiteral = ((Calendar)thingLiteral).getTime();
+					thingLiteral = ((Calendar) thingLiteral).getTime();
 				if (thingLiteral instanceof Date)
 					thingLiteral = dateFormatter.format(thingLiteral);
 			}
@@ -907,8 +917,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
-	public static void sync(){
+
+	public static void sync() {
 		TDB.sync(tdbDataset);
 	}
 }

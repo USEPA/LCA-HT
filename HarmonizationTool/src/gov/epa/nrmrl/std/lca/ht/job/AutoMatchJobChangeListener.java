@@ -2,8 +2,10 @@ package gov.epa.nrmrl.std.lca.ht.job;
 
 //import java.util.Date;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+//import java.util.Calendar;
+//import java.util.GregorianCalendar;
+
+import java.util.Date;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -29,9 +31,10 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	public AutoMatchJobChangeListener(FlowsWorkflow flowsWorkflow, String key) {
 		this.key = key;
 	}
+
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
-		Calendar startDate = GregorianCalendar.getInstance();
+		Date startDate = new Date();
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -49,7 +52,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 	@Override
 	public void done(IJobChangeEvent event) {
 
-		Calendar endDate = GregorianCalendar.getInstance();
+		Date endDate = new Date();
 
 		Logger.getLogger("run").info("Job: " + key + " ended: " + endDate);
 
@@ -71,17 +74,17 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 			}
 		});
 
-//		if (job instanceof AutoMatchJob) {
-//			Display.getDefault().asyncExec(new Runnable() {
-//				public void run() {
-//					FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util.findView(FlowsWorkflow.ID);
-//					if (((AutoMatchJob) job).getHitCounts() == null) {
-//						return;
-//					}
-//					flowsWorkflow.queryCallback(((AutoMatchJob) job).getHitCounts(), key);
-//				}
-//			});
-//		}
+		// if (job instanceof AutoMatchJob) {
+		// Display.getDefault().asyncExec(new Runnable() {
+		// public void run() {
+		// FlowsWorkflow flowsWorkflow = (FlowsWorkflow) Util.findView(FlowsWorkflow.ID);
+		// if (((AutoMatchJob) job).getHitCounts() == null) {
+		// return;
+		// }
+		// flowsWorkflow.queryCallback(((AutoMatchJob) job).getHitCounts(), key);
+		// }
+		// });
+		// }
 	}
 
 	@Override

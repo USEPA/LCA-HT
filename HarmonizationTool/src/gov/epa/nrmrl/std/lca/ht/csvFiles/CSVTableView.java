@@ -24,7 +24,8 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
+import java.util.Date;
+//import java.util.GregorianCalendar;
 //import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -739,13 +740,13 @@ public class CSVTableView extends ViewPart {
 		setHeaderMenu(1);
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(key);
-		Calendar loadStartDate = GregorianCalendar.getInstance();
+		Date loadStartDate = new Date();
 
 		tableViewer.setInput(tableProvider.getData());
 
-		Calendar loadEndDate = GregorianCalendar.getInstance();
+		Date loadEndDate = new Date();
 
-		long secondsRead = ((loadEndDate.getTimeInMillis() - loadStartDate.getTimeInMillis()) / 1000);
+		long secondsRead = ((loadEndDate.getTime() - loadStartDate.getTime()) / 1000);
 
 		// System.out.println("# CSVTableView load time (in seconds): " + secondsRead);
 

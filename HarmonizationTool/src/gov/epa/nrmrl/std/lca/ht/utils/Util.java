@@ -1,6 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.utils;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,11 +28,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Util {
-	
+
 	private static Object INIT_LOCK = new Object();
-	
+
 	public static final String EMPTY_STRING = "";
-	
+
 	private Util() {
 	}
 
@@ -141,7 +140,7 @@ public class Util {
 	}
 
 	public static ScopedPreferenceStore getPreferenceStore() {
-		return (ScopedPreferenceStore)Activator.getDefault().getPreferenceStore();
+		return (ScopedPreferenceStore) Activator.getDefault().getPreferenceStore();
 	}
 
 	public static Resource getResourceFromString(String uriString) {
@@ -161,13 +160,13 @@ public class Util {
 		}
 		return null;
 	}
-	
+
 	private static String initialStorageLocation = Platform.getLocation().toFile().getPath();
-	
+
 	public static String getInitialStorageLocation() {
 		return initialStorageLocation;
 	}
-	
+
 	public static void setInitialStorageLocation(String location) {
 		initialStorageLocation = location;
 	}
@@ -178,12 +177,13 @@ public class Util {
 		iWorkBench.getActiveWorkbenchWindow().getActivePage()
 				.setPerspective(perspectiveRegistry.findPerspectiveWithId(perspectiveID));
 	}
+
 	// public static IStatusLineManager getStatusLine(){
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().
 	// PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getV
 	// getViewSite().getActionBars().getStatusLineManager();
 	// }
-	
+
 	public static Object getInitLock() {
 		return INIT_LOCK;
 	}

@@ -6,8 +6,8 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-//import java.util.Date;
+//import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
@@ -96,10 +96,10 @@ public class DataSourceProvider {
 	public List<FileMD> getFileMDListNewestFirst() {
 		List<FileMD> results = new ArrayList<FileMD>();
 		for (FileMD fileMD : fileMDList) {
-			Calendar readDate = fileMD.getReadDate();
+			Date readDate = fileMD.getReadDate();
 			int index = results.size();
 			for (FileMD newFileMD : results) {
-				Calendar newReadDate = newFileMD.getReadDate();
+				Date newReadDate = newFileMD.getReadDate();
 				if (readDate.after(newReadDate)) {
 					index = results.indexOf(newFileMD);
 					break;
@@ -113,10 +113,10 @@ public class DataSourceProvider {
 	public List<FileMD> getFileMDListOldestFirst() {
 		List<FileMD> results = new ArrayList<FileMD>();
 		for (FileMD fileMD : fileMDList) {
-			Calendar readDate = fileMD.getReadDate();
+			Date readDate = fileMD.getReadDate();
 			int index = results.size();
 			for (FileMD newFileMD : results) {
-				Calendar newReadDate = newFileMD.getReadDate();
+				Date newReadDate = newFileMD.getReadDate();
 				if (readDate.before(newReadDate)) {
 					index = results.indexOf(newFileMD);
 					break;
