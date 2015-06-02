@@ -29,6 +29,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -45,6 +46,7 @@ public class Flowable {
 	public static final String flowableNameString = "Name";
 	public static final String flowableSynonymString = "Synonym";
 	public static final String casString = "CAS";
+//	public static final String stdCASString = "Standard CAS";
 	public static final String chemicalFormulaString = "Chemical formula";
 	public static final String smilesString = "SMILES";
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
@@ -223,6 +225,19 @@ public class Flowable {
 		}
 		return null;
 	}
+	
+	public Object getOneProperty(Property predicate) {
+		if (tdbResource.hasProperty(predicate)){
+			try {
+				return  tdbResource.getProperty(predicate).getObject().asLiteral().getValue();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
 
 	public Object[] getAllProperties(String key) {
 		List<Object> resultList = new ArrayList<Object>();
@@ -342,6 +357,10 @@ public class Flowable {
 	public String getCas() {
 		return (String) getOneProperty(casString);
 	}
+	
+	public String getFormattedCas() {
+		return (String) getOneProperty(FedLCA.hasFormattedCAS);
+	}
 
 	private void removeValues(String key) {
 		for (LCADataValue lcaDataValue : lcaDataValues) {
@@ -423,151 +442,151 @@ public class Flowable {
 		return true;
 	}
 
-	public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
-		Set<Resource> results = new HashSet<Resource>();
-		Resource qResource = flowable.getTdbResource();
-		String qName = flowable.getName();
-		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
-		// Model tdbModel = ActiveTDB.getModel();
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-				qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
+//	public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
+//		Set<Resource> results = new HashSet<Resource>();
+//		Resource qResource = flowable.getTdbResource();
+//		String qName = flowable.getName();
+//		Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
+//		// Model tdbModel = ActiveTDB.getModel();
+//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+//				qNameLiteral);
+//		while (resIterator.hasNext()) {
+//			Resource flowableMatchCandidate = resIterator.next();
+//
+//			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+//				results.add(flowableMatchCandidate);
+//			}
+//		}
+//
+//		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+//				qNameLiteral);
+//		while (resIterator.hasNext()) {
+//			Resource flowableMatchCandidate = resIterator.next();
+//
+//			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+//				results.add(flowableMatchCandidate);
+//			}
+//		}
+//
+//		for (String qSyn : flowable.getSynonyms()) {
+//			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
+//			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
+//					qSynLiteral);
+//			while (resIterator.hasNext()) {
+//				Resource flowableMatchCandidate = resIterator.next();
+//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+//					results.add(flowableMatchCandidate);
+//				}
+//			}
+//
+//			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
+//					qSynLiteral);
+//			while (resIterator.hasNext()) {
+//				Resource flowableMatchCandidate = resIterator.next();
+//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+//					results.add(flowableMatchCandidate);
+//				}
+//			}
+//		}
+//
+//		// CAS MATCHING
+//		if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
+//			String cas = flowable.getCas();
+//			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
+//
+//			resIterator = tdbModel.listSubjectsWithProperty(
+//					FedLCA.hasFormattedCAS, qCASLiteral);
+//			while (resIterator.hasNext()) {
+//				Resource flowableMatchCandidate = resIterator.next();
+//				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
+//					results.add(flowableMatchCandidate);
+//				}
+//			}
+//		}
+//		ActiveTDB.tdbDataset.end();
+//		return results;
+//	}
 
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				results.add(flowableMatchCandidate);
-			}
-		}
-
-		resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-				qNameLiteral);
-		while (resIterator.hasNext()) {
-			Resource flowableMatchCandidate = resIterator.next();
-
-			if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-				results.add(flowableMatchCandidate);
-			}
-		}
-
-		for (String qSyn : flowable.getSynonyms()) {
-			Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
-			resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-					qSynLiteral);
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					results.add(flowableMatchCandidate);
-				}
-			}
-
-			resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-					qSynLiteral);
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					results.add(flowableMatchCandidate);
-				}
-			}
-		}
-
-		// CAS MATCHING
-		if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
-			String cas = flowable.getCas();
-			Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
-
-			resIterator = tdbModel.listSubjectsWithProperty(
-					FedLCA.hasFormattedCAS, qCASLiteral);
-			while (resIterator.hasNext()) {
-				Resource flowableMatchCandidate = resIterator.next();
-				if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-					results.add(flowableMatchCandidate);
-				}
-			}
-		}
-		ActiveTDB.tdbDataset.end();
-		return results;
-	}
-
-	public static String compareFlowables(Flowable queryFlowable,
-			Flowable referenceFlowable) {
-		// INFO TO SHARE FOR JUST NAME AND CAS:
-		// ++++.+ (BOTH MATCH, BEST)
-		// ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
-		// ++++.0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
-		// ++++.- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
-
-		// NAME MATCH SCORES:
-		// "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
-		// " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
-		// PRESENT FOR ONE
-		// "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
-		// PRESENT FOR ONE
-		// "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
-		// PRESENT FOR ONE
-
-		String nameFlag = "-";
-		String qName = queryFlowable.getName();
-		String rName = referenceFlowable.getName();
-		if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
-												// REQUIRED "name"
-			nameFlag = "0";
-		} else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
-															// HAPPEN WITH
-															// REQUIRED "name"
-			nameFlag = "0";
-		} else if (qName.equals(rName)) {
-			nameFlag = "+";
-		}
-
-		String synName = "0";
-		String nameSyn = "0";
-		String synSyn = "0";
-		for (String qSynonym : queryFlowable.getSynonyms()) {
-			if (synName.equals("0")) {
-				synName = "-";
-			}
-			if (qSynonym.equals(rName)) {
-				synName = "+";
-			}
-			for (String rSynonym : referenceFlowable.getSynonyms()) {
-				if (nameSyn.equals("0")) {
-					nameSyn = "-";
-				}
-				if (synSyn.equals("0")) {
-					synSyn = "-";
-				}
-				if (qName.equals(rSynonym)) {
-					nameSyn = "+";
-				}
-				if (qSynonym.equals(rSynonym)) {
-					synSyn = "+";
-				}
-			}
-		}
-
-		for (String rSynonym : referenceFlowable.getSynonyms()) {
-			if (nameSyn.equals("0")) {
-				nameSyn = "-";
-			}
-			if (qName.equals(rSynonym)) {
-				nameSyn = "+";
-			}
-		}
-
-		String casFlag = "-";
-		String qCas = queryFlowable.getCas();
-		String rCas = referenceFlowable.getCas();
-		if (qCas == null || rCas == null) {
-			casFlag = "0";
-		} else if (qCas.equals("") || rCas.equals("")) {
-			casFlag = "0";
-		} else if (qCas.equals(rCas)) {
-			casFlag = "+";
-		}
-		return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
-	}
+//	public static String compareFlowables(Flowable queryFlowable,
+//			Flowable referenceFlowable) {
+//		// INFO TO SHARE FOR JUST NAME AND CAS:
+//		// ++++.+ (BOTH MATCH, BEST)
+//		// ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
+//		// ++++.0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
+//		// ++++.- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
+//
+//		// NAME MATCH SCORES:
+//		// "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
+//		// " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
+//		// PRESENT FOR ONE
+//		// "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
+//		// PRESENT FOR ONE
+//		// "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
+//		// PRESENT FOR ONE
+//
+//		String nameFlag = "-";
+//		String qName = queryFlowable.getName();
+//		String rName = referenceFlowable.getName();
+//		if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
+//												// REQUIRED "name"
+//			nameFlag = "0";
+//		} else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
+//															// HAPPEN WITH
+//															// REQUIRED "name"
+//			nameFlag = "0";
+//		} else if (qName.equals(rName)) {
+//			nameFlag = "+";
+//		}
+//
+//		String synName = "0";
+//		String nameSyn = "0";
+//		String synSyn = "0";
+//		for (String qSynonym : queryFlowable.getSynonyms()) {
+//			if (synName.equals("0")) {
+//				synName = "-";
+//			}
+//			if (qSynonym.equals(rName)) {
+//				synName = "+";
+//			}
+//			for (String rSynonym : referenceFlowable.getSynonyms()) {
+//				if (nameSyn.equals("0")) {
+//					nameSyn = "-";
+//				}
+//				if (synSyn.equals("0")) {
+//					synSyn = "-";
+//				}
+//				if (qName.equals(rSynonym)) {
+//					nameSyn = "+";
+//				}
+//				if (qSynonym.equals(rSynonym)) {
+//					synSyn = "+";
+//				}
+//			}
+//		}
+//
+//		for (String rSynonym : referenceFlowable.getSynonyms()) {
+//			if (nameSyn.equals("0")) {
+//				nameSyn = "-";
+//			}
+//			if (qName.equals(rSynonym)) {
+//				nameSyn = "+";
+//			}
+//		}
+//
+//		String casFlag = "-";
+//		String qCas = queryFlowable.getCas();
+//		String rCas = referenceFlowable.getCas();
+//		if (qCas == null || rCas == null) {
+//			casFlag = "0";
+//		} else if (qCas.equals("") || rCas.equals("")) {
+//			casFlag = "0";
+//		} else if (qCas.equals(rCas)) {
+//			casFlag = "+";
+//		}
+//		return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
+//	}
 
 	private static List<QACheck> getFormulaCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
@@ -818,7 +837,7 @@ public class Flowable {
 		// Model tdbModel = ActiveTDB.getModel();
 
 		boolean checkCas = false;
-		String qCAS = getCas();
+		String qCAS = getFormattedCas();
 		if (qCAS != null) {
 			if (!qCAS.equals("")) {
 				checkCas = true;
@@ -843,8 +862,8 @@ public class Flowable {
 		b.append("    } \n");
 
 		if (checkCas) {
-			b.append("    optional {?f eco:casNumber ?cas . }\n");
-			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
+			b.append("    optional {?f fedlca:hasFormattedCAS \""+ qCAS +"\"^^xsd:string . }\n");
+//			b.append("    filter (str(?cas) = \"" + qCAS + "\")\n");
 		}
 		b.append("    ?f eco:hasDataSource ?ds . \n");
 		b.append("    ?ds a lcaht:MasterDataset . \n");

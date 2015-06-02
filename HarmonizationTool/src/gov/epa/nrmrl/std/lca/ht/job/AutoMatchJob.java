@@ -58,8 +58,6 @@ public class AutoMatchJob extends Job {
 	private static Color purple = new Color(Display.getCurrent(), 200, 0, 200);
 	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
-
-
 	/* 1: HIGH EVIDENCE HITS - AutoMatch FINDS THESE THROUGH METHODS: */
 	/* -- Flowable.setMasterMatches() */
 	/* -- FlowContext.setMatches() */
@@ -227,6 +225,16 @@ public class AutoMatchJob extends Job {
 					}
 					LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
 					flowable.setProperty(lcaDataPropertyProvider.getPropertyName(), dataValue);
+
+					if (lcaDataPropertyProvider.getPropertyName().equals(Flowable.casString)
+							&& lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label) && dataValue != null
+							&& dataValue.length() != 0) {
+						String standardCas = Flowable.standardizeCAS(dataValue);
+						if (!(standardCas == null) && (!standardCas.equals(""))) {
+							ActiveTDB.tsAddGeneralTriple(flowable.getTdbResource(), FedLCA.hasFormattedCAS,
+									standardCas, null);
+						}
+					}
 				}
 				// stopWatch03.stop();
 				// stopWatch04.start();
@@ -328,9 +336,9 @@ public class AutoMatchJob extends Job {
 			}
 
 			// ========================== FLOW (UUIDs ONLY) ==========================
-			if (flowCSVColumnNumberForUUID > -1){
-				String uuid = dataRow.get(flowCSVColumnNumberForUUID-1);
-				if (masterFlowUUIDs.contains(uuid)){
+			if (flowCSVColumnNumberForUUID > -1) {
+				String uuid = dataRow.get(flowCSVColumnNumberForUUID - 1);
+				if (masterFlowUUIDs.contains(uuid)) {
 					final int masterUUIDRowNum = rowNumToSend;
 					final int rowNum = flowCSVColumnNumberForUUID;
 					Display.getDefault().asyncExec(new Runnable() {
@@ -341,7 +349,7 @@ public class AutoMatchJob extends Job {
 					});
 
 				}
-//						String dataValue = 
+				// String dataValue =
 
 			}
 		}
