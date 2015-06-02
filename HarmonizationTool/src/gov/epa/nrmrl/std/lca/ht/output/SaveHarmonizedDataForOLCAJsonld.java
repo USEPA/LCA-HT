@@ -13,6 +13,9 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
+import java.util.Calendar;
+
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -106,29 +109,36 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		 * new information 2) Create new UUIDs for those 3) Move old info to an appropriate field name 4) Place new info
 		 * in the appropriate place 5) Append to description info about what happened
 		 */
-		// FIXME -- ISSUES ARE BELOW WITH DATE TIME FUNCTIONS
+
 		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
-		Literal modLiteral = modNode.asLiteral();
-		//HACKS !!
-		Object thingg = modLiteral.getValue();
-		Object thinggg = ((XSDDateTime) thingg).asCalendar();
-		XSDDateTime modObject = (XSDDateTime) modLiteral.getValue();
-//		Calendar modCalendar = modObject.asCalendar();
-		String modString = "broken";
-		//TODO: THoward - figure out how to get a properly formatted string for a timestamp to be used below in "modString".  I believe this is iso-8601 format.
-		
+		String modString = "";
+		try {
+			Literal modLiteral = modNode.asLiteral();
+//			XSDDateTime modDateTime = (XSDDateTime) modLiteral.getValue();
+			// ABOVE .getValue() METHOD CHOKES ON BAD XSDDateTime Literals
+			// .getString() should work for these purposes
+			modString = modLiteral.getString();
+//			String modLexical = modLiteral.getLexicalForm();
+//			Calendar modCalendar = modDateTime.asCalendar();
+//			System.out.println("modLexical = " + modLexical);
+//			System.out.println("modCalendar = " + modCalendar);
+
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 		// nothing
-//		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
-//		Literal modLiteral = modNode.asLiteral();
-//		Calendar cal = ((XSDDateTime) literalDate).;
-//		Object thing = literalDate.getValue();
-//		System.out.println("it is a :"+modString.getClass());
-//		Date annotatationDate = new Date(CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified)
-//				.getObject().asLiteral().getLong());
-//		String dateString = Util.getLocalDateFmt(annotatationDate);
+		// RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
+		// Literal modLiteral = modNode.asLiteral();
+		// Calendar cal = ((XSDDateTime) literalDate).;
+		// Object thing = literalDate.getValue();
+		// System.out.println("it is a :"+modString.getClass());
+		// Date annotatationDate = new Date(CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified)
+		// .getObject().asLiteral().getLong());
+		// String dateString = Util.getLocalDateFmt(annotatationDate);
 		try {
 
 			StringBuilder b = new StringBuilder();
@@ -202,7 +212,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
 			b.append("    optional {?of olca:lastChange ?oLastChange } \n");
 			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
-			b.append("    bind (\""+ modString +"\"^^xsd:dataTime as ?newLastChange) \n");
+			b.append("    bind (\"" + modString + "\"^^xsd:dataTime as ?newLastChange) \n");
 			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
 			b.append("   \n");
 			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");

@@ -66,6 +66,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static MessageDialog creationMessage;
 
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	// UNFORTUNATELY, THE FORMAT BELOW (WITHOUT MILLISECONDS) CRASHES WHEN TRYING TO RETRIEVE INFO AS Literal.getValue()
+	// public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.XXX");
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
@@ -734,20 +736,28 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return countOfRemovedItems;
 	}
 
-	public static Literal tsCreateTypedLiteral(Object thingLiteral, String graphName) {
-		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
+	public static Literal tsCreateTypedLiteral(Object thingToMakeLiteral, String graphName) {
+		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingToMakeLiteral);
 		Literal literal = null;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = getModel(graphName);
 		try {
-			if (XSDDatatype.XSDdateTime.equals(rdfDatatype)) {
-				if (thingLiteral instanceof Calendar)
-					thingLiteral = ((Calendar) thingLiteral).getTime();
-				if (thingLiteral instanceof Date)
-					thingLiteral = dateFormatter.format(thingLiteral);
+			if (thingToMakeLiteral instanceof Calendar || thingToMakeLiteral instanceof Date) {
+				String formattedDate = null;
+				if (thingToMakeLiteral instanceof Date) {
+					formattedDate = dateFormatter.format(thingToMakeLiteral);
+				} else {
+					long milliseconds = ((Calendar) thingToMakeLiteral).getTimeInMillis();
+					Date dateConvertedFromCalendar = new Date(milliseconds);
+					formattedDate = dateFormatter.format(dateConvertedFromCalendar);
+				}
+				literal = tdbModel.createTypedLiteral(formattedDate, XSDDatatype.XSDdateTime);
+				// TODO: QUESTION: Does Jena actually write something when creating Nodes? If not, no need for write-safe transaction....
+				// TODO: ... ALSO: Does it matter what graph the Node is created in?
+			} else {
+				literal = tdbModel.createTypedLiteral(thingToMakeLiteral, rdfDatatype);
 			}
-			literal = tdbModel.createTypedLiteral(thingLiteral, rdfDatatype);
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("tsCreateTypedLiteral(Object thingLiteral, String graphName) failed; see Exception: "
