@@ -53,82 +53,37 @@ public class RDFUtil {
 
 	public static Class<?> getJavaClassFromRDFDatatype(RDFDatatype rdfDatatype) {
 		if (rdfDatatype.equals(XSDDatatype.XSDfloat)) {
-			try {
-				return Class.forName("Float");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Float.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDdouble)) {
-			try {
-				return Class.forName("Double");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Double.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDint)) {
-			try {
-				return Class.forName("Integer");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Integer.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDlong)) {
-			try {
-				return Class.forName("Long");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Long.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDshort)) {
-			try {
-				return Class.forName("Short");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Short.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDbyte)) {
-			try {
-				return Class.forName("Byte");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Byte.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDinteger)) {
-			try {
-				return Class.forName("BigInteger");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return BigInteger.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDdecimal)) {
-			try {
-				return Class.forName("BigDecimal");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return BigDecimal.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDboolean)) {
-			try {
-				return Class.forName("Boolean");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Boolean.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDstring)) {
-			try {
-				// System.out.println("String.class.getName() "+ String.class.getName());
-				return Class.forName("java.lang.String");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return String.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDdateTime)) {
-			try {
-				return Class.forName("Date");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			return Date.class;
 		}
 		return null;
 	}
@@ -138,16 +93,16 @@ public class RDFUtil {
 		if (!typedLiteralDate.isLiteral()) {
 			return null;
 		}
-//		Literal literalDate = typedLiteralDate.asLiteral();
-//		String formattedDate = literalDate.getString();
-//		String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+		// Literal literalDate = typedLiteralDate.asLiteral();
+		// String formattedDate = literalDate.getString();
+		// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
 
 		try {
 			Object thing = typedLiteralDate.getDatatype();
 			Object thing2 = typedLiteralDate.getValue();
-			System.out.println("thing2 = "+thing2);
-//			resultingDate = ((Calendar) typedLiteralDate;
-//			resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
+			System.out.println("thing2 = " + thing2);
+			// resultingDate = ((Calendar) typedLiteralDate;
+			// resultingDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(actualFormattedDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
