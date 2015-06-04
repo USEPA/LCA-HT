@@ -212,7 +212,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
 			b.append("    optional {?of olca:lastChange ?oLastChange } \n");
 			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
-			b.append("    bind (\"" + modString + "\"^^xsd:dataTime as ?newLastChange) \n");
+			b.append("    bind (\"" + modString + "\"^^xsd:dateTime as ?newLastChange) \n");
 			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
 			b.append("   \n");
 			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");
