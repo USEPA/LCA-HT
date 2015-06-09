@@ -69,8 +69,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		String[] filterNames = new String[] { "Json Files", "Jsonld Files" };
-		String[] filterExtensions = new String[] { "*.json", "*.jsonld" };
+		String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
+		String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
 
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -149,7 +149,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?oLastChange ; \n");
 			b.append("        olca:cas ?oCas ; \n");
 			b.append("        olca:name ?oName ; \n");
-			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
+//			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
@@ -157,7 +157,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?newLastChange ; \n");
 			b.append("        olca:cas ?newCas ; \n");
 			b.append("        olca:name ?mName ; \n");
-			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
+//			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  where { \n");
@@ -180,16 +180,16 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    #-- olca:name == rdfs:label -- 1 CONDITION NEEDING ACTION \n");
 			b.append("    ?of olca:name ?oName . \n");
 			b.append("    ?mflowable rdfs:label ?mName . \n");
-			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: master = \", ?mName) , \"\") as ?cName) \n");
+			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: original = \", ?oName) , \"\") as ?cName) \n");
 			b.append("   \n");
-			b.append("    #-- olca:cas == fedlca:hasFormattedCas -- 3 CONDITIONS NEEDING ACTION \n");
+			b.append("    #-- olca:cas == fedlca:hasFormattedCAS -- 3 CONDITIONS NEEDING ACTION \n");
 			b.append("    optional { ?of olca:cas ?oCas . } \n");
-			b.append("    optional { ?mflowable fedlca:hasFormattedCas ?mCas . } \n");
+			b.append("    optional { ?mflowable fedlca:hasFormattedCAS ?mCas . } \n");
 			b.append("    bind (IF (( bound(?oCas) &&  bound(?mCas) && str(?oCas) != str(?mCas)) , concat(\"; cas: original = \",?oCas),\"\") as ?c1Cas) \n");
 			b.append("    bind (IF ((!bound(?oCas) &&  bound(?mCas)) , \"; cas: original not defined\",\"\") as ?c2Cas) \n");
 			b.append("    bind (IF (( bound(?oCas) && !bound(?mCas)) , \"; cas: master not defined\",\"\") as ?c3Cas) \n");
 			b.append("    bind (concat(?c1Cas,?c2Cas,?c3Cas) as ?cCas) \n");
-			b.append("    bind (IF ((?c1Cas != \"\" || ?c2Cas != \"\" || ?c3Cas != \"\"),?mCas, ?oCas) as ?newCas) \n");
+			b.append("    bind (IF ((?c1Cas != \"\" || ?c2Cas != \"\"),?mCas, ?oCas) as ?newCas) \n");
 			b.append("    #-- ABOVE, THE USE OF ?oCas IS TO ENSURE THAT IT GETS PUT BACK SINCE IT WILL BE DELETED \n");
 			b.append("   \n");
 			b.append("    #-- olca:formula == eco:chemicalFormula -- 3 CONDITIONS NEEDING ACTION \n");
@@ -238,58 +238,58 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
-//		String olcaNS = OpenLCA.NS;
-//		if (!olcaNS.equals(Prefixes.getNSForPrefix("olca"))) {
-//			System.out.println("Aaack!  OpenLCA namespace has changed!");
-//			// TODO: Determine a good place to keep track of this since openLCA namespace may change in or out of LCA HT
-//		}
-//		int olcaNSLength = olcaNS.length()+1;
-//
-//		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-//		try {
-//			// NOW NEED TO CREATE NEW ENTITIES WITH MASTER UUID IN URI olca:UUID
-//			StringBuilder b = new StringBuilder();
-//			b.append(Prefixes.getPrefixesForQuery());
-//			b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
-//			b.append("    ?of ?op1 ?oo1 . \n");
-//			b.append("    ?os2 ?op2 ?of . \n");
-//			b.append("  }} \n");
-//			b.append("   \n");
-//			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
-//			b.append("    ?nmf ?op1 ?oo1 . \n");
-//			b.append("    ?os2 ?op2 ?nmf . \n");
-//			b.append("  }} \n");
-//			b.append("   \n");
-//			b.append("  where { \n");
-//			b.append("    ?of a olca:Flow . \n");
-//			b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
-//			b.append("    ?pf fedlca:hasOpenLCAUUID ?uuid . \n");
-//			b.append("    ?pf a fedlca:Flow . \n");
-//			b.append("    ?pf owl:sameAs ?mf . \n");
-//			b.append("    bind (substr(str(?of),"+olcaNSLength+") as ?ofUUID) \n");
-//			b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . \n");
-//			b.append("    bind (str(?mUUIDTyped) as ?mUUID) \n");
-//			b.append("    filter ( ?mUUID != ?ofUUID) \n");
-//			b.append("    bind (concat(\"" + olcaNS + "\",?mUUID) as ?nmf) \n");
-//			b.append("    filter (?nmf != ?of) ");
-//			b.append("    ?of  ?op1 ?oo1 . \n");
-//			b.append("    ?os2 ?op2 ?of . \n");
-//			b.append("} \n");
-//			b.append("   \n");
-//			String query = b.toString();
-//			System.out.println("Replace UUIDs query = \n" + query + "\n");
-//			UpdateRequest request = UpdateFactory.create(query);
-//			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
-//			proc.execute();
-//			ActiveTDB.tdbDataset.commit();
-//		} catch (Exception e) {
-//			System.out.println("01 TDB transaction failed; see Exception: " + e);
-//			ActiveTDB.tdbDataset.abort();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
+		String olcaNS = OpenLCA.NS;
+		if (!olcaNS.equals(Prefixes.getNSForPrefix("olca"))) {
+			System.out.println("Aaack!  OpenLCA namespace has changed!");
+			// TODO: Determine a good place to keep track of this since openLCA namespace may change in or out of LCA HT
+		}
+		int olcaNSLength = olcaNS.length()+1;
+
+		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		try {
+			// NOW NEED TO CREATE NEW ENTITIES WITH MASTER UUID IN URI olca:UUID
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+			b.append("    ?of ?op1 ?oo1 . \n");
+			b.append("    ?os2 ?op2 ?of . \n");
+			b.append("  }} \n");
+			b.append("   \n");
+			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+			b.append("    ?nmf ?op1 ?oo1 . \n");
+			b.append("    ?os2 ?op2 ?nmf . \n");
+			b.append("  }} \n");
+			b.append("   \n");
+			b.append("  where { \n");
+			b.append("    ?of a olca:Flow . \n");
+			b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
+			b.append("    ?pf fedlca:hasOpenLCAUUID ?uuid . \n");
+			b.append("    ?pf a fedlca:Flow . \n");
+			b.append("    ?pf owl:sameAs ?mf . \n");
+			b.append("    bind (substr(str(?of),"+olcaNSLength+") as ?ofUUID) \n");
+			b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . \n");
+			b.append("    bind (str(?mUUIDTyped) as ?mUUID) \n");
+			b.append("    filter ( ?mUUID != ?ofUUID) \n");
+			b.append("    bind (IRI(concat(\"" + olcaNS + "\",?mUUID)) as ?nmf) \n");
+			b.append("    filter (?nmf != ?of) ");
+			b.append("    ?of  ?op1 ?oo1 . \n");
+			b.append("    ?os2 ?op2 ?of . \n");
+			b.append("} \n");
+			b.append("   \n");
+			String query = b.toString();
+			System.out.println("Replace UUIDs query = \n" + query + "\n");
+			UpdateRequest request = UpdateFactory.create(query);
+			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
+			proc.execute();
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("01 TDB transaction failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 //		}
 		try {
@@ -308,6 +308,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		ActiveTDB.clearExportGraphContents();
 
 		/* To copy a dataset to the export graph */
 		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
