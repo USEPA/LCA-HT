@@ -98,7 +98,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			for (String header : headerRow.getColumnValues()) {
 				headers[i++] = header;
 			}
-			format.withHeader(headers);
+			format = format.withHeader(headers).withRecordSeparator("\n");
 			CSVPrinter csvPrinter = new CSVPrinter(fileWriter, format);
 
 			// prepare and write data

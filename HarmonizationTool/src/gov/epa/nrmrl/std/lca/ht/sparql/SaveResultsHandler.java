@@ -154,7 +154,7 @@ public class SaveResultsHandler implements IHandler {
 			for (String header : headerRow.getColumnValues()) {
 				headers[i++] = header;
 			}
-			csvFormat.withHeader(headers);
+			csvFormat = csvFormat.withHeader(headers).withRecordSeparator("\n");
 			CSVPrinter csvPrinter = new CSVPrinter(fileWriter, csvFormat);
 
 			// prepare and write data
