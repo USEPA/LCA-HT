@@ -10,10 +10,10 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
 import java.util.Calendar;
 
 //import java.util.Calendar;
@@ -89,7 +89,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		String key = CSVTableView.getTableProviderKey();
 		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
 		String currentName = dataSourceProvider.getDataSourceName();
-		dialog.setFileName(currentName + "_harmoinzed");
+		dialog.setFileName(currentName + "_harmonized");
 
 		// GenericStringBox dataSetNameSelector = new GenericStringBox(shell, "(choose dataset)",
 		// DataSourceKeeper.getAlphabetizedNames());
@@ -110,18 +110,19 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		 * in the appropriate place 5) Append to description info about what happened
 		 */
 
+//		if (false){
 		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
 		String modString = "";
 		try {
 			Literal modLiteral = modNode.asLiteral();
-//			XSDDateTime modDateTime = (XSDDateTime) modLiteral.getValue();
+			// XSDDateTime modDateTime = (XSDDateTime) modLiteral.getValue();
 			// ABOVE .getValue() METHOD CHOKES ON BAD XSDDateTime Literals
 			// .getString() should work for these purposes
 			modString = modLiteral.getString();
-//			String modLexical = modLiteral.getLexicalForm();
-//			Calendar modCalendar = modDateTime.asCalendar();
-//			System.out.println("modLexical = " + modLexical);
-//			System.out.println("modCalendar = " + modCalendar);
+			// String modLexical = modLiteral.getLexicalForm();
+			// Calendar modCalendar = modDateTime.asCalendar();
+			// System.out.println("modLexical = " + modLexical);
+			// System.out.println("modCalendar = " + modCalendar);
 
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
@@ -147,6 +148,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    ?of olca:description ?oDescription ; \n");
 			b.append("        olca:lastChange ?oLastChange ; \n");
 			b.append("        olca:cas ?oCas ; \n");
+			b.append("        olca:name ?oName ; \n");
 			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
@@ -154,6 +156,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    ?of olca:description ?newDescription ; \n");
 			b.append("        olca:lastChange ?newLastChange ; \n");
 			b.append("        olca:cas ?newCas ; \n");
+			b.append("        olca:name ?mName ; \n");
 			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
@@ -206,7 +209,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    bind (IF ((!bound(?oUUID) && !bound(?mUUID)) , \"; UUID: new value created\",\"\") as ?c4UUID) \n");
 			b.append("    bind (concat(?c1UUID,?c2UUID,?c3UUID,?c4UUID) as ?cUUID) \n");
 			b.append("    bind (IF (( bound(?oUUID) &&  bound(?mUUID)) , str(?mUUID),\"\") as ?new1UUID) \n");
-			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) ,str(?oUUID),\"\") as ?new2UUID) \n");
+			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , str(?oUUID),\"\") as ?new2UUID) \n");
 			b.append("    bind (concat(?new1UUID,?new2UUID) as ?newUUID) \n");
 			b.append("   \n");
 			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
@@ -235,6 +238,60 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
+//		String olcaNS = OpenLCA.NS;
+//		if (!olcaNS.equals(Prefixes.getNSForPrefix("olca"))) {
+//			System.out.println("Aaack!  OpenLCA namespace has changed!");
+//			// TODO: Determine a good place to keep track of this since openLCA namespace may change in or out of LCA HT
+//		}
+//		int olcaNSLength = olcaNS.length()+1;
+//
+//		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+//		try {
+//			// NOW NEED TO CREATE NEW ENTITIES WITH MASTER UUID IN URI olca:UUID
+//			StringBuilder b = new StringBuilder();
+//			b.append(Prefixes.getPrefixesForQuery());
+//			b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+//			b.append("    ?of ?op1 ?oo1 . \n");
+//			b.append("    ?os2 ?op2 ?of . \n");
+//			b.append("  }} \n");
+//			b.append("   \n");
+//			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+//			b.append("    ?nmf ?op1 ?oo1 . \n");
+//			b.append("    ?os2 ?op2 ?nmf . \n");
+//			b.append("  }} \n");
+//			b.append("   \n");
+//			b.append("  where { \n");
+//			b.append("    ?of a olca:Flow . \n");
+//			b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
+//			b.append("    ?pf fedlca:hasOpenLCAUUID ?uuid . \n");
+//			b.append("    ?pf a fedlca:Flow . \n");
+//			b.append("    ?pf owl:sameAs ?mf . \n");
+//			b.append("    bind (substr(str(?of),"+olcaNSLength+") as ?ofUUID) \n");
+//			b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . \n");
+//			b.append("    bind (str(?mUUIDTyped) as ?mUUID) \n");
+//			b.append("    filter ( ?mUUID != ?ofUUID) \n");
+//			b.append("    bind (concat(\"" + olcaNS + "\",?mUUID) as ?nmf) \n");
+//			b.append("    filter (?nmf != ?of) ");
+//			b.append("    ?of  ?op1 ?oo1 . \n");
+//			b.append("    ?os2 ?op2 ?of . \n");
+//			b.append("} \n");
+//			b.append("   \n");
+//			String query = b.toString();
+//			System.out.println("Replace UUIDs query = \n" + query + "\n");
+//			UpdateRequest request = UpdateFactory.create(query);
+//			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
+//			proc.execute();
+//			ActiveTDB.tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("01 TDB transaction failed; see Exception: " + e);
+//			ActiveTDB.tdbDataset.abort();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+//		}
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
 			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
