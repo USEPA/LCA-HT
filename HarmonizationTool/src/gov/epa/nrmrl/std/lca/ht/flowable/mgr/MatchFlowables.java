@@ -530,7 +530,7 @@ public class MatchFlowables extends ViewPart {
 			if (!uneditedParam.matches(".*[0-9].*")) {
 				return;
 			}
-			whereClause = "?f fedlca:hasFormattedCas ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
+			whereClause = "?f fedlca:hasFormattedCAS ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
 		}
 		if (chooseSearchFieldCombo.getSelectionIndex() == 2) {
 			// if (!uneditedParam.matches(".*[0-9].*")) {

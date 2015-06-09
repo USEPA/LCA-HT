@@ -69,8 +69,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		String[] filterNames = new String[] { "Json Files", "Jsonld Files" };
-		String[] filterExtensions = new String[] { "*.json", "*.jsonld" };
+		String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
+		String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
 
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -149,7 +149,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?oLastChange ; \n");
 			b.append("        olca:cas ?oCas ; \n");
 			b.append("        olca:name ?oName ; \n");
-			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
+//			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
@@ -157,7 +157,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?newLastChange ; \n");
 			b.append("        olca:cas ?newCas ; \n");
 			b.append("        olca:name ?mName ; \n");
-			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
+//			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  where { \n");
@@ -180,16 +180,16 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    #-- olca:name == rdfs:label -- 1 CONDITION NEEDING ACTION \n");
 			b.append("    ?of olca:name ?oName . \n");
 			b.append("    ?mflowable rdfs:label ?mName . \n");
-			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: master = \", ?mName) , \"\") as ?cName) \n");
+			b.append("    bind (IF ((str(?oName) != str(?mName) ) , concat(\"; name: original = \", ?oName) , \"\") as ?cName) \n");
 			b.append("   \n");
-			b.append("    #-- olca:cas == fedlca:hasFormattedCas -- 3 CONDITIONS NEEDING ACTION \n");
+			b.append("    #-- olca:cas == fedlca:hasFormattedCAS -- 3 CONDITIONS NEEDING ACTION \n");
 			b.append("    optional { ?of olca:cas ?oCas . } \n");
-			b.append("    optional { ?mflowable fedlca:hasFormattedCas ?mCas . } \n");
+			b.append("    optional { ?mflowable fedlca:hasFormattedCAS ?mCas . } \n");
 			b.append("    bind (IF (( bound(?oCas) &&  bound(?mCas) && str(?oCas) != str(?mCas)) , concat(\"; cas: original = \",?oCas),\"\") as ?c1Cas) \n");
 			b.append("    bind (IF ((!bound(?oCas) &&  bound(?mCas)) , \"; cas: original not defined\",\"\") as ?c2Cas) \n");
 			b.append("    bind (IF (( bound(?oCas) && !bound(?mCas)) , \"; cas: master not defined\",\"\") as ?c3Cas) \n");
 			b.append("    bind (concat(?c1Cas,?c2Cas,?c3Cas) as ?cCas) \n");
-			b.append("    bind (IF ((?c1Cas != \"\" || ?c2Cas != \"\" || ?c3Cas != \"\"),?mCas, ?oCas) as ?newCas) \n");
+			b.append("    bind (IF ((?c1Cas != \"\" || ?c2Cas != \"\"),?mCas, ?oCas) as ?newCas) \n");
 			b.append("    #-- ABOVE, THE USE OF ?oCas IS TO ENSURE THAT IT GETS PUT BACK SINCE IT WILL BE DELETED \n");
 			b.append("   \n");
 			b.append("    #-- olca:formula == eco:chemicalFormula -- 3 CONDITIONS NEEDING ACTION \n");

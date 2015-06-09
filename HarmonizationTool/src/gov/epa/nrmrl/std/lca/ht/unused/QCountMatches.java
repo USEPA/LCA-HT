@@ -95,8 +95,8 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
 		b.append("  ?ds_match rdfs:label ?match_label . \n");
 		b.append("  filter (?ds_prim != ?ds_match) \n");
-		b.append("  ?s1 fedlca:hasFormattedCas ?cas .  \n");
-		b.append("  ?s2 fedlca:hasFormattedCas ?cas .   \n");
+		b.append("  ?s1 fedlca:hasFormattedCAS ?cas .  \n");
+		b.append("  ?s2 fedlca:hasFormattedCAS ?cas .   \n");
 		b.append("  ?s1 rdfs:label ?name1 . \n");
 		b.append("  ?s2 rdfs:label ?name2 .  \n");
 		b.append("  filter (fn:upper-case(?name1) = fn:upper-case(?name2)) \n");
@@ -124,8 +124,8 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 		b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
 		b.append("  ?ds_match rdfs:label ?match_label . \n");
 		b.append("  filter (?ds_prim != ?ds_match) \n");
-		b.append("  ?s1 fedlca:hasFormattedCas ?cas .  \n");
-		b.append("  ?s2 fedlca:hasFormattedCas ?cas .   \n");
+		b.append("  ?s1 fedlca:hasFormattedCAS ?cas .  \n");
+		b.append("  ?s2 fedlca:hasFormattedCAS ?cas .   \n");
 		b.append("  ?s1 rdfs:label ?name1 . \n");
 		b.append("  ?s2 rdfs:label ?name2 .  \n");
 		b.append("  filter (fn:upper-case(?name1) != fn:upper-case(?name2)) \n");
@@ -178,8 +178,8 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 // b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
 // b.append("  ?ds_match rdfs:label ?match_label . \n");
 // b.append("  filter (?ds_prim != ?ds_match) \n");
-// b.append("  ?s1 fedlca:hasFormattedCas ?cas .  \n");
-// b.append("  ?s2 fedlca:hasFormattedCas ?cas .   \n");
+// b.append("  ?s1 fedlca:hasFormattedCAS ?cas .  \n");
+// b.append("  ?s2 fedlca:hasFormattedCAS ?cas .   \n");
 // b.append("  ?s1 rdfs:label ?name1 . \n");
 // b.append("  ?s2 rdfs:label ?name2 .  \n");
 // b.append("  filter (fn:upper-case(?name1) = fn:upper-case(?name2)) \n");
@@ -203,8 +203,8 @@ public class QCountMatches extends HarmonyQuery2Impl implements LabeledQuery {
 // b.append("  ?s2 eco:hasDataSource ?ds_match . \n");
 // b.append("  ?ds_match rdfs:label ?match_label . \n");
 // b.append("  filter (?ds_prim != ?ds_match) \n");
-// b.append("  ?s1 fedlca:hasFormattedCas ?cas .  \n");
-// b.append("  ?s2 fedlca:hasFormattedCas ?cas .   \n");
+// b.append("  ?s1 fedlca:hasFormattedCAS ?cas .  \n");
+// b.append("  ?s2 fedlca:hasFormattedCAS ?cas .   \n");
 // b.append("  ?s1 rdfs:label ?name1 . \n");
 // b.append("  ?s2 rdfs:label ?name2 .  \n");
 // b.append("  filter (fn:upper-case(?name1) != fn:upper-case(?name2)) \n");
