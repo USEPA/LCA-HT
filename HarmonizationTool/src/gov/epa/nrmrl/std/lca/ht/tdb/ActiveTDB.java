@@ -346,6 +346,22 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
+	public static void clearExportGraphContents() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model exportModel = getModel(exportGraphName);
+		try {
+			exportModel.removeAll();
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("clearExportGraphContents() failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+	}
+	
 	private static boolean prefsCanceled = false;
 
 	public static void markPrefsCanceled() {
