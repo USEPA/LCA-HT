@@ -19,15 +19,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
-
-
 import java.util.LinkedList;
 import java.util.List;
-
-
-
-
 
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
@@ -78,8 +71,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("Saving Harmonized Data to .jsonld file");
-		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
-		System.out.println("headerRow " + headerRow);
+//		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
+//		System.out.println("headerRow " + headerRow);
 
 		// List<DataRow> dataRows = new ArrayList<DataRow>();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
@@ -170,7 +163,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?oLastChange ; \n");
 			b.append("        olca:cas ?oCas ; \n");
 			b.append("        olca:name ?oName ; \n");
-			// b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
+			b.append("        fedlca:hasOpenLCAUUID ?oUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
@@ -178,7 +171,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("        olca:lastChange ?newLastChange ; \n");
 			b.append("        olca:cas ?newCas ; \n");
 			b.append("        olca:name ?mName ; \n");
-			// b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
+			b.append("        fedlca:hasOpenLCAUUID ?newUUID . \n");
 			b.append("  }} \n");
 			b.append("   \n");
 			b.append("  where { \n");
@@ -229,8 +222,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , \"; UUID: master not defined\",\"\") as ?c3UUID) \n");
 			b.append("    bind (IF ((!bound(?oUUID) && !bound(?mUUID)) , \"; UUID: new value created\",\"\") as ?c4UUID) \n");
 			b.append("    bind (concat(?c1UUID,?c2UUID,?c3UUID,?c4UUID) as ?cUUID) \n");
-			b.append("    bind (IF (( bound(?oUUID) &&  bound(?mUUID)) , str(?mUUID),\"\") as ?new1UUID) \n");
-			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , str(?oUUID),\"\") as ?new2UUID) \n");
+			b.append("    bind (IF (( bound(?oUUID) &&  bound(?mUUID)) , ?mUUID,\"\") as ?new1UUID) \n");
+			b.append("    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , ?oUUID,\"\") as ?new2UUID) \n");
 			b.append("    bind (concat(?new1UUID,?new2UUID) as ?newUUID) \n");
 			b.append("   \n");
 			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
@@ -258,7 +251,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		
+
 		String olcaNS = OpenLCA.NS;
 		if (!olcaNS.equals(Prefixes.getNSForPrefix("olca"))) {
 			System.out.println("Aaack!  OpenLCA namespace has changed!");
@@ -266,45 +259,131 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 		int olcaNSLength = olcaNS.length() + 1;
 
-		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
+//		 ---- BEGIN SAFE -WRITE- TRANSACTION ---
+//		 ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		 tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+//		 try {
+//		 // NOW NEED TO CREATE NEW ENTITIES WITH MASTER UUID IN URI olca:UUID
+//		 StringBuilder b = new StringBuilder();
+//		 b.append(Prefixes.getPrefixesForQuery());
+//		 b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+//		 b.append("    ?of ?op1 ?oo1 . \n");
+//		 b.append("    ?os2 ?op2 ?of . \n");
+//		 b.append("  }} \n");
+//		 b.append("   \n");
+//		 b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
+//		 b.append("    ?nmf ?op1 ?oo1 . \n");
+//		 b.append("    ?os2 ?op2 ?nmf . \n");
+//		 b.append("  }} \n");
+//		 b.append("   \n");
+//		 b.append("  where { \n");
+//		 b.append("    ?of a olca:Flow . \n");
+//		 b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
+//		 b.append("    ?mf fedlca:hasOpenLCAUUID ?muuid . \n");
+//		 b.append("    filter (str(?uuid) = str(?muuid)) \n");
+//		 b.append("    ?mf eco:hasDataSource ?mds . \n");
+//		 b.append("    ?mds a lcaht:MasterDataset . \n");
+////		 b.append("    bind (substr(str(?of)," + olcaNSLength + ") as ?ofUUID) \n");
+////		 b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . \n");
+////		 b.append("    bind (str(?mUUIDTyped) as ?mUUID) \n");
+////		 b.append("    filter ( ?mUUID != ?ofUUID) \n");
+//		 b.append("    bind (IRI(concat(\"" + olcaNS + "\",(str(?uuid)))) as ?nmf) \n");
+//		 b.append("    filter (?nmf != ?of) \n");
+//		 b.append("    ?of  ?op1 ?oo1 . \n");
+//		 b.append("    ?os2 ?op2 ?of . \n");
+//		 b.append("} \n");
+//		 String query = b.toString();
+//		 System.out.println("Replace UUIDs query = \n" + query + "\n");
+//		 UpdateRequest request = UpdateFactory.create(query);
+//		 UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
+//		 proc.execute();
+//		 ActiveTDB.tdbDataset.commit();
+//		 } catch (Exception e) {
+//		 System.out.println("replace URI failed; see Exception: " + e);
+//		 ActiveTDB.tdbDataset.abort();
+//		 } finally {
+//		 ActiveTDB.tdbDataset.end();
+//		 }
+//		 ---- END SAFE -WRITE- TRANSACTION ---
+
+
+		List<Resource> originalURI = new ArrayList<Resource>();
+		List<String> newUUID = new ArrayList<String>();
+
+//		 TRY TO SEE WHAT THE PARTS ARE TO THE NEW THING
+//		 ---- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		try {
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("select distinct ?of ?uuid \n");
+			b.append("  where { \n");
+			b.append("    ?of a olca:Flow . \n");
+			 b.append("    ?of fedlca:hasOpenLCAUUID str(?uuid) . \n");
+			 b.append("    ?mf fedlca:hasOpenLCAUUID ?uuid . \n");
+//			 b.append("    filter (str(?uuid) = str(?muuid)) \n");
+			 b.append("    ?mf eco:hasDataSource ?mds . \n");
+			 b.append("    ?mds a lcaht:MasterDataset . \n");
+			b.append("} \n");
+			String query = b.toString();
+			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(query);
+			System.out.println("query = "+query);
+			harmonyQuery2Impl.setGraphName(ActiveTDB.exportGraphName);
+
+			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+			while (resultSet.hasNext()) {
+				QuerySolution querySolution = resultSet.next();
+//				// ?mUUID ?of ?op1 ?oo1 ?os2 ?op2
+				originalURI.add(querySolution.get("of").asResource());
+				newUUID.add(querySolution.get("uuid").asLiteral().getString());
+//				Resource newMasterFlow = nmf.asResource();
+//				Resource oldFlow = querySolution.get("of").asResource();
+//				String op1 = querySolution.get("op1").toString();
+////				Property op1 = (Property) op1Node;
+//				RDFNode oo1 = querySolution.get("oo1");
+//				Resource os2 = querySolution.get("os2").asResource();
+//				String op2 = querySolution.get("op2").toString();
+//				addSubject.add(newMasterFlow);
+//				addPredicate.add(op1);
+//				addObject.add(oo1);
+//				removeSubject.add(oldFlow);
+//				removePredicate.add(op1);
+//				removeObject.add(oo1);
+//
+//				addSubject.add(os2);
+//				addPredicate.add(op2);
+//				addObject.add(nmf);
+//				removeSubject.add(os2);
+//				removePredicate.add(op2);
+//				removeObject.add(oldFlow);
+			}
+		} catch (Exception e) {
+			System.out.println("Read from TDB failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+//		// ---- END SAFE -READ- TRANSACTION ---
+//
+//		// ---- BEGIN SAFE -WRITE- TRANSACTION ---
 //		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 //		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 //		try {
-//			// NOW NEED TO CREATE NEW ENTITIES WITH MASTER UUID IN URI olca:UUID
-//			StringBuilder b = new StringBuilder();
-//			b.append(Prefixes.getPrefixesForQuery());
-			// b.append("  delete {graph <" + ActiveTDB.exportGraphName + ">{  \n");
-			// b.append("    ?of ?op1 ?oo1 . \n");
-			// b.append("    ?os2 ?op2 ?of . \n");
-			// b.append("  }} \n");
-//			b.append("   \n");
-//			b.append("  insert {graph <" + ActiveTDB.exportGraphName + ">{  \n");
-//			b.append("    ?nmf ?op1 ?oo1 . \n");
-//			b.append("    ?nmf ?op1 ?oo1 . \n");
-//			b.append("    ?os2 ?op2 ?nmf . \n");
-//			b.append("  }} \n");
-//			b.append("   \n");
-//			b.append("  where { \n");
-//			b.append("    ?of a olca:Flow . \n");
-//			b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
-//			b.append("    ?pf fedlca:hasOpenLCAUUID ?uuid . \n");
-//			b.append("    ?pf a fedlca:Flow . \n");
-//			b.append("    ?pf owl:sameAs ?mf . \n");
-//			b.append("    bind (substr(str(?of)," + olcaNSLength + ") as ?ofUUID) \n");
-//			b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . \n");
-//			b.append("    bind (str(?mUUIDTyped) as ?mUUID) \n");
-//			b.append("    filter ( ?mUUID != ?ofUUID) \n");
-//			b.append("    bind (IRI(concat(\"" + olcaNS + "\",?mUUID)) as ?nmf) \n");
-//			b.append("    filter (?nmf != ?of) \n");
-//			b.append("    ?of  ?op1 ?oo1 . \n");
-//			b.append("    ?os2 ?op2 ?of . \n");
-//			b.append("} \n");
-//			b.append("   \n");
-//			String query = b.toString();
-//			System.out.println("Replace UUIDs query = \n" + query + "\n");
-//			UpdateRequest request = UpdateFactory.create(query);
-//			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
-//			proc.execute();
+//			for (int i = 0; i < addSubject.size(); i++) {
+//				Property addProperty = tdbModel.createProperty(addPredicate.get(i));
+//				if (addPredicate.get(i).matches(".*name.*")){
+////					System.out.println("object "+addObject.get(i));
+//					if (addObject.get(i).toString().matches(".*Nitrous.*")){
+//						System.out.println("object "+addObject.get(i));
+//					}
+//				}
+//				tdbModel.add(addSubject.get(i), addProperty, addObject.get(i));
+//				
+//				Property removeProperty = tdbModel.createProperty(removePredicate.get(i));
+//				tdbModel.remove(removeSubject.get(i), removeProperty, removeObject.get(i));
+//			}
 //			ActiveTDB.tdbDataset.commit();
 //		} catch (Exception e) {
 //			System.out.println("replace URI failed; see Exception: " + e);
@@ -314,70 +393,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 //		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		// }
-		
-		LinkedList<Statement> addStatements = new LinkedList<Statement>();
-		LinkedList<Statement> removeStatements = new LinkedList<Statement>();
-		// TRY TO SEE WHAT THE PARTS ARE TO THE NEW THING
-		// ---- BEGIN SAFE -READ- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-		try {
-//			ResIterator thing = tdbModel.listResourcesWithProperty(OpenLCA.name, "Dinitrogen monoxide");
-//			while (thing.hasNext()){
-//				Resource bit = thing.next();
-//				System.out.println("bit = "+bit);
-//				StmtIterator props = bit.listProperties();
-//				while (props.hasNext()){
-//					System.out.println("props = "+props.next());
-//				}
-//			}
-			
-			StringBuilder b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());			
-			b.append("select ?nmf ?of ?op1 ?oo1 ?os2 ?op2 \n");
-			b.append("from <" + ActiveTDB.exportGraphName + ">\n");
-			b.append("  where { \n");
-			b.append("    ?of a olca:Flow . \n");
-			b.append("    ?of fedlca:hasOpenLCAUUID ?uuid . \n");
-			b.append("    ?pf fedlca:hasOpenLCAUUID ?uuid . \n");
-			b.append("    ?pf a fedlca:Flow . \n");
-			b.append("    ?pf owl:sameAs ?mf . \n");
-			b.append("    bind (substr(str(?of)," + olcaNSLength + ") as ?ofUUID) \n");
-			b.append("    ?mf fedlca:hasOpenLCAUUID ?mUUID . \n");
-			b.append("    filter ( ?mUUID != ?ofUUID) \n");
-			b.append("    bind (IRI(concat(\"" + olcaNS + "\",?mUUID)) as ?nmf) \n");
-			b.append("    filter (?nmf != ?of) \n");
-			b.append("    ?of  ?op1 ?oo1 . \n");
-			b.append("    ?os2 ?op2 ?of . \n");
-//			b.append("    filter regex (str(?nmf),\"20185046\")  \n");
-			b.append("} \n");
-			String query = b.toString();
-			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-			harmonyQuery2Impl.setQuery(query);
-			harmonyQuery2Impl.setGraphName(ActiveTDB.exportGraphName);
 
-			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-			while (resultSet.hasNext()) {
-				QuerySolution querySolution = resultSet.next();
-//				 ?mUUID ?of ?op1 ?oo1 ?os2 ?op2
-				Resource newMasterFlow = querySolution.get("nmf").asResource();
-				Resource oldFlow = querySolution.get("of").asResource();
-				Property op1 = (Property) querySolution.get("op1").asResource();
-				RDFNode oo1 = querySolution.get("oo1");
-				Resource os2 = querySolution.get("os2").asResource();
-				RDFNode op2 = querySolution.get("op2");
-//				ReifiedStatement newStaetment = // WORK HERE()
-//				addStatements.add(newMasterFlow, op1, oo1);
-			}
-		} catch (Exception e) {
-			System.out.println("Read from TDB failed; see Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -READ- TRANSACTION ---
-		
-		
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
 			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
