@@ -34,6 +34,14 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+
+/**
+ * The FlowProperty class handles all Flow Properties and Flow Property Units
+ * 
+ * 
+ * @author cfowler
+ *
+ */
 public class FlowProperty {
 	// CLASS VARIABLES
 	// public static final String flowPropertyPrimaryIdentifier = "Primary Info";

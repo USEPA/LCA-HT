@@ -2,6 +2,12 @@ package gov.epa.nrmrl.std.lca.ht.utils;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class is used to measure the time it takes to perform specific operations.  It contains methods such as {@link #start()}, {@link #stop()}, {@link #getElapsedTime(TimeUnit)}, {@link #toString()}.
+ * @author cfowler
+ * @author ttransue
+ *
+ */
 public class StopWatch {
 	private String name= "";
 	private long startTime;

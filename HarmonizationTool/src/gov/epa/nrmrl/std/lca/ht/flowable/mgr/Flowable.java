@@ -563,37 +563,11 @@ public class Flowable {
 
 	private static List<QACheck> getCASCheckList() {
 		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
-
-		// String d1 = "Non-standard CAS format";
-		// String e1 =
-		// "CAS numbers may only have either a) all digits, or b) digits with \"-\" signs 4th and 2nd from the end.";
-		// String s1 = "Parse digits into a formatted CAS";
-		// Pattern p1 = Pattern.compile("^\\s*$");
-		// String r1 = "";
-		// qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
-
 		String d2 = "Non-standard CAS format";
 		String e2 = "CAS fields must be either blank or formatted propertly.  Data will be ignored.";
-
-		// String e2 =
-		// "CAS numbers must be a) blank, b) 5+ digits, or c) digits with \"-\" signs 4th and 2nd from the end.";
 		String s2 = "Standardize CAS";
-		// Pattern acceptableCASFormat =
-		// Pattern.compile("^$|^0*(\\d{2,})-?(\\d\\d)-?(\\d)$");
-		// Pattern acceptableCASFormat =
-		// Pattern.compile("^$|^[1-9]\\d{1,}-\\d\\d-\\d$");
 		Pattern acceptableCASFormat = Pattern.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
-		// DONE CFowler: fix the above
-
-		// String r2 = "$1-$2-$3";
 		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
-		// DONE: CFowler - using | (regex or) allow for either two dashes or
-		// none
-
-		/*
-		 * CFowler: COMPLETE. Changed d{2,} to d{2-7} and added |^\\d{5-10}$ This is based on what I think Tom wanted.
-		 */
-
 		return qaChecks;
 	}
 
@@ -622,6 +596,12 @@ public class Flowable {
 		return qaChecks;
 	}
 
+	/**
+	 * Removes all leading zeroes and dashes in the CASRN if possible.
+	 * 
+	 * @param candidate	candidate is a CASRN of type string.  
+	 * @return
+	 */
 	public static String stripCASdigits(String candidate) {
 		String strippedCas = "";
 		strippedCas = candidate.replaceAll("\\D", "");
@@ -635,6 +615,11 @@ public class Flowable {
 		return strippedCas;
 	}
 
+	/**
+	 * 
+	 * @param candidate	candidate is a CASRN of type string.
+	 * @return
+	 */
 	public static String standardizeCAS(String candidate) {
 		String standardizedCas = "";
 		String digitsOnly = stripCASdigits(candidate);
@@ -653,17 +638,15 @@ public class Flowable {
 		return standardizedCas;
 	}
 
+	/**
+	 * This function is a simple CAS checksum checker.  Enter a CASRN (with or without dashes) and either the test will pass or fail. 
+	 * Recall that a CASRN must be 5-7 digits - 2 digits - 1 digit and that the last digit is the checksum value.
+	 * 
+	 * @param casNumber	Enter a CASRN with or without dashes.  The CASRN must be of type string.
+	 * @return	True if checksum passes, False if checksum fails.
+	 * @author cfowler
+	 */
 	public static boolean correctCASCheckSum(String casNumber) {
-		// CFowler: The only CAS numbers that should come through the door (this
-		// function) are those that
-		// are properly formatted (with or without both dashes or empty strings)
-		// so I will work from there.
-
-		// TODO: CFowler - CHECKSUM ~ determine when to use this and if it is
-		// too slow for some cas
-		/*
-		 * CFowler: I guess I need to plug this function into the checkOneColumn function.
-		 */
 
 		// Stripping CAS down to digits only
 		String strippedCas = stripCASdigits(casNumber);
@@ -671,9 +654,7 @@ public class Flowable {
 			return false;
 		}
 
-		// The cas number should only be 5 to 10 digits now.
-
-		// Correct code for checksum calculator
+		// Checksum checker code
 		int multiplier = strippedCas.length() - 1;
 		int checksum = 0;
 		for (int i = 0; i < strippedCas.length() - 1; i++) {
@@ -698,12 +679,8 @@ public class Flowable {
 		return new QACheck(d, e, s, p, r, false);
 
 		// TODO CFowler: Change the color of the issues
-		// DONE: Associated with the Notable issue
-		// DONE: Change text in d, e, s
 
 		// Make sure that the workflow accepts notable issues
-
-		// DONE: Remove Standardize CAS functionality
 
 	}
 

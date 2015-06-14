@@ -17,17 +17,26 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+
+/**
+ * The LoggerViewer's primary function is to show all logs to the user in a logger window within the User Interface.
+ * 
+ * @author cfowler
+ * @author ttransue
+ *
+ */
 public class LoggerViewer extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.log.LoggerViewer";
-
 	private static LoggerWriter loggerWriter;
 	private static Text loggerArea;
-//	private static Text text;
+
 
 	public LoggerViewer() {
 		super();
 	}
 
+	
+	
 	public void createPartControl(Composite parent) {
 
 //		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
@@ -58,10 +67,14 @@ public class LoggerViewer extends ViewPart {
 		configureLog();
 	}
 
+	
+	
 	public void configureLog() {
 		setupLogger(Logger.getLogger("run"), "INFO");
 	}
 
+	
+	
 	private void setupLogger(Logger logger, String level) {
 		logger.setAdditivity(true);
 		logger.setLevel(Level.toLevel(level));
@@ -74,12 +87,16 @@ public class LoggerViewer extends ViewPart {
 		logger.addAppender(appender);
 	}
 
+	
+	
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
 	}
 
+	
+	
 	public static void clear() {
 		loggerWriter.clear();
 		loggerArea.setText("");		

@@ -21,20 +21,31 @@ import org.apache.log4j.RollingFileAppender;
 public class LoggerManager {
 	private static String timestampValidFmt = Util.getPreferenceStore().getString("startTimestamp").replace(":", "-")
 			.substring(0, Util.getPreferenceStore().getString("startTimestamp").length() - 5);
+	
 
+	/**
+	 * Initializes two loggers: Root and Run loggers. Both loggers print to std.out the time that they have started.  The logs can be seen upon startup of the Harmonization Tool. 
+	 */
 	public static void Init() {
 		System.out.println("The logger init is executing");
 		setUpRootLogger();
 		setUpRunLogger();
-		// setUpTDBLogger();
-
-		// System.out.println("Wrote to root log!");
 	}
 
+	
+	
+	
 	public static String getTimeStampValidFmt() {
 		return timestampValidFmt;
 	}
 
+	
+	
+	/**
+	 * This method initializes the Java-based logger (called log4j) named rootLogger and utilizes several log4j functions.  The root logger is set to INFO level.  
+	 * A time pattern is generated.  This method is not used.
+
+	 */
 	private static void setUpRootLogger() {
 		Logger rootLogger = Logger.getRootLogger();
 		BasicConfigurator.configure();
@@ -44,9 +55,18 @@ public class LoggerManager {
 		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
 		rootLogger.addAppender(new ConsoleAppender(layout));
+		
+		/**
+		 * Notification that LCAHT has started at a particular time. 
+		 */
 		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
+	
+	
+	/**
+	 * This method sets up a logger of type "run" with a particular pattern and is named runLogger.  The logger level is set to INFO.  
+	 */
 	private static void setUpRunLogger() {
 		Logger runLogger = Logger.getLogger("run");
 
@@ -73,29 +93,15 @@ public class LoggerManager {
 		runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
 	}
 
+	
+	
+	/**
+	 * This method initializes a Java-based logger (called log4j) with name tdbLogger.  The logger type is from com.hp.hpl.jena.tdb.base.file.BlockAccessMapped.  The logger level is set to TRACE.
+	 */
 	private static void setUpTDBLogger() {
 		Logger tdbLogger = Logger.getLogger("com.hp.hpl.jena.tdb.base.file.BlockAccessMapped");
-
-		// PatternLayout layout = new PatternLayout("%m%n");
 		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
-
-		// try {
-		// // Define file appender with layout and output log file name
-		// RollingFileAppender fileAppender = new RollingFileAppender(layout,
-		// Util.getPreferenceStore().getString("outputDirectory")
-		// + "/"
-		// + Util.getPreferenceStore().getString(
-		// "runfileRootRoot") + "_tdb_"
-		// + timestampValidFmt + ".txt");
-		//
-		// // Add the appender to root logger
-		// tdbLogger.addAppender(fileAppender);
-		// } catch (IOException e) {
-		// System.out.println("Failed to add appender !!");
-		// System.out.println("e =" + e);
-		// }
 		tdbLogger.setLevel(Level.TRACE);
-		// runLogger.info("# Started LCAHT at: " + Util.getLocalDateFmt(new
-		// Date()));
+
 	}
 }

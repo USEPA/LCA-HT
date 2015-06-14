@@ -36,17 +36,25 @@ public class Util {
 	private Util() {
 	}
 
+	/**
+	 * Get the time in GMT
+	 * @param date		Pass in a date (of type Data) and the time in Gmt will be returned.
+	 * @return
+	 */
 	public static String getGMTDateFmt(Date date) {
 		if (date == null) {
 			return null;
 		}
-		// SimpleDateFormat dateFormatGmt = new
-		// SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return dateFormatGmt.format(date);
 	}
 
+	/**
+	 * Get the local time 
+	 * @param date		Pass in a type Date
+	 * @return
+	 */
 	public static String getLocalDateFmt(Date date) {
 		if (date == null) {
 			return null;
@@ -56,6 +64,11 @@ public class Util {
 		return dateFormatLocal.format(date);
 	}
 
+	/**
+	 * Get the local time
+	 * @param calendar		Pass in a type Calendar.
+	 * @return
+	 */
 	public static String getLocalDateFmt(Calendar calendar) {
 		if (calendar == null) {
 			return null;
@@ -71,6 +84,11 @@ public class Util {
 		return dateFormatLocal.parse(string);
 	}
 
+	/**
+	 * This method will parse a string that has camel-casing into many words with the first word capitalized.
+	 * @param s		Pass in a string and it will be reformatted with spaces and the first word capitalized.
+	 * @return
+	 */
 	public static String splitCamelCase(String s) {
 		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
 				"(?<=[A-Za-z])(?=[^A-Za-z])");
@@ -80,6 +98,10 @@ public class Util {
 		return s1.toUpperCase() + s2;
 	}
 
+	/** 
+	 * Get the version number of the Harmonization Tool from the platform product bundle version.
+	 * @return
+	 */
 	public static String getProductVersion() {
 		final IProduct product = Platform.getProduct();
 		final Bundle bundle = product.getDefiningBundle();
@@ -102,15 +124,6 @@ public class Util {
 			if (chars[i] == '"') {
 				b.append("\\");
 			}
-			// if (chars[i] == ',') {
-			// b.append("\\");
-			// }
-			// if (chars[i] == '\'') {
-			// b.append("\\");
-			// }
-			// if (chars[i] == '`') {
-			// b.append("\\");
-			// }
 			b.append(chars[i]);
 		}
 		return b.toString();

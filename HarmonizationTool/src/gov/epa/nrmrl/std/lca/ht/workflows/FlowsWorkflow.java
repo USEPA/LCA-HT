@@ -38,6 +38,14 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 //import org.eclipse.swt.events.SelectionAdapter;
 
+/**
+ * The Flows Workflow is the first example of a workflow in the Harmonization Tool.  In the future, there will be many workflows that users can utilize.  The first operation that
+ * the user will perform once the Harmonization Tool is running and they have selected their working directories resides within the window produced in this class. 
+ * The window is called the Inventory Workflow (the window name can be found within the plugin.xml file).
+ * 
+ *
+ * @author ttransue
+ */
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
 
