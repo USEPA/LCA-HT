@@ -129,6 +129,11 @@
                   style="push">
             </command>
             <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
+                  label="Save Harmonized Data For openLCA (zip)"
+                  style="push">
+            </command>
+            <command
                   commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
                   label="Export entire TDB"
                   style="push">
@@ -439,6 +444,11 @@
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataJsonld"
+            name="Export Data to Jsonld">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
+            id="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
             name="Export Data to Jsonld">
       </command>
    </extension>

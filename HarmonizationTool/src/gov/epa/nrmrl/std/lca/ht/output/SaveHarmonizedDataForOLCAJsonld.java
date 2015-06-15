@@ -73,6 +73,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("Saving Harmonized Data to .jsonld file");
+		
+		String saveTo = event.getParameter("LCA-HT.outputFilename");
 		// DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 		// System.out.println("headerRow " + headerRow);
 
@@ -83,6 +85,11 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// dataRows.add(dataRow);
 		// }
 
+		String key = CSVTableView.getTableProviderKey();
+		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
+		String currentName = dataSourceProvider.getDataSourceName();
+		
+		if (saveTo == null) {
 		Shell shell = HandlerUtil.getActiveShell(event);
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
@@ -102,15 +109,13 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		Util.findView(CSVTableView.ID);
-		String key = CSVTableView.getTableProviderKey();
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
-		String currentName = dataSourceProvider.getDataSourceName();
 		dialog.setFileName(currentName + "_harmonized");
 
 		// GenericStringBox dataSetNameSelector = new GenericStringBox(shell, "(choose dataset)",
 		// DataSourceKeeper.getAlphabetizedNames());
 
-		String saveTo = dialog.open();
+		saveTo = dialog.open();
+		}
 		System.out.println("Save to: " + saveTo);
 		if (saveTo == null) {
 			// "dialog was cancelled or an error occurred"

@@ -3,7 +3,6 @@
 
 <product name="LCA Harmonization Tool" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -14,7 +13,6 @@
 
    <windowImages i16="icons/alt_window_16.gif" i32="icons/alt_window_32.gif"/>
 
-
    <launcher name="HarmonizeLCA">
       <solaris/>
       <win useIco="false">
@@ -22,10 +20,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="CSV-tools"/>
@@ -41,6 +37,7 @@
       <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
       <plugin id="json-tools"/>
+      <plugin id="olca2ht"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>

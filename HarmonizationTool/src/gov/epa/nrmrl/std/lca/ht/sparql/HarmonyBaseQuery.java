@@ -135,7 +135,7 @@ public abstract class HarmonyBaseQuery implements HarmonyQuery {
 			}
 			data = newData;
 			float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-			System.out.println("Time elapsed: " + elapsedTimeSec);
+			System.out.println("Time elapsed (BaseQuery): " + elapsedTimeSec);
 		} catch (Exception e) {
 			System.err.print("Error:" + e.getMessage());
 		} finally {

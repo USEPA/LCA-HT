@@ -111,7 +111,7 @@ public class HarmonyBaseUpdate implements HarmonyQuery {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
-		System.out.println("Time elapsed: " + elapsedTimeSec);
+		System.out.println("Time elapsed (BaseUpdate): " + elapsedTimeSec);
 		// long endModelSize = ActiveTDB.getModel().size();
 		long endModelSize = -1;
 

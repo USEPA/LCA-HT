@@ -43,7 +43,7 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
 		long timeStop = System.currentTimeMillis();
 		long time = timeStop - timeStart;
-		System.out.println("Time elapsed: " + time);
+		System.out.println("Time elapsed (Query2): " + time);
 		return resultSetRewindable;
 	}
 
