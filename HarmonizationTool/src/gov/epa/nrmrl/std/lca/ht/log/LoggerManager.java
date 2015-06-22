@@ -28,7 +28,7 @@ public class LoggerManager {
 	 */
 	public static void Init() {
 		System.out.println("The logger init is executing");
-		setUpRootLogger();
+//		setUpRootLogger();
 		setUpRunLogger();
 	}
 
@@ -46,21 +46,21 @@ public class LoggerManager {
 	 * A time pattern is generated.  This method is not used.
 
 	 */
-	private static void setUpRootLogger() {
-		Logger rootLogger = Logger.getRootLogger();
-		BasicConfigurator.configure();
-		rootLogger.setLevel(Level.INFO);
-
-		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
-		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
-
-		rootLogger.addAppender(new ConsoleAppender(layout));
-		
-		/**
-		 * Notification that LCAHT has started at a particular time. 
-		 */
-		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
-	}
+//	private static void setUpRootLogger() {
+//		Logger rootLogger = Logger.getRootLogger();
+//		BasicConfigurator.configure();
+//		rootLogger.setLevel(Level.INFO);
+//
+//		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
+//		// "%d{ISO8601} [%t] %-5p %c %x - %m%n");
+//
+//		rootLogger.addAppender(new ConsoleAppender(layout));
+//		
+//		/**
+//		 * Notification that LCAHT has started at a particular time. 
+//		 */
+//		rootLogger.info("Started LCAHT at: " + Util.getLocalDateFmt(new Date()));
+//	}
 
 	
 	
@@ -98,10 +98,10 @@ public class LoggerManager {
 	/**
 	 * This method initializes a Java-based logger (called log4j) with name tdbLogger.  The logger type is from com.hp.hpl.jena.tdb.base.file.BlockAccessMapped.  The logger level is set to TRACE.
 	 */
-	private static void setUpTDBLogger() {
-		Logger tdbLogger = Logger.getLogger("com.hp.hpl.jena.tdb.base.file.BlockAccessMapped");
-		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
-		tdbLogger.setLevel(Level.TRACE);
-
-	}
+//	private static void setUpTDBLogger() {
+//		Logger tdbLogger = Logger.getLogger("com.hp.hpl.jena.tdb.base.file.BlockAccessMapped");
+//		PatternLayout layout = new PatternLayout("%d{HH:mm:ss.SSS} [%t] %-5p %c %x - %m%n");
+//		tdbLogger.setLevel(Level.TRACE);
+//
+//	}
 }

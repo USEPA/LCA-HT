@@ -38,8 +38,8 @@ public class Util {
 
 	/**
 	 * Get the time in GMT
-	 * @param date		Pass in a date (of type Data) and the time in Gmt will be returned.
-	 * @return
+	 * @param date		Pass in a date (of type Date) and the time in GMT will be returned.
+	 * @return String
 	 */
 	public static String getGMTDateFmt(Date date) {
 		if (date == null) {
@@ -53,7 +53,7 @@ public class Util {
 	/**
 	 * Get the local time 
 	 * @param date		Pass in a type Date
-	 * @return
+	 * @return String
 	 */
 	public static String getLocalDateFmt(Date date) {
 		if (date == null) {
@@ -67,7 +67,7 @@ public class Util {
 	/**
 	 * Get the local time
 	 * @param calendar		Pass in a type Calendar.
-	 * @return
+	 * @return String
 	 */
 	public static String getLocalDateFmt(Calendar calendar) {
 		if (calendar == null) {
@@ -87,7 +87,7 @@ public class Util {
 	/**
 	 * This method will parse a string that has camel-casing into many words with the first word capitalized.
 	 * @param s		Pass in a string and it will be reformatted with spaces and the first word capitalized.
-	 * @return
+	 * @return String
 	 */
 	public static String splitCamelCase(String s) {
 		String pattern = String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
@@ -100,7 +100,7 @@ public class Util {
 
 	/** 
 	 * Get the version number of the Harmonization Tool from the platform product bundle version.
-	 * @return
+	 * @return String
 	 */
 	public static String getProductVersion() {
 		final IProduct product = Platform.getProduct();
