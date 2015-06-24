@@ -262,11 +262,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.READ);
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
-		Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+		//Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
 
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
-		System.out.println("unionModel: " + unionModel.size());
+		//System.out.println("unionModel: " + unionModel.size());
 		tdbDataset.end();
 		// ---- END SAFE -READ- TRANSACTION ---
 
@@ -323,10 +323,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.READ);
 		defaultModel = getModel(null);
 		exportModel = getModel(exportGraphName);
-		unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+		//unionModel = ModelFactory.createUnion(defaultModel, exportModel);
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
-		System.out.println("unionModel: " + unionModel.size());
+		//System.out.println("unionModel: " + unionModel.size());
 		tdbDataset.end();
 	}
 
