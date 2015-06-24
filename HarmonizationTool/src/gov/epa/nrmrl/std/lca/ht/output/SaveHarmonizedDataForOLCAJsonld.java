@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.output;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
@@ -15,11 +16,15 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
 //import java.util.Calendar;
@@ -85,8 +90,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// dataRows.add(dataRow);
 		// }
 
+		//TODO - create dialog to ask for the datasource to export, remove hardcoded electricity
+		DataSourceProvider dataSourceProvider = null;
 		String key = CSVTableView.getTableProviderKey();
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
+		if (key == null) {
+			System.out.println("Debug - no table, exporting asphalt");
+			dataSourceProvider = DataSourceKeeper.getByName("electricity");
+		}
+		else
+			dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
 		String currentName = dataSourceProvider.getDataSourceName();
 		
 		if (saveTo == null) {
@@ -391,6 +403,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 			tdbModel.write(fout, outType);
 			ActiveTDB.tdbDataset.end();
+			removePrefix(saveTo);
 			// ---- END SAFE -WRITE- TRANSACTION ---
 
 		} catch (FileNotFoundException e1) {
@@ -403,6 +416,30 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		/* To copy a dataset to the export graph */
 		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
 		return null;
+	}
+	
+	//OpenLCA does not handle the olca: prefix correctly.  Resolve by removing and letting the @context declaration handle
+	private void removePrefix(String path) {
+		String tempPath = path + ".lcaht.tmp";
+		File oldFile = new File(path);
+		File newFile = new File(tempPath);
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(oldFile));
+			String line = bufferedReader.readLine();
+			PrintWriter printWriter = new PrintWriter(new PrintWriter(newFile));
+			while (line != null) {
+				line = line.replaceAll("olca:", "");
+				printWriter.println(line);
+				line = bufferedReader.readLine();
+			}
+			printWriter.close();
+			bufferedReader.close();
+			oldFile.delete();
+			newFile.renameTo(oldFile);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	@Override
