@@ -1,9 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.flowProperty.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -309,8 +309,8 @@ public class FlowProperty {
 		}
 	}
 
-	private static List<QACheck> getPropertyNameCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getPropertyNameCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		return qaChecks;
 	}
 

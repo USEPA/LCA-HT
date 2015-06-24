@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.ui.PartInitException;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -63,7 +64,7 @@ public class Flow {
 		lcaDataPropertyProvider.setRequired(false);
 		lcaDataPropertyProvider.setUnique(true);
 		lcaDataPropertyProvider.setLeftJustified(true);
-		lcaDataPropertyProvider.setCheckLists(QACheck.getUUIDCheck());
+		lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 	}

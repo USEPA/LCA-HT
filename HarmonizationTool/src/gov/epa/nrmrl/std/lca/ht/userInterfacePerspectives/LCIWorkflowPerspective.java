@@ -1,4 +1,4 @@
-package gov.epa.nrmrl.std.lca.ht.perspectives;
+package gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
@@ -16,7 +16,7 @@ import org.eclipse.ui.IFolderLayout;
 
 public class LCIWorkflowPerspective implements IPerspectiveFactory {
 
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective";
 
 	public void createInitialLayout(IPageLayout layout) {
 //		addFastViews(layout);

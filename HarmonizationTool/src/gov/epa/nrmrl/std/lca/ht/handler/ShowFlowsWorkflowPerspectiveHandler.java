@@ -2,7 +2,8 @@
 
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV3;
+import gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -19,7 +20,7 @@ public class ShowFlowsWorkflowPerspectiveHandler implements IHandler {
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IPerspectiveRegistry perspectiveRegistry = wb.getPerspectiveRegistry();
 		IWorkbenchPage iWorkbenchPage = wb.getActiveWorkbenchWindow().getActivePage();
-		iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV3.ID));
+		iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(LCIWorkflowPerspective.ID));
 		return null;
 	}
 

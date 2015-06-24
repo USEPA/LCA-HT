@@ -14,18 +14,8 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV4"
-            name="Context or Property Matching Perspective">
-      </perspective>
-      <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV5"
-            name="Flowable Matching Perspective">
-      </perspective>
-      <perspective
-            class="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective"
-            id="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective"
+            class="gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective"
+            id="gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective"
             name="LCI Workflow Perspective">
       </perspective>
    </extension>
@@ -95,16 +85,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective">
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.OriginalPerspective">
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1">
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2">
+            targetID="gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective">
       </perspectiveExtension>
    </extension>
    <extension
@@ -200,17 +181,7 @@
                      label="Show Output Harmonized Data"
                      style="push">
                </command>
-               <command
-                     commandId="harmonizationtool.handler.ShowJobStatusHandler"
-                     label="Show Job Status"
-                     style="push">
-               </command>
             </menu>
-            <command
-                  commandId="org.eclipse.ui.window.resetPerspective"
-                  label="Reset Views"
-                  style="push">
-            </command>
          </menu>
          <menu
                label="SPARQL">
@@ -362,11 +333,6 @@
             name="Show Match Properties View">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
-            id="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsTreeEditorHandler"
-            name="Show Results Tree Editor">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowHandler"
             id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
             name="Show Flows Workflow Command">
@@ -430,11 +396,6 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             name="Save Harmonized Data">
-      </command>
-      <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.unused.ShowJobStatusHandler"
-            id="harmonizationtool.handler.ShowJobStatusHandler"
-            name="Show Job Status">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"

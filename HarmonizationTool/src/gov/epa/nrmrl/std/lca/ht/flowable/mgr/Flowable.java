@@ -1,11 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.csvFiles.Issue;
-import gov.epa.nrmrl.std.lca.ht.csvFiles.Status;
-import gov.epa.nrmrl.std.lca.ht.curation.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -15,23 +13,17 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -404,187 +396,41 @@ public class Flowable {
 		return true;
 	}
 
-	// public static Set<Resource> findMatchingFlowableResources(Flowable flowable) {
-	// Set<Resource> results = new HashSet<Resource>();
-	// Resource qResource = flowable.getTdbResource();
-	// String qName = flowable.getName();
-	// Literal qNameLiteral = ActiveTDB.tsCreateTypedLiteral(qName, null);
-	// // Model tdbModel = ActiveTDB.getModel();
-	// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-	// Model tdbModel = ActiveTDB.getModel(null);
-	// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-	// qNameLiteral);
-	// while (resIterator.hasNext()) {
-	// Resource flowableMatchCandidate = resIterator.next();
-	//
-	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-	// results.add(flowableMatchCandidate);
-	// }
-	// }
-	//
-	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-	// qNameLiteral);
-	// while (resIterator.hasNext()) {
-	// Resource flowableMatchCandidate = resIterator.next();
-	//
-	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-	// results.add(flowableMatchCandidate);
-	// }
-	// }
-	//
-	// for (String qSyn : flowable.getSynonyms()) {
-	// Literal qSynLiteral = ActiveTDB.tsCreateTypedLiteral(qSyn, null);
-	// resIterator = tdbModel.listSubjectsWithProperty(RDFS.label,
-	// qSynLiteral);
-	// while (resIterator.hasNext()) {
-	// Resource flowableMatchCandidate = resIterator.next();
-	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-	// results.add(flowableMatchCandidate);
-	// }
-	// }
-	//
-	// resIterator = tdbModel.listSubjectsWithProperty(SKOS.altLabel,
-	// qSynLiteral);
-	// while (resIterator.hasNext()) {
-	// Resource flowableMatchCandidate = resIterator.next();
-	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-	// results.add(flowableMatchCandidate);
-	// }
-	// }
-	// }
-	//
-	// // CAS MATCHING
-	// if (qResource.hasProperty(FedLCA.hasFormattedCAS)) {
-	// String cas = flowable.getCas();
-	// Literal qCASLiteral = ActiveTDB.tsCreateTypedLiteral(cas, null);
-	//
-	// resIterator = tdbModel.listSubjectsWithProperty(
-	// FedLCA.hasFormattedCAS, qCASLiteral);
-	// while (resIterator.hasNext()) {
-	// Resource flowableMatchCandidate = resIterator.next();
-	// if (flowableMatchCandidate.hasProperty(RDF.type, rdfClass)) {
-	// results.add(flowableMatchCandidate);
-	// }
-	// }
-	// }
-	// ActiveTDB.tdbDataset.end();
-	// return results;
-	// }
-
-	// public static String compareFlowables(Flowable queryFlowable,
-	// Flowable referenceFlowable) {
-	// // INFO TO SHARE FOR JUST NAME AND CAS:
-	// // ++++.+ (BOTH MATCH, BEST)
-	// // ----.+ (NAME DOESN'T MATCH, ASSUME ITS A SYNONYM), CAS MATCHES
-	// // ++++.0 (NAME MATCHES, CAS NOT PRESENT FOR ONE OR BOTH)
-	// // ++++.- (NAME MATCHES, CAS DOES NOT - RARE AND NEEDS INSPECTION)
-	//
-	// // NAME MATCH SCORES:
-	// // "+   "; IF NAMES MATCH OR "-   " IF THEY DON'T
-	// // " +  "; IF qSyn = rName OR " -  " IF THEY DON'T OR " 0  " IF NOT
-	// // PRESENT FOR ONE
-	// // "  + "; IF qName = rSyn OR "  - " IF THEY DON'T OR "  0 " IF NOT
-	// // PRESENT FOR ONE
-	// // "   +"; IF qSyn = rSyn OR "   -" IF THEY DON'T OR "   0" IF NOT
-	// // PRESENT FOR ONE
-	//
-	// String nameFlag = "-";
-	// String qName = queryFlowable.getName();
-	// String rName = referenceFlowable.getName();
-	// if (qName == null || rName == null) { // NOT SUPPOSED TO HAPPEN WITH
-	// // REQUIRED "name"
-	// nameFlag = "0";
-	// } else if (qName.equals("") || rName.equals("")) { // NOT SUPPOSED TO
-	// // HAPPEN WITH
-	// // REQUIRED "name"
-	// nameFlag = "0";
-	// } else if (qName.equals(rName)) {
-	// nameFlag = "+";
-	// }
-	//
-	// String synName = "0";
-	// String nameSyn = "0";
-	// String synSyn = "0";
-	// for (String qSynonym : queryFlowable.getSynonyms()) {
-	// if (synName.equals("0")) {
-	// synName = "-";
-	// }
-	// if (qSynonym.equals(rName)) {
-	// synName = "+";
-	// }
-	// for (String rSynonym : referenceFlowable.getSynonyms()) {
-	// if (nameSyn.equals("0")) {
-	// nameSyn = "-";
-	// }
-	// if (synSyn.equals("0")) {
-	// synSyn = "-";
-	// }
-	// if (qName.equals(rSynonym)) {
-	// nameSyn = "+";
-	// }
-	// if (qSynonym.equals(rSynonym)) {
-	// synSyn = "+";
-	// }
-	// }
-	// }
-	//
-	// for (String rSynonym : referenceFlowable.getSynonyms()) {
-	// if (nameSyn.equals("0")) {
-	// nameSyn = "-";
-	// }
-	// if (qName.equals(rSynonym)) {
-	// nameSyn = "+";
-	// }
-	// }
-	//
-	// String casFlag = "-";
-	// String qCas = queryFlowable.getCas();
-	// String rCas = referenceFlowable.getCas();
-	// if (qCas == null || rCas == null) {
-	// casFlag = "0";
-	// } else if (qCas.equals("") || rCas.equals("")) {
-	// casFlag = "0";
-	// } else if (qCas.equals(rCas)) {
-	// casFlag = "+";
-	// }
-	// return nameFlag + synName + nameSyn + synSyn + "." + casFlag;
-	// }
-
-	private static List<QACheck> getFormulaCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getFormulaCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		// Pattern p1 = Pattern.compile("?([A-Z][a-z]?\\d*)+");
 		// Issue i1 = new Issue("Double quote",
 		// "Chemical names may have a prime (single quote), but two or three primes should be represented by multiple single quote characters.",
 		// "Replace the double quote with two single quotes.  You may also use the auto-clean function.",
 		// true);
-		// qaChecks.add(new QACheck(p1, i1));
+		// qaChecks.add(new FormatCheck(p1, i1));
 		return qaChecks;
 	}
 
-	private static List<QACheck> getCASCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getCASCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		String d2 = "Non-standard CAS format";
 		String e2 = "CAS fields must be either blank or formatted propertly.  Data will be ignored.";
 		String s2 = "Standardize CAS";
 		Pattern acceptableCASFormat = Pattern.compile("^$|^\\d{2,7}-\\d\\d-\\d$|^\\d{5,10}$");
-		qaChecks.add(new QACheck(d2, e2, s2, acceptableCASFormat, null, true));
+		qaChecks.add(new FormatCheck(d2, e2, s2, acceptableCASFormat, null, true));
 		return qaChecks;
 	}
 
-	private static List<QACheck> getSmilesCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getSmilesCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 
 		// String d1 = "Invalid SMILES";
 		// String e1 = "Characters disallowed in SMILES include ...";
 		// String s1 = "Check the SMILES source.";
 		// Pattern p1 = Pattern.compile(" GET FROM TOMMY");
 		// String r2 = null;
-		// qaChecks.add(new QACheck(d1, e1, s1, p1, null, true));
+		// qaChecks.add(new FormatCheck(d1, e1, s1, p1, null, true));
 		return qaChecks;
 	}
 
-	private static List<QACheck> getFlowablesNameCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getFlowablesNameCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 
 		String d1 = "Non-allowed characters";
 		String e1 = "Various characters are not considered acceptible in standard chemical names.";
@@ -592,7 +438,7 @@ public class Flowable {
 		Pattern p1 = Pattern.compile("^([^\"]+)[\"]([^\"]+)$");
 		String r1 = null;
 
-		qaChecks.add(new QACheck(d1, e1, s1, p1, r1, false));
+		qaChecks.add(new FormatCheck(d1, e1, s1, p1, r1, false));
 		return qaChecks;
 	}
 
@@ -669,14 +515,14 @@ public class Flowable {
 		return false;
 	}
 
-	public static QACheck createBadCheckSumQACheck() {
+	public static FormatCheck createBadCheckSumQACheck() {
 
 		String d = "Invalid CAS";
 		String e = "A bad checksum has been detected.  Data will be used but flagged in TDB for bad checksum.";
 		String s = "Select ignore row or change CAS in data file.";
 		Pattern p = null;
 		String r = null;
-		return new QACheck(d, e, s, p, r, false);
+		return new FormatCheck(d, e, s, p, r, false);
 
 		// TODO CFowler: Change the color of the issues
 

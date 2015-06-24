@@ -1,15 +1,16 @@
 package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -326,8 +328,8 @@ public class FlowContext {
 		updateSyncDataFromTDB();
 	}
 
-	private static List<QACheck> getContextNameCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getContextNameCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		return qaChecks;
 	}
 

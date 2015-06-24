@@ -1,6 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
-import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
+import gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective;
 
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.ui.PlatformUI;
@@ -30,10 +30,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	}
 
 	public String getInitialWindowPerspectiveId() {
-//		return FlowDataV1.ID;
-//		return FlowDataV4.ID;
 		return LCIWorkflowPerspective.ID;
-//		return OriginalPerspective.ID;
 	}
 
 }

@@ -1,8 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.flowProperty.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -87,7 +87,7 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(true);
 				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(QACheck.getUUIDCheck());
+				lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
@@ -98,7 +98,7 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(true);
 				lcaDataPropertyProvider.setLeftJustified(false);
-				lcaDataPropertyProvider.setCheckLists(QACheck.getFloatCheck());
+				lcaDataPropertyProvider.setCheckLists(FormatCheck.getFloatCheck());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.unitConversionFactor);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
@@ -288,8 +288,8 @@ public class FlowUnit {
 		}
 	}
 
-	private static List<QACheck> getPropertyNameCheckList() {
-		List<QACheck> qaChecks = QACheck.getGeneralQAChecks();
+	private static List<FormatCheck> getPropertyNameCheckList() {
+		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		return qaChecks;
 	}
 

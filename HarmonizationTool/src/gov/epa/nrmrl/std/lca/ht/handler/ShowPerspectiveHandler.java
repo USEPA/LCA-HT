@@ -1,8 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.handler;
 
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV1;
-import gov.epa.nrmrl.std.lca.ht.perspectives.FlowDataV2;
-import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
+import gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -21,7 +19,8 @@ public class ShowPerspectiveHandler implements IHandler {
 		IWorkbench wb = PlatformUI.getWorkbench();
 
 		IPerspectiveRegistry perspectiveRegistry = wb.getPerspectiveRegistry();
-		IPerspectiveDescriptor[] perspectiveDescriptors = perspectiveRegistry.getPerspectives();
+		IPerspectiveDescriptor[] perspectiveDescriptors = perspectiveRegistry
+				.getPerspectives();
 		System.out.println("hello!");
 		for (IPerspectiveDescriptor ipd : perspectiveDescriptors) {
 			System.out.println("============");
@@ -31,23 +30,23 @@ public class ShowPerspectiveHandler implements IHandler {
 		}
 
 		// try {
-		IWorkbenchPage iWorkbenchPage = wb.getActiveWorkbenchWindow().getActivePage();
-		IPerspectiveDescriptor iPerspectiveDescriptor = iWorkbenchPage.getPerspective();
+		IWorkbenchPage iWorkbenchPage = wb.getActiveWorkbenchWindow()
+				.getActivePage();
+		IPerspectiveDescriptor iPerspectiveDescriptor = iWorkbenchPage
+				.getPerspective();
 		String id = iPerspectiveDescriptor.getId();
 
 		System.out.println("id " + id);
-//		if (id.equals(FlowDataV1.ID)) {
-//			System.out.println("Matched FlowDataV1!");
-//			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
-//		} else if (id.equals(FlowDataV2.ID)) {
-	 if (id.equals(FlowDataV2.ID)) {
-			System.out.println("Matched FlowDataV2!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(FlowDataV1.ID));
-		} else if (id.equals(LCIWorkflowPerspective.ID)) {
+		// if (id.equals(FlowDataV1.ID)) {
+		// System.out.println("Matched FlowDataV1!");
+		// iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(OriginalPerspective.ID));
+		// } else if (id.equals(FlowDataV2.ID)) {
+		if (id.equals(LCIWorkflowPerspective.ID)) {
 			System.out.println("Matched LCIWorkflowPerspective!");
-			iWorkbenchPage.setPerspective(perspectiveRegistry.findPerspectiveWithId(LCIWorkflowPerspective.ID));
+			iWorkbenchPage.setPerspective(perspectiveRegistry
+					.findPerspectiveWithId(LCIWorkflowPerspective.ID));
 
-		}  else {
+		} else {
 			System.out.println("No match, dude.  Sorry!");
 		}
 

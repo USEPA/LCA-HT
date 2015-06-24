@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class LCADataPropertyProvider {
 	private boolean isRequired = false; // e.g. true
 	private boolean isUnique = true; // e.g. false
 	private boolean leftJustified = true; // e.g. true
-	private List<QACheck> qaChecks; // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
+	private List<FormatCheck> qaChecks; // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
 	private Property tdbProperty;
 
 	// private List<Issue> issues = new ArrayList<Issue>();
@@ -154,24 +156,24 @@ public class LCADataPropertyProvider {
 		this.leftJustified = leftJustified;
 	}
 
-	public List<QACheck> getCheckLists() {
+	public List<FormatCheck> getCheckLists() {
 		return qaChecks;
 	}
 
-	public void setCheckLists(List<QACheck> checkLists) {
+	public void setCheckLists(List<FormatCheck> checkLists) {
 		this.qaChecks = checkLists;
 	}
 
-	public List<QACheck> copyCheckLists() {
-		List<QACheck> results = new ArrayList<QACheck>();
-		for (QACheck qaCheck : qaChecks) {
-			QACheck newQACheck = new QACheck(qaCheck);
+	public List<FormatCheck> copyCheckLists() {
+		List<FormatCheck> results = new ArrayList<FormatCheck>();
+		for (FormatCheck qaCheck : qaChecks) {
+			FormatCheck newQACheck = new FormatCheck(qaCheck);
 			results.add(newQACheck);
 		}
 		return results;
 	}
 
-	public void addQACheck(QACheck qaCheck) {
+	public void addQACheck(FormatCheck qaCheck) {
 		this.qaChecks.add(qaCheck);
 	}
 

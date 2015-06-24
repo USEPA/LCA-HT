@@ -1,5 +1,6 @@
 gov.epa.nrmrl.std.lca.ht.csvFiles
-gov.epa.nrmrl.std.lca.ht.curation
+gov.epa.nrmrl.std.lca.ht.dataCuration
+gov.epa.nrmrl.std.lca.ht.dataFormatCheck
 gov.epa.nrmrl.std.lca.ht.dataModels
 gov.epa.nrmrl.std.lca.ht.dialog
 gov.epa.nrmrl.std.lca.ht.flowContext.mgr
@@ -10,13 +11,11 @@ gov.epa.nrmrl.std.lca.ht.harmonizationtool
 gov.epa.nrmrl.std.lca.ht.job
 gov.epa.nrmrl.std.lca.ht.log
 gov.epa.nrmrl.std.lca.ht.output
-gov.epa.nrmrl.std.lca.ht.perspectives
 gov.epa.nrmrl.std.lca.ht.preferences
-gov.epa.nrmrl.std.lca.ht.snippets
 gov.epa.nrmrl.std.lca.ht.sparql
 gov.epa.nrmrl.std.lca.ht.sparqlQueries
 gov.epa.nrmrl.std.lca.ht.tdb
-gov.epa.nrmrl.std.lca.ht.unused
+gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives
 gov.epa.nrmrl.std.lca.ht.utils
 gov.epa.nrmrl.std.lca.ht.vocabulary
 gov.epa.nrmrl.std.lca.ht.workflows

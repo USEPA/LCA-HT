@@ -1,16 +1,22 @@
-package gov.epa.nrmrl.std.lca.ht.csvFiles;
-
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
+package gov.epa.nrmrl.std.lca.ht.dataFormatCheck;
 
 @SuppressWarnings("rawtypes")
+/**
+ * An Issue is created each time a field fails a FormatCheck. The Status of each
+ * issue may be changed following user action.
+ * 
+ * @author Tom Transue
+ * 
+ */
 public class Issue implements Comparable {
-	private QACheck qaCheck;
+	private FormatCheck qaCheck;
 	private int rowNumber;
 	private int colNumber;
 	private int characterPosition;
 	private Status status = null;
 
-	public Issue(QACheck qaCheck, int rowNumber, int colNumber, int characterPosition, Status status) {
+	public Issue(FormatCheck qaCheck, int rowNumber, int colNumber,
+			int characterPosition, Status status) {
 		this.qaCheck = qaCheck;
 		this.rowNumber = rowNumber;
 		this.colNumber = colNumber;
@@ -18,11 +24,11 @@ public class Issue implements Comparable {
 		this.status = status;
 	}
 
-	public QACheck getQaCheck() {
+	public FormatCheck getQaCheck() {
 		return qaCheck;
 	}
 
-	public void setQaCheck(QACheck qaCheck) {
+	public void setQaCheck(FormatCheck qaCheck) {
 		this.qaCheck = qaCheck;
 	}
 

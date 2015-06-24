@@ -1,21 +1,24 @@
-package gov.epa.nrmrl.std.lca.ht.csvFiles;
+package gov.epa.nrmrl.std.lca.ht.dataFormatCheck;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Each Issue is assigned a Status when a FormatCheck is run. The Status may be
+ * changed by the user or by the software following updates in analysis or
+ * interpretation.
+ * 
+ * @author Tom Transue
+ * 
+ */
 public enum Status {
-	UNCHECKED(0, 255, 255, 255),
-	NOISSUES(1, 255, 255, 255),
-	
-	NOTABLE(2, 0, 0, 255),
-	WARNING(3, 255, 255, 0),
-	FATAL(4, 255, 150, 150),
-	
+	UNCHECKED(0, 255, 255, 255), NOISSUES(1, 255, 255, 255),
+
+	NOTABLE(2, 0, 0, 255), WARNING(3, 255, 255, 0), FATAL(4, 255, 150, 150),
+
 	RESOLVED(10, 0, 255, 0);
-//	UNRESOLVED(2, 255, 0, 0),
-
-
+	// UNRESOLVED(2, 255, 0, 0),
 
 	private int value;
 	private int r;

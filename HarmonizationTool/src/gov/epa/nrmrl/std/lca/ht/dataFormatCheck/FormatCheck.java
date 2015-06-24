@@ -1,12 +1,20 @@
-package gov.epa.nrmrl.std.lca.ht.dataModels;
+package gov.epa.nrmrl.std.lca.ht.dataFormatCheck;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-//import org.eclipse.swt.widgets.TableColumn;
-
-public class QACheck {
+/**
+ * An instance of a FormatCheck is used to check the format of a string to
+ * determine if it can be parsed to the data type appropriate for the field for
+ * which it is designed. Each data field may have zero or more FormatCheck
+ * values defined. The result of running a FormatCheck test against a field is
+ * an Issue whose Status is intended to be checked by a user before proceeding.
+ * 
+ * @author Tom Transue
+ * 
+ */
+public class FormatCheck {
 	private String description;
 	private String explanation;
 	private String suggestion;
@@ -19,7 +27,8 @@ public class QACheck {
 		this.pattern = pattern;
 	}
 
-	public QACheck(String description, String explanation, String suggestion, Pattern pattern, String replacement,
+	public FormatCheck(String description, String explanation,
+			String suggestion, Pattern pattern, String replacement,
 			boolean patternMustMatch) {
 		this.description = description;
 		this.explanation = explanation;
@@ -29,7 +38,7 @@ public class QACheck {
 		this.patternMustMatch = patternMustMatch;
 	}
 
-	public QACheck(QACheck qaCheck) {
+	public FormatCheck(FormatCheck qaCheck) {
 		this.description = qaCheck.getDescription();
 		this.explanation = qaCheck.getExplanation();
 		this.suggestion = qaCheck.getSuggestion();
@@ -42,53 +51,54 @@ public class QACheck {
 		return pattern;
 	}
 
-	public static List<QACheck> getGeneralQAChecks() {
-		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+	public static List<FormatCheck> getGeneralQAChecks() {
+		List<FormatCheck> qaCheckPack = new ArrayList<FormatCheck>();
 		String d1 = "Bookend quotes";
 		String e1 = "The text is surrounded by apparently superfluous double quote marks.";
 		String s1 = "Remove these quote marks";
 		Pattern p1 = Pattern.compile("^\"([^\"]*)\"$");
 		String r1 = "$1";
-		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, false));
+		qaCheckPack.add(new FormatCheck(d1, e1, s1, p1, r1, false));
 
 		String d2 = "Leading and trailing space(s)";
 		String e2 = "At least one white space character occurs both before and after text.";
 		String s2 = "Remove leading and trailing space(s)";
 		Pattern p2 = Pattern.compile("^\\s+(.*?)\\s+$");
 		String r2 = "$1";
-		qaCheckPack.add(new QACheck(d2, e2, s2, p2, r2, false));
+		qaCheckPack.add(new FormatCheck(d2, e2, s2, p2, r2, false));
 
 		String d3 = "Leading space(s)";
 		String e3 = "At least one white space character occurs before text.";
 		String s3 = "Remove leading space(s)";
 		Pattern p3 = Pattern.compile("^\\s+(.*)$");
 		String r3 = "$1";
-		qaCheckPack.add(new QACheck(d3, e3, s3, p3, r3, false));
+		qaCheckPack.add(new FormatCheck(d3, e3, s3, p3, r3, false));
 
 		String d4 = "Trailing space(s)";
 		String e4 = "At least one white space character occurs after text.";
 		String s4 = "Remove leading space(s)";
 		Pattern p4 = Pattern.compile("^(.*?)\\s+$");
 		String r4 = "$1";
-		qaCheckPack.add(new QACheck(d4, e4, s4, p4, r4, false));
+		qaCheckPack.add(new FormatCheck(d4, e4, s4, p4, r4, false));
 
 		String d5 = "Non-ASCII character";
 		String e5 = "A character outside the standard ASCII printable range was detected.  This can not be auto-resolved.";
 		String s5 = "Run the character-encoding tool";
 		Pattern p5 = Pattern.compile("[^ -~]");
 		String r5 = null;
-		qaCheckPack.add(new QACheck(d5, e5, s5, p5, r5, false));
+		qaCheckPack.add(new FormatCheck(d5, e5, s5, p5, r5, false));
 		return qaCheckPack;
 	}
 
-	public static List<QACheck> getUUIDCheck() {
-		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+	public static List<FormatCheck> getUUIDCheck() {
+		List<FormatCheck> qaCheckPack = new ArrayList<FormatCheck>();
 		String d1 = "UUID format";
 		String e1 = "The text does not match a properly formatted UUID: hex digits separated by dashes: 8-4-4-4-12.";
 		String s1 = "Check format.  For example, sometimes leading zeros get removed.";
-		Pattern p1 = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
+		Pattern p1 = Pattern
+				.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
 		String r1 = null;
-		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, true));
+		qaCheckPack.add(new FormatCheck(d1, e1, s1, p1, r1, true));
 
 		return qaCheckPack;
 	}
@@ -141,14 +151,15 @@ public class QACheck {
 		this.handlerMethod = handlerMethod;
 	}
 
-	public static List<QACheck> getFloatCheck() {
-		List<QACheck> qaCheckPack = new ArrayList<QACheck>();
+	public static List<FormatCheck> getFloatCheck() {
+		List<FormatCheck> qaCheckPack = new ArrayList<FormatCheck>();
 		String d1 = "Float format";
 		String e1 = "The text does not match a properly formatted floating point number.";
 		String s1 = "Check format.";
-		Pattern p1 = Pattern.compile("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$");
+		Pattern p1 = Pattern
+				.compile("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$");
 		String r1 = null;
-		qaCheckPack.add(new QACheck(d1, e1, s1, p1, r1, true));
+		qaCheckPack.add(new FormatCheck(d1, e1, s1, p1, r1, true));
 
 		return qaCheckPack;
 	}

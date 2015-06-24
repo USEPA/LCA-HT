@@ -2,26 +2,29 @@ CFowler
 
 S = Suggestion
 
-S1: Two loggers are initialized.  runLogger and rootLogger.  rootLogger is not used.  It should be removed.
-
-S2: Refactor: change package name 'curation' to 'dataCuration'.  I think a better job can be done with naming the packages.  
-
-S3: Refactor: move QACheck.java to dataCuration package
-
-S4: Refactor: change 'perspectives' package name to 'userInterfacePerspectives'
 
 S5: I'm not entirely sure about this, but is the log4j.properties file being used at all?  If not, can we get rid of it?
 
-S6: Remove the 'unused' package entirely from the Harmonization Tool code base.  If you want to keep it around, keep it in a different project so that it doesn't pollute the code base.
-
 S7: Refactor: The 'sparql' package contains many classes that are unuzed.  It also seems a bit redundant to have queries in the 'sparql' package and then also have a 'sparqlQueries' package.  
     This is definitely a target for refactoring.
-    
-S8: Lots of commented out code in Flowables.  It could be removed.
 
 S9: Move CAS checkers to dataCuration package
 
 S10: Remove all QAChecks from Flowables classes (and any other classes) and place them in the location with other QAChecks.
 
 S11: 
+
+Done:
+2015-06-23 S2: Refactor: change package name 'curation' to 'dataCuration'.  I think a better job can be done with naming the packages.  
+
+2015-06-23 S3: Refactor: move QACheck.java to dataCuration package
+
+2015-06-23 S4: Refactor: change 'perspectives' package name to 'userInterfacePerspectives'
+
+2015-06-23 S6: Remove the 'unused' package entirely from the Harmonization Tool code base.  If you want to keep it around, keep it in a different project so that it doesn't pollute the code base.
+
+2015-06-23 S8: Lots of commented out code in Flowables.  It could be removed.
+
+2015-06-21 S1: Two loggers are initialized.  runLogger and rootLogger.  rootLogger is not used.  It should be removed.
+
 

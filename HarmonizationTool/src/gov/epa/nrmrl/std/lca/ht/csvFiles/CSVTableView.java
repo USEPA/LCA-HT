@@ -3,10 +3,12 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.Issue;
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.Status;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
-import gov.epa.nrmrl.std.lca.ht.dataModels.QACheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
@@ -708,7 +710,7 @@ public class CSVTableView extends ViewPart {
 		String startingText = tableItem.getText(colNumSelected);
 		for (Issue issue : getIssuesByColumn(colNumSelected)) {
 			if ((issue.getRowNumber() == rowNumSelected) && (!issue.getStatus().equals(Status.RESOLVED))) {
-				QACheck qaCheck = issue.getQaCheck();
+				FormatCheck qaCheck = issue.getQaCheck();
 				if (qaCheck.getReplacement() != null) {
 					Matcher matcher = qaCheck.getPattern().matcher(startingText);
 					String fixedValue = matcher.replaceFirst(qaCheck.getReplacement());
@@ -1601,7 +1603,7 @@ public class CSVTableView extends ViewPart {
 		TableItem tableItem = table.getItem(issue.getRowNumber());
 		String startingText = tableItem.getText(colNumber);
 		// System.out.println("trying to fix: " + startingText);
-		QACheck qaCheck = issue.getQaCheck();
+		FormatCheck qaCheck = issue.getQaCheck();
 		if (qaCheck.getReplacement() != null) {
 			Matcher matcher = qaCheck.getPattern().matcher(startingText);
 			String fixedText = matcher.replaceFirst(qaCheck.getReplacement());
@@ -1670,7 +1672,7 @@ public class CSVTableView extends ViewPart {
 		// csvColumnInfo.clearIssues();
 		List<String> columnValues = getColumnValues(colIndex);
 
-		for (QACheck qaCheck : lcaDataPropertyProvider.getCheckLists()) {
+		for (FormatCheck qaCheck : lcaDataPropertyProvider.getCheckLists()) {
 			for (int i = 0; i < columnValues.size(); i++) {
 				if (rowsToIgnore.contains(i)) {
 					continue;

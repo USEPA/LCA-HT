@@ -17,7 +17,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
-import gov.epa.nrmrl.std.lca.ht.perspectives.LCIWorkflowPerspective;
+import gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -600,7 +600,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 			// Util.setPerspective(FlowDataV4.ID);
-			// Util.setPerspective(LCIWorkflowPerspective.ID);
+			 Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
@@ -641,7 +641,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.setRowNumSelected(0);
 			CSVTableView.matchRowContents();
 			// Util.setPerspective(FlowDataV4.ID);
-			// Util.setPerspective(LCIWorkflowPerspective.ID);
+			 Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchProperties.ID);
 			} catch (PartInitException e1) {
