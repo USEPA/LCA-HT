@@ -270,7 +270,7 @@ public class ResultsView extends ViewPart {
 	 * @param title
 	 * @param bound
 	 * @param colNumber
-	 * @return
+	 * @return a TableViewerColumn
 	 */
 	private TableViewerColumn createTableViewerColumn(String title, int bound,
 			final int colNumber) {

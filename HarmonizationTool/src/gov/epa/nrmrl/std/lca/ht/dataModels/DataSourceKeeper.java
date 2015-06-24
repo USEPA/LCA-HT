@@ -109,8 +109,8 @@ public class DataSourceKeeper {
 	/**
 	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE TDB
 	 * 
-	 * @param proposedNewDataSourceName
-	 * @return
+	 * @param proposedNewDataSourceName is a String proposed as a new dataset name
+	 * @return a unique dataset name based on the proposed String (with an incremented integer at the end)
 	 */
 	public static String uniquify(String proposedNewDataSourceName) {
 		String uniqueName = proposedNewDataSourceName;

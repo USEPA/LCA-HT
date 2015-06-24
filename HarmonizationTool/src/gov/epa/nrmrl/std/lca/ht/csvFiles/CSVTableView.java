@@ -1392,7 +1392,7 @@ public class CSVTableView extends ViewPart {
 	 * @param title
 	 * @param bound
 	 * @param colNumber
-	 * @return
+	 * @return a TableViewerColumn
 	 */
 	private static TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
 

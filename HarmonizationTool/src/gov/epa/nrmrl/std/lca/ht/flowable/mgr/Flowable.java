@@ -446,7 +446,7 @@ public class Flowable {
 	 * Removes all leading zeroes and dashes in the CASRN if possible.
 	 * 
 	 * @param candidate	candidate is a CASRN of type string.  
-	 * @return
+	 * @return a sequence of 5 to 10 digits NOT starting with zero
 	 */
 	public static String stripCASdigits(String candidate) {
 		String strippedCas = "";
@@ -464,7 +464,7 @@ public class Flowable {
 	/**
 	 * 
 	 * @param candidate	candidate is a CASRN of type string.
-	 * @return
+	 * @return a standard CAS with 2 to 7 digits (not starting with a zero), a dash, two digits, a dash, and one digit
 	 */
 	public static String standardizeCAS(String candidate) {
 		String standardizedCas = "";
@@ -490,7 +490,6 @@ public class Flowable {
 	 * 
 	 * @param casNumber	Enter a CASRN with or without dashes.  The CASRN must be of type string.
 	 * @return	True if checksum passes, False if checksum fails.
-	 * @author cfowler
 	 */
 	public static boolean correctCASCheckSum(String casNumber) {
 
