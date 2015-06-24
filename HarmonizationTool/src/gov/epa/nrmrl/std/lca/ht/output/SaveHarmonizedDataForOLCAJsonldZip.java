@@ -92,6 +92,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 		File input = new File(tempOutputName);
 		File output = new File(saveTo);
 		new Json2Zip(input, output).run();
+		input.delete();
 		return null;
 	}
 
