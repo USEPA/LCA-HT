@@ -870,7 +870,7 @@ public class FlowsWorkflow extends ViewPart {
 		// + " matched. "
 		// + uniqueFlowPropertyRowNumbers.size() + " found.");
 
-		textCommit.setText(matchedFlowRowNumbers.size() + " of " + uniqueFlowRowNumbers.size() + " flows matched");
+//		textCommit.setText(matchedFlowRowNumbers.size() + " of " + uniqueFlowRowNumbers.size() + " flows matched");
 		CSVTableView.colorFlowRows();
 	}
 

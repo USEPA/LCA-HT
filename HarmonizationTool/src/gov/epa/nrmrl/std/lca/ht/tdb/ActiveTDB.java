@@ -57,15 +57,32 @@ import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+/**
+ * This Class is intended to provide commonly used methods more complex TDB access methods than those offered through
+ * the API. It including read and update queries.
+ * Methods using transactions as well as those not using transactions are included.  The latter are often called from
+ * within a transaction (e.g. in another method) since a transaction within a transaction is not allowed.
+ * 
+ * @author Tom Transue
+ *
+ */
 public class ActiveTDB implements IHandler, IActiveTDB {
-	// public static Model tdbModel = null; // DO NOT ATTEMPT TO MANAGE A STATIC
-	// COPY OF THE DEFAULT MODEL!!!
+	// public static Model tdbModel = null;
+	// DO NOT ATTEMPT TO MANAGE A STATIC COPY OF THE DEFAULT MODEL!!!
 	public static Dataset tdbDataset = null;
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
 	private static ActiveTDB instance = null;
 	public static MessageDialog creationMessage;
 
+	/**
+	 *  It appears that when retrieving a literal of type xsd:dateTime from the TDB, the Literal.getValue()
+	 *  method will cause an exception if the value stored does not contain fractions of a second.  Interestingly
+	 *  the API does not appear to have problems storing such values, suggesting the question of what if any checking
+	 *  is done prior to typing any Literal.  It would make sense for the engine to save time by assuming the user
+	 *  has properly typed their variable, but Jena would be better served if the getValue() function could fail more
+	 *  gracefully for incorrectly formatted entries.  More investigation may reveal more details.  
+	 */
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	// UNFORTUNATELY, THE FORMAT BELOW (WITHOUT MILLISECONDS) CRASHES WHEN
 	// TRYING TO RETRIEVE INFO AS Literal.getValue()
@@ -894,37 +911,42 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		s.addProperty(p, o);
 	}
 
+	/**
+	 * "TURTLE" TURTLE
+	 * "TTL" TURTLE
+	 * "Turtle" TURTLE
+	 * "N-TRIPLES" NTRIPLES
+	 * "N-TRIPLE" NTRIPLES
+	 * "NT" NTRIPLES
+	 * "RDF/XML" RDFXML
+	 * "N3" N3
+	 * "JSON-LD" JSONLD
+	 * "RDF/JSON" RDFJSON
+	 *
+	 * @param fileName = the file name (including the suffix) 
+	 * @return a String representing the RDF type associate with this file type
+	 */
 	public static String getRDFTypeFromSuffix(String fileName) {
-		String inputType = null;
 		if (fileName.matches(".*\\.rdf")) {
-			inputType = "RDF/XML";
-		} else if (fileName.matches(".*\\.nt")) {
-			inputType = "N-TRIPLES";
-		} else if (fileName.matches(".*\\.n3")) {
-			inputType = "N3";
-		} else if (fileName.matches(".*\\.ttl")) {
-			inputType = "TTL";
-		} else if (fileName.matches(".*\\.jsonld")) {
-			inputType = "JSON-LD";
-		} else if (fileName.matches(".*\\.json")) {
-			inputType = "JSON-LD";
+			return "RDF/XML";
 		}
-		/*
-		 * /* Jena reader RIOT Lang
-		 */
+		if (fileName.matches(".*\\.nt")) {
+			return "N-TRIPLES";
+		}
+		if (fileName.matches(".*\\.n3")) {
+			return "N3";
+		}
+		if (fileName.matches(".*\\.ttl")) {
+			return "TTL";
+		}
+		if (fileName.matches(".*\\.jsonld")) {
+			return "JSON-LD";
+		}
+		if (fileName.matches(".*\\.json")) {
+			return "JSON-LD";
+		}
 
-		/* "TURTLE" TURTLE */
-		/* "TTL" TURTLE */
-		/* "Turtle" TURTLE */
-		/* "N-TRIPLES" NTRIPLES */
-		/* "N-TRIPLE" NTRIPLES */
-		/* "NT" NTRIPLES */
-		/* "RDF/XML" RDFXML */
-		/* "N3" N3 */
-		/* "JSON-LD" JSONLD */
-		/* "RDF/JSON" RDFJSON */
-
-		return inputType;
+		return null;
 	}
 
 	public static void setModelPrefixMap(String exportgraphnameToUse) {

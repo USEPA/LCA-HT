@@ -2082,7 +2082,13 @@ public class CSVTableView extends ViewPart {
 		}
 		TableColumn tc = table.getColumn(0);
 		tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
-		table.getColumn(0).pack();
+		double digits = Math.floor(Math.log(matchedFlowRowNumbers.size())*Math.log(10));
+		digits+=Math.floor(Math.log(uniqueFlowRowNumbers.size())*Math.log(10));
+		digits+=1;
+		int digitWidth = (int) (digits * 8);
+//		table.getColumn(0).pack();
+		table.getColumn(0).setWidth(digitWidth);
+		
 	}
 
 	// public static Set<Integer> getUniqueFlowableRowNumbers() {

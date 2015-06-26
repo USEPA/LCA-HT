@@ -22,6 +22,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.StopWatch;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
@@ -33,23 +34,33 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PartInitException;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
- * @author tsb Tommy Cathey 919-541-1500
+ * 
+ * This class is run in a separate thread as it may take several minutes, and the user may wish to 
+ * make assignments while it runs.
+ * 
+ * The purpose is to go through a table of LCI user data row by row first matching Flowables, Flow Contexts,
+ * and Flow Properties.  At the end, the user Flows in which each of the three components are matched are
+ * checked against a list of master Flows.
+ * 
+ * @author Tommy Cathey 919-541-1500
  * @author Tom Transue 919-541-0494
  * 
- *         Job for executing AutoMatching rows in a CSVTableView.
  * 
  */
 public class AutoMatchJob extends Job {
@@ -144,7 +155,7 @@ public class AutoMatchJob extends Job {
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextCommit("0%");
+				FlowsWorkflow.setTextCommit("0/3 steps");
 			}
 		});
 		int percentComplete = 0;
@@ -180,7 +191,7 @@ public class AutoMatchJob extends Job {
 			}
 
 			if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
-				final String state = percentComplete + "%";
+				final String state = "1/3: " + percentComplete + "%";
 
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -355,12 +366,191 @@ public class AutoMatchJob extends Job {
 		}
 		// ========================== FLOW ==========================
 		// stopWatch06.start();
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				FlowsWorkflow.setTextCommit("Adding flow data...");
-				Flow.addAllFlowData();
+
+		Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
+		List<Integer> rowsToCheck = new ArrayList<Integer>();
+		percentComplete = 0;
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			// ========================== BEGIN ROW BY ROW ==========================
+			for (int rowNumber = 0; rowNumber < tableProvider.getData().size(); rowNumber++) {
+				if (rowsToIgnore.contains(rowNumber)) {
+					continue;
+				}
+				if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
+					final String state = "2/3: " + percentComplete + "%";
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							FlowsWorkflow.setTextCommit(state);
+							// Flow.addAllFlowData();
+						}
+					});
+					percentComplete += 1;
+				}
+
+				int rowNumberPlusOne = rowNumber + 1;
+				DataRow dataRow = tableProvider.getData().get(rowNumber);
+				boolean findMatchingFlow = true;
+				Resource tdbResource = tdbModel.createResource(Flow.getRdfclass());
+				if (rowNumberPlusOne > 0) {
+					Literal rowNumberLiteral = tdbModel.createTypedLiteral(rowNumberPlusOne);
+					tdbModel.add(tdbResource, FedLCA.sourceTableRowNumber, rowNumberLiteral);
+
+					if (dataRow.getFlowable() != null) {
+						tdbModel.add(tdbResource, ECO.hasFlowable, dataRow.getFlowable().getTdbResource());
+					} else {
+						findMatchingFlow = false;
+					}
+					if (dataRow.getFlowContext() != null) {
+						tdbModel.add(tdbResource, FedLCA.hasFlowContext, dataRow.getFlowContext().getTdbResource());
+					} else {
+						findMatchingFlow = false;
+					}
+					if (dataRow.getFlowUnit() != null) {
+						// tdbModel.add(tdbResource, FedLCA.hasFlowProperty, dataRow.getFlowUnit().getTdbResource());
+						tdbModel.add(tdbResource, FedLCA.hasFlowUnit, dataRow.getFlowUnit().getTdbResource());
+					} else {
+						findMatchingFlow = false;
+					}
+					if (dataSourceResource != null) {
+						tdbModel.add(tdbResource, ECO.hasDataSource, dataSourceResource);
+					} else {
+						findMatchingFlow = false;
+					}
+					if (flowCSVColumnNumberForUUID > -1) {
+						String value = dataRow.get(flowCSVColumnNumberForUUID - 1);
+						if (!value.equals("")) {
+							Literal valueAsLiteral = tdbModel.createTypedLiteral(value);
+							tdbModel.add(tdbResource, FedLCA.hasOpenLCAUUID, valueAsLiteral);
+						}
+					}
+					if (findMatchingFlow) {
+						rowsToCheck.add(rowNumber);
+					}
+				}
 			}
-		});
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("addFlowData failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
+		// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
+		percentComplete = 0;
+		int counter = 0;
+		for (int i : rowsToCheck) {
+			counter++;
+			if (100 * counter / rowsToCheck.size() >= percentComplete) {
+				final String state = "3/3: " + percentComplete + "%";
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setTextCommit(state);
+						// Flow.addAllFlowData();
+					}
+				});
+				percentComplete += 1;
+			}
+			FlowsWorkflow.addFlowRowNum(i, false);
+			int iPlusOne = i + 1;
+			b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("select distinct ?f ?mf \n");
+			b.append(" \n");
+			b.append("where { \n");
+			b.append(" \n");
+			b.append("  ?f fedlca:sourceTableRowNumber " + iPlusOne + " . \n");
+			b.append("  ?f eco:hasFlowable ?flowable . \n");
+			b.append("  optional {?f fedlca:hasOpenLCAUUID ?uuid } \n");
+			b.append("  ?c fedlca:comparedSource ?flowable . \n");
+			b.append("  ?c fedlca:comparedMaster ?mflowable . \n");
+			b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append("  ?mf eco:hasFlowable ?mflowable . \n");
+
+			b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
+			b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+			b.append("  ?mug fedlca:hasFlowUnit ?mflowUnit . \n");
+			b.append("  ?mFlowProperty fedlca:belongsToUnitGroup ?mug . \n");
+			b.append("  ?mf fedlca:hasFlowProperty ?mFlowProperty . \n");
+
+			b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
+			b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+			b.append("  ?mf fedlca:hasFlowContext ?mflowContext . \n");
+
+			b.append("  ?f a fedlca:Flow . \n");
+			b.append("  ?f eco:hasDataSource ?ds . \n");
+			b.append("  ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string . \n");
+			b.append("  ?c a fedlca:Comparison . \n");
+			b.append("  ?mf a fedlca:Flow . \n");
+			b.append("  ?mf eco:hasDataSource ?mds . \n");
+			b.append("  ?mds a lcaht:MasterDataset . \n");
+
+			b.append("} \n");
+
+			query = b.toString();
+			// System.out.println("Flow matching query \n" + query);
+
+			harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(query);
+			harmonyQuery2Impl.setGraphName(null);
+
+			resultSet = harmonyQuery2Impl.getResultSet();
+			final int colorIt = i;
+
+			if (resultSet.hasNext()) {
+				QuerySolution querySolution = resultSet.next();
+				Resource userFlowResource = querySolution.get("f").asResource();
+				Resource masterFlowResource = querySolution.get("mf").asResource();
+				// RDFNode uuidNode = querySolution.get("uuid");
+				// if (uuidNode != null){
+				// String uuidString = uuidNode.asLiteral().getString();
+				// ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
+				// }
+
+				flowMap.put(userFlowResource, masterFlowResource);
+
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.addMatchFlowRowNum(colorIt);
+					}
+				});
+			} else {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.removeMatchFlowRowNum(colorIt);
+					}
+				});
+			}
+		}
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = ActiveTDB.getModel(null);
+		try {
+			for (Resource key : flowMap.keySet()) {
+				tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("addFlowData failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
+
+		// return flowMap.size();
+		// }
+
+		// matchFlows(rowsToCheck);
+
+		// }
 		// stopWatch06.stop();
 		stopWatch01.stop();
 
