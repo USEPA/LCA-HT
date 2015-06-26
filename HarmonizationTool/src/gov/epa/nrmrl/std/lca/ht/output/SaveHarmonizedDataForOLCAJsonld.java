@@ -404,12 +404,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 			tdbModel.write(fout, outType);
 			ActiveTDB.tdbDataset.end();
+			fout.close();
 			removePrefix(saveTo);
 			// ---- END SAFE -WRITE- TRANSACTION ---
 
 		} catch (FileNotFoundException e1) {
 			ActiveTDB.tdbDataset.abort();
 			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		ActiveTDB.clearExportGraphContents();
