@@ -58,7 +58,8 @@ import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ActiveTDB implements IHandler, IActiveTDB {
-	// public static Model tdbModel = null; // DO NOT ATTEMPT TO MANAGE A STATIC COPY OF THE DEFAULT MODEL!!!
+	// public static Model tdbModel = null; // DO NOT ATTEMPT TO MANAGE A STATIC
+	// COPY OF THE DEFAULT MODEL!!!
 	public static Dataset tdbDataset = null;
 	// private static String tdbDir = null;
 	public static GraphStore graphStore = null;
@@ -66,8 +67,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static MessageDialog creationMessage;
 
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-	// UNFORTUNATELY, THE FORMAT BELOW (WITHOUT MILLISECONDS) CRASHES WHEN TRYING TO RETRIEVE INFO AS Literal.getValue()
-	// public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.XXX");
+	// UNFORTUNATELY, THE FORMAT BELOW (WITHOUT MILLISECONDS) CRASHES WHEN
+	// TRYING TO RETRIEVE INFO AS Literal.getValue()
+	// public static final SimpleDateFormat dateFormatter = new
+	// SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.XXX");
 
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
@@ -159,14 +162,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 						tdbCreated = true;
 						if (creationMessage != null)
 							creationMessage.close();
-						// TODO: Write to the Logger whether the TDB is freshly created or has contents already. Also
+						// TODO: Write to the Logger whether the TDB is freshly
+						// created or has contents already. Also
 						// write
 						// to the TDB that the session has started
 						// Prefixes.syncPrefixMapToTDBModel();
 					} catch (Exception e1) {
 						System.out.println("Exception: " + e1);
 						if (!prefsCanceled) {
-							// TODO: Determine when this message might display and what the user and software shoul do
+							// TODO: Determine when this message might display
+							// and what the user and software shoul do
 							// about it.
 							StringBuilder b = new StringBuilder();
 							b.append("It appears that the HT can not create a TDB in the default directory. ");
@@ -182,7 +187,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 				if (!tdbCreated) {
 					// ask user for TDB directory
-					// TODO: Determine when this message might display and what the user and software shoul do about it.
+					// TODO: Determine when this message might display and what
+					// the user and software shoul do about it.
 					new GenericMessageBox(shell, "Error", errMsg);
 					// If user has previously canceled with invalid data, quit.
 					if (prefsCanceled) {
@@ -262,11 +268,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.READ);
 		Model defaultModel = tdbDataset.getDefaultModel();
 		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
-		//Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+		// Model unionModel = ModelFactory.createUnion(defaultModel,
+		// exportModel);
 
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
-		//System.out.println("unionModel: " + unionModel.size());
+		// System.out.println("unionModel: " + unionModel.size());
 		tdbDataset.end();
 		// ---- END SAFE -READ- TRANSACTION ---
 
@@ -277,34 +284,36 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			b.append(Prefixes.getPrefixesForQuery());
 			b.append("insert {graph <" + exportGraphName + "> { \n");
 			b.append("    ?s ?p ?o . \n");
-//			b.append("    ?c ?p1 ?o1 . \n");
-//			b.append("    ?m ?p2 ?o2 . \n");
-//			b.append("    ?mdt ?p3 ?o3 . \n");
-//			b.append("    ?s4 ?p4 ?mdt . \n");
+			b.append("    ?c ?p1 ?o1 . \n");
+			b.append("    ?m ?p2 ?o2 . \n");
+			b.append("    ?mdt ?p3 ?o3 . \n");
+			b.append("    ?s4 ?p4 ?mdt . \n");
+			b.append("    ?s5 ?p5 ?m .  \n");
 			b.append("    }} \n");
 			b.append("  where {\n");
 			b.append("    ?s ?p ?o .  \n");
-//			b.append("    {{  \n");
-//			b.append("      ?s eco:hasDataSource ?ds .  \n");
-//			b.append("      ?ds rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
-//			b.append("      OPTIONAL {  \n");
-//			b.append("        ?c fedlca:comparedSource ?s . \n");
-//			b.append("        ?c fedlca:comparedMaster ?m . \n");
-//			b.append("        ?c ?p1 ?o1 .  \n");
-//			b.append("        ?m ?p2 ?o2 .  \n");
-//			b.append("      }  \n");
-//			b.append("      OPTIONAL {  \n");
-//			b.append("        ?s owl:sameAs ?mdt . \n");
-//			b.append("        ?mdt eco:hasDataSource ?mds . \n");
-//			b.append("        ?mds a  fedlca:MasterDataset . \n");
-//			b.append("        ?mdt ?p3 ?o3 .  \n");
-//			b.append("        ?s4 ?p4 ?mdt .  \n");
-//			b.append("      }  \n");
-//			b.append("    } UNION  \n");
-//			b.append("    {  \n");
-//			b.append("      ?s a eco:DataSource .  \n");
-//			b.append("      ?s rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
-//			b.append("    }}  \n");
+			b.append("    {{  \n");
+			b.append("      ?s eco:hasDataSource ?ds .  \n");
+			b.append("      ?ds rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
+			b.append("      OPTIONAL {  \n");
+			b.append("        ?c fedlca:comparedSource ?s . \n");
+			b.append("        ?c fedlca:comparedMaster ?m . \n");
+			b.append("        ?c ?p1 ?o1 .  \n");
+			b.append("        ?m ?p2 ?o2 .  \n");
+			b.append("        ?s5 ?p5 ?m .  \n");
+			b.append("      }  \n");
+			b.append("      OPTIONAL {  \n");
+			b.append("        ?s owl:sameAs ?mdt . \n");
+			b.append("        ?mdt eco:hasDataSource ?mds . \n");
+			b.append("        ?mds a  lcaht:MasterDataset . \n");
+			b.append("        ?mdt ?p3 ?o3 .  \n");
+			b.append("        ?s4 ?p4 ?mdt .  \n");
+			b.append("      }  \n");
+			b.append("    } UNION  \n");
+			b.append("    {  \n");
+			b.append("      ?s a eco:DataSource .  \n");
+			b.append("      ?s rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
+			b.append("    }}  \n");
 			b.append("  }\n");
 			String query = b.toString();
 			System.out.println("\n" + query + "\n");
@@ -323,10 +332,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		tdbDataset.begin(ReadWrite.READ);
 		defaultModel = getModel(null);
 		exportModel = getModel(exportGraphName);
-		//unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+		// unionModel = ModelFactory.createUnion(defaultModel, exportModel);
 		System.out.println("defaultModel: " + defaultModel.size());
 		System.out.println("exportModel: " + exportModel.size());
-		//System.out.println("unionModel: " + unionModel.size());
+		// System.out.println("unionModel: " + unionModel.size());
 		tdbDataset.end();
 	}
 
@@ -361,7 +370,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
-	
+
 	private static boolean prefsCanceled = false;
 
 	public static void markPrefsCanceled() {
@@ -782,8 +791,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					formattedDate = dateFormatter.format(dateConvertedFromCalendar);
 				}
 				literal = tdbModel.createTypedLiteral(formattedDate, XSDDatatype.XSDdateTime);
-				// TODO: QUESTION: Does Jena actually write something when creating Nodes? If not, no need for write-safe transaction....
-				// TODO: ... ALSO: Does it matter what graph the Node is created in?
+				// TODO: QUESTION: Does Jena actually write something when
+				// creating Nodes? If not, no need for write-safe
+				// transaction....
+				// TODO: ... ALSO: Does it matter what graph the Node is created
+				// in?
 			} else {
 				literal = tdbModel.createTypedLiteral(thingToMakeLiteral, rdfDatatype);
 			}
