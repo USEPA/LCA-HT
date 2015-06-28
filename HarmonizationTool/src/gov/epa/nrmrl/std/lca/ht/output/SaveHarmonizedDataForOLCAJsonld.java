@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -59,6 +60,7 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld";
@@ -162,9 +164,27 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
+		
+		List<Statement> statementsToFix = new ArrayList<Statement>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		Selector selector0 = new SimpleSelector(null, OpenLCA.lastChange, null, null);
+		StmtIterator stmtIterator0 = tdbModel.listStatements(selector0);
+		while (stmtIterator0.hasNext()) {
+			Statement statement = stmtIterator0.next();
+			statementsToFix.add(statement);
+		}
+		ActiveTDB.tdbDataset.end();
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		for (Statement statement:statementsToFix){
+			String unTypedDateTime = statement.getObject().toString();
+			Literal typedDateTime = tdbModel.createTypedLiteral(unTypedDateTime, XSDDatatype.XSDdateTime);
+			tdbModel.add(statement.getSubject(), OpenLCA.lastChange, typedDateTime);
+			tdbModel.remove(statement);
+			System.out.println("statement = "+statement);
+		}
 		// nothing
 		// RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
 		// Literal modLiteral = modNode.asLiteral();
@@ -249,7 +269,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION \n");
 			b.append("    optional {?of olca:lastChange ?oLastChange } \n");
 			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
-			b.append("    bind (\"" + modString + "\"^^" + XSDDatatype.XSDdateTime.getURI() + " as ?newLastChange) \n");
+			b.append("    bind (\"" + modString + "\"^^xsd:dateTime as ?newLastChange) \n");
+//			b.append("    bind (\"" + modString + "\" as ?newLastChange) \n");
 			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
 			b.append("   \n");
 			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");
@@ -259,7 +280,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("  } \n");
 			b.append("   \n");
 			String query = b.toString();
-			System.out.println("\n" + query + "\n");
+			System.out.println("Big query = \n" + query + "\n");
 			UpdateRequest request = UpdateFactory.create(query);
 			UpdateProcessor proc = UpdateExecutionFactory.create(request, ActiveTDB.graphStore);
 			proc.execute();
