@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -29,6 +30,8 @@ import java.util.List;
 
 
 
+
+
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -38,6 +41,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -75,6 +79,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		
+		Shell shell = HandlerUtil.getActiveShell(event);
+		ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell);
+		dlg.open();
+		String currentName = dlg.getSelection();
+		
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
 
@@ -92,20 +102,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 		// dataRows.add(dataRow);
 		// }
-
-		//TODO - create dialog to ask for the datasource to export, remove hardcoded electricity
-		DataSourceProvider dataSourceProvider = null;
-		String key = CSVTableView.getTableProviderKey();
-		if (key == null) {
-			System.out.println("Debug - no table, exporting asphalt");
-			dataSourceProvider = DataSourceKeeper.getByName("electricity");
-		}
-		else
-			dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
-		String currentName = dataSourceProvider.getDataSourceName();
 		
 		if (saveTo == null) {
-		Shell shell = HandlerUtil.getActiveShell(event);
+		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
 		String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };

@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.output;
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
+import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -10,6 +11,8 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+
 
 
 
@@ -22,6 +25,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.openlca.lcaht.converter.Json2Zip;
 
@@ -40,7 +44,10 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		
-
+		Shell shell = HandlerUtil.getActiveShell(event);
+		ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell);
+		dlg.open();
+		String currentName = dlg.getSelection();
 			
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
@@ -49,7 +56,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 
 		System.out.println("Saving Harmonized Data to .zip file");
 
-		Shell shell = HandlerUtil.getActiveShell(event);
+		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "Zip Files" };
 		String[] filterExtensions = new String[] { "*.zip" };
@@ -68,9 +75,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		Util.findView(CSVTableView.ID);
-		String key = CSVTableView.getTableProviderKey();
-		DataSourceProvider dataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
-		String currentName = dataSourceProvider.getDataSourceName();
+
 		dialog.setFileName(currentName + "_harmonized");
 
 		String saveTo = dialog.open();
@@ -81,8 +86,9 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 		}
 		
 		String tempOutputName = saveTo + ".tmp.json";
-		HashMap newParams = new HashMap(event.getParameters());
+		HashMap<String, String> newParams = new HashMap<String,String>(event.getParameters());
 		newParams.put("LCA-HT.outputFilename", tempOutputName);
+		newParams.put("LCA-HT.exportDataSetName", currentName);
 		ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),event.getApplicationContext());
 		
 		runLogger.debug("Converting to OpenLCA Zip");
