@@ -68,8 +68,8 @@ public class FlowContext {
 				lcaDataPropertyProvider.setPropertyClass(label);
 				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(true);
-				lcaDataPropertyProvider.setUnique(true);
+				lcaDataPropertyProvider.setRequired(false);
+				lcaDataPropertyProvider.setUnique(false);
 				lcaDataPropertyProvider.setLeftJustified(true);
 				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextGeneral);

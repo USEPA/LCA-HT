@@ -28,10 +28,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
-
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -67,7 +63,7 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
-	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataForOLCAJsonld";
+	public static final String ID = "gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld";
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -79,19 +75,19 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		
+
 		Shell shell = HandlerUtil.getActiveShell(event);
 		ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell);
 		dlg.open();
 		String currentName = dlg.getSelection();
-		
+
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
 
 		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("Saving Harmonized Data to .jsonld file");
-		
+
 		String saveTo = event.getParameter("LCA-HT.outputFilename");
 		// DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 		// System.out.println("headerRow " + headerRow);
@@ -102,33 +98,33 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 		// dataRows.add(dataRow);
 		// }
-		
+
 		if (saveTo == null) {
-		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
-		String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
+			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+			String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
+			String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
 
-		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
-		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
-			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
-		}
-		if (outputDirectory.length() > 0) {
-			dialog.setFilterPath(outputDirectory);
-		} else {
-			String homeDir = System.getProperty("user.home");
-			dialog.setFilterPath(homeDir);
-		}
+			String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
+			if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
+				outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
+			}
+			if (outputDirectory.length() > 0) {
+				dialog.setFilterPath(outputDirectory);
+			} else {
+				String homeDir = System.getProperty("user.home");
+				dialog.setFilterPath(homeDir);
+			}
 
-		dialog.setFilterNames(filterNames);
-		dialog.setFilterExtensions(filterExtensions);
-		Util.findView(CSVTableView.ID);
-		dialog.setFileName(currentName + "_harmonized");
+			dialog.setFilterNames(filterNames);
+			dialog.setFilterExtensions(filterExtensions);
+			Util.findView(CSVTableView.ID);
+			dialog.setFileName(currentName + "_harmonized");
 
-		// GenericStringBox dataSetNameSelector = new GenericStringBox(shell, "(choose dataset)",
-		// DataSourceKeeper.getAlphabetizedNames());
+			// GenericStringBox dataSetNameSelector = new GenericStringBox(shell, "(choose dataset)",
+			// DataSourceKeeper.getAlphabetizedNames());
 
-		saveTo = dialog.open();
+			saveTo = dialog.open();
 		}
 		System.out.println("Save to: " + saveTo);
 		if (saveTo == null) {
@@ -137,7 +133,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
-		ActiveTDB.copyDatasetContentsToExportGraph(currentName);
+		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
+		ActiveTDB.copyDefaultModelToExportGraph();
 
 		/*
 		 * Once data are copied into the export graph, data can be prepared for openLCA 1) Determine which Flows have
@@ -163,7 +160,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		
+
 		List<Statement> statementsToFix = new ArrayList<Statement>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
@@ -177,12 +174,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-		for (Statement statement:statementsToFix){
+		for (Statement statement : statementsToFix) {
 			String unTypedDateTime = statement.getObject().toString();
 			Literal typedDateTime = tdbModel.createTypedLiteral(unTypedDateTime, XSDDatatype.XSDdateTime);
 			tdbModel.add(statement.getSubject(), OpenLCA.lastChange, typedDateTime);
 			tdbModel.remove(statement);
-			System.out.println("statement = "+statement);
+			// System.out.println("statement = "+statement);
 		}
 		// nothing
 		// RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
@@ -269,7 +266,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    optional {?of olca:lastChange ?oLastChange } \n");
 			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
 			b.append("    bind (\"" + modString + "\"^^xsd:dateTime as ?newLastChange) \n");
-//			b.append("    bind (\"" + modString + "\" as ?newLastChange) \n");
+			// b.append("    bind (\"" + modString + "\" as ?newLastChange) \n");
 			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
 			b.append("   \n");
 			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");
@@ -439,8 +436,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
 		return null;
 	}
-	
-	//OpenLCA does not handle the olca: prefix correctly.  Resolve by removing and letting the @context declaration handle
+
+	// OpenLCA does not handle the olca: prefix correctly. Resolve by removing and letting the @context declaration
+	// handle
 	private void removePrefix(String path) {
 		String tempPath = path + ".lcaht.tmp";
 		File oldFile = new File(path);
@@ -461,7 +459,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	@Override

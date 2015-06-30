@@ -279,6 +279,27 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
+	public static void copyDefaultModelToExportGraph() {
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model defaultModel = tdbDataset.getDefaultModel();
+		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
+		try {
+			exportModel.add(defaultModel);
+			// Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
+
+			System.out.println("defaultModel: " + defaultModel.size());
+			System.out.println("exportModel: " + exportModel.size());
+			// System.out.println("unionModel: " + unionModel.size());
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+	}
+
 	public static void copyDatasetContentsToExportGraph(String datasetName) {
 
 		// --- BEGIN SAFE -READ- TRANSACTION ---

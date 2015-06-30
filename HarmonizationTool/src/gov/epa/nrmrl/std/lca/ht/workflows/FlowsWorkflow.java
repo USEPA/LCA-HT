@@ -17,6 +17,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJob;
 import gov.epa.nrmrl.std.lca.ht.job.AutoMatchJobChangeListener;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerViewer;
+import gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld;
 import gov.epa.nrmrl.std.lca.ht.userInterfacePerspectives.LCIWorkflowPerspective;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -702,56 +703,66 @@ public class FlowsWorkflow extends ViewPart {
 	// ------------- CONCLUDE FILE LISTENER ----------------
 	SelectionListener concludeFileListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			CSVTableView.clearFilterRowNumbers();
-			CSVTableView.reset();
-			CSVTableView.initialize();
-			CSVTableView.setSelection(0);
+//			CSVTableView.clearFilterRowNumbers();
+//			CSVTableView.reset();
+//			CSVTableView.initialize();
+//			CSVTableView.setSelection(0);
 
-			btnLoadUserData.setEnabled(true);
-			textLoadUserData.setText("");
+//			btnLoadUserData.setEnabled(true);
+//			textLoadUserData.setText("");
 
-			btnCheckData.setEnabled(false);
-			textCheckData.setText("");
+//			btnCheckData.setEnabled(false);
+//			textCheckData.setText("");
 
-			btnCommit.setEnabled(false);
-			textCommit.setText("");
+//			btnCommit.setEnabled(false);
+//			textCommit.setText("");
 
-			btnMatchFlowables.setEnabled(false);
-			textMatchFlowables.setText("");
+//			btnMatchFlowables.setEnabled(false);
+//			textMatchFlowables.setText("");
 
-			btnMatchFlowContexts.setEnabled(false);
-			textMatchFlowContexts.setText("");
+//			btnMatchFlowContexts.setEnabled(false);
+//			textMatchFlowContexts.setText("");
 
-			btnMatchFlowProperties.setEnabled(false);
-			textMatchFlowProperties.setText("");
+//			btnMatchFlowProperties.setEnabled(false);
+//			textMatchFlowProperties.setText("");
 
-			btnConcludeFile.setEnabled(false);
+//			btnConcludeFile.setEnabled(false);
 
-			uniqueFlowContextRowNumbers.clear();
-			uniqueFlowPropertyRowNumbers.clear();
-			uniqueFlowableRowNumbers.clear();
-			uniqueFlowRowNumbers.clear();
+//			uniqueFlowContextRowNumbers.clear();
+//			uniqueFlowPropertyRowNumbers.clear();
+//			uniqueFlowableRowNumbers.clear();
+//			uniqueFlowRowNumbers.clear();
 
-			matchedFlowContextRowNumbers.clear();
-			matchedFlowPropertyRowNumbers.clear();
-			matchedFlowableRowNumbers.clear();
-			matchedFlowRowNumbers.clear();
+//			matchedFlowContextRowNumbers.clear();
+//			matchedFlowPropertyRowNumbers.clear();
+//			matchedFlowableRowNumbers.clear();
+//			matchedFlowRowNumbers.clear();
 
 			if (btnConcludeFile.getText().equals("Export Harmonized Data")) {
 				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 				try {
-					handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler", null);
+					handlerService.executeCommand(SaveHarmonizedDataForOLCAJsonld.ID, null);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 				// MatchFlowables.initialize();
 
 			} else if (btnConcludeFile.getText().equals("Cancel Harmonization")) {
+				CSVTableView.clearFilterRowNumbers();
+				CSVTableView.reset();
+				CSVTableView.initialize();
+				CSVTableView.setSelection(0);
+
+				btnLoadUserData.setEnabled(true);
+				textLoadUserData.setText("");
+
+				btnCheckData.setEnabled(false);
+				textCheckData.setText("");
+
 				// TODO - CONFIRM WITH USER
 				// TODO - REMOVE THE FileMD
 				// TODO - INDICATE THAT FILE CONTENT WAS REMOVED
 				MatchFlowables.initialize();
-
 			}
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 

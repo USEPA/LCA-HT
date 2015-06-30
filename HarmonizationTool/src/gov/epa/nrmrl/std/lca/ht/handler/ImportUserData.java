@@ -492,8 +492,10 @@ public class ImportUserData implements IHandler {
 		b.append("  #--- FLOW CONTEXT \n");
 		b.append("  ?f olca:category ?cat . \n");
 		b.append("  ?cat olca:name ?context_specific . \n");
-		b.append("  ?cat olca:parentCategory ?parentCat . \n");
-		b.append("  ?parentCat olca:name ?context_general . \n");
+		b.append("  optional { \n");
+		b.append("    ?cat olca:parentCategory ?parentCat . \n");
+		b.append("    ?parentCat olca:name ?context_general . \n");
+		b.append("  } \n");
 		b.append("  bind (fn:string-length(str(?cat)) as ?cat_length) \n");
 		b.append(" \n");
 		b.append("  #--- FLOW PROPERTY \n");
