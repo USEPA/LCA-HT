@@ -1,0 +1,33 @@
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+SELECT (afn:localname(?s1) as ?q_sub) (str(?name) as ?q_name) (str(?cas) as ?same_cas) (str(?name2) as ?db_name) (afn:localname(?s2) as ?db_sub) (concat(afn:localname(?ds_match),":",str(?ds_name)," ",str(?mj),".",str(?mn)) as ?from_data_set) 
+
+WHERE {
+      ?s1 eco:hasDataSource eco:ds_001 .
+      ?s2 eco:hasDataSource ?ds_match .
+      ?s1 eco:casNumber ?cas . 
+      ?s2 eco:casNumber ?cas .  
+      ?s1 rdfs:label ?name .
+      ?s2 rdfs:label ?name2 . 
+filter (fn:upper-case(?name) = fn:upper-case(?name2))
+#((?name = ?name2) as ?match)
+      ?s1 a eco:Substance . 
+      ?s2 a eco:Substance . 
+      ?ds_match rdfs:label ?ds_name .
+      ?ds_match eco:hasMajorVersionNumber ?mj .
+      ?ds_match eco:hasMajorVersionNumber ?mn .
+
+      filter(str(afn:localname(?ds_match)) != "ds_001") .
+}
+order by ?q_sub ?ds_match
+#limit 4
+#      group by ?ds_match

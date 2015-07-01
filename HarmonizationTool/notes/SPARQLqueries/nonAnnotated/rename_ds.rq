@@ -1,0 +1,16 @@
+##
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#> 
+PREFIX  eco:  <http://ontology.earthster.org/eco/core#> 
+
+DELETE { 
+  ?ds rdfs:label "oldName"^^xsd:string .
+}
+INSERT {
+  ?ds rdfs:label "newName"^^xsd:string .
+}
+
+where {
+  ?ds a eco:DataSource .
+  ?ds rdfs:label "oldName"^^xsd:string .
+}

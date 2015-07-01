@@ -1,0 +1,23 @@
+##
+prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> 
+prefix eco:    <http://ontology.earthster.org/eco/core#> 
+prefix ecoi:   <http://ontology.earthster.org/eco/impact#> 
+prefix  afn:   <http://jena.hpl.hp.com/ARQ/function#>
+prefix  xml:   <http://www.w3.org/XML/1998/namespace>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> 
+prefix xsd:    <http://www.w3.org/2001/XMLSchema#> 
+prefix owl:    <http://www.w3.org/2002/07/owl#> 
+prefix skos:   <http://www.w3.org/2004/02/skos/core#> 
+prefix  fn:    <http://www.w3.org/2005/xpath-functions#>
+
+select (str(afn:localname(?to)) as ?master ) (str(afn:localname(?from)) as ?data)  (str(afn:localname(?eq)) as ?basis)  where {
+?e ethold:equivalentFrom ?from .
+?e ethold:equivalentTo ?to .
+?e ethold:hasEquivalenceBasis ?eq .
+#?e ethold:hasEquivalenceBasis ?eq1 .
+#?e ethold:hasEquivalenceBasis ?eq2 .
+#filter (?eq1 != ?eq2)
+
+}
+order by ?to ?from ?basis

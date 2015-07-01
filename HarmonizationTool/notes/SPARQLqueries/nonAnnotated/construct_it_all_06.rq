@@ -1,0 +1,79 @@
+#
+  delete {  
+    ?of olca:description ?oDescription ; 
+        olca:lastChange ?oLastChange ; 
+        olca:cas ?oCas ; 
+        olca:name ?oName ; 
+        fedlca:hasOpenLCAUUID ?oUUID . 
+  }
+   
+  insert {
+    ?of olca:description ?newDescription ; 
+        olca:lastChange ?newLastChange ; 
+        olca:cas ?newCas ; 
+        olca:name ?mName ; 
+        fedlca:hasOpenLCAUUID ?newUUID . 
+  }
+  
+  where { 
+    #-- olca:Flow 
+    ?of a olca:Flow . 
+    ?of fedlca:hasOpenLCAUUID ?oUUID . 
+    ?pf a fedlca:Flow . 
+   
+    #-- fedlca:Flow (parsed) 
+    ?pf fedlca:hasOpenLCAUUID ?oUUID . 
+    ?pf fedlca:sourceTableRowNumber ?row . 
+   
+    ?pf owl:sameAs ?mf . 
+    #-- fedlca:Flow (master) 
+    ?mf a fedlca:Flow . 
+    ?mf eco:hasFlowable ?mflowable . 
+    ?mds a lcaht:MasterDataset . 
+    ?mf eco:hasDataSource ?mds . 
+   
+    #-- olca:name == rdfs:label -- 1 CONDITION NEEDING ACTION 
+    ?of olca:name ?oName . 
+    ?mflowable rdfs:label ?mName . 
+    bind (IF ((str(?oName) != str(?mName) ) , concat("; name: master = ", ?mName) , "") as ?cName) 
+   
+    #-- olca:cas == fedlca:hasFormattedCas -- 3 CONDITIONS NEEDING ACTION 
+    optional { ?of olca:cas ?oCas . } 
+    optional { ?mflowable fedlca:hasFormattedCas ?mCas . } 
+    bind (IF (( bound(?oCas) &&  bound(?mCas) && str(?oCas) != str(?mCas)) , concat("; cas: original = ",?oCas),"") as ?c1Cas) 
+    bind (IF ((!bound(?oCas) &&  bound(?mCas)) , "; cas: original not defined","") as ?c2Cas) 
+    bind (IF (( bound(?oCas) && !bound(?mCas)) , "; cas: master not defined","") as ?c3Cas) 
+    bind (concat(?c1Cas,?c2Cas,?c3Cas) as ?cCas) 
+    bind (IF ((?c1Cas != "" || ?c2Cas != "" || ?c3Cas != ""),?mCas, ?oCas) as ?newCas) 
+    #-- ABOVE, THE USE OF ?oCas IS TO ENSURE THAT IT GETS PUT BACK SINCE IT WILL BE DELETED 
+   
+    #-- olca:formula == eco:chemicalFormula -- 3 CONDITIONS NEEDING ACTION 
+    optional { ?of olca:formula ?oFormula . } 
+    optional { ?mflowable eco:chemicalFormula ?mFormula . } 
+    bind (IF (( bound(?oFormula) &&  bound(?mFormula) && str(?oFormula) != str(?mFormula)) , concat("; formula: original = ",?oFormula),"") as ?c1Formula) 
+    bind (IF ((!bound(?oFormula) &&  bound(?mFormula)) , "; formula: original not defined","") as ?c2Formula) 
+    bind (IF (( bound(?oFormula) && !bound(?mFormula)) , "; formula: master not defined","") as ?c3Formula) 
+    bind (concat(?c1Formula,?c2Formula,?c3Formula) as ?cFormula) 
+   
+    #-- fedlca:hasOpenLCAUUID (for both) -- 4 CONDITIONS NEEDING ACTION 
+    optional { ?mf fedlca:hasOpenLCAUUID ?mUUID . } 
+    bind (IF (( bound(?oUUID) &&  bound(?mUUID) && str(?oUUID) != str(?mUUID)) , concat("; UUID: original = ",?oUUID),"") as ?c1UUID) 
+    bind (IF ((!bound(?oUUID) &&  bound(?mUUID)) , "; UUID: original not defined","") as ?c2UUID) 
+    #-- ABOVE NOT NEEDED UNLESS WE MAKE THE oUUID OPTIONAL 
+    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , "; UUID: master not defined","") as ?c3UUID) 
+    bind (IF ((!bound(?oUUID) && !bound(?mUUID)) , "; UUID: new value created","") as ?c4UUID) 
+    bind (concat(?c1UUID,?c2UUID,?c3UUID,?c4UUID) as ?cUUID) 
+    bind (IF (( bound(?oUUID) &&  bound(?mUUID)) , str(?mUUID),"") as ?new1UUID) 
+    bind (IF (( bound(?oUUID) && !bound(?mUUID)) , str(?oUUID),"") as ?new2UUID) 
+    bind (concat(?new1UUID,?new2UUID) as ?newUUID) 
+   
+    #-- olca:lastChange -- 1 CONDITION NEEDING ACTION 
+    optional {?of olca:lastChange ?oLastChange } 
+    bind (IF (bound(?oLastChange) , concat("; previous lastChange: ",str(?oLastChange)),"") as ?cLastChange)  
+    bind (now() as ?newLastChange) 
+   
+    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED 
+    optional {?of olca:description ?oDescription } 
+    bind (IF (!bound(?oDescription) , concat("Description created:",str(now())),?oDescription) as ?cDescription)  
+    bind (concat(?cDescription , ?cUUID, ?cName, ?cCas, ?cFormula , ?cLastChange) as ?newDescription) 
+  } 

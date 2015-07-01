@@ -1,0 +1,32 @@
+##
+PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  gc:   <http://data.actor.epa.gov/2012_q1/genericChemical#>
+PREFIX  traci: <http://data.lca.std.nrmrl.epa.gov/harm_tool/TRACI2.1#>
+PREFIX  xml:  <http://www.w3.org/XML/1998/namespace>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca#>
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  acto: <http://ontology.actor.epa.gov/core#>
+PREFIX  fn:   <http://www.w3.org/2005/xpath-functions#>
+PREFIX  eco:  <http://ontology.earthster.org/eco/core#>
+
+select  * where {
+{SELECT (count(?s) as  ?ACToR2012_1           ) where {?s eco:hasDataSource eco:ACToR2012.1          . }}
+{SELECT (count(?s) as  ?TRACI2_1              ) where {?s eco:hasDataSource eco:TRACI2.1             . }}
+{SELECT (count(?s) as  ?compartments_es1_0    ) where {?s eco:hasDataSource eco:compartments_es1.0   . }}
+{SELECT (count(?s) as  ?compartments_es2_0    ) where {?s eco:hasDataSource eco:compartments_es2.0   . }}
+{SELECT (count(?s) as  ?compartments_ilcd0_1  ) where {?s eco:hasDataSource eco:compartments_ilcd0.1 . }}
+{SELECT (count(?s) as  ?effects_es1_0         ) where {?s eco:hasDataSource eco:effects_es1.0        . }}
+{SELECT (count(?s) as  ?effects_es2_0         ) where {?s eco:hasDataSource eco:effects_es2.0        . }}
+{SELECT (count(?s) as  ?effects_ilcd0_1       ) where {?s eco:hasDataSource eco:effects_ilcd0.1      . }}
+{SELECT (count(?s) as  ?effects_usda0_1       ) where {?s eco:hasDataSource eco:effects_usda0.1      . }}
+{SELECT (count(?s) as  ?flows_es1_0           ) where {?s eco:hasDataSource eco:flows_es1.0          . }}
+{SELECT (count(?s) as  ?flows_es2_0           ) where {?s eco:hasDataSource eco:flows_es2.0          . }}
+{SELECT (count(?s) as  ?flows_ilcd0_1         ) where {?s eco:hasDataSource eco:flows_ilcd0.1        . }}
+{SELECT (count(?s) as  ?flows_usda0_1         ) where {?s eco:hasDataSource eco:flows_usda0.1        . }}
+{SELECT (count(?s) as  ?ilcd_maps_es1_0       ) where {?s eco:hasDataSource eco:ilcd_maps_es1.0      . }}
+{SELECT (count(?s) as  ?ilcd_maps_es2_0       ) where {?s eco:hasDataSource eco:ilcd_maps_es2.0      . }}
+}
+

@@ -1,0 +1,39 @@
+#
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+select distinct ?f ?uuuid ?muuid where {
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedMaster ?mflowable .
+  ?c fedlca:comparedSource ?flowable .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+  ?f eco:hasFlowable ?flowable .
+  optional {?f fedlca:hasOpenLCAUUID ?uuuid }
+  ?mf eco:hasFlowable ?mflowable .
+  ?f fedlca:hasFlowContext ?fc .
+  ?mf fedlca:hasFlowContext ?mfc .
+  ?fc owl:sameAs ?mfc .
+  ?f fedlca:hasFlowProperty ?fp .
+  ?fp fedlca:flowPropertyString ?fpString .
+  ?mf fedlca:hasFlowProperty ?mfp .
+  optional {?mf fedlca:hasOpenLCAUUID ?muuid }
+  filter (str(afn:localname(?mfp)) = str(?fpString))
+  ?flowable rdfs:label ?flowable_name .
+  ?mflowable rdfs:label ?flowable_name .
+  ?flowable eco:casNumber ?cas .
+  ?mflowable eco:casNumber ?cas .
+}
+limit 10
+

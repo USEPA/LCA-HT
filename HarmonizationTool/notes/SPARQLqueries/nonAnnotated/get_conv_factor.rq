@@ -1,0 +1,10 @@
+select ?mu ?factor where {
+?muo a fedlca:FlowProperty .
+?muo dcterms:description ?desc .
+?muo fedlca:unitConversionFactor ?fac . 
+?mu a fedlca:FlowUnit .
+?mu dcterms:description ?desc2 .
+filter (str(?desc) = str(?desc2))
+?muo fedlca:unitConversionFactor ?factor .
+
+}

@@ -1,0 +1,67 @@
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+select (str(?row) as ?n) ?mCas ?of ?pf ?mf ?master_match where {
+#select (str(?row) as ?n) ?of ?pf ?mf ?master_match ?amf where {
+  ?of a olca:Flow .
+  ?of fedlca:hasOpenLCAUUID ?uuid .
+  ?pf a fedlca:Flow .
+  ?pf fedlca:hasOpenLCAUUID ?uuid .
+  ?pf fedlca:sourceTableRowNumber ?row .
+
+    ?pf owl:sameAs ?mf .
+    ?mf a fedlca:Flow .
+?mf eco:hasFlowable ?mflowable .
+    ?mds a lcaht:MasterDataset .
+    ?mf eco:hasDataSource ?mds .
+    optional {?mf fedlca:hasOpenLCAUUID ?muuid . }
+
+# bind (IF ( ?muuid = ?uuid , "yes", "no") as ?master_match)
+  bind (IF ( ?muuid = ?uuid , "yes", ?muuid) as ?master_match)
+
+
+  optional {
+    ?of olca:name ?oName .
+    ?mflowable rdfs:label ?mName .
+  }
+  bind (IF ((?oName != ?mName ) , concat("; NAME: ", ?oName, " => std: ", ?mName ) , "") as ?cName)
+
+  optional {
+    ?of olca:cas ?oCas .
+    ?mflowable eco:casNumber ?mCas .
+  }
+  bind (IF ((?oCas != ?mCas ) , concat("; CAS: ", ?oCas, " => std: ", ?mCas ) , "") as ?cCas) 
+
+
+  optional {?of olca:lastChange ?lc }
+  bind (IF (bound(?lc) , ?lc, "(not defined)") as ?lastChange) 
+
+  optional {?of olca:descrption ?de }
+  bind (IF (bound(?de) , concat(?de,"; "), "") as ?description) 
+
+  bind (concat(?description, "Previous last update: ", ?lastChange) as ?newDesc)
+
+
+  # THE PART BELOW IS NOT WORTH IT, IT ADDS 6.7 SECONDS FOR A TINY 27 ROW DATA SET
+  #optional {
+  #  ?amf a fedlca:Flow .
+  #  ?mds a lcaht:MasterDataset .
+  #  ?amf eco:hasDataSource ?mds .
+  #  ?amf fedlca:hasOpenLCAUUID ?uuid .
+  #}
+}
+
+order by ?row
+

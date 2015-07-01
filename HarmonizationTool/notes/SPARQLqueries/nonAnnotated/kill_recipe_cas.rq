@@ -1,0 +1,22 @@
+##
+PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#> 
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> 
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#> 
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#> 
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX  xml:  <http://www.w3.org/XML/1998/namespace> 
+PREFIX  fn:   <http://www.w3.org/2005/xpath-functions#> 
+PREFIX  skos: <http://www.w3.org/2004/02/skos/core#> 
+PREFIX  eco:  <http://ontology.earthster.org/eco/core#> 
+
+DELETE {?sub eco:casNumber ?cas}
+WHERE
+  {
+    ?sub eco:hasDataSource eco:ds_006 . 
+    ?sub a eco:Substance .
+    # OPTIONAL { ?sub rdfs:label ?label . }
+    OPTIONAL { ?sub eco:casNumber $cas . }
+  }
+
+#limit 100

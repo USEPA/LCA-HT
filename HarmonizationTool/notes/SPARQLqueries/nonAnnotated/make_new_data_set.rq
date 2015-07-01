@@ -1,0 +1,15 @@
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix j.4:   <http://ontology.earthster.org/eco/fasc#> .
+@prefix j.5:   <http://ontology.earthster.org/eco/core#> .
+@prefix j.1:   <http://epa.gov/nrmrl/std/lca/ht/1.0#> .
+@prefix j.0:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix j.3:   <http://purl.org/dc/terms/> .
+@prefix j.2:   <http://epa.gov/nrmrl/std/lca/fedlca/1.0#> .
+
+insert  data {
+_:b0 a           eco:DataSource ,
+                 lcaht:MasterDataset ;
+     rdfs:label  "newData"^^<http://www.w3.org/2001/XMLSchema#string> . 
+}
+

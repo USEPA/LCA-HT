@@ -1,0 +1,27 @@
+##
+prefix :       <http://epa.gov/nrmrl/std/lca/ethold#> 
+prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> 
+prefix eco:    <http://ontology.earthster.org/eco/core#> 
+prefix skos:   <http://www.w3.org/2004/02/skos/core#> 
+prefix owl:    <http://www.w3.org/2002/07/owl#> 
+prefix xsd:    <http://www.w3.org/2001/XMLSchema#> 
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> 
+
+
+insert {?ds2 ethold:localSerialNumber ?next . }
+where {
+
+{
+?ds2 a eco:DataSource .
+not exists {?ds2 ethold:localSerialNumber ?num . }
+}
+
+select ?next where {
+  ?ds a eco:DataSource .
+  ?ds ethold:localSerialNumber ?biggest .
+  bind (?biggest + 1 as ?next)
+}
+order by desc(?biggest)
+limit 1
+}

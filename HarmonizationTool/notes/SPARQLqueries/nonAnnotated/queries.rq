@@ -1,0 +1,23 @@
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?g ?s "hasComp" ?o
+WHERE 
+  { 
+    graph ?g{
+
+     ?s <http://ontology.earthster.org/eco/fasc#hasCompartment> ?o
+
+         }
+}
+LIMIT 1000
+#-------------------
+PREFIX eco:  <http://ontology.earthster.org/eco/fasc#>
+SELECT ?g ?s "hasComp" ?o
+WHERE 
+  { 
+    graph ?g{
+   #  ?s <http://ontology.earthster.org/eco/fasc#hasCompartment> ?o
+    ?s eco:hasCompartment ?o
+
+         }
+}
+LIMIT 1000

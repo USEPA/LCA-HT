@@ -1,0 +1,172 @@
+#
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+select distinct 
+  ?rowNumber 
+ 
+where { 
+ 
+  #--- FLOWABLE 
+  ?f a fedlca:Flow . 
+  ?f eco:hasDataSource ?ds . 
+  ?ds rdfs:label "asphalt"^^xsd:string . 
+  ?mf a fedlca:Flow . 
+  ?mf eco:hasDataSource ?mds . 
+  ?mds a lcaht:MasterDataset . 
+  ?f eco:hasFlowable ?flowable . 
+  ?mf eco:hasFlowable ?flowable . 
+  ?f fedlca:hasFlowContext ?flowContext . 
+  ?mf fedlca:hasFlowContext ?flowContext . 
+  ?f fedlca:hasFlowProperty ?flowPropertyUnit . 
+  ?flowPropertyUnit fedlca:flowPropertyString ?flowPropertyString . 
+  ?mf fedlca:hasFlowProperty ?flowProperty . 
+  filter (str(?flowPropertyString) = str(afn:localname(?flowProperty)))  . 
+  ?f fedlca:sourceTableRowNumber ?rowNumber . 
+} 
+order by ?rowNumber 
+##
+select distinct 
+  ?rowNumber ?flowPropertyUnit ?flowPropertyString ?thing
+ 
+where { 
+ 
+  #--- FLOWABLE 
+  ?f a fedlca:Flow . 
+  ?f eco:hasDataSource ?ds . 
+  ?ds rdfs:label "asphalt"^^xsd:string . 
+  ?mf a fedlca:Flow . 
+  ?mf eco:hasDataSource ?mds . 
+  ?mds a eco:DataSource . 
+  ?mds a lcaht:MasterDataset .
+  ?f eco:hasFlowable ?flowable . 
+  ?mf eco:hasFlowable ?flowable . 
+ # ?f fedlca:hasFlowContext ?flowContext . 
+ # ?mf fedlca:hasFlowContext ?flowContext . 
+  ?f fedlca:hasFlowProperty ?flowPropertyUnit . 
+  ?flowPropertyUnit fedlca:flowPropertyString ?flowPropertyString . 
+  ?mf fedlca:hasFlowProperty ?flowProperty . 
+#  filter (str(?flowPropertyString) = str(afn:localname(?flowProperty)))  . 
+  ?f fedlca:sourceTableRowNumber ?rowNumber . 
+} 
+limit 10
+
+##
+select * where {
+?mf eco:hasDataSource ?mds .
+?mf a fedlca:Flow .
+?mf eco:hasFlowable ?mflowable .
+?mds a eco:DataSource .
+?mds a lcaht:MasterDataset .
+?mds rdfs:label ?label .
+?mf fedlca:hasFlowContext ?mcontext .
+?mf fedlca:hasFlowProperty ?mproperty .
+?f a fedlca:Flow .
+?f eco:hasDataSource ?ds .
+?ds rdfs:label "asphalt"^^xsd:string .
+?f fedlca:hasFlowContext ?fc .
+?fc owl:sameAs ?mfc .
+?f fedlca:hasFlowProperty ?property .
+?property fedlca:flowPropertyString ?fpString .
+filter (str(afn:localname(?mproperty)) = str(?fpString))
+}
+limit 10
+
+##
+select * where {
+  ?mf eco:hasDataSource ?mds .
+  ?mf a fedlca:Flow .
+  ?mf eco:hasFlowable ?mflowable .
+  ?mflowable rdfs:label ?mflowableName .
+  ?mds a eco:DataSource .
+  ?mds a lcaht:MasterDataset .
+  ?mds rdfs:label ?label .
+  ?mf fedlca:hasFlowContext ?mcontext .
+  ?mf fedlca:hasFlowProperty ?mproperty .
+  ?f a fedlca:Flow .
+  ?f eco:hasFlowable ?flowable .
+  ?flowable rdfs:label ?flowableName .
+  ?f eco:hasDataSource ?ds .
+  ?ds rdfs:label "asphalt"^^xsd:string .
+  ?f fedlca:hasFlowContext ?fc .
+  ?fc owl:sameAs ?mfc .
+  ?f fedlca:hasFlowProperty ?property .
+  ?property fedlca:flowPropertyString ?fpString .
+  filter (str(afn:localname(?mproperty)) = str(?fpString))
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedMaster ?mflowable .
+  ?c fedlca:comparedSource ?flowable .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+}
+limit 10
+##
+
+
+select (count(distinct ?f) as ?count) where {
+?c a fedlca:Comparison .
+?c fedlca:comparedMaster ?mflowable .
+?c fedlca:comparedSource ?flowable .
+?c fedlca:comparedEquivalence fedlca:Equivalent .
+?f eco:hasFlowable ?flowable .
+?mf eco:hasFlowable ?mflowable .
+?f fedlca:hasFlowContext ?fc .
+?mf fedlca:hasFlowContext ?mfc .
+?fc owl:sameAs ?mfc .
+?f fedlca:hasFlowProperty ?fp .
+?fp fedlca:flowPropertyString ?fpString .
+?mf fedlca:hasFlowProperty ?mfp .
+filter (str(afn:localname(?mfp)) = str(?fpString))
+}
+limit 10
+
+##
+select * where {
+?c a fedlca:Comparison .
+?c fedlca:comparedMaster ?mflowable .
+?c fedlca:comparedSource ?flowable .
+?c fedlca:comparedEquivalence fedlca:Equivalent .
+?f eco:hasFlowable ?flowable .
+?mf eco:hasFlowable ?mflowable .
+?f fedlca:hasFlowContext ?fc .
+?mf fedlca:hasFlowContext ?mfc .
+?fc owl:sameAs ?mfc .
+?f fedlca:hasFlowProperty ?fp .
+?fp fedlca:flowPropertyString ?fpString .
+?mf fedlca:hasFlowProperty ?mfp .
+filter (str(afn:localname(?mfp)) = str(?fpString))
+}
+limit 10
+
+##
+select (count(distinct ?f) as ?count) where {
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedMaster ?mflowable .
+  ?c fedlca:comparedSource ?flowable .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+  ?f eco:hasFlowable ?flowable .
+  ?mf eco:hasFlowable ?mflowable .
+  ?f fedlca:hasFlowContext ?fc .
+  ?mf fedlca:hasFlowContext ?mfc .
+  ?fc owl:sameAs ?mfc .
+  ?f fedlca:hasFlowProperty ?fp .
+  ?fp fedlca:flowPropertyString ?fpString .
+  ?mf fedlca:hasFlowProperty ?mfp .
+  filter (str(afn:localname(?mfp)) = str(?fpString))
+  ?flowable rdfs:label ?flowable_name .
+  ?mflowable rdfs:label ?flowable_name .
+  ?flowable eco:casNumber ?cas .
+  ?mflowable eco:casNumber ?cas .
+}
+limit 10
+##

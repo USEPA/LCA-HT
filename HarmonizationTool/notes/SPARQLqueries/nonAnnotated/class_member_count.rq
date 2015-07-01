@@ -1,0 +1,26 @@
+#
+select * where {
+  {
+    select (str(?count) as ?number) ?class
+    where {
+      {
+      select   (count(?s) as ?count) ?class  where {
+        ?s a ?class .
+      }
+      group by ?class
+      order by desc(?count)
+      }
+    }
+  }
+  union
+  {
+    select (str(count(?a)) as ?number) ("(No Class)" as ?class) where {
+      ?a ?b ?c .
+      filter (
+        (!exists{ ?a a ?nocass  } )
+        && 
+        (!isBlank(?a))
+      )
+    }
+  }
+}

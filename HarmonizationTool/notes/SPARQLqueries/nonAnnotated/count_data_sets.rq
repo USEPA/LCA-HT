@@ -1,0 +1,8 @@
+#
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>  
+select (count(distinct ?ds) as ?count) 
+where {  
+  ?s eco:hasDataSource ?ds .  
+} 
+

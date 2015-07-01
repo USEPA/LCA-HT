@@ -1,0 +1,10 @@
+#
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#> 
+select distinct ?dataSource
+where { 
+  ?s eco:hasDataSource ?ds . 
+  ?ds rdfs:label ?ds_name .
+  bind (str(?ds_name) as ?dataSource)
+}
+

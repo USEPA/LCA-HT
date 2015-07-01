@@ -1,0 +1,86 @@
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+select ?total_subs ?cas_ex_name ?cas_ci_name ?cas_only ?ci_name_not_cas where {
+  {SELECT (str(count(distinct(?s1))) as ?total_subs) 
+
+  WHERE {
+      ?s1 eco:hasDataSource eco:ds_001 .
+      ?s1 a eco:Substance . 
+    }
+  }
+  {SELECT (str(count(distinct(?s1))) as ?cas_only) 
+
+  WHERE {
+      ?s1 eco:hasDataSource eco:ds_001 .
+      ?s2 eco:hasDataSource ?ds_match .
+      ?s1 eco:casNumber ?cas . 
+      ?s2 eco:casNumber ?cas .  
+      ?s1 rdfs:label ?name .
+      ?s2 rdfs:label ?name2 . 
+      filter (fn:upper-case(?name) != fn:upper-case(?name2))
+      ?s1 a eco:Substance . 
+      ?s2 a eco:Substance . 
+
+      filter(str(afn:localname(?ds_match)) != "ds_001") .
+    }
+  }
+  {SELECT (str(count(distinct(?s1))) as ?cas_ci_name) 
+
+  WHERE {
+      ?s1 eco:hasDataSource eco:ds_001 .
+      ?s2 eco:hasDataSource ?ds_match .
+      ?s1 eco:casNumber ?cas . 
+      ?s2 eco:casNumber ?cas .  
+      ?s1 rdfs:label ?name .
+      ?s2 rdfs:label ?name2 . 
+      filter (fn:upper-case(?name) = fn:upper-case(?name2))
+      filter (?name != ?name2)
+      ?s1 a eco:Substance . 
+      ?s2 a eco:Substance . 
+
+      filter(str(afn:localname(?ds_match)) != "ds_001") .
+    }
+  }
+  {SELECT (str(count(distinct(?s1))) as ?cas_ex_name) 
+
+  WHERE {
+      ?s1 eco:hasDataSource eco:ds_001 .
+      ?s2 eco:hasDataSource ?ds_match .
+      ?s1 eco:casNumber ?cas . 
+      ?s2 eco:casNumber ?cas .  
+      ?s1 rdfs:label ?name .
+      ?s2 rdfs:label ?name2 . 
+      filter (?name = ?name2)
+      ?s1 a eco:Substance . 
+      ?s2 a eco:Substance . 
+
+      filter(str(afn:localname(?ds_match)) != "ds_001") .
+    }
+  }
+#  {SELECT (str(count(distinct(?s1))) as ?ci_name_not_cas) 
+#
+#  WHERE {
+#      ?s1 eco:hasDataSource eco:ds_001 .
+#      ?s2 eco:hasDataSource ?ds_match .
+#      ?s1 rdfs:label ?name .
+##      ?s2 rdfs:label ?name2 . 
+#      filter (fn:upper-case(?name) = fn:upper-case(?name2))
+#      ?s1 eco:casNumber ?cas . 
+#      ?s2 eco:casNumber ?cas2.  
+#      filter (?cas != ?cas2)
+#      ?s1 a eco:Substance . 
+#      ?s2 a eco:Substance . 
+#
+#      filter(str(afn:localname(?ds_match)) != "ds_001") .
+#    }
+#  }
+}

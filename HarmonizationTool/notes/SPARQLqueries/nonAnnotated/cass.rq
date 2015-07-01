@@ -1,0 +1,59 @@
+#
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+select ?cas_plus_name ?cas_minus_name ?ds
+WHERE {
+
+{SELECT (str(count(distinct(?s1))) as ?cas_plus_name) (str(afn:localname(?ds_match)) as ?ds)
+
+  WHERE {
+  ?s1 eco:hasDataSource eco:ds_001 .
+  ?s2 eco:hasDataSource ?ds_match .
+  ?s1 eco:casNumber ?cas . 
+  ?s2 eco:casNumber ?cas .  
+  ?s1 rdfs:label ?name .
+  ?s2 rdfs:label ?name2 . 
+  filter (fn:upper-case(?name) = fn:upper-case(?name2))
+  #filter (?name != ?name2)
+  ?s1 a eco:Substance . 
+  ?s2 a eco:Substance . 
+
+  filter(str(afn:localname(?ds_match)) != "ds_001")
+  }
+  group by ?ds_match
+}
+
+{SELECT (str(count(distinct(?s1))) as ?cas_minus_name) (str(afn:localname(?ds_match)) as ?ds)
+
+  WHERE {
+  ?s1 eco:hasDataSource eco:ds_001 .
+  ?s2 eco:hasDataSource ?ds_match .
+  ?s1 eco:casNumber ?cas . 
+  ?s2 eco:casNumber ?cas .  
+  ?s1 rdfs:label ?name .
+  ?s2 rdfs:label ?name2 . 
+  filter (fn:upper-case(?name) != fn:upper-case(?name2))
+  ?s1 a eco:Substance . 
+  ?s2 a eco:Substance . 
+
+  filter((str(afn:localname(?ds_match)) = "ds_002" ) ||
+         (str(afn:localname(?ds_match)) = "ds_003" ) ||
+         ( false )
+  )
+  #filter(str(afn:localname(?ds_match)) = ("ds_002" || "ds_003"))
+  }
+group by ?ds_match
+}
+}
+order by ?ds
+
+

@@ -1,0 +1,24 @@
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+select (str(afn:localname(?ds)) as ?data_set_iri) (str(afn:localname(?sub)) as ?substance_id) (str(?label) as ?name) (str(afn:localname(?prop)) as ?property) (str(?value) as ?value_with_issue) (str(?comment) as ?issue)
+where {
+    ?sub <http://epa.gov/nrmrl/std/lca/ethold#hasInconsistency> ?o .
+    ?o ethold:propertyInQuestion ?prop .
+    #?o <http://epa.gov/nrmrl/std/lca/ethold#propertyInQuestion> ?prop .
+    ?o rdfs:comment ?comment .
+    ?sub ?prop ?value .
+    ?sub eco:hasDataSource ?ds .
+    ?sub rdfs:label ?label .
+    ?sub a eco:Substance .
+}
+order by ?sub
+

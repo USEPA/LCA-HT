@@ -1,0 +1,24 @@
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+  ?sub <http://epa.gov/nrmrl/std/lca/ethold#hasInconsistency> _:b0 .
+  _:b0 <http://epa.gov/nrmrl/std/lca/ethold#propertyInQuestion> <http://ontology.earthster.org/eco/core#casNumber> .
+  _:b0 <http://www.w3.org/2000/01/rdf-schema#commnet> "Failed regex: ^\\d{2,7}-\\d\\d-\\d$" .
+}
+WHERE
+  { ?sub <http://ontology.earthster.org/eco/core#casNumber> ?cas
+    FILTER ( ! regex(?cas, "^\\d{2,7}-\\d\\d-\\d$") )
+    ?sub <http://ontology.earthster.org/eco/core#hasDataSource> ?ds .
+    ?sub <http://www.w3.org/2000/01/rdf-schema#label> ?label .
+    ?sub <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://ontology.earthster.org/eco/core#Substance>
+  }
+

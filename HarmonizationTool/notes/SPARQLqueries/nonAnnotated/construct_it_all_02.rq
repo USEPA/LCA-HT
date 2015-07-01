@@ -1,0 +1,80 @@
+#
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+delete {
+  ?of olca:description ?oDescription ;
+      olca:lastChange ?oLastChange .
+}
+
+insert {
+  ?of olca:description ?newDescription .
+  ?of olca:lastChange ?newLastChange .
+  ?of olca:cas ?newCas .
+}
+#select (str(?row) as ?n) ?cName ?cCas ?cFormula ?cLastChange ?newDescription ?of ?pf ?mf ?master_match
+where {
+  #-- olca:Flow
+  ?of a olca:Flow .
+  ?of fedlca:hasOpenLCAUUID ?uuid .
+  ?pf a fedlca:Flow .
+
+  #-- fedlca:Flow (parsed)
+  ?pf fedlca:hasOpenLCAUUID ?uuid .
+  ?pf fedlca:sourceTableRowNumber ?row .
+
+  ?pf owl:sameAs ?mf .
+  #-- fedlca:Flow (master)
+  ?mf a fedlca:Flow .
+  ?mf eco:hasFlowable ?mflowable .
+  ?mds a lcaht:MasterDataset .
+  ?mf eco:hasDataSource ?mds .
+  optional {?mf fedlca:hasOpenLCAUUID ?muuid . }
+
+  #-- olca:name == rdfs:label -- 1 CONDITION NEEDING ACTION
+  ?of olca:name ?oName .
+  ?mflowable rdfs:label ?mName .
+  bind (IF ((?oName != ?mName ) , concat("; name: master = ", ?mName) , "") as ?cName)
+
+  #-- olca:cas == eco:casNumber -- 3 CONDITIONS NEEDING ACTION
+  optional { ?of olca:cas ?oCas . }
+  optional { ?mflowable eco:casNumber ?mCas . }
+  bind (IF (( bound(?oCas) &&  bound(?mCas) && ?oCas != ?mCas) , concat("; cas: original = ",?oCas),"") as ?c1Cas)
+  bind (IF ((!bound(?oCas) &&  bound(?mCas)) , "; cas: original not defined","") as ?c2Cas)
+  bind (IF (( bound(?oCas) && !bound(?mCas)) , "; cas: master not defined","") as ?c3Cas)
+  bind (concat(?c1Cas,?c2Cas,?c3Cas) as ?cCas)
+  bind (IF ((?c1Cas != "" || ?c2Cas != ""),?mCas,?unbound) as ?newCas)
+
+  #-- olca:formula == eco:chemicalFormula -- 3 CONDITIONS NEEDING ACTION
+  optional { ?of olca:formula ?oFormula . }
+  optional { ?mflowable eco:chemicalFormula ?mFormula . }
+  bind (IF (( bound(?oFormula) &&  bound(?mFormula) && ?oFormula != ?mFormula) , concat("; formula: original = ",?oFormula),"") as ?c1Formula)
+  bind (IF ((!bound(?oFormula) &&  bound(?mFormula)) , "; formula: original not defined","") as ?c2Formula)
+  bind (IF (( bound(?oFormula) && !bound(?mFormula)) , "; formula: master not defined","") as ?c3Formula)
+  bind (concat(?c1Formula,?c2Formula,?c3Formula) as ?cFormula)
+
+  #-- olca:lastChange -- 1 CONDITION NEEDING ACTION
+  optional {?of olca:lastChange ?oLastChange }
+  bind (IF (bound(?oLastChange) , concat("; previous lastChange: ",str(?oLastChange)),"") as ?cLastChange) 
+  bind ("2015-05-26T09:15:07-04:00"^^xsd:dataTime as ?newLastChange)
+
+  #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED
+  optional {?of olca:description ?oDescription }
+  bind (IF (!bound(?oDescription) , concat("Description created:",str(now())),?oDescription) as ?cDescription) 
+  bind (concat(?cDescription , ?cName, ?cCas, ?cFormula , ?cLastChange) as ?newDescription)
+}
+
+#order by ?row
+

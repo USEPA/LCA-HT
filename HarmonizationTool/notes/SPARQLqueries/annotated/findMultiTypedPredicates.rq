@@ -1,0 +1,28 @@
+# Author: Sidney Bailin <knowevol@gmail.com>
+# Added by: Tom Transue <transue.tom@epa.gov>
+# Date added: 2015-07-01
+# Date updated: 2015-07-01
+
+# Applicability: This query can be run on any database and needs no prefixes.
+
+# Function: Returns any predicate whose objects have more than one datatype and
+# the count of distinct datatypes.
+
+# Performance: It takes about 10 seconds in a TDB of 142,000 triples on a ~2011 
+# dual core laptop running Windows 7.
+
+# Keywords: general query ; datatype ; nested query ; predicate ; 10 seconds
+
+SELECT ?p ?count WHERE {
+  {
+    SELECT ?p (COUNT(?t) AS ?count) WHERE { 
+      SELECT DISTINCT ?p ?t WHERE { 
+        ?s ?p ?o .
+        BIND (datatype(?o) AS ?t)
+      }
+      GROUP BY ?p ?t
+    }
+    GROUP BY ?p
+  } 
+  FILTER (?count > 1)
+}

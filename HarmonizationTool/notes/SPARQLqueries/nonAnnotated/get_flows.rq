@@ -1,0 +1,31 @@
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olcao: <http://openlca.org/>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+
+select ?flow_uuid ?flow ?cat_general ?cat_name ?property ?context_specific_uuid where {
+  ?f a olca:Flow .
+  ?f olcao:name ?flow .
+  ?f olcao:referenceFlowProperty  ?rfp .
+  ?rfp olcao:name ?property .
+  ?f olcao:category ?cat .
+  ?cat olcao:name ?cat_name .
+  ?cat olcao:parentCategory ?parentCat .
+  ?parentCat olcao:name ?cat_general .
+  bind (fn:string-length(str(?cat)) as ?cat_length)
+  bind (fn:substring(str(?cat), ?cat_length - 35) as ?context_specific_uuid)
+  bind (fn:string-length(str(?f)) as ?flow_length)
+  bind (fn:substring(str(?f), ?flow_length - 35) as ?flow_uuid)
+}

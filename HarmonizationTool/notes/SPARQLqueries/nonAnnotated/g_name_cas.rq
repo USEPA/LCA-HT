@@ -1,0 +1,22 @@
+#
+prefix eco:    <http://ontology.earthster.org/eco/core#>
+prefix ecou:   <http://ontology.earthster.org/eco/unit#>
+prefix fasc:   <http://ontology.earthster.org/eco/fasc#>
+prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#>
+
+prefix afn:    <http://jena.hpl.hp.com/ARQ/function#>
+
+prefix owl:    <http://www.w3.org/2002/07/owl#>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xml:    <http://www.w3.org/XML/1998/namespace>
+prefix xsd:    <http://www.w3.org/2001/XMLSchema#>
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select ?name ?cas where {
+?s eco:hasDataSource eco:ds_001 .
+?s a eco:Substance .
+?s rdfs:label ?name .
+optional {?s eco:casNumber ?cas .}
+}
+

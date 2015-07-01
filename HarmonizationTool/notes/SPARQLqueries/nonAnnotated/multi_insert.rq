@@ -1,0 +1,176 @@
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+insert {?t fedlca:unitConversionFactor 1.78    } where {?t fedlca:hasOpenLCAUUID "007f0ce1-4a0b-4bb2-8f7c-1b2a0e6ef6b2"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.06    } where {?t fedlca:hasOpenLCAUUID "0866bd06-77b3-41a2-8157-6d96ffb5666b"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.63    } where {?t fedlca:hasOpenLCAUUID "14ed0060-9198-48c1-b458-7fa4075c9811"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.73    } where {?t fedlca:hasOpenLCAUUID "18b04307-98b7-4d9e-82ee-f11d1b9f0d28"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.01    } where {?t fedlca:hasOpenLCAUUID "28bb8ff6-79d1-4f97-b7c4-7fa3dd05bec8"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.13    } where {?t fedlca:hasOpenLCAUUID "2f3cc326-da25-4086-b06d-3a7ef914aef6"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 1.1     } where {?t fedlca:hasOpenLCAUUID "3f838c0d-bf6c-49f1-a465-d256ab0d13eb"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.12    } where {?t fedlca:hasOpenLCAUUID "594fb96f-0d06-4053-9263-826fcd4d0046"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.01    } where {?t fedlca:hasOpenLCAUUID "6c277db7-2784-4296-83bf-15c04a9d59b2"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.15    } where {?t fedlca:hasOpenLCAUUID "71326000-165d-41fb-aea9-1bfbd9d7fc6c"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.64    } where {?t fedlca:hasOpenLCAUUID "8632c804-eed7-4a57-91e6-1798289c49e3"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.12    } where {?t fedlca:hasOpenLCAUUID "97ee3997-137d-4d96-80bf-c4f106c743c4"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 1       } where {?t fedlca:hasOpenLCAUUID "a55b7fe7-fa09-47ef-be62-e07b8e6f4351"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 1.65    } where {?t fedlca:hasOpenLCAUUID "ae63f1fd-3679-443a-ad06-8d03e867351e"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.00095 } where {?t fedlca:hasOpenLCAUUID "d246fd48-c363-4f0e-ab01-641325dd89eb"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.27    } where {?t fedlca:hasOpenLCAUUID "dce13106-087c-4fea-bfaa-def214e3cecb"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.0038  } where {?t fedlca:hasOpenLCAUUID "fb4258af-95b2-4359-af03-9687178df527"^^xsd:string } ;
+insert {?t fedlca:unitConversionFactor 0.02    } where {?t fedlca:hasOpenLCAUUID "fd100082-4cdf-4932-9282-6bb7d7091bd4"^^xsd:string } ;
+
+
+insert {?t fedlca:displaySortIndex 001 } where {?t fedlca:hasOpenLCAUUID "20aadc24-a391-41cf-b340-3e4529f44bde"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 002 } where {?t fedlca:hasOpenLCAUUID "0300ec69-ce1a-45f0-bcf0-7b33845dc53e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 003 } where {?t fedlca:hasOpenLCAUUID "ae5cced9-f9f1-4719-bd37-837b36013d96"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 004 } where {?t fedlca:hasOpenLCAUUID "bdd34bd7-7d0b-4be4-9aca-b231f4067388"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 005 } where {?t fedlca:hasOpenLCAUUID "e1317ffc-7f83-4a85-bc65-4fb229a25cf8"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 006 } where {?t fedlca:hasOpenLCAUUID "95dd50e9-c184-4412-9afc-9764b1ffcf8f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 007 } where {?t fedlca:hasOpenLCAUUID "e5ccc940-eb40-41f9-847e-5ee691ba8c2f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 008 } where {?t fedlca:hasOpenLCAUUID "d022bf34-1162-4579-90ab-dcca9620ce54"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 009 } where {?t fedlca:hasOpenLCAUUID "d01259b2-24c2-46af-a7fe-36dd025ead15"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 010 } where {?t fedlca:hasOpenLCAUUID "b872a063-0500-42b7-9e5d-441642d84417"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 011 } where {?t fedlca:hasOpenLCAUUID "63214902-17d4-41a0-be10-d1cad375c32e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 012 } where {?t fedlca:hasOpenLCAUUID "fa44e424-f37b-419d-8475-723429d63c08"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 013 } where {?t fedlca:hasOpenLCAUUID "2457aee5-c7ee-4416-a65a-5be4ff2b2976"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 014 } where {?t fedlca:hasOpenLCAUUID "68c83ad3-bc5b-414a-81f7-5b47af2c8a23"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 015 } where {?t fedlca:hasOpenLCAUUID "d4922696-9c95-4b5d-a876-425e98276978"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 016 } where {?t fedlca:hasOpenLCAUUID "83192ffa-5990-490b-a23a-b45ca072db6f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 018 } where {?t fedlca:hasOpenLCAUUID "3d314eab-ef11-4ff3-a35e-9bc5cd858694"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 019 } where {?t fedlca:hasOpenLCAUUID "d018183e-ea8c-4a41-a303-627c9b9b173d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 020 } where {?t fedlca:hasOpenLCAUUID "f7905d3f-904d-4fdb-829e-54a72fb4c98e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 021 } where {?t fedlca:hasOpenLCAUUID "030e99e1-2237-483c-8447-8b3a256d8b0d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 022 } where {?t fedlca:hasOpenLCAUUID "4a51d52b-f94f-4168-a38c-c612f14b8a2d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 023 } where {?t fedlca:hasOpenLCAUUID "715ca68e-0ac5-4c4b-b557-fdc36623be88"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 024 } where {?t fedlca:hasOpenLCAUUID "9003179a-bf17-4e89-8fd7-a0c1c91ac189"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 025 } where {?t fedlca:hasOpenLCAUUID "cc44768b-c0ce-4bc9-804a-c59b67d22e39"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 026 } where {?t fedlca:hasOpenLCAUUID "1f112940-6c27-4c75-828a-46d548d71cff"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 027 } where {?t fedlca:hasOpenLCAUUID "a16960ba-31e2-4fe9-82fe-219013f4708f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 029 } where {?t fedlca:hasOpenLCAUUID "3ce61faa-5716-41c1-aef6-b5920054acc9"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 030 } where {?t fedlca:hasOpenLCAUUID "8ee3bcbf-9e65-4f59-9b0b-40b504cbe345"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 031 } where {?t fedlca:hasOpenLCAUUID "e114cd83-3e7f-4466-8028-761c0469f7c7"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 032 } where {?t fedlca:hasOpenLCAUUID "c66d26f1-7946-4027-85f0-ac79222a59f1"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 033 } where {?t fedlca:hasOpenLCAUUID "20ce5f57-69b1-438b-a8e8-23089854d058"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 034 } where {?t fedlca:hasOpenLCAUUID "debee4d9-bc47-4e35-8624-4957ecb75386"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 035 } where {?t fedlca:hasOpenLCAUUID "588613d5-6c8c-4ab6-8c69-ec5e20ef7881"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 036 } where {?t fedlca:hasOpenLCAUUID "b9a011a0-c9bf-459b-b105-2623d1b61ddf"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 037 } where {?t fedlca:hasOpenLCAUUID "4689d28c-29f6-4f0a-ad03-0276f7070edd"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 038 } where {?t fedlca:hasOpenLCAUUID "6c4b1e4a-bf45-4385-a60c-12cc48ecbab5"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 040 } where {?t fedlca:hasOpenLCAUUID "9bc2cfb2-fb43-42e6-9783-6c7479c78cce"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 041 } where {?t fedlca:hasOpenLCAUUID "a681e9e5-6304-45f0-a5f4-df413eee0724"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 042 } where {?t fedlca:hasOpenLCAUUID "1c4169d1-4fee-40e3-9868-953ee15e26ae"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 043 } where {?t fedlca:hasOpenLCAUUID "89121cea-0d98-4466-9b0f-e33e448db7ec"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 044 } where {?t fedlca:hasOpenLCAUUID "91995a9e-3cb4-4fc9-a93b-8c618ff9b948"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 045 } where {?t fedlca:hasOpenLCAUUID "07973a41-56b3-4e1b-a208-fd75a09fbd4b"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 046 } where {?t fedlca:hasOpenLCAUUID "1c3a9695-398d-4b1f-b07e-a8715b610f70"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 047 } where {?t fedlca:hasOpenLCAUUID "806c64aa-8609-4ff6-a033-6714a3348f24"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 048 } where {?t fedlca:hasOpenLCAUUID "8aa31dda-e324-469c-a29d-56476584f5ca"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 049 } where {?t fedlca:hasOpenLCAUUID "c530708d-be50-4207-b536-23d0857210bf"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 050 } where {?t fedlca:hasOpenLCAUUID "431df202-da83-4baa-b576-5d17f59f0c8a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 051 } where {?t fedlca:hasOpenLCAUUID "62eb6f51-0574-4489-ae1a-1bd806f6c2ac"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 052 } where {?t fedlca:hasOpenLCAUUID "90888d8d-3d57-497f-a3fa-12aefd2bc774"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 053 } where {?t fedlca:hasOpenLCAUUID "b80a512e-e402-4363-8ad0-7d02dcf4a459"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 054 } where {?t fedlca:hasOpenLCAUUID "df6987d7-afcc-4c92-ae2c-3ce3bc6f5578"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 055 } where {?t fedlca:hasOpenLCAUUID "81696a66-6919-4bbb-a3ab-c79b2900de7d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 056 } where {?t fedlca:hasOpenLCAUUID "4669b8ce-894d-405a-95d1-3211accaa739"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 057 } where {?t fedlca:hasOpenLCAUUID "c026770b-5b4f-467d-8fdb-15dfb8e52913"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 058 } where {?t fedlca:hasOpenLCAUUID "a19bcd84-e836-4764-8367-419dac3d2434"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 059 } where {?t fedlca:hasOpenLCAUUID "2df86f1f-293e-4e07-9cde-34eebc6d2c5f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 060 } where {?t fedlca:hasOpenLCAUUID "5ec65531-6bb4-4990-a687-44e9ab8f3529"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 061 } where {?t fedlca:hasOpenLCAUUID "2d64c7e0-1167-42ec-9988-c441c261a35c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 063 } where {?t fedlca:hasOpenLCAUUID "11074cfd-08a4-449b-adad-18ce24a1b275"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 064 } where {?t fedlca:hasOpenLCAUUID "227a54d9-44e7-468c-b8bb-f2dd1ae68c7a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 065 } where {?t fedlca:hasOpenLCAUUID "9fa94e47-03bd-4ad1-8726-e10cfb6dbb7a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 066 } where {?t fedlca:hasOpenLCAUUID "845178d8-3f2c-497f-9ca6-3c5657c2823c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 067 } where {?t fedlca:hasOpenLCAUUID "9a87f840-752d-4863-b911-533f92ee5073"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 069 } where {?t fedlca:hasOpenLCAUUID "55244053-94ba-404e-9172-cb279d905e00"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 070 } where {?t fedlca:hasOpenLCAUUID "01e58eb9-0aba-4c76-ba0c-03f6f3be1353"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 071 } where {?t fedlca:hasOpenLCAUUID "469d61f1-3bc4-4841-8adf-873825c1bc11"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 072 } where {?t fedlca:hasOpenLCAUUID "010f811e-3cc2-4b14-a901-337da9b3e49c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 073 } where {?t fedlca:hasOpenLCAUUID "f4119718-2d50-47fe-9154-cab6fd2d30eb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 074 } where {?t fedlca:hasOpenLCAUUID "86ad2244-1f0e-4912-af53-7865283103e4"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 075 } where {?t fedlca:hasOpenLCAUUID "52765a6c-3896-43c2-b2f4-c679acf13efe"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 076 } where {?t fedlca:hasOpenLCAUUID "92e3bd49-8ed5-4885-9db6-fc88c7afcfcb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 077 } where {?t fedlca:hasOpenLCAUUID "57c492e7-d94b-4fcc-98df-cdc4163b754c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 078 } where {?t fedlca:hasOpenLCAUUID "787f2ac9-7bcd-4a91-9fab-55bfe414138f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 079 } where {?t fedlca:hasOpenLCAUUID "425aff51-b7e5-4561-aa5a-562ec103a79e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 080 } where {?t fedlca:hasOpenLCAUUID "fc3604f7-aa93-4aa3-8ae9-8f822874da5f"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 082 } where {?t fedlca:hasOpenLCAUUID "ac324d87-9961-463a-81a1-099bb0f7d89b"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 083 } where {?t fedlca:hasOpenLCAUUID "ef6d9358-a156-4c73-b678-320ddee7d2eb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 084 } where {?t fedlca:hasOpenLCAUUID "e9773595-284e-46dd-9671-5fc9ff406833"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 085 } where {?t fedlca:hasOpenLCAUUID "a45722ee-fc30-4bb1-aa95-5c8fb56c6bfb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 087 } where {?t fedlca:hasOpenLCAUUID "b2ad404c-3e4f-4a7a-a604-46fb36654823"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 088 } where {?t fedlca:hasOpenLCAUUID "2fdc0039-6c5e-489a-af77-b225684fa337"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 089 } where {?t fedlca:hasOpenLCAUUID "ab01fe47-d2c0-4308-adb1-e32df38d5a50"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 090 } where {?t fedlca:hasOpenLCAUUID "5209be3d-094e-4203-a074-06d7b75e9a38"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 091 } where {?t fedlca:hasOpenLCAUUID "23cc7a32-f08a-43df-a87c-66953eeeb3f5"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 093 } where {?t fedlca:hasOpenLCAUUID "94b84332-8f2d-4592-b2a0-e19da33a69e9"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 095 } where {?t fedlca:hasOpenLCAUUID "0dea4ed8-bb6b-4049-b2b4-b2c413ef2180"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 096 } where {?t fedlca:hasOpenLCAUUID "5458351a-f6f7-4e0b-a449-823c9b6374db"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 097 } where {?t fedlca:hasOpenLCAUUID "d24270f0-c1f2-49ec-a6bf-e86a74177070"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 098 } where {?t fedlca:hasOpenLCAUUID "a40229e6-7275-42e3-a304-23d590044770"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 099 } where {?t fedlca:hasOpenLCAUUID "3cc51ae9-b993-4a3d-964e-0aed8d7f3966"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 100 } where {?t fedlca:hasOpenLCAUUID "7dd57df4-c092-41aa-966e-c93a27797ea1"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 102 } where {?t fedlca:hasOpenLCAUUID "f7fe0af2-e764-4984-bb9f-2cbff6cd2f18"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 104 } where {?t fedlca:hasOpenLCAUUID "c7266b67-4ea2-457f-b391-9b94e26e195a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 105 } where {?t fedlca:hasOpenLCAUUID "efbbab8b-eb92-4e39-bd5f-99951ffda6c3"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 106 } where {?t fedlca:hasOpenLCAUUID "1c43f336-c84b-4f42-bbf7-b1b6f89e121a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 107 } where {?t fedlca:hasOpenLCAUUID "4866ec7b-6218-4783-87b4-cbd107280a85"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 108 } where {?t fedlca:hasOpenLCAUUID "c8166ae2-b592-4eb9-b365-e384c8b79f3c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 109 } where {?t fedlca:hasOpenLCAUUID "00d8370e-2bf1-4f3b-81bb-f8f147e84819"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 111 } where {?t fedlca:hasOpenLCAUUID "ee5f2241-18af-4444-b457-b275660e5a20"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 112 } where {?t fedlca:hasOpenLCAUUID "f3a1ae74-9750-4199-acdc-2e7e0546e0a5"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 113 } where {?t fedlca:hasOpenLCAUUID "9942703a-5962-4823-8ea3-7af06af9a21e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 114 } where {?t fedlca:hasOpenLCAUUID "8c1fafa2-2b2e-4fef-9581-5de34ae87350"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 116 } where {?t fedlca:hasOpenLCAUUID "5042a5e9-b8fd-40ca-b13e-cb9f1ce0357a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 117 } where {?t fedlca:hasOpenLCAUUID "de900fea-2536-4fe5-a92d-00ac9a28654b"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 118 } where {?t fedlca:hasOpenLCAUUID "fad23f5c-f841-4369-ba17-2dd297b5fadf"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 119 } where {?t fedlca:hasOpenLCAUUID "112e9d4a-262d-4dcb-8003-c19204faedfb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 120 } where {?t fedlca:hasOpenLCAUUID "a0805221-ed1e-4177-9e2a-4b72ce2beb06"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 121 } where {?t fedlca:hasOpenLCAUUID "0c62f887-da22-4b0a-999b-145c4b2ffe1e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 123 } where {?t fedlca:hasOpenLCAUUID "94dcd768-ea3e-47da-ba1b-11fea4b5f4cc"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 125 } where {?t fedlca:hasOpenLCAUUID "aff60d84-007c-4f30-bfda-3853760f6954"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 127 } where {?t fedlca:hasOpenLCAUUID "6dabe201-aaac-4509-92f0-d00c26cb72ab"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 128 } where {?t fedlca:hasOpenLCAUUID "3bd6c6c3-bb61-46f3-b19a-c87ac5502bb7"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 130 } where {?t fedlca:hasOpenLCAUUID "2abb86b6-e71b-4de5-a766-a20e80e59b6d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 131 } where {?t fedlca:hasOpenLCAUUID "ce39138f-55f8-47bc-b55a-66027fc836d9"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 132 } where {?t fedlca:hasOpenLCAUUID "9bf0166c-fa76-47d0-95af-054ea9125f2c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 134 } where {?t fedlca:hasOpenLCAUUID "fe8da65d-f0ea-4496-b13e-1955aaa412d7"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 136 } where {?t fedlca:hasOpenLCAUUID "19a89180-e40c-4f6b-bcd3-d7347566d1e7"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 138 } where {?t fedlca:hasOpenLCAUUID "14ed0060-9198-48c1-b458-7fa4075c9811"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 139 } where {?t fedlca:hasOpenLCAUUID "18b04307-98b7-4d9e-82ee-f11d1b9f0d28"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 140 } where {?t fedlca:hasOpenLCAUUID "fd100082-4cdf-4932-9282-6bb7d7091bd4"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 141 } where {?t fedlca:hasOpenLCAUUID "2f3cc326-da25-4086-b06d-3a7ef914aef6"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 142 } where {?t fedlca:hasOpenLCAUUID "0866bd06-77b3-41a2-8157-6d96ffb5666b"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 143 } where {?t fedlca:hasOpenLCAUUID "a55b7fe7-fa09-47ef-be62-e07b8e6f4351"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 144 } where {?t fedlca:hasOpenLCAUUID "fb4258af-95b2-4359-af03-9687178df527"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 145 } where {?t fedlca:hasOpenLCAUUID "28bb8ff6-79d1-4f97-b7c4-7fa3dd05bec8"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 146 } where {?t fedlca:hasOpenLCAUUID "6c277db7-2784-4296-83bf-15c04a9d59b2"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 147 } where {?t fedlca:hasOpenLCAUUID "007f0ce1-4a0b-4bb2-8f7c-1b2a0e6ef6b2"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 148 } where {?t fedlca:hasOpenLCAUUID "dce13106-087c-4fea-bfaa-def214e3cecb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 149 } where {?t fedlca:hasOpenLCAUUID "97ee3997-137d-4d96-80bf-c4f106c743c4"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 150 } where {?t fedlca:hasOpenLCAUUID "ae63f1fd-3679-443a-ad06-8d03e867351e"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 151 } where {?t fedlca:hasOpenLCAUUID "71326000-165d-41fb-aea9-1bfbd9d7fc6c"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 152 } where {?t fedlca:hasOpenLCAUUID "d246fd48-c363-4f0e-ab01-641325dd89eb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 153 } where {?t fedlca:hasOpenLCAUUID "594fb96f-0d06-4053-9263-826fcd4d0046"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 154 } where {?t fedlca:hasOpenLCAUUID "8632c804-eed7-4a57-91e6-1798289c49e3"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 155 } where {?t fedlca:hasOpenLCAUUID "3f838c0d-bf6c-49f1-a465-d256ab0d13eb"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 156 } where {?t fedlca:hasOpenLCAUUID "2e16ca4a-9f65-472f-b4cb-274050aaf328"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 157 } where {?t fedlca:hasOpenLCAUUID "2f1b55fb-a432-447a-a0f5-9b02bf649724"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 158 } where {?t fedlca:hasOpenLCAUUID "691ae73c-3fc1-4157-85d0-2659bdc2380a"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 159 } where {?t fedlca:hasOpenLCAUUID "95e8feec-abc7-4eb0-bf39-2a6d411cba8d"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 160 } where {?t fedlca:hasOpenLCAUUID "aa14a795-2239-496a-81b0-ad7cb8bbe0d2"^^xsd:string } ;
+insert {?t fedlca:displaySortIndex 161 } where {?t fedlca:hasOpenLCAUUID "0dc79b8e-47a1-4ec7-96b1-c9b9da2769fa"^^xsd:string } 

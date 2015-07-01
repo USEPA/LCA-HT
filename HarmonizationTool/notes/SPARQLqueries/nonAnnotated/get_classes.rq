@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT distinct (str(afn:localname(?class)) as ?the_class) (str(?label) as ?name) (str(afn:localname(?sub)) as ?the_sub) (str(?comment) as ?note) ?source
+	WHERE {
+?class a owl:Class .
+bind (str(afn:namespace(?class)) as ?source)
+filter ((?source = "http://ontology.earthster.org/eco/core#") || (?source = "http://epa.gov/nrmrl/std/lca/ethold#"))
+?class rdfs:comment ?comment .
+optional {?class rdfs:subClassOf ?sub}
+?class rdfs:label ?label .
+}
+

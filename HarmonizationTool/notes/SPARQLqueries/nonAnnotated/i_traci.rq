@@ -1,0 +1,50 @@
+# -- REPLACE "TRACI2.1" WITH THE DATASOURCE NAME
+#
+PREFIX  acto:   <http://ontology.actor.epa.gov/core#>
+PREFIX  gc:     <http://data.actor.epa.gov/2012_q1/genericChemical#>
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca#>
+PREFIX  qd001:  <http://data.lca.std.nrmrl.epa.gov/qd001#> #-- THIS IS THE "QUERY" DATA SET
+
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA 
+{
+
+eco:qd001 rdf:type eco:DataSource ,
+                   owl:NamedIndividual ;
+
+          rdfs:comment "User data with user description... from a file called: TRACI2.1.xlsx with size: 1,444,917 bytes and md5: 1821879b5ab014e0ec9192c3d1a2d6d4." ; #-- THE USER SHOULD BE ABLE TO CHANGE THIS EVENTUALLY
+
+          eco:hasMajorVersionNumber 0 ; #-- THE USER SHOULD BE ABLE TO CHANGE THIS EVENTUALLY
+          eco:hasMinorVersionNumber 1 . #-- THE USER SHOULD BE ABLE TO CHANGE THIS EVENTUALLY
+
+qd001:row_0001 rdf:type eco:Substance ,
+                        owl:NamedIndividual ;
+               eco:hasDataSource eco:qd001 ;
+               eco:casNumber "50-00-0"^^xsd:string ;
+               ethold:hasSubstanceName "Formaldehyde"^^xsd:string ;
+               ethold:hasSubstanceAltName "Bad"^^xsd:string .
+
+qd001:row_0002 rdf:type eco:Substance ,
+                        owl:NamedIndividual ;
+               eco:hasDataSource eco:qd001 ;
+               eco:casNumber "25-32-1"^^xsd:string ;
+               ethold:hasSubstanceName "Benzene"^^xsd:string ;
+               ethold:hasSubstanceAltName "Poison"^^xsd:string .
+# ...
+
+qd001:row_3211 rdf:type eco:Substance ,
+                        owl:NamedIndividual ;
+               eco:hasDataSource eco:qd001 ;
+               eco:casNumber "925-12-4"^^xsd:string ;
+               ethold:hasSubstanceName "Bisphenol A"^^xsd:string ;
+               ethold:hasSubstanceAltName "Candy"^^xsd:string .
+
+}

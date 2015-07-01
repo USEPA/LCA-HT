@@ -1,0 +1,12 @@
+prefix eco:    <http://ontology.earthster.org/eco/core#>
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix afn:    <http://jena.hpl.hp.com/ARQ/function#>
+
+select ?s ?name ?cas where {
+?s a eco:Substance .
+filter (afn:namespace(?s) = "http://epa.gov/nrmrl/std/lca/ethold/ds_001#" )
+
+?s rdfs:label ?name .
+optional {?s eco:casNumber ?cas .}
+}

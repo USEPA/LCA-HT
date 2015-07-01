@@ -1,0 +1,10 @@
+DELETE {
+  ?s <http://www.w3.org/2000/01/rdf-schema#commnet> "Failed regex: ^\\d{2,7}-\\d\\d-\\d$" .
+}
+INSERT {
+  ?s <http://www.w3.org/2000/01/rdf-schema#comment> "Failed regex: ^\\d{2,7}-\\d\\d-\\d$" .
+}
+WHERE
+{
+  ?s <http://www.w3.org/2000/01/rdf-schema#commnet> "Failed regex: ^\\d{2,7}-\\d\\d-\\d$" .
+}

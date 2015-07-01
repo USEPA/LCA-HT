@@ -1,0 +1,35 @@
+
+# select ?fc ?fc_full ?fcm where {
+#    {select ?fc ?fc_full  where { 
+#      ?fc a fedlca:FlowContext . 
+#      ?fc fedlca:flowContextGeneral ?fc_gen . 
+#      ?fc fedlca:flowContextSpecific ?fc_spec . 
+#      bind (str(?fc_gen) + " - " +str(?fc_spec) as ?fc_full)
+#
+#      filter (not exists{ ?fc a lcaht:MasterDataset } ) 
+#      } 
+#    } 
+#  ?fcm a fedlca:FlowContext .
+#  ?fcm a lcaht:MasterDataset .
+#  ?fcm fedlca:flowContextNecessaryRegexPattern ?necessary .
+#  filter regex (?fc_full, ?necessary)
+#}
+
+#minus 
+
+select ?fc ?fc_full ?fcm ?forbidden where {
+    {select ?fc ?fc_full  where { 
+      ?fc a fedlca:FlowContext . 
+      ?fc fedlca:flowContextGeneral ?fc_gen . 
+      ?fc fedlca:flowContextSpecific ?fc_spec . 
+      bind (str(?fc_gen) + " - " +str(?fc_spec) as ?fc_full)
+      filter (not exists{ ?fc a lcaht:MasterDataset } ) 
+      } 
+    } 
+  ?fcm a fedlca:FlowContext .
+  ?fcm a lcaht:MasterDataset .
+  ?fcm fedlca:flowContextForbiddenRegexPattern ?forbidden .
+  filter regex (?fc_full, ?forbidden) 
+}
+
+

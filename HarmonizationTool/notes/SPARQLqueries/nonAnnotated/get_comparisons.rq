@@ -1,0 +1,94 @@
+#
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+#==
+select ?f ?uuid ?f2 ?fl_name ?fl2_name where {
+  ?f a fedlca:Flow .
+  ?f fedlca:hasFlowContext ?fc .
+  ?f2 a eco:Flow .
+  ?f2 fedlca:hasFlowContext ?fc2 .
+  ?fc owl:sameAs ?fc2 .
+  ?f eco:hasFlowable ?fl .
+  ?f2 eco:hasFlowable ?fl2 .
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedSource ?fl .
+  ?c fedlca:comparedMaster ?fl2 .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+  ?f eco:hasDataSource ?ds .
+  ?ds rdfs:label ?ds_name .
+  ?f2 eco:hasDataSource ?ds2 .
+  ?fl rdfs:label ?fl_name .
+  ?fl2 rdfs:label ?fl2_name .
+  ?ds2 rdfs:label ?ds2_name .
+  optional {
+    ?f2 fedlca:hasOpenLCAUUID ?uuid . 
+  }
+}
+limit 100
+#==
+
+select (count(?f) as ?count) ?ds_name ?ds2_name where {
+  ?f a fedlca:Flow .
+  ?f fedlca:hasFlowContext ?fc .
+  ?f2 a eco:Flow .
+  ?f2 fedlca:hasFlowContext ?fc2 .
+  ?fc owl:sameAs ?fc2 .
+  ?f eco:hasFlowable ?fl .
+  ?f2 eco:hasFlowable ?fl2 .
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedSource ?fl .
+  ?c fedlca:comparedMaster ?fl2 .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+  ?f eco:hasDataSource ?ds .
+  ?ds rdfs:label ?ds_name .
+  ?f2 eco:hasDataSource ?ds2 .
+  ?ds2 rdfs:label ?ds2_name .
+  optional {
+    ?f2 fedlca:hasOpenLCAUUID ?uuid . 
+  }
+}
+group by ?ds_name ?ds2_name
+##
+select ?f ?f2 ?f_name ?f2_name where {
+  ?f a fedlca:Flow .
+  ?f fedlca:hasFlowContext ?fc .
+  ?f2 a eco:Flow .
+  ?f2 fedlca:hasFlowContext ?fc2 .
+  ?fc owl:sameAs ?fc2 .
+  ?f eco:hasFlowable ?fl .
+  ?f2 eco:hasFlowable ?fl2 .
+  ?c a fedlca:Comparison .
+  ?c fedlca:comparedSource ?fl .
+  ?c fedlca:comparedMaster ?fl2 .
+  ?c fedlca:comparedEquivalence fedlca:Equivalent .
+  ?f eco:hasDataSource ?ds .
+  ?ds rdfs:label ?ds_name .
+  ?f2 eco:hasDataSource ?ds2 .
+  ?f olca:name ?f_name .
+  ?f2 rdfs:label ?f2_name .
+  ?ds2 rdfs:label ?ds2_name .
+  optional {
+    ?f2 fedlca:hasOpenLCAUUID ?uuid . 
+  }
+}
+limit 100
+
+##
+select ?f ?flowable where {
+?f olca:flowType olca:ELEMENTARY_FLOW .
+?f olca:name ?flowable . 
+}
+order by ?flowable

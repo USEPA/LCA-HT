@@ -1,0 +1,15 @@
+select ?nmf ?of ?op1 ?oo1 ?os2 ?op2 
+  where { 
+    ?of a olca:Flow . 
+    ?of fedlca:hasOpenLCAUUID ?uuid . 
+    ?pf fedlca:hasOpenLCAUUID ?uuid . 
+    ?pf a fedlca:Flow . 
+    ?pf owl:sameAs ?mf . 
+    bind (substr(str(?of)," + olcaNSLength + ") as ?ofUUID) 
+    ?mf fedlca:hasOpenLCAUUID ?mUUID . 
+    filter ( ?mUUID != ?ofUUID) 
+    bind (IRI(concat(\"" + olcaNS + "\",?mUUID)) as ?nmf) 
+    filter (?nmf != ?of) 
+    ?of  ?op1 ?oo1 . 
+    ?os2 ?op2 ?of . 
+}

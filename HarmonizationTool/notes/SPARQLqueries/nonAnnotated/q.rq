@@ -1,0 +1,27 @@
+prefix  eco:    <http://ontology.earthster.org/eco/core#> 
+prefix  ecoi:   <http://ontology.earthster.org/eco/impact#> 
+prefix  fasc:   <http://ontology.earthster.org/eco/fasc#>  
+prefix  ethold: <http://epa.gov/nrmrl/std/lca/ethold#> 
+prefix  afn:    <http://jena.hpl.hp.com/ARQ/function#> 
+prefix  fn:     <http://www.w3.org/2005/xpath-functions#> 
+prefix  owl:    <http://www.w3.org/2002/07/owl#> 
+prefix  skos:   <http://www.w3.org/2004/02/skos/core#> 
+prefix  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix  rdfs:   <http://www.w3.org/2000/01/rdf-schema#> 
+prefix  xml:    <http://www.w3.org/XML/1998/namespace> 
+prefix  xsd:    <http://www.w3.org/2001/XMLSchema#> 
+
+select ?col_name (str(count(distinct ?col_vals)) as ?vals) where {
+# select ?col_name where {
+    ?row ethold:fromRowNum 0 .
+    ?cell ethold:fromRow ?row .
+    ?cell ethold:fromColNum ?col_num .
+    ?cell ethold:contains ?col_name .
+    ?rows ethold:fromRowNum ?row_num .
+    filter (?row_num > 0)
+    ?cells ethold:fromRow ?rows .
+    ?cells ethold:fromColNum ?col_num .
+    ?cells ethold:contains ?col_vals .
+  }
+group by ?col_name
+order by ?col_num

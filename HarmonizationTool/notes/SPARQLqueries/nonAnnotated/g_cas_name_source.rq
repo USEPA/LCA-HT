@@ -1,0 +1,30 @@
+# -- REPLACE "TRACI2.1" WITH THE DATASOURCE NAME
+#
+PREFIX  acto:   <http://ontology.actor.epa.gov/core#>
+PREFIX  gc:     <http://data.actor.epa.gov/2012_q1/genericChemical#>
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca#>
+PREFIX  traci:  <http://data.lca.std.nrmrl.epa.gov/harm_tool/TRACI2.1#>
+
+PREFIX  afn:    <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  fn:     <http://www.w3.org/2005/xpath-functions#>
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xml:    <http://www.w3.org/XML/1998/namespace>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?s1 ?s2 ?source
+
+where {
+?s1 ethold:hasSubstanceName ?name .
+?s2 ethold:hasSubstanceName ?name . 
+
+?s1 eco:casNumber ?cas .
+?s2 eco:casNumber ?cas . 
+
+?s1 eco:hasDataSource eco:TRACI2.1 .
+not exists {?s2 eco:hasDataSource eco:TRACI2.1 .}
+?s2 eco:hasDataSource ?source .
+}
+order by ?s1

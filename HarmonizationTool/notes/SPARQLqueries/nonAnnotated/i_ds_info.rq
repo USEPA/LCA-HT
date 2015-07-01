@@ -1,0 +1,19 @@
+#-- TOMMY: NOTE THE FOLLOWING CHANGES:
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca#>
+PREFIX  ds_001:  <http://data.lca.std.nrmrl.epa.gov/ds_001#> #-- TOMMY: CHANGE BOTH INSTANCES OF THE 001 TO MATCH THE ds NUMBER
+
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA 
+{
+eco:ds_001 rdf:type eco:DataSource ,                  #-- TOMMY: CHANGE THE 001 TO MATCH THE ds NUMBER
+                   owl:NamedIndividual ;
+          rdfs:label "TRACI"^^xsd:string ;            #-- TOMMY: PUT THE DATASET NAME IN THE QUOTES
+          rdfs:comment "Comment text"^^xsd:string ;   #-- TOMMY: PUT THE COMMENT IN THE QUOTES
+          eco:hasMajorVersionNumber "0"^^xsd:string ; #-- TOMMY: PUT THE MAJOR VERSION IN THE QUOTES (AS TEXT FOR NOW)
+          eco:hasMinorVersionNumber "1"^^xsd:string . #-- TOMMY: PUT THE MINOR VERSION IN THE QUOTES (AS TEXT FOR NOW)
+}

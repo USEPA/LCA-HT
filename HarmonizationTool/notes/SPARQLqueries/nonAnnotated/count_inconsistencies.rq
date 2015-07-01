@@ -1,0 +1,3 @@
+select (count(?sub) as ?inconsistencies) where {
+  ?sub <http://epa.gov/nrmrl/std/lca/ethold#hasInconsistency> ?o .
+}

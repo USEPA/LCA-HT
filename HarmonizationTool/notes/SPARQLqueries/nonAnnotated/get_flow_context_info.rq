@@ -1,0 +1,21 @@
+select ?fc
+       ?fc_uuid
+       ?fc_gen
+       ?fc_spec
+       ?fc_nec_regex
+       ?fc_suf_regex
+       ?fc_forbid_regex
+where {\n");
+  ?fc a fedlca:FlowContext . 
+  ?fc eco:hasDataSource ?ds .
+  ?ds a lcaht:MasterDataset . 
+  ?fc fedlca:flowContextGeneral ?fc_gen . 
+  ?fc fedlca:flowContextSpecific ?fc_spec . 
+  ?fc fedlca:hasOpenLCAUUID ?fc_uuid .
+  ?fc fedlca:presentationSortIndex ?sort . 
+
+  optional { ?fc fedlca:flowContextNecessaryRegexPattern ?fc_nec_regex }
+  optional { ?fc fedlca:flowContextSufficientRegexPattern ?fc_suf_regex }
+  optional { ?fc fedlca:flowContextForbiddenRegexPattern ?fc_forbid_regex }
+}
+order by ?sort

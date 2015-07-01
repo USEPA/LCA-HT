@@ -1,0 +1,21 @@
+#-- TOMMY: NOTE THE FOLLOWING CHANGES:
+PREFIX  eco:    <http://ontology.earthster.org/eco/core#>
+PREFIX  ethold: <http://epa.gov/nrmrl/std/lca#>
+PREFIX  ds_001:  <http://data.lca.std.nrmrl.epa.gov/ds_001#> #-- TOMMY: CHANGE BOTH INSTANCES OF 001 TO MATCH THE ds NUMBER
+
+PREFIX  owl:    <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA 
+{
+ds_001:row_0001 rdf:type eco:Substance ,                             #-- TOMMY: CHANGE THE FIRST 001 TO MATCH THE ds NUMBER, AND THE 0001 TO MATCH THE ROW
+                         owl:NamedIndividual ;
+                eco:casNumber "50-00-0"^^xsd:string ;                 #-- TOMMY: CHANGE THE 50-00-0 TO MATCH THE CAS NUMBER <OPTIONAL>
+                ethold:hasSubstanceName "Formaldehyde"^^xsd:string ;  #-- TOMMY: CHANGE THE Formaldehyde TO MATCH THE NAME  <OPTIONAL>
+                ethold:hasSubstanceAltName "AltName"^^xsd:string ;    #-- TOMMY: CHANGE THE AltName TO MATCH AltName NUMBER <OPTIONAL>
+                eco:hasDataSource eco:ds_001 .                        #-- TOMMY: CHANGE THE 001 TO MATCH THE ds NUMBER
+}
+
+#-- TOMMY: NOW THE TRICKY PART: FOR THE ONES MARKED <OPTIONAL>, YOU LEAVE THAT WHOLE ROW OUT IF THE DATA IS BLANK OR "n/a".  EVENTUALLY WE'LL HAVE TO DETERMINE WHAT SYMBOLES MEAN "BLANK"

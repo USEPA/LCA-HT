@@ -1,0 +1,26 @@
+  delete {
+    ?of ?op1 ?oo1 . 
+    ?os2 ?op2 ?of . 
+  }
+   
+  insert {
+    ?nmf ?op1 ?oo1 . 
+    ?os2 ?op2 ?nmf . 
+  }
+   
+  where { 
+    ?of a olca:Flow . 
+    ?of fedlca:hasOpenLCAUUID ?uuid . 
+    ?pf fedlca:hasOpenLCAUUID ?uuid . 
+    ?pf a fedlca:Flow . 
+    ?pf owl:sameAs ?mf . 
+    bind (substr(str(?of),32) as ?ofUUID) 
+    ?mf fedlca:hasOpenLCAUUID ?mUUIDTyped . 
+    bind (str(?mUUIDTyped) as ?mUUID) 
+    filter ( ?mUUID != ?ofUUID) 
+    bind (IRI(concat("http://openlca.org/schema/v1.0/",?mUUID)) as ?nmf) 
+    filter (?nmf != ?of)
+    ?of  ?op1 ?oo1 . 
+    ?os2 ?op2 ?of . 
+} 
+

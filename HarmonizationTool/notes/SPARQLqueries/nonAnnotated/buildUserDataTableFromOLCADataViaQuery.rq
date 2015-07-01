@@ -1,0 +1,61 @@
+PREFIX fedlca: <http://epa.gov/nrmrl/std/lca/fedlca/1.0#>
+PREFIX lcaht: <http://epa.gov/nrmrl/std/lca/ht/1.0#>
+PREFIX olca: <http://openlca.org/schema/v1.0/>
+PREFIX eco: <http://ontology.earthster.org/eco/core#>
+PREFIX fasc: <http://ontology.earthster.org/eco/fasc#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+select distinct
+  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid)
+  ?flowable 
+  ?cas
+  ?formula
+  ?context_general
+  ?context_specific
+  ?reference_unit
+  ?flow_property
+
+where {
+
+  #--- FLOWABLE
+  ?f olca:flowType olca:ELEMENTARY_FLOW .
+  ?f olca:name ?flowable .
+  optional {
+    ?f olca:cas ?cas .
+  }
+  optional {
+    ?f olca:formula ?formula .
+  }
+bind (fn:string-length(str(?f)) as ?flowable_length)
+
+  #--- FLOW CONTEXT
+  ?f olca:category ?cat .
+  ?cat olca:name ?context_specific .
+  ?cat olca:parentCategory ?parentCat .
+  ?parentCat olca:name ?context_general .
+  bind (fn:string-length(str(?cat)) as ?cat_length)
+
+  #--- FLOW PROPERTY
+  {{?f olca:flowPropertyFactors ?fpf } UNION
+  {?f olca:flowProperties ?fpf }}
+  ?fpf olca:flowProperty ?fp .
+  ?fp olca:name ?flow_property .
+  bind (fn:string-length(str(?fp)) as ?fp_length)
+
+  ?fp olca:unitGroup ?ug .
+  {{ ?ug olca:referenceUnit ?ru . } UNION
+  { ?ug olca:units ?ru .
+  ?ru olca:referenceUnit "true"^^xsd:boolean . }}
+  ?ru olca:name ?reference_unit .
+  bind (fn:string-length(str(?ru)) as ?ru_length)
+
+}
+order by ?flowable

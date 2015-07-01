@@ -1,0 +1,14 @@
+prefix eco:    <http://ontology.earthster.org/eco/core#>
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix afn:    <http://jena.hpl.hp.com/ARQ/function#>
+
+select ?name ?type ?cas where {
+?s eco:hasDataSource eco:ds_001 .
+?s a eco:Substance .
+
+?s rdfs:label ?name .
+optional {?s eco:casNumber ?cas .}
+bind (afn:localname(datatype(?cas)) as ?type)
+}
+limit 20

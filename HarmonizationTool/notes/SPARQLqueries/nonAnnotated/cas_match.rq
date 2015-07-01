@@ -1,0 +1,32 @@
+##
+prefix ethold: <http://epa.gov/nrmrl/std/lca/ethold#> 
+prefix eco:    <http://ontology.earthster.org/eco/core#> 
+prefix ecoi:   <http://ontology.earthster.org/eco/impact#> 
+prefix  afn:   <http://jena.hpl.hp.com/ARQ/function#>
+prefix  xml:   <http://www.w3.org/XML/1998/namespace>
+prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> 
+prefix xsd:    <http://www.w3.org/2001/XMLSchema#> 
+prefix owl:    <http://www.w3.org/2002/07/owl#> 
+prefix skos:   <http://www.w3.org/2004/02/skos/core#> 
+prefix  fn:    <http://www.w3.org/2005/xpath-functions#>
+
+select (str(afn:localname(?from)) as ?data) (str(afn:localname(?to)) as ?master) (str(afn:localname(?ds)) as ?data_set) (str(?cas) as ?cas_match) where {
+
+?to eco:hasDataSource eco:ds_000 .
+?to eco:casNumber ?cas .
+?from eco:casNumber ?cas .
+?from eco:hasDataSource ?ds .
+filter (str(afn:localname(?ds)) != "ds_000")
+#! EXISTS {?from eco:hasDataSource eco:ds000 }
+
+# ?from eco:casNumber ?cas1 .
+# ?to eco:casNumber ?cas2 .
+# ?from eco:hasDataSource ?ds .
+# ?to eco:hasDataSource eco:ds000 .
+# filter (str(?cas1) = str(?cas2))
+# filter (str(afn:localname(?ds)) != "ds000")
+# ?from rdf:type eco:Flowable .
+# ?to rdf:type eco:Flowable .
+}
+

@@ -1,0 +1,52 @@
+#
+prefix olca: <http://openlca.org/schema/v1.0/>
+prefix  afn:   <http://jena.hpl.hp.com/ARQ/function#>
+prefix  fn:    <http://www.w3.org/2005/xpath-functions#>
+
+select
+  ?flowable 
+  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid)
+  ?cas
+  ?formula
+  ?context_general
+  ?context_specific
+  (fn:substring(str(?cat), ?cat_length - 35) as?context_specific_uuid)
+  ?reference_unit
+  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid)
+  ?flow_property
+  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid)
+
+where {
+
+  #--- FLOWABLE
+  ?f olca:flowType olca:ELEMENTARY_FLOW .
+  ?f olca:name ?flowable .
+  optional {
+    ?f olca:cas ?cas .
+  }
+  optional {
+    ?f olca:formula ?formula .
+  }
+bind (fn:string-length(str(?f)) as ?flowable_length)
+
+  #--- FLOW CONTEXT
+  ?f olca:category ?cat .
+  ?cat olca:name ?context_specific .
+  ?cat olca:parentCategory ?parentCat .
+  ?parentCat olca:name ?context_general .
+  bind (fn:string-length(str(?cat)) as ?cat_length)
+
+
+  #--- FLOW PROPERTY
+  ?f olca:flowPropertyFactors ?fpf .
+  ?fpf olca:flowProperty ?fp .
+  ?fp olca:name ?flow_property .
+  bind (fn:string-length(str(?fp)) as ?fp_length)
+
+  ?fp olca:unitGroup ?ug .
+  ?ug olca:referenceUnit ?ru .
+  ?ru olca:name ?reference_unit .
+  bind (fn:string-length(str(?ru)) as ?ru_length)
+
+}
+order by ?flowable 
