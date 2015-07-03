@@ -42,7 +42,7 @@ public class CurationMethods {
 		b.append("SELECT distinct ?a  \n");
 		b.append("WHERE \n");
 		b.append("  { \n");
-		b.append("    ?a rdf:type fedlca:Annotation . \n");
+		b.append("    ?a rdf:type fedlca:AnnotationProvider . \n");
 		b.append("    ?a dcterms:dateSubmitted ?date . \n");
 		b.append("   } \n");
 		b.append("order by ?date DESC \n");
@@ -59,28 +59,28 @@ public class CurationMethods {
 		return null;
 	}
 
-	public static Resource createNewAnnotation() {
-		Resource annotationResource = ActiveTDB.tsCreateResource(FedLCA.Annotation);
-		// Calendar calendar = GregorianCalendar.getInstance();
-		Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(new Date(), null);
-		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.created, dateLiteral, null);
-		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.modified, dateLiteral, null);
+//	public static Resource createNewAnnotation() {
+//		Resource annotationResource = ActiveTDB.tsCreateResource(FedLCA.Annotation);
+//		// Calendar calendar = GregorianCalendar.getInstance();
+//		Literal dateLiteral = ActiveTDB.tsCreateTypedLiteral(new Date(), null);
+//		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.created, dateLiteral, null);
+//		ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.modified, dateLiteral, null);
+//
+//		if (Util.getPreferenceStore().getString("userName") != null) {
+//			String userName = Util.getPreferenceStore().getString("userName");
+//			ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.creator, userName, null);
+//		}
+//		currentAnnotation = annotationResource;
+//		return annotationResource;
+//	}
 
-		if (Util.getPreferenceStore().getString("userName") != null) {
-			String userName = Util.getPreferenceStore().getString("userName");
-			ActiveTDB.tsAddGeneralTriple(annotationResource, DCTerms.creator, userName, null);
-		}
-		currentAnnotation = annotationResource;
-		return annotationResource;
-	}
-
-	public static void updateAnnotationModifiedDate() {
-		if (currentAnnotation == null) {
-			createNewAnnotation();
-		} else {
-			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, new Date());
-		}
-	}
+//	public static void updateAnnotationModifiedDate() {
+//		if (currentAnnotation == null) {
+//			createNewAnnotation();
+//		} else {
+//			ActiveTDB.tsReplaceLiteral(currentAnnotation, DCTerms.modified, new Date());
+//		}
+//	}
 
 	public static Resource compareSourceToMasterThing(Resource sourceResource, Resource masterResource) {
 		/*
@@ -184,7 +184,7 @@ public class CurationMethods {
 				}
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
-				System.out.println("Creating new Comparison failed with Exception: " + e);
+				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
 				ActiveTDB.tdbDataset.abort();
 			} finally {
 				ActiveTDB.tdbDataset.end();
@@ -205,142 +205,138 @@ public class CurationMethods {
 		return result;
 	}
 
-	public static Resource findComparison(Resource querySource, Resource master) {
-		Resource comparisonResource = null;
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, querySource);
-		while (resIterator.hasNext()) {
-			comparisonResource = resIterator.next();
-			if (tdbModel.contains(comparisonResource, FedLCA.comparedMaster, master)) {
-				break;
-			}
-		}
-		ActiveTDB.tdbDataset.end();
-		return comparisonResource;
-	}
+//	public static Resource findComparison(Resource querySource, Resource master) {
+//		Resource comparisonResource = null;
+//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, querySource);
+//		while (resIterator.hasNext()) {
+//			comparisonResource = resIterator.next();
+//			if (tdbModel.contains(comparisonResource, FedLCA.comparedMaster, master)) {
+//				break;
+//			}
+//		}
+//		ActiveTDB.tdbDataset.end();
+//		return comparisonResource;
+//	}
 
-	public static Resource setComparison(Resource querySource, Resource master, Resource equivalence) {
-		if (querySource == null || master == null) {
-			System.out.println("querySource = " + querySource + " and master = " + master);
-			return null;
-		}
-		if (querySource.equals(master)) {
-			return null;
-		}
+//	public static Resource setComparison(Resource querySource, Resource master, Resource equivalence) {
+//		if (querySource == null || master == null) {
+//			System.out.println("querySource = " + querySource + " and master = " + master);
+//			return null;
+//		}
+//		if (querySource.equals(master)) {
+//			return null;
+//		}
+//
+//		Resource comparisonResource = findComparison(querySource, master);
+//		if (comparisonResource == null) {
+//			comparisonResource = createNewComparison(querySource, master, equivalence);
+//			return comparisonResource;
+//		}
+//
+//		ActiveTDB.tsReplaceObject(comparisonResource, FedLCA.comparedEquivalence, equivalence);
+//		ActiveTDB.tsAddGeneralTriple(currentAnnotation, FedLCA.hasComparison, comparisonResource, null);
+//		updateAnnotationModifiedDate();
+//		return comparisonResource;
+//	}
 
-		Resource comparisonResource = findComparison(querySource, master);
-		if (comparisonResource == null) {
-			comparisonResource = createNewComparison(querySource, master, equivalence);
-			return comparisonResource;
-		}
+//	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
+//		Resource newComparison = null;
+//		if (querySource == null || master == null) {
+//			System.out.println("querySource = " + querySource + " and master = " + master);
+//			return null;
+//		}
+//		if (querySource.equals(master)) {
+//			return null;
+//		}
+//
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		try {
+//			newComparison = tdbModel.createResource(FedLCA.Comparison);
+//			tdbModel.add(newComparison, FedLCA.comparedSource, querySource);
+//			tdbModel.add(newComparison, FedLCA.comparedMaster, master);
+//			tdbModel.add(newComparison, FedLCA.comparedEquivalence, equivalence);
+//			tdbModel.add(currentAnnotation, FedLCA.hasComparison, newComparison);
+//			ActiveTDB.tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+//			ActiveTDB.tdbDataset.abort();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
+//		// ---- END SAFE -WRITE- TRANSACTION ---
+//
+//		updateAnnotationModifiedDate();
+//		return newComparison;
+//	}
 
-		ActiveTDB.tsReplaceObject(comparisonResource, FedLCA.comparedEquivalence, equivalence);
-		ActiveTDB.tsAddGeneralTriple(currentAnnotation, FedLCA.hasComparison, comparisonResource, null);
-		updateAnnotationModifiedDate();
-		return comparisonResource;
-	}
+//	public static void updateComparison(Resource comparison, Resource equivalence) {
+//		if (comparison == null || equivalence == null) {
+//			System.out.println("comparison = " + comparison + " and equivalence = " + equivalence);
+//			return;
+//		}
+//		updateAnnotationModifiedDate();
+//		ActiveTDB.tsReplaceObject(comparison, FedLCA.comparedEquivalence, equivalence);
+//	}
 
-	public static Resource createNewComparison(Resource querySource, Resource master, Resource equivalence) {
-		Resource newComparison = null;
-		if (querySource == null || master == null) {
-			System.out.println("querySource = " + querySource + " and master = " + master);
-			return null;
-		}
-		if (querySource.equals(master)) {
-			return null;
-		}
-
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(null);
-		try {
-			newComparison = tdbModel.createResource(FedLCA.Comparison);
-			tdbModel.add(newComparison, FedLCA.comparedSource, querySource);
-			tdbModel.add(newComparison, FedLCA.comparedMaster, master);
-			tdbModel.add(newComparison, FedLCA.comparedEquivalence, equivalence);
-			tdbModel.add(currentAnnotation, FedLCA.hasComparison, newComparison);
-			ActiveTDB.tdbDataset.commit();
-		} catch (Exception e) {
-			System.out.println("Creating new Comparison failed with Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
-
-		updateAnnotationModifiedDate();
-		return newComparison;
-	}
-
-	public static void updateComparison(Resource comparison, Resource equivalence) {
-		if (comparison == null || equivalence == null) {
-			System.out.println("comparison = " + comparison + " and equivalence = " + equivalence);
-			return;
-		}
-		updateAnnotationModifiedDate();
-		ActiveTDB.tsReplaceObject(comparison, FedLCA.comparedEquivalence, equivalence);
-	}
-
-	public static Resource getCurrentAnnotation() {
-		return currentAnnotation;
-	}
+//	public static Resource getCurrentAnnotation() {
+//		return currentAnnotation;
+//	}
 
 	public static void setCurrentAnnotation(Resource newAnnotation) {
 		currentAnnotation = newAnnotation;
 	}
 
-	public static void removeComparison(Resource comparison) {
-		ActiveTDB.tsRemoveStatement(currentAnnotation, FedLCA.comparedEquivalence, comparison);
-		ActiveTDB.tsRemoveGenericTriple(comparison, null, null, null);
-		updateAnnotationModifiedDate();
-	}
+	
 
-	public static void removeComparison(Resource comparedSource, Resource comparedMaster) {
-		List<Resource> comparisonsToRemove = new ArrayList<Resource>();
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		// Model model = ActiveTDB.getModel(null);
-		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, comparedSource);
-		StmtIterator stmtIterator = tdbModel.listStatements(selector);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.nextStatement();
-			int count = 0;
-			while (tdbModel.contains(statement.getSubject(), FedLCA.comparedMaster, comparedMaster)) {
-				comparisonsToRemove.add(statement.getSubject());
-				count++;
-			}
-			System.out.println("count " + count);
-			break;
-		}
-		ActiveTDB.tdbDataset.end();
-		for (Resource toRemove : comparisonsToRemove) {
-			removeComparison(toRemove);
-		}
-	}
+//	public static void removeComparison(Resource comparedSource, Resource comparedMaster) {
+//		List<Resource> comparisonsToRemove = new ArrayList<Resource>();
+//		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		// Model model = ActiveTDB.getModel(null);
+//		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, comparedSource);
+//		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+//		while (stmtIterator.hasNext()) {
+//			Statement statement = stmtIterator.nextStatement();
+//			int count = 0;
+//			while (tdbModel.contains(statement.getSubject(), FedLCA.comparedMaster, comparedMaster)) {
+//				comparisonsToRemove.add(statement.getSubject());
+//				count++;
+//			}
+//			System.out.println("count " + count);
+//			break;
+//		}
+//		ActiveTDB.tdbDataset.end();
+//		for (Resource toRemove : comparisonsToRemove) {
+//			removeComparison(toRemove);
+//		}
+//	}
 
-	public static Resource getComparison(Resource tdbResource, Resource matchResource) {
-		Resource comparison = findCurrentComparison(tdbResource, matchResource);
-		if (comparison != null) {
-			return comparison;
-		}
-		comparison = createNewComparison(tdbResource, matchResource, FedLCA.EquivalenceCandidate);
-		return comparison;
-	}
+//	public static Resource getComparison(Resource tdbResource, Resource matchResource) {
+//		Resource comparison = findCurrentComparison(tdbResource, matchResource);
+//		if (comparison != null) {
+//			return comparison;
+//		}
+//		comparison = createNewComparison(tdbResource, matchResource, FedLCA.EquivalenceCandidate);
+//		return comparison;
+//	}
 
-	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
-		Model tdbModel = ActiveTDB.getModel(null);
-		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
-		StmtIterator stmtIterator = tdbModel.listStatements(selector);
-		while (stmtIterator.hasNext()) {
-			Statement statement = stmtIterator.nextStatement();
-			Resource comparisonCandidate = statement.getSubject();
-			if (tdbModel.contains(comparisonCandidate, FedLCA.comparedMaster, matchResource)
-					&& tdbModel.contains(currentAnnotation, FedLCA.hasComparison, comparisonCandidate)) {
-				removeComparison(comparisonCandidate);
-				return comparisonCandidate;
-			}
-		}
-		return null;
-	}
+//	public static Resource findCurrentComparison(Resource tdbResource, Resource matchResource) {
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
+//		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+//		while (stmtIterator.hasNext()) {
+//			Statement statement = stmtIterator.nextStatement();
+//			Resource comparisonCandidate = statement.getSubject();
+//			if (tdbModel.contains(comparisonCandidate, FedLCA.comparedMaster, matchResource)
+//					&& tdbModel.contains(currentAnnotation, FedLCA.hasComparison, comparisonCandidate)) {
+//				removeComparison(comparisonCandidate);
+//				return comparisonCandidate;
+//			}
+//		}
+//		return null;
+//	}
 }

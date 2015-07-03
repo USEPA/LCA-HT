@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -22,19 +21,13 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.TreeNode;
-import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -383,7 +376,6 @@ public class MatchContexts extends ViewPart {
 		FlowContext.loadMasterFlowContexts();
 		TreeNode masterCompartmentTree = new TreeNode(null);
 		String general = "";
-		String specific = "";
 		TreeNode tn = null;
 		for (FlowContext flowContext : FlowContext.getLcaMasterContexts()) {
 			String newGeneral = (String) flowContext.getOneProperty(FlowContext.flowContextGeneral);
@@ -627,40 +619,40 @@ public class MatchContexts extends ViewPart {
 
 	}
 
-	private static TreeNode getTreeNodeByURI(Resource resource) {
-		for (TreeItem treeItem1 : masterTree.getItems()) {
-			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
-			if (treeNode1.getUri() != null) {
-				System.out.println("treeNode1 = " + treeNode1);
-				if (resource.equals(treeNode1.getUri())) {
-					return treeNode1;
-
-				}
-			}
-
-			for (TreeItem treeItem2 : treeItem1.getItems()) {
-				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
-				System.out.println("treeNode2 = " + treeNode2);
-
-				if (treeNode2.getUri() != null) {
-					if (resource.equals(treeNode2.getUri())) {
-						return treeNode2;
-					}
-				}
-				for (TreeItem treeItem3 : treeItem2.getItems()) {
-					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
-					System.out.println("treeNode3 = " + treeNode3);
-
-					if (treeNode3.getUri() != null) {
-						if (resource.equals(treeNode3.getUri())) {
-							return treeNode3;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
+//	private static TreeNode getTreeNodeByURI(Resource resource) {
+//		for (TreeItem treeItem1 : masterTree.getItems()) {
+//			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
+//			if (treeNode1.getUri() != null) {
+//				System.out.println("treeNode1 = " + treeNode1);
+//				if (resource.equals(treeNode1.getUri())) {
+//					return treeNode1;
+//
+//				}
+//			}
+//
+//			for (TreeItem treeItem2 : treeItem1.getItems()) {
+//				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
+//				System.out.println("treeNode2 = " + treeNode2);
+//
+//				if (treeNode2.getUri() != null) {
+//					if (resource.equals(treeNode2.getUri())) {
+//						return treeNode2;
+//					}
+//				}
+//				for (TreeItem treeItem3 : treeItem2.getItems()) {
+//					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
+//					System.out.println("treeNode3 = " + treeNode3);
+//
+//					if (treeNode3.getUri() != null) {
+//						if (resource.equals(treeNode3.getUri())) {
+//							return treeNode3;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
 	private static TreeItem getTreeItemByURI(Resource resource) {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
@@ -723,76 +715,76 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-	private MouseListener columnMouseListener = new MouseListener() {
-
-		@Override
-		public void mouseDoubleClick(MouseEvent e) {
-			System.out.println("double click event :e =" + e);
-		}
-
-		@Override
-		public void mouseDown(MouseEvent e) {
-			System.out.println("mouse down event :e =" + e);
-			// if (e.button == 1) {
-			// leftClick(e);
-			// } else if (e.button == 3) {
-			// // queryTbl.deselectAll();
-			// rightClick(e);
-			// }
-		}
-
-		@Override
-		public void mouseUp(MouseEvent e) {
-			System.out.println("mouse up event :e =" + e);
-		}
-
-		private void leftClick(MouseEvent event) {
-			System.out.println("cellSelectionMouseDownListener event " + event);
-			// Point ptLeft = new Point(1, event.y);
-			// Point ptClick = new Point(event.x, event.y);
-			// int clickedRow = 0;
-			// int clickedCol = 0;
-			// // TableItem item = queryTbl.getItem(ptLeft);
-			// // if (item == null) {
-			// // return;
-			// // }
-			// // clickedRow = queryTbl.indexOf(item);
-			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// // if (clickedCol > 0) {
-			// // queryTbl.deselectAll();
-			// // return;
-			// // }
-			// // queryTbl.select(clickedRow);
-			// rowNumSelected = clickedRow;
-			// colNumSelected = clickedCol;
-			// System.out.println("rowNumSelected = " + rowNumSelected);
-			// System.out.println("colNumSelected = " + colNumSelected);
-			// rowMenu.setVisible(true);
-		}
-
-		private void rightClick(MouseEvent event) {
-			System.out.println("cellSelectionMouseDownListener event " + event);
-			// Point ptLeft = new Point(1, event.y);
-			// Point ptClick = new Point(event.x, event.y);
-			// int clickedRow = 0;
-			// int clickedCol = 0;
-			// // TableItem item = queryTbl.getItem(ptLeft);
-			// // if (item == null) {
-			// // return;
-			// // }
-			// // clickedRow = queryTbl.indexOf(item);
-			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-			// // int dataClickedCol = clickedCol - 1;
-			// if (clickedCol < 0) {
-			// return;
-			// }
-			//
-			// rowNumSelected = clickedRow;
-			// colNumSelected = clickedCol;
-			// System.out.println("rowNumSelected = " + rowNumSelected);
-			// System.out.println("colNumSelected = " + colNumSelected);
-		}
-	};
+//	private MouseListener columnMouseListener = new MouseListener() {
+//
+//		@Override
+//		public void mouseDoubleClick(MouseEvent e) {
+//			System.out.println("double click event :e =" + e);
+//		}
+//
+//		@Override
+//		public void mouseDown(MouseEvent e) {
+//			System.out.println("mouse down event :e =" + e);
+//			// if (e.button == 1) {
+//			// leftClick(e);
+//			// } else if (e.button == 3) {
+//			// // queryTbl.deselectAll();
+//			// rightClick(e);
+//			// }
+//		}
+//
+//		@Override
+//		public void mouseUp(MouseEvent e) {
+//			System.out.println("mouse up event :e =" + e);
+//		}
+//
+//		private void leftClick(MouseEvent event) {
+//			System.out.println("cellSelectionMouseDownListener event " + event);
+//			// Point ptLeft = new Point(1, event.y);
+//			// Point ptClick = new Point(event.x, event.y);
+//			// int clickedRow = 0;
+//			// int clickedCol = 0;
+//			// // TableItem item = queryTbl.getItem(ptLeft);
+//			// // if (item == null) {
+//			// // return;
+//			// // }
+//			// // clickedRow = queryTbl.indexOf(item);
+//			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+//			// // if (clickedCol > 0) {
+//			// // queryTbl.deselectAll();
+//			// // return;
+//			// // }
+//			// // queryTbl.select(clickedRow);
+//			// rowNumSelected = clickedRow;
+//			// colNumSelected = clickedCol;
+//			// System.out.println("rowNumSelected = " + rowNumSelected);
+//			// System.out.println("colNumSelected = " + colNumSelected);
+//			// rowMenu.setVisible(true);
+//		}
+//
+//		private void rightClick(MouseEvent event) {
+//			System.out.println("cellSelectionMouseDownListener event " + event);
+//			// Point ptLeft = new Point(1, event.y);
+//			// Point ptClick = new Point(event.x, event.y);
+//			// int clickedRow = 0;
+//			// int clickedCol = 0;
+//			// // TableItem item = queryTbl.getItem(ptLeft);
+//			// // if (item == null) {
+//			// // return;
+//			// // }
+//			// // clickedRow = queryTbl.indexOf(item);
+//			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+//			// // int dataClickedCol = clickedCol - 1;
+//			// if (clickedCol < 0) {
+//			// return;
+//			// }
+//			//
+//			// rowNumSelected = clickedRow;
+//			// colNumSelected = clickedCol;
+//			// System.out.println("rowNumSelected = " + rowNumSelected);
+//			// System.out.println("colNumSelected = " + colNumSelected);
+//		}
+//	};
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
@@ -809,9 +801,9 @@ public class MatchContexts extends ViewPart {
 		return contextResourcesToMatch;
 	}
 
-	public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
-		this.contextResourcesToMatch = contextResourcesToMatch;
-	}
+//	public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
+//		this.contextResourcesToMatch = contextResourcesToMatch;
+//	}
 
 	public static void update(int rowNumber) {
 		List<DataRow> data = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData();

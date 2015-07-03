@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
-import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
@@ -566,17 +567,21 @@ public class Flowable {
 
 	public void addMatchCandidate(Resource resource) {
 		matchCandidates.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		new ComparisonProvider(tdbResource, resource, FedLCA.EquivalenceCandidate);
 	}
 
-	public void addSearchResult(Resource resource) {
-		searchResults.put(resource, "?");
-		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+	public void addSearchResult(Resource resource, String equivalenceSymbol) {
+//		searchResults.put(resource, "?");
+//		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		Resource comparisonEquivalenceValue = MatchStatus.getBySymbol(equivalenceSymbol).getEquivalence();
+		new ComparisonProvider(tdbResource, resource, comparisonEquivalenceValue);
+
 	}
 
 	public void removeMatchCandidate(Resource resource) {
 		matchCandidates.remove(resource);
-		CurationMethods.removeComparison(tdbResource, resource);
+		ComparisonProvider comparison = new ComparisonProvider(resource);
+		comparison.remove();
 
 	}
 
@@ -652,7 +657,9 @@ public class Flowable {
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
 			matchCandidates.put(rdfNode.asResource(), "=");
-			CurationMethods.setComparison(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
+			ComparisonProvider comparisonProvider = new ComparisonProvider(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
+			comparisonProvider.setComment("Created in setMasterMatches");
+			AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		}
 		if (count > 0) {
 			return count;

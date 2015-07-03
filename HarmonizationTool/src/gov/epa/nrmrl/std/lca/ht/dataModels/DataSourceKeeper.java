@@ -1,7 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
-import gov.epa.nrmrl.std.lca.ht.dialog.GenericStringBox;
-import gov.epa.nrmrl.std.lca.ht.sparql.GenericUpdate;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -16,14 +14,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;

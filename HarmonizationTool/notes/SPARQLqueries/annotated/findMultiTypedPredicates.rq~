@@ -9,14 +9,13 @@
 # the count of distinct datatypes.
 
 # Performance: It takes about 10 seconds in a TDB of 142,000 triples on a ~2011 
-# dual core laptop running Windows 7. With (# triples in asphalt.zip) triples,
-# it takes 25.5 seconds.
+# dual core laptop running Windows 7.
 
 # Keywords: general query ; datatype ; nested query ; predicate ; 10 seconds
 
 SELECT ?p ?count WHERE {
   {
-    SELECT ?p (STR(COUNT(?t)) AS ?count) WHERE { 
+    SELECT ?p (COUNT(?t) AS ?count) WHERE { 
       SELECT DISTINCT ?p ?t WHERE { 
         ?s ?p ?o .
         BIND (datatype(?o) AS ?t)

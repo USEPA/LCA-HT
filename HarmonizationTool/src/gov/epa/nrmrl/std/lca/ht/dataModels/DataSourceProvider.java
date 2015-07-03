@@ -27,7 +27,7 @@ public class DataSourceProvider {
 	private String comments = "";
 	private Person contactPerson = null;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
-	// private List<Annotation> annotationList = new ArrayList<Annotation>();
+	// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
 	private Resource tdbResource;
 	private static final Resource rdfClass = ECO.DataSource;
 	private Integer referenceDataStatus = null;

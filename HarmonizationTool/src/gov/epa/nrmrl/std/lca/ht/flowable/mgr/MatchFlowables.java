@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
@@ -453,7 +455,14 @@ public class MatchFlowables extends ViewPart {
 			}
 		}
 		Resource equivalenceResource = matchStatus.getEquivalence();
-		CurationMethods.setComparison(flowableToMatch.getTdbResource(), flowableResource, equivalenceResource);
+		ComparisonProvider comparisonProvider = ComparisonProvider.findComparison(flowableToMatch.getTdbResource(), flowableResource);
+		if (comparisonProvider == null) {
+			comparisonProvider = new ComparisonProvider(flowableToMatch.getTdbResource(), flowableResource, equivalenceResource);
+		} else {
+			comparisonProvider.setEquivalence(equivalenceResource);
+		}
+		comparisonProvider.appendToComment(" - Udpated by curator");
+		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 		rematchFlows();
@@ -569,13 +578,18 @@ public class MatchFlowables extends ViewPart {
 			count++;
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
-			if (flowableToMatch.getTdbResource().equals(rdfNode)) {
+			Resource resource = rdfNode.asResource();
+			if (flowableToMatch.getTdbResource().equals(resource)) {
 				continue;
 			}
 			if (candidateMap.containsKey(rdfNode)) {
 				continue;
 			}
-			flowableToMatch.addSearchResult(rdfNode.asResource());
+			candidateMap.put(resource, "?");
+		}
+		// resultSet.remove();
+		for (Resource resource:candidateMap.keySet()){
+			flowableToMatch.addSearchResult(resource, candidateMap.get(resource));
 		}
 		if (count > 99) {
 			nextStartResult += maxSearchResults;
@@ -655,7 +669,7 @@ public class MatchFlowables extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 			System.out.println("event e = " + e);
-//			CSVTableView.selectNext(ID);
+			// CSVTableView.selectNext(ID);
 			CSVTableView.selectNextFlowable();
 		}
 

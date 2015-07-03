@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
@@ -132,7 +133,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-		CurationMethods.updateAnnotationModifiedDate();
+		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
 
 	private static void openTDB() {

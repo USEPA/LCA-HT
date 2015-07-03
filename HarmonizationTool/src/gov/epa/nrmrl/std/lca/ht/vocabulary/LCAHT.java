@@ -28,7 +28,7 @@ public class LCAHT {
 
     /** <p>The namespace of the vocabulary as a resource</p> */
     public static final Resource NAMESPACE = m_model.createResource( NS );
-    public static final Resource Annotation = m_model.createResource( NS + "Annotation" );
+    public static final Resource Annotation = m_model.createResource( NS + "AnnotationProvider" );
     public static final Resource dataFile = m_model.createResource( NS + "dataFile" );
     public static final Property byteCount = m_model.createProperty( NS + "byteCount" );
     public static final Property fileName = m_model.createProperty( NS + "fileName" );

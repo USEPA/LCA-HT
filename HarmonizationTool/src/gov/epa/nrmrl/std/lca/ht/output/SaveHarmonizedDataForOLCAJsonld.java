@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.output;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -26,7 +27,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+
+
 
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
@@ -143,24 +148,11 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		 */
 
 		// if (false){
-		RDFNode modNode = CurationMethods.getCurrentAnnotation().getProperty(DCTerms.modified).getObject();
-		String modString = "";
-		try {
-			Literal modLiteral = modNode.asLiteral();
-			// XSDDateTime modDateTime = (XSDDateTime) modLiteral.getValue();
-			// ABOVE .getValue() METHOD CHOKES ON BAD XSDDateTime Literals
-			// .getString() should work for these purposes
-			modString = modLiteral.getString();
-			// String modLexical = modLiteral.getLexicalForm();
-			// Calendar modCalendar = modDateTime.asCalendar();
-			// System.out.println("modLexical = " + modLexical);
-			// System.out.println("modCalendar = " + modCalendar);
-
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
+		Date modifiedDate = AnnotationProvider.getCurrentAnnotation().getModifiedDate();
+		
+		String modString = modifiedDate.toString();
+		// FIXME - ABOVE TO GET CORRECTLY FORMATTED STRING
+	
 		List<Statement> statementsToFix = new ArrayList<Statement>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
@@ -267,7 +259,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    bind (IF (bound(?oLastChange) , concat(\"; previous lastChange: \",str(?oLastChange)),\"\") as ?cLastChange)  \n");
 			b.append("    bind (\"" + modString + "\"^^xsd:dateTime as ?newLastChange) \n");
 			// b.append("    bind (\"" + modString + "\" as ?newLastChange) \n");
-			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM Annotation ABOVE \n");
+			b.append("    #--    ^^^^^^^^^^^^^^^^^^^^^^^^^ PLACE ACTUAL VALUE FROM AnnotationProvider ABOVE \n");
 			b.append("   \n");
 			b.append("    #-- olca:description -- 1 CONDITION PLUS CONCATINATION NEEDED \n");
 			b.append("    optional {?of olca:description ?oDescription } \n");

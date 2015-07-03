@@ -11,8 +11,8 @@
  * 3) Manual - in which the user must supply information to supplement that in the user's data file to help find
  * a match in the master data files. 
  * 
- * When two data items have a defined relationship, an instance of a Comparison is created and written to the TDB.
- * Each Comparison comparison is associated with an Annotation (which will often contain multiple Comparisons).
+ * When two data items have a defined relationship, an instance of a ComparisonProvider is created and written to the TDB.
+ * Each ComparisonProvider comparison is associated with an AnnotationProvider (which will often contain multiple Comparisons).
  *
  * @author Tom Transue
  *
