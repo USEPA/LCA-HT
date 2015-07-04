@@ -659,9 +659,9 @@ public class Flowable {
 			matchCandidates.put(rdfNode.asResource(), "=");
 			ComparisonProvider comparisonProvider = new ComparisonProvider(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
 			comparisonProvider.setComment("Created in setMasterMatches");
-			AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		}
 		if (count > 0) {
+			AnnotationProvider.updateCurrentAnnotationModifiedDate();
 			return count;
 		}
 
