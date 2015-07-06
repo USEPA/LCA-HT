@@ -123,6 +123,11 @@ public class CSVTableView extends ViewPart {
 	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
 	public static boolean preCommit = true;
+	
+	private static List<Integer> flowableColumns = null;
+	private static List<Integer> propertyColumns = null;
+	private static List<Integer> contextColumns = null;
+	private static List<Integer> flowColumns = null;
 
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
@@ -1842,6 +1847,7 @@ public class CSVTableView extends ViewPart {
 		}
 		return -1;
 	}
+	
 
 	public static void colorOneFlowableRow(int rowToColor) {
 		if (!uniqueFlowableRowNumbers.contains(rowToColor)) {
@@ -1852,56 +1858,49 @@ public class CSVTableView extends ViewPart {
 			return;
 		}
 
-		List<Integer> flowableColumns = new ArrayList<Integer>();
-		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
-				.getLcaDataProperties();
-		for (int i = 0; i < lcaDataProperties.length; i++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
-					flowableColumns.add(i);
-				}
-			}
-		}
-
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
 		int hitCount = 0;
 		boolean anyCandidate = false;
+		Color color;
 
 		List<DataRow> data = TableKeeper.getTableProvider(tableProviderKey).getData();
 		DataRow dataRow = data.get(rowToColor);
 		Flowable flowable = dataRow.getFlowable();
 		// TODO: FIX THIS HACK BELOW
 		if (flowable != null) { // HACK TO AVOID RACE CONDITION IN WINDOWS
-			LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
-			for (String symbol : thing.values()) {
-				int matchNum = MatchStatus.getNumberBySymbol(symbol);
-				if (matchNum > 0 && matchNum < 5) {
-					hitCount++;
-				} else if (matchNum == 0) {
-					anyCandidate = true;
-				}
-				// if (matchNum == 0) {
-				// hitCount = 2;
-				// break;
-				// }
-			}
-
-			Color color;
 			Resource resource = flowable.getTdbResource();
-
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 			boolean adHoc = ActiveTDB.getModel(null).contains(resource, LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
 			ActiveTDB.tdbDataset.end();
-
 			if (adHoc) {
 				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-			} else if (hitCount == 1) {
-				color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-			} else if (hitCount > 1 || anyCandidate) {
-				color = orange;
-			} else {
-				color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+			}
+			else {
+				LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
+				for (String symbol : thing.values()) {
+					int matchNum = MatchStatus.getNumberBySymbol(symbol);
+					if (matchNum > 0 && matchNum < 5) {
+						hitCount++;
+					} else if (matchNum == 0) {
+						anyCandidate = true;
+					}
+					if (hitCount > 1)
+						break;
+					// if (matchNum == 0) {
+					// hitCount = 2;
+					// break;
+					// }
+				}	
+	
+	
+				if (hitCount == 1) {
+					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				} else if (hitCount > 1 || anyCandidate) {
+					color = orange;
+				} else {
+					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				}
+			
 			}
 
 			TableItem tableItem = table.getItem(tableRowToColor);
@@ -1917,19 +1916,20 @@ public class CSVTableView extends ViewPart {
 			colorOneFlowableRow(i);
 		}
 	}
+	
+	public static void colorOneFlowContextRow(int rowToColor, boolean matched) {
+		Color color;
+		if (matched)
+			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		else
+			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		for (int j : contextColumns) {
+			colorCell(rowToColor, j, color);
+		}
+	}
+
 
 	public static void colorFlowContextRows() {
-		List<Integer> contextColumns = new ArrayList<Integer>();
-		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
-				.getLcaDataProperties();
-		for (int i = 0; i < lcaDataProperties.length; i++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
-					contextColumns.add(i);
-				}
-			}
-		}
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
 
 		if (filterRowNumbers.size() > 0) {
@@ -1963,19 +1963,19 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
+	
+	public static void colorOneFlowPropertyRow(int rowToColor, boolean matched) {
+		Color color;
+		if (matched)
+			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		else
+			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		for (int j : propertyColumns) {
+			colorCell(rowToColor, j, color);
+		}
+	}
 
 	public static void colorFlowPropertyRows() {
-		List<Integer> propertyColumns = new ArrayList<Integer>();
-		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
-				.getLcaDataProperties();
-		for (int i = 0; i < lcaDataProperties.length; i++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
-					propertyColumns.add(i);
-				}
-			}
-		}
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
 
 		if (filterRowNumbers.size() > 0) {
@@ -2033,51 +2033,46 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
+	
+	public static void colorOneFlowRow(int rowToColor, boolean matched) {
+		colorOneFlowRow(rowToColor, matched, false);
+	}
+
+	public static void colorOneFlowRow(int rowToColor, boolean matched, boolean updateHeader) {
+		Color color;
+		if (matched)
+			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		else
+			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+		for (int j : flowColumns) {
+			colorCell(rowToColor, j, color);
+		}
+		colorCell(rowToColor, 0, color);
+		
+		if (updateHeader) {
+			TableColumn tc = table.getColumn(0);
+			tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
+			double digits = Math.floor(Math.log(matchedFlowRowNumbers.size())*Math.log(10));
+			digits+=Math.floor(Math.log(uniqueFlowRowNumbers.size())*Math.log(10));
+			digits+=1;
+			int digitWidth = (int) (digits * 5);
+	//		table.getColumn(0).pack();
+			table.getColumn(0).setWidth(digitWidth);
+		}
+	}
 
 	public static void colorFlowRows() {
-		List<Integer> flowColumns = new ArrayList<Integer>();
-		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
-				.getLcaDataProperties();
-		for (int i = 0; i < lcaDataProperties.length; i++) {
-			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
-			if (lcaDataPropertyProvider != null) {
-				if (lcaDataPropertyProvider.getPropertyClass().equals(Flow.label)) {
-					flowColumns.add(i);
-				}
-			}
-		}
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
 
 		if (filterRowNumbers.size() > 0) {
-			int visibleRowNum = 0;
 			for (int i : filterRowNumbers) {
 				if (uniqueFlowRowNumbers.contains(i)) {
-
-					Color color;
-					if (matchedFlowRowNumbers.contains(i)) {
-						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-					} else {
-						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-					}
-					for (int j : flowColumns) {
-						colorCell(visibleRowNum, j, color);
-						colorCell(visibleRowNum, 0, color);
-					}
+					colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
 				}
-				visibleRowNum++;
 			}
 		} else {
 			for (int i : uniqueFlowRowNumbers) {
-				Color color;
-				if (matchedFlowRowNumbers.contains(i)) {
-					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-				} else {
-					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-				}
-				for (int j : flowColumns) {
-					colorCell(i, j, color);
-					colorCell(i, 0, color);
-				}
+				colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
 			}
 		}
 		TableColumn tc = table.getColumn(0);
@@ -2201,5 +2196,29 @@ public class CSVTableView extends ViewPart {
 	public static void setPostCommit() {
 		preCommit = false;
 		// tableViewer.
+		
+		flowableColumns = new ArrayList<Integer>();
+		propertyColumns = new ArrayList<Integer>();
+		contextColumns = new ArrayList<Integer>();
+		flowColumns = new ArrayList<Integer>();
+		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
+				.getLcaDataProperties();
+		for (int i = 0; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider != null) {
+				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+					flowableColumns.add(i);
+				}
+				else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
+					propertyColumns.add(i);
+				}
+				else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+					contextColumns.add(i);
+				} else if (lcaDataPropertyProvider.getPropertyClass().equals(Flow.label)) {
+					flowColumns.add(i);
+				}
+			}
+		}
+		
 	}
 }

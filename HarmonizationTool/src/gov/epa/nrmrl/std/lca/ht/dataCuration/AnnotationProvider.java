@@ -23,7 +23,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Tom Transue
  *
  */
-public class AnnotationProvider {
+public class AnnotationProvider implements Runnable {
 	private static final Resource rdfClass = FedLCA.Annotation;
 
 	private static AnnotationProvider currentAnnotation = null;
@@ -38,6 +38,11 @@ public class AnnotationProvider {
 	private Date modifiedDate = null;
 	private Person curator = null;
 	private String comment = null;
+	private long lastUpdateTime = 0;
+	private boolean running = false;
+	
+	//Number of seconds to wait after last update to creation date before writing to TDB
+	private static final int TDB_UPDATE_INTERVAL = 2;
 
 	/**
 	 * Because AnnotationProviders are not often created, bundling the transaction safe TDB writes is not
@@ -161,5 +166,35 @@ public class AnnotationProvider {
 	public void setCreationDate(Date creationDate) {
 		ActiveTDB.tsReplaceLiteral(currentAnnotation.tdbResource, DCTerms.modified, creationDate);
 		this.creationDate = creationDate;
+		lastUpdateTime = System.currentTimeMillis();
+		if (!running)
+			new Thread(this).start();
+			
+	}
+	
+	/*
+	 * setCreationDate() is called while processing each row during the AutoMatchJob, which triggered
+	 * lots of writes to the TDB.  This is intended to wait TDB_UPDATE_INTERVAL seconds after the last
+	 * call to setCreationDate() to write the data, effectively delaying writing the creation date once
+	 * at the start and once at the end of processing.  Lack of synchronization between run() and setCreationDate()
+	 *  means there's a tiny chance the creation date may be TDB_UPDATE_INTERVAL seconds earlier than it
+	 * should be. Assuming that error is insignificant, fixing is not worth the synchronization overhead. 
+	 */
+	public void run() {
+		running = true;
+		while (lastUpdateTime != 0) {
+			if (System.currentTimeMillis() > (lastUpdateTime + TDB_UPDATE_INTERVAL * 1000)) {
+				ActiveTDB.tsReplaceLiteral(currentAnnotation.tdbResource, DCTerms.modified, creationDate);
+				lastUpdateTime = 0;
+				System.out.println("AnnotationProvider updating last modified " + new Date());
+			} else {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		running = false;
 	}
 }

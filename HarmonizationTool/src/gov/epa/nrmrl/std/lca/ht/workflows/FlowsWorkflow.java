@@ -831,33 +831,32 @@ public class FlowsWorkflow extends ViewPart {
 		uniqueFlowContextRowNumbers.add(rowNumToSend);
 		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
-		CSVTableView.colorFlowContextRows();
+		CSVTableView.colorOneFlowContextRow(rowNumToSend, matchedFlowContextRowNumbers.contains(rowNumToSend));
 	}
 
 	public static void addPropertyRowNum(int rowNumToSend) {
 		uniqueFlowPropertyRowNumbers.add(rowNumToSend);
 		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
-		CSVTableView.colorFlowPropertyRows();
+		CSVTableView.colorOneFlowPropertyRow(rowNumToSend, matchedFlowPropertyRowNumbers.contains(rowNumToSend));
 	}
 
 	public static void addFlowableRowNum(int rowNumToSend) {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
-		// CSVTableView.colorFlowableRows();
 		CSVTableView.colorOneFlowableRow(rowNumToSend);
 	}
 
 	public static void addFlowRowNum(int rowNumToSend) {
 		uniqueFlowRowNumbers.add(rowNumToSend);
-		CSVTableView.colorFlowRows();
+		CSVTableView.colorOneFlowRow(rowNumToSend, matchedFlowRowNumbers.contains(rowNumToSend), true);
 	}
 
 	public static void addFlowRowNum(int rowNumToSend, boolean colorNow) {
 		uniqueFlowRowNumbers.add(rowNumToSend);
 		if (colorNow) {
-			CSVTableView.colorFlowRows();
+			CSVTableView.colorOneFlowRow(rowNumToSend, matchedFlowRowNumbers.contains(rowNumToSend), true);
 		}
 	}
 
@@ -873,6 +872,7 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowPropertyRows();
+		
 	}
 
 	public static void addMatchFlowRowNum(int rowNumToSend) {
