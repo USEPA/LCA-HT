@@ -1,10 +1,5 @@
 package gov.epa.nrmrl.std.lca.ht.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
@@ -34,54 +29,6 @@ public class Util {
 	public static final String EMPTY_STRING = "";
 
 	private Util() {
-	}
-
-	/**
-	 * Get the time in GMT
-	 * @param date		Pass in a date (of type Date) and the time in GMT will be returned.
-	 * @return String
-	 */
-	public static String getGMTDateFmt(Date date) {
-		if (date == null) {
-			return null;
-		}
-		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return dateFormatGmt.format(date);
-	}
-
-	/**
-	 * Get the local time 
-	 * @param date		Pass in a type Date
-	 * @return String
-	 */
-	public static String getLocalDateFmt(Date date) {
-		if (date == null) {
-			return null;
-		}
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		dateFormatLocal.setTimeZone(TimeZone.getDefault());
-		return dateFormatLocal.format(date);
-	}
-
-	/**
-	 * Get the local time
-	 * @param calendar		Pass in a type Calendar.
-	 * @return String
-	 */
-	public static String getLocalDateFmt(Calendar calendar) {
-		if (calendar == null) {
-			return null;
-		}
-		long time = calendar.getTimeInMillis();
-		Date date = new Date(time);
-		return getLocalDateFmt(date);
-	}
-
-	public static Date setDateFmt(String string) throws ParseException {
-		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		dateFormatLocal.setTimeZone(TimeZone.getDefault());
-		return dateFormatLocal.parse(string);
 	}
 
 	/**

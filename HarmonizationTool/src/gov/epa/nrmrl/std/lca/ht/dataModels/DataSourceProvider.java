@@ -4,6 +4,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.util.ArrayList;
 //import java.util.Calendar;
@@ -13,8 +14,11 @@ import java.util.List;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -22,6 +26,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DataSourceProvider {
+	private static final Resource rdfClass = ECO.DataSource;
+
 	private String dataSourceName;
 	private String version = "";
 	private String comments = "";
@@ -29,7 +35,6 @@ public class DataSourceProvider {
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
 	private Resource tdbResource;
-	private static final Resource rdfClass = ECO.DataSource;
 	private Integer referenceDataStatus = null;
 
 	// private boolean isMaster = false;
@@ -143,13 +148,61 @@ public class DataSourceProvider {
 	}
 
 	public void remove() {
+		String noString = null;
+		remove(noString);
+	}
+
+	/**
+	 * This method is intended to remove a DataSourceProvider including
+	 * 1) The DataSourceProvider itself
+	 * 2) The TDB objects associated with the ECO.DataSource
+	 * 3) Each TDB subject having a ECO.hasDataSource of that ECO.DataSource
+	 * 4) Each triple beginning with the subject mentioned in 3)
+	 * 
+	 * Note: It should be adjusted to consider other triples
+	 * 
+	 * @param graph String representing the graph from which the ECO.DataSource should be removed
+	 */
+	public void remove(String graph) {
 		removeFileMDList();
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDF.type, null, null);
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDFS.label, null, null);
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, DCTerms.hasVersion, null, null);
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, RDFS.comment, null, null);
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, FedLCA.hasContactPerson, null, null);
-		ActiveTDB.tsRemoveGenericTriple(tdbResource, LCAHT.containsFile, null, null);
+		List<Statement> removeStatements = new ArrayList<Statement>();
+
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graph);
+		Selector selector0 = new SimpleSelector(tdbResource, null, null, null);
+		StmtIterator stmtIterator0 = tdbModel.listStatements(selector0);
+		while (stmtIterator0.hasNext()) {
+			removeStatements.add(stmtIterator0.next());
+		}
+		Selector selector1 = new SimpleSelector(null, ECO.hasDataSource, tdbResource.asNode());
+		StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+		while (stmtIterator1.hasNext()) {
+			Statement statement = stmtIterator1.next();
+			removeStatements.add(statement);
+			Selector selector2 = new SimpleSelector(statement.getSubject(), null, null, null);
+			StmtIterator stmtIterator2 = tdbModel.listStatements(selector2);
+			while (stmtIterator2.hasNext()) {
+				removeStatements.add(stmtIterator2.next());
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		// --- END SAFE -READ- TRANSACTION ---
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		tdbModel = ActiveTDB.getModel(graph);
+		try {
+			for (Statement statement : removeStatements) {
+				tdbModel.remove(statement);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public String getDataSourceName() {
@@ -200,78 +253,62 @@ public class DataSourceProvider {
 		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.comment, comments);
 	}
 
+	/**
+	 * Items that need to be synced to the Java object from the TDB (using Resource tdbResource) include
+	 * String dataSourceName <= RDFS.label
+	 * String version <= DCTerms.hasVersion
+	 * String comments <= RDFS.comment
+	 * Person contactPerson <= FedLCA.hasContactPerson
+	 * List<FileMD> fileMDList <= LCAHT.containsFile
+	 * Integer referenceDataStatus <= [if belongs to class LCAHT.MasterDataset or LCAHT.SupplementaryReferenceDataset]
+
+	 * @param String indicating which graph is to be used to sync from
+	 * @return True if succeeded, False if failed.
+	 */
 	public boolean syncFromTDB(String graphName) {
-		RDFNode rdfNode = null;
 		if (tdbResource == null) {
 			return false;
 		}
+		Resource personResource = null;
+		List<Resource> fileMDResources = new ArrayList<Resource>();
+
 		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model tdbModel = ActiveTDB.getModel(graphName);
-		try {
-			if (!tdbModel.containsResource(tdbResource)) {
-				return false;
-			}
-			NodeIterator nodeIterator = tdbModel.listObjectsOfProperty(tdbResource, RDFS.label);
-			if (nodeIterator.hasNext()) {
-				rdfNode = nodeIterator.next();
-			}
-			if (rdfNode == null) {
-				dataSourceName = DataSourceKeeper.uniquify("unknownName");
-			} else {
-				dataSourceName = rdfNode.asLiteral().getString();
-			}
-			if (tdbModel.contains(tdbResource, RDF.type, LCAHT.MasterDataset)) {
-				referenceDataStatus = 1;
-			} else if (tdbModel.contains(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset)) {
-				referenceDataStatus = 1;
-			} else {
-				referenceDataStatus = null;
-			}
-		} catch (Exception e) {
-			System.out.println("Syncing of dataset failed with Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
+		if (!tdbModel.containsResource(tdbResource)) {
+			return false;
 		}
+		Selector selector = new SimpleSelector(tdbResource, null, null, null);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Property property = statement.getPredicate();
+			if (property.equals(RDFS.label)) {
+				dataSourceName = statement.getObject().asLiteral().getString();
+			} else if (property.equals(RDFS.comment)) {
+				comments = statement.getObject().asLiteral().getString();
+			} else if (property.equals(DCTerms.hasVersion)) {
+				version = statement.getObject().asLiteral().getString();
+			} else if (property.equals(FedLCA.hasContactPerson)) {
+				personResource = statement.getObject().asResource();
+			} else if (property.equals(LCAHT.containsFile)) {
+				fileMDResources.add(statement.getObject().asResource());
+			} else if (property.equals(RDF.type)) {
+				Resource type = statement.getObject().asResource();
+				if (type.equals(LCAHT.MasterDataset) || type.equals(LCAHT.SupplementaryReferenceDataset)) {
+					referenceDataStatus = 1;
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
 		// ---- END SAFE -READ- TRANSACTION ---
 
-		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
-
-		if (tdbResource.hasProperty(RDFS.comment)) {
-			rdfNode = tdbResource.getProperty(RDFS.comment).getObject();
-			if (rdfNode != null) {
-				comments = ActiveTDB.getStringFromLiteral(rdfNode);
-			}
-		}
-		if (tdbResource.hasProperty(FedLCA.hasContactPerson)) {
-			rdfNode = tdbResource.getProperty(FedLCA.hasContactPerson).getObject();
-			if (rdfNode != null) {
-				contactPerson = new Person(rdfNode.asResource());
-			}
-		}
-
-		StmtIterator stmtIterator = tdbResource.listProperties(LCAHT.containsFile);
-		System.out.println("stmtIterator.toList() = " + stmtIterator.toList());
-
-		while (stmtIterator.hasNext()) {
-			// ================= ?BUG IN JENA? USING THE LINE BELOW TO KEEP STABILITY
-			System.out.println("stmtIterator.toList() = " + stmtIterator.toList());
-			// SOMETHING ABOUT THE ABOVE STATEMENT PREVENTS THE TDB AND ITERATOR FROM SCREWING UP
-
-			// Statement statement = stmtIterator.next(); <== SOMETHING WRONG WITH COUNTER IF YOU USE THIS
-			Statement statement = stmtIterator.nextStatement();
-
-			rdfNode = statement.getObject();
-			int fileMDIndex = FileMDKeeper.getIndexByTdbResource(rdfNode.asResource());
-			System.out.println("file Index: " + fileMDIndex);
-			FileMD fileMD;
-			if (fileMDIndex > -1) {
-				fileMD = FileMDKeeper.get(fileMDIndex);
-			} else {
-				fileMD = new FileMD(rdfNode.asResource());
-			}
-			addFileMD(fileMD);
+		// FIXME - TONY HOWARD - PUT A BREAK POINT JUST BELOW HERE, THEN RUN THE HT
+		contactPerson = new Person(personResource);
+		for (Resource fileMDResource : fileMDResources) {
+			FileMD fileMD = new FileMD(fileMDResource);
+			fileMDList.add(fileMD);
 		}
 		return true;
 	}

@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Date;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.apache.log4j.Logger;
@@ -99,7 +100,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("logDirectory", logPath);
 
 		store.setDefault("runfileRoot", "LCAHT");
-		store.setDefault("startTimestamp", Util.getLocalDateFmt(new Date()));
+		store.setDefault("startTimestamp", Temporal.getLocalDateFmt(new Date()));
 		return true;
 	}
 }

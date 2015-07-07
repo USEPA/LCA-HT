@@ -15,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -149,7 +150,7 @@ public class ImportUserData implements IHandler {
 				return null;
 			}
 			data.file = new File(data.path);
-			data.fileMD = new FileMD();
+			data.fileMD = new FileMD(true);
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
 			data.fileMD.setByteCount(data.file.length());
@@ -161,11 +162,11 @@ public class ImportUserData implements IHandler {
 //			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
 //			data.readDate = new Date();
 //			data.fileMD.setReadDate(data.readDate);
-			runLogger.info("# File read at: " + Util.getLocalDateFmt(data.readDate));
+			runLogger.info("# File read at: " + Temporal.getLocalDateFmt(data.readDate));
 			long time = data.file.lastModified();
 			Date date = new Date(time);
 //			calednar.setTimeInMillis(time);
-			runLogger.info("# File last modified: " + Util.getLocalDateFmt(date));
+			runLogger.info("# File last modified: " + Temporal.getLocalDateFmt(date));
 			runLogger.info("# File size: " + data.file.length());
 
 			System.out.println("All's fine before opening dialog");

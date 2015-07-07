@@ -3,9 +3,9 @@ package gov.epa.nrmrl.std.lca.ht.dataModels;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.FileEncodingUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
-//import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -21,19 +21,23 @@ public class FileMD {
 	private String path;
 	private String encoding;
 	private long byteCount;
-//	private Date modifiedDate;
-//	private Date readDate;
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
 	private static final Resource rdfClass = LCAHT.dataFile;
 
-	public FileMD() {
-		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+	public FileMD(){
+	
+	}
+	public FileMD(boolean createTDBResource) {
+		if (createTDBResource){
+		  this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+		}
 		FileMDKeeper.add(this);
 	}
 
 	public FileMD(Resource tdbResource) {
+//		super();
 		this.tdbResource = tdbResource;
 		FileMDKeeper.add(this);
 		syncDataFromTDB();
@@ -95,11 +99,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-		//TODO: THoward - figure out what the correct object / value is here.
-		// The code seems to allow getting values in, but trying to get a Calendar back out is the issue
-		// Literal thing = literal.getValue() fails if you put in a Calendar or GregorianCalendar, but returns text if you put in a Date.
-		// Either way, it seems a problem to get a Calendar back out.
-		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.fileReadDate, readDate, null);
+		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, readDate);
 	}
 
 	public String getEncoding() {
@@ -157,17 +157,15 @@ public class FileMD {
 
 		if (tdbResource.hasProperty(DCTerms.modified)) {
 			rdfNode = tdbResource.getProperty(DCTerms.modified).getObject();
-			if (rdfNode != null) {
-				String thing = rdfNode.toString();
-				System.out.println("thing = "+thing);
-				modifiedDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
+			if (rdfNode.isLiteral()) {
+				modifiedDate = Temporal.getDateObject(rdfNode.asLiteral());
 			}
 		}
 
 		if (tdbResource.hasProperty(LCAHT.fileReadDate)) {
 			rdfNode = tdbResource.getProperty(LCAHT.fileReadDate).getObject();
-			if (rdfNode != null) {
-				readDate = RDFUtil.getDateFromLiteral(rdfNode.asLiteral());
+			if (rdfNode.isLiteral()) {
+				readDate = Temporal.getDateObject(rdfNode.asLiteral());
 			}
 		}
 

@@ -192,7 +192,7 @@ public class ImportReferenceDataHandler implements IHandler {
 					dataSourceProvider.setDataSourceName(proposedNewDatasetName);
 					dataSourceProvider.setReferenceDataStatus(referenceStatus);
 				}
-				FileMD fileMD = new FileMD();
+				FileMD fileMD = new FileMD(true);
 				fileMD.setFilename(fileName);
 				fileMD.setPath(path);
 				fileMD.setByteCount(file.length());

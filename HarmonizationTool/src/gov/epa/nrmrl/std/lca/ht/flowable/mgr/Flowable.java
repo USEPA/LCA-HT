@@ -594,7 +594,7 @@ public class Flowable {
 	public int setMasterMatches(boolean doubleCheck) {
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
-		lcQName.replaceAll("\"", "\\\\\"");
+		lcQName = lcQName.replaceAll("\"", "\\\\\"");
 		List<String> namesToMatch = new ArrayList<String>();
 		namesToMatch.add(lcQName);
 		if (lcQName.matches(".*;.*")) {
@@ -602,7 +602,7 @@ public class Flowable {
 		}
 		for (String syn : getSynonyms()) {
 			String lcSyn = syn.toLowerCase();
-			lcSyn.replaceAll("\"", "\\\\\"");
+			lcSyn = lcSyn.replaceAll("\"", "\\\\\"");
 			namesToMatch.add(lcSyn);
 			if (lcSyn.matches(".*;.*")) {
 				namesToMatch.add(lcSyn.split(";")[0]);
@@ -676,7 +676,7 @@ public class Flowable {
 		wasDoubleChedked = true;
 		String qName = getName();
 		String lcQName = qName.toLowerCase();
-		lcQName.replaceAll("\"", "\\\\\"");
+		lcQName = lcQName.replaceAll("\"", "\\\\\"");
 		List<String> namesToMatch = new ArrayList<String>();
 		namesToMatch.add(lcQName);
 		if (lcQName.matches(".*;.*")) {
@@ -727,7 +727,7 @@ public class Flowable {
 
 		for (String syn : getSynonyms()) {
 			String lcSyn = syn.toLowerCase();
-			lcSyn.replaceAll("\"", "\\\\\"");
+			lcSyn = lcSyn.replaceAll("\"", "\\\\\"");
 			namesToMatch.add(lcSyn);
 			/*
 			 * Special rule to attempt to match first part of a semi-colon delimited list

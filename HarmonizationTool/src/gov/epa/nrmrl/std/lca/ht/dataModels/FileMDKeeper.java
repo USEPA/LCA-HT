@@ -110,6 +110,16 @@ public class FileMDKeeper {
 				return fileMDList.indexOf(fileMD);
 			}
 		}
+		FileMD fileMD = new FileMD(tdbResource);
+		add(fileMD);
+		iterator = fileMDList.iterator();
+		while (iterator.hasNext()) {
+			FileMD fileMDinKeeper = iterator.next();
+			Resource resource = fileMD.getTdbResource();
+			if (resource.equals(tdbResource)) {
+				return fileMDList.indexOf(fileMD);
+			}
+		}
 		return -1;
 	}
 
@@ -130,18 +140,18 @@ public class FileMDKeeper {
 	public static void setFileMDList(List<FileMD> fileMDList) {
 		FileMDKeeper.fileMDList = fileMDList;
 	}
-	public static void syncFromTDB() {
-		Model tdbModel = ActiveTDB.getModel(null);
-		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
-		while (iterator.hasNext()) {
-			Resource fileMDRDFResource = iterator.next();
-			// NOW SEE IF THE FileMD IS IN THE FileMDKeeper YET
-			int fileMDIndex = getIndexByTdbResource(fileMDRDFResource);
-			System.out.println("another file found in TDB");
-			if (fileMDIndex < 0) {
-				System.out.println("... new one");
-				new FileMD(fileMDRDFResource);
-			}
-		}
-	}
+//	public static void syncFromTDB() {
+//		Model tdbModel = ActiveTDB.getModel(null);
+//		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, LCAHT.dataFile);
+//		while (iterator.hasNext()) {
+//			Resource fileMDRDFResource = iterator.next();
+//			// NOW SEE IF THE FileMD IS IN THE FileMDKeeper YET
+//			int fileMDIndex = getIndexByTdbResource(fileMDRDFResource);
+//			System.out.println("another file found in TDB");
+//			if (fileMDIndex < 0) {
+//				System.out.println("... new one");
+//				new FileMD(fileMDRDFResource);
+//			}
+//		}
+//	}
 }

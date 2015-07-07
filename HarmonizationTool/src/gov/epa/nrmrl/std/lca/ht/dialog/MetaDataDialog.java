@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Person;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
 import org.apache.log4j.Logger;
@@ -450,8 +451,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 		FileMD curFileMD = fileMDs.get(index);
 		dialogValues[6].setText("" + curFileMD.getByteCount());
-		dialogValues[7].setText(Util.getLocalDateFmt(curFileMD.getModifiedDate()));
-		dialogValues[8].setText(Util.getLocalDateFmt(curFileMD.getReadDate()));
+		dialogValues[7].setText(Temporal.getLocalDateFmt(curFileMD.getModifiedDate()));
+		dialogValues[8].setText(Temporal.getLocalDateFmt(curFileMD.getReadDate()));
 	}
 
 	@Override

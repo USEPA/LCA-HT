@@ -44,6 +44,9 @@ public class RDFUtil {
 		if (object instanceof String) {
 			return XSDDatatype.XSDstring;
 		}
+		if (object instanceof XSDDateTime) {
+			return XSDDatatype.XSDdateTime;
+		}
 		if (object instanceof Date) {
 			return XSDDatatype.XSDdateTime;
 		}
@@ -85,36 +88,36 @@ public class RDFUtil {
 			return String.class;
 		}
 		if (rdfDatatype.equals(XSDDatatype.XSDdateTime)) {
-			return Date.class;
+			return XSDDateTime.class;
 		}
 		return null;
 	}
 
-	public static Date getDateFromLiteral(Literal typedLiteralDate) {
-		Date resultingDate = null;
-		if (!typedLiteralDate.isLiteral()) {
-			return null;
-		}
-		// Literal literalDate = typedLiteralDate.asLiteral();
-		// String formattedDate = literalDate.getString();
-		// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
-
-		try {
-			RDFDatatype dataType = typedLiteralDate.getDatatype();
-			if (dataType.equals(XSDDatatype.XSDdateTime)){
-				
-				XSDDateTime xsdDateTime = (XSDDateTime) typedLiteralDate.getValue();
-				Calendar calendar = xsdDateTime.asCalendar();
-				Long milliseconds = calendar.getTimeInMillis();
-				resultingDate = new Date(milliseconds);
-//				String lexicalValue = typedLiteralDate.getLexicalForm();
-//				resultingDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(lexicalValue);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resultingDate;
-	}
+//	public static Date getDateFromLiteral(Literal typedLiteralDate) {
+//		Date resultingDate = null;
+//		if (!typedLiteralDate.isLiteral()) {
+//			return null;
+//		}
+//		// Literal literalDate = typedLiteralDate.asLiteral();
+//		// String formattedDate = literalDate.getString();
+//		// String actualFormattedDate = formattedDate.replaceFirst("\\^\\^.*", "");
+//
+//		try {
+//			RDFDatatype dataType = typedLiteralDate.getDatatype();
+//			if (dataType.equals(XSDDatatype.XSDdateTime)){
+//				
+//				XSDDateTime xsdDateTime = (XSDDateTime) typedLiteralDate.getValue();
+//				Calendar calendar = xsdDateTime.asCalendar();
+//				Long milliseconds = calendar.getTimeInMillis();
+//				resultingDate = new Date(milliseconds);
+////				String lexicalValue = typedLiteralDate.getLexicalForm();
+////				resultingDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(lexicalValue);
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return resultingDate;
+//	}
 
 }

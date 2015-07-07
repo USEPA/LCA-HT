@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataCuration;
 
+import java.util.Date;
+
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
@@ -40,10 +42,12 @@ public class ComparisonProvider {
 	private Resource masterDataObject = null;
 	private Resource equivalence = null;
 	private String comment = null;
+	private Date lastUpdate = null;
 	private AnnotationProvider annotationProvider = null;
 
 	/**
-	 * The default constructor does not set any values
+	 * The default constructor does not set any values.  It is assumed that once the AnnotationProvider is set
+	 * the 
 	 */
 	public ComparisonProvider() {
 
@@ -58,11 +62,13 @@ public class ComparisonProvider {
 	public ComparisonProvider(boolean commitToTDB) {
 		if (commitToTDB){
 			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-			setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());	
+			setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+			AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		}
 	}
 	/**
-	 * This constructor accepts the tdbResource, then populates itself with calls to the TDB.
+	 * This constructor accepts the tdbResource, then populates itself with calls to the TDB.  Because the
+	 * ComparisonProvider is not a new one, it is not necessary to update the AnnotationProvider modified date.
 	 * @param tdbResource
 	 */
 	public ComparisonProvider(Resource tdbResource) {
@@ -284,5 +290,13 @@ public class ComparisonProvider {
 			String newComment = this.comment + comment;
 			setComment(newComment);
 		}
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 }

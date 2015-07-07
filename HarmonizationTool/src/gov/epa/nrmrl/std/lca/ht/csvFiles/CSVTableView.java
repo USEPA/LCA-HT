@@ -75,12 +75,14 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * @author Tommy E. Cathey and Tom Transue
@@ -522,15 +524,21 @@ public class CSVTableView extends ViewPart {
 	public static void matchRowContents() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
-		Resource fileResource = tableProvider.getFileMD().getTdbResource();
-		Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
-		RDFNode modifiedObject = modifiedStatement.getObject();
-		Literal modifiedLiteral = modifiedObject.asLiteral();
-		RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
-		String thing = modifiedLiteral.getString();
-		if (modifiedLiteral instanceof Literal) {
-			Object thing2 = modifiedLiteral.getValue();
-		}
+		// TODO - figure out why I (Tom) wanted the file date here...
+//		Resource fileResource = tableProvider.getFileMD().getTdbResource();
+//		Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
+//		RDFNode modifiedObject = modifiedStatement.getObject();
+//		Literal modifiedLiteral = modifiedObject.asLiteral();
+//		Object dateThang = modifiedLiteral.getValue();
+//		XSDDateTime fred = (XSDDateTime) dateThang;
+//		long seconds = fred.asCalendar().getTimeInMillis();
+		
+		
+//		RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
+//		String thing = modifiedLiteral.getString();
+//		if (modifiedLiteral instanceof Literal) {
+//			Object thing2 = modifiedLiteral.getValue();
+//		}
 
 		// Object thing = modifiedLiteral.getValue();
 

@@ -1,7 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.tdb;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
@@ -76,20 +76,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	private static ActiveTDB instance = null;
 	public static MessageDialog creationMessage;
 
-	/**
-	 *  It appears that when retrieving a literal of type xsd:dateTime from the TDB, the Literal.getValue()
-	 *  method will cause an exception if the value stored does not contain fractions of a second.  Interestingly
-	 *  the API does not appear to have problems storing such values, suggesting the question of what if any checking
-	 *  is done prior to typing any Literal.  It would make sense for the engine to save time by assuming the user
-	 *  has properly typed their variable, but Jena would be better served if the getValue() function could fail more
-	 *  gracefully for incorrectly formatted entries.  More investigation may reveal more details.  
-	 */
-	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-	// UNFORTUNATELY, THE FORMAT BELOW (WITHOUT MILLISECONDS) CRASHES WHEN
-	// TRYING TO RETRIEVE INFO AS Literal.getValue()
-	// public static final SimpleDateFormat dateFormatter = new
-	// SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.XXX");
-
 	// private List<IActiveTDBListener> activeTDBListeners = new
 	// ArrayList<IActiveTDBListener>();
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB";
@@ -126,12 +112,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void syncTDBtoLCAHT() {
-		System.out.println("Syncing people");
-		PersonKeeper.syncFromTDB();
-		System.out.println("Syncing files");
-		FileMDKeeper.syncFromTDB();
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
+//		System.out.println("Syncing people");
+//		PersonKeeper.syncFromTDB();
+//		System.out.println("Syncing files");
+//		FileMDKeeper.syncFromTDB();
 		System.out.println("Done syncing");
 		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
@@ -612,8 +598,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				RDFDatatype rdfDatatypeOfNode = literal.getDatatype();
 				if (rdfDatatypeOfNode == null) {
 					System.out.println("yell!");
-				}
-				if (rdfDatatypeOfNode.equals(rdfDatatype)) {
+				} else if (rdfDatatypeOfNode.equals(rdfDatatype)) {
 					rdfNodesToRemove.add(rdfNode);
 				}
 			}
@@ -630,7 +615,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("08 TDB transaction failed; see Exception: " + e);
+			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -675,11 +660,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				if (thingToAdd instanceof Calendar || thingToAdd instanceof Date) {
 					String formattedDate = null;
 					if (thingToAdd instanceof Date) {
-						formattedDate = dateFormatter.format(thingToAdd);
+						formattedDate = Temporal.dateFormatter.format(thingToAdd);
 					} else {
 						long milliseconds = ((Calendar) thingToAdd).getTimeInMillis();
 						Date dateConvertedFromCalendar = new Date(milliseconds);
-						formattedDate = dateFormatter.format(dateConvertedFromCalendar);
+						formattedDate = Temporal.dateFormatter.format(dateConvertedFromCalendar);
 					}
 					Literal literalToAdd = tdbModel.createTypedLiteral(formattedDate, XSDDatatype.XSDdateTime);
 					tdbModel.add(subject, predicate, literalToAdd);
@@ -704,6 +689,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
+		if (thingLiteral == null){
+			return;
+		}
 		tsRemoveAllLikeLiterals(subject, predicate, thingLiteral, null);
 		tsAddGeneralTriple(subject, predicate, thingLiteral, null);
 	}
@@ -823,11 +811,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			if (thingToMakeLiteral instanceof Calendar || thingToMakeLiteral instanceof Date) {
 				String formattedDate = null;
 				if (thingToMakeLiteral instanceof Date) {
-					formattedDate = dateFormatter.format(thingToMakeLiteral);
+					formattedDate = Temporal.dateFormatter.format(thingToMakeLiteral);
 				} else {
 					long milliseconds = ((Calendar) thingToMakeLiteral).getTimeInMillis();
 					Date dateConvertedFromCalendar = new Date(milliseconds);
-					formattedDate = dateFormatter.format(dateConvertedFromCalendar);
+					formattedDate = Temporal.dateFormatter.format(dateConvertedFromCalendar);
 				}
 				literal = tdbModel.createTypedLiteral(formattedDate, XSDDatatype.XSDdateTime);
 				// TODO: QUESTION: Does Jena actually write something when
