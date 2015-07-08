@@ -309,6 +309,8 @@ public class DataSourceProvider {
 		for (Resource fileMDResource : fileMDResources) {
 			FileMD fileMD = new FileMD(fileMDResource);
 			fileMDList.add(fileMD);
+			System.out.println("Is this FileMD really null? Look here ->" + fileMD);
+			System.out.println("Then how can it have a byteCount of this: " + fileMD.getByteCount());
 		}
 		return true;
 	}
