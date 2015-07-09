@@ -680,6 +680,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 			}
 			CSVTableView.setRowNumSelected(0);
+			CSVTableView.setColNumSelected(1);
 			CSVTableView.matchRowContents();
 
 			try {

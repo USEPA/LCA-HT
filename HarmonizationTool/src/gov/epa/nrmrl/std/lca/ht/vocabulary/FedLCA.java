@@ -61,7 +61,7 @@ public class FedLCA {
 	public static final Resource Annotation = m_model.createResource(NS + "Annotation");
 	public static final Property hasComparison = m_model.createProperty(NS + "hasComparison");
 
-	public static final Resource Comparison = m_model.createResource(NS + "ComparisonProvider");
+	public static final Resource Comparison = m_model.createResource(NS + "Comparison");
 	public static final Property comparedSource = m_model.createProperty(NS + "comparedSource");
 	public static final Property comparedMaster = m_model.createProperty(NS + "comparedMaster");
 	public static final Property comparedEquivalence = m_model.createProperty(NS + "comparedEquivalence");

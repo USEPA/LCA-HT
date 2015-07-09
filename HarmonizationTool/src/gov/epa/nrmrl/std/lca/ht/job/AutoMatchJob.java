@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
@@ -367,6 +368,7 @@ public class AutoMatchJob extends Job {
 		// ========================== FLOW ==========================
 		// stopWatch06.start();
 
+		ComparisonKeeper.commitUncommittedComparisons();
 		Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Integer> rowsToCheck = new ArrayList<Integer>();
 		percentComplete = 0;

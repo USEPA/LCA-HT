@@ -213,6 +213,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			b.append("    ?pf fedlca:sourceTableRowNumber ?row . \n");
 			b.append("   \n");
 			b.append("    ?pf owl:sameAs ?mf . \n");
+//			b.append("    #-- fedlca:Comparison (created) \n");
+//			b.append("    ?comp fedlca:comparedSource ?pf . \n");
+//			b.append("    ?comp fedlca:comparedMaster ?mf . \n");
+//			b.append("    ?comp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+//			// TODO: Handle cases other than "Equivalent"
+			b.append("   \n");
 			b.append("    #-- fedlca:Flow (master) \n");
 			b.append("    ?mf a fedlca:Flow . \n");
 			b.append("    ?mf eco:hasFlowable ?mflowable . \n");

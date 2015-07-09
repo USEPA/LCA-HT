@@ -306,10 +306,19 @@ public class DataSourceProvider {
 
 		// FIXME - TONY HOWARD - PUT A BREAK POINT JUST BELOW HERE, THEN RUN THE HT
 		contactPerson = new Person(personResource);
-		for (Resource fileMDResource : fileMDResources) {
-			FileMD fileMD = new FileMD(fileMDResource);
+		for (Resource fileMDResource : fileMDResources) {			
+//			FileMD fileMD = new FileMD(fileMDResource);
+//			fileMDList.add(fileMD);
+//			System.out.println("Is this FileMD really null? Look here ->" + fileMD);
+//			System.out.println("Then how can it have a byteCount of this: " + fileMD.getByteCount());
+			FileMD fileMD = new FileMD();
+			System.out.println("Is this FileMD really null at beginning? Look here ->" + fileMD);
+
+			fileMD.setTdbResource(fileMDResource);
+			fileMD.syncDataFromTDB();
+			FileMDKeeper.add(fileMD);
 			fileMDList.add(fileMD);
-			System.out.println("Is this FileMD really null? Look here ->" + fileMD);
+			System.out.println("Is this FileMD really still null? Look here ->" + fileMD);
 			System.out.println("Then how can it have a byteCount of this: " + fileMD.getByteCount());
 		}
 		return true;

@@ -125,7 +125,7 @@ public class CSVTableView extends ViewPart {
 	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
 	public static boolean preCommit = true;
-	
+
 	private static List<Integer> flowableColumns = null;
 	private static List<Integer> propertyColumns = null;
 	private static List<Integer> contextColumns = null;
@@ -525,20 +525,19 @@ public class CSVTableView extends ViewPart {
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
 		// TODO - figure out why I (Tom) wanted the file date here...
-//		Resource fileResource = tableProvider.getFileMD().getTdbResource();
-//		Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
-//		RDFNode modifiedObject = modifiedStatement.getObject();
-//		Literal modifiedLiteral = modifiedObject.asLiteral();
-//		Object dateThang = modifiedLiteral.getValue();
-//		XSDDateTime fred = (XSDDateTime) dateThang;
-//		long seconds = fred.asCalendar().getTimeInMillis();
-		
-		
-//		RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
-//		String thing = modifiedLiteral.getString();
-//		if (modifiedLiteral instanceof Literal) {
-//			Object thing2 = modifiedLiteral.getValue();
-//		}
+		// Resource fileResource = tableProvider.getFileMD().getTdbResource();
+		// Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
+		// RDFNode modifiedObject = modifiedStatement.getObject();
+		// Literal modifiedLiteral = modifiedObject.asLiteral();
+		// Object dateThang = modifiedLiteral.getValue();
+		// XSDDateTime fred = (XSDDateTime) dateThang;
+		// long seconds = fred.asCalendar().getTimeInMillis();
+
+		// RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
+		// String thing = modifiedLiteral.getString();
+		// if (modifiedLiteral instanceof Literal) {
+		// Object thing2 = modifiedLiteral.getValue();
+		// }
 
 		// Object thing = modifiedLiteral.getValue();
 
@@ -1855,7 +1854,6 @@ public class CSVTableView extends ViewPart {
 		}
 		return -1;
 	}
-	
 
 	public static void colorOneFlowableRow(int rowToColor) {
 		if (!uniqueFlowableRowNumbers.contains(rowToColor)) {
@@ -1867,7 +1865,7 @@ public class CSVTableView extends ViewPart {
 		}
 
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
-		int hitCount = 0;
+		// int hitCount = 0;
 		boolean anyCandidate = false;
 		Color color;
 
@@ -1882,33 +1880,32 @@ public class CSVTableView extends ViewPart {
 			ActiveTDB.tdbDataset.end();
 			if (adHoc) {
 				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-			}
-			else {
-				LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
-				for (String symbol : thing.values()) {
-					int matchNum = MatchStatus.getNumberBySymbol(symbol);
-					if (matchNum > 0 && matchNum < 5) {
-						hitCount++;
-					} else if (matchNum == 0) {
-						anyCandidate = true;
-					}
-					if (hitCount > 1)
-						break;
-					// if (matchNum == 0) {
-					// hitCount = 2;
-					// break;
-					// }
-				}	
-	
-	
-				if (hitCount == 1) {
+			} else {
+				int assignedMatches = flowable.countAssignedComparisons();
+				// LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
+				// for (String symbol : thing.values()) {
+				// int matchNum = MatchStatus.getNumberBySymbol(symbol);
+				// if (matchNum > 0 && matchNum < 5) {
+				// hitCount++;
+				// } else if (matchNum == 0) {
+				// anyCandidate = true;
+				// }
+				// if (hitCount > 1)
+				// break;
+				// // if (matchNum == 0) {
+				// // hitCount = 2;
+				// // break;
+				// // }
+				// }
+
+				if (assignedMatches == 1) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-				} else if (hitCount > 1 || anyCandidate) {
+				} else if (assignedMatches > 1 || anyCandidate) {
 					color = orange;
 				} else {
 					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 				}
-			
+
 			}
 
 			TableItem tableItem = table.getItem(tableRowToColor);
@@ -1924,7 +1921,7 @@ public class CSVTableView extends ViewPart {
 			colorOneFlowableRow(i);
 		}
 	}
-	
+
 	public static void colorOneFlowContextRow(int rowToColor, boolean matched) {
 		Color color;
 		if (matched)
@@ -1935,7 +1932,6 @@ public class CSVTableView extends ViewPart {
 			colorCell(rowToColor, j, color);
 		}
 	}
-
 
 	public static void colorFlowContextRows() {
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
@@ -1971,7 +1967,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	
+
 	public static void colorOneFlowPropertyRow(int rowToColor, boolean matched) {
 		Color color;
 		if (matched)
@@ -2041,7 +2037,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}
 	}
-	
+
 	public static void colorOneFlowRow(int rowToColor, boolean matched) {
 		colorOneFlowRow(rowToColor, matched, false);
 	}
@@ -2056,15 +2052,15 @@ public class CSVTableView extends ViewPart {
 			colorCell(rowToColor, j, color);
 		}
 		colorCell(rowToColor, 0, color);
-		
+
 		if (updateHeader) {
 			TableColumn tc = table.getColumn(0);
 			tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
-			double digits = Math.floor(Math.log(matchedFlowRowNumbers.size())*Math.log(10));
-			digits+=Math.floor(Math.log(uniqueFlowRowNumbers.size())*Math.log(10));
-			digits+=1;
+			double digits = Math.floor(Math.log(matchedFlowRowNumbers.size()) * Math.log(10));
+			digits += Math.floor(Math.log(uniqueFlowRowNumbers.size()) * Math.log(10));
+			digits += 1;
 			int digitWidth = (int) (digits * 5);
-	//		table.getColumn(0).pack();
+			// table.getColumn(0).pack();
 			table.getColumn(0).setWidth(digitWidth);
 		}
 	}
@@ -2085,13 +2081,13 @@ public class CSVTableView extends ViewPart {
 		}
 		TableColumn tc = table.getColumn(0);
 		tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
-		double digits = Math.floor(Math.log(matchedFlowRowNumbers.size())*Math.log(10));
-		digits+=Math.floor(Math.log(uniqueFlowRowNumbers.size())*Math.log(10));
-		digits+=1;
+		double digits = Math.floor(Math.log(matchedFlowRowNumbers.size()) * Math.log(10));
+		digits += Math.floor(Math.log(uniqueFlowRowNumbers.size()) * Math.log(10));
+		digits += 1;
 		int digitWidth = (int) (digits * 5);
-//		table.getColumn(0).pack();
+		// table.getColumn(0).pack();
 		table.getColumn(0).setWidth(digitWidth);
-		
+
 	}
 
 	// public static Set<Integer> getUniqueFlowableRowNumbers() {
@@ -2204,7 +2200,7 @@ public class CSVTableView extends ViewPart {
 	public static void setPostCommit() {
 		preCommit = false;
 		// tableViewer.
-		
+
 		flowableColumns = new ArrayList<Integer>();
 		propertyColumns = new ArrayList<Integer>();
 		contextColumns = new ArrayList<Integer>();
@@ -2216,17 +2212,19 @@ public class CSVTableView extends ViewPart {
 			if (lcaDataPropertyProvider != null) {
 				if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
 					flowableColumns.add(i);
-				}
-				else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
+				} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
 					propertyColumns.add(i);
-				}
-				else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+				} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
 					contextColumns.add(i);
 				} else if (lcaDataPropertyProvider.getPropertyClass().equals(Flow.label)) {
 					flowColumns.add(i);
 				}
 			}
 		}
-		
+
+	}
+
+	public static void setColNumSelected(int col) {
+		colNumSelected = col;
 	}
 }

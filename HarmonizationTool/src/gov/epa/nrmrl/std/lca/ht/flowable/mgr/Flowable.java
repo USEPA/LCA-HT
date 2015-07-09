@@ -15,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -163,8 +164,10 @@ public class Flowable {
 	// INSTANCE VARIABLES
 	private Resource tdbResource;
 	private List<LCADataValue> lcaDataValues;
-	private LinkedHashMap<Resource, String> matchCandidates;
-	private LinkedHashMap<Resource, String> searchResults;
+	// private LinkedHashMap<Resource, String> matchCandidates;
+	// private LinkedHashMap<Resource, String> searchResults;
+	private List<ComparisonProvider> comparisons = new ArrayList<ComparisonProvider>();
+	private List<ComparisonProvider> searchComparisons = new ArrayList<ComparisonProvider>();
 	public boolean wasDoubleChedked = false;
 
 	private int firstRow;
@@ -173,15 +176,15 @@ public class Flowable {
 	public Flowable() {
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new LinkedHashMap<Resource, String>();
-		searchResults = new LinkedHashMap<Resource, String>();
+		// matchCandidates = new LinkedHashMap<Resource, String>();
+		// searchResults = new LinkedHashMap<Resource, String>();
 	}
 
 	public Flowable(Resource tdbResource) {
 		this.tdbResource = tdbResource;
 		lcaDataValues = new ArrayList<LCADataValue>();
-		matchCandidates = new LinkedHashMap<Resource, String>();
-		searchResults = new LinkedHashMap<Resource, String>();
+		// matchCandidates = new LinkedHashMap<Resource, String>();
+		// searchResults = new LinkedHashMap<Resource, String>();
 		clearSyncDataFromTDB();
 	}
 
@@ -384,16 +387,19 @@ public class Flowable {
 	}
 
 	public boolean notMatched() {
-		int count = 0;
-		for (String hit : matchCandidates.values()) {
-			int hitNumber = MatchStatus.getNumberBySymbol(hit);
-			if (hitNumber > 0 && hitNumber < 6) {
-				count++;
-			}
-		}
-		if (count == 1) {
+		// int count = 0;
+		// for (String hit : matchCandidates.values()) {
+		// int hitNumber = MatchStatus.getNumberBySymbol(hit);
+		// if (hitNumber > 0 && hitNumber < 6) {
+		// count++;
+		// }
+		// }
+		if (countAssignedComparisons() == 1) {
 			return false;
 		}
+		// if (count == 1) {
+		// return false;
+		// }
 		return true;
 	}
 
@@ -554,41 +560,47 @@ public class Flowable {
 		return dataPropertyMap;
 	}
 
-	public LinkedHashMap<Resource, String> getMatchCandidates() {
-		if (matchCandidates == null) {
-			return new LinkedHashMap<Resource, String>();
-		}
-		return matchCandidates;
-	}
+	// public LinkedHashMap<Resource, String> getMatchCandidates() {
+	// if (matchCandidates == null) {
+	// return new LinkedHashMap<Resource, String>();
+	// }
+	// return matchCandidates;
+	// }
 
-	public void setMatchCandidates(LinkedHashMap<Resource, String> matchCandidates) {
-		this.matchCandidates = matchCandidates;
-	}
+	// public void setMatchCandidates(LinkedHashMap<Resource, String> matchCandidates) {
+	// this.matchCandidates = matchCandidates;
+	// }
 
 	public void addMatchCandidate(Resource resource) {
-		matchCandidates.put(resource, "?");
-		new ComparisonProvider(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		// matchCandidates.put(resource, "?");
+		comparisons.add(new ComparisonProvider(tdbResource, resource, FedLCA.EquivalenceCandidate));
 	}
 
-	public void addSearchResult(Resource resource, String equivalenceSymbol) {
-//		searchResults.put(resource, "?");
-//		CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
-		Resource comparisonEquivalenceValue = MatchStatus.getBySymbol(equivalenceSymbol).getEquivalence();
-		new ComparisonProvider(tdbResource, resource, comparisonEquivalenceValue);
-
+	public void addSearchResult(Resource masterResource, String equivalenceSymbol) {
+		// searchResults.put(resource, "?");
+		// CurationMethods.createNewComparison(tdbResource, resource, FedLCA.EquivalenceCandidate);
+		ComparisonProvider comparisonProvider = getComparison(masterResource);
+		if (comparisonProvider == null) {
+			Resource comparisonEquivalenceValue = MatchStatus.getBySymbol(equivalenceSymbol).getEquivalence();
+			comparisonProvider = new ComparisonProvider(tdbResource, masterResource, comparisonEquivalenceValue);
+			searchComparisons.add(comparisonProvider);
+		}
 	}
 
 	public void removeMatchCandidate(Resource resource) {
-		matchCandidates.remove(resource);
+		// matchCandidates.remove(resource);
 		ComparisonProvider comparison = new ComparisonProvider(resource);
 		comparison.remove();
 
 	}
 
 	public void setMatchCandidateStatus(int matchCandidateIndex, int statusCol) {
-		Resource dFlowableResource = (Resource) matchCandidates.keySet().toArray()[matchCandidateIndex];
+		ComparisonProvider comparisonProvider = comparisons.get(matchCandidateIndex);
+		// Resource dFlowableResource = (Resource) matchCandidates.keySet().toArray()[matchCandidateIndex];
 		MatchStatus matchStatus = MatchStatus.getByValue(statusCol);
-		matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
+		Resource equivalence = matchStatus.getEquivalence();
+		comparisonProvider.setEquivalence(equivalence);
+		// matchCandidates.put(dFlowableResource, matchStatus.getSymbol());
 	}
 
 	public int setMasterMatches(boolean doubleCheck) {
@@ -656,9 +668,11 @@ public class Flowable {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			count++;
-			matchCandidates.put(rdfNode.asResource(), "=");
-			ComparisonProvider comparisonProvider = new ComparisonProvider(tdbResource, rdfNode.asResource(), FedLCA.Equivalent);
+			// matchCandidates.put(rdfNode.asResource(), "=");
+			ComparisonProvider comparisonProvider = new ComparisonProvider(tdbResource, rdfNode.asResource(),
+					FedLCA.Equivalent);
 			comparisonProvider.setComment("Created in setMasterMatches");
+			comparisons.add(comparisonProvider);
 		}
 		if (count > 0) {
 			AnnotationProvider.updateCurrentAnnotationModifiedDate();
@@ -826,9 +840,12 @@ public class Flowable {
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
+			Resource masterResource = rdfNode.asResource();
 			count++;
-			if (!matchCandidates.containsKey(rdfNode.asResource())) {
-				matchCandidates.put(rdfNode.asResource(), "?");
+			ComparisonProvider comparisonProvider = getComparison(masterResource);
+			if (comparisonProvider == null) {
+				comparisonProvider = new ComparisonProvider(tdbResource, masterResource, FedLCA.EquivalenceCandidate);
+				comparisons.add(comparisonProvider);
 			}
 		}
 		return count;
@@ -855,23 +872,131 @@ public class Flowable {
 		this.firstRow = firstRow;
 	}
 
-	public void clearSearchResults() {
-		searchResults.clear();
+	// public void clearSearchResults() {
+	// searchResults.clear();
+	// }
+
+	public void clearSearchComparisons() {
+		searchComparisons.clear();
 	}
 
 	public void transferSearchResults() {
-		for (Resource resource : searchResults.keySet()) {
-			String value = searchResults.get(resource);
-			if (!value.equals(MatchStatus.UNKNOWN.getSymbol())) {
-				matchCandidates.put(resource, value);
+		for (ComparisonProvider comparisonProvider : searchComparisons) {
+			Resource equivalence = comparisonProvider.getEquivalence();
+			if (equivalence != null) {
+				if (!equivalence.equals(FedLCA.EquivalenceCandidate)) {
+					comparisons.add(comparisonProvider);
+				}
 			}
 		}
 	}
 
-	public LinkedHashMap<Resource, String> getSearchResults() {
-		if (searchResults == null) {
-			return new LinkedHashMap<Resource, String>();
+	// public LinkedHashMap<Resource, String> getSearchResults() {
+	// if (searchResults == null) {
+	// return new LinkedHashMap<Resource, String>();
+	// }
+	// return searchResults;
+	// }
+
+	public List<ComparisonProvider> getComparisons() {
+		if (comparisons == null) {
+			comparisons = new ArrayList<ComparisonProvider>();
 		}
-		return searchResults;
+		return comparisons;
+	}
+
+	public void setComparisons(List<ComparisonProvider> comparisons) {
+		this.comparisons = comparisons;
+	}
+
+	public void addComparison(ComparisonProvider comparisonProvider) {
+		comparisonProvider.commitToTDB();
+		comparisons.add(comparisonProvider);
+	}
+
+	public void addComparison(Resource masterResource, Resource equivalence) {
+		ComparisonProvider comparisonProvider = getComparison(masterResource);
+		if (comparisonProvider == null) {
+			comparisonProvider = new ComparisonProvider(tdbResource, masterResource, equivalence);
+			addComparison(comparisonProvider);
+		} else {
+			comparisonProvider.setEquivalence(equivalence);
+		}
+	}
+
+	public void removeComparison(ComparisonProvider comparisonProvider) {
+		comparisons.remove(comparisonProvider);
+	}
+
+	public void removeComparison(Resource masterResource) {
+		removeComparison(getComparison(masterResource));
+	}
+
+	public int countTotalComparisons() {
+		return comparisons.size();
+	}
+
+	public int countAssignedComparisons() {
+		int count = 0;
+		for (ComparisonProvider comparisonProvider : comparisons) {
+			Resource equivalence = comparisonProvider.getEquivalence();
+			if (equivalence == null) {
+				continue;
+			}
+			if (equivalence.equals(FedLCA.Equivalent) || equivalence.equals(FedLCA.EquivalenceSubset)
+					|| equivalence.equals(FedLCA.EquivalenceSuperset) || equivalence.equals(FedLCA.EquivalenceProxy)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public ComparisonProvider getComparison(Resource masterResource) {
+		if (masterResource == null) {
+			return null;
+		}
+		for (ComparisonProvider comparisonProvider : comparisons) {
+			Resource comparisonMasterResource = comparisonProvider.getMasterDataObject();
+			if (comparisonMasterResource != null) {
+				if (comparisonMasterResource.equals(masterResource)) {
+					return comparisonProvider;
+				}
+			}
+		}
+		return null;
+	}
+
+	public ComparisonProvider getSearchComparison(Resource masterResource) {
+		if (masterResource == null) {
+			return null;
+		}
+		for (ComparisonProvider comparisonProvider : searchComparisons) {
+			Resource comparisonMasterResource = comparisonProvider.getMasterDataObject();
+			if (comparisonMasterResource != null) {
+				if (comparisonMasterResource.equals(masterResource)) {
+					return comparisonProvider;
+				}
+			}
+		}
+		return null;
+	}
+
+	public List<ComparisonProvider> getSearchComparisons() {
+		if (searchComparisons == null) {
+			searchComparisons = new ArrayList<ComparisonProvider>();
+		}
+		return searchComparisons;
+	}
+
+	public void setSearchComparisons(List<ComparisonProvider> searchComparisons) {
+		this.searchComparisons = searchComparisons;
+	}
+
+	public void removeSearchComparisons(ComparisonProvider comparisonProvidertoRemove) {
+		searchComparisons.remove(comparisonProvidertoRemove);
+	}
+
+	public void addSearchComparison(ComparisonProvider comparisonProvider) {
+		searchComparisons.add(comparisonProvider);
 	}
 }

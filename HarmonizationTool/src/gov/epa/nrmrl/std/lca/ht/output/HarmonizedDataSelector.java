@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
@@ -25,6 +26,7 @@ import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
+
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
@@ -40,6 +42,7 @@ import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
+
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.AnonId;
@@ -642,15 +645,18 @@ public class HarmonizedDataSelector extends ViewPart {
 				outputRow.add("");
 			}
 		} else {
-			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
+//			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
 			boolean hit = false;
-			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
-				String matchCondition = matchCandidate.getValue();
+//			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
+
+			for (ComparisonProvider comparisonProvider:flowable.getComparisons()) {
+				MatchStatus matchStatus = MatchStatus.getByResource(comparisonProvider.getEquivalence());
+				String matchCondition = matchStatus.getSymbol();
 				outputRow.add(matchCondition);
-				int matchNumber = MatchStatus.getNumberBySymbol(matchCandidate.getValue());
+				int matchNumber = matchStatus.getValue();
 				if (matchNumber > 0 && matchNumber < 5) {
 					hit = true;
-					Flowable mFlowable = new Flowable(matchCandidate.getKey());
+					Flowable mFlowable = new Flowable(comparisonProvider.getUserDataObject());
 					// String dataSourceName = mFlowable.getDataSource();
 					List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
 

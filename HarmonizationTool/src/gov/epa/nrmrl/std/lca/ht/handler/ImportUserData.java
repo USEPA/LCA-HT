@@ -71,8 +71,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ImportUserData implements IHandler {
 
-	boolean thing = false;
-
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
 	}
@@ -90,7 +88,6 @@ public class ImportUserData implements IHandler {
 	private Display display = null;
 
 	class RunData implements Runnable {
-//		boolean thing = false;
 		String path = null;
 		File file = null;
 		FileMD fileMD = null;
@@ -174,8 +171,7 @@ public class ImportUserData implements IHandler {
 			System.out.println("meta initialized");
 			data.dialog.create();
 			System.out.println("meta created");
-			boolean thing;
-			if (thing = data.dialog.open() == MetaDataDialog.CANCEL) { // FIXME
+			if (data.dialog.open() == MetaDataDialog.CANCEL) {
 				System.out.println("cancel!");
 				FlowsWorkflow.btnLoadUserData.setEnabled(true);
 
@@ -703,17 +699,9 @@ public class ImportUserData implements IHandler {
 	}
 
 	public void finishImport(final RunData data) {
-
-//		System.out.println("thing = " + data.thing);
-		System.out.println("Got past opening dialog");
 		tableProvider.setFileMD(data.fileMD);
-		System.out.println("FileMD set in tableProvider");
-
 		tableProvider.setDataSourceProvider(data.dialog.getCurDataSourceProvider());
-		System.out.println("DataSource set in tableProvider");
-
 		TableKeeper.saveTableProvider(data.path, tableProvider);
-		System.out.println("Save tableProvider in TableKeeper");
 
 		if (data.path.matches(".*\\.csv")) {
 			loadUserDataFromCSVFile(data.file);
@@ -723,11 +711,10 @@ public class ImportUserData implements IHandler {
 
 		Date readEndDate = new Date();
 		System.out.println("readEndDate.getTime() "+readEndDate.getTime());
-		Date thing = data.fileMD.getReadDate();
-		System.out.println("data.readDate.getTime() "+thing.getTime());
+		Date readDate = data.fileMD.getReadDate();
+		System.out.println("data.readDate.getTime() "+readDate.getTime());
 
 		long secondsRead = (readEndDate.getTime() - data.readDate.getTime())/1000 ; 
-//				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		display.wake();

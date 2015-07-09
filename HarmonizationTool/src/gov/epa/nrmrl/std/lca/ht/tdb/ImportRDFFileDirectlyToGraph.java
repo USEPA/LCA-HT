@@ -1,5 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.tdb;
 
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,7 +11,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -16,21 +22,26 @@ import java.util.zip.ZipInputStream;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class ImportRDFFileDirectlyToGraph {
-	
+
 	public static final Logger runLogger = Logger.getLogger("run");
 
 	private static class LCAZipInputStream extends ZipInputStream {
 		public LCAZipInputStream(InputStream in) {
 			super(in);
 		}
-		
+
 		public void close() throws IOException {
-			
+
 		}
-		
+
 		public void closeZip() throws IOException {
 			super.close();
 		}
@@ -42,15 +53,13 @@ public class ImportRDFFileDirectlyToGraph {
 			return null;
 		}
 
-		
 		File file = null;
 		InputStream input = null;
-		
+
 		if (filePath.startsWith("classpath:")) {
 			String targetPath = filePath.substring("classpath:".length());
 			input = ImportRDFFileDirectlyToGraph.class.getResourceAsStream(targetPath);
-		}
-		else		
+		} else
 			file = new File(filePath);
 
 		long time0 = System.currentTimeMillis();
@@ -66,22 +75,48 @@ public class ImportRDFFileDirectlyToGraph {
 		return null;
 	}
 
-	
 	private static void loadDataFromRDFFile(File file, String graphName) {
+		List<Resource> beforeList = findFileMDResource(graphName);
 		try {
 			InputStream in = new FileInputStream(file);
 			String fileName = file.getName();
 			String path = file.getPath();
 			loadDataFromRDFFile(fileName, path, in, graphName);
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		List<Resource> afterList = findFileMDResource(graphName);
+		if (afterList.size() == beforeList.size() + 1) {
+			for (Resource resource : afterList) {
+				if (!beforeList.contains(resource)) {
+					Date date = new Date();
+					Literal literal = Temporal.getLiteralFromDate1(date);
+					ActiveTDB.tsRemoveAllLikeLiterals(resource, LCAHT.fileReadDate, literal, graphName);
+					ActiveTDB.tsAddGeneralTriple(resource, LCAHT.fileReadDate, literal, graphName);
+				}
+			}
+		} else if (afterList.size() == beforeList.size()) {
+			// TODO: create new FileMD info and attach to file
+		}
 	}
-	
+
+	private static List<Resource> findFileMDResource(String graphName) {
+		List<Resource> fileMDResources = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graphName);
+		Selector selector = new SimpleSelector(null, LCAHT.containsFile, null, null);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			fileMDResources.add(stmtIterator.next().getObject().asResource());
+		}
+		ActiveTDB.tdbDataset.end();
+		return fileMDResources;
+	}
+
 	private static void loadDataFromRDFFile(String fileName, String path, InputStream in, String graphName) {
 
 		runLogger.info("\nLOAD RDF path " + path + " fileName " + fileName);
+		List<Resource> beforeList = findFileMDResource(graphName);
 
 		Map<String, String> fileContents = new HashMap<String, String>();
 		if (!fileName.matches(".*\\.zip")) {
@@ -117,17 +152,30 @@ public class ImportRDFFileDirectlyToGraph {
 
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-			finally {
+			} finally {
 				try {
 					if (zs != null)
 						zs.closeZip();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 			}
 		}
 		readStringsCountNewDataSources(fileContents, graphName);
-	}
+		List<Resource> afterList = findFileMDResource(graphName);
+		if (afterList.size() == beforeList.size() + 1) {
+			for (Resource resource : afterList) {
+				if (!beforeList.contains(resource)) {
+					Date date = new Date();
+					Literal literal = Temporal.getLiteralFromDate1(date);
+					ActiveTDB.tsRemoveAllLikeLiterals(resource, LCAHT.fileReadDate, literal, graphName);
+					ActiveTDB.tsAddGeneralTriple(resource, LCAHT.fileReadDate, literal, graphName);
+				}
+			}
+		} else if (afterList.size() == beforeList.size()) {
+			// TODO: create new FileMD info and attach to file
+		}
 
+	}
 
 	private static String bufferToString(BufferedReader bufferedReader) {
 		StringBuilder stringBuilder = new StringBuilder();

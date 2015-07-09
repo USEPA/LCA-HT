@@ -277,7 +277,6 @@ public class Flow {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 		matchFlows(rowsToCheck);
-
 	}
 
 	public static int matchFlows(List<Integer> rowsToCheck) {

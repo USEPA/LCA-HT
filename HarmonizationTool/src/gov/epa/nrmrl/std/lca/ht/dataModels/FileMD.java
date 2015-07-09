@@ -37,7 +37,6 @@ public class FileMD {
 	}
 
 	public FileMD(Resource tdbResource) {
-//		super();
 		this.tdbResource = tdbResource;
 		FileMDKeeper.add(this);
 		syncDataFromTDB();
@@ -99,7 +98,7 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, readDate);
+		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
 	}
 
 	public String getEncoding() {

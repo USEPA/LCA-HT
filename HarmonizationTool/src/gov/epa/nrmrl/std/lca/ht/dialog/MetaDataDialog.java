@@ -415,7 +415,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
 				masterButton.setSelection(true);
 				supplementaryButton.setSelection(false);
-			} else if (curDataSourceProvider.getReferenceDataStatus() == 2){
+			} else if (curDataSourceProvider.getReferenceDataStatus() == 2) {
 				supplementaryButton.setSelection(true);
 				masterButton.setSelection(false);
 			}
@@ -451,8 +451,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 		}
 		FileMD curFileMD = fileMDs.get(index);
 		dialogValues[6].setText("" + curFileMD.getByteCount());
-		dialogValues[7].setText(Temporal.getLocalDateFmt(curFileMD.getModifiedDate()));
-		dialogValues[8].setText(Temporal.getLocalDateFmt(curFileMD.getReadDate()));
+		dialogValues[7].setText("" + Temporal.getLocalDateFmt(curFileMD.getModifiedDate()));
+		dialogValues[8].setText("" + Temporal.getLocalDateFmt(curFileMD.getReadDate()));
 	}
 
 	@Override

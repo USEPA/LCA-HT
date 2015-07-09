@@ -119,7 +119,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 //		System.out.println("Syncing files");
 //		FileMDKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-		AnnotationProvider.updateCurrentAnnotationModifiedDate();
+//		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
 
 	private static void openTDB() {

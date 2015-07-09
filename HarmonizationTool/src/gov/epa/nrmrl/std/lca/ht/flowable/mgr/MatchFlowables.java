@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
@@ -13,6 +14,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
@@ -245,7 +247,7 @@ public class MatchFlowables extends ViewPart {
 		chooseSearchFieldText.setText("");
 
 		// flowableToMatch.transferSearchResults();
-		flowableToMatch.clearSearchResults();
+		flowableToMatch.clearSearchComparisons();
 
 		boolean adHoc = false;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
@@ -271,7 +273,8 @@ public class MatchFlowables extends ViewPart {
 		System.out.println("got rows:" + rowCount);
 
 		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
-		LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
+		// LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
+		List<ComparisonProvider> comparisonProviders = flowableToMatch.getComparisons();
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
 		FlowableTableRow flowableTableRow0 = new FlowableTableRow();
@@ -281,16 +284,27 @@ public class MatchFlowables extends ViewPart {
 		flowableTableRows.add(flowableTableRow0);
 
 		int row = 1;
-		for (Object dFlowableResource : matchCandidateResources.keySet()) {
-			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
+		for (ComparisonProvider comparisonProvider : comparisonProviders) {
+			Flowable dFlowable = new Flowable(comparisonProvider.getMasterDataObject());
 			FlowableTableRow flowableTableRow = new FlowableTableRow();
 			flowableTableRow.setFlowable(dFlowable);
 			flowableTableRow.setRowNumber(row);
-			flowableTableRow.matchStatus = MatchStatus.getBySymbol(matchCandidateResources.get(dFlowableResource));
+			flowableTableRow.matchStatus = MatchStatus.getByResource(comparisonProvider.getEquivalence());
 			flowableTableRow.setValues();
 			flowableTableRows.add(flowableTableRow);
 			row++;
+
 		}
+		// for (Object dFlowableResource : matchCandidateResources.keySet()) {
+		// Flowable dFlowable = new Flowable((Resource) dFlowableResource);
+		// FlowableTableRow flowableTableRow = new FlowableTableRow();
+		// flowableTableRow.setFlowable(dFlowable);
+		// flowableTableRow.setRowNumber(row);
+		// flowableTableRow.matchStatus = MatchStatus.getBySymbol(matchCandidateResources.get(dFlowableResource));
+		// flowableTableRow.setValues();
+		// flowableTableRows.add(flowableTableRow);
+		// row++;
+		// }
 
 		tableViewer.setInput(flowableTableRows);
 
@@ -323,16 +337,17 @@ public class MatchFlowables extends ViewPart {
 	}
 
 	private static void displayNewSearchResults() {
-		flowableToMatch.transferSearchResults();
+		// flowableToMatch.transferSearchResults();
 		clearSearchRows();
-		LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
-		int row = flowableToMatch.getMatchCandidates().size() + 1;
-		for (Object dFlowableResource : searchResultResources.keySet()) {
-			Flowable dFlowable = new Flowable((Resource) dFlowableResource);
+		List<ComparisonProvider> searchResultComparisons = flowableToMatch.getSearchComparisons();
+		// LinkedHashMap<Resource, String> searchResultResources = flowableToMatch.getSearchResults();
+		int row = flowableToMatch.getComparisons().size() + 1;
+		for (ComparisonProvider comparisonProvider : searchResultComparisons) {
+			Flowable dFlowable = new Flowable(comparisonProvider.getMasterDataObject());
 			FlowableTableRow flowableTableRow = new FlowableTableRow();
 			flowableTableRow.setFlowable(dFlowable);
 			flowableTableRow.setRowNumber(row);
-			flowableTableRow.setMatchStatus(MatchStatus.getBySymbol(searchResultResources.get(dFlowableResource)));
+			flowableTableRow.matchStatus = MatchStatus.getByResource(comparisonProvider.getEquivalence());
 			flowableTableRow.setValues();
 			flowableTableRows.add(flowableTableRow);
 			row++;
@@ -378,10 +393,11 @@ public class MatchFlowables extends ViewPart {
 		if (table.getItemCount() == 0) {
 			return;
 		}
-		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		List<ComparisonProvider> comparisons = flowableToMatch.getComparisons();
+		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		// int tableRow = 1;
-		for (String value : candidateMap.values()) {
-			int col = MatchStatus.getNumberBySymbol(value);
+		for (ComparisonProvider comparisonProvider : comparisons) {
+			int col = MatchStatus.getByResource(comparisonProvider.getEquivalence()).getValue();
 			if (col > 0 && col < 5) {
 				hits++;
 			}
@@ -407,7 +423,7 @@ public class MatchFlowables extends ViewPart {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
-		} else if (hits == 0 && candidateMap.size() == 0) {
+		} else if (hits == 0 && comparisons.size() == 0) {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 
@@ -431,37 +447,46 @@ public class MatchFlowables extends ViewPart {
 	}
 
 	protected static void assignMatch() {
+		List<ComparisonProvider> comparisons = flowableToMatch.getComparisons();
+
 		TableItem tableItem = table.getItem(rowNumSelected);
 		FlowableTableRow flowableTableRow = (FlowableTableRow) tableItem.getData();
 		Flowable flowable = flowableTableRow.getFlowable();
 		Resource flowableResource = flowable.getTdbResource();
 		MatchStatus matchStatus = MatchStatus.getByValue(colNumSelected);
 		flowableTableRow.setMatchStatus(matchStatus);
-		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 
-		if (rowNumSelected < candidateMap.size() + 1) {
-			candidateMap.put(flowableResource, matchStatus.getSymbol());
+		if (rowNumSelected < comparisons.size() + 1) {
+			ComparisonProvider comparisonProvider = comparisons.get(rowNumSelected - 1);
+			comparisonProvider.setEquivalence(matchStatus.getEquivalence());
+			// candidateMap.put(flowableResource, matchStatus.getSymbol());
 		} else {
-			LinkedHashMap<Resource, String> searchMap = flowableToMatch.getSearchResults();
-			if (searchMap != null) {
-				if (rowNumSelected < candidateMap.size() + searchMap.size() + 1) {
-					searchMap.put(flowableResource, matchStatus.getSymbol());
-					if (colNumSelected == 0) {
-						candidateMap.remove(flowableResource);
-					} else {
-						candidateMap.put(flowableResource, matchStatus.getSymbol());
-					}
+			List<ComparisonProvider> searchComparisons = flowableToMatch.getSearchComparisons();
+			// LinkedHashMap<Resource, String> searchMap = flowableToMatch.getSearchResults();
+			// if (searchMap != null) {
+			if (rowNumSelected < comparisons.size() + searchComparisons.size() + 1) {
+				ComparisonProvider comparisonProvider = searchComparisons.get(rowNumSelected - comparisons.size() - 1);
+				comparisonProvider.setEquivalence(matchStatus.getEquivalence());
+				// searchMap.put(flowableResource, matchStatus.getSymbol());
+				if (colNumSelected == 0) {
+					flowableToMatch.removeComparison(comparisonProvider);
+				} else {
+					flowableToMatch.addComparison(comparisonProvider);
 				}
 			}
 		}
 		Resource equivalenceResource = matchStatus.getEquivalence();
-		ComparisonProvider comparisonProvider = ComparisonProvider.findComparison(flowableToMatch.getTdbResource(), flowableResource);
+		ComparisonProvider comparisonProvider = ComparisonKeeper.findComparison(flowableToMatch.getTdbResource(),
+				flowableResource);
 		if (comparisonProvider == null) {
-			comparisonProvider = new ComparisonProvider(flowableToMatch.getTdbResource(), flowableResource, equivalenceResource);
+			comparisonProvider = new ComparisonProvider(flowableToMatch.getTdbResource(), flowableResource,
+					equivalenceResource);
 		} else {
 			comparisonProvider.setEquivalence(equivalenceResource);
 		}
 		comparisonProvider.appendToComment(" - Udpated by curator");
+		comparisonProvider.syncToTDB();
 		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
@@ -495,7 +520,7 @@ public class MatchFlowables extends ViewPart {
 
 	private static void clearSearchRows() {
 		int totalRows = flowableTableRows.size();
-		for (int i = totalRows - 1; i > flowableToMatch.getMatchCandidates().size() + 1; i--) {
+		for (int i = totalRows - 1; i > flowableToMatch.getComparisons().size() + 1; i--) {
 			flowableTableRows.remove(i);
 		}
 		// flowableToMatch.clearSearchResults();
@@ -569,28 +594,34 @@ public class MatchFlowables extends ViewPart {
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		// flowableToMatch.transferSearchResults();
-		flowableToMatch.clearSearchResults();
+		// flowableToMatch.clearSearchResults();
+		flowableToMatch.clearSearchComparisons();
 
 		// resetTable();
-		LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
+		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		int count = 0;
 		while (resultSet.hasNext()) {
 			count++;
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			Resource resource = rdfNode.asResource();
+			/* Don't match self */
 			if (flowableToMatch.getTdbResource().equals(resource)) {
 				continue;
 			}
-			if (candidateMap.containsKey(rdfNode)) {
+			ComparisonProvider comparisonProvider = flowableToMatch.getComparison(resource);
+			/* Don't match something already in the list of Comparisons */
+			if (comparisonProvider != null) {
 				continue;
 			}
-			candidateMap.put(resource, "?");
+			comparisonProvider = new ComparisonProvider(flowableToMatch.getTdbResource(), resource,
+					FedLCA.EquivalenceCandidate);
+			flowableToMatch.addSearchComparison(comparisonProvider);
 		}
 		// resultSet.remove();
-		for (Resource resource:candidateMap.keySet()){
-			flowableToMatch.addSearchResult(resource, candidateMap.get(resource));
-		}
+		// for (Resource resource : candidateMap.keySet()) {
+		// flowableToMatch.addSearchResult(resource, candidateMap.get(resource));
+		// }
 		if (count > 99) {
 			nextStartResult += maxSearchResults;
 			searchButton.setText(nextStartResult + " -");
