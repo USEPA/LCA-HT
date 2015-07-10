@@ -87,7 +87,7 @@ public class ImportUserData implements IHandler {
 
 	private Display display = null;
 
-	class RunData implements Runnable {
+	public static class RunData implements Runnable {
 		String path = null;
 		File file = null;
 		FileMD fileMD = null;
@@ -95,6 +95,7 @@ public class ImportUserData implements IHandler {
 //		Calendar readDate = GregorianCalendar.getInstance();
 		Date readDate = new Date();
 		ImportUserData importCommand;
+		Display display = null;
 
 		public RunData(ImportUserData data) {
 			importCommand = data;
@@ -125,7 +126,7 @@ public class ImportUserData implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
 			RunData data = new RunData(this);
-			display = Display.getCurrent();
+			data.display = Display.getCurrent();
 			FlowsWorkflow.btnLoadUserData.setEnabled(false);
 
 			tableProvider = new TableProvider();
@@ -456,7 +457,11 @@ public class ImportUserData implements IHandler {
 		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
 	}
 
-	private static void buildUserDataTableFromOLCADataViaQuery() {
+	public static void buildUserDataTableFromOLCADataViaQuery() {
+		buildUserDataTableFromOLCADataViaQuery(null, tableProvider);
+	}
+
+	public static void buildUserDataTableFromOLCADataViaQuery(String dataSourceName, TableProvider tblProvider) {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct \n");
@@ -471,11 +476,16 @@ public class ImportUserData implements IHandler {
 		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
 		b.append("  ?flow_property \n");
 		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
-		b.append("from <" + ActiveTDB.importGraphName + ">\n");
+		if (dataSourceName == null)
+			b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");
 		b.append("  #--- FLOWABLE \n");
+		if (dataSourceName != null) {
+			b.append("  ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			b.append("  ?f eco:hasDataSource ?ds . \n");
+		}
 		b.append("  ?f olca:flowType olca:ELEMENTARY_FLOW . \n");
 		b.append("  ?f olca:name ?flowable . \n");
 		b.append("  optional { \n");
@@ -517,28 +527,29 @@ public class ImportUserData implements IHandler {
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
-		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
+		if (dataSourceName == null)
+			harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
 		// runLogger.info("querying current user data " + new Date());
 		updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 
 		// runLogger.info("adding user data to table " + new Date());
-		tableProvider.createUserData((ResultSetRewindable) resultSet);
+		tblProvider.createUserData((ResultSetRewindable) resultSet);
 
-		tableProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
+		tblProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
 												// COUNT FIELD TO TABLES
 
-		tableProvider.setLCADataPropertyProvider(1, Flow.getDataPropertyMap().get(Flow.openLCAUUID));
-		tableProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
-		tableProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.casString));
-		tableProvider.setLCADataPropertyProvider(4, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
-		tableProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap()
+		tblProvider.setLCADataPropertyProvider(1, Flow.getDataPropertyMap().get(Flow.openLCAUUID));
+		tblProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
+		tblProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.casString));
+		tblProvider.setLCADataPropertyProvider(4, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
+		tblProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap()
 				.get(FlowContext.flowContextGeneral));
-		tableProvider.setLCADataPropertyProvider(6,
+		tblProvider.setLCADataPropertyProvider(6,
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
-		tableProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
-		tableProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
+		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
+		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
 		return;
 	}
 
@@ -699,6 +710,7 @@ public class ImportUserData implements IHandler {
 	}
 
 	public void finishImport(final RunData data) {
+
 		tableProvider.setFileMD(data.fileMD);
 		tableProvider.setDataSourceProvider(data.dialog.getCurDataSourceProvider());
 		TableKeeper.saveTableProvider(data.path, tableProvider);
@@ -715,16 +727,21 @@ public class ImportUserData implements IHandler {
 		System.out.println("data.readDate.getTime() "+readDate.getTime());
 
 		long secondsRead = (readEndDate.getTime() - data.readDate.getTime())/1000 ; 
+//				- data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
-		display.wake();
+		displayTableView(data);
+	}
+
+	public static void displayTableView(final RunData data) {
+		data.display.wake();
 
 		// This has to be done in a UI thread, otherwise we get NPEs when we try to access the active window
 		// final Display display = ImportUserData.currentDisplay;
 		/*
 		 * new Thread() { public void run() { //display.async
 		 */
-		display.syncExec(new Runnable() {
+		data.display.syncExec(new Runnable() {
 			public void run() {
 				try {
 					Util.showView(CSVTableView.ID);

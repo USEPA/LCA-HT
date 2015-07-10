@@ -136,6 +136,11 @@
                   label="Edit Metadata"
                   style="push">
             </command>
+            <command
+                  commandId="HarmonizationTool.LoadDataSet"
+                  label="Load Data Set"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="Window Manager">
@@ -340,6 +345,11 @@
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.EditMetadataHandler"
             id="HarmonizationTool.EditMetadataId"
+            name="Edit Metadata">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.OpenDataSet"
+            id="HarmonizationTool.LoadDataSet"
             name="Edit Metadata">
       </command>
       <command
