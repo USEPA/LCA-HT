@@ -444,16 +444,16 @@ public class DataSourceKeeper {
 		}
 		
 		
-		if (!dataPresent) {
-			System.out.println("No data present, loading master flows and flowables");
-			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
-			System.out.println("Load finished");
-			syncFromTDB();
-			ActiveTDB.getInstance().creationMessage.close();
-			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			shell.setVisible(true);
-			shell.getDisplay().update();
-		}
+//		if (!dataPresent) {
+//			System.out.println("No data present, loading master flows and flowables");
+//			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
+//			System.out.println("Load finished");
+//			syncFromTDB();
+//			ActiveTDB.getInstance().creationMessage.close();
+//			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+//			shell.setVisible(true);
+//			shell.getDisplay().update();
+//		}
 	}
 
 }

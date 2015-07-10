@@ -553,7 +553,7 @@ public class MatchFlowables extends ViewPart {
 		}
 		String whereClause = "";
 		if (chooseSearchFieldCombo.getSelectionIndex() == 0) {
-			/* Name / synonym search */
+			/* Name / synonym search - Must have at least on alphanumeric */
 			if (!uneditedParam.matches(".*[a-zA-Z0-9].*")) {
 				return;
 			}
@@ -600,11 +600,17 @@ public class MatchFlowables extends ViewPart {
 		// resetTable();
 		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		int count = 0;
+		List<Resource> candidates = new ArrayList<Resource>();
 		while (resultSet.hasNext()) {
 			count++;
 			QuerySolution querySolution = resultSet.next();
 			RDFNode rdfNode = querySolution.get("f");
 			Resource resource = rdfNode.asResource();
+			candidates.add(resource);
+		}
+		// Expect that resultSet is done, so block manager is happy
+
+		for (Resource resource : candidates) {
 			/* Don't match self */
 			if (flowableToMatch.getTdbResource().equals(resource)) {
 				continue;

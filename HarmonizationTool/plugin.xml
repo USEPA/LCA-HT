@@ -350,7 +350,7 @@
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.OpenDataSet"
             id="HarmonizationTool.LoadDataSet"
-            name="Edit Metadata">
+            name="Re-load data from TDB">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowLightWeightConsoleHandler"

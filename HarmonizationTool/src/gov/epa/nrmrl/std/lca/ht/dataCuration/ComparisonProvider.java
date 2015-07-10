@@ -90,19 +90,24 @@ public class ComparisonProvider {
 	 * @param equivalence
 	 */
 	public ComparisonProvider(Resource userDataObject, Resource masterDataObject, Resource equivalence) {
-		Resource alreadyDefined = findComparisonResource(userDataObject, masterDataObject);
-		if (alreadyDefined != null) {
-			ComparisonProvider existing = new ComparisonProvider(alreadyDefined);
-			this.tdbResource = existing.getTdbResource();
-			setComment(null);
-		} else {
-			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-			setUserDataObject(userDataObject);
-			setMasterDataObject(masterDataObject);
-		}
-		setEquivalence(equivalence);
-		setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+		// do not check for duplicates
+		this.userDataObject = userDataObject;
+		this.masterDataObject = masterDataObject;
+		this.equivalence = equivalence;
 	}
+//		Resource alreadyDefined = findComparisonResource(userDataObject, masterDataObject);
+//		if (alreadyDefined != null) {
+//			ComparisonProvider existing = new ComparisonProvider(alreadyDefined);
+//			this.tdbResource = existing.getTdbResource();
+//			setComment(null);
+//		} else {
+//			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+//			setUserDataObject(userDataObject);
+//			setMasterDataObject(masterDataObject);
+//		}
+//		setEquivalence(equivalence);
+//		setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+//	}
 
 	public void commitToTDB() {
 		if (tdbResource != null) {
