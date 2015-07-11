@@ -59,6 +59,7 @@ public class ComparisonKeeper {
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+			e.printStackTrace();
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();

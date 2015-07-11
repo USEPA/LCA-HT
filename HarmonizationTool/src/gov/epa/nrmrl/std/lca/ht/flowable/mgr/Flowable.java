@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
@@ -14,6 +15,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -672,6 +674,9 @@ public class Flowable {
 			ComparisonProvider comparisonProvider = new ComparisonProvider(tdbResource, rdfNode.asResource(),
 					FedLCA.Equivalent);
 			comparisonProvider.setComment("Created in setMasterMatches");
+			comparisonProvider.setLastUpdate(new Date());
+			ComparisonKeeper.addUncommittedComparison(comparisonProvider);
+
 			comparisons.add(comparisonProvider);
 		}
 		if (count > 0) {
