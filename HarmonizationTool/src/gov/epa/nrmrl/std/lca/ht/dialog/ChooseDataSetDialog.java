@@ -1,6 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dialog;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -19,13 +22,28 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
 
 public class ChooseDataSetDialog extends Dialog {
+	
+	boolean filterMasters = false;
+	
+	private static Set<String> masterNames = new HashSet<String>();
+	
+	static {
+		masterNames.add("Master Contexts ");
+		masterNames.add("Master Properties ");
+		masterNames.add("Master Flowables ");
+	}
+	
+	public ChooseDataSetDialog(Shell parentShell) {
+		this(parentShell, false);
+	}
 
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public ChooseDataSetDialog(Shell parentShell) {
+	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets) {
 		super(parentShell);
+		filterMasters = filterMasterDataSets;
 	}
 	
 	private Combo combo;
@@ -33,6 +51,7 @@ public class ChooseDataSetDialog extends Dialog {
 	Label dialogLabel;
 	boolean showPrefs = false;
 	String selection = null;
+	boolean noDataSets = false;
 	
 	protected Control createDialogArea(Composite parent) {
 		
@@ -63,7 +82,31 @@ public class ChooseDataSetDialog extends Dialog {
 		gd.grabExcessHorizontalSpace = true;
 		combo.setLayoutData(gd);
 				
-		combo.setItems(DataSourceKeeper.getAlphabetizedNames());
+		List<String> names = DataSourceKeeper.getAlphabetizedNameList();
+		if (filterMasters) {
+			List<String> filteredNames = new ArrayList<String>();
+			for (String name: names) {
+				boolean masterFound = false;
+				for (String master:masterNames) {
+					if (name.startsWith(master)) {
+						masterFound = true;
+						break;
+					}
+						
+				}
+				if (!masterFound)
+					filteredNames.add(name); 
+			}
+			names = filteredNames;
+		}
+		
+		if (names.isEmpty()) {
+			dialogLabel.setText("No data sets found");
+			noDataSets = true;
+			//combo.setEnabled(false);
+		}
+		
+		combo.setItems(names.toArray(new String[0]));
 		
 		String key = CSVTableView.getTableProviderKey();
 		if (key != null) {
@@ -89,9 +132,15 @@ public class ChooseDataSetDialog extends Dialog {
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 
-		
-
 		return area;
+	}
+	
+	protected Control createContents(Composite parent) {
+		Control ret = super.createContents(parent);
+		//OK Button doesn't exist until after super.createContents returns
+		if (noDataSets)
+			this.getButton(IDialogConstants.OK_ID).setEnabled(false);
+		return ret;
 	}
 	
 	protected void okPressed() {
