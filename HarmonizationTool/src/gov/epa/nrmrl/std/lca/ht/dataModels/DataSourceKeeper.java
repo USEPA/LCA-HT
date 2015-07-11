@@ -451,9 +451,6 @@ public class DataSourceKeeper {
 //			syncFromTDB();
 //			ActiveTDB.getInstance().creationMessage.close();
 //		}
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		shell.setVisible(true);
-		shell.getDisplay().update();
 	}
 
 }

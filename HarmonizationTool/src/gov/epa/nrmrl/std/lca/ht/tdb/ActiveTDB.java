@@ -107,6 +107,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			e2.printStackTrace();
 			System.exit(1);
 		}
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		shell.setVisible(true);
+		shell.getDisplay().update();
 
 		return null;
 	}
