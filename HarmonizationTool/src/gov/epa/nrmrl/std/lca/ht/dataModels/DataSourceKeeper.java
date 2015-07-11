@@ -450,10 +450,10 @@ public class DataSourceKeeper {
 //			System.out.println("Load finished");
 //			syncFromTDB();
 //			ActiveTDB.getInstance().creationMessage.close();
-//			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-//			shell.setVisible(true);
-//			shell.getDisplay().update();
 //		}
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		shell.setVisible(true);
+		shell.getDisplay().update();
 	}
 
 }
