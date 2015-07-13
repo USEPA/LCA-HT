@@ -13,6 +13,7 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
@@ -29,6 +30,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 
 
@@ -141,17 +143,21 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 		ActiveTDB.copyDefaultModelToExportGraph();
 
-		/*
-		 * Once data are copied into the export graph, data can be prepared for openLCA 1) Determine which Flows have
-		 * new information 2) Create new UUIDs for those 3) Move old info to an appropriate field name 4) Place new info
-		 * in the appropriate place 5) Append to description info about what happened
+		/**
+		 * Once data are copied into the export graph, data can be prepared for openLCA
+		 * 1) Select Flows using Comparisons
+		 * 2) Create new UUIDs for those
+		 * 3) Move old info to an appropriate field name
+		 * 4) Place new info in the appropriate place
+		 * 5) Append to description info about what happened
 		 */
 
 		// if (false){
 		Date modifiedDate = AnnotationProvider.getCurrentAnnotation().getModifiedDate();
-		
-		String modString = modifiedDate.toString();
-		// FIXME - ABOVE TO GET CORRECTLY FORMATTED STRING
+		String modString = Temporal.getLocalDateFmt(modifiedDate);
+		/* TODO - WORK HERE to collect the ComparisonProviders associated with the dataset, then go through each
+		 * and make appropriate changes to the export dataset
+		 */
 	
 		List<Statement> statementsToFix = new ArrayList<Statement>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);

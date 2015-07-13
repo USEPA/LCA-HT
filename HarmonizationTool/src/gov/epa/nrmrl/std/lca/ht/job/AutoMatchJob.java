@@ -368,7 +368,7 @@ public class AutoMatchJob extends Job {
 		// ========================== FLOW ==========================
 		// stopWatch06.start();
 
-		ComparisonKeeper.commitUncommittedComparisons();
+		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
 		Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Integer> rowsToCheck = new ArrayList<Integer>();
 		percentComplete = 0;

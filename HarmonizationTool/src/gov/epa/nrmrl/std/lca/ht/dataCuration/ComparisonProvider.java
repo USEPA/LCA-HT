@@ -46,8 +46,7 @@ public class ComparisonProvider {
 	private AnnotationProvider annotationProvider = null;
 
 	/**
-	 * The default constructor does not set any values.  It is assumed that once the AnnotationProvider is set
-	 * the 
+	 * The default constructor does not set any values, but registers it with the ComparisonKeeper.
 	 */
 	public ComparisonProvider() {
 		ComparisonKeeper.addUncommittedComparison(this);
@@ -109,15 +108,25 @@ public class ComparisonProvider {
 //		setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
 //	}
 
+	/**
+	 * This method can be applied to a single ComparisonProvider that does not have a tdbResource to 
+	 * create one for it, thereby committing it to the TDB.  If first checks to see if another TDB resource
+	 * exists with the same userObject and masterObject, in which case it updates that one effectively
+	 * replacing it, but using this same tdbResource.
+	 */
 	public void commitToTDB() {
 		if (tdbResource != null) {
 			return;
 		}
-		Resource sameComparison = findComparisonResource();
+		ComparisonProvider sameComparison = findComparison();
 		if (sameComparison == null) {
 			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+			this.annotationProvider = AnnotationProvider.getCurrentAnnotation();
 		} else {
-			ComparisonKeeper.addUncommittedComparison(this);
+			sameComparison.setEquivalence(this.equivalence);
+			sameComparison.appendToComment("changed to: "+this.comment+"; ");
+			sameComparison.setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+			AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		}
 	}
 
@@ -194,6 +203,14 @@ public class ComparisonProvider {
 		}
 		ActiveTDB.tdbDataset.end();
 		return comparisonResource;
+	}
+	
+	public ComparisonProvider findComparison(){
+		Resource comparisonResource = findComparisonResource();
+		if (comparisonResource != null){
+			return new ComparisonProvider(comparisonResource);
+		}
+		return null;
 	}
 
 	public static Resource getRDFClass() {

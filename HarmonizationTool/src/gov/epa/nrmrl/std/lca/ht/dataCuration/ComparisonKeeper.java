@@ -31,7 +31,7 @@ public class ComparisonKeeper {
 		uncommittedComparisons.remove(comparisonProvider);
 	}
 
-	public static int commitUncommittedComparisons() {
+	public static int commitUncommittedComparisons(String commentToAdd) {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(null);
@@ -42,7 +42,7 @@ public class ComparisonKeeper {
 					tdbModel.add(tdbResource, FedLCA.comparedSource, comparisonProvider.getUserDataObject());
 					tdbModel.add(tdbResource, FedLCA.comparedMaster, comparisonProvider.getMasterDataObject());
 					tdbModel.add(tdbResource, FedLCA.comparedEquivalence, comparisonProvider.getEquivalence());
-					Literal literal = tdbModel.createLiteral(comparisonProvider.getComment());
+					Literal literal = tdbModel.createLiteral(comparisonProvider.getComment()+commentToAdd);
 					tdbModel.add(tdbResource, RDFS.comment, literal);
 					literal = Temporal.getLiteralFromDate1(comparisonProvider.getLastUpdate());
 					tdbModel.add(tdbResource, DCTerms.modified, literal);

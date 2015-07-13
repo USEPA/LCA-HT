@@ -443,14 +443,14 @@ public class DataSourceKeeper {
 			new DataSourceProvider(resource);
 		}
 		
-		
-//		if (!dataPresent) {
-//			System.out.println("No data present, loading master flows and flowables");
-//			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
-//			System.out.println("Load finished");
-//			syncFromTDB();
-//			ActiveTDB.getInstance().creationMessage.close();
-//		}
+	
+		if (!dataPresent) {
+			System.out.println("No data present, loading master flows and flowables");
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
+			System.out.println("Load finished");
+			syncFromTDB();
+			ActiveTDB.getInstance().creationMessage.close();
+		}
 	}
 
 }

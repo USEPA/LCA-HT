@@ -9,6 +9,8 @@ import java.util.Map;
 import org.eclipse.ui.PartInitException;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
@@ -287,9 +289,14 @@ public class Flow {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
+		// Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
+		int matchCount = 0;
+		/*
+		 * TODO - It might be more efficient to write this query to search for all matches on any row, adding a union of
+		 * multiple statements e.g.: {?f fedlca:sourceTableRowNumber 5 } union {?f fedlca:sourceTableRowNumber 7 }
+		 */
 		for (int i : rowsToCheck) {
 			FlowsWorkflow.addFlowRowNum(i, false);
 			int iPlusOne = i + 1;
@@ -336,39 +343,42 @@ public class Flow {
 
 			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 			if (resultSet.hasNext()) {
+				matchCount++;
 				QuerySolution querySolution = resultSet.next();
 				Resource userFlowResource = querySolution.get("f").asResource();
 				Resource masterFlowResource = querySolution.get("mf").asResource();
-//				RDFNode uuidNode = querySolution.get("uuid");
-//				if (uuidNode != null){
-//					String uuidString = uuidNode.asLiteral().getString();
-//					ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
-//				}
+				// RDFNode uuidNode = querySolution.get("uuid");
+				// if (uuidNode != null){
+				// String uuidString = uuidNode.asLiteral().getString();
+				// ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
+				// }
 
-				flowMap.put(userFlowResource, masterFlowResource);
+				// flowMap.put(userFlowResource, masterFlowResource);
+				new ComparisonProvider(userFlowResource, masterFlowResource, FedLCA.Equivalent);
 				FlowsWorkflow.addMatchFlowRowNum(i);
 			} else {
 				FlowsWorkflow.removeMatchFlowRowNum(i);
 			}
 		}
 
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(null);
-		try {
-			for (Resource key : flowMap.keySet()) {
-				tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
-			}
-			ActiveTDB.tdbDataset.commit();
-		} catch (Exception e) {
-			System.out.println("addFlowData failed; see Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-		// ---- END SAFE -WRITE- TRANSACTION ---
+		ComparisonKeeper.commitUncommittedComparisons("Flows matched in bulk; ");
+		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		// Model tdbModel = ActiveTDB.getModel(null);
+		// try {
+		// for (Resource key : flowMap.keySet()) {
+		// tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
+		// }
+		// ActiveTDB.tdbDataset.commit();
+		// } catch (Exception e) {
+		// System.out.println("addFlowData failed; see Exception: " + e);
+		// ActiveTDB.tdbDataset.abort();
+		// } finally {
+		// ActiveTDB.tdbDataset.end();
+		// }
+		// // ---- END SAFE -WRITE- TRANSACTION ---
 
-		return flowMap.size();
+		return matchCount;
 	}
 
 	// public static int matchFlows() {
@@ -443,6 +453,8 @@ public class Flow {
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
 		int iPlusOne = rowNumber + 1;
+		// Begin transaction safe read
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct ?f ?mf \n");
@@ -492,9 +504,15 @@ public class Flow {
 		} else {
 			FlowsWorkflow.removeMatchFlowRowNum(rowNumber);
 		}
-
-		ActiveTDB.tsAddGeneralTriple(userFlowResource, OWL2.sameAs, masterFlowResource, null);
-
+		ActiveTDB.tdbDataset.end();
+		// End of transaction safe read
+		if (userFlowResource != null && masterFlowResource != null) {
+			ComparisonProvider comparisonProvider = new ComparisonProvider(userFlowResource, masterFlowResource,
+					FedLCA.Equivalent);
+			comparisonProvider.appendToComment("Created individually; ");
+			comparisonProvider.commitToTDB();
+		}
+		// ActiveTDB.tsAddGeneralTriple(userFlowResource, OWL2.sameAs, masterFlowResource, null);
 		return false;
 	}
 

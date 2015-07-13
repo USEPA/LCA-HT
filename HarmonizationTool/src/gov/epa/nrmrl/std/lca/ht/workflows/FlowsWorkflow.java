@@ -44,8 +44,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
  * the user will perform once the Harmonization Tool is running and they have selected their working directories resides within the window produced in this class. 
  * The window is called the Inventory Workflow (the window name can be found within the plugin.xml file).
  * 
- *
- * @author ttransue
+ * @author Tom Transue
  */
 public class FlowsWorkflow extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow";
