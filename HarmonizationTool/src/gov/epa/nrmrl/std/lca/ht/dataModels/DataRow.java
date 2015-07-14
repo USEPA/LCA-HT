@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Color;
+
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -28,6 +30,11 @@ public class DataRow {
 	private int rowNumber;
 	private String rowToolTip;
 	private Resource openLCASourceURI = null;
+	
+	private Color flowableColor = null;
+	private Color contextColor = null;
+	private Color propertyColor = null;
+	private Color flowColor = null;
 
 	public DataRow() {
 	}
@@ -35,6 +42,38 @@ public class DataRow {
 	@Override
 	public String toString() {
 		return "DataRow [columnValues=" + columnValues + "]";
+	}
+	
+	public void setFlowableColor(Color color) {
+		flowableColor = color;
+	}
+	
+	public Color getFlowableColor() {
+		return flowableColor;
+	}
+	
+	public void setFlowPropertyColor(Color color) {
+		propertyColor = color;
+	}
+	
+	public Color getFlowPropertyColor() {
+		return propertyColor;
+	}
+	
+	public void setFlowContextColor(Color color) {
+		contextColor = color;
+	}
+	
+	public Color getFlowContextColor() {
+		return contextColor;
+	}
+
+	public void setFlowColor(Color color) {
+		flowColor = color;
+	}
+	
+	public Color getFlowColor() {
+		return flowColor;
 	}
 
 	public Resource getMatchingMasterContext() {

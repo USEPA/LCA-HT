@@ -19,6 +19,8 @@ import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchFlowables;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
@@ -76,7 +78,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -122,7 +126,7 @@ public class CSVTableView extends ViewPart {
 	private static ViewerSorter sorter;
 
 	private static TableRowFilter rowFilter = new TableRowFilter();
-	private static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
+	public static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
 	public static boolean preCommit = true;
 
@@ -130,6 +134,8 @@ public class CSVTableView extends ViewPart {
 	private static List<Integer> propertyColumns = null;
 	private static List<Integer> contextColumns = null;
 	private static List<Integer> flowColumns = null;
+	
+	private static List<String> masterFlowUUIDs  = null;
 
 	public static List<Integer> getRowsToIgnore() {
 		return rowsToIgnore;
@@ -150,6 +156,13 @@ public class CSVTableView extends ViewPart {
 	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers;
 	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers;
 	private static LinkedHashSet<Integer> matchedFlowRowNumbers;
+	
+	private static class LCAArrayContentProvider extends ArrayContentProvider {
+		public Object[] 	getElements(Object inputElement) {
+			Object[] ret = super.getElements(inputElement);
+			return ret;
+		}
+	}
 
 	public CSVTableView() {
 	}
@@ -178,7 +191,7 @@ public class CSVTableView extends ViewPart {
 
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		// editor = new TextCellEditor(tableViewer.getTable());
-		tableViewer.setContentProvider(new ArrayContentProvider());
+		tableViewer.setContentProvider(new CSVTableView.LCAArrayContentProvider());
 		tableViewer.setSorter(sorter);
 		tableViewer.addFilter(rowFilter);
 	}
@@ -776,6 +789,8 @@ public class CSVTableView extends ViewPart {
 		}
 		initializeColumnActionsMenu();
 		initializeOtherViews();
+		
+		tableProvider.colorExistingRows();
 	}
 
 	// private static void tinyRoutine(List<DataRow> data) {
@@ -2079,6 +2094,10 @@ public class CSVTableView extends ViewPart {
 				colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
 			}
 		}
+		resizeFlowColumns();
+	}
+	
+	public static void resizeFlowColumns() {
 		TableColumn tc = table.getColumn(0);
 		tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
 		double digits = Math.floor(Math.log(matchedFlowRowNumbers.size()) * Math.log(10));
@@ -2191,6 +2210,34 @@ public class CSVTableView extends ViewPart {
 			table.getItem(oldRowNumSelected).setFont(defaultFont);
 		}
 		tableItem.setFont(boldFont);
+	}
+	
+	public static List<String> getMasterFlowUUIDs() {
+		if (masterFlowUUIDs == null) {
+			/* Collect master Flow UUIDs (if any) */
+			masterFlowUUIDs = new ArrayList<String>();
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("select distinct ?uuid \n");
+			b.append("where {  \n");
+			b.append("  ?f fedlca:hasOpenLCAUUID ?uuid .  \n");
+			b.append("  ?f a fedlca:Flow . \n");
+			b.append("  ?f eco:hasDataSource ?mds . \n");
+			b.append("  ?mds a lcaht:MasterDataset . \n");
+			b.append("} \n");
+			String query = b.toString();
+	
+			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(query);
+	
+			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+			while (resultSet.hasNext()) {
+				QuerySolution querySolution = resultSet.next();
+				RDFNode rdfNode = querySolution.get("uuid");
+				masterFlowUUIDs.add(rdfNode.asLiteral().getString());
+			}
+		}
+		return masterFlowUUIDs;
 	}
 
 	public static int getRowNumSelected() {

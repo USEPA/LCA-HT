@@ -1,8 +1,21 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -19,7 +32,21 @@ public class TableProvider {
 
 	private LCADataPropertyProvider[] lcaDataProperties = null;
 	private boolean containsUntranslatedOpenLCAData = false;
-
+	
+	private boolean existingLcaData = false;
+	
+	private static Set<String> metaDataColumns = new HashSet();
+	static {
+		metaDataColumns.add("adhoc");
+		metaDataColumns.add("flowableMatch");
+		metaDataColumns.add("contextMatch");
+		metaDataColumns.add("unitMatch");
+		metaDataColumns.add("lcaflowable");
+		metaDataColumns.add("flowCtx");
+		metaDataColumns.add("flowUnit");
+		metaDataColumns.add("mf");
+	}
+	
 	public LCADataPropertyProvider getLCADataPropertyProvider(int colNumber) {
 		if (lcaDataProperties == null) {
 			lcaDataProperties = new LCADataPropertyProvider[headerRow.getSize()];
@@ -107,6 +134,10 @@ public class TableProvider {
 			headerRow.clear();
 		}
 		for (String name : columnNames) {
+			if (existingLcaData) {
+				if (metaDataColumns.contains(name))
+					continue;
+			}
 			headerRow.add(name);
 			headerRow.setRowNumber(-1);
 		}
@@ -142,6 +173,7 @@ public class TableProvider {
 				}
 			}
 		}
+		System.out.println("Returned " + resultSetRewindable.size() + " results");
 		return tableProvider;
 	}
 
@@ -218,11 +250,19 @@ public class TableProvider {
 //
 //		return tableProvider;
 //	}
+	
+	public void setExistingData(boolean existingData) {
+		existingLcaData = existingData;
+	}
 
 	public void createUserData(ResultSetRewindable resultSetRewindable) {
 		resultSetRewindable.reset();
 		setHeaderNames(resultSetRewindable.getResultVars());
 		// int count = 0;
+		
+		Set<String> uniqueFlowables = new HashSet<String>();
+		Set<String> uniqueFlowContexts = new HashSet<String>();
+		Set<String> uniqueFlowUnits = new HashSet<String>();
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
@@ -242,13 +282,140 @@ public class TableProvider {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
+				}				
 			}
+			if (existingLcaData) {
+				RDFNode rdfNode = soln.get("lcaflowable");
+				String flowable = null;
+				if (rdfNode != null)
+					flowable = rdfNode.toString();
+				Color color = null;
+				if (flowable != null &&!uniqueFlowables.contains(flowable)) {
+					uniqueFlowables.add(flowable);
+					int adHoc = soln.getLiteral("adhoc").getInt();
+					int flowableMatches = soln.getLiteral("flowableMatch").getInt();
+					if (adHoc != 0) {
+						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+					} else {
+						if (flowableMatches == 1)
+							color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+						else if (flowableMatches > 1)
+							color = CSVTableView.orange;
+						else
+							color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+					}
+					dataRow.setFlowableColor(color);
+				}
+				String flowContext = null;
+				rdfNode = soln.get("flowCtx");
+				if (rdfNode != null)
+					flowContext = rdfNode.toString();
+				if (flowContext != null && !uniqueFlowContexts.contains(flowContext)) {
+					uniqueFlowContexts.add(flowContext);
+					int contextMatches = soln.getLiteral("contextMatch").getInt();
+					if (contextMatches > 0)
+						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					else
+						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				}
+				String flowUnit = null;
+				rdfNode = soln.get("flowUnit");
+				if (rdfNode != null)
+					flowUnit = rdfNode.toString();
+				if (flowUnit != null && !uniqueFlowUnits.contains(flowUnit)) {
+					uniqueFlowUnits.add(flowUnit);
+					int unitMatches = soln.getLiteral("unitMatch").getInt();
+					if (unitMatches > 0)
+						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					else
+						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				}
+				rdfNode = soln.get("mf");
+				if (rdfNode != null)
+					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				else
+					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			}
+
 		}
 
 		return;
 	}
 
+	public void colorExistingRows() {
+		if (!existingLcaData)
+			return;
+		
+		Set<Integer> flowColumnNumbers = new HashSet<Integer>();
+		Set<Integer> flowableCSVColumnNumbers = new HashSet<Integer>();
+		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
+		Set<Integer> flowPropertyCSVColumnNumbers = new HashSet<Integer>();
+		int flowCSVColumnNumberForUUID = -1;
+		
+		
+
+		// NOTE: assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
+		for (int i = 1; i < lcaDataProperties.length; i++) {
+			LCADataPropertyProvider lcaDataPropertyProvider = lcaDataProperties[i];
+			if (lcaDataPropertyProvider == null) {
+				continue;
+			}
+			if (lcaDataPropertyProvider.getPropertyClass().equals(Flowable.label)) {
+				flowableCSVColumnNumbers.add(i);
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowContext.label)) {
+				flowContextCSVColumnNumbers.add(i);
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
+				flowPropertyCSVColumnNumbers.add(i);
+			} else if (lcaDataPropertyProvider.getPropertyClass().equals(Flow.label)) {
+				flowColumnNumbers.add(i);
+				if (lcaDataPropertyProvider.getPropertyName().equals(Flow.openLCAUUID)) {
+					flowCSVColumnNumberForUUID = i;
+				}
+			}
+			
+		}
+	
+		Table table = CSVTableView.getTable();
+		List<String> masterFlowUUIDs = CSVTableView.getMasterFlowUUIDs();
+
+		
+		for (DataRow row : data) {
+			TableItem tableItem = table.getItem(row.getRowNumber());
+			
+			Color color = row.getFlowableColor();
+			if (color != null) {
+				for (int column : flowableCSVColumnNumbers)
+					tableItem.setBackground(column, color);
+			}
+			
+			color = row.getFlowContextColor();
+			if (color != null) {
+				for (int column: flowContextCSVColumnNumbers)
+					tableItem.setBackground(column, color);
+			}
+			
+			color = row.getFlowPropertyColor();
+			if (color != null) {
+				for (int column: flowPropertyCSVColumnNumbers)
+					tableItem.setBackground(column, color);
+			}
+			
+			color = row.getFlowColor();
+			if (color != null) {
+				for (int j : flowColumnNumbers) {
+					tableItem.setBackground(j, color);
+				}
+				tableItem.setBackground(0, color);
+			}
+			if (flowCSVColumnNumberForUUID != -1) {
+				String uuid = row.get(flowCSVColumnNumberForUUID - 1);
+				if (masterFlowUUIDs.contains(uuid)) {
+					tableItem.setBackground(0, CSVTableView.orange);
+					tableItem.setBackground(flowCSVColumnNumberForUUID, CSVTableView.orange);
+				}
+			}
+		}
+	}
 	
 	public void setContainsUntranslatedOpenLCAData(boolean b) {
 		this.containsUntranslatedOpenLCAData = b;

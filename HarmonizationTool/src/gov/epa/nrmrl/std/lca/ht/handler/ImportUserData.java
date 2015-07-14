@@ -464,6 +464,26 @@ public class ImportUserData implements IHandler {
 	public static void buildUserDataTableFromOLCADataViaQuery(String dataSourceName, TableProvider tblProvider) {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
+		if (dataSourceName != null) {
+			b.append("select \n ");
+			b.append("  ?flowable_uuid \n");
+			b.append("  ?flowable \n");
+			b.append("  ?cas \n");
+			b.append("  ?formula \n");
+			b.append("  ?context_general \n");
+			b.append("  ?context_specific \n");
+			b.append("  ?reference_unit \n");
+			b.append("  ?flow_property \n");
+			b.append("  ?lcaflowable \n");
+			b.append("  ?flowCtx \n");
+			b.append("  ?flowUnit \n");
+			b.append("  ?mf \n");
+			b.append("  (count (?ahs) as ?adhoc) \n");
+			b.append("  (count (?cp) as ?flowableMatch) \n");
+			b.append("  (count (?ctxMatch) as ?contextMatch) \n");
+			b.append("  (count (?unMatch) as ?unitMatch) \n");
+			b.append("where { {");
+		}
 		b.append("select distinct \n");
 		b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?flowable  \n");
@@ -476,7 +496,17 @@ public class ImportUserData implements IHandler {
 		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
 		b.append("  ?flow_property \n");
 		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
-		if (dataSourceName == null)
+		if (dataSourceName != null) {
+			b.append("  ?lcaflowable \n");
+			b.append("  ?flowCtx \n");
+			b.append("  ?flowUnit \n");
+			b.append("  ?ahs \n"); 
+			b.append("  ?cp \n");
+			b.append("  ?mf \n");
+			b.append("  ?ctxMatch \n");
+			b.append("  ?unMatch \n");
+		}
+		else
 			b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
@@ -519,7 +549,45 @@ public class ImportUserData implements IHandler {
 		b.append("  ?ru olca:name ?reference_unit . \n");
 		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
 		b.append(" \n");
+		if ( dataSourceName != null) {
+			b.append("  optional { \n");
+			//b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			b.append("    ?f eco:hasDataSource ?ds . \n");
+			b.append("    ?f lcaht:hasQCStatus ?ahs   . \n");
+			b.append("    FILTER( ?ahs = lcaht:QCStatusAdHocMaster) . \n");
+			b.append("  } \n");
+			b.append("  optional { \n");
+			//b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			b.append("    ?lcaflow eco:hasDataSource ?ds . \n");
+			b.append("    ?f fedlca:hasOpenLCAUUID ?lcid . \n");
+			b.append("    ?lcaflow fedlca:hasOpenLCAUUID ?lcid . \n");
+			b.append("    ?lcaflow eco:hasFlowable ?lcaflowable . \n");
+			b.append("    optional { \n");
+			b.append("      ?cp fedlca:comparedSource ?lcaflowable . \n");
+			b.append("      ?cp fedlca:comparedEquivalence fedlca:Equivalent \n");
+			b.append("    } \n");
+			b.append("    optional { \n");
+			b.append("      ?lcaflow fedlca:hasFlowContext ?flowCtx . \n");
+			b.append("      optional { \n");
+			b.append("        ?flowCtx owl:sameAs ?ctxMatch . \n");
+			b.append("      } \n");
+			b.append("    } \n");
+			b.append("    optional { \n");
+			b.append("      ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
+			b.append("      optional { \n");
+			b.append("        ?flowUnit owl:sameAs ?unMatch \n");
+			b.append("      } \n");
+			b.append("    } \n");
+			b.append("    optional { \n");
+			b.append("      ?lcaflow owl:sameAs ?mf \n");
+			b.append("    } \n");
+			b.append("  } \n");
+		}
 		b.append("} \n");
+		if (dataSourceName != null) {
+			b.append("} } \n");
+			b.append(" group by ?flowable_uuid ?flowable ?cas ?formula ?context_general ?context_specific ?reference_unit ?flow_property ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
+		}
 		b.append("order by ?flowable \n");
 
 		String query = b.toString();
@@ -533,6 +601,10 @@ public class ImportUserData implements IHandler {
 		// runLogger.info("querying current user data " + new Date());
 		updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		
+		
+		if (dataSourceName != null)
+			tblProvider.setExistingData(dataSourceName != null);
 
 		// runLogger.info("adding user data to table " + new Date());
 		tblProvider.createUserData((ResultSetRewindable) resultSet);
@@ -550,6 +622,7 @@ public class ImportUserData implements IHandler {
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
+		
 		return;
 	}
 
@@ -750,6 +823,7 @@ public class ImportUserData implements IHandler {
 				}
 				System.out.println("About to update CSVTableView");
 				CSVTableView.update(data.path);
+
 				FlowsWorkflow.btnLoadUserData.setEnabled(true);
 
 				String key = CSVTableView.getTableProviderKey();
