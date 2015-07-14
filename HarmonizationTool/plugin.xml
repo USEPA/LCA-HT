@@ -106,7 +106,12 @@
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld"
-                  label="Save Harmonized Data For openLCA (json)"
+                  label="Save Harmonized Data (json, ttl)"
+                  style="push">
+            </command>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
+                  label="Save Harmonized Data for openCLA (zipped Json)"
                   style="push">
             </command>
             <command
@@ -401,6 +406,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
             name="Save Harmonized Data">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
+            id="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
+            name="Save Harmonized Data Zipped for OLCA">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"
