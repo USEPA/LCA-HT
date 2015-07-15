@@ -79,6 +79,9 @@ public class Temporal {
 	 * @return A <i>Calendar</i> object representing the same time.
 	 */
 	public static Calendar getCalendarFromDate(Date date){
+		if (date == null){
+			return null;
+		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar;

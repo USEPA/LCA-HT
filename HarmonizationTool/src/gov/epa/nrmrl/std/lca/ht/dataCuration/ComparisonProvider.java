@@ -3,10 +3,12 @@ package gov.epa.nrmrl.std.lca.ht.dataCuration;
 import java.util.Date;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -14,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -42,8 +45,10 @@ public class ComparisonProvider {
 	private Resource masterDataObject = null;
 	private Resource equivalence = null;
 	private String comment = null;
-	private Date lastUpdate = null;
-	private AnnotationProvider annotationProvider = null;
+	private Date creationDate = new Date();
+	private Date lastUpdate = new Date();
+
+	// private AnnotationProvider annotationProvider = null;
 
 	/**
 	 * The default constructor does not set any values, but registers it with the ComparisonKeeper.
@@ -65,7 +70,7 @@ public class ComparisonProvider {
 		} else {
 			ComparisonKeeper.addUncommittedComparison(this);
 		}
-		setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+		// setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
 	}
 
 	/**
@@ -93,20 +98,22 @@ public class ComparisonProvider {
 		this.userDataObject = userDataObject;
 		this.masterDataObject = masterDataObject;
 		this.equivalence = equivalence;
+		ComparisonKeeper.addUncommittedComparison(this);
 	}
-//		Resource alreadyDefined = findComparisonResource(userDataObject, masterDataObject);
-//		if (alreadyDefined != null) {
-//			ComparisonProvider existing = new ComparisonProvider(alreadyDefined);
-//			this.tdbResource = existing.getTdbResource();
-//			setComment(null);
-//		} else {
-//			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-//			setUserDataObject(userDataObject);
-//			setMasterDataObject(masterDataObject);
-//		}
-//		setEquivalence(equivalence);
-//		setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
-//	}
+
+	// Resource alreadyDefined = findComparisonResource(userDataObject, masterDataObject);
+	// if (alreadyDefined != null) {
+	// ComparisonProvider existing = new ComparisonProvider(alreadyDefined);
+	// this.tdbResource = existing.getTdbResource();
+	// setComment(null);
+	// } else {
+	// this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+	// setUserDataObject(userDataObject);
+	// setMasterDataObject(masterDataObject);
+	// }
+	// setEquivalence(equivalence);
+	// setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+	// }
 
 	/**
 	 * This method can be applied to a single ComparisonProvider that does not have a tdbResource to 
@@ -121,12 +128,13 @@ public class ComparisonProvider {
 		ComparisonProvider sameComparison = findComparison();
 		if (sameComparison == null) {
 			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-			this.annotationProvider = AnnotationProvider.getCurrentAnnotation();
+			// this.annotationProvider = AnnotationProvider.getCurrentAnnotation();
 		} else {
 			sameComparison.setEquivalence(this.equivalence);
-			sameComparison.appendToComment("changed to: "+this.comment+"; ");
-			sameComparison.setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
-			AnnotationProvider.updateCurrentAnnotationModifiedDate();
+			sameComparison.appendToComment("changed to: " + this.comment + "; ");
+			setLastUpdate(new Date());
+			// sameComparison.setAnnotationProvider(AnnotationProvider.getCurrentAnnotation());
+			// AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		}
 	}
 
@@ -134,7 +142,7 @@ public class ComparisonProvider {
 		if (tdbResource == null) {
 			return;
 		}
-		Resource annotationProviderResource = null;
+		// Resource annotationProviderResource = null;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		// Model tdbModel = ActiveTDB.getModel(null);
 		StmtIterator stmtIterator = tdbResource.listProperties();
@@ -148,14 +156,22 @@ public class ComparisonProvider {
 				this.masterDataObject = statement.getObject().asResource();
 			} else if (statement.getPredicate().equals(FedLCA.comparedEquivalence)) {
 				this.equivalence = statement.getObject().asResource();
-			} else if (statement.getPredicate().equals(FedLCA.memberOfCollection)) {
-				annotationProviderResource = statement.getObject().asResource();
+			} else if (statement.getPredicate().equals(DCTerms.created)) {
+				RDFNode object = statement.getObject();
+				if (object.isLiteral()) {
+					this.creationDate = Temporal.getDateObject(object.asLiteral());
+				}
+			} else if (statement.getPredicate().equals(DCTerms.modified)) {
+				RDFNode object = statement.getObject();
+				if (object.isLiteral()) {
+					this.lastUpdate = Temporal.getDateObject(object.asLiteral());
+				}
 			} else if (statement.getPredicate().equals(RDFS.comment)) {
 				this.comment = statement.getObject().asLiteral().getString();
 			}
 		}
 		ActiveTDB.tdbDataset.end();
-		this.annotationProvider = AnnotationProvider.getAnnotationProvider(annotationProviderResource);
+		// this.annotationProvider = AnnotationProvider.getAnnotationProvider(annotationProviderResource);
 	}
 
 	public void remove() {
@@ -204,10 +220,10 @@ public class ComparisonProvider {
 		ActiveTDB.tdbDataset.end();
 		return comparisonResource;
 	}
-	
-	public ComparisonProvider findComparison(){
+
+	public ComparisonProvider findComparison() {
 		Resource comparisonResource = findComparisonResource();
-		if (comparisonResource != null){
+		if (comparisonResource != null) {
 			return new ComparisonProvider(comparisonResource);
 		}
 		return null;
@@ -242,6 +258,8 @@ public class ComparisonProvider {
 					tdbResource.removeAll(FedLCA.comparedSource);
 				}
 				tdbResource.addProperty(FedLCA.comparedSource, userDataObject);
+				tdbResource.removeAll(DCTerms.modified);
+				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
 				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
@@ -268,6 +286,8 @@ public class ComparisonProvider {
 					tdbResource.removeAll(FedLCA.comparedMaster);
 				}
 				tdbResource.addProperty(FedLCA.comparedMaster, masterDataObject);
+				tdbResource.removeAll(DCTerms.modified);
+				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
 				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
@@ -294,6 +314,8 @@ public class ComparisonProvider {
 					tdbResource.removeAll(FedLCA.comparedEquivalence);
 				}
 				tdbResource.addProperty(FedLCA.comparedEquivalence, equivalence);
+				tdbResource.removeAll(DCTerms.modified);
+				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
 				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
@@ -306,9 +328,9 @@ public class ComparisonProvider {
 		this.equivalence = equivalence;
 	}
 
-	public AnnotationProvider getAnnotationProvider() {
-		return annotationProvider;
-	}
+	// public AnnotationProvider getAnnotationProvider() {
+	// return annotationProvider;
+	// }
 
 	// public void setAnnotationResource(Resource annotationResource) {
 	// if (this.annotationResource != null) {
@@ -318,26 +340,26 @@ public class ComparisonProvider {
 	// this.annotationResource = annotationResource;
 	// }
 
-	public void setAnnotationProvider(AnnotationProvider annotationProvider) {
-		if (tdbResource != null) {
-			// --- BEGIN SAFE -WRITE- TRANSACTION ---
-			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			try {
-				if (this.annotationProvider != null) {
-					tdbResource.removeAll(FedLCA.memberOfCollection);
-				}
-				tdbResource.addProperty(FedLCA.memberOfCollection, annotationProvider.getTdbResource());
-				ActiveTDB.tdbDataset.commit();
-			} catch (Exception e) {
-				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
-				ActiveTDB.tdbDataset.abort();
-			} finally {
-				ActiveTDB.tdbDataset.end();
-			}
-			// ---- END SAFE -WRITE- TRANSACTION ----
-		}
-		this.annotationProvider = annotationProvider;
-	}
+	// public void setAnnotationProvider(AnnotationProvider annotationProvider) {
+	// if (tdbResource != null) {
+	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// try {
+	// if (this.annotationProvider != null) {
+	// tdbResource.removeAll(FedLCA.memberOfCollection);
+	// }
+	// tdbResource.addProperty(FedLCA.memberOfCollection, annotationProvider.getTdbResource());
+	// ActiveTDB.tdbDataset.commit();
+	// } catch (Exception e) {
+	// System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+	// ActiveTDB.tdbDataset.abort();
+	// } finally {
+	// ActiveTDB.tdbDataset.end();
+	// }
+	// // ---- END SAFE -WRITE- TRANSACTION ----
+	// }
+	// this.annotationProvider = annotationProvider;
+	// }
 
 	public String getComment() {
 		return comment;
@@ -385,16 +407,37 @@ public class ComparisonProvider {
 	}
 
 	public void syncToTDB() {
-		if (tdbResource == null) {
-			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			if (this.tdbResource == null) {
+				this.tdbResource = tdbModel.createResource(ComparisonProvider.getRDFClass());
+			}
+			tdbModel.add(tdbResource, FedLCA.comparedSource, this.getUserDataObject());
+			tdbModel.add(tdbResource, FedLCA.comparedMaster, this.getMasterDataObject());
+			tdbModel.add(tdbResource, FedLCA.comparedEquivalence, this.getEquivalence());
+			Literal literal = tdbModel.createLiteral(this.getComment());
+			tdbModel.add(tdbResource, RDFS.comment, literal);
+			literal = Temporal.getLiteralFromDate1(this.getLastUpdate());
+			tdbModel.add(tdbResource, DCTerms.modified, literal);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+			e.printStackTrace();
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
 		}
-		setUserDataObject(this.userDataObject);
-		setMasterDataObject(this.masterDataObject);
-		setEquivalence(this.equivalence);
-		setComment(this.comment);
-		if (this.annotationProvider == null) {
-			this.annotationProvider = AnnotationProvider.getCurrentAnnotation();
-		}
-		setAnnotationProvider(this.annotationProvider);
+		// ---- END SAFE -WRITE- TRANSACTION ----
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }

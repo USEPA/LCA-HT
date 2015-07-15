@@ -1,7 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
-import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+//import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
@@ -487,7 +487,7 @@ public class MatchFlowables extends ViewPart {
 		}
 		comparisonProvider.appendToComment(" - Udpated by curator");
 		comparisonProvider.syncToTDB();
-		AnnotationProvider.updateCurrentAnnotationModifiedDate();
+//		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 		rematchFlows();

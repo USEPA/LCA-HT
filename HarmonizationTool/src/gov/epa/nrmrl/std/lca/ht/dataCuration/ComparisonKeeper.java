@@ -46,13 +46,13 @@ public class ComparisonKeeper {
 					tdbModel.add(tdbResource, RDFS.comment, literal);
 					literal = Temporal.getLiteralFromDate1(comparisonProvider.getLastUpdate());
 					tdbModel.add(tdbResource, DCTerms.modified, literal);
-					AnnotationProvider annotationProvider = comparisonProvider.getAnnotationProvider();
-					if (annotationProvider != null){
-						Resource annotationResource = annotationProvider.getTdbResource();
-						if (annotationResource != null){
-							tdbModel.add(tdbResource, FedLCA.memberOfCollection, annotationResource);
-						}
-					}
+//					AnnotationProvider annotationProvider = comparisonProvider.getAnnotationProvider();
+//					if (annotationProvider != null){
+//						Resource annotationResource = annotationProvider.getTdbResource();
+//						if (annotationResource != null){
+//							tdbModel.add(tdbResource, FedLCA.memberOfCollection, annotationResource);
+//						}
+//					}
 					comparisonProvider.setTdbResource(tdbResource, false);
 				}
 			}
@@ -65,7 +65,7 @@ public class ComparisonKeeper {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ----
-		AnnotationProvider.updateCurrentAnnotationModifiedDate();
+//		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		int done = uncommittedComparisons.size();
 		uncommittedComparisons.clear();
 		return done;
