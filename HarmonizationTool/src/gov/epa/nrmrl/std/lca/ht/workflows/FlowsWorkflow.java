@@ -335,6 +335,21 @@ public class FlowsWorkflow extends ViewPart {
 		Util.findView(LoggerViewer.ID);
 		LoggerViewer.clear(); // INITIALIZES SO THAT LOGGER RECEIVES INPUT
 	}
+	
+	public static void enableCommitButton(boolean enabled) {
+		btnCommit.setEnabled(enabled);
+	}
+	
+	public static void buttonModePostCommit() {
+		btnCheckData.setEnabled(false);
+		btnMatchFlowables.setEnabled(true);
+		btnMatchFlowables.setGrayed(false);
+		btnMatchFlowContexts.setEnabled(true);
+		btnMatchFlowContexts.setGrayed(false);
+		btnMatchFlowProperties.setEnabled(true);
+		btnMatchFlowProperties.setGrayed(false);
+		CSVTableView.setPostCommit();
+	}
 
 	// ------------------- LOAD LISTENER -------------------
 	SelectionListener loadUserDataListener = new SelectionListener() {
@@ -536,15 +551,8 @@ public class FlowsWorkflow extends ViewPart {
 				btnMatchFlowables.setEnabled(false);
 				return;
 			}
-			btnCheckData.setEnabled(false);
-			btnMatchFlowables.setEnabled(true);
-			btnMatchFlowables.setGrayed(false);
-			btnMatchFlowContexts.setEnabled(true);
-			btnMatchFlowContexts.setGrayed(false);
-			btnMatchFlowProperties.setEnabled(true);
-			btnMatchFlowProperties.setGrayed(false);
+			buttonModePostCommit();
 			// CSVTableView.preCommit = false;
-			CSVTableView.setPostCommit();
 			CSVTableView.initializeRowMenu();
 			String jobKey = "autoMatch_01";
 			AutoMatchJob autoMatchJob = new AutoMatchJob("FlowsWorkflow Job");
@@ -826,25 +834,37 @@ public class FlowsWorkflow extends ViewPart {
 		btnMatchFlowProperties.setGrayed(true);
 		btnMatchFlowProperties.setEnabled(false);
 	}
+	
+	public static void showFlowContextMatchCount(int matched, int total) {
+		textMatchFlowContexts.setText(matched + " matched. "
+				+ total + " found.");
+	}
 
 	public static void addContextRowNum(int rowNumToSend) {
 		uniqueFlowContextRowNumbers.add(rowNumToSend);
-		textMatchFlowContexts.setText(matchedFlowContextRowNumbers.size() + " matched. "
-				+ uniqueFlowContextRowNumbers.size() + " found.");
+		showFlowContextMatchCount(matchedFlowContextRowNumbers.size(), uniqueFlowContextRowNumbers.size());
 		CSVTableView.colorOneFlowContextRow(rowNumToSend, matchedFlowContextRowNumbers.contains(rowNumToSend));
+	}
+	
+	public static void showFlowUnitMatchCount(int matched, int total) {
+		textMatchFlowProperties.setText(matched + " matched. "
+				+ total + " found.");
 	}
 
 	public static void addPropertyRowNum(int rowNumToSend) {
 		uniqueFlowPropertyRowNumbers.add(rowNumToSend);
-		textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
-				+ uniqueFlowPropertyRowNumbers.size() + " found.");
+		showFlowUnitMatchCount(matchedFlowPropertyRowNumbers.size(), uniqueFlowPropertyRowNumbers.size());
 		CSVTableView.colorOneFlowPropertyRow(rowNumToSend, matchedFlowPropertyRowNumbers.contains(rowNumToSend));
+	}
+	
+	public static void showFlowableMatchCount(int matched, int total) {
+		textMatchFlowables.setText(matched + " matched. "
+				+ total + " found.");
 	}
 
 	public static void addFlowableRowNum(int rowNumToSend) {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
-		textMatchFlowables.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
-				+ " found.");
+		showFlowableMatchCount(matchedFlowableRowNumbers.size(),  uniqueFlowableRowNumbers.size());
 		CSVTableView.colorOneFlowableRow(rowNumToSend);
 	}
 

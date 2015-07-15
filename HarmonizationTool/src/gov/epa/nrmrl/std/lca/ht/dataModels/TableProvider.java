@@ -4,11 +4,14 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -20,6 +23,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class TableProvider {
 	private DataSourceProvider dataSourceProvider = null;
@@ -260,9 +264,13 @@ public class TableProvider {
 		setHeaderNames(resultSetRewindable.getResultVars());
 		// int count = 0;
 		
-		Set<String> uniqueFlowables = new HashSet<String>();
-		Set<String> uniqueFlowContexts = new HashSet<String>();
-		Set<String> uniqueFlowUnits = new HashSet<String>();
+		int matchedFlowables = 0;
+		int matchedFlowContexts = 0;
+		int matchedFlowUnits = 0;
+		
+		Map<String, Flowable> uniqueFlowables = new HashMap<String, Flowable>();
+		Map<String, FlowContext> uniqueFlowContexts = new HashMap<String, FlowContext>();
+		Map<String, FlowUnit> uniqueFlowUnits = new HashMap<String, FlowUnit>();
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
@@ -290,15 +298,19 @@ public class TableProvider {
 				if (rdfNode != null)
 					flowable = rdfNode.toString();
 				Color color = null;
-				if (flowable != null &&!uniqueFlowables.contains(flowable)) {
-					uniqueFlowables.add(flowable);
+				if (flowable != null &&!uniqueFlowables.containsKey(flowable)) {
+					Flowable flowableObj = new Flowable((Resource)rdfNode);
+					uniqueFlowables.put(flowable, flowableObj);
+					dataRow.setFlowable(flowableObj);
 					int adHoc = soln.getLiteral("adhoc").getInt();
 					int flowableMatches = soln.getLiteral("flowableMatch").getInt();
 					if (adHoc != 0) {
 						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 					} else {
-						if (flowableMatches == 1)
+						if (flowableMatches == 1) {
 							color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+							++matchedFlowables;
+						}
 						else if (flowableMatches > 1)
 							color = CSVTableView.orange;
 						else
@@ -306,30 +318,44 @@ public class TableProvider {
 					}
 					dataRow.setFlowableColor(color);
 				}
+				else if (flowable != null)
+					dataRow.setFlowable(uniqueFlowables.get(flowable));
 				String flowContext = null;
 				rdfNode = soln.get("flowCtx");
 				if (rdfNode != null)
 					flowContext = rdfNode.toString();
-				if (flowContext != null && !uniqueFlowContexts.contains(flowContext)) {
-					uniqueFlowContexts.add(flowContext);
+				if (flowContext != null && !uniqueFlowContexts.containsKey(flowContext)) {
+					FlowContext fcObj = new FlowContext((Resource)rdfNode, true);
+					uniqueFlowContexts.put(flowContext, fcObj);
+					dataRow.setFlowContext(fcObj);
 					int contextMatches = soln.getLiteral("contextMatch").getInt();
-					if (contextMatches > 0)
+					if (contextMatches > 0) {
 						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+						++matchedFlowContexts;
+					}
 					else
 						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
+				else if (flowContext != null)
+					dataRow.setFlowContext(uniqueFlowContexts.get(flowContext));
 				String flowUnit = null;
 				rdfNode = soln.get("flowUnit");
 				if (rdfNode != null)
 					flowUnit = rdfNode.toString();
-				if (flowUnit != null && !uniqueFlowUnits.contains(flowUnit)) {
-					uniqueFlowUnits.add(flowUnit);
+				if (flowUnit != null && !uniqueFlowUnits.containsKey(flowUnit)) {
+					FlowUnit fuObj = new FlowUnit((Resource)rdfNode, false);
+					uniqueFlowUnits.put(flowUnit, fuObj);
+					dataRow.setFlowUnit(fuObj);
 					int unitMatches = soln.getLiteral("unitMatch").getInt();
-					if (unitMatches > 0)
+					if (unitMatches > 0) {
 						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+						++matchedFlowUnits;
+					}
 					else
 						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
+				else if (flowUnit != null)
+					dataRow.setFlowUnit(uniqueFlowUnits.get(flowUnit));
 				rdfNode = soln.get("mf");
 				if (rdfNode != null)
 					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -337,6 +363,12 @@ public class TableProvider {
 					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
 
+		}
+		
+		if (existingLcaData) {
+			FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
+			FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
+			FlowsWorkflow.showFlowUnitMatchCount(matchedFlowUnits, uniqueFlowUnits.size());
 		}
 
 		return;
@@ -351,8 +383,6 @@ public class TableProvider {
 		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
 		Set<Integer> flowPropertyCSVColumnNumbers = new HashSet<Integer>();
 		int flowCSVColumnNumberForUUID = -1;
-		
-		
 
 		// NOTE: assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {

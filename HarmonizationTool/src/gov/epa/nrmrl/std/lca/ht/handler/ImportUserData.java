@@ -623,6 +623,11 @@ public class ImportUserData implements IHandler {
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
 		
+		if (dataSourceName != null) {
+			updateText(FlowsWorkflow.textLoadUserData, dataSourceName);
+			FlowsWorkflow.enableCommitButton(true);
+		}
+		
 		return;
 	}
 

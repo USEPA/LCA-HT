@@ -140,12 +140,18 @@ public class FlowUnit {
 		lcaDataValues = new ArrayList<LCADataValue>();
 		matchingResource = null;
 	}
+	
+	public FlowUnit(Resource res) {
+		this(res, true);
+	}
 
-	public FlowUnit(Resource resource) {
+	public FlowUnit(Resource resource, boolean sync) {
 		this.tdbResource = resource;
 		lcaDataValues = new ArrayList<LCADataValue>();
-		clearSyncDataFromTDB();
-		// updateSyncFromTDB();
+		if (sync) {
+			clearSyncDataFromTDB();
+			// updateSyncFromTDB();
+		}
 	}
 
 	// public void updateSyncFromTDB() {

@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -68,7 +69,8 @@ public class OpenDataSet implements IHandler {
 		data.display = Display.getCurrent();
 		ImportUserData.displayTableView(data);
 	
-		
+		FlowsWorkflow.buttonModePostCommit();
+
 		return null;
 	}
 
