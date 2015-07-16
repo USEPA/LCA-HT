@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,9 +16,11 @@ import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.MatchStatus;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
@@ -33,6 +36,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -297,12 +301,14 @@ public class Flow {
 		 * TODO - It might be more efficient to write this query to search for all matches on any row, adding a union of
 		 * multiple statements e.g.: {?f fedlca:sourceTableRowNumber 5 } union {?f fedlca:sourceTableRowNumber 7 }
 		 */
+		Map<Resource, Resource> flowComparisonsToUpdateMap = new HashMap<Resource, Resource>();
+
 		for (int i : rowsToCheck) {
 			FlowsWorkflow.addFlowRowNum(i, false);
 			int iPlusOne = i + 1;
 			StringBuilder b = new StringBuilder();
 			b.append(Prefixes.getPrefixesForQuery());
-			b.append("select distinct ?f ?mf \n");
+			b.append("select distinct ?f ?mf ?eq ?fc ?ceq \n");
 			b.append(" \n");
 			b.append("where { \n");
 			b.append(" \n");
@@ -311,7 +317,7 @@ public class Flow {
 			b.append("  optional {?f fedlca:hasOpenLCAUUID ?uuid } \n");
 			b.append("  ?c fedlca:comparedSource ?flowable . \n");
 			b.append("  ?c fedlca:comparedMaster ?mflowable . \n");
-			b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append("  ?c fedlca:comparedEquivalence ?eq . \n");
 			b.append("  ?mf eco:hasFlowable ?mflowable . \n");
 
 			b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
@@ -331,6 +337,11 @@ public class Flow {
 			b.append("  ?mf a fedlca:Flow . \n");
 			b.append("  ?mf eco:hasDataSource ?mds . \n");
 			b.append("  ?mds a lcaht:MasterDataset . \n");
+			b.append("  optional{ \n");
+			b.append("    ?fc fedlca:comparedSource ?f . \n");
+			b.append("    ?fc fedlca:comparedMaster ?mf . \n");
+			b.append("    ?fc fedlca:comparedEquivalence ?ceq . \n");
+			b.append("  } \n");
 
 			b.append("} \n");
 
@@ -342,41 +353,68 @@ public class Flow {
 			harmonyQuery2Impl.setGraphName(null);
 
 			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-			if (resultSet.hasNext()) {
-				matchCount++;
+			boolean notFound = true;
+			while (resultSet.hasNext()) {
 				QuerySolution querySolution = resultSet.next();
 				Resource userFlowResource = querySolution.get("f").asResource();
 				Resource masterFlowResource = querySolution.get("mf").asResource();
-				// RDFNode uuidNode = querySolution.get("uuid");
-				// if (uuidNode != null){
-				// String uuidString = uuidNode.asLiteral().getString();
-				// ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
-				// }
+				Resource flowableEquivalence = querySolution.get("eq").asResource();
+				int flowableMatchNumber = MatchStatus.getByResource(flowableEquivalence).getValue();
 
-				// flowMap.put(userFlowResource, masterFlowResource);
-				new ComparisonProvider(userFlowResource, masterFlowResource, FedLCA.Equivalent);
-				FlowsWorkflow.addMatchFlowRowNum(i);
-			} else {
+				RDFNode flowComparisonNode = querySolution.get("fc");
+				RDFNode flowComparisonEquivalenceNode = querySolution.get("ceq");
+
+				if (notFound) {
+					if (flowableMatchNumber > 0 && flowableMatchNumber < 5) {
+						FlowsWorkflow.addMatchFlowRowNum(i);
+					} else {
+						FlowsWorkflow.removeMatchFlowRowNum(i);
+					}
+					matchCount++;
+					if (flowComparisonNode == null || flowComparisonEquivalenceNode == null) {
+						new ComparisonProvider(userFlowResource, masterFlowResource, flowableEquivalence);
+					} else {
+						flowComparisonsToUpdateMap.put(flowComparisonNode.asResource(),
+								flowComparisonEquivalenceNode.asResource());
+					}
+					notFound = false;
+				} else {
+					/*
+					 * We only get here if multiple Comparisons are found for the flowable / masterFlowable pair So we
+					 * should remove all subsequent ones
+					 */
+					if (flowComparisonNode != null) {
+						flowComparisonsToUpdateMap.put(flowComparisonNode.asResource(), null);
+					}
+				}
+			}
+			if (notFound) {
 				FlowsWorkflow.removeMatchFlowRowNum(i);
 			}
 		}
 
 		ComparisonKeeper.commitUncommittedComparisons("Flows matched in bulk; ");
-		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		// Model tdbModel = ActiveTDB.getModel(null);
-		// try {
-		// for (Resource key : flowMap.keySet()) {
-		// tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
-		// }
-		// ActiveTDB.tdbDataset.commit();
-		// } catch (Exception e) {
-		// System.out.println("addFlowData failed; see Exception: " + e);
-		// ActiveTDB.tdbDataset.abort();
-		// } finally {
-		// ActiveTDB.tdbDataset.end();
-		// }
-		// // ---- END SAFE -WRITE- TRANSACTION ---
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		Literal literalDate = Temporal.getLiteralFromDate1(new Date());
+
+		try {
+			for (Resource comparisonResource : flowComparisonsToUpdateMap.keySet()) {
+				tdbModel.removeAll(comparisonResource, FedLCA.comparedEquivalence, null);
+				tdbModel.removeAll(comparisonResource, DCTerms.modified, null);
+				tdbModel.add(comparisonResource, FedLCA.comparedEquivalence,
+						flowComparisonsToUpdateMap.get(comparisonResource));
+				tdbModel.add(comparisonResource, DCTerms.modified, literalDate);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Updating comparison failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		return matchCount;
 	}

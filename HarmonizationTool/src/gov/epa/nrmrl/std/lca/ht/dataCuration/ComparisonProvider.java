@@ -44,7 +44,7 @@ public class ComparisonProvider {
 	private Resource userDataObject = null;
 	private Resource masterDataObject = null;
 	private Resource equivalence = null;
-	private String comment = null;
+	private String comment = "";
 	private Date creationDate = new Date();
 	private Date lastUpdate = new Date();
 
@@ -128,7 +128,6 @@ public class ComparisonProvider {
 		ComparisonProvider sameComparison = findComparison();
 		if (sameComparison == null) {
 			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
-			// this.annotationProvider = AnnotationProvider.getCurrentAnnotation();
 		} else {
 			sameComparison.setEquivalence(this.equivalence);
 			sameComparison.appendToComment("changed to: " + this.comment + "; ");
@@ -142,9 +141,7 @@ public class ComparisonProvider {
 		if (tdbResource == null) {
 			return;
 		}
-		// Resource annotationProviderResource = null;
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		// Model tdbModel = ActiveTDB.getModel(null);
 		StmtIterator stmtIterator = tdbResource.listProperties();
 		while (stmtIterator.hasNext()) {
 			Statement statement = stmtIterator.next();
@@ -171,24 +168,22 @@ public class ComparisonProvider {
 			}
 		}
 		ActiveTDB.tdbDataset.end();
-		// this.annotationProvider = AnnotationProvider.getAnnotationProvider(annotationProviderResource);
 	}
 
 	public void remove() {
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		// Model tdbModel = ActiveTDB.getModel(null);
+		Model tdbModel = ActiveTDB.getModel(null);
 		try {
-			this.tdbResource.removeProperties();
+			tdbModel.removeAll(this.tdbResource, null, null);
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+			System.out.println("remove (ComparisonProvider) failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ----
-		AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
 
 	public static Resource findComparisonResource(Resource userObject, Resource masterObject) {
@@ -249,20 +244,23 @@ public class ComparisonProvider {
 	}
 
 	public void setUserDataObject(Resource userDataObject) {
+		if (userDataObject == null) {
+			return;
+		}
 		if (tdbResource != null) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			// Model tdbModel = ActiveTDB.getModel(null);
+			Model tdbModel = ActiveTDB.getModel(null);
 			try {
 				if (this.userDataObject != null) {
-					tdbResource.removeAll(FedLCA.comparedSource);
+					tdbModel.removeAll(tdbResource, FedLCA.comparedSource, null);
 				}
-				tdbResource.addProperty(FedLCA.comparedSource, userDataObject);
-				tdbResource.removeAll(DCTerms.modified);
-				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
+				tdbModel.add(tdbResource, FedLCA.comparedSource, userDataObject);
+				tdbModel.removeAll(tdbResource, DCTerms.modified, null);
+				tdbModel.add(tdbResource, DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
-				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+				System.out.println("setUserDataObject failed with Exception: " + e);
 				ActiveTDB.tdbDataset.abort();
 			} finally {
 				ActiveTDB.tdbDataset.end();
@@ -277,20 +275,23 @@ public class ComparisonProvider {
 	}
 
 	public void setMasterDataObject(Resource masterDataObject) {
+		if (masterDataObject == null) {
+			return;
+		}
 		if (tdbResource != null) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			// Model tdbModel = ActiveTDB.getModel(null);
+			Model tdbModel = ActiveTDB.getModel(null);
 			try {
-				if (this.masterDataObject != null) {
-					tdbResource.removeAll(FedLCA.comparedMaster);
+				if (this.userDataObject != null) {
+					tdbModel.removeAll(tdbResource, FedLCA.comparedSource, null);
 				}
-				tdbResource.addProperty(FedLCA.comparedMaster, masterDataObject);
-				tdbResource.removeAll(DCTerms.modified);
-				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
+				tdbModel.add(tdbResource, FedLCA.comparedSource, masterDataObject);
+				tdbModel.removeAll(tdbResource, DCTerms.modified, null);
+				tdbModel.add(tdbResource, DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
-				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+				System.out.println("setMasteDataObject failed with Exception: " + e);
 				ActiveTDB.tdbDataset.abort();
 			} finally {
 				ActiveTDB.tdbDataset.end();
@@ -305,20 +306,23 @@ public class ComparisonProvider {
 	}
 
 	public void setEquivalence(Resource equivalence) {
+		if (equivalence == null) {
+			return;
+		}
 		if (tdbResource != null) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			// Model tdbModel = ActiveTDB.getModel(null);
+			Model tdbModel = ActiveTDB.getModel(null);
 			try {
 				if (this.equivalence != null) {
-					tdbResource.removeAll(FedLCA.comparedEquivalence);
+					tdbModel.removeAll(tdbResource, FedLCA.comparedEquivalence, null);
 				}
-				tdbResource.addProperty(FedLCA.comparedEquivalence, equivalence);
-				tdbResource.removeAll(DCTerms.modified);
-				tdbResource.addProperty(DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
+				tdbModel.add(tdbResource, FedLCA.comparedEquivalence, equivalence);
+				tdbModel.removeAll(tdbResource, DCTerms.modified, null);
+				tdbModel.add(tdbResource, DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
-				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+				System.out.println("set Equivalence failed with Exception: " + e);
 				ActiveTDB.tdbDataset.abort();
 			} finally {
 				ActiveTDB.tdbDataset.end();
@@ -328,39 +332,6 @@ public class ComparisonProvider {
 		this.equivalence = equivalence;
 	}
 
-	// public AnnotationProvider getAnnotationProvider() {
-	// return annotationProvider;
-	// }
-
-	// public void setAnnotationResource(Resource annotationResource) {
-	// if (this.annotationResource != null) {
-	// tdbResource.removeAll(FedLCA.memberOfCollection);
-	// }
-	// tdbResource.addProperty(FedLCA.memberOfCollection, annotationResource);
-	// this.annotationResource = annotationResource;
-	// }
-
-	// public void setAnnotationProvider(AnnotationProvider annotationProvider) {
-	// if (tdbResource != null) {
-	// // --- BEGIN SAFE -WRITE- TRANSACTION ---
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// try {
-	// if (this.annotationProvider != null) {
-	// tdbResource.removeAll(FedLCA.memberOfCollection);
-	// }
-	// tdbResource.addProperty(FedLCA.memberOfCollection, annotationProvider.getTdbResource());
-	// ActiveTDB.tdbDataset.commit();
-	// } catch (Exception e) {
-	// System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
-	// ActiveTDB.tdbDataset.abort();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// // ---- END SAFE -WRITE- TRANSACTION ----
-	// }
-	// this.annotationProvider = annotationProvider;
-	// }
-
 	public String getComment() {
 		return comment;
 	}
@@ -369,17 +340,17 @@ public class ComparisonProvider {
 		if (tdbResource != null) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-			// Model tdbModel = ActiveTDB.getModel(null);
+			Model tdbModel = ActiveTDB.getModel(null);
 			try {
 				if (this.comment != null) {
-					tdbResource.removeAll(RDFS.comment);
+					tdbModel.removeAll(tdbResource, RDFS.comment, null);
 				}
 				if (comment != null) {
-					tdbResource.addLiteral(RDFS.comment, comment);
+					tdbModel.add(tdbResource, RDFS.comment, comment);
 				}
 				ActiveTDB.tdbDataset.commit();
 			} catch (Exception e) {
-				System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+				System.out.println("setComment failed with Exception: " + e);
 				ActiveTDB.tdbDataset.abort();
 			} finally {
 				ActiveTDB.tdbDataset.end();
@@ -390,6 +361,9 @@ public class ComparisonProvider {
 	}
 
 	public void appendToComment(String comment) {
+		if (comment == null) {
+			return;
+		}
 		if (this.comment == null) {
 			setComment(comment);
 		} else {
@@ -402,7 +376,32 @@ public class ComparisonProvider {
 		return lastUpdate;
 	}
 
+	public void updateNow() {
+		setLastUpdate(new Date());
+	}
+
 	public void setLastUpdate(Date lastUpdate) {
+		if (lastUpdate == null) {
+			return;
+		}
+		if (tdbResource != null) {
+			// --- BEGIN SAFE -WRITE- TRANSACTION ---
+			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+			Model tdbModel = ActiveTDB.getModel(null);
+			try {
+				if (this.lastUpdate != null) {
+					tdbModel.removeAll(tdbResource, DCTerms.modified, null);
+				}
+				tdbModel.add(tdbResource, DCTerms.modified, Temporal.getLiteralFromDate1(new Date()));
+				ActiveTDB.tdbDataset.commit();
+			} catch (Exception e) {
+				System.out.println("setLastUpdate failed with Exception: " + e);
+				ActiveTDB.tdbDataset.abort();
+			} finally {
+				ActiveTDB.tdbDataset.end();
+			}
+			// ---- END SAFE -WRITE- TRANSACTION ----
+		}
 		this.lastUpdate = lastUpdate;
 	}
 
@@ -424,7 +423,7 @@ public class ComparisonProvider {
 			tdbModel.add(tdbResource, DCTerms.modified, literal);
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Creating new ComparisonProvider failed with Exception: " + e);
+			System.out.println("syncToTDB failed with Exception: " + e);
 			e.printStackTrace();
 			ActiveTDB.tdbDataset.abort();
 		} finally {

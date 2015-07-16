@@ -323,8 +323,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		if (datasetName == null) {
 			return null;
 		}
-		List<Statement> returnStatements = new ArrayList<Statement>();
-		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
 		Set<RDFNode> newNodesToCheck = new HashSet<RDFNode>();
 		Resource datasetTDBResource = null;
 		RDFNode datasetTDBNode = null;
@@ -354,9 +352,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		stmtIterator0 = datasetTDBResource.listProperties();
 		while (stmtIterator0.hasNext()) {
 			Statement statement = stmtIterator0.next();
-			returnStatements.add(statement);
-			newNodesToCheck.add(statement.getPredicate());
-			newNodesToCheck.add(statement.getObject());
+			newNodesToCheck.add(statement.getSubject());
 		}
 
 		// Next - get all subjects that are members of the dataset
@@ -366,9 +362,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		stmtIterator1 = tdbModel.listStatements(selector1);
 		while (stmtIterator1.hasNext()) {
 			Statement statement = stmtIterator1.next();
-			// returnStatements.add(statement);
 			membersOfDataset.add(statement.getSubject());
-			newNodesToCheck.add(statement.getPredicate());
 		}
 		newNodesToCheck.addAll(membersOfDataset);
 		if (includeComparisons) {
@@ -384,13 +378,33 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 		}
 		ActiveTDB.tdbDataset.end();
+		return collectStatementsTraversingNodeSet(newNodesToCheck, graphName);
+	}
 
-		// Finally - begin the recursion
+	/**
+	 * This method "Follows" each RDFNode in the specified newNodesToCheck HashSet, collecting all Statements
+	 * in which the RDFNode is a subject.  It then iterates using each Predicate and non-Literal Object in then
+	 * next round of newNodesToCheck and continues until new new RDFNodes are found.  Note that for some data
+	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
+	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
+	 * the newNodesToCheck HashSet.
+	 * 
+	 * @param newNodesToCheck - a HashSet of RDFNodes to "follow"
+	 * @param graphName - the String name of the graph within tdbDataset
+	 * @return an ArrayList of Statements containing every triple found while following the RDFNodes.
+	 */
+	public static List<Statement> collectStatementsTraversingNodeSet(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
 		int cycle = 0;
 		while (newNodesToCheck.size() > 0) {
 			cycle++;
-			System.out.println("Cycle " + cycle + " . Starting with " + returnStatements.size() + " statements, and "
-					+ newNodesToCheck.size() + " new nodes to check");
+			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
 			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
 			nodesAlreadyFound.addAll(newNodesToCheck);
 			newNodesToCheck.clear();
@@ -408,19 +422,66 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
-
+		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return returnStatements;
 	}
+	
+	/**
+	 * Like collectStatementsTraversingNodeSet, this method "Follows" each RDFNode in the specified newNodesToCheck
+	 * HashSet, returning all RDFNodes found while traversing the graph in a "forward" direction (i.e. not seeking
+	 * all subjects and objects associated with predicates found, nor all subjects and predicates associated with all
+	 * objects found).  It does iterate using each Predicate and non-Literal Object in then
+	 * next round of newNodesToCheck and continues until new new RDFNodes are found.  Note that for some data
+	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
+	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
+	 * the newNodesToCheck HashSet.
+	 * 
+	 * @param newNodesToCheck - a HashSet of RDFNodes to "follow"
+	 * @param graphName - the String name of the graph within tdbDataset
+	 * @return a HashSet of RDFNodes found while following the starting set of RDFNodes.
+	 */
+	public static Set<RDFNode> collectNodesTraversingNodeSet(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode predicate = statement.getPredicate();
+				if (!nodesAlreadyFound.contains(predicate)) {
+					nodesAlreadyFound.add(predicate);
+					newNodesToCheck.add(predicate);
+				}
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					nodesAlreadyFound.add(object);
+					newNodesToCheck.add(object);
+				}
+			}
+		}
+		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return nodesAlreadyFound;
+	}
+
 
 	/**
-	 * This method scours an RDF graph for non-literal nodes that appear in the object or predicate position
-	 * of triples containing in which the input set of RDFNodes appears as subject.  The goal is to gather all
-	 * objects necessary for a given graph to be "complete".  It can be used as part of a recursion to grow a
-	 * HashSet of Subject RDFNodes and a corresponding ArrayList of Statements, the latter of which forms a
-	 * complete graph.
+	 * This returns all Statements within a specified graph in which the specified Nodes are a Subject.
+	 * It can be used as part of a recursion to "follow" a set of Subjects, including all necessary components.
 	 * 
 	 * @param nodesToTest : a Set of nodes to find ?node ?p ?o statements if ?node is not a Literal.
-	 * @param graphName is the String associated with the graph
+	 * @param graphName is the String associated with the graph in tdbDataset
 	 * @return An ArrayList<Statement> containing Statements with the nodesToTest entries as subjects
 	 */
 	private static List<Statement> collectStatements(Set<RDFNode> nodesToTest, String graphName) {
