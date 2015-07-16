@@ -760,6 +760,10 @@ public class CSVTableView extends ViewPart {
 
 	// ===========================================
 	public static void update(String key) {
+		table.removeAll();
+		while ( table.getColumnCount() > 0 ) {
+		    table.getColumns()[ 0 ].dispose();
+		}
 		tableProviderKey = key;
 		createColumns();
 		resetFields();
