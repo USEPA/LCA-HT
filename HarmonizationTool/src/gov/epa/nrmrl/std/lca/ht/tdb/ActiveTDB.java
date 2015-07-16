@@ -299,6 +299,42 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.end();
 		}
 	}
+	
+	public static Set<Resource> getDatasetMemberSubjects(String datasetName, String graphName) {
+		if (datasetName == null) {
+			return null;
+		}
+		Set<Resource> datasetMemberSubjects = new HashSet<Resource>();
+		Resource datasetTDBResource = null;
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graphName);
+
+		// First - find the dataset's TDBResource. If more than one, ( TODO ) present an intelligent response
+		Literal dataSetNameLiteral = tdbModel.createTypedLiteral(datasetName);
+		Selector selector0 = new SimpleSelector(null, RDFS.label, dataSetNameLiteral);
+		StmtIterator stmtIterator0 = tdbModel.listStatements(selector0);
+		while (stmtIterator0.hasNext()) {
+			Statement statement = stmtIterator0.next();
+			datasetTDBResource = statement.getSubject().asResource();
+		}
+
+		if (datasetTDBResource == null) {
+			ActiveTDB.tdbDataset.end();
+			return null;
+		}
+
+		// Next - get all subjects that are members of the dataset
+		SimpleSelector selector1 = new SimpleSelector(null, ECO.hasDataSource, datasetTDBResource);
+		StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+		stmtIterator1 = tdbModel.listStatements(selector1);
+		while (stmtIterator1.hasNext()) {
+			Statement statement = stmtIterator1.next();
+			datasetMemberSubjects.add(statement.getSubject().asResource());
+		}
+		ActiveTDB.tdbDataset.end();
+		return datasetMemberSubjects;
+	}
 
 	/**
 	 * This method follows components of an RDF graph starting with a dataset (eco:DataSource).
@@ -306,8 +342,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	 * 
 	 * Then each subject with eco:hasDataSource [the DataSource] is followed in the following way:
 	 * 1) Each triple with the subject is included.
-	 * 2) Each triple in which a predicate of the above triple AS SUBJECT is included
-	 * 3) Each triple in which a non-literal object of the triple from (1) is the subject is included
+	 * 2) Each triple in which a predicate of the triple from (1) AS Subject is included
+	 * 3) Each triple in which a non-literal object of the triple from (1) AS Subject is included
 	 * 4) Predicates and Objects found in the triples of (2) and (3) are followed in the same way
 	 * 
 	 * The goal is to gather all objects necessary for a given graph to be "complete".
@@ -426,7 +462,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return returnStatements;
 	}
-	
+
 	/**
 	 * Like collectStatementsTraversingNodeSet, this method "Follows" each RDFNode in the specified newNodesToCheck
 	 * HashSet, returning all RDFNodes found while traversing the graph in a "forward" direction (i.e. not seeking
@@ -474,7 +510,6 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return nodesAlreadyFound;
 	}
-
 
 	/**
 	 * This returns all Statements within a specified graph in which the specified Nodes are a Subject.
@@ -528,8 +563,21 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("exportModel: " + getModel(exportGraphName).size());
 	}
 
-	public static void addComparedFeaturesToExportGraph() {
+	public static void copyStatementsToGraph(List<Statement> statementsToCopy, String graphTo) {
 
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = getModel(graphTo);
+		try {
+			tdbModel.add(statementsToCopy);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("copyStatementsToGraph(" + graphTo + ") failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public static void clearImportGraphContents() {
