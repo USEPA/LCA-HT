@@ -6,6 +6,7 @@ import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import java.io.BufferedReader;
@@ -14,10 +15,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -47,6 +53,22 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	@Override
 	public void dispose() {
 	}
+	
+	/*
+	 * TODO FIXME TODO FIXME TODO ALERT! DANGER! SEE HERE!
+	 * ATTENTION TOM TRANSUE : 
+	 * Tom, just change writeResource to generate a correct uuid and convert the resource to JSON instead of calling toString
+	 * and remove the main method (I added it just as a sample for how to use the zip api), and I think everything else
+	 *  will just work.
+	 */
+	
+	private void writeResource(String folder, Resource resource, ZipOutputStream output) throws IOException {
+		String uuid = Integer.toString(resource.hashCode());
+		output.putNextEntry(new ZipEntry(folder + "/" + uuid + ".json"));
+		output.write(resource.toString().getBytes());
+		output.closeEntry();
+	}
+
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -68,8 +90,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		if (saveTo == null) {
 			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-			String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files" };
-			String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
+			String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files", "Zip Files" };
+			String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl", "*.zip" };
 
 			String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 			if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -100,61 +122,67 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
 		Set<Resource> datasetMembers = ActiveTDB.getDatasetMemberSubjects(currentName, null);
 
-		/*
-		 * TODO FIXME TODO FIXME TODO ALERT! DANGER! SEE HERE!
-		 * ATTENTION TONY HOWARD : 
-		 * We need to make a zip file with each of the following folders.
-		 * Then, I'll work some magic to create <uuid.json> "files" to put in each folder one by one
-		 * Then we need to write the zip file.
-		 * So: do some magic near the beginning to set up the streams or whatever they're called.  I guess I'd
-		 * be specifying "paths" for each file?!?
-		 * Then, at the end, set up something to output (or zip then output).
-		 * 
-		 * Thanks!
-		 * 
-		 */
-		Set<Resource> actorResources = new HashSet<Resource>();
-		Set<Resource> categoryResources = new HashSet<Resource>();
-		Set<Resource> flowPropertyResources = new HashSet<Resource>();
-		Set<Resource> flowResources = new HashSet<Resource>();
-		Set<Resource> lciaCategoryResources = new HashSet<Resource>();
-		Set<Resource> lciaMethodResources = new HashSet<Resource>();
-		Set<Resource> locationResources = new HashSet<Resource>();
-		Set<Resource> processResources = new HashSet<Resource>();
-		Set<Resource> sourceResources = new HashSet<Resource>();
-		Set<Resource> unitGroupResources = new HashSet<Resource>();
-		Set<Resource> unMatchedResource = new HashSet<Resource>();
-
-		// First, sort members into batches
-		for (Resource itemResource : datasetMembers) {
-			Set<RDFNode> singleSet = new HashSet<RDFNode>();
-			singleSet.add(itemResource);
-			List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSet(singleSet, null);
-			ActiveTDB.clearExportGraphContents();
-			ActiveTDB.copyStatementsToGraph(statements, ActiveTDB.exportGraphName);
-			if (itemResource.hasProperty(RDF.type, OpenLCA.Actor)) {
-				actorResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Category)) {
-				categoryResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.FlowProperty)) {
-				flowPropertyResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Flow)) {
-				flowResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactCategory)) {
-				lciaCategoryResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactMethod)) {
-				lciaMethodResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
-				locationResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
-				processResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
-				sourceResources.add(itemResource);
-			} else if (itemResource.hasProperty(RDF.type, OpenLCA.UnitGroup)) {
-				unitGroupResources.add(itemResource);
-			} else {
-				unMatchedResource.add(itemResource);
-			}
+		
+		if (saveTo.endsWith(".zip")) {
+		
+			try {
+				ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(saveTo));
+			
+				Map<String, Set<Resource>> resourceMap = new HashMap<String, Set<Resource>>();
+				resourceMap.put("actorResources", new HashSet<Resource>());
+				resourceMap.put("categoryResources", new HashSet<Resource>());
+				resourceMap.put("flowPropertyResources", new HashSet<Resource>());
+				resourceMap.put("flowResources", new HashSet<Resource>());
+				resourceMap.put("lciaCategoryResources", new HashSet<Resource>());
+				resourceMap.put("lciaMethodResources", new HashSet<Resource>());
+				resourceMap.put("locationResources", new HashSet<Resource>());
+				resourceMap.put("processResources", new HashSet<Resource>());
+				resourceMap.put("sourceResources", new HashSet<Resource>());
+				resourceMap.put("unitGroupResources", new HashSet<Resource>());
+				resourceMap.put("unMatchedResource", new HashSet<Resource>());
+		
+				// First, sort members into batches
+				for (Resource itemResource : datasetMembers) {
+					Set<RDFNode> singleSet = new HashSet<RDFNode>();
+					singleSet.add(itemResource);
+					List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSet(singleSet, null);
+					ActiveTDB.clearExportGraphContents();
+					ActiveTDB.copyStatementsToGraph(statements, ActiveTDB.exportGraphName);
+					if (itemResource.hasProperty(RDF.type, OpenLCA.Actor)) {
+						resourceMap.get("actorResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.Category)) {
+						resourceMap.get("categoryResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.FlowProperty)) {
+						resourceMap.get("flowPropertyResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.Flow)) {
+						resourceMap.get("flowResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactCategory)) {
+						resourceMap.get("lciaCategoryResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactMethod)) {
+						resourceMap.get("lciaMethodResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
+						resourceMap.get("locationResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
+						resourceMap.get("processResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
+						resourceMap.get("sourceResources").add(itemResource);
+					} else if (itemResource.hasProperty(RDF.type, OpenLCA.UnitGroup)) {
+						resourceMap.get("unitGroupResources").add(itemResource);
+					} else {
+						resourceMap.get("unMatchedResource").add(itemResource);
+					}
+				}
+				
+				for (String folder : resourceMap.keySet()) {
+					Set<Resource> resources = resourceMap.get(folder);
+					for (Resource resource : resources)
+						writeResource(folder, resource, zipFile);
+				}
+				zipFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+			return null;
 		}
 
 		/*
@@ -501,6 +529,40 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	public void removeHandlerListener(IHandlerListener handlerListener) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/* 
+	 * This creates a zip file in /tmp/data.zip.  Run main, and look at /tmp/data.zip.  The structure matches the fileNames
+	 * and fileContents arrays.
+	 * 
+	 */
+	
+	public static void main(String[] args) {
+		String outputPath = "/tmp/data.zip";
+		
+		String[] fileNames = new String[] { "uuids/first.json", "uuids/second.json", "flows/elements.json", "readme.txt" };
+		
+		String[] fileContentsToZip = new String[] {
+				"this is the first file - not much in it",
+				"this is where all the good stuff happens",
+				"these are not the flows you're looking for",
+				"nothing to see here, move along"
+		};
+		
+		try {
+			ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputPath));
+			for (int i = 0; i < fileNames.length; ++i) {
+				zipFile.putNextEntry(new ZipEntry(fileNames[i]));
+				//Treat this just like a FileOutputStream
+				zipFile.write(fileContentsToZip[i].getBytes());
+				zipFile.closeEntry();
+			}
+			zipFile.close();
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 }

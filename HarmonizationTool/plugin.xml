@@ -106,7 +106,7 @@
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonld"
-                  label="Save Harmonized Data (json, ttl)"
+                  label="Save Harmonized Data (json, ttl, zip)"
                   style="push">
             </command>
             <command
