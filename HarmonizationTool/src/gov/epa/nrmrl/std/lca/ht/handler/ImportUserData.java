@@ -265,7 +265,7 @@ public class ImportUserData implements IHandler {
 					fixIDs = true;
 				}
 				fileContents.put(bufferToString(br, fixIDs), inputType);
-				runLogger.info("LOAD RDF " + fileName + " " + GregorianCalendar.getInstance());
+				runLogger.info("LOAD RDF " + fileName + " " + new Date());
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
@@ -275,7 +275,7 @@ public class ImportUserData implements IHandler {
 			try {
 				@SuppressWarnings("resource")
 				ZipFile zf = new ZipFile(path);
-				runLogger.info("LOAD RDF (zip file)" + fileName + " " + GregorianCalendar.getInstance());
+				runLogger.info("LOAD RDF (zip file)" + fileName + " " + new Date());
 				int size = zf.size();
 				int i = 0;
 				int percent = 0;
@@ -363,7 +363,7 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 
-		runLogger.info("Syncing TDB to LCAHT " + GregorianCalendar.getInstance());
+		runLogger.info("Syncing TDB to LCAHT " + new Date());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;

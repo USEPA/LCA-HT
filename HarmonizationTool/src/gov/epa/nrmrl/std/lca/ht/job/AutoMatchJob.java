@@ -9,6 +9,7 @@ import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
@@ -348,26 +349,25 @@ public class AutoMatchJob extends Job {
 			}
 
 			// ========================== FLOW (UUIDs ONLY) ==========================
-			if (flowCSVColumnNumberForUUID > -1) {
+			if (flowCSVColumnNumberForUUID > 0) {
 				String uuid = dataRow.get(flowCSVColumnNumberForUUID - 1);
 				if (masterFlowUUIDs.contains(uuid)) {
 					final int masterUUIDRowNum = rowNumToSend;
-					final int rowNum = flowCSVColumnNumberForUUID;
+					final int colNum = flowCSVColumnNumberForUUID;
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							CSVTableView.colorCell(masterUUIDRowNum, 0, orange);
-							CSVTableView.colorCell(masterUUIDRowNum, rowNum, orange);
+							CSVTableView.colorCell(masterUUIDRowNum, colNum, orange);
 						}
 					});
 
 				}
-				// String dataValue =
-
 			}
 		}
 		// ========================== FLOW ==========================
 		// stopWatch06.start();
 
+		// First commit the Comparisons created above
 		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
 		Resource dataSourceResource = tableProvider.getDataSourceProvider().getTdbResource();
 		List<Integer> rowsToCheck = new ArrayList<Integer>();
@@ -421,7 +421,7 @@ public class AutoMatchJob extends Job {
 					} else {
 						findMatchingFlow = false;
 					}
-					if (flowCSVColumnNumberForUUID > -1) {
+					if (flowCSVColumnNumberForUUID > 0) {
 						String value = dataRow.get(flowCSVColumnNumberForUUID - 1);
 						if (!value.equals("")) {
 							Literal valueAsLiteral = tdbModel.createTypedLiteral(value);
@@ -442,7 +442,7 @@ public class AutoMatchJob extends Job {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
-		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
+//		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
 		percentComplete = 0;
@@ -514,8 +514,8 @@ public class AutoMatchJob extends Job {
 				// String uuidString = uuidNode.asLiteral().getString();
 				// ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
 				// }
-
-				flowMap.put(userFlowResource, masterFlowResource);
+				new ComparisonProvider(userFlowResource, masterFlowResource, FedLCA.Equivalent);
+//				flowMap.put(userFlowResource, masterFlowResource);
 
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -531,20 +531,25 @@ public class AutoMatchJob extends Job {
 			}
 		}
 
-		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		tdbModel = ActiveTDB.getModel(null);
-		try {
-			for (Resource key : flowMap.keySet()) {
-				tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
-			}
-			ActiveTDB.tdbDataset.commit();
-		} catch (Exception e) {
-			System.out.println("addFlowData failed; see Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
+//		for (Resource key: flowMap.keySet()){
+//			new ComparisonProvider(key, flowMap.get(key),FedLCA.Equivalent);
+//		}
+		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
+//
+//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+//		tdbModel = ActiveTDB.getModel(null);
+//		try {
+//			for (Resource key : flowMap.keySet()) {
+//				tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
+//			}
+//			ActiveTDB.tdbDataset.commit();
+//		} catch (Exception e) {
+//			System.out.println("addFlowData failed; see Exception: " + e);
+//			ActiveTDB.tdbDataset.abort();
+//		} finally {
+//			ActiveTDB.tdbDataset.end();
+//		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		// return flowMap.size();

@@ -71,6 +71,18 @@ public class OpenLCA {
 	/** A root entity which can have a category. */
 	public static final Resource CategorizedEntity = m_model.createResource(NS + "CategorizedEntity");
 
+	/** An actor is a person or organisation. */
+	public static final Resource Actor = m_model.createResource(NS + "Actor");
+	
+	/** Category - A category for the categorisation of types like processes, flows, etc. */
+	public static final Resource Category = m_model.createResource(NS + "Category");
+
+	/**
+	 * A flow property is a quantity that can be used to express amounts of a flow. The flow property (quantity) of the
+	 * factor.
+	 */
+	public static final Resource FlowProperty = m_model.createResource(NS + "FlowProperty");
+	
 	/** Everything that can be an input or output of a process (e.g. a substance, a product, a waste, a service * etc.) */
 	public static final Resource Flow = m_model.createResource(NS + "Flow");
 
@@ -133,12 +145,20 @@ public class OpenLCA {
 	/** A LCIA category of a LCIA method (see ImpactMethod) which groups a set of characterisation factors */
 	public static final Resource ImpactCategory = m_model.createResource(NS + "ImpactCategory");
 	
-	/**
-	 * A flow property is a quantity that can be used to express amounts of a flow. The flow property (quantity) of the
-	 * factor.
-	 */
-	public static final Resource FlowProperty = m_model.createResource(NS + "FlowProperty");
+	/** A impact assessment method. */
+	public static final Resource ImpactMethod = m_model.createResource(NS + "ImpactMethod");
+	
+	/** A location like a country, state, city, etc. */
+	public static final Resource Location = m_model.createResource(NS + "Location");
 
+	public static final Resource Process = m_model.createResource(NS + "Process");
+	
+	/** A source is a literature reference. */
+	public static final Resource Source = m_model.createResource(NS + "Source");
+	
+	/** UnitGroup - A group of units that can be converted into each other. */
+	public static final Resource UnitGroup = m_model.createResource(NS + "UnitGroup");
+	
 	/** The type of the flow property */
 	public static final Property flowPropertyType = m_model.createProperty(NS + "flowPropertyType");
 
@@ -152,8 +172,7 @@ public class OpenLCA {
 	/** unitGroup - The units of measure that can be used to express quantities of the flow property. */
 	public static final Property unitGroup = m_model.createProperty(NS + "unitGroup");
 
-	/** UnitGroup - A group of units that can be converted into each other. */
-	public static final Resource UnitGroup = m_model.createResource(NS + "UnitGroup");
+
 
 	/**
 	 * referenceUnit - The reference unit of the group with the conversion factor 1.0. As of 2015-02-12, this applies to
@@ -184,9 +203,6 @@ public class OpenLCA {
 	/** category - The category of the entity. */
 	public static final Property category = m_model.createProperty(NS + "category");
 
-	/** Category - A category for the categorisation of types like processes, flows, etc. */
-	public static final Resource Category = m_model.createResource(NS + "Category");
-
 	/** childCategories - A list of categories that are sub-categories of the category. Deprecated as of 2015-02-12 */
 	public static final Property childCategories = m_model.createProperty(NS + "childCategories");
 
@@ -197,7 +213,7 @@ public class OpenLCA {
 
 	/**
 	 *  modelType - The type of models that can be linked to the category. 
-	 */  
+	 */
 	public static final Property modelType = m_model.createProperty(NS + "modelType");
 
 	/**
@@ -210,21 +226,20 @@ public class OpenLCA {
 	 * The following are modelTypes for the root level: Category
 	 */
 
-	public static final Resource ACTOR = m_model.createResource(NS + "ACTOR");
-	public static final Resource CATEGORY = m_model.createResource(NS + "CATEGORY");
-	public static final Resource FLOW = m_model.createResource(NS + "FLOW");
-	public static final Resource FLOW_PROPERTY = m_model.createResource(NS + "FLOW_PROPERTY");
-	public static final Resource IMPACT_CATEGORY = m_model.createResource(NS + "IMPACT_CATEGORY");
-	public static final Resource IMPACT_METHOD = m_model.createResource(NS + "IMPACT_METHOD");
-	public static final Resource LOCATION = m_model.createResource(NS + "LOCATION");
+//	public static final Resource ACTOR = m_model.createResource(NS + "ACTOR");
+//	public static final Resource CATEGORY = m_model.createResource(NS + "CATEGORY");
+//	public static final Resource FLOW = m_model.createResource(NS + "FLOW");
+//	public static final Resource FLOW_PROPERTY = m_model.createResource(NS + "FLOW_PROPERTY");
+//	public static final Resource IMPACT_CATEGORY = m_model.createResource(NS + "IMPACT_CATEGORY");
+//	public static final Resource IMPACT_METHOD = m_model.createResource(NS + "IMPACT_METHOD");
+//	public static final Resource LOCATION = m_model.createResource(NS + "LOCATION");
 	public static final Resource NW_SET = m_model.createResource(NS + "NW_SET");
 
-	public static final Resource PROCESS = m_model.createResource(NS + "PROCESS");
 	public static final Resource PRODUCT_SYSTEM = m_model.createResource(NS + "PRODUCT_SYSTEM");
 	public static final Resource PROJECT = m_model.createResource(NS + "PROJECT");
-	public static final Resource SOURCE = m_model.createResource(NS + "SOURCE");
-	public static final Resource UNIT = m_model.createResource(NS + "UNIT");
-	public static final Resource UNIT_GROUP = m_model.createResource(NS + "UNIT_GROUP");
+//	public static final Resource SOURCE = m_model.createResource(NS + "SOURCE");
+//	public static final Resource UNIT = m_model.createResource(NS + "UNIT");
+//	public static final Resource UNIT_GROUP = m_model.createResource(NS + "UNIT_GROUP");
 	// public static final Resource UNKNOWN = m_model.createResource(NS + "UNKNOWN");
 
 	/** name - The name of the entity. */

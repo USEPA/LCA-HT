@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
+//import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
@@ -17,7 +19,10 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -46,6 +51,10 @@ import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.tdb.TDB;
@@ -57,6 +66,7 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * This Class is intended to provide commonly used methods more complex TDB access methods than those offered through
@@ -117,12 +127,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static void syncTDBtoLCAHT() {
 		System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
-//		System.out.println("Syncing people");
-//		PersonKeeper.syncFromTDB();
-//		System.out.println("Syncing files");
-//		FileMDKeeper.syncFromTDB();
+		// System.out.println("Syncing people");
+		// PersonKeeper.syncFromTDB();
+		// System.out.println("Syncing files");
+		// FileMDKeeper.syncFromTDB();
 		System.out.println("Done syncing");
-//		AnnotationProvider.updateCurrentAnnotationModifiedDate();
+		// AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
 
 	private static void openTDB() {
@@ -289,65 +299,257 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.end();
 		}
 	}
+	
+	public static Set<Resource> getDatasetMemberSubjects(String datasetName, String graphName) {
+		if (datasetName == null) {
+			return null;
+		}
+		Set<Resource> datasetMemberSubjects = new HashSet<Resource>();
+		Resource datasetTDBResource = null;
 
-	public static void copyDatasetContentsToExportGraph(String datasetName) {
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graphName);
 
-		// --- BEGIN SAFE -READ- TRANSACTION ---
-		tdbDataset.begin(ReadWrite.READ);
-		Model defaultModel = tdbDataset.getDefaultModel();
-		Model exportModel = tdbDataset.getNamedModel(exportGraphName);
-		// Model unionModel = ModelFactory.createUnion(defaultModel,
-		// exportModel);
+		// First - find the dataset's TDBResource. If more than one, ( TODO ) present an intelligent response
+		Literal dataSetNameLiteral = tdbModel.createTypedLiteral(datasetName);
+		Selector selector0 = new SimpleSelector(null, RDFS.label, dataSetNameLiteral);
+		StmtIterator stmtIterator0 = tdbModel.listStatements(selector0);
+		while (stmtIterator0.hasNext()) {
+			Statement statement = stmtIterator0.next();
+			datasetTDBResource = statement.getSubject().asResource();
+		}
 
-		System.out.println("defaultModel: " + defaultModel.size());
-		System.out.println("exportModel: " + exportModel.size());
-		// System.out.println("unionModel: " + unionModel.size());
-		tdbDataset.end();
-		// ---- END SAFE -READ- TRANSACTION ---
+		if (datasetTDBResource == null) {
+			ActiveTDB.tdbDataset.end();
+			return null;
+		}
+
+		// Next - get all subjects that are members of the dataset
+		SimpleSelector selector1 = new SimpleSelector(null, ECO.hasDataSource, datasetTDBResource);
+		StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+		stmtIterator1 = tdbModel.listStatements(selector1);
+		while (stmtIterator1.hasNext()) {
+			Statement statement = stmtIterator1.next();
+			datasetMemberSubjects.add(statement.getSubject().asResource());
+		}
+		ActiveTDB.tdbDataset.end();
+		return datasetMemberSubjects;
+	}
+
+	/**
+	 * This method follows components of an RDF graph starting with a dataset (eco:DataSource).
+	 * Each triple associated with the DataSource is included.
+	 * 
+	 * Then each subject with eco:hasDataSource [the DataSource] is followed in the following way:
+	 * 1) Each triple with the subject is included.
+	 * 2) Each triple in which a predicate of the triple from (1) AS Subject is included
+	 * 3) Each triple in which a non-literal object of the triple from (1) AS Subject is included
+	 * 4) Predicates and Objects found in the triples of (2) and (3) are followed in the same way
+	 * 
+	 * The goal is to gather all objects necessary for a given graph to be "complete".
+
+	 * @param datasetName - the (unique) String name (rdfs:label) of the data set (eco:DataSource)
+	 * @param graphName - String name of the graph from which to pull Statements.  Use null for the default graph.
+	 * @param includeComparisons - if set to <i>true</i> Statements of associated Comparisons and ComparedMaster features will be
+	 * included
+	 * @return A List of Statements which may then be placed into an alternate graph or tested in a particular way.
+	 */
+	public static List<Statement> collectAllStatementsForDataset(String datasetName, String graphName,
+			boolean includeComparisons) {
+		if (datasetName == null) {
+			return null;
+		}
+		Set<RDFNode> newNodesToCheck = new HashSet<RDFNode>();
+		Resource datasetTDBResource = null;
+		RDFNode datasetTDBNode = null;
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graphName);
+
+		// First - find the dataset's TDBResource. If more than one, ( TODO ) present an intelligent response
+		Literal dataSetNameLiteral = tdbModel.createTypedLiteral(datasetName);
+		Selector selector0 = new SimpleSelector(null, RDFS.label, dataSetNameLiteral);
+		StmtIterator stmtIterator0 = tdbModel.listStatements(selector0);
+		while (stmtIterator0.hasNext()) {
+			Statement statement = stmtIterator0.next();
+			if (newNodesToCheck.size() > 0) {
+				System.out.println("There should not be more than one dataset with this name: " + datasetName);
+			}
+			datasetTDBResource = statement.getSubject();
+			datasetTDBNode = datasetTDBResource;
+			newNodesToCheck.add(datasetTDBNode);
+		}
+
+		if (newNodesToCheck.size() == 0) {
+			ActiveTDB.tdbDataset.end();
+			return null;
+		}
+		// Next - get all aspects of the dataset itself
+		stmtIterator0 = datasetTDBResource.listProperties();
+		while (stmtIterator0.hasNext()) {
+			Statement statement = stmtIterator0.next();
+			newNodesToCheck.add(statement.getSubject());
+		}
+
+		// Next - get all subjects that are members of the dataset
+		List<Resource> membersOfDataset = new ArrayList<Resource>();
+		SimpleSelector selector1 = new SimpleSelector(null, ECO.hasDataSource, datasetTDBResource);
+		StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+		stmtIterator1 = tdbModel.listStatements(selector1);
+		while (stmtIterator1.hasNext()) {
+			Statement statement = stmtIterator1.next();
+			membersOfDataset.add(statement.getSubject());
+		}
+		newNodesToCheck.addAll(membersOfDataset);
+		if (includeComparisons) {
+			// Next - get all subjects that are members of the dataset
+			for (Resource resource : membersOfDataset) {
+				SimpleSelector selector2 = new SimpleSelector(null, FedLCA.comparedSource, resource);
+				StmtIterator stmtIterator2 = tdbModel.listStatements(selector2);
+				stmtIterator2 = tdbModel.listStatements(selector2);
+				while (stmtIterator2.hasNext()) {
+					Statement statement = stmtIterator2.next();
+					newNodesToCheck.add(statement.getSubject());
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		return collectStatementsTraversingNodeSet(newNodesToCheck, graphName);
+	}
+
+	/**
+	 * This method "Follows" each RDFNode in the specified newNodesToCheck HashSet, collecting all Statements
+	 * in which the RDFNode is a subject.  It then iterates using each Predicate and non-Literal Object in then
+	 * next round of newNodesToCheck and continues until new new RDFNodes are found.  Note that for some data
+	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
+	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
+	 * the newNodesToCheck HashSet.
+	 * 
+	 * @param newNodesToCheck - a HashSet of RDFNodes to "follow"
+	 * @param graphName - the String name of the graph within tdbDataset
+	 * @return an ArrayList of Statements containing every triple found while following the RDFNodes.
+	 */
+	public static List<Statement> collectStatementsTraversingNodeSet(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode predicate = statement.getPredicate();
+				if (!nodesAlreadyFound.contains(predicate)) {
+					nodesAlreadyFound.add(predicate);
+					newNodesToCheck.add(predicate);
+				}
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					nodesAlreadyFound.add(object);
+					newNodesToCheck.add(object);
+				}
+			}
+		}
+		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
+	}
+
+	/**
+	 * Like collectStatementsTraversingNodeSet, this method "Follows" each RDFNode in the specified newNodesToCheck
+	 * HashSet, returning all RDFNodes found while traversing the graph in a "forward" direction (i.e. not seeking
+	 * all subjects and objects associated with predicates found, nor all subjects and predicates associated with all
+	 * objects found).  It does iterate using each Predicate and non-Literal Object in then
+	 * next round of newNodesToCheck and continues until new new RDFNodes are found.  Note that for some data
+	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
+	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
+	 * the newNodesToCheck HashSet.
+	 * 
+	 * @param newNodesToCheck - a HashSet of RDFNodes to "follow"
+	 * @param graphName - the String name of the graph within tdbDataset
+	 * @return a HashSet of RDFNodes found while following the starting set of RDFNodes.
+	 */
+	public static Set<RDFNode> collectNodesTraversingNodeSet(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode predicate = statement.getPredicate();
+				if (!nodesAlreadyFound.contains(predicate)) {
+					nodesAlreadyFound.add(predicate);
+					newNodesToCheck.add(predicate);
+				}
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					nodesAlreadyFound.add(object);
+					newNodesToCheck.add(object);
+				}
+			}
+		}
+		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return nodesAlreadyFound;
+	}
+
+	/**
+	 * This returns all Statements within a specified graph in which the specified Nodes are a Subject.
+	 * It can be used as part of a recursion to "follow" a set of Subjects, including all necessary components.
+	 * 
+	 * @param nodesToTest : a Set of nodes to find ?node ?p ?o statements if ?node is not a Literal.
+	 * @param graphName is the String associated with the graph in tdbDataset
+	 * @return An ArrayList<Statement> containing Statements with the nodesToTest entries as subjects
+	 */
+	private static List<Statement> collectStatements(Set<RDFNode> nodesToTest, String graphName) {
+		if (nodesToTest == null) {
+			return null;
+		}
+		List<Statement> returnList = new ArrayList<Statement>();
+
+		if (nodesToTest.size() == 0) {
+			return returnList;
+		}
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		for (RDFNode rdfNode : nodesToTest) {
+			if (!rdfNode.isLiteral()) {
+				if (rdfNode.isResource()) {
+					Resource resource = rdfNode.asResource();
+					StmtIterator stmtIterator = resource.listProperties();
+					returnList.addAll(stmtIterator.toList());
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		return returnList;
+	}
+
+	public static void copyDatasetContentsToExportGraph(String datasetName, boolean includeComparisons) {
+		List<Statement> statementsToCopy = collectAllStatementsForDataset(datasetName, null, true);
 
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = getModel(exportGraphName);
 		try {
-			StringBuilder b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());
-			b.append("insert {graph <" + exportGraphName + "> { \n");
-			b.append("    ?s ?p ?o . \n");
-			b.append("    ?c ?p1 ?o1 . \n");
-			b.append("    ?m ?p2 ?o2 . \n");
-			b.append("    ?mdt ?p3 ?o3 . \n");
-			b.append("    ?s4 ?p4 ?mdt . \n");
-			b.append("    ?s5 ?p5 ?m .  \n");
-			b.append("    }} \n");
-			b.append("  where {\n");
-			b.append("    ?s ?p ?o .  \n");
-			b.append("    {{  \n");
-			b.append("      ?s eco:hasDataSource ?ds .  \n");
-			b.append("      ?ds rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
-			b.append("      OPTIONAL {  \n");
-			b.append("        ?c fedlca:comparedSource ?s . \n");
-			b.append("        ?c fedlca:comparedMaster ?m . \n");
-			b.append("        ?c ?p1 ?o1 .  \n");
-			b.append("        ?m ?p2 ?o2 .  \n");
-			b.append("        ?s5 ?p5 ?m .  \n");
-			b.append("      }  \n");
-			b.append("      OPTIONAL {  \n");
-			b.append("        ?s owl:sameAs ?mdt . \n");
-			b.append("        ?mdt eco:hasDataSource ?mds . \n");
-			b.append("        ?mds a  lcaht:MasterDataset . \n");
-			b.append("        ?mdt ?p3 ?o3 .  \n");
-			b.append("        ?s4 ?p4 ?mdt .  \n");
-			b.append("      }  \n");
-			b.append("    } UNION  \n");
-			b.append("    {  \n");
-			b.append("      ?s a eco:DataSource .  \n");
-			b.append("      ?s rdfs:label \"" + datasetName + "\"^^xsd:string .  \n");
-			b.append("    }}  \n");
-			b.append("  }\n");
-			String query = b.toString();
-			System.out.println("\n" + query + "\n");
-			UpdateRequest request = UpdateFactory.create(query);
-			UpdateProcessor proc = UpdateExecutionFactory.create(request, graphStore);
-			proc.execute();
+			tdbModel.add(statementsToCopy);
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
@@ -357,14 +559,25 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
-		tdbDataset.begin(ReadWrite.READ);
-		defaultModel = getModel(null);
-		exportModel = getModel(exportGraphName);
-		// unionModel = ModelFactory.createUnion(defaultModel, exportModel);
-		System.out.println("defaultModel: " + defaultModel.size());
-		System.out.println("exportModel: " + exportModel.size());
-		// System.out.println("unionModel: " + unionModel.size());
-		tdbDataset.end();
+		System.out.println("defaultModel: " + getModel(null).size());
+		System.out.println("exportModel: " + getModel(exportGraphName).size());
+	}
+
+	public static void copyStatementsToGraph(List<Statement> statementsToCopy, String graphTo) {
+
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = getModel(graphTo);
+		try {
+			tdbModel.add(statementsToCopy);
+			tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("copyStatementsToGraph(" + graphTo + ") failed; see Exception: " + e);
+			tdbDataset.abort();
+		} finally {
+			tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION ---
 	}
 
 	public static void clearImportGraphContents() {
@@ -692,7 +905,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void tsReplaceLiteral(Resource subject, Property predicate, Object thingLiteral) {
-		if (thingLiteral == null){
+		if (thingLiteral == null) {
 			return;
 		}
 		tsRemoveAllLikeLiterals(subject, predicate, thingLiteral, null);
