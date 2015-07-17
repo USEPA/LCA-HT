@@ -24,7 +24,7 @@ public class FileMD {
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
-	private static final Resource rdfClass = LCAHT.dataFile;
+	private static final Resource rdfClass = LCAHT.DataFile;
 
 	public FileMD(){
 	

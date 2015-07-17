@@ -299,7 +299,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.end();
 		}
 	}
-	
+
 	public static Set<Resource> getDatasetMemberSubjects(String datasetName, String graphName) {
 		if (datasetName == null) {
 			return null;
@@ -420,6 +420,70 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	/**
 	 * This method "Follows" each RDFNode in the specified newNodesToCheck HashSet, collecting all Statements
 	 * in which the RDFNode is a subject.  It then iterates using each Predicate and non-Literal Object in then
+	 * next round of newNodesToCheck and continues until new new RDFNodes are found.
+	 * <br/>A set of "stopClasses" can be specified in <i>stopAtTheseClasses</i>so that objects in triples which
+	 * belong to specified RDF Classes can be explicitly <i>not</i> followed.
+	 * <br/>Note that for some data
+	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
+	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
+	 * the newNodesToCheck HashSet.
+	 * 
+	 * @param newNodesToCheck - a HashSet of RDFNodes to "follow"
+	 * @param stopAtTheseClasses - a HashSet of RDFNodes to not follow. A subject with rdf:type [stopAtTheseClasses member]
+	 * will not be followed.
+	 * @param graphName - the String name of the graph within tdbDataset
+	 * @return an ArrayList of Statements containing every triple found while following the RDFNodes.
+	 */
+	public static List<Statement> collectStatementsTraversingNodeSetWithStops(Set<RDFNode> newNodesToCheck,
+			Set<RDFNode> stopAtTheseClasses, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+//			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+//					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode predicate = statement.getPredicate();
+				if (!nodesAlreadyFound.contains(predicate)) {
+					nodesAlreadyFound.add(predicate);
+					newNodesToCheck.add(predicate);
+				}
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					boolean stopClass = false;
+					if (!object.isLiteral()) {
+						StmtIterator stmtIterator = object.asResource().listProperties(RDF.type);
+						while (stmtIterator.hasNext()) {
+							RDFNode classObject = stmtIterator.next().getObject();
+							if (stopAtTheseClasses.contains(classObject)) {
+								stopClass = true;
+							}
+						}
+					}
+					if (!stopClass) {
+						nodesAlreadyFound.add(object);
+						newNodesToCheck.add(object);
+					}
+				}
+			}
+		}
+//		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+//				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
+	}
+
+	/**
+	 * This method "Follows" each RDFNode in the specified newNodesToCheck HashSet, collecting all Statements
+	 * in which the RDFNode is a subject.  It then iterates using each Predicate and non-Literal Object in then
 	 * next round of newNodesToCheck and continues until new new RDFNodes are found.  Note that for some data
 	 * structures or with a Reasoner in place, this method could take a long time and possibly return the entire
 	 * graph.  An alternate version might include a specified maximum number of cycles to try or maximum size of
@@ -434,6 +498,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			return null;
 		}
 		List<Statement> returnStatements = new ArrayList<Statement>();
+		/*
+		 * The lines below would solve the same problem, but a tiny bit slower, so leaving the full "copy of above
+		 * method
+		 */
+		// Set<RDFNode> stopClassesEmpty = new HashSet<RDFNode>();
+		// return collectStatementsTraversingNodeSetWithStops(newNodesToCheck, stopClassesEmpty, graphName);
+
 		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
 
 		int cycle = 0;
@@ -1220,4 +1291,5 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	public static void sync() {
 		TDB.sync(tdbDataset);
 	}
+
 }
