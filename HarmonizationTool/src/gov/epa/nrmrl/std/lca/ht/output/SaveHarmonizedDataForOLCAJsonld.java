@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -130,19 +131,26 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		Set<Resource> datasetMembers = ActiveTDB.getDatasetMemberSubjects(currentName, null);
 
 		if (saveTo.endsWith(".zip")) {
-
-			Map<String, Set<Resource>> resourceMap = new HashMap<String, Set<Resource>>();
+			/*
+			 * The order of the items below is critical since detection of changes in some objects must be propagated to
+			 * objects that contain them. During preparation of each .json file, Comparisons will be consulted to see
+			 * what changes should be made
+			 */
+			Map<String, Set<Resource>> resourceMap = new LinkedHashMap<String, Set<Resource>>();
 			resourceMap.put("actors", new HashSet<Resource>());
 			resourceMap.put("categories", new HashSet<Resource>());
 			resourceMap.put("flow_properties", new HashSet<Resource>());
-			resourceMap.put("flows", new HashSet<Resource>());
-			resourceMap.put("lcia_categories", new HashSet<Resource>());
-			resourceMap.put("lcia_methods", new HashSet<Resource>());
 			resourceMap.put("locations", new HashSet<Resource>());
-			resourceMap.put("processes", new HashSet<Resource>());
 			resourceMap.put("sources", new HashSet<Resource>());
 			resourceMap.put("unit_groups", new HashSet<Resource>());
-			resourceMap.put("unmatched_resources", new HashSet<Resource>());
+
+			resourceMap.put("flows", new HashSet<Resource>());
+
+			resourceMap.put("processes", new HashSet<Resource>());
+			resourceMap.put("lcia_categories", new HashSet<Resource>());
+			resourceMap.put("lcia_methods", new HashSet<Resource>());
+
+			// resourceMap.put("unmatched_resources", new HashSet<Resource>());
 
 			// First, sort members into batches
 			int memberCount = datasetMembers.size();
@@ -168,7 +176,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				} else if (itemResource.hasProperty(RDF.type, OpenLCA.UnitGroup)) {
 					resourceMap.get("unit_groups").add(itemResource);
 				} else {
-					resourceMap.get("unmatched_resources").add(itemResource);
+					memberCount--;
+					// resourceMap.get("unmatched_resources").add(itemResource);
 				}
 			}
 
@@ -236,14 +245,17 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 						ActiveTDB.tdbDataset.end();
 						String fileContents = stringOut.toString();
-						String cleanedfileContents = fileContents.replaceAll("\"olca:", "\"");
+						String cleanedfileContents1 = fileContents.replaceAll("\"olca:", "\"");
+						String cleanedfileContents2 = cleanedfileContents1.replaceAll(
+								" \"@id\" : \"urn:x-arq:DefaultGraphNode\",", "");
+
 						// NOTE: DO NOT USE .getLocalName() AS IT TRUNCATES LEADING ZEROS!!
 						// String fileName = itemResource.getLocalName() + ".json";
 						if (!itemResource.isAnon()) {
 							String uriName = itemResource.getURI();
 							if (uriName.matches(OpenLCA.NS + "[a-f0-9-]{36}")) {
 								String fileName = uriName.substring(OpenLCA.NS.length()) + ".json";
-								writeResource(folderKey, fileName, cleanedfileContents, zipFile);
+								writeResource(folderKey, fileName, cleanedfileContents2, zipFile);
 							} else {
 								for (Statement statement : itemResource.listProperties(RDF.type).toList()) {
 									if (!subClassesNotToPackageSeparately.contains(statement.getObject())) {
@@ -251,7 +263,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 												+ statement.getObject());
 									}
 								}
-
 							}
 						}
 					}
