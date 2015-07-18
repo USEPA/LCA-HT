@@ -62,6 +62,7 @@ public class OpenDataSet implements IHandler {
 		//TODO - does it matter if there was an old one?
 		TableKeeper.saveTableProvider(filePath, provider);
 		//TODO - make sure we handle buildUserDataTableFromLCAHTDataViaQuery case also
+		long startTime = System.currentTimeMillis();
 		ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
 		
 		ImportUserData.RunData data = new ImportUserData.RunData(null);
@@ -69,7 +70,14 @@ public class OpenDataSet implements IHandler {
 		data.display = Display.getCurrent();
 		ImportUserData.displayTableView(data);
 	
-		FlowsWorkflow.buttonModePostCommit();
+
+		if (CSVTableView.preCommit)
+			FlowsWorkflow.buttonModePostLoad();
+		else {
+			FlowsWorkflow.textCheckData.setText("");
+			FlowsWorkflow.buttonModePostCommit();
+		}
+		System.out.println("Data set opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 
 		return null;
 	}

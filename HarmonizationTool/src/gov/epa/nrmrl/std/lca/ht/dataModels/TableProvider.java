@@ -365,6 +365,7 @@ public class TableProvider {
 
 		}
 		
+		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
 		if (existingLcaData) {
 			FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
 			FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
@@ -375,7 +376,7 @@ public class TableProvider {
 	}
 
 	public void colorExistingRows() {
-		if (!existingLcaData)
+		if (!existingLcaData || CSVTableView.preCommit)
 			return;
 		
 		Set<Integer> flowColumnNumbers = new HashSet<Integer>();

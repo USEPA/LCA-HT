@@ -129,7 +129,7 @@ public class CSVTableView extends ViewPart {
 	public static Color orange = new Color(Display.getCurrent(), 255, 128, 0);
 
 	public static boolean preCommit = true;
-
+	
 	private static List<Integer> flowableColumns = null;
 	private static List<Integer> propertyColumns = null;
 	private static List<Integer> contextColumns = null;
@@ -1936,7 +1936,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void colorFlowableRows() {
-		for (int i : uniqueFlowableRowNumbers) {
+		for (int i = 0; i < table.getItemCount() && uniqueFlowableRowNumbers.contains(i); ++i) {
 			colorOneFlowableRow(i);
 		}
 	}
@@ -1973,7 +1973,7 @@ public class CSVTableView extends ViewPart {
 				visibleRowNum++;
 			}
 		} else {
-			for (int i : uniqueFlowContextRowNumbers) {
+			for (int i = 0; i < table.getItemCount() && uniqueFlowContextRowNumbers.contains(i); ++i) {
 				Color color;
 				if (matchedFlowContextRowNumbers.contains(i)) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
@@ -2031,7 +2031,7 @@ public class CSVTableView extends ViewPart {
 				visibleRowNum++;
 			}
 		} else {
-			for (int i : uniqueFlowPropertyRowNumbers) {
+			for (int i = 0; i < table.getItemCount() && uniqueFlowPropertyRowNumbers.contains(i); ++i) {
 				Color color;
 				// Resource resource =
 				// TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
@@ -2094,7 +2094,7 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 		} else {
-			for (int i : uniqueFlowRowNumbers) {
+			for (int i = 0; i < table.getItemCount() && uniqueFlowRowNumbers.contains(i); ++i) {
 				colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
 			}
 		}

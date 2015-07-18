@@ -599,7 +599,8 @@ public class ImportUserData implements IHandler {
 			harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
 		// runLogger.info("querying current user data " + new Date());
-		updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
+		if (dataSourceName == null)
+			updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		
 		
@@ -622,11 +623,6 @@ public class ImportUserData implements IHandler {
 				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
-		
-		if (dataSourceName != null) {
-			updateText(FlowsWorkflow.textLoadUserData, dataSourceName);
-			FlowsWorkflow.enableCommitButton(true);
-		}
 		
 		return;
 	}

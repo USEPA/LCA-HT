@@ -85,7 +85,7 @@ public class FlowsWorkflow extends ViewPart {
 	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> matchedFlowRowNumbers = new LinkedHashSet<Integer>();
-
+	
 	// private static FileMD fileMD;
 	// private static DataSourceProvider dataSourceProvider;
 
@@ -340,7 +340,17 @@ public class FlowsWorkflow extends ViewPart {
 		btnCommit.setEnabled(enabled);
 	}
 	
+	public static void buttonModePostLoad() {
+		textCheckData.setText("");
+		textCommit.setText("");
+		textMatchFlowables.setText("");
+		textMatchFlowContexts.setText("");
+		textMatchFlowProperties.setText("");
+		CSVTableView.preCommit = true;
+	}
+	
 	public static void buttonModePostCommit() {
+		btnCommit.setEnabled(false);
 		btnCheckData.setEnabled(false);
 		btnMatchFlowables.setEnabled(true);
 		btnMatchFlowables.setGrayed(false);
@@ -356,6 +366,7 @@ public class FlowsWorkflow extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 
+			buttonModePostLoad();
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
 				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserData", null);
@@ -894,7 +905,7 @@ public class FlowsWorkflow extends ViewPart {
 		CSVTableView.colorFlowPropertyRows();
 		
 	}
-
+	
 	public static void addMatchFlowRowNum(int rowNumToSend) {
 		matchedFlowRowNumbers.add(rowNumToSend);
 		// textMatchFlowProperties.setText(matchedFlowPropertyRowNumbers.size()
