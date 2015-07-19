@@ -128,7 +128,7 @@ public class FedLCA {
 	public static final Property flowPropertySupplementalDescription = m_model.createProperty(NS
 			+ "flowPropertySupplementalDescription");
 
-//	public static final Property hasFlowProperty = m_model.createProperty(NS + "hasFlowProperty");
+	public static final Property hasFlowProperty = m_model.createProperty(NS + "hasFlowProperty");
 
 	public static final Resource UnitSuperGroup = m_model.createResource(NS + "UnitSuperGroup");
 	

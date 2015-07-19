@@ -138,7 +138,7 @@ public class OpenLCA {
 	public static final Resource Exchange = m_model.createResource(NS + "Exchange");
 
 	public static final Resource ProcessDocumentation = m_model.createResource(NS + "ProcessDocumentation");
-	
+
 	/**
 	 * Defines the parameter values of an uncertainty distribution. Depending on the uncertainty distribution type
 	 * different parameters could be used.
@@ -259,6 +259,11 @@ public class OpenLCA {
 	public static final Property description = m_model.createProperty(NS + "description");
 	/** version - A version number in ILCD format (e.g. 1.0 or 1.0.1). */
 	public static final Property version = m_model.createProperty(NS + "version");
+
+	/** The location of the flow. Normally the location of a flow is defined by the process location where
+	 * the flow is an input or output. However, some data formats define a location as a property of a flow. */
+	public static final Property location = m_model.createProperty(NS + "location");
+
 	/**
 	 * lastChange - The date when the entity was changed the last time. Together with the UUID and version this
 	 * identifies an entity unambiguously. The format is a Literal dateTime
@@ -500,5 +505,18 @@ public class OpenLCA {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		return count;
+	}
+
+	public static Map<String, Property> getOpenLCAMap() {
+		Map<String, Property> returnMap = new HashMap<String, Property>();
+		returnMap.put("name", OpenLCA.name);
+		returnMap.put("cas", OpenLCA.cas);
+		returnMap.put("formula", OpenLCA.formula);
+		returnMap.put("description", OpenLCA.description);
+		returnMap.put("version", OpenLCA.version);
+		returnMap.put("lastChange", OpenLCA.lastChange);
+		returnMap.put("location", OpenLCA.location);
+		returnMap.put("flowProperties", OpenLCA.flowProperties);
+		return returnMap;
 	}
 }
