@@ -516,7 +516,8 @@ public class OpenLCA {
 		returnMap.put("version", OpenLCA.version);
 		returnMap.put("lastChange", OpenLCA.lastChange);
 		returnMap.put("location", OpenLCA.location);
-		returnMap.put("flowProperties", OpenLCA.flowProperties);
+		returnMap.put("flow_properties", OpenLCA.flowProperties);
+		returnMap.put("category", OpenLCA.category);
 		return returnMap;
 	}
 }

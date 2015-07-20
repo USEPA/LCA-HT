@@ -445,8 +445,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		int cycle = 0;
 		while (newNodesToCheck.size() > 0) {
 			cycle++;
-//			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
-//					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
 			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
 			nodesAlreadyFound.addAll(newNodesToCheck);
 			newNodesToCheck.clear();
@@ -476,8 +476,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
-//		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
-//				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return returnStatements;
 	}
 
@@ -1292,4 +1292,38 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		TDB.sync(tdbDataset);
 	}
 
+	/**
+	 * This method is intended to return a String containing a properly formatted UUID String given either
+	 * a) a URI resource (not blank node) whose URI terminates in a UUID (i.e. last 36 characters form one)
+	 * b) a Literal whose string value is a UUID
+	 * @param uuidNode - and RDFNode to test
+	 * @return a String with a properly formatted UUID / ^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$ /
+	 */
+	public static String getUUIDFromRDFNode(RDFNode uuidNode) {
+		if (uuidNode == null) {
+			return null;
+		}
+		if (uuidNode.isAnon()) {
+			return null;
+		}
+		String uuidToReturn = null;
+		if (uuidNode.isLiteral()) {
+			Literal uuidLiteral = uuidNode.asLiteral();
+			if (uuidLiteral.getDatatype().equals(XSDDatatype.XSDstring)) {
+				uuidToReturn = uuidLiteral.getString();
+			}
+		} else {
+			String uri = uuidNode.asResource().getURI();
+			int start = uri.length() - 36;
+			uuidToReturn = uri.substring(start);
+		}
+		if (uuidToReturn == null) {
+			return null;
+		}
+		String lcUUIDToReturn = uuidToReturn.toLowerCase();
+		if (lcUUIDToReturn.matches("[a-f\\d]{8}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{12}")) {
+			return lcUUIDToReturn;
+		}
+		return null;
+	}
 }
