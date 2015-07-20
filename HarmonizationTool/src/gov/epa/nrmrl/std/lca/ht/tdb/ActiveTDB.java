@@ -582,6 +582,81 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		return nodesAlreadyFound;
 	}
 
+	public static List<Statement> collectStatementsStopAtQualifiedURIsWithStops(Set<RDFNode> newNodesToCheck,
+			Set<RDFNode> stopAtTheseClasses, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					boolean stopClass = false;
+					if (object.isAnon()) {
+						StmtIterator stmtIterator = object.asResource().listProperties(RDF.type);
+						while (stmtIterator.hasNext()) {
+							RDFNode classObject = stmtIterator.next().getObject();
+							if (stopAtTheseClasses.contains(classObject)) {
+								stopClass = true;
+								break;
+							}
+						}
+						if (!stopClass) {
+							nodesAlreadyFound.add(object);
+							newNodesToCheck.add(object);
+						}
+					}
+				}
+			}
+		}
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
+	}
+
+	public static List<Statement> collectStatementsStopAtQualifiedURIs(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					if (object.isAnon()) {
+						nodesAlreadyFound.add(object);
+						newNodesToCheck.add(object);
+					}
+				}
+			}
+		}
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
+	}
+
 	/**
 	 * This returns all Statements within a specified graph in which the specified Nodes are a Subject.
 	 * It can be used as part of a recursion to "follow" a set of Subjects, including all necessary components.

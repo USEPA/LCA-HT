@@ -50,6 +50,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
@@ -261,8 +262,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 						Set<RDFNode> singleSet = new HashSet<RDFNode>();
 						singleSet.add(itemResource);
 
-						List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
+						// List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
+						// stopAtTheseClasses, null);
+						List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIsWithStops(singleSet,
 								stopAtTheseClasses, null);
+						// List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIs(singleSet, null);
+
 						ActiveTDB.clearExportGraphContents();
 						ActiveTDB.copyStatementsToGraph(statements, ActiveTDB.exportGraphName);
 
@@ -329,8 +334,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 											OpenLCA.flowProperty);
 									String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
 											.getObject().asResource());
-									if (oldNewUUIDMap.containsKey(itemPropertyUUID)) {
-									} else {
+									if (!oldNewUUIDMap.containsKey(itemPropertyUUID)) {
 										RDFNode masterProperty = masterProperties.get("flow_properties");
 										Statement findUUIDStatement = masterProperty.asResource().getProperty(
 												FedLCA.hasOpenLCAUUID);
@@ -741,7 +745,30 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	// }
 	// }
 
-	private void updateDescription(Resource itemResource, String newDescription) {
+	// private static void removeOtherResources(Resource itemResource, String graphName) {
+	// Set<Statement> statementsToRemove = new HashSet<Statement>();
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+	//
+	// ResIterator thing = tdbModel.listSubjects();
+	//
+	// ActiveTDB.tdbDataset.end();
+	//
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+	// try {
+	// tdbModel.removeAll(itemResource, OpenLCA.description, null);
+	// tdbModel.add(itemResource, OpenLCA.description, newDescription);
+	// ActiveTDB.tdbDataset.commit();
+	// } catch (Exception e) {
+	// System.out.println("Update description failed; see Exception: " + e);
+	// ActiveTDB.tdbDataset.abort();
+	// } finally {
+	// ActiveTDB.tdbDataset.end();
+	// }
+	// }
+
+	private static void updateDescription(Resource itemResource, String newDescription) {
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 		try {
@@ -756,7 +783,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 	}
 
-	private void updateLastChange(Resource itemResource) {
+	private static void updateLastChange(Resource itemResource) {
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 		try {
