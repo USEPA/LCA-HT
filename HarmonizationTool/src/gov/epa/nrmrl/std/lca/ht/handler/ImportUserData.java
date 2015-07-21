@@ -148,7 +148,7 @@ public class ImportUserData implements IHandler {
 				return null;
 			}
 			data.file = new File(data.path);
-			data.fileMD = new FileMD(true);
+			data.fileMD = new FileMD(false);
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
 			data.fileMD.setByteCount(data.file.length());
@@ -179,6 +179,7 @@ public class ImportUserData implements IHandler {
 				data.fileMD.remove();
 				return null;
 			}
+			data.fileMD.createTDBResource();
 			FlowsWorkflow.textLoadUserData.setText("... loading ...");
 			FlowsWorkflow.textLoadUserData.setToolTipText("... loading ...");
 			new Thread(data).start();

@@ -113,6 +113,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
 			System.out.println("syncTDBtoLCAHT() failed with Exception: " + e);
+			e.printStackTrace();
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
@@ -228,6 +229,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB default failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -242,6 +244,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB import failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -256,6 +259,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB export failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -445,8 +449,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		int cycle = 0;
 		while (newNodesToCheck.size() > 0) {
 			cycle++;
-//			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
-//					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
 			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
 			nodesAlreadyFound.addAll(newNodesToCheck);
 			newNodesToCheck.clear();
@@ -476,8 +480,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
-//		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
-//				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return returnStatements;
 	}
 
@@ -580,6 +584,81 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
 				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return nodesAlreadyFound;
+	}
+
+	public static List<Statement> collectStatementsStopAtQualifiedURIsWithStops(Set<RDFNode> newNodesToCheck,
+			Set<RDFNode> stopAtTheseClasses, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					boolean stopClass = false;
+					if (object.isAnon()) {
+						StmtIterator stmtIterator = object.asResource().listProperties(RDF.type);
+						while (stmtIterator.hasNext()) {
+							RDFNode classObject = stmtIterator.next().getObject();
+							if (stopAtTheseClasses.contains(classObject)) {
+								stopClass = true;
+								break;
+							}
+						}
+						if (!stopClass) {
+							nodesAlreadyFound.add(object);
+							newNodesToCheck.add(object);
+						}
+					}
+				}
+			}
+		}
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
+	}
+
+	public static List<Statement> collectStatementsStopAtQualifiedURIs(Set<RDFNode> newNodesToCheck, String graphName) {
+		if (newNodesToCheck == null) {
+			return null;
+		}
+		List<Statement> returnStatements = new ArrayList<Statement>();
+		Set<RDFNode> nodesAlreadyFound = new HashSet<RDFNode>();
+
+		int cycle = 0;
+		while (newNodesToCheck.size() > 0) {
+			cycle++;
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
+			nodesAlreadyFound.addAll(newNodesToCheck);
+			newNodesToCheck.clear();
+			for (Statement statement : newStatements) {
+				returnStatements.add(statement);
+
+				RDFNode object = statement.getObject();
+				if (!nodesAlreadyFound.contains(object)) {
+					if (object.isAnon()) {
+						nodesAlreadyFound.add(object);
+						newNodesToCheck.add(object);
+					}
+				}
+			}
+		}
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		return returnStatements;
 	}
 
 	/**
@@ -902,7 +981,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: " + e);
+			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: ");
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1255,6 +1335,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1281,6 +1362,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("tsReplaceObject from ActiveTDB failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1292,4 +1374,38 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		TDB.sync(tdbDataset);
 	}
 
+	/**
+	 * This method is intended to return a String containing a properly formatted UUID String given either
+	 * a) a URI resource (not blank node) whose URI terminates in a UUID (i.e. last 36 characters form one)
+	 * b) a Literal whose string value is a UUID
+	 * @param uuidNode - and RDFNode to test
+	 * @return a String with a properly formatted UUID / ^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$ /
+	 */
+	public static String getUUIDFromRDFNode(RDFNode uuidNode) {
+		if (uuidNode == null) {
+			return null;
+		}
+		if (uuidNode.isAnon()) {
+			return null;
+		}
+		String uuidToReturn = null;
+		if (uuidNode.isLiteral()) {
+			Literal uuidLiteral = uuidNode.asLiteral();
+			if (uuidLiteral.getDatatype().equals(XSDDatatype.XSDstring)) {
+				uuidToReturn = uuidLiteral.getString();
+			}
+		} else {
+			String uri = uuidNode.asResource().getURI();
+			int start = uri.length() - 36;
+			uuidToReturn = uri.substring(start);
+		}
+		if (uuidToReturn == null) {
+			return null;
+		}
+		String lcUUIDToReturn = uuidToReturn.toLowerCase();
+		if (lcUUIDToReturn.matches("[a-f\\d]{8}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{12}")) {
+			return lcUUIDToReturn;
+		}
+		return null;
+	}
 }

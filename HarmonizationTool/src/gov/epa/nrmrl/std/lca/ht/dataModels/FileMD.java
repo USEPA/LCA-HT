@@ -20,7 +20,7 @@ public class FileMD {
 	private String filename;
 	private String path;
 	private String encoding;
-	private long byteCount;
+	private long byteCount = 0;
 	private Date modifiedDate;
 	private Date readDate;
 	private Resource tdbResource;
@@ -55,7 +55,8 @@ public class FileMD {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileName, filename);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileName, filename);
 	}
 
 	public String getPath() {
@@ -71,7 +72,8 @@ public class FileMD {
 
 	public void setPath(String path) {
 		this.path = path;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.filePath, path);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.filePath, path);
 	}
 
 	public long getByteCount() {
@@ -80,7 +82,8 @@ public class FileMD {
 
 	public void setByteCount(long size) {
 		this.byteCount = size;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.byteCount, size);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.byteCount, size);
 	}
 
 	public Date getModifiedDate() {
@@ -89,7 +92,8 @@ public class FileMD {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
-		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, modifiedDate);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.modified, modifiedDate);
 	}
 
 	public Date getReadDate() {
@@ -98,7 +102,8 @@ public class FileMD {
 
 	public void setReadDate(Date readDate) {
 		this.readDate = readDate;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileReadDate, readDate);
 	}
 
 	public String getEncoding() {
@@ -110,7 +115,8 @@ public class FileMD {
 			// WARN THAT THIS ENCODING HAS NOT BEEN SEEN
 		}
 		this.encoding = encoding;
-		ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, LCAHT.fileEncoding, encoding);
 	}
 
 	@Override
@@ -170,8 +176,28 @@ public class FileMD {
 
 		System.out.println("sync line: 8");
 	}
+	
+	public void createTDBResource() {
+		if (tdbResource == null)
+			return;
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+		if (filename != null)
+			setFilename(filename);
+		if (path != null)
+			setPath(path);
+		if (encoding != null)
+			setEncoding(encoding);
+		if (byteCount != 0)
+			setByteCount(byteCount);
+		if (modifiedDate != null)
+			setModifiedDate(modifiedDate);
+		if (readDate != null)
+		setReadDate(readDate);
+	}
 
 	public void remove() {
+		if (tdbResource == null)
+			return;
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(null);

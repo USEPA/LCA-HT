@@ -33,17 +33,26 @@ public class DataSourceProvider {
 	private String comments = "";
 	private Person contactPerson = null;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
+	private List<FileMD> newFileMDList = new ArrayList<FileMD>();
 	// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
 	private Resource tdbResource;
 	private Integer referenceDataStatus = null;
 
 	// private boolean isMaster = false;
-
+	
+	public Exception creation = new Exception();
+	
 	public DataSourceProvider() {
-		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+		this(true);
+	}
+
+	public DataSourceProvider(boolean createTDBResource) {
 		boolean success = DataSourceKeeper.add(this);
 		System.out.println("Success: " + success + " with this.dataSourceName");
 		DataSourceKeeper.add(this);
+		if (createTDBResource)
+			this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+
 	}
 
 	public DataSourceProvider(Resource tdbResource) {
@@ -60,6 +69,28 @@ public class DataSourceProvider {
 			DataSourceKeeper.add(this);
 		}
 	}
+	
+	public void createTDBResource() {
+		if (tdbResource != null)
+			return;
+		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
+		if (dataSourceName != null)
+			setDataSourceName(dataSourceName);
+		if (version != null)
+			setVersion(version);
+		if (comments != null)
+			setComments(comments);
+		if (contactPerson != null)
+			setContactPerson(contactPerson);
+		if (referenceDataStatus != null)
+			setReferenceDataStatus(referenceDataStatus);
+		for (FileMD fileMD : newFileMDList) {
+			fileMD.createTDBResource();
+		}
+		newFileMDList.clear();
+		// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
+
+	}
 
 	public Person getContactPerson() {
 		return contactPerson;
@@ -70,7 +101,8 @@ public class DataSourceProvider {
 		if (contactPerson == null) {
 			return;
 		}
-		ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasContactPerson, contactPerson.getTdbResource());
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceObject(tdbResource, FedLCA.hasContactPerson, contactPerson.getTdbResource());
 	}
 
 	public Resource getTdbResource() {
@@ -90,7 +122,10 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 		// Model tdbModel = ActiveTDB.getModel();
 		// if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-		ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource(), null);
+		if (tdbResource != null)
+			ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource(), null);
+		else
+			newFileMDList.add(fileMD);
 		// }
 	}
 
@@ -131,12 +166,13 @@ public class DataSourceProvider {
 		}
 		return results;
 	}
-
+	
 	public void remove(FileMD fileMD) {
 		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER
 		// DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
-		ActiveTDB.tsRemoveStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+		if (tdbResource != null)
+			ActiveTDB.tsRemoveStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
 	}
 
 	public void removeFileMDList() {
@@ -165,6 +201,8 @@ public class DataSourceProvider {
 	 */
 	public void remove(String graph) {
 		removeFileMDList();
+		if (tdbResource == null)
+			return;
 		List<Statement> removeStatements = new ArrayList<Statement>();
 
 		// --- BEGIN SAFE -READ- TRANSACTION ---
@@ -218,7 +256,8 @@ public class DataSourceProvider {
 
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
-		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.label, dataSourceName);
 	}
 
 	public String getVersion() {
@@ -234,7 +273,8 @@ public class DataSourceProvider {
 
 	public void setVersion(String version) {
 		this.version = version;
-		ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.hasVersion, version);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, DCTerms.hasVersion, version);
 	}
 
 	public String getComments() {
@@ -250,7 +290,8 @@ public class DataSourceProvider {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-		ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.comment, comments);
+		if (tdbResource != null)
+			ActiveTDB.tsReplaceLiteral(tdbResource, RDFS.comment, comments);
 	}
 
 	/**
@@ -334,6 +375,8 @@ public class DataSourceProvider {
 
 	public void setReferenceDataStatus(Integer referenceDataStatus) {
 		this.referenceDataStatus = referenceDataStatus;
+		if (tdbResource == null)
+			return;
 		if (referenceDataStatus == null) {
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
