@@ -84,7 +84,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		this.curDataSourceProvider = new DataSourceProvider();
+		this.curDataSourceProvider = new DataSourceProvider(false);
 		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(fileMD.getFilenameString().substring(0,
 				fileMD.getFilenameString().length() - 4)));
 		this.curDataSourceProvider.addFileMD(this.callingFileMD);
@@ -100,7 +100,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		assert fileMD != null : "fileMD cannot be null";
 		this.callingFileMD = fileMD;
-		this.curDataSourceProvider = new DataSourceProvider();
+		this.curDataSourceProvider = new DataSourceProvider(false);
 		this.curDataSourceProvider.setDataSourceName(DataSourceKeeper.uniquify(newProposedName));
 		this.curDataSourceProvider.addFileMD(this.callingFileMD);
 		this.newDataSourceProvider = curDataSourceProvider;
@@ -392,8 +392,8 @@ public class MetaDataDialog extends TitleAreaDialog {
 
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		if (contactPerson == null) {
-			contactPerson = new Person();
-			curDataSourceProvider.setContactPerson(contactPerson);
+			//contactPerson = new Person();
+			//curDataSourceProvider.setContactPerson(contactPerson);
 			dialogValues[2].setText("");
 			dialogValues[3].setText("");
 			dialogValues[4].setText("");
@@ -460,7 +460,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		// super.cancelPressed();
 		if (callingFileMD != null) {
 			// NEED TO REMOVE THE NEW DATASOURCE
-			newDataSourceProvider.remove();
+			DataSourceKeeper.remove(newDataSourceProvider);
 			// curDataSourceProvider = null;
 		}
 		runLogger.info("SET META cancel");
@@ -471,6 +471,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	protected void okPressed() {
 		String dataSourceName = comboSelectorDataSource.getText();
 		System.out.println("comboSelectorDataSource.getText() " + comboSelectorDataSource.getText());
+		curDataSourceProvider.createTDBResource();
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		if (contactPerson == null) {
 			contactPerson = new Person();

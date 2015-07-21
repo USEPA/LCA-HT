@@ -177,7 +177,7 @@ public class DataSourceKeeper {
 		while (iterator.hasNext()) {
 			DataSourceProvider dataSourceProvider = iterator.next();
 			Resource resource = dataSourceProvider.getTdbResource();
-			if (resource.equals(tdbResource)) {
+			if (resource != null && resource.equals(tdbResource)) {
 				return dataSourceProviderList.indexOf(dataSourceProvider);
 			}
 		}

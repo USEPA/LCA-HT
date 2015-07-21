@@ -113,6 +113,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			syncTDBtoLCAHT();
 		} catch (Exception e) {
 			System.out.println("syncTDBtoLCAHT() failed with Exception: " + e);
+			e.printStackTrace();
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
@@ -228,6 +229,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB default failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -242,6 +244,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB import failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -256,6 +259,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync ActiveTDB export failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -977,7 +981,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: " + e);
+			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: ");
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1330,6 +1335,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1356,6 +1362,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("tsReplaceObject from ActiveTDB failed with Exception: " + e);
+			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
