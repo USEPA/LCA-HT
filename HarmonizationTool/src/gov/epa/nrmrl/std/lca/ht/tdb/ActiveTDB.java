@@ -679,11 +679,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			return returnList;
 		}
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(graphName);
 		for (RDFNode rdfNode : nodesToTest) {
 			if (!rdfNode.isLiteral()) {
 				if (rdfNode.isResource()) {
 					Resource resource = rdfNode.asResource();
-					StmtIterator stmtIterator = resource.listProperties();
+					Selector selector = new SimpleSelector(resource, null, null, null);
+					StmtIterator stmtIterator = tdbModel.listStatements(selector);
 					returnList.addAll(stmtIterator.toList());
 				}
 			}

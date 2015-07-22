@@ -1252,8 +1252,245 @@ owl:DataTypeProperty rdf:type owl:Class .
                    
                    eco:hasDataSource :master_contexts_v1.4a .
 
+olca:6cd7ba3c-4a99-4504-b7a7-2064602d33c5
+        a                  olca:Category ;
+        eco:hasDataSource  fedlca:master_contexts_v1.4a ;
+        olca:modelType     olca:FLOW_PROPERTY ;
+        olca:name          "Economic flow properties" .
 
+olca:3e34bea9-b96b-4a52-b0e9-2f117da18462
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "agricultural" ;
+        olca:parentCategory  olca:c95855de-c2af-4137-9b7c-254487748624 .
 
+olca:c95855de-c2af-4137-9b7c-254487748624
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "soil" ;
+        olca:parentCategory  olca:elementary-flows .
+
+olca:elementary-flows
+        a                  olca:Category ;
+        eco:hasDataSource  fedlca:master_contexts_v1.4a ;
+        olca:modelType     olca:FLOW ;
+        olca:name          "Elementary flows" .
+
+olca:c2f5c3a9-70a8-443e-972d-c0cdf5ef1f57
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "industrial" ;
+        olca:parentCategory  olca:c95855de-c2af-4137-9b7c-254487748624 .
+
+olca:5757a050-d6aa-470a-b1fc-f8deb7410b5a
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "low population density, long-term" ;
+        olca:parentCategory  olca:861abd18-00e7-49e9-85b1-de28560edea1 .
+
+olca:861abd18-00e7-49e9-85b1-de28560edea1
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "air" ;
+        olca:parentCategory  olca:elementary-flows .
+
+olca:8291c777-3f1e-46be-a550-fe50fd677753
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "low population density" ;
+        olca:parentCategory  olca:861abd18-00e7-49e9-85b1-de28560edea1 .
+
+olca:231bda25-8d18-48b2-b5ba-9b5795e30317
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "lake" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:50a5b682-0f1c-4468-9e48-2d2d612134c6
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "water" ;
+        olca:parentCategory  olca:elementary-flows .
+
+olca:6e54f561-d63a-4a49-bec9-55468f56a698
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "ground water" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:f5d93540-81ed-11e0-b278-0800200c9a66
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "surface water" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:e38f841d-bc83-49a3-ab86-2783de8cebfb
+        a                  olca:Category ;
+        eco:hasDataSource  fedlca:master_contexts_v1.4a ;
+        olca:modelType     olca:UNIT_GROUP ;
+        olca:name          "Technical unit groups" .
+
+olca:3779f888-b4cb-4503-81f0-e7f599277a89
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "in air" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:3095c63c-7962-4086-a0d7-df4fd38c2e68
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "resource" ;
+        olca:parentCategory  olca:elementary-flows .
+
+olca:c62956a1-36e2-472a-9d7b-76f6ed030501
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "fossil-" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:fbeac9d8-cfd7-49a5-bc43-0d7b39fa4345
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "unspecified" ;
+        olca:parentCategory  olca:c95855de-c2af-4137-9b7c-254487748624 .
+
+olca:31a33ee5-e7c2-431e-990f-5ab1209cbc00
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "ocean" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:97f511b2-9031-438f-aa90-d514709cd109
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "river" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:a56b521d-ca6c-4d43-9876-7e944c78392d
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "forestry" ;
+        olca:parentCategory  olca:c95855de-c2af-4137-9b7c-254487748624 .
+
+olca:0b14d4cc-186e-4bab-a7fc-fffd448b0e2c
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "land" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:a99b1904-6e54-4d02-983a-2b0ec1263a28
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "ground water, long-term" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:86863950-d175-4400-8cc2-c40511322f94
+        a                  olca:Category ;
+        eco:hasDataSource  fedlca:master_contexts_v1.4a ;
+        olca:modelType     olca:FLOW_PROPERTY ;
+        olca:name          "Technical flow properties" .
+
+olca:d4e9a1fa-e2d0-44f1-9243-acc0db978d0f
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "unspecified" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:e41f6688-ff59-4733-9d6f-8744095382c1
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "biotic" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:e02cb1ea-727e-42fa-9ea1-65cfc8195452
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "lower stratosphere + upper troposphere" ;
+        olca:parentCategory  olca:861abd18-00e7-49e9-85b1-de28560edea1 .
+
+olca:b3834b67-5caf-41ea-bf50-0c8962ef9b6d
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "unspecified" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:65632802-cee7-4319-b270-b7dfe66bcabd
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "in water" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:7c393da4-5f55-41d5-baa2-4216a299c21c
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "high population density" ;
+        olca:parentCategory  olca:861abd18-00e7-49e9-85b1-de28560edea1 .
+
+olca:d734414d-8bcf-497f-9896-b96761d6b488
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "in ground" ;
+        olca:parentCategory  olca:3095c63c-7962-4086-a0d7-df4fd38c2e68 .
+
+olca:2d9498c8-6873-45e1-af33-e1a298c119b9
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "unspecified" ;
+        olca:parentCategory  olca:861abd18-00e7-49e9-85b1-de28560edea1 .
+
+olca:3beedca8-84be-4deb-97b4-d578f75ddee1
+        a                  olca:Category ;
+        eco:hasDataSource  fedlca:master_contexts_v1.4a ;
+        olca:modelType     olca:UNIT_GROUP ;
+        olca:name          "Economic unit groups" .
+
+olca:87f48832-e550-458c-885a-d2a4c02e5543
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "river, long-term" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:90b2f926-e261-4df0-b435-63b0c660101e
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "fresh water, long-term" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
+
+olca:870110ab-6bbf-4149-beb6-ef0402b6ba6c
+        a                    olca:Category ;
+        eco:hasDataSource    fedlca:master_contexts_v1.4a ;
+        olca:modelType       olca:FLOW ;
+        olca:name            "fresh water" ;
+        olca:parentCategory  olca:50a5b682-0f1c-4468-9e48-2d2d612134c6 .
 
 ###  Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net
 

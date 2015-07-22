@@ -143,11 +143,30 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
 		Set<Resource> datasetMembers = ActiveTDB.getDatasetMemberSubjects(currentName, null);
 
+		Set<RDFNode> stopAtTheseClasses = new HashSet<RDFNode>();
+		stopAtTheseClasses.add(OpenLCA.Actor);
+		// stopAtTheseClasses.add(OpenLCA.Category);
+		// stopAtTheseClasses.add(OpenLCA.FlowProperty);
+		stopAtTheseClasses.add(OpenLCA.Flow);
+		stopAtTheseClasses.add(OpenLCA.ImpactCategory);
+		stopAtTheseClasses.add(OpenLCA.ImpactMethod);
+		stopAtTheseClasses.add(OpenLCA.Location);
+		stopAtTheseClasses.add(OpenLCA.Process);
+		stopAtTheseClasses.add(OpenLCA.Source);
+		stopAtTheseClasses.add(OpenLCA.UnitGroup);
+		stopAtTheseClasses.add(FedLCA.Person);
+		stopAtTheseClasses.add(LCAHT.DataFile);
+		stopAtTheseClasses.add(ECO.DataSource);
+		stopAtTheseClasses.add(ECO.Flowable);
+		stopAtTheseClasses.add(FedLCA.Flow);
+		stopAtTheseClasses.add(FedLCA.FlowContext);
+		stopAtTheseClasses.add(FedLCA.FlowUnit);
+
 		if (saveTo.endsWith(".zip")) {
 			/*
-			 * The order of the items below is critical since detection of changes in some objects must be propagated to
-			 * objects that contain them. During preparation of each .json file, Comparisons will be consulted to see
-			 * what changes should be made
+			 * FAILED ATTEMPT TO WRITE INDIVIDUAL .json FILES TO SPECIFIC DIRECTORIES /* The order of the items below is
+			 * critical since detection of changes in some objects must be propagated to objects that contain them.
+			 * During preparation of each .json file, Comparisons will be consulted to see what changes should be made
 			 */
 			Map<String, Set<Resource>> resourceMap = new LinkedHashMap<String, Set<Resource>>();
 			resourceMap.put("actors", new HashSet<Resource>());
@@ -193,25 +212,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 					// resourceMap.get("unmatched_resources").add(itemResource);
 				}
 			}
-
-			Set<RDFNode> stopAtTheseClasses = new HashSet<RDFNode>();
-			stopAtTheseClasses.add(OpenLCA.Actor);
-			// stopAtTheseClasses.add(OpenLCA.Category);
-			// stopAtTheseClasses.add(OpenLCA.FlowProperty);
-			stopAtTheseClasses.add(OpenLCA.Flow);
-			stopAtTheseClasses.add(OpenLCA.ImpactCategory);
-			stopAtTheseClasses.add(OpenLCA.ImpactMethod);
-			stopAtTheseClasses.add(OpenLCA.Location);
-			stopAtTheseClasses.add(OpenLCA.Process);
-			stopAtTheseClasses.add(OpenLCA.Source);
-			stopAtTheseClasses.add(OpenLCA.UnitGroup);
-			stopAtTheseClasses.add(FedLCA.Person);
-			stopAtTheseClasses.add(LCAHT.DataFile);
-			stopAtTheseClasses.add(ECO.DataSource);
-			stopAtTheseClasses.add(ECO.Flowable);
-			stopAtTheseClasses.add(FedLCA.Flow);
-			stopAtTheseClasses.add(FedLCA.FlowContext);
-			stopAtTheseClasses.add(FedLCA.FlowUnit);
 
 			Set<RDFNode> subClassesNotToPackageSeparately = new HashSet<RDFNode>();
 			subClassesNotToPackageSeparately.add(OpenLCA.Exchange);
@@ -391,8 +391,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 
 		/*
-		 * ======================================================= == Alternate approach - copy things, then zip up ==
-		 * =======================================================
+		 * ===========================================================================================================
+		 * == Alternate approach - copy things, then zip up ==========================================================
+		 * ===========================================================================================================
 		 */
 
 		/*
@@ -445,24 +446,24 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			}
 		}
 
-		Set<RDFNode> stopAtTheseClasses = new HashSet<RDFNode>();
-		stopAtTheseClasses.add(OpenLCA.Actor);
-		// stopAtTheseClasses.add(OpenLCA.Category);
-		// stopAtTheseClasses.add(OpenLCA.FlowProperty);
-		stopAtTheseClasses.add(OpenLCA.Flow);
-		stopAtTheseClasses.add(OpenLCA.ImpactCategory);
-		stopAtTheseClasses.add(OpenLCA.ImpactMethod);
-		stopAtTheseClasses.add(OpenLCA.Location);
-		stopAtTheseClasses.add(OpenLCA.Process);
-		stopAtTheseClasses.add(OpenLCA.Source);
-		stopAtTheseClasses.add(OpenLCA.UnitGroup);
-		stopAtTheseClasses.add(FedLCA.Person);
-		stopAtTheseClasses.add(LCAHT.DataFile);
-		stopAtTheseClasses.add(ECO.DataSource);
-		stopAtTheseClasses.add(ECO.Flowable);
-		stopAtTheseClasses.add(FedLCA.Flow);
-		stopAtTheseClasses.add(FedLCA.FlowContext);
-		stopAtTheseClasses.add(FedLCA.FlowUnit);
+		// Set<RDFNode> stopAtTheseClasses = new HashSet<RDFNode>();
+		// stopAtTheseClasses.add(OpenLCA.Actor);
+		// // stopAtTheseClasses.add(OpenLCA.Category);
+		// // stopAtTheseClasses.add(OpenLCA.FlowProperty);
+		// stopAtTheseClasses.add(OpenLCA.Flow);
+		// stopAtTheseClasses.add(OpenLCA.ImpactCategory);
+		// stopAtTheseClasses.add(OpenLCA.ImpactMethod);
+		// stopAtTheseClasses.add(OpenLCA.Location);
+		// stopAtTheseClasses.add(OpenLCA.Process);
+		// stopAtTheseClasses.add(OpenLCA.Source);
+		// stopAtTheseClasses.add(OpenLCA.UnitGroup);
+		// stopAtTheseClasses.add(FedLCA.Person);
+		// stopAtTheseClasses.add(LCAHT.DataFile);
+		// stopAtTheseClasses.add(ECO.DataSource);
+		// stopAtTheseClasses.add(ECO.Flowable);
+		// stopAtTheseClasses.add(FedLCA.Flow);
+		// stopAtTheseClasses.add(FedLCA.FlowContext);
+		// stopAtTheseClasses.add(FedLCA.FlowUnit);
 
 		Set<RDFNode> subClassesNotToPackageSeparately = new HashSet<RDFNode>();
 		subClassesNotToPackageSeparately.add(OpenLCA.Exchange);
@@ -481,7 +482,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// try {
 		// ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(saveTo));
 		int total = 0;
-		Map<String, String> oldNewUUIDMap = new HashMap<String, String>();
+		Map<String, String> oldNewFlowUUIDMap = new HashMap<String, String>();
+		Map<String, String> oldNewOtherUUIDMap = new HashMap<String, String>();
+
 		ActiveTDB.clearExportGraphContents();
 
 		for (String folderKey : resourceMap.keySet()) {
@@ -517,7 +520,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 				// List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
 				// stopAtTheseClasses, null);
-				List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIsWithStops(singleSet,
+				List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
 						stopAtTheseClasses, null);
 				// List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIs(singleSet, null);
 
@@ -530,6 +533,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				 * "lastChange" 2) processes require changing the "flow" info and info about Exchanges
 				 */
 				if (folderKey.equals("flows")) {
+					if (itemUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+						System.out.println("pause here");
+					}
 					// Only ELEMENTARY_FLOW Flows will have changes (at this point)
 					if (ActiveTDB.getModel(ActiveTDB.exportGraphName).contains(itemResource, OpenLCA.flowType,
 							OpenLCA.ELEMENTARY_FLOW)) {
@@ -555,26 +561,29 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 							// Now check UUIDs of some things
 							RDFNode newUUIDNode = masterProperties.get("uuid");
-							String newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
-							if (newUUID == null) {
+							String newUUID = null;
+							if (newUUIDNode == null) {
 								newUUID = Util.getRandomUUID();
 								// TODO: HANDLE THIS SITUATION BETTER
+							} else {
+								newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
 							}
 							if (!newUUID.equals(itemUUID)) {
-								oldNewUUIDMap.put(itemUUID, newUUID);
+								newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
+								oldNewFlowUUIDMap.put(itemUUID, newUUID);
 							}
 
 							// Handle FlowCategory (context)
 							RDFNode itemCategory = itemProperties.get("category");
 							String itemCategoryUUID = ActiveTDB.getUUIDFromRDFNode(itemCategory);
-							if (!oldNewUUIDMap.containsKey(itemCategoryUUID)) {
+							if (!oldNewOtherUUIDMap.containsKey(itemCategoryUUID)) {
 								RDFNode masterCategory = masterProperties.get("category");
 								Statement findUUIDStatement = masterCategory.asResource().getProperty(
 										FedLCA.hasOpenLCAUUID);
 								String masterContextUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement.getObject());
 								if (!itemCategoryUUID.equals(masterContextUUID)) {
-									removeCategories(itemCategory);
-									oldNewUUIDMap.put(itemCategoryUUID, masterContextUUID);
+									// removeCategories(itemCategory);
+									oldNewOtherUUIDMap.put(itemCategoryUUID, masterContextUUID);
 								}
 							}
 							// Handle FlowProperty and FlowUnit
@@ -583,26 +592,27 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 									OpenLCA.flowProperty);
 							String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
 									.getObject().asResource());
-							if (!oldNewUUIDMap.containsKey(itemPropertyUUID)) {
+							if (!oldNewOtherUUIDMap.containsKey(itemPropertyUUID)) {
 								RDFNode masterProperty = masterProperties.get("flow_properties");
 								Statement findUUIDStatement = masterProperty.asResource().getProperty(
 										FedLCA.hasOpenLCAUUID);
 								String masterPropertyUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement.getObject());
 								if (!itemPropertyUUID.equals(masterPropertyUUID)) {
-									removeFlowProperty(itemProperty);
-									oldNewUUIDMap.put(itemPropertyUUID, masterPropertyUUID);
+									// removeFlowProperty(itemProperty);
+									oldNewOtherUUIDMap.put(itemPropertyUUID, masterPropertyUUID);
 								}
 							}
 						}
 					}
 				}
-				for (String oldUUID : oldNewUUIDMap.keySet()) {
-					replaceUUIDtypeURI(oldUUID, oldNewUUIDMap.get(oldUUID), ActiveTDB.exportGraphName);
-				}
+				// processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap);
+
 				// Update the lastChange anyway
 				updateLastChange(itemResource);
 			}
 		}
+		processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
+
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
 			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
@@ -704,6 +714,127 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	// ActiveTDB.tdbDataset.end();
 	// }
 	// }
+
+	private void processUUIDReplacement(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
+			Set<RDFNode> stopAtTheseClasses) {
+		// while (ActiveTDB.tdbDataset.isInTransaction()){
+		// ActiveTDB.tdbDataset.end();
+		// }
+		Set<RDFNode> otherThingsToBringIn = new HashSet<RDFNode>();
+		List<Statement> statementsToAdd = new ArrayList<Statement>();
+		List<Statement> statementsToRemove = new ArrayList<Statement>();
+		// List<RDFNode> objectsToAdd = new ArrayList<RDFNode>();
+		// List<RDFNode> objectsToRemove = new ArrayList<RDFNode>();
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
+			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+				System.out.println("pause here");
+			}
+			String newUUID = oldNewFlowUUIDMap.get(oldUUID);
+			Resource oldFlowResource = expModel.createResource(OpenLCA.NS + oldUUID);
+			Resource newFlowResource = expModel.createResource(OpenLCA.NS + newUUID);
+			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+			// StmtIterator stmtIterator0 = expModel.listStatements(oldFlowResource, null, null, null);
+			Selector selector0 = new SimpleSelector(oldFlowResource, null, null, null);
+			StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+			while (stmtIterator0.hasNext()) {
+				Statement statement = stmtIterator0.next();
+				statementsToRemove.add(statement);
+				RDFNode object = statement.getObject();
+				if (!object.isLiteral() && !object.isAnon()) {
+					String uri = object.asResource().getURI();
+					if (uri.length() == 36 + OpenLCA.NS.length()) {
+						String oldUUIDObject = uri.substring(uri.length() - 36);
+						if (oldNewOtherUUIDMap.containsKey(oldUUIDObject)) {
+							String newUUIDObject = oldNewOtherUUIDMap.get(oldUUIDObject);
+							object = expModel.createResource(OpenLCA.NS + newUUIDObject);
+						}
+					}
+				}
+				Statement addStatement = expModel.createStatement(newFlowResource, statement.getPredicate(), object);
+				statementsToAdd.add(addStatement);
+			}
+
+			Selector selector1 = new SimpleSelector(null, null, oldFlowResource);
+			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement = stmtIterator1.next();
+				statementsToRemove.add(statement);
+				Statement addStatement = expModel.createStatement(statement.getSubject(), statement.getPredicate(),
+						newFlowResource);
+				statementsToAdd.add(addStatement);
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
+		// It is necessary to do this once because otherwise, the Flow won't be present to have it's objects replaced
+		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+		statementsToAdd.clear();
+		statementsToRemove.clear();
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		for (String oldUUID : oldNewOtherUUIDMap.keySet()) {
+			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
+			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
+				System.out.println("pause here");
+			}
+			Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
+			Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
+
+			otherThingsToBringIn.add(newOtherResource);
+			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+			// StmtIterator stmtIterator0 = expModel.listStatements(oldOtherResource, null, null, null);
+			// Selector selector0 = new SimpleSelector(oldOtherResource, null, null, null);
+			// StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+			// while (stmtIterator0.hasNext()) {
+			// Statement statement = stmtIterator0.next();
+			// statementsToRemove.add(statement);
+			// }
+
+			Selector selector1 = new SimpleSelector(null, null, oldOtherResource);
+			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement = stmtIterator1.next();
+				statementsToRemove.add(statement);
+				RDFNode object = statement.getObject();
+				if (!object.isLiteral() && !object.isAnon()) {
+					String uri = object.asResource().getURI();
+					String oldUUIDObject = uri.substring(uri.length() - 36);
+					if (!oldNewFlowUUIDMap.containsKey(oldUUIDObject)) {
+
+						Statement addStatement = expModel.createStatement(statement.getSubject(),
+								statement.getPredicate(), newOtherResource);
+						statementsToAdd.add(addStatement);
+					}
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
+		// Now collect the item which is new from the default graph so as to replace the removed one.
+		statementsToAdd.addAll(ActiveTDB.collectStatementsTraversingNodeSet(otherThingsToBringIn, null));
+
+		// Now remove and add the new batches of statements (whose objects have changed)
+		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+	}
+
+	private static void tsRemoveStatementsFromGraph(List<Statement> statementsToRemove,
+			List<Statement> statementsToAdd, String graphName) {
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model expModel = ActiveTDB.getModel(graphName);
+		try {
+			expModel.remove(statementsToRemove);
+			expModel.add(statementsToAdd);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			System.out.println("Replace URI failed; see Exception: " + e);
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+	}
 
 	private static void replaceUUIDtypeURI(String oldUUID, String newUUID, String graphName) {
 		Resource oldResource = ActiveTDB.tsCreateResource(OpenLCA.NS + oldUUID);
