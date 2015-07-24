@@ -11,6 +11,7 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +40,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -71,22 +73,17 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	public void dispose() {
 	}
 
-	/*
-	 * TODO FIXME TODO FIXME TODO ALERT! DANGER! SEE HERE! ATTENTION TOM TRANSUE : Tom, just change writeResource to
-	 * generate a correct uuid and convert the resource to JSON instead of calling toString and remove the main method
-	 * (I added it just as a sample for how to use the zip api), and I think everything else will just work.
-	 */
-
-	// private void writeResource(String folder, Resource resource, ZipOutputStream output) throws IOException {
-	// String uuid = Integer.toString(resource.hashCode());
-	// output.putNextEntry(new ZipEntry(folder + "/" + uuid + ".json"));
-	// output.write(resource.toString().getBytes());
-	// output.closeEntry();
-	// }
-
 	private void writeResource(String folder, String filename, String fileContents, ZipOutputStream output)
 			throws IOException {
-		output.putNextEntry(new ZipEntry(folder + "/" + filename));
+		String separator = "/";
+
+		try {
+			separator = System.getProperty("file.separator");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		output.putNextEntry(new ZipEntry(folder + separator + filename));
 		output.write(fileContents.getBytes());
 		output.closeEntry();
 	}
@@ -141,6 +138,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
+		/*
+		 * The following line collects essentially every item in the TDB default graph that has the predicate, object
+		 * pair: eco:hasDataSource [dataset to export]. This Set is then parsed and binned according to what type of
+		 * object it is. Then objects are read in batches from simplest (i.e. not containing reference to more complex
+		 * types) to more complex, and "followed" to include all attributes. If the attribute is Literal the single
+		 * statement is added, if it is another node (URI type or blank = Anonymous) Note that: In the first attempt
+		 * (which does not work) nodes are not followed if they belongs to a specified "stop class". When "flows" are
+		 * read their UUIDs are compared with those found via harmonization.
+		 */
 		Set<Resource> datasetMembers = ActiveTDB.getDatasetMemberSubjects(currentName, null);
 
 		Set<RDFNode> stopAtTheseClasses = new HashSet<RDFNode>();
@@ -240,7 +246,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 						total++;
 						int percent = 100 * total / memberCount;
 
-						if ((percent % 5 == 0) && (percent > lastPercent + 1)) {
+						if (percent > lastPercent + 1) {
 							System.out.println(percent + " % complete");
 							lastPercent = percent;
 						}
@@ -396,6 +402,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		 * ===========================================================================================================
 		 */
 
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextConcludeStatus("0/3 steps to complete");
+			}
+		});
+
 		/*
 		 * The order of the items below is critical since detection of changes in some objects must be propagated to
 		 * objects that contain them. During preparation of each .json file, Comparisons will be consulted to see what
@@ -435,6 +447,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
 				resourceMap.get("locations").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
+				System.out.println("Process count: " + resourceMap.get("processes").size());
 				resourceMap.get("processes").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
 				resourceMap.get("sources").add(itemResource);
@@ -486,18 +499,24 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		Map<String, String> oldNewOtherUUIDMap = new HashMap<String, String>();
 
 		ActiveTDB.clearExportGraphContents();
-
+		int lastPercent = -1;
 		for (String folderKey : resourceMap.keySet()) {
 			// List<String> uuidsToReplace = new LinkedList<String>();
 			System.out.println("Working on '" + folderKey + "' files");
 			Set<Resource> hashSet = resourceMap.get(folderKey);
-			int lastPercent = -1;
 			for (Resource itemResource : hashSet) {
 				total++;
 				int percent = 100 * total / memberCount;
 
-				if ((percent % 5 == 0) && (percent > lastPercent + 1)) {
-					System.out.println(percent + " % complete");
+				if (percent >= lastPercent + 1) {
+					// Ready for when this routine becomes threaded
+					final int percentToWrite = percent;
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							FlowsWorkflow.setTextConcludeStatus("1/3 preparing components " + percentToWrite + "%");
+						}
+					});
+					System.out.println("1/3 " + percent + "% complete");
 					lastPercent = percent;
 				}
 
@@ -569,8 +588,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 								newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
 							}
 							if (!newUUID.equals(itemUUID)) {
-								newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
 								oldNewFlowUUIDMap.put(itemUUID, newUUID);
+								updateLastChange(itemResource);
 							}
 
 							// Handle FlowCategory (context)
@@ -608,7 +627,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				// processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap);
 
 				// Update the lastChange anyway
-				updateLastChange(itemResource);
+				// updateLastChange(itemResource);
 			}
 		}
 		processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
@@ -720,6 +739,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// while (ActiveTDB.tdbDataset.isInTransaction()){
 		// ActiveTDB.tdbDataset.end();
 		// }
+		int totalToDo = oldNewFlowUUIDMap.size() + oldNewOtherUUIDMap.size();
+		int totalDone = 0;
+		int lastPercentComplete = -1;
 		Set<RDFNode> otherThingsToBringIn = new HashSet<RDFNode>();
 		List<Statement> statementsToAdd = new ArrayList<Statement>();
 		List<Statement> statementsToRemove = new ArrayList<Statement>();
@@ -731,6 +753,22 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
 			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
 				System.out.println("pause here");
+			}
+			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
+				System.out.println("pause here");
+			}
+			
+			totalDone++;
+			int percent = 100 * totalDone / totalToDo;
+			if (percent >= lastPercentComplete + 1) {
+				final int percentToWrite = percent;
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+					}
+				});
+				System.out.println("2/3 " + percent + "% complete");
+				lastPercentComplete = percent;
 			}
 			String newUUID = oldNewFlowUUIDMap.get(oldUUID);
 			Resource oldFlowResource = expModel.createResource(OpenLCA.NS + oldUUID);
@@ -776,6 +814,18 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		for (String oldUUID : oldNewOtherUUIDMap.keySet()) {
+			totalDone++;
+			int percent = 100 * totalDone / totalToDo;
+			if (percent >= lastPercentComplete + 1) {
+				final int percentToWrite = percent;
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+					}
+				});
+				System.out.println("2/3 " + percent + "% complete");
+				lastPercentComplete = percent;
+			}
 			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
 			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
 				System.out.println("pause here");
@@ -935,6 +985,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		return matchingResources;
 	}
 
+	/**
+	 * This method is designed to take the Resource of an openLCA Flow, together with the list of attributes
+	 * of the original and of the harmonized master Flow.  It then writes new triples for any Literals that
+	 * change and makes a note of the changes in the returned String. 
+	 * @param itemResource is the Resource of the openLCA Flow for which data are to be replaced
+	 * @param oldProperties is a Map of name (String) / value (RDFNode) pairs for the original
+	 * @param newProperties a Map of name (String) / value (RDFNode) pairs for the master Flow
+	 * @return a String containing the changes concatenated with semi-colon space.
+	 */
 	private static String replaceUserLiterals(Resource itemResource, Map<String, RDFNode> oldProperties,
 			Map<String, RDFNode> newProperties) {
 		String changes = "";

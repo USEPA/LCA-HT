@@ -159,9 +159,9 @@ public class SaveResultsHandler implements IHandler {
 
 			// prepare and write data
 			for (DataRow dataRow : dataRows) {
-				for (i = 0; i < dataRow.getColumnValues().size(); i++) {
+//				for (i = 0; i < dataRow.getColumnValues().size(); i++) {
 					csvPrinter.printRecord(dataRow.getColumnValues());
-				}
+//				}
 			}
 
 			csvPrinter.close();

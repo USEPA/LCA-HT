@@ -118,7 +118,7 @@ public class MatchContexts extends ViewPart {
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
 
-		userDataLabel = new Text(parent, SWT.NONE);
+		userDataLabel = new Text(parent, SWT.MULTI);
 		GridData gd_userDataLabel = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_userDataLabel.heightHint = 40;
 		gd_userDataLabel.widthHint = 800;
@@ -838,6 +838,7 @@ public class MatchContexts extends ViewPart {
 		}
 		labelString+=System.getProperty("line.separator") + rowCount + " rows";
 
+		 
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);

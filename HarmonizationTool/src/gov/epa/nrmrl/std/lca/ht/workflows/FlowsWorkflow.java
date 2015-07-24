@@ -55,6 +55,8 @@ public class FlowsWorkflow extends ViewPart {
 	public static StyledText textMatchFlowables;
 	public static StyledText textMatchFlowContexts;
 	public static StyledText textMatchFlowProperties;
+	public static StyledText textConcludeStatus;
+
 
 	private Label label_01;
 	private Label label_02;
@@ -271,8 +273,12 @@ public class FlowsWorkflow extends ViewPart {
 		btnConcludeFile.setLayoutData(gd_btnConcludeFile);
 		btnConcludeFile.setText("Cancel Harmonization");
 		btnConcludeFile.setEnabled(false);
-		new Label(composite, SWT.NONE);
+		textConcludeStatus = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
+		textConcludeStatus.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
+		textConcludeStatus.setEnabled(false);
+		textConcludeStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		btnConcludeFile.addSelectionListener(concludeFileListener);
+		gd_textMatchFlowables.widthHint = 120;
 	}
 
 	public static String getTextMetaFileInfo() {
@@ -307,14 +313,6 @@ public class FlowsWorkflow extends ViewPart {
 		textCommit.setText(msg);
 	}
 
-	public static String getTextMatchFlowables() {
-		return textMatchFlowables.getText();
-	}
-
-	public static void setTextMatchFlowables(String matchFlowables) {
-		textMatchFlowables.setText(matchFlowables);
-	}
-
 	public static String getTextFlowContexts() {
 		return textMatchFlowContexts.getText();
 	}
@@ -331,6 +329,21 @@ public class FlowsWorkflow extends ViewPart {
 		textMatchFlowProperties.setText(flowProperties);
 	}
 
+	public static String getTextMatchFlowables() {
+		return textMatchFlowables.getText();
+	}
+
+	public static void setTextMatchFlowables(String matchFlowables) {
+		textMatchFlowables.setText(matchFlowables);
+	}
+	
+	public static String getTextConcludeStatus() {
+		return textConcludeStatus.getText();
+	}
+
+	public static void setTextConcludeStatus(String concludeStatus) {
+		textConcludeStatus.setText(concludeStatus);
+	}
 	private static void initializeOtherViews() {
 		Util.findView(LoggerViewer.ID);
 		LoggerViewer.clear(); // INITIALIZES SO THAT LOGGER RECEIVES INPUT
