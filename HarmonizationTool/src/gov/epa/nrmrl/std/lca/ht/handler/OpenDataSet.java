@@ -40,7 +40,7 @@ public class OpenDataSet implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ChooseDataSetDialog dlg = new ChooseDataSetDialog(HandlerUtil.getActiveShell(event), true);
+		ChooseDataSetDialog dlg = new ChooseDataSetDialog(HandlerUtil.getActiveShell(event), false, "Please choose a data set to open:");
 		dlg.open();
 		if (dlg.getReturnCode() == ChooseDataSetDialog.CANCEL)
 			return null;

@@ -178,7 +178,7 @@ public class FileMD {
 	}
 	
 	public void createTDBResource() {
-		if (tdbResource == null)
+		if (tdbResource != null)
 			return;
 		this.tdbResource = ActiveTDB.tsCreateResource(rdfClass);
 		if (filename != null)

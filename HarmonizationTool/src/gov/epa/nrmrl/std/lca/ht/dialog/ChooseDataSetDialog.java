@@ -25,6 +25,10 @@ public class ChooseDataSetDialog extends Dialog {
 	
 	boolean filterMasters = false;
 	
+	static String defaultPrompt = "Please choose a data set to export:";
+	
+	String prompt;
+	
 	private static Set<String> masterNames = new HashSet<String>();
 	
 	static {
@@ -34,15 +38,16 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 	
 	public ChooseDataSetDialog(Shell parentShell) {
-		this(parentShell, false);
+		this(parentShell, false, defaultPrompt);
 	}
 
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets) {
+	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message) {
 		super(parentShell);
+		prompt = message;
 		filterMasters = filterMasterDataSets;
 	}
 	
@@ -71,7 +76,7 @@ public class ChooseDataSetDialog extends Dialog {
 		
 		dialogLabel = new Label(container, SWT.CHECK);
 
-		dialogLabel.setText("Please choose a data set to export:");
+		dialogLabel.setText(prompt);
 		dialogLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		
 		new Label(container, SWT.NONE);

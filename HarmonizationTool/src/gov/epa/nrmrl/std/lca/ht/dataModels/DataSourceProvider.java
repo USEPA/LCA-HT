@@ -86,6 +86,7 @@ public class DataSourceProvider {
 			setReferenceDataStatus(referenceDataStatus);
 		for (FileMD fileMD : newFileMDList) {
 			fileMD.createTDBResource();
+			addFileMD(fileMD);
 		}
 		newFileMDList.clear();
 		// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
@@ -122,8 +123,11 @@ public class DataSourceProvider {
 		fileMDList.add(fileMD);
 		// Model tdbModel = ActiveTDB.getModel();
 		// if (!tdbModel.contains(tdbResource, LCAHT.containsFile, fileMD.getTdbResource())) {
-		if (tdbResource != null)
+		if (tdbResource != null) {
+			if (fileMD.getTdbResource() == null)
+				fileMD.createTDBResource();
 			ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource(), null);
+		}
 		else
 			newFileMDList.add(fileMD);
 		// }
