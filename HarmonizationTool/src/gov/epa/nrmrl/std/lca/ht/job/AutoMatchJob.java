@@ -562,6 +562,11 @@ public class AutoMatchJob extends Job {
 		stopWatch01.stop();
 
 		System.out.println(stopWatch01);
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.buttonModePostCommit();
+			}
+		});
 		// System.out.println(stopWatch02);
 		// System.out.println(stopWatch03);
 		// System.out.println(stopWatch04);

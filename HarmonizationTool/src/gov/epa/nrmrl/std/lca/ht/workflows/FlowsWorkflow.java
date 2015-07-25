@@ -1,8 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
@@ -77,7 +79,28 @@ public class FlowsWorkflow extends ViewPart {
 	public static Button btnMatchFlowContexts;
 	public static Button btnMatchFlowProperties;
 	public static Button btnConcludeFile;
-
+	
+	private static Map<Button, Boolean> buttonState = new HashMap<Button, Boolean>();
+	//enable / restore all buttons are meant to be called while commands are running to prevent multiple invocations
+	public static void disableAllButtons() {
+		buttonState.put(btnLoadUserData, btnLoadUserData.isEnabled());
+		buttonState.put(btnCheckData, btnCheckData.isEnabled());
+		buttonState.put(btnCommit, btnCommit.isEnabled());
+		buttonState.put(btnMatchFlowables, btnMatchFlowables.isEnabled());
+		buttonState.put(btnMatchFlowContexts, btnMatchFlowContexts.isEnabled());
+		buttonState.put(btnMatchFlowProperties, btnMatchFlowProperties.isEnabled());
+		buttonState.put(btnConcludeFile, btnConcludeFile.isEnabled());
+		for (Map.Entry<Button, Boolean> pair : buttonState.entrySet()) {
+			pair.getKey().setEnabled(false);
+		}
+	}
+	public static void restoreAllButtons() {
+		for (Map.Entry<Button, Boolean> pair : buttonState.entrySet()) {
+			pair.getKey().setEnabled(pair.getValue());
+		}
+		buttonState.clear();
+	}
+	
 	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers = new LinkedHashSet<Integer>();
 	private static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
@@ -354,6 +377,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 	
 	public static void buttonModePostLoad() {
+		FlowsWorkflow.restoreAllButtons();
 		textCheckData.setText("");
 		textCommit.setText("");
 		textMatchFlowables.setText("");
@@ -362,7 +386,23 @@ public class FlowsWorkflow extends ViewPart {
 		CSVTableView.preCommit = true;
 	}
 	
+	//TODO - ensure that all these buttons should be set while auto match is running.  If not, set them individually.
+	public static void buttonModeWhileCommit() {
+		buttonModePostCommit();
+		/*
+		 *  Leaving this enabled for now - it gives the user the ability to "cancel" a job as it's reunning and work on something
+		 * else.  This may be worth revisiting later - the "canceled" job still runs in the background, and will re-enable buttons
+		 * when it's finished, regardless of what's currently happening
+		 */
+		/*
+		btnLoadUserData.setEnabled(false);
+		btnLoadUserData.setGrayed(true);
+		*/
+		btnConcludeFile.setEnabled(false);
+		btnConcludeFile.setGrayed(true);
+	}
 	public static void buttonModePostCommit() {
+		FlowsWorkflow.restoreAllButtons();
 		btnCommit.setEnabled(false);
 		btnCheckData.setEnabled(false);
 		btnMatchFlowables.setEnabled(true);
@@ -371,6 +411,12 @@ public class FlowsWorkflow extends ViewPart {
 		btnMatchFlowContexts.setGrayed(false);
 		btnMatchFlowProperties.setEnabled(true);
 		btnMatchFlowProperties.setGrayed(false);
+		/*
+		btnLoadUserData.setEnabled(true);
+		btnLoadUserData.setGrayed(false);
+		*/
+		btnConcludeFile.setEnabled(true);
+		btnConcludeFile.setGrayed(false);
 		CSVTableView.setPostCommit();
 	}
 
@@ -379,7 +425,6 @@ public class FlowsWorkflow extends ViewPart {
 
 		private void doit(SelectionEvent e) {
 
-			buttonModePostLoad();
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
 				handlerService.executeCommand("gov.epa.nrmrl.std.lca.ht.handler.ImportUserData", null);
@@ -565,17 +610,17 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener commitListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
+			FlowsWorkflow.disableAllButtons();
 			btnCommit.setEnabled(false);
 			Util.findView(CSVTableView.ID);
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
 				textCommit.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				textCommit.setText("Assign and check columns first)");
-				btnCheckData.setEnabled(true);
-				btnMatchFlowables.setEnabled(false);
+				FlowsWorkflow.restoreAllButtons();
 				return;
 			}
-			buttonModePostCommit();
+			buttonModeWhileCommit();
 			// CSVTableView.preCommit = false;
 			CSVTableView.initializeRowMenu();
 			String jobKey = "autoMatch_01";

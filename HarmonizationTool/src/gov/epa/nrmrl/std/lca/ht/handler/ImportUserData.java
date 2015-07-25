@@ -8,6 +8,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
@@ -125,9 +126,9 @@ public class ImportUserData implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
+			FlowsWorkflow.disableAllButtons();
 			RunData data = new RunData(this);
 			data.display = Display.getCurrent();
-			FlowsWorkflow.btnLoadUserData.setEnabled(false);
 
 			tableProvider = new TableProvider();
 
@@ -143,11 +144,18 @@ public class ImportUserData implements IHandler {
 
 			data.path = fileDialog.open();
 			if (data.path == null) {
-				FlowsWorkflow.btnLoadUserData.setEnabled(true);
-				runLogger.info("# Cancelling CSV file read");
+				runLogger.info("# Cancelling data file read");
+				FlowsWorkflow.restoreAllButtons();
 				return null;
 			}
 			data.file = new File(data.path);
+			if (!data.file.exists() || !data.file.isFile()) {
+				String errMsg = "Could not open the file \"" + data.path + "\".";
+				new GenericMessageBox(Display.getCurrent().getActiveShell(), "Error", errMsg);
+				runLogger.info("# Cancelling data file read");
+				FlowsWorkflow.restoreAllButtons();
+				return null;
+			}
 			data.fileMD = new FileMD(false);
 			data.fileMD.setFilename(data.file.getName());
 			data.fileMD.setPath(data.path);
@@ -173,10 +181,8 @@ public class ImportUserData implements IHandler {
 			data.dialog.create();
 			System.out.println("meta created");
 			if (data.dialog.open() == MetaDataDialog.CANCEL) {
-				System.out.println("cancel!");
-				FlowsWorkflow.btnLoadUserData.setEnabled(true);
-
 				data.fileMD.remove();
+				FlowsWorkflow.restoreAllButtons();
 				return null;
 			}
 			data.fileMD.createTDBResource();
@@ -806,6 +812,7 @@ public class ImportUserData implements IHandler {
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		displayTableView(data);
+		FlowsWorkflow.buttonModePostLoad();
 	}
 
 	public static void displayTableView(final RunData data) {
