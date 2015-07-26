@@ -26,6 +26,7 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -1936,8 +1937,9 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void colorFlowableRows() {
-		for (int i = 0; i < table.getItemCount() && uniqueFlowableRowNumbers.contains(i); ++i) {
-			colorOneFlowableRow(i);
+		for (int i = 0; i < table.getItemCount(); ++i) {
+			if (uniqueFlowableRowNumbers.contains(i))
+				colorOneFlowableRow(i);
 		}
 	}
 
@@ -1973,7 +1975,9 @@ public class CSVTableView extends ViewPart {
 				visibleRowNum++;
 			}
 		} else {
-			for (int i = 0; i < table.getItemCount() && uniqueFlowContextRowNumbers.contains(i); ++i) {
+			for (int i = 0; i < table.getItemCount(); ++i) {
+				if (!uniqueFlowContextRowNumbers.contains(i))
+					continue;
 				Color color;
 				if (matchedFlowContextRowNumbers.contains(i)) {
 					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
@@ -2031,7 +2035,9 @@ public class CSVTableView extends ViewPart {
 				visibleRowNum++;
 			}
 		} else {
-			for (int i = 0; i < table.getItemCount() && uniqueFlowPropertyRowNumbers.contains(i); ++i) {
+			for (int i = 0; i < table.getItemCount(); ++i) {
+				if (!uniqueFlowPropertyRowNumbers.contains(i))
+					continue;
 				Color color;
 				// Resource resource =
 				// TableKeeper.getTableProvider(tableProviderKey).getData().get(i).getFlowable()
@@ -2094,8 +2100,9 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 		} else {
-			for (int i = 0; i < table.getItemCount() && uniqueFlowRowNumbers.contains(i); ++i) {
-				colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
+			for (int i = 0; i < table.getItemCount(); ++i) {
+				if (uniqueFlowRowNumbers.contains(i))
+					colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
 			}
 		}
 		resizeFlowColumns();

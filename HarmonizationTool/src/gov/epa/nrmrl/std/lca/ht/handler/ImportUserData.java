@@ -126,7 +126,9 @@ public class ImportUserData implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
+			//Save button state, disable everything
 			FlowsWorkflow.disableAllButtons();
+
 			RunData data = new RunData(this);
 			data.display = Display.getCurrent();
 
@@ -185,6 +187,7 @@ public class ImportUserData implements IHandler {
 				FlowsWorkflow.restoreAllButtons();
 				return null;
 			}
+			FlowsWorkflow.clearButtonText();
 			data.fileMD.createTDBResource();
 			FlowsWorkflow.textLoadUserData.setText("... loading ...");
 			FlowsWorkflow.textLoadUserData.setToolTipText("... loading ...");
@@ -485,7 +488,7 @@ public class ImportUserData implements IHandler {
 			b.append("  ?flowCtx \n");
 			b.append("  ?flowUnit \n");
 			b.append("  ?mf \n");
-			b.append("  (count (?ahs) as ?adhoc) \n");
+			b.append("  ?adhoc \n");
 			b.append("  (count (?cp) as ?flowableMatch) \n");
 			b.append("  (count (?ctxMatch) as ?contextMatch) \n");
 			b.append("  (count (?unMatch) as ?unitMatch) \n");
@@ -507,7 +510,7 @@ public class ImportUserData implements IHandler {
 			b.append("  ?lcaflowable \n");
 			b.append("  ?flowCtx \n");
 			b.append("  ?flowUnit \n");
-			b.append("  ?ahs \n"); 
+			b.append("  ?adhoc \n"); 
 			b.append("  ?cp \n");
 			b.append("  ?mf \n");
 			b.append("  ?ctxMatch \n");
@@ -558,10 +561,14 @@ public class ImportUserData implements IHandler {
 		b.append(" \n");
 		if ( dataSourceName != null) {
 			b.append("  optional { \n");
-			//b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
-			b.append("    ?f eco:hasDataSource ?ds . \n");
-			b.append("    ?f lcaht:hasQCStatus ?ahs   . \n");
-			b.append("    FILTER( ?ahs = lcaht:QCStatusAdHocMaster) . \n");
+			b.append("    select ?f ?adhoc \n");
+			b.append("      where { \n");
+			//b.append("      ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			b.append("        ?f eco:hasDataSource ?ds . \n");
+			b.append("        ?f lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
+			b.append("        BIND (\"1\"^^xsd:integer as ?adhoc) . \n");
+			b.append("    } \n");
+			b.append("    LIMIT 1 \n ");
 			b.append("  } \n");
 			b.append("  optional { \n");
 			//b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
@@ -582,18 +589,19 @@ public class ImportUserData implements IHandler {
 			b.append("    optional { \n");
 			b.append("      ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
 			b.append("      optional { \n");
-			b.append("        ?flowUnit owl:sameAs ?unMatch \n");
+			b.append("        ?flowUnit owl:sameAs ?unMatch . \n");
 			b.append("      } \n");
 			b.append("    } \n");
 			b.append("    optional { \n");
-			b.append("      ?lcaflow owl:sameAs ?mf \n");
+			b.append("      ?mf fedlca:comparedSource ?lcaflow . \n");
+			b.append("      ?mf fedlca:comparedEquivalence fedlca:Equivalent \n");
 			b.append("    } \n");
 			b.append("  } \n");
 		}
 		b.append("} \n");
 		if (dataSourceName != null) {
 			b.append("} } \n");
-			b.append(" group by ?flowable_uuid ?flowable ?cas ?formula ?context_general ?context_specific ?reference_unit ?flow_property ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
+			b.append(" group by ?flowable_uuid ?flowable ?cas ?formula ?context_general ?context_specific ?reference_unit ?flow_property ?adhoc ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
 		}
 		b.append("order by ?flowable \n");
 
@@ -812,7 +820,6 @@ public class ImportUserData implements IHandler {
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		displayTableView(data);
-		FlowsWorkflow.buttonModePostLoad();
 	}
 
 	public static void displayTableView(final RunData data) {
@@ -833,7 +840,7 @@ public class ImportUserData implements IHandler {
 				System.out.println("About to update CSVTableView");
 				CSVTableView.update(data.path);
 
-				FlowsWorkflow.btnLoadUserData.setEnabled(true);
+				FlowsWorkflow.buttonModePostLoad();
 
 				String key = CSVTableView.getTableProviderKey();
 				if (key == null) {

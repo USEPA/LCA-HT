@@ -535,6 +535,12 @@ public class AutoMatchJob extends Job {
 //			new ComparisonProvider(key, flowMap.get(key),FedLCA.Equivalent);
 //		}
 		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
+		
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				CSVTableView.colorFlowContextRows();
+			}
+		});
 //
 //		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 //		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
@@ -576,7 +582,7 @@ public class AutoMatchJob extends Job {
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 		return Status.OK_STATUS;
 	}
-
+	
 	public Integer[] getHitCounts() {
 		return results;
 	}

@@ -302,9 +302,9 @@ public class TableProvider {
 					Flowable flowableObj = new Flowable((Resource)rdfNode);
 					uniqueFlowables.put(flowable, flowableObj);
 					dataRow.setFlowable(flowableObj);
-					int adHoc = soln.getLiteral("adhoc").getInt();
+					
 					int flowableMatches = soln.getLiteral("flowableMatch").getInt();
-					if (adHoc != 0) {
+					if (soln.contains("adHoc")) {
 						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
 					} else {
 						if (flowableMatches == 1) {

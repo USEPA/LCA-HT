@@ -376,13 +376,16 @@ public class FlowsWorkflow extends ViewPart {
 		btnCommit.setEnabled(enabled);
 	}
 	
-	public static void buttonModePostLoad() {
-		FlowsWorkflow.restoreAllButtons();
+	public static void clearButtonText() {
+		textLoadUserData.setText("");
 		textCheckData.setText("");
 		textCommit.setText("");
 		textMatchFlowables.setText("");
 		textMatchFlowContexts.setText("");
-		textMatchFlowProperties.setText("");
+		textMatchFlowProperties.setText("");	
+	}
+	public static void buttonModePostLoad() {
+		FlowsWorkflow.restoreAllButtons();
 		CSVTableView.preCommit = true;
 	}
 	
