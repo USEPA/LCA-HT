@@ -209,7 +209,7 @@ public class ImportRDFFileDirectlyToGraph {
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Import failed with Exception: " + e);
-			System.out.println("The failing string was: \n" + failedString);
+//			System.out.println("The failing string was: \n" + failedString);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
