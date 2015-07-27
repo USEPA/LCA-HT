@@ -74,6 +74,21 @@ public class ComparisonKeeper {
 	public static List<ComparisonProvider> getUncommittedcomparisons() {
 		return uncommittedComparisons;
 	}
+	
+	public static List<ComparisonProvider> getComparisons(Resource userObject) {
+		Resource comparisonResource = null;
+		List<ComparisonProvider> comparisons = new ArrayList<ComparisonProvider>();
+		Model tdbModel = ActiveTDB.getModel(null);
+		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, userObject);
+		while (resIterator.hasNext()) {
+			comparisonResource = resIterator.next();
+			ComparisonProvider comparisonProvider = new ComparisonProvider(comparisonResource);
+			comparisons.add(comparisonProvider);
+
+		}
+		return comparisons;
+
+	}
 
 	public static ComparisonProvider findComparison(Resource userObject, Resource masterObject) {
 		for (ComparisonProvider comparisonProvider : uncommittedComparisons) {

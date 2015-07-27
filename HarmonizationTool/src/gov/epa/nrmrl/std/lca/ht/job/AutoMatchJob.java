@@ -439,7 +439,7 @@ public class AutoMatchJob extends Job {
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
-		}
+		}	
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 //		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
@@ -535,12 +535,7 @@ public class AutoMatchJob extends Job {
 //			new ComparisonProvider(key, flowMap.get(key),FedLCA.Equivalent);
 //		}
 		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
-		
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				CSVTableView.colorFlowContextRows();
-			}
-		});
+	
 //
 //		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 //		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);

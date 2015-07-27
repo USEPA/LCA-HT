@@ -148,15 +148,15 @@ public class CSVTableView extends ViewPart {
 	// private static Font boldFont = new Font(Display.getCurrent(), new FontData("Lucida Grande", 11, SWT.BOLD));
 
 	// THESE 6 ARE MANAGED IN FlowsWorkflow, BUT BROUGHT OVER FOR CONVENIENCE
-	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
-	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers;
-	private static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers;
-	private static LinkedHashSet<Integer> uniqueFlowRowNumbers;
+	public static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
+	public static LinkedHashSet<Integer> uniqueFlowContextRowNumbers;
+	public static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers;
+	public static LinkedHashSet<Integer> uniqueFlowRowNumbers;
 
-	private static LinkedHashSet<Integer> matchedFlowableRowNumbers;
-	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers;
-	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers;
-	private static LinkedHashSet<Integer> matchedFlowRowNumbers;
+	public static LinkedHashSet<Integer> matchedFlowableRowNumbers;
+	public static LinkedHashSet<Integer> matchedFlowContextRowNumbers;
+	public static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers;
+	public static LinkedHashSet<Integer> matchedFlowRowNumbers;
 	
 	private static class LCAArrayContentProvider extends ArrayContentProvider {
 		public Object[] 	getElements(Object inputElement) {
@@ -536,6 +536,8 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void matchRowContents() {
+		if (colNumSelected < 0)
+			return;
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
 		// TODO - figure out why I (Tom) wanted the file date here...
@@ -2079,15 +2081,19 @@ public class CSVTableView extends ViewPart {
 		colorCell(rowToColor, 0, color);
 
 		if (updateHeader) {
-			TableColumn tc = table.getColumn(0);
-			tc.setText(matchedFlowRowNumbers.size() + "/" + uniqueFlowRowNumbers.size());
-			double digits = Math.floor(Math.log(matchedFlowRowNumbers.size()) * Math.log(10));
-			digits += Math.floor(Math.log(uniqueFlowRowNumbers.size()) * Math.log(10));
-			digits += 1;
-			int digitWidth = (int) (digits * 5);
-			// table.getColumn(0).pack();
-			table.getColumn(0).setWidth(digitWidth);
+			updateFlowHeaderCount(matchedFlowRowNumbers.size(), uniqueFlowRowNumbers.size());
 		}
+	}
+	
+	public static void updateFlowHeaderCount(int  matched, int total) {
+		TableColumn tc = table.getColumn(0);
+		tc.setText(matched + "/" + total);
+		double digits = Math.floor(Math.log(matched) * Math.log(10));
+		digits += Math.floor(Math.log(total) * Math.log(10));
+		digits += 1;
+		int digitWidth = (int) (digits * 5);
+		// table.getColumn(0).pack();
+		table.getColumn(0).setWidth(digitWidth);	
 	}
 
 	public static void colorFlowRows() {
@@ -2118,6 +2124,19 @@ public class CSVTableView extends ViewPart {
 		// table.getColumn(0).pack();
 		table.getColumn(0).setWidth(digitWidth);
 
+	}
+	
+	public static void clearItemCounts() {
+		uniqueFlowableRowNumbers.clear();
+		uniqueFlowableRowNumbers.clear();
+		uniqueFlowContextRowNumbers.clear();
+		uniqueFlowPropertyRowNumbers.clear();
+		uniqueFlowRowNumbers.clear();
+
+		matchedFlowableRowNumbers.clear();
+		matchedFlowContextRowNumbers.clear();
+		matchedFlowPropertyRowNumbers.clear();
+		matchedFlowRowNumbers.clear();
 	}
 
 	// public static Set<Integer> getUniqueFlowableRowNumbers() {

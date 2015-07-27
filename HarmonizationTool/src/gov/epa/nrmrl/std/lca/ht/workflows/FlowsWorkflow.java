@@ -302,6 +302,17 @@ public class FlowsWorkflow extends ViewPart {
 		textConcludeStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		btnConcludeFile.addSelectionListener(concludeFileListener);
 		gd_textMatchFlowables.widthHint = 120;
+		
+		// this needs to be done here to be available for reloaded data sets that have never been auto matched
+		CSVTableView.setUniqueFlowableRowNumbers(uniqueFlowableRowNumbers);
+		CSVTableView.setUniqueFlowContextRowNumbers(uniqueFlowContextRowNumbers);
+		CSVTableView.setUniqueFlowPropertyRowNumbers(uniqueFlowPropertyRowNumbers);
+		CSVTableView.setUniqueFlowRowNumbers(uniqueFlowRowNumbers);
+
+		CSVTableView.setMatchedFlowableRowNumbers(matchedFlowableRowNumbers);
+		CSVTableView.setMatchedFlowContextRowNumbers(matchedFlowContextRowNumbers);
+		CSVTableView.setMatchedFlowPropertyRowNumbers(matchedFlowPropertyRowNumbers);
+		CSVTableView.setMatchedFlowRowNumbers(matchedFlowRowNumbers);
 	}
 
 	public static String getTextMetaFileInfo() {
@@ -634,17 +645,6 @@ public class FlowsWorkflow extends ViewPart {
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
 			btnConcludeFile.setText("Export Harmonized Data");
-			// THIS IS AS GOOD A PLACE AS ANY TO SEND THESE 6 REFERENCES:
-			CSVTableView.setUniqueFlowableRowNumbers(uniqueFlowableRowNumbers);
-			CSVTableView.setUniqueFlowContextRowNumbers(uniqueFlowContextRowNumbers);
-			CSVTableView.setUniqueFlowPropertyRowNumbers(uniqueFlowPropertyRowNumbers);
-			CSVTableView.setUniqueFlowRowNumbers(uniqueFlowRowNumbers);
-
-			CSVTableView.setMatchedFlowableRowNumbers(matchedFlowableRowNumbers);
-			CSVTableView.setMatchedFlowContextRowNumbers(matchedFlowContextRowNumbers);
-			CSVTableView.setMatchedFlowPropertyRowNumbers(matchedFlowPropertyRowNumbers);
-			CSVTableView.setMatchedFlowRowNumbers(matchedFlowRowNumbers);
-
 		}
 
 		@Override

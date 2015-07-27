@@ -45,6 +45,7 @@ public class OpenDataSet implements IHandler {
 		if (dlg.getReturnCode() == ChooseDataSetDialog.CANCEL)
 			return null;
 		FlowsWorkflow.clearButtonText();
+		FlowsWorkflow.buttonModePostLoad();
 		String dataSet = dlg.getSelection();
 		
 		//dataSet = chooseDataSetDialog.getit()

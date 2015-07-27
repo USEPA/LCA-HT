@@ -1,6 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -271,10 +272,12 @@ public class TableProvider {
 		Map<String, Flowable> uniqueFlowables = new HashMap<String, Flowable>();
 		Map<String, FlowContext> uniqueFlowContexts = new HashMap<String, FlowContext>();
 		Map<String, FlowUnit> uniqueFlowUnits = new HashMap<String, FlowUnit>();
+		
+		CSVTableView.clearItemCounts();
+		
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
-			// dataRow.setRowNumber(count);
 			addDataRow(dataRow);
 			Iterator<String> iterator = getHeaderRow().getIterator();
 			while (iterator.hasNext()) {
@@ -300,7 +303,10 @@ public class TableProvider {
 				Color color = null;
 				if (flowable != null &&!uniqueFlowables.containsKey(flowable)) {
 					Flowable flowableObj = new Flowable((Resource)rdfNode);
+					flowableObj.setComparisons(ComparisonKeeper.getComparisons(flowableObj.getTdbResource()));
+					flowableObj.setFirstRow(dataRow.getRowNumber());
 					uniqueFlowables.put(flowable, flowableObj);
+					CSVTableView.uniqueFlowableRowNumbers.add(dataRow.getRowNumber());
 					dataRow.setFlowable(flowableObj);
 					
 					int flowableMatches = soln.getLiteral("flowableMatch").getInt();
@@ -310,6 +316,7 @@ public class TableProvider {
 						if (flowableMatches == 1) {
 							color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 							++matchedFlowables;
+							CSVTableView.matchedFlowableRowNumbers.add(dataRow.getRowNumber());
 						}
 						else if (flowableMatches > 1)
 							color = CSVTableView.orange;
@@ -326,12 +333,15 @@ public class TableProvider {
 					flowContext = rdfNode.toString();
 				if (flowContext != null && !uniqueFlowContexts.containsKey(flowContext)) {
 					FlowContext fcObj = new FlowContext((Resource)rdfNode, true);
+					fcObj.setFirstRow(dataRow.getRowNumber());
 					uniqueFlowContexts.put(flowContext, fcObj);
+					CSVTableView.uniqueFlowContextRowNumbers.add(dataRow.getRowNumber());
 					dataRow.setFlowContext(fcObj);
 					int contextMatches = soln.getLiteral("contextMatch").getInt();
 					if (contextMatches > 0) {
 						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 						++matchedFlowContexts;
+						CSVTableView.matchedFlowContextRowNumbers.add(dataRow.getRowNumber());
 					}
 					else
 						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
@@ -344,12 +354,15 @@ public class TableProvider {
 					flowUnit = rdfNode.toString();
 				if (flowUnit != null && !uniqueFlowUnits.containsKey(flowUnit)) {
 					FlowUnit fuObj = new FlowUnit((Resource)rdfNode, false);
+					fuObj.setFirstRow(dataRow.getRowNumber());
 					uniqueFlowUnits.put(flowUnit, fuObj);
+					CSVTableView.uniqueFlowPropertyRowNumbers.add(dataRow.getRowNumber());
 					dataRow.setFlowUnit(fuObj);
 					int unitMatches = soln.getLiteral("unitMatch").getInt();
 					if (unitMatches > 0) {
 						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 						++matchedFlowUnits;
+						CSVTableView.matchedFlowPropertyRowNumbers.add(dataRow.getRowNumber());
 					}
 					else
 						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
@@ -357,15 +370,16 @@ public class TableProvider {
 				else if (flowUnit != null)
 					dataRow.setFlowUnit(uniqueFlowUnits.get(flowUnit));
 				rdfNode = soln.get("mf");
-				if (rdfNode != null)
-					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-				else
-					dataRow.setFlowColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				CSVTableView.uniqueFlowRowNumbers.add(dataRow.getRowNumber());
+				dataRow.setFlowMatched(rdfNode != null);
+				if (dataRow.getFlowMatched())
+					CSVTableView.matchedFlowRowNumbers.add(dataRow.getRowNumber());
 			}
 
 		}
 		
 		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
+		
 		if (existingLcaData) {
 			FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
 			FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
@@ -384,6 +398,8 @@ public class TableProvider {
 		Set<Integer> flowContextCSVColumnNumbers = new HashSet<Integer>();
 		Set<Integer> flowPropertyCSVColumnNumbers = new HashSet<Integer>();
 		int flowCSVColumnNumberForUUID = -1;
+		int totalFlows = 0;
+		int matchedFlows = 0;
 
 		// NOTE: assignedCSVColumns[0] SHOULD BE NULL (NO DATA IN THAT COLUMN)
 		for (int i = 1; i < lcaDataProperties.length; i++) {
@@ -431,6 +447,9 @@ public class TableProvider {
 					tableItem.setBackground(column, color);
 			}
 			
+			++totalFlows;
+			if (row.getFlowMatched())
+				++matchedFlows;
 			color = row.getFlowColor();
 			if (color != null) {
 				for (int j : flowColumnNumbers) {
@@ -446,6 +465,7 @@ public class TableProvider {
 				}
 			}
 		}
+		CSVTableView.updateFlowHeaderCount(matchedFlows, totalFlows);
 	}
 	
 	public void setContainsUntranslatedOpenLCAData(boolean b) {

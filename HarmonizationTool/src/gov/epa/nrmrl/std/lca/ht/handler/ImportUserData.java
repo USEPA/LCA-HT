@@ -840,8 +840,6 @@ public class ImportUserData implements IHandler {
 				System.out.println("About to update CSVTableView");
 				CSVTableView.update(data.path);
 
-				FlowsWorkflow.buttonModePostLoad();
-
 				String key = CSVTableView.getTableProviderKey();
 				if (key == null) {
 					System.out.println("The CSVTableView does not have a table!");

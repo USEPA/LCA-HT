@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -34,7 +36,7 @@ public class DataRow {
 	private Color flowableColor = null;
 	private Color contextColor = null;
 	private Color propertyColor = null;
-	private Color flowColor = null;
+	private boolean flowMatched = false;
 
 	public DataRow() {
 	}
@@ -67,13 +69,19 @@ public class DataRow {
 	public Color getFlowContextColor() {
 		return contextColor;
 	}
-
-	public void setFlowColor(Color color) {
-		flowColor = color;
+	
+	public void setFlowMatched(boolean matched) {
+		flowMatched = matched;
+	}
+	
+	public boolean getFlowMatched() {
+		return flowMatched;
 	}
 	
 	public Color getFlowColor() {
-		return flowColor;
+		if (flowMatched)
+			return SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		return SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 	}
 
 	public Resource getMatchingMasterContext() {
