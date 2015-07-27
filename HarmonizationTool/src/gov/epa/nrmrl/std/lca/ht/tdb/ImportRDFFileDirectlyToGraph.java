@@ -47,18 +47,24 @@ public class ImportRDFFileDirectlyToGraph {
 		}
 	}
 
-	public static Object loadToDefaultGraph(String filePath, String graphName) {
-
+	public static boolean loadToDefaultGraph(String filePath, String graphName) {
+		boolean directLoad = true;
 		if (ActiveTDB.getModel(graphName) == null) {
-			return null;
+			return false;
 		}
 
 		File file = null;
 		InputStream input = null;
 
 		if (filePath.startsWith("classpath:")) {
+			directLoad = false;
 			String targetPath = filePath.substring("classpath:".length());
-			input = ImportRDFFileDirectlyToGraph.class.getResourceAsStream(targetPath);
+
+			try {
+				input = ImportRDFFileDirectlyToGraph.class.getResourceAsStream(targetPath);
+			} catch (Exception e) {
+				return false;
+			}
 		} else
 			file = new File(filePath);
 
@@ -66,13 +72,17 @@ public class ImportRDFFileDirectlyToGraph {
 		if (file != null)
 			loadDataFromRDFFile(file, graphName);
 		else
-			loadDataFromRDFFile(filePath, null, input, graphName);
+			try {
+				loadDataFromRDFFile(filePath, null, input, graphName);
+			} catch (Exception e) {
+				return false;
+			}
 		long time1 = System.currentTimeMillis();
 
 		float interval1 = ((time1 - time0) / 1000F);
 		runLogger.info("  # Seconds to read file:  " + interval1);
 
-		return null;
+		return directLoad;
 	}
 
 	private static void loadDataFromRDFFile(File file, String graphName) {
@@ -209,7 +219,7 @@ public class ImportRDFFileDirectlyToGraph {
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
 			System.out.println("Import failed with Exception: " + e);
-//			System.out.println("The failing string was: \n" + failedString);
+			// System.out.println("The failing string was: \n" + failedString);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
