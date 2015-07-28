@@ -2,10 +2,12 @@ package gov.epa.nrmrl.std.lca.ht.dialog;
 
 import java.util.List;
 
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Person;
+import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -72,7 +74,16 @@ public class MetaDataDialog extends TitleAreaDialog {
 			return;
 		}
 		this.callingFileMD = null;
-		this.curDataSourceProvider = DataSourceKeeper.get(0);
+		
+		String key = CSVTableView.getTableProviderKey();
+		if (key != null) {
+			this.curDataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
+		}
+		else {
+			List<String> dataSources = DataSourceKeeper.getDataSourceNamesInTDB();
+			this.curDataSourceProvider = DataSourceKeeper.getByName(dataSources.get(dataSources.size() - 1));
+		}
+
 		runLogger.info("SET META existing DataSource");
 	}
 
