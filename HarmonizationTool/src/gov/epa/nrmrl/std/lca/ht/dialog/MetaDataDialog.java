@@ -552,19 +552,19 @@ public class MetaDataDialog extends TitleAreaDialog {
 			}
 
 			if (comboSelectorDataSource.getText().equals(newFileName)) {
-				if (comboSelectorDataSource.getText().equals(newFileName)) {
-					// SAME NAME, DO NOTHING
-					return;
-				}
-
-				if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
-					new GenericMessageBox(getParentShell(), "Duplicate Name",
-							"Data Set names must be onePerParentGroup.  Please choose a new name.");
-					return;
-				}
-				curDataSourceProvider.setDataSourceName(newFileName);
-				comboSelectorDataSource.setItem(comboSelectorDataSource.getSelectionIndex(), newFileName);
+				// SAME NAME, DO NOTHING
+				return;
 			}
+
+			if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
+				new GenericMessageBox(getParentShell(), "Duplicate Name",
+						"Data Set names must be onePerParentGroup.  Please choose a new name.");
+				return;
+			}
+			curDataSourceProvider.setDataSourceName(newFileName);
+			int index = comboSelectorDataSource.getSelectionIndex();
+			comboSelectorDataSource.setItem(index, newFileName);
+			comboSelectorDataSource.select(index);
 		}
 	}
 
