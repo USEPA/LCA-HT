@@ -424,7 +424,7 @@ public class DataSourceKeeper {
 		List<Resource> dataSourceResourcesToAdd = new ArrayList<Resource>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
-		//TODO - Choose better ways of checking TDB for content
+		// TODO - Choose better ways of checking TDB for content
 		boolean dataPresent = false;
 		while (iterator.hasNext()) {
 			dataPresent = true;
@@ -435,21 +435,27 @@ public class DataSourceKeeper {
 			if (dataSourceIndex < 0) {
 				System.out.println("... new one");
 				dataSourceResourcesToAdd.add(dataSourceRDFResource);
-//				new DataSourceProvider(dataSourceRDFResource);
+				// new DataSourceProvider(dataSourceRDFResource);
 			}
 		}
 		ActiveTDB.tdbDataset.end();
-		for (Resource resource:dataSourceResourcesToAdd){
+		for (Resource resource : dataSourceResourcesToAdd) {
 			new DataSourceProvider(resource);
 		}
-		
-	
+
 		if (!dataPresent) {
+//			boolean firstTry = true;
 			System.out.println("No data present, loading master flows and flowables");
-			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_lcaht.zip", null);
-			System.out.println("Load finished");
-			syncFromTDB();
-			ActiveTDB.getInstance().creationMessage.close();
+
+			boolean direct = ImportRDFFileDirectlyToGraph.loadToDefaultGraph(
+					"classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip", null);
+			// ImportRDFFileDirectlyToGraph.loadToDefaultGraph("C:\\Users\\Tom\\lca\\master_files\\possible_complete_new_master_flows_lcaht.n3",
+			// null);
+			if (direct) {
+				System.out.println("Load finished");
+				syncFromTDB();
+				ActiveTDB.getInstance().creationMessage.close();
+			}
 		}
 	}
 
