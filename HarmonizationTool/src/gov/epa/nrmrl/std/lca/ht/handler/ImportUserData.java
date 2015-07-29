@@ -561,12 +561,11 @@ public class ImportUserData implements IHandler {
 		b.append(" \n");
 		if ( dataSourceName != null) {
 			b.append("  optional { \n");
-			b.append("    select ?f ?adhoc \n");
+			b.append("    select ?adhoc \n");
 			b.append("      where { \n");
 			//b.append("      ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
 			b.append("        ?f eco:hasDataSource ?ds . \n");
-			b.append("        ?f lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
-			b.append("        BIND (\"1\"^^xsd:integer as ?adhoc) . \n");
+			b.append("        ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
 			b.append("    } \n");
 			b.append("    LIMIT 1 \n ");
 			b.append("  } \n");
