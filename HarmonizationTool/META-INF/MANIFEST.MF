@@ -16,6 +16,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  swt-grouplayout.jar,
  swing2swt.jar
-Service-Component: log4j.properties.xml
+
 
 

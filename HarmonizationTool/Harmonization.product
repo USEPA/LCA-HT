@@ -18,7 +18,7 @@
    <launcher name="HarmonizeLCA">
       <solaris/>
       <win useIco="true">
-         <ico path="/HarmonizationTool/config_files/new_icons.ico"/>
+         <ico path="/HarmonizationTool/icons/win_icons.ico"/>
          <bmp/>
       </win>
    </launcher>
