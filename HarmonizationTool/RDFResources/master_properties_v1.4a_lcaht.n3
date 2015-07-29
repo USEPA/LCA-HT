@@ -1653,7 +1653,7 @@ fedlca:unit_l  a                     owl:NamedIndividual , fedlca:FlowUnit ;
 
 fedlca:unit_m3  a                    owl:NamedIndividual , fedlca:FlowUnit ;
         rdfs:label                   "m3"^^xsd:string ;
-        fedlca:displaySortIndex      46 ;
+        fedlca:displaySortIndex      39 ;
         fedlca:hasOpenLCAUUID        "1c3a9695-398d-4b1f-b07e-a8715b610f70"^^xsd:string ;
         fedlca:unitConversionFactor  "1.0"^^xsd:double ;
         eco:hasDataSource            fedlca:master_properties_v1.4a ;
