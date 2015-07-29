@@ -7,15 +7,18 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-XX:MaxPermSize=256m -Xms40m -Xmx2048m</vmArgs>
+      <vmArgs>-XX:MaxPermSize=256m -Xms40m -Xmx1024m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="icons/alt_window_16.gif" i32="icons/alt_window_32.gif"/>
 
+   <splash
+      location="HarmonizationTool" />
    <launcher name="HarmonizeLCA">
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="/HarmonizationTool/config_files/new_icons.ico"/>
          <bmp/>
       </win>
    </launcher>
