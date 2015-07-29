@@ -4,6 +4,8 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -47,7 +49,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -168,233 +172,233 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		stopAtTheseClasses.add(FedLCA.FlowContext);
 		stopAtTheseClasses.add(FedLCA.FlowUnit);
 
-		if (saveTo.endsWith(".zip")) {
-			/*
-			 * FAILED ATTEMPT TO WRITE INDIVIDUAL .json FILES TO SPECIFIC DIRECTORIES /* The order of the items below is
-			 * critical since detection of changes in some objects must be propagated to objects that contain them.
-			 * During preparation of each .json file, Comparisons will be consulted to see what changes should be made
-			 */
-			Map<String, Set<Resource>> resourceMap = new LinkedHashMap<String, Set<Resource>>();
-			resourceMap.put("actors", new HashSet<Resource>());
-			resourceMap.put("categories", new HashSet<Resource>());
-			resourceMap.put("flow_properties", new HashSet<Resource>());
-			resourceMap.put("locations", new HashSet<Resource>());
-			resourceMap.put("sources", new HashSet<Resource>());
-			resourceMap.put("unit_groups", new HashSet<Resource>());
-
-			resourceMap.put("flows", new HashSet<Resource>());
-
-			resourceMap.put("processes", new HashSet<Resource>());
-			resourceMap.put("lcia_categories", new HashSet<Resource>());
-			resourceMap.put("lcia_methods", new HashSet<Resource>());
-
-			// resourceMap.put("unmatched_resources", new HashSet<Resource>());
-
-			// First, sort members into batches
-			int memberCount = datasetMembers.size();
-			for (Resource itemResource : datasetMembers) {
-				if (itemResource.hasProperty(RDF.type, OpenLCA.Actor)) {
-					resourceMap.get("actors").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Category)) {
-					resourceMap.get("categories").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.FlowProperty)) {
-					resourceMap.get("flow_properties").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Flow)) {
-					resourceMap.get("flows").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactCategory)) {
-					resourceMap.get("lcia_categories").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactMethod)) {
-					resourceMap.get("lcia_methods").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
-					resourceMap.get("locations").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
-					resourceMap.get("processes").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
-					resourceMap.get("sources").add(itemResource);
-				} else if (itemResource.hasProperty(RDF.type, OpenLCA.UnitGroup)) {
-					resourceMap.get("unit_groups").add(itemResource);
-				} else {
-					memberCount--;
-					// resourceMap.get("unmatched_resources").add(itemResource);
-				}
-			}
-
-			Set<RDFNode> subClassesNotToPackageSeparately = new HashSet<RDFNode>();
-			subClassesNotToPackageSeparately.add(OpenLCA.Exchange);
-			subClassesNotToPackageSeparately.add(OpenLCA.FlowPropertyFactor);
-			subClassesNotToPackageSeparately.add(OpenLCA.ProcessDocumentation);
-			subClassesNotToPackageSeparately.add(OpenLCA.Uncertainty);
-			subClassesNotToPackageSeparately.add(ECO.Flowable);
-			subClassesNotToPackageSeparately.add(ECO.DataSource);
-			subClassesNotToPackageSeparately.add(ECO.Flowable);
-			subClassesNotToPackageSeparately.add(FedLCA.Flow);
-			subClassesNotToPackageSeparately.add(FedLCA.FlowContext);
-			subClassesNotToPackageSeparately.add(FedLCA.FlowUnit);
-			subClassesNotToPackageSeparately.add(FedLCA.Person);
-			subClassesNotToPackageSeparately.add(LCAHT.DataFile);
-
-			try {
-				ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(saveTo));
-				int total = 0;
-				Map<String, String> oldNewUUIDMap = new HashMap<String, String>();
-				for (String folderKey : resourceMap.keySet()) {
-					// List<String> uuidsToReplace = new LinkedList<String>();
-					System.out.println("Working on '" + folderKey + "' files");
-					Set<Resource> hashSet = resourceMap.get(folderKey);
-					int lastPercent = -1;
-					for (Resource itemResource : hashSet) {
-						total++;
-						int percent = 100 * total / memberCount;
-
-						if (percent > lastPercent + 1) {
-							System.out.println(percent + " % complete");
-							lastPercent = percent;
-						}
-
-						/*
-						 * Confirm that this item should be processed (i.e. URI is a UUID)
-						 */
-						String itemUUID = ActiveTDB.getUUIDFromRDFNode(itemResource);
-						if (itemUUID == null) {
-							for (Statement statement : itemResource.listProperties(RDF.type).toList()) {
-								if (!subClassesNotToPackageSeparately.contains(statement.getObject())) {
-									System.out.println("Found in '" + folderKey + "' a thing with class: "
-											+ statement.getObject());
-								}
-							}
-							continue;
-						}
-
-						Set<RDFNode> singleSet = new HashSet<RDFNode>();
-						singleSet.add(itemResource);
-
-						// List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
-						// stopAtTheseClasses, null);
-						List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIsWithStops(singleSet,
-								stopAtTheseClasses, null);
-						// List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIs(singleSet, null);
-
-						ActiveTDB.clearExportGraphContents();
-						ActiveTDB.copyStatementsToGraph(statements, ActiveTDB.exportGraphName);
-
-						/*
-						 * Here begins the test to manage exactly what changes are made to what types of objects Some
-						 * require nothing 1) flows require changing info to the harmonized flow, but creating
-						 * "description" and "lastChange" 2) processes require changing the "flow" info and info about
-						 * Exchanges
-						 */
-						if (folderKey.equals("flows")) {
-							// Only ELEMENTARY_FLOW Flows will have changes (at this point)
-							if (ActiveTDB.getModel(ActiveTDB.exportGraphName).contains(itemResource, OpenLCA.flowType,
-									OpenLCA.ELEMENTARY_FLOW)) {
-
-								List<Resource> matchingMasters = getOLCAMatchingMasterResources(itemUUID);
-								if (matchingMasters.size() > 1) {
-									System.out.println("Got multiple matches.  Count is :" + matchingMasters.size());
-								} else if (matchingMasters.size() == 1) {
-									Map<String, RDFNode> itemProperties = getFlowFeatureLiterals(itemResource);
-									Map<String, RDFNode> masterProperties = getFlowFeatureLiterals(matchingMasters
-											.get(0));
-									// Update description and lastChange if needed
-									String changes = replaceUserLiterals(itemResource, itemProperties, masterProperties);
-									if (!changes.equals("")) {
-										RDFNode oldDescription = itemProperties.get("description");
-										if (oldDescription == null || oldDescription.asLiteral().getString().equals("")) {
-											updateDescription(itemResource, changes);
-										} else {
-											String newDescription = itemProperties.get("description").asLiteral()
-													.getString()
-													+ " -> " + changes;
-											updateDescription(itemResource, newDescription);
-										}
-									}
-
-									// Now check UUIDs of some things
-									RDFNode newUUIDNode = masterProperties.get("uuid");
-									String newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
-									if (newUUID == null) {
-										newUUID = Util.getRandomUUID();
-										// TODO: HANDLE THIS SITUATION BETTER
-									}
-									if (!newUUID.equals(itemUUID)) {
-										oldNewUUIDMap.put(itemUUID, newUUID);
-									}
-
-									// Handle FlowCategory (context)
-									RDFNode itemCategory = itemProperties.get("category");
-									String itemCategoryUUID = ActiveTDB.getUUIDFromRDFNode(itemCategory);
-									if (!oldNewUUIDMap.containsKey(itemCategoryUUID)) {
-										RDFNode masterCategory = masterProperties.get("category");
-										Statement findUUIDStatement = masterCategory.asResource().getProperty(
-												FedLCA.hasOpenLCAUUID);
-										String masterContextUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement
-												.getObject());
-										if (!itemCategoryUUID.equals(masterContextUUID)) {
-											removeCategories(itemCategory);
-											oldNewUUIDMap.put(itemCategoryUUID, masterContextUUID);
-										}
-									}
-									// Handle FlowProperty and FlowUnit
-									RDFNode itemProperty = itemProperties.get("flow_properties");
-									Statement firstFlowPropertyStatement = itemProperty.asResource().getProperty(
-											OpenLCA.flowProperty);
-									String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
-											.getObject().asResource());
-									if (!oldNewUUIDMap.containsKey(itemPropertyUUID)) {
-										RDFNode masterProperty = masterProperties.get("flow_properties");
-										Statement findUUIDStatement = masterProperty.asResource().getProperty(
-												FedLCA.hasOpenLCAUUID);
-										String masterPropertyUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement
-												.getObject());
-										if (!itemPropertyUUID.equals(masterPropertyUUID)) {
-											removeFlowProperty(itemProperty);
-											oldNewUUIDMap.put(itemPropertyUUID, masterPropertyUUID);
-										}
-									}
-								}
-							}
-						}
-
-						// Update the lastChange anyway
-						updateLastChange(itemResource);
-						/*
-						 * Now copy contents of the graph to a string in .json format
-						 */
-						StringWriter stringOut = new StringWriter();
-						ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-						Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-						tdbModel.write(stringOut, "JSON-LD");
-
-						/*
-						 * Now some post-processing string manipulation to make openLCA happy
-						 */
-						ActiveTDB.tdbDataset.end();
-						String fileContents = stringOut.toString();
-						for (String from : oldNewUUIDMap.keySet()) {
-							String newString = fileContents.replaceAll(from, oldNewUUIDMap.get(from));
-							fileContents = newString;
-						}
-						String cleanedFileContents1 = fileContents.replaceAll("\"olca:", "\"");
-						String cleanedFileContents2 = cleanedFileContents1.replaceAll(
-								" \"@id\" : \"urn:x-arq:DefaultGraphNode\",", "");
-
-						/*
-						 * Now append to the .zip file with the individual .json file
-						 */
-						String fileName = itemUUID + ".json";
-						if (oldNewUUIDMap.containsKey(itemUUID)) {
-							fileName = oldNewUUIDMap.get(itemUUID) + ".json";
-						}
-
-						writeResource(folderKey, fileName, cleanedFileContents2, zipFile);
-					}
-				}
-				zipFile.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
+//		if (saveTo.endsWith(".zip")) {
+//			/*
+//			 * FAILED ATTEMPT TO WRITE INDIVIDUAL .json FILES TO SPECIFIC DIRECTORIES /* The order of the items below is
+//			 * critical since detection of changes in some objects must be propagated to objects that contain them.
+//			 * During preparation of each .json file, Comparisons will be consulted to see what changes should be made
+//			 */
+//			Map<String, Set<Resource>> resourceMap = new LinkedHashMap<String, Set<Resource>>();
+//			resourceMap.put("actors", new HashSet<Resource>());
+//			resourceMap.put("categories", new HashSet<Resource>());
+//			resourceMap.put("flow_properties", new HashSet<Resource>());
+//			resourceMap.put("locations", new HashSet<Resource>());
+//			resourceMap.put("sources", new HashSet<Resource>());
+//			resourceMap.put("unit_groups", new HashSet<Resource>());
+//
+//			resourceMap.put("flows", new HashSet<Resource>());
+//
+//			resourceMap.put("processes", new HashSet<Resource>());
+//			resourceMap.put("lcia_categories", new HashSet<Resource>());
+//			resourceMap.put("lcia_methods", new HashSet<Resource>());
+//
+//			// resourceMap.put("unmatched_resources", new HashSet<Resource>());
+//
+//			// First, sort members into batches
+//			int memberCount = datasetMembers.size();
+//			for (Resource itemResource : datasetMembers) {
+//				if (itemResource.hasProperty(RDF.type, OpenLCA.Actor)) {
+//					resourceMap.get("actors").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Category)) {
+//					resourceMap.get("categories").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.FlowProperty)) {
+//					resourceMap.get("flow_properties").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Flow)) {
+//					resourceMap.get("flows").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactCategory)) {
+//					resourceMap.get("lcia_categories").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.ImpactMethod)) {
+//					resourceMap.get("lcia_methods").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
+//					resourceMap.get("locations").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
+//					resourceMap.get("processes").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
+//					resourceMap.get("sources").add(itemResource);
+//				} else if (itemResource.hasProperty(RDF.type, OpenLCA.UnitGroup)) {
+//					resourceMap.get("unit_groups").add(itemResource);
+//				} else {
+//					memberCount--;
+//					// resourceMap.get("unmatched_resources").add(itemResource);
+//				}
+//			}
+//
+//			Set<RDFNode> subClassesNotToPackageSeparately = new HashSet<RDFNode>();
+//			subClassesNotToPackageSeparately.add(OpenLCA.Exchange);
+//			subClassesNotToPackageSeparately.add(OpenLCA.FlowPropertyFactor);
+//			subClassesNotToPackageSeparately.add(OpenLCA.ProcessDocumentation);
+//			subClassesNotToPackageSeparately.add(OpenLCA.Uncertainty);
+//			subClassesNotToPackageSeparately.add(ECO.Flowable);
+//			subClassesNotToPackageSeparately.add(ECO.DataSource);
+//			subClassesNotToPackageSeparately.add(ECO.Flowable);
+//			subClassesNotToPackageSeparately.add(FedLCA.Flow);
+//			subClassesNotToPackageSeparately.add(FedLCA.FlowContext);
+//			subClassesNotToPackageSeparately.add(FedLCA.FlowUnit);
+//			subClassesNotToPackageSeparately.add(FedLCA.Person);
+//			subClassesNotToPackageSeparately.add(LCAHT.DataFile);
+//
+//			try {
+//				ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(saveTo));
+//				int total = 0;
+//				Map<String, String> oldNewUUIDMap = new HashMap<String, String>();
+//				for (String folderKey : resourceMap.keySet()) {
+//					// List<String> uuidsToReplace = new LinkedList<String>();
+//					System.out.println("Working on '" + folderKey + "' files");
+//					Set<Resource> hashSet = resourceMap.get(folderKey);
+//					int lastPercent = -1;
+//					for (Resource itemResource : hashSet) {
+//						total++;
+//						int percent = 100 * total / memberCount;
+//
+//						if (percent > lastPercent + 1) {
+//							System.out.println(percent + " % complete");
+//							lastPercent = percent;
+//						}
+//
+//						/*
+//						 * Confirm that this item should be processed (i.e. URI is a UUID)
+//						 */
+//						String itemUUID = ActiveTDB.getUUIDFromRDFNode(itemResource);
+//						if (itemUUID == null) {
+//							for (Statement statement : itemResource.listProperties(RDF.type).toList()) {
+//								if (!subClassesNotToPackageSeparately.contains(statement.getObject())) {
+//									System.out.println("Found in '" + folderKey + "' a thing with class: "
+//											+ statement.getObject());
+//								}
+//							}
+//							continue;
+//						}
+//
+//						Set<RDFNode> singleSet = new HashSet<RDFNode>();
+//						singleSet.add(itemResource);
+//
+//						// List<Statement> statements = ActiveTDB.collectStatementsTraversingNodeSetWithStops(singleSet,
+//						// stopAtTheseClasses, null);
+//						List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIsWithStops(singleSet,
+//								stopAtTheseClasses, null);
+//						// List<Statement> statements = ActiveTDB.collectStatementsStopAtQualifiedURIs(singleSet, null);
+//
+//						ActiveTDB.clearExportGraphContents();
+//						ActiveTDB.copyStatementsToGraph(statements, ActiveTDB.exportGraphName);
+//
+//						/*
+//						 * Here begins the test to manage exactly what changes are made to what types of objects Some
+//						 * require nothing 1) flows require changing info to the harmonized flow, but creating
+//						 * "description" and "lastChange" 2) processes require changing the "flow" info and info about
+//						 * Exchanges
+//						 */
+//						if (folderKey.equals("flows")) {
+//							// Only ELEMENTARY_FLOW Flows will have changes (at this point)
+//							if (ActiveTDB.getModel(ActiveTDB.exportGraphName).contains(itemResource, OpenLCA.flowType,
+//									OpenLCA.ELEMENTARY_FLOW)) {
+//
+//								List<Resource> matchingMasters = getOLCAMatchingMasterResources(itemUUID);
+//								if (matchingMasters.size() > 1) {
+//									System.out.println("Got multiple matches.  Count is :" + matchingMasters.size());
+//								} else if (matchingMasters.size() == 1) {
+//									Map<String, RDFNode> itemProperties = getFlowFeatureLiterals(itemResource);
+//									Map<String, RDFNode> masterProperties = getFlowFeatureLiterals(matchingMasters
+//											.get(0));
+//									// Update description and lastChange if needed
+//									String changes = replaceUserLiterals(itemResource, itemProperties, masterProperties);
+//									if (!changes.equals("")) {
+//										RDFNode oldDescription = itemProperties.get("description");
+//										if (oldDescription == null || oldDescription.asLiteral().getString().equals("")) {
+//											updateDescription(itemResource, changes);
+//										} else {
+//											String newDescription = itemProperties.get("description").asLiteral()
+//													.getString()
+//													+ " -> " + changes;
+//											updateDescription(itemResource, newDescription);
+//										}
+//									}
+//
+//									// Now check UUIDs of some things
+//									RDFNode newUUIDNode = masterProperties.get("uuid");
+//									String newUUID = ActiveTDB.getUUIDFromRDFNode(newUUIDNode);
+//									if (newUUID == null) {
+//										newUUID = Util.getRandomUUID();
+//										// TODO: HANDLE THIS SITUATION BETTER
+//									}
+//									if (!newUUID.equals(itemUUID)) {
+//										oldNewUUIDMap.put(itemUUID, newUUID);
+//									}
+//
+//									// Handle FlowCategory (context)
+//									RDFNode itemCategory = itemProperties.get("category");
+//									String itemCategoryUUID = ActiveTDB.getUUIDFromRDFNode(itemCategory);
+//									if (!oldNewUUIDMap.containsKey(itemCategoryUUID)) {
+//										RDFNode masterCategory = masterProperties.get("category");
+//										Statement findUUIDStatement = masterCategory.asResource().getProperty(
+//												FedLCA.hasOpenLCAUUID);
+//										String masterContextUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement
+//												.getObject());
+//										if (!itemCategoryUUID.equals(masterContextUUID)) {
+//											removeCategories(itemCategory);
+//											oldNewUUIDMap.put(itemCategoryUUID, masterContextUUID);
+//										}
+//									}
+//									// Handle FlowProperty and FlowUnit
+//									RDFNode itemProperty = itemProperties.get("flow_properties");
+//									Statement firstFlowPropertyStatement = itemProperty.asResource().getProperty(
+//											OpenLCA.flowProperty);
+//									String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
+//											.getObject().asResource());
+//									if (!oldNewUUIDMap.containsKey(itemPropertyUUID)) {
+//										RDFNode masterProperty = masterProperties.get("flow_properties");
+//										Statement findUUIDStatement = masterProperty.asResource().getProperty(
+//												FedLCA.hasOpenLCAUUID);
+//										String masterPropertyUUID = ActiveTDB.getUUIDFromRDFNode(findUUIDStatement
+//												.getObject());
+//										if (!itemPropertyUUID.equals(masterPropertyUUID)) {
+//											removeFlowProperty(itemProperty);
+//											oldNewUUIDMap.put(itemPropertyUUID, masterPropertyUUID);
+//										}
+//									}
+//								}
+//							}
+//						}
+//
+//						// Update the lastChange anyway
+//						updateLastChange(itemResource);
+//						/*
+//						 * Now copy contents of the graph to a string in .json format
+//						 */
+//						StringWriter stringOut = new StringWriter();
+//						ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+//						Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+//						tdbModel.write(stringOut, "JSON-LD");
+//
+//						/*
+//						 * Now some post-processing string manipulation to make openLCA happy
+//						 */
+//						ActiveTDB.tdbDataset.end();
+//						String fileContents = stringOut.toString();
+//						for (String from : oldNewUUIDMap.keySet()) {
+//							String newString = fileContents.replaceAll(from, oldNewUUIDMap.get(from));
+//							fileContents = newString;
+//						}
+//						String cleanedFileContents1 = fileContents.replaceAll("\"olca:", "\"");
+//						String cleanedFileContents2 = cleanedFileContents1.replaceAll(
+//								" \"@id\" : \"urn:x-arq:DefaultGraphNode\",", "");
+//
+//						/*
+//						 * Now append to the .zip file with the individual .json file
+//						 */
+//						String fileName = itemUUID + ".json";
+//						if (oldNewUUIDMap.containsKey(itemUUID)) {
+//							fileName = oldNewUUIDMap.get(itemUUID) + ".json";
+//						}
+//
+//						writeResource(folderKey, fileName, cleanedFileContents2, zipFile);
+//					}
+//				}
+//				zipFile.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			return null;
+//		}
 
 		/*
 		 * ===========================================================================================================
@@ -407,6 +411,102 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				FlowsWorkflow.setTextConcludeStatus("0/3 steps to complete");
 			}
 		});
+		Map<String, String> userFlow2masterFlow = new HashMap<String, String>();
+		Map<String, String> userFlow2masterUnit = new HashMap<String, String>();
+		Map<String, Double> masterUnit2convFactor = new HashMap<String, Double>();
+
+		// First - collect info on Flow Units
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct \n ");
+		b.append("  ?row \n ");
+		b.append("  ?userFlowUUID \n ");
+		b.append("  ?masterFlowUUID \n ");
+		b.append("  ?masterUnitUUID \n ");
+		b.append("  ?fedlcaMasterIsReferenceUnit \n ");
+		b.append("  ?olcaMasterIsReferenceUnit \n ");
+		b.append("  ?masterConversionFactor \n ");
+		b.append("  ?olcaMasterConversionFactor \n ");
+		b.append("where { \n ");
+		b.append(" \n ");
+		b.append("  ?uf a fedlca:Flow . \n ");
+		b.append("  ?uf fedlca:hasOpenLCAUUID ?userFlowUUID . \n ");
+		b.append("  ?uf eco:hasDataSource ?uds . \n ");
+		b.append("  ?uds rdfs:label \"electricity\"^^xsd:string . \n ");
+		b.append("  ?uf fedlca:sourceTableRowNumber ?row . \n ");
+		b.append("  ?c fedlca:comparedSource ?uf . \n ");
+		b.append("  ?c fedlca:comparedMaster ?mf . \n ");
+		b.append("  ?c fedlca:comparedEquivalence fedlca:Equivalent . \n ");
+		b.append("  ?mf fedlca:hasOpenLCAUUID ?masterFlowUUID . \n ");
+		b.append(" \n ");
+		b.append("  ?uf fedlca:hasFlowUnit ?ufu . \n ");
+		b.append("  ?ufu a fedlca:FlowUnit . \n ");
+		b.append(" \n ");
+		b.append("  ?ufu owl:sameAs ?mfu . \n ");
+		b.append("  ?mfu fedlca:unitConversionFactor ?masterConversionFactor . \n ");
+		b.append("  ?mug a fedlca:UnitGroup . \n ");
+		b.append("  ?mug fedlca:hasFlowUnit ?mfu . \n ");
+		b.append("  ?mug fedlca:hasReferenceUnit ?mrefU . \n ");
+		b.append("  ?mfu fedlca:hasOpenLCAUUID ?uuid_typed . \n ");
+		b.append("  bind (if((?mrefU = ?mfu),true,false) as ?fedlcaMasterIsReferenceUnit ) \n ");
+		b.append(" \n ");
+		b.append("  bind (str(?uuid_typed) as ?masterUnitUUID) \n ");
+		b.append("  bind (IRI(concat(\"http://openlca.org/schema/v1.0/\",?masterUnitUUID)) as ?olcaMasterUnitURI ) \n ");
+		b.append("  ?olcaMasterUnitURI olca:conversionFactor ?olcaMasterConversionFactor . \n ");
+		b.append("  optional { ?olcaMasterUnitURI olca:referenceUnit ?olcaMasterIsReferenceUnit .} \n ");
+		b.append("} \n ");
+		b.append("order by ?row \n ");
+		b.append(" \n ");
+		String query = b.toString();
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			RDFNode rowNode = querySolution.get("row");
+			int row = rowNode.asLiteral().getInt();
+			
+			RDFNode rdfNode2 = querySolution.get("userFlowUUID");
+			String userFlowUUID = rdfNode2.asLiteral().getString();
+			
+			RDFNode rdfNode3 = querySolution.get("masterFlowUUID");
+			String masterFlowUUID = rdfNode3.asLiteral().getString();
+
+			RDFNode rdfNode4 = querySolution.get("masterUnitUUID");
+			String masterUnitUUID = rdfNode4.asLiteral().getString();
+			
+			userFlow2masterFlow.put(userFlowUUID, masterFlowUUID);
+			userFlow2masterUnit.put(userFlowUUID, masterUnitUUID);
+
+			RDFNode rdfNode5 = querySolution.get("fedlcaMasterIsReferenceUnit");
+			boolean fedlcaMasterIsRef = false;
+			if (rdfNode5 != null){
+				if (rdfNode5.asLiteral().getBoolean()){
+					fedlcaMasterIsRef = true;
+				}
+			}
+			RDFNode rdfNode6 = querySolution.get("olcaMasterIsReferenceUnit");
+			boolean olcaMasterIsRef = false;
+			if (rdfNode6 != null){
+				if (rdfNode6.asLiteral().getBoolean()){
+					olcaMasterIsRef = true;
+				}
+			}
+			if ((fedlcaMasterIsRef && !olcaMasterIsRef) ||(!fedlcaMasterIsRef && olcaMasterIsRef)){
+				System.out.println("Reference unit mismatch: "+fedlcaMasterIsRef+" in FedLCA and "+olcaMasterIsRef+"in OpenLCA");
+			}
+			
+			RDFNode rdfNode7 = querySolution.get("masterConversionFactor");
+			double masterConversionFactor = rdfNode7.asLiteral().getDouble();
+			RDFNode rdfNode8 = querySolution.get("olcaMasterConversionFactor");
+			double olcaConversionFactor = rdfNode8.asLiteral().getDouble();
+			if (masterConversionFactor != olcaConversionFactor){
+				System.out.println("Conversion factor mismatch: "+masterConversionFactor+" in FedLCA and "+olcaConversionFactor+"in OpenLCA");
+			}
+			masterUnit2convFactor.put(userFlowUUID, olcaConversionFactor);
+		}
 
 		/*
 		 * The order of the items below is critical since detection of changes in some objects must be propagated to
@@ -624,10 +724,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 						}
 					}
 				}
-				// processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap);
-
-				// Update the lastChange anyway
-				// updateLastChange(itemResource);
 			}
 		}
 		processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
@@ -690,49 +786,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 	}
-
-	// private void updateDescriptionLastChange(Resource itemResource, String newDescription) {
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-	// try {
-	// tdbModel.removeAll(itemResource, OpenLCA.description, null);
-	// tdbModel.add(itemResource, OpenLCA.description, newDescription);
-	//
-	// Date lastChange = new Date();
-	// tdbModel.removeAll(itemResource, DCTerms.modified, null);
-	// tdbModel.removeAll(itemResource, OpenLCA.lastChange, null);
-	// tdbModel.add(itemResource, OpenLCA.lastChange, Temporal.getLiteralFromDate1(lastChange));
-	// ActiveTDB.tdbDataset.commit();
-	// } catch (Exception e) {
-	// System.out.println("Update description failed; see Exception: " + e);
-	// ActiveTDB.tdbDataset.abort();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// }
-
-	// private static void removeOtherResources(Resource itemResource, String graphName) {
-	// Set<Statement> statementsToRemove = new HashSet<Statement>();
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-	//
-	// ResIterator thing = tdbModel.listSubjects();
-	//
-	// ActiveTDB.tdbDataset.end();
-	//
-	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-	// try {
-	// tdbModel.removeAll(itemResource, OpenLCA.description, null);
-	// tdbModel.add(itemResource, OpenLCA.description, newDescription);
-	// ActiveTDB.tdbDataset.commit();
-	// } catch (Exception e) {
-	// System.out.println("Update description failed; see Exception: " + e);
-	// ActiveTDB.tdbDataset.abort();
-	// } finally {
-	// ActiveTDB.tdbDataset.end();
-	// }
-	// }
 
 	private void processUUIDReplacement(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
 			Set<RDFNode> stopAtTheseClasses) {
