@@ -364,6 +364,12 @@ public class AutoMatchJob extends Job {
 				}
 			}
 		}
+		// Now quickly recolor the Flowables since Windows race condition doesn't always keep up.
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				CSVTableView.colorFlowableRows();
+			}
+		});
 		// ========================== FLOW ==========================
 		// stopWatch06.start();
 
