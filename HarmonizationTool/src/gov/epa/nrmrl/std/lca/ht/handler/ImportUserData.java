@@ -471,7 +471,7 @@ public class ImportUserData implements IHandler {
 		buildUserDataTableFromOLCADataViaQuery(null, tableProvider);
 	}
 
-	public static void buildUserDataTableFromOLCADataViaQuery(String dataSourceName, TableProvider tblProvider) {
+	public static ResultSetRewindable queryOLCATAbleData(String dataSourceName) {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		if (dataSourceName != null) {
@@ -615,14 +615,18 @@ public class ImportUserData implements IHandler {
 		// runLogger.info("querying current user data " + new Date());
 		if (dataSourceName == null)
 			updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
-		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		return (ResultSetRewindable) harmonyQuery2Impl.getResultSet();
+	}
 		
+	public static void buildUserDataTableFromOLCADataViaQuery(String dataSourceName, TableProvider tblProvider) {
+	
+		ResultSetRewindable results = queryOLCATAbleData(dataSourceName);
 		
 		if (dataSourceName != null)
 			tblProvider.setExistingData(dataSourceName != null);
 
 		// runLogger.info("adding user data to table " + new Date());
-		tblProvider.createUserData((ResultSetRewindable) resultSet);
+		tblProvider.createUserData(results);
 
 		tblProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
 												// COUNT FIELD TO TABLES

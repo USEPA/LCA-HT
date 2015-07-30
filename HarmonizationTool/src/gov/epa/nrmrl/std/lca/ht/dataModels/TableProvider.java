@@ -130,7 +130,7 @@ public class TableProvider {
 		return headerNamesAsStrings;
 	}
 
-	public void setHeaderNames(List<String> columnNames) {
+	public static void setHeaderNames(DataRow headerRow, List<String> columnNames) {
 		assert columnNames != null : "columnNames cannot be null";
 		assert columnNames.size() != 0 : "columnNames cannot be empty";
 		if (headerRow == null) {
@@ -139,10 +139,8 @@ public class TableProvider {
 			headerRow.clear();
 		}
 		for (String name : columnNames) {
-			if (existingLcaData) {
-				if (metaDataColumns.contains(name))
-					continue;
-			}
+			if (metaDataColumns.contains(name))
+				continue;
 			headerRow.add(name);
 			headerRow.setRowNumber(-1);
 		}
@@ -151,7 +149,12 @@ public class TableProvider {
 	public static TableProvider create(ResultSetRewindable resultSetRewindable) {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
-		tableProvider.setHeaderNames(resultSetRewindable.getResultVars());
+		if (tableProvider.headerRow == null) {
+			tableProvider.headerRow = new DataRow();
+		} else {
+			tableProvider.headerRow.clear();
+		}
+		tableProvider.setHeaderNames(tableProvider.headerRow, resultSetRewindable.getResultVars());
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
@@ -262,7 +265,12 @@ public class TableProvider {
 
 	public void createUserData(ResultSetRewindable resultSetRewindable) {
 		resultSetRewindable.reset();
-		setHeaderNames(resultSetRewindable.getResultVars());
+		if (headerRow == null) {
+			headerRow = new DataRow();
+		} else {
+			headerRow.clear();
+		}
+		setHeaderNames(headerRow, resultSetRewindable.getResultVars());
 		// int count = 0;
 		
 		int matchedFlowables = 0;

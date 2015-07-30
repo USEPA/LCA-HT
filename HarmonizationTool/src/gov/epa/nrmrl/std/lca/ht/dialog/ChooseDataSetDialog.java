@@ -29,6 +29,8 @@ public class ChooseDataSetDialog extends Dialog {
 	
 	String prompt;
 	
+	int height = 200;
+	
 	private static Set<String> masterNames = new HashSet<String>();
 	
 	static {
@@ -38,25 +40,39 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 	
 	public ChooseDataSetDialog(Shell parentShell) {
-		this(parentShell, false, defaultPrompt);
+		this(parentShell, false, defaultPrompt, true);
+	}
+	
+	public ChooseDataSetDialog(Shell parentShell, boolean askFormat) {
+		this(parentShell, false, defaultPrompt, askFormat);
+	}	
+	
+	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message) {
+		this(parentShell, filterMasterDataSets, message, false);
 	}
 
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message) {
+	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message, boolean askFormat) {
 		super(parentShell);
 		prompt = message;
 		filterMasters = filterMasterDataSets;
+		askFileFormat = askFormat;
+		if (askFileFormat)
+			height = 250;
 	}
 	
-	private Combo combo;
+	private Combo dataSetCombo;
+	private Combo outputFormatCombo;
 	String storageLocation;
 	Label dialogLabel;
 	boolean showPrefs = false;
 	String selection = null;
+	int format = 1;
 	boolean noDataSets = false;
+	boolean askFileFormat = false;
 	
 	protected Control createDialogArea(Composite parent) {
 		
@@ -80,12 +96,12 @@ public class ChooseDataSetDialog extends Dialog {
 		dialogLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		
 		new Label(container, SWT.NONE);
-		combo = new Combo(container, SWT.READ_ONLY);
+		dataSetCombo = new Combo(container, SWT.READ_ONLY);
 		
 
 		gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd.grabExcessHorizontalSpace = true;
-		combo.setLayoutData(gd);
+		dataSetCombo.setLayoutData(gd);
 				
 		List<String> names = DataSourceKeeper.getAlphabetizedNameList();
 		if (filterMasters) {
@@ -111,31 +127,61 @@ public class ChooseDataSetDialog extends Dialog {
 			//combo.setEnabled(false);
 		}
 		
-		combo.setItems(names.toArray(new String[0]));
+		dataSetCombo.setItems(names.toArray(new String[0]));
 		
 		String key = CSVTableView.getTableProviderKey();
 		if (key != null) {
 			String curDataSourceProviderName = TableKeeper.getTableProvider(key).getDataSourceProvider().getDataSourceName();
-			int index = combo.indexOf(curDataSourceProviderName);
-			String text = combo.getItem(index) + " (Current)";
-			combo.setItem(index, text);
-			combo.select(index);
+			int index = dataSetCombo.indexOf(curDataSourceProviderName);
+			String text = dataSetCombo.getItem(index) + " (Current)";
+			dataSetCombo.setItem(index, text);
+			dataSetCombo.select(index);
 		}
 		else {
 			List<String> dataSources = DataSourceKeeper.getDataSourceNamesInTDB();
 			String lastDs = dataSources.get(dataSources.size() - 1);
-			String[] items = combo.getItems();
+			String[] items = dataSetCombo.getItems();
 			for (int i = 0; i < items.length; ++i) {
 				if (items[i].equals(lastDs)) {
-					combo.select(i);
+					dataSetCombo.select(i);
 					break;
 				}
 			}
 		}
 
 		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
+		//new Label(container, SWT.NONE);
+		//new Label(container, SWT.NONE);
+		
+		
+		if (askFileFormat) {
+			Label outputFormatLabel = new Label(container, SWT.CHECK);
+	
+			outputFormatLabel.setText("Please choose an output format:");
+			outputFormatLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+			
+			new Label(container, SWT.NONE);
+			outputFormatCombo = new Combo(container, SWT.READ_ONLY);
+			
+	
+			gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+			gd.grabExcessHorizontalSpace = true;
+			dataSetCombo.setLayoutData(gd);
+					
+			List<String> formats = new ArrayList<String>();
+			formats.add("Text file (csv)");
+			formats.add("LCA-HT (json, jsonld, ttl)");
+			formats.add("OpenLCA (zip)");
+			
+			outputFormatCombo.setItems(formats.toArray(new String[0]));
+			outputFormatCombo.select(1);
+
+			
+			new Label(container, SWT.NONE);
+			new Label(container, SWT.NONE);
+			new Label(container, SWT.NONE);
+
+		}
 
 		return area;
 	}
@@ -149,7 +195,9 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 	
 	protected void okPressed() {
-		selection = combo.getText();
+		selection = dataSetCombo.getText();
+		if (askFileFormat)
+			format = outputFormatCombo.getSelectionIndex(); 
 		if (selection.endsWith(" (Current)"))
 			selection = selection.substring(0,  selection.length() - " (Current)".length());
 		System.out.println("Setting selection = " + selection);
@@ -158,6 +206,10 @@ public class ChooseDataSetDialog extends Dialog {
 	
 	public String getSelection() {
 		return selection;
+	}
+	
+	public int getFormat() {
+		return format;
 	}
 
 	/**
@@ -177,7 +229,7 @@ public class ChooseDataSetDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 200);
+		return new Point(450, height);
 	}
 
 }
