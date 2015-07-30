@@ -3,17 +3,25 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.handler.ImportUserData;
 import gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -22,9 +30,15 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class SaveHarmonizedDataHandler implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler";
@@ -36,27 +50,68 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	@Override
 	public void dispose() {
 	}
+	
+	public void writeStoredData(String dataSourceName, String saveLocation) {
+		ResultSetRewindable resultSetRewindable = ImportUserData.queryOLCATAbleData(dataSourceName);
 
-	@Override
-	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		Util.findView(MatchContexts.ID);
-		Util.findView(MatchProperties.ID);
+		DataRow headerRow = new DataRow();
+		
+		TableProvider.setHeaderNames(headerRow, resultSetRewindable.getResultVars());
+		
+		List<DataRow> dataRows = new ArrayList<DataRow>();
+				
+		while (resultSetRewindable.hasNext()) {
+			QuerySolution soln = resultSetRewindable.nextSolution();
+			DataRow dataRow = new DataRow();
+			dataRows.add(dataRow);
+			Iterator<String> iterator = headerRow.getIterator();
+			while (iterator.hasNext()) {
+				String header = iterator.next();
+				try {
+					RDFNode rdfNode = null;
+					rdfNode = soln.get(header);
+					if (rdfNode == null) {
+						dataRow.add("");
+					} else {
+						dataRow.add(rdfNode.toString());
 
-		System.out.println("Saving Harmonized Data");
-		DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
-		System.out.println("headerRow " + headerRow);
-
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}				
+			}
+		}
+		writeTableData(headerRow, dataRows, saveLocation);
+	}
+	
+	public List<DataRow> getOpenTableData() {
 		List<DataRow> dataRows = new ArrayList<DataRow>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		for (int i = 0; i < tableProvider.getData().size(); i++) {
 			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 			dataRows.add(dataRow);
 		}
+		return dataRows;
+	}
 
-		Shell shell = HandlerUtil.getActiveShell(event);
+
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		
+		Util.findView(MatchContexts.ID);
+		Util.findView(MatchProperties.ID);
+		
+		FlowsWorkflow.disableAllButtons();
+
+		System.out.println("Saving Harmonized Data");
+		
+		final String dataSetName = event.getParameter("LCA-HT.exportDataSetName");
+
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		String[] filterNames = new String[] { "Text Files", "All Files (*)" };
-		String[] filterExtensions = new String[] { "*.txt", "*" };
+		String[] filterNames = new String[] { "CSV Files", "Text Files", "All Files (*)" };
+		String[] filterExtensions = new String[] { "*.csv", "*.txt", "*" };
 
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -73,11 +128,36 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFileName("query_results");
 
-		String saveTo = dialog.open();
+		final String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
+		
 		if (saveTo == null) {
-			return null;
+			FlowsWorkflow.restoreAllButtons();
 		}
+		
+		
+		new Thread(new Runnable() { public void run() {
+			if (dataSetName != null) {
+				writeStoredData(dataSetName, saveTo);
+				Display.getDefault().syncExec(new Runnable() { public void run() {
+					FlowsWorkflow.restoreAllButtons();
+				}});
+			}
+			
+			DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
+			System.out.println("headerRow " + headerRow);
+	
+			List<DataRow> dataRows = getOpenTableData();
+			
+			writeTableData(headerRow, dataRows, saveTo);
+			Display.getDefault().syncExec(new Runnable() { public void run() {
+				FlowsWorkflow.restoreAllButtons();
+			}});
+			}}).start();
+		return null;
+	}
+	
+	public void writeTableData(DataRow headerRow, List<DataRow> dataRows, String saveTo) {
 
 		try {
 			// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
@@ -109,15 +189,13 @@ public class SaveHarmonizedDataHandler implements IHandler {
 				}
 			}
 
+			// flush and close writer (closes underlying writer)
+			csvPrinter.flush();
 			csvPrinter.close();
-			// flush and close writer
-			fileWriter.flush();
-			fileWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return null;
 	}
 
 	@Override

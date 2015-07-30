@@ -95,25 +95,32 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		Shell shell = HandlerUtil.getActiveShell(event);
-		ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell);
-		dlg.open();
-		String currentName = dlg.getSelection();
-
-		Util.findView(MatchContexts.ID);
-		Util.findView(MatchProperties.ID);
+		boolean nestedCall = true;
+		Shell shell = null;
+		String currentName = event.getParameter("LCA-HT.exportDataSetName");
+		
+		if (currentName == null) {
+			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell, false);
+			dlg.open();
+			currentName = dlg.getSelection();
+		}
+		
+		String saveTo = event.getParameter("LCA-HT.outputFilename");
 
 		Logger runLogger = Logger.getLogger("run");
 
 		System.out.println("Saving Harmonized Data to .jsonld file");
 
-		String saveTo = event.getParameter("LCA-HT.outputFilename");
-
 		if (saveTo == null) {
+			Util.findView(MatchContexts.ID);
+			Util.findView(MatchProperties.ID);
+
+			nestedCall = false;
 			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 			String[] filterNames = new String[] { "Json Files", "Jsonld Files", "Turtle Files", "Zip Files" };
-			String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl", "*.zip" };
+			String[] filterExtensions = new String[] { "*.json", "*.jsonld", "*.ttl" };
 
 			String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
 			if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
@@ -140,6 +147,33 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
+		if (nestedCall) 
+			writeData(saveTo, currentName);
+		else {
+			final String save = saveTo;
+			final String ds = currentName;
+			new Thread(new Runnable() { public void run() {
+				disableButtons();
+				writeData(save, ds);
+				enableButtons();
+			}}).start();
+		}
+		return null;
+	}
+	
+	private void disableButtons() {
+		Display.getDefault().syncExec(new Runnable() { public void run() {
+			FlowsWorkflow.disableAllButtons();
+		}});
+	}
+	
+	private void enableButtons() {
+		Display.getDefault().syncExec(new Runnable() { public void run() {
+			FlowsWorkflow.restoreAllButtons();
+		}});
+	}
+	
+	public void writeData(String saveTo, String currentName) {
 		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
 		/*
@@ -779,7 +813,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		/* To copy a dataset to the export graph */
 		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
-		return null;
 	}
 
 	private void removeCategories(RDFNode categoryRDFNode) {
@@ -1149,6 +1182,11 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		// Now remove and add the new batches of statements (whose objects have changed)
 		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setTextConcludeStatus("");
+			}
+		});
 	}
 
 	private static void tsRemoveStatementsFromGraph(List<Statement> statementsToRemove,
