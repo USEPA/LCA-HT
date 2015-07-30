@@ -593,7 +593,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
 				resourceMap.get("locations").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
-				System.out.println("Process count: " + resourceMap.get("processes").size());
+//				System.out.println("Process count: " + resourceMap.get("processes").size());
 				resourceMap.get("processes").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
 				resourceMap.get("sources").add(itemResource);
@@ -648,7 +648,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		int lastPercent = -1;
 		for (String folderKey : resourceMap.keySet()) {
 			// List<String> uuidsToReplace = new LinkedList<String>();
-			System.out.println("Working on '" + folderKey + "' files");
+//			System.out.println("Working on '" + folderKey + "' files");
 			Set<Resource> hashSet = resourceMap.get(folderKey);
 			for (Resource itemResource : hashSet) {
 				total++;
@@ -698,9 +698,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				 * "lastChange" 2) processes require changing the "flow" info and info about Exchanges
 				 */
 				if (folderKey.equals("flows")) {
-					if (itemUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
-						System.out.println("pause here");
-					}
+//					if (itemUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+//						System.out.println("pause here");
+//					}
 					// Only ELEMENTARY_FLOW Flows will have changes (at this point)
 					if (ActiveTDB.getModel(ActiveTDB.exportGraphName).contains(itemResource, OpenLCA.flowType,
 							OpenLCA.ELEMENTARY_FLOW)) {
@@ -752,24 +752,24 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 								}
 							}
 							// Handle FlowProperty and FlowUnit
-							if (userFlow2masterFlow.containsKey(itemUUID)) {
-								System.out.println("UUID and master are: " + itemUUID + " and "
-										+ userFlow2masterFlow.get(itemUUID));
-							}
+//							if (userFlow2masterFlow.containsKey(itemUUID)) {
+//								System.out.println("UUID and master are: " + itemUUID + " and "
+//										+ userFlow2masterFlow.get(itemUUID));
+//							}
 							RDFNode itemProperty = itemProperties.get("flow_properties");
 							Statement firstFlowPropertyStatement = itemProperty.asResource().getProperty(
 									OpenLCA.flowProperty);
 							String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
 									.getObject().asResource());
-							if (!itemPropertyUUID.equals(userFlow2masterUnit.get(itemUUID))) {
+//							if (!itemPropertyUUID.equals(userFlow2masterUnit.get(itemUUID))) {
 								// Careful here. Because the same flow can have different units, we must update the unit
 								// in this flow, but not all instances this unit...
 								// so, do nothing here, but deal with it in phase 2
-								if (userFlow2masterFlow.containsKey(itemUUID)) {
-									System.out.println("Flow: " + itemUUID + " will get new unit: "
-											+ userFlow2masterUnit.get(itemUUID) + ". Not: " + itemPropertyUUID);
-								}
-							}
+//								if (userFlow2masterFlow.containsKey(itemUUID)) {
+//									System.out.println("Flow: " + itemUUID + " will get new unit: "
+//											+ userFlow2masterUnit.get(itemUUID) + ". Not: " + itemPropertyUUID);
+//								}
+//							}
 							if (!oldNewOtherUUIDMap.containsKey(itemPropertyUUID)) {
 								RDFNode masterProperty = masterProperties.get("flow_properties");
 								Statement findUUIDStatement = masterProperty.asResource().getProperty(
@@ -896,7 +896,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				Statement statement = stmtIterator0.next();
 				statementsToRemove.add(statement);
 				RDFNode predicate = statement.getPredicate();
-				System.out.println("Predicate : " + predicate.asResource().getURI());
+//				System.out.println("Predicate : " + predicate.asResource().getURI());
 				RDFNode object = statement.getObject();
 				if (!object.isLiteral() && !object.isAnon()) {
 					String uri = object.asResource().getURI();
@@ -1004,9 +1004,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				lastPercentComplete = percent;
 			}
 			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
-			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
-				System.out.println("pause here");
-			}
+//			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
+//				System.out.println("pause here");
+//			}
 			Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
 			Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
 
@@ -1065,12 +1065,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
-			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
-				System.out.println("pause here");
-			}
-			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
-				System.out.println("pause here");
-			}
+//			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+//				System.out.println("pause here");
+//			}
+//			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
+//				System.out.println("pause here");
+//			}
 
 			totalDone++;
 			int percent = 100 * totalDone / totalToDo;

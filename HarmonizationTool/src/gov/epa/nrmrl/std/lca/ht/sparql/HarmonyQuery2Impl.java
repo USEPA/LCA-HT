@@ -38,12 +38,12 @@ public class HarmonyQuery2Impl implements HarmonyQuery2 {
 		if (model == null) {
 			return null;
 		}
-		long timeStart = System.currentTimeMillis();
+//		long timeStart = System.currentTimeMillis();
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSetRewindable resultSetRewindable = ResultSetFactory.copyResults(qexec.execSelect());
-		long timeStop = System.currentTimeMillis();
-		long time = timeStop - timeStart;
-		System.out.println("Time elapsed (Query2): " + time);
+//		long timeStop = System.currentTimeMillis();
+//		long time = timeStop - timeStart;
+//		System.out.println("Time elapsed (Query2): " + time);
 		return resultSetRewindable;
 	}
 
