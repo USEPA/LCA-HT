@@ -261,7 +261,7 @@
             name="LCA Harmonization Tool">
          <property
                name="windowImages"
-               value="icons/alt_window_16.gif,icons/alt_window_32.gif">
+               value="icons/alt_window_16.gif,icons/alt_window_32_lca2.gif">
          </property>
          <property
                name="appName"

@@ -432,7 +432,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		b.append("  ?uf a fedlca:Flow . \n ");
 		b.append("  ?uf fedlca:hasOpenLCAUUID ?userFlowUUID . \n ");
 		b.append("  ?uf eco:hasDataSource ?uds . \n ");
-		b.append("  ?uds rdfs:label \"electricity\"^^xsd:string . \n ");
+		b.append("  ?uds rdfs:label \"" + currentName + "\"^^xsd:string . \n ");
 		b.append("  ?uf fedlca:sourceTableRowNumber ?row . \n ");
 		b.append("  ?c fedlca:comparedSource ?uf . \n ");
 		b.append("  ?c fedlca:comparedMaster ?mf . \n ");
@@ -477,9 +477,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			RDFNode rdfNode4 = querySolution.get("masterUnitUUID");
 			String masterUnitUUID = rdfNode4.asLiteral().getString();
 
-			userFlow2masterFlow.put(userFlowUUID, masterFlowUUID);
-			userFlow2masterUnit.put(userFlowUUID, masterUnitUUID);
-
 			RDFNode rdfNode5 = querySolution.get("fedlcaMasterIsReferenceUnit");
 			boolean fedlcaMasterIsRef = false;
 			if (rdfNode5 != null) {
@@ -511,7 +508,16 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				System.out.println("Reference unit: " + masterUnitUUID + "has conversion factor: "
 						+ masterConversionFactor + " -- instead of 1.0");
 			}
-			masterUnit2convFactor.put(userFlowUUID, olcaConversionFactor);
+			/*
+			 * TODO: Check the logic here, but only need to make a note for a change if not a reference unit (which
+			 * implies conversion factor 1, but cf = 1 does not imply reference)
+			 */
+			if (!fedlcaMasterIsRef || !olcaMasterIsRef || (olcaConversionFactor != 1.0)
+					|| (masterConversionFactor != 1.0)) {
+				userFlow2masterFlow.put(userFlowUUID, masterFlowUUID);
+				userFlow2masterUnit.put(userFlowUUID, masterUnitUUID);
+				masterUnit2convFactor.put(userFlowUUID, olcaConversionFactor);
+			}
 		}
 
 		/*
@@ -721,6 +727,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 									OpenLCA.flowProperty);
 							String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
 									.getObject().asResource());
+							if (!itemPropertyUUID.equals(userFlow2masterUnit.get(itemUUID))) {
+								// Careful here. Because the same flow can have different units, we must update the unit
+								// in this flow, but not all instances this unit...
+								// so, do nothing here, but deal with it in phase 2
+								if (userFlow2masterFlow.containsKey(itemUUID)) {
+									System.out.println("Flow: " + itemUUID + " will get new unit: "
+											+ userFlow2masterUnit.get(itemUUID) + ". Not: " + itemPropertyUUID);
+								}
+							}
 							if (!oldNewOtherUUIDMap.containsKey(itemPropertyUUID)) {
 								RDFNode masterProperty = masterProperties.get("flow_properties");
 								Statement findUUIDStatement = masterProperty.asResource().getProperty(
@@ -736,7 +751,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				}
 			}
 		}
-		processUUIDReplacement(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
+		// runAllUUIDReplacements(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
+		// runUnitUUIDReplacements(userFlow2masterFlow, userFlow2masterUnit, masterUnit2convFactor);
+		runAllUUIDReplacements2(oldNewFlowUUIDMap, oldNewOtherUUIDMap, userFlow2masterUnit, masterUnit2convFactor);
 
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
@@ -797,7 +814,208 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 	}
 
-	private void processUUIDReplacement(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
+	private void runAllUUIDReplacements2(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
+			Map<String, String> oldNewFlowUnitUUIDMap, Map<String, Double> oldNewConvFactorMap) {
+		// while (ActiveTDB.tdbDataset.isInTransaction()){
+		// ActiveTDB.tdbDataset.end();
+		// }
+		int totalToDo = oldNewFlowUUIDMap.size() + oldNewOtherUUIDMap.size();
+		int totalDone = 0;
+		int lastPercentComplete = -1;
+		Set<RDFNode> otherThingsToBringIn = new HashSet<RDFNode>();
+		List<Statement> statementsToAdd = new ArrayList<Statement>();
+		List<Statement> statementsToRemove = new ArrayList<Statement>();
+		// List<RDFNode> objectsToAdd = new ArrayList<RDFNode>();
+		// List<RDFNode> objectsToRemove = new ArrayList<RDFNode>();
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
+			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+				System.out.println("pause here");
+			}
+			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
+				System.out.println("pause here");
+			}
+
+			totalDone++;
+			int percent = 100 * totalDone / totalToDo;
+			if (percent >= lastPercentComplete + 1) {
+				final int percentToWrite = percent;
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+					}
+				});
+				System.out.println("2/3 " + percent + "% complete");
+				lastPercentComplete = percent;
+			}
+			String newUUID = oldNewFlowUUIDMap.get(oldUUID);
+			Resource oldFlowResource = expModel.createResource(OpenLCA.NS + oldUUID);
+			Resource newFlowResource = expModel.createResource(OpenLCA.NS + newUUID);
+			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+			// StmtIterator stmtIterator0 = expModel.listStatements(oldFlowResource, null, null, null);
+			// Get all the statements with this Flow as subject. Note that the Flow doesn't change even if the FlowUnit
+			// does
+			Selector selector0 = new SimpleSelector(oldFlowResource, null, null, null);
+			StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+			while (stmtIterator0.hasNext()) {
+				Statement statement = stmtIterator0.next();
+				statementsToRemove.add(statement);
+				RDFNode predicate = statement.getPredicate();
+				System.out.println("Predicate : " + predicate.asResource().getURI());
+				RDFNode object = statement.getObject();
+				if (!object.isLiteral() && !object.isAnon()) {
+					String uri = object.asResource().getURI();
+					if (uri.length() == 36 + OpenLCA.NS.length()) {
+						String oldUUIDObject = uri.substring(uri.length() - 36);
+						if (oldNewOtherUUIDMap.containsKey(oldUUIDObject)) {
+							String newUUIDObject = oldNewOtherUUIDMap.get(oldUUIDObject);
+							object = expModel.createResource(OpenLCA.NS + newUUIDObject);
+						}
+					}
+				}
+				Statement addStatement = expModel.createStatement(newFlowResource, statement.getPredicate(), object);
+				statementsToAdd.add(addStatement);
+			}
+
+			// Now get all the statements with this Flow as an object.
+
+			Selector selector1 = new SimpleSelector(null, null, oldFlowResource);
+			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement = stmtIterator1.next();
+				statementsToRemove.add(statement);
+				Resource subject = statement.getSubject();
+				Property predicate = statement.getPredicate();
+				Statement addStatement = expModel.createStatement(subject, predicate, newFlowResource);
+				statementsToAdd.add(addStatement);
+				if (subject.isAnon() && predicate.equals(OpenLCA.flow)) {
+					if (oldNewConvFactorMap.containsKey(oldUUID) && oldNewFlowUnitUUIDMap.containsKey(oldUUID)) {
+						boolean isExchangeOrImpactFactor = false;
+						// Determine what type of thing this is that has the "Flow" in question
+						if (expModel.contains(subject, RDF.type, OpenLCA.Exchange)) {
+							isExchangeOrImpactFactor = true;
+							Selector selector2 = new SimpleSelector(subject, OpenLCA.amount, null, null);
+							StmtIterator stmtIterator2 = expModel.listStatements(selector2);
+							// TODO : What if there were more than one?!?
+							Statement statement2 = stmtIterator2.next();
+							RDFNode oldAmountDouble = statement2.getObject();
+							Double amountToConvert = oldAmountDouble.asLiteral().getDouble();
+							// Now, the great question: "to divide or muliply?"
+							// Divide because e.g. the Exchange amount would have to be 2.2 times as much if X
+							// number of pounds were applied vs. X number of kg. Conversion factor is 0.45, so
+							// divide.
+							Double newAmountAfterConversion = amountToConvert / oldNewConvFactorMap.get(oldUUID);
+							Literal newAmount = expModel.createTypedLiteral(newAmountAfterConversion);
+							Statement addStatement2 = expModel.createStatement(subject.asResource(), OpenLCA.amount,
+									newAmount);
+							statementsToAdd.add(addStatement2);
+							statementsToRemove.add(statement2);
+						} else if (expModel.contains(subject, RDF.type, OpenLCA.ImpactFactor)) {
+							isExchangeOrImpactFactor = true;
+							Selector selector2 = new SimpleSelector(subject, OpenLCA.value, null, null);
+							StmtIterator stmtIterator2 = expModel.listStatements(selector2);
+							// TODO : What if there were more than one?!?
+							Statement statement2 = stmtIterator2.next();
+							RDFNode oldAmountDouble = statement2.getObject();
+							Double amountToConvert = oldAmountDouble.asLiteral().getDouble();
+							// Now, the great question: "to divide or muliply?"
+							// Multiply because e.g. the ImpactFactor value would be .45 times as much if X number
+							// of pounds were applied vs. X number of kg.
+							Double newAmountAfterConversion = amountToConvert * oldNewConvFactorMap.get(oldUUID);
+							Literal newAmount = expModel.createTypedLiteral(newAmountAfterConversion);
+							Statement addStatement2 = expModel.createStatement(subject.asResource(), OpenLCA.amount,
+									newAmount);
+							statementsToAdd.add(addStatement2);
+							statementsToRemove.add(statement2);
+						} else {
+							isExchangeOrImpactFactor = false;
+							System.out.println("What other thing has the Flow as an object?!?");
+						}
+						if (isExchangeOrImpactFactor) {
+							// Change the "unit" to the new unit
+							Selector selector3 = new SimpleSelector(subject, OpenLCA.unit, null, null);
+							StmtIterator stmtIterator3 = expModel.listStatements(selector3);
+							Statement statement3 = stmtIterator3.next();
+							statementsToRemove.add(statement3);
+							Resource subject3 = statement3.getSubject();
+							Resource newObject = expModel.createResource(OpenLCA.NS
+									+ oldNewFlowUnitUUIDMap.get(oldUUID));
+							Statement addStatement3 = expModel.createStatement(subject3, OpenLCA.unit, newObject);
+							statementsToAdd.add(addStatement3);
+						}
+					}
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
+		// It is necessary to do this once because otherwise, the Flow won't be present to have it's objects replaced
+		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+		statementsToAdd.clear();
+		statementsToRemove.clear();
+
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		for (String oldUUID : oldNewOtherUUIDMap.keySet()) {
+			totalDone++;
+			int percent = 100 * totalDone / totalToDo;
+			if (percent >= lastPercentComplete + 1) {
+				final int percentToWrite = percent;
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+					}
+				});
+				System.out.println("2/3 " + percent + "% complete");
+				lastPercentComplete = percent;
+			}
+			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
+			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
+				System.out.println("pause here");
+			}
+			Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
+			Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
+
+			otherThingsToBringIn.add(newOtherResource);
+			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+			// AVOID: StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+
+			Selector selector1 = new SimpleSelector(null, null, oldOtherResource);
+			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement = stmtIterator1.next();
+				statementsToRemove.add(statement);
+				RDFNode subject = statement.getSubject();
+				RDFNode predicate = statement.getPredicate();
+				RDFNode object = statement.getObject();
+				if (!object.isLiteral() && !object.isAnon()) {
+					String uri = object.asResource().getURI();
+					String oldUUIDObject = uri.substring(uri.length() - 36);
+					/*
+					 * Logic here is tricky. We're looking for statements in which the object is the old Flow Resource,
+					 * but the subject is NOT a Flow Resource. Maybe this is not possible, but the "if" helps confirm
+					 * it. The subject should be a.... check this. If an Exchange or an ImpactFactor, the subject is
+					 * Anon. These are not root objects (in the resourceMap)
+					 */
+					if (!oldNewFlowUUIDMap.containsKey(oldUUIDObject)) {
+						Statement addStatement = expModel.createStatement(subject.asResource(), (Property) predicate,
+								newOtherResource);
+						statementsToAdd.add(addStatement);
+					}
+				}
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+
+		// Now collect the item which is new from the default graph so as to replace the removed one.
+		statementsToAdd.addAll(ActiveTDB.collectStatementsTraversingNodeSet(otherThingsToBringIn, null));
+
+		// Now remove and add the new batches of statements (whose objects have changed)
+		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+	}
+
+	private void runAllUUIDReplacements(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
 			Set<RDFNode> stopAtTheseClasses) {
 		// while (ActiveTDB.tdbDataset.isInTransaction()){
 		// ActiveTDB.tdbDataset.end();
