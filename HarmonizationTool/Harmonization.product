@@ -31,6 +31,7 @@
    <vm>
    </vm>
 
+
    <plugins>
       <plugin id="CSV-tools"/>
       <plugin id="HarmonizationTool"/>
@@ -196,5 +197,8 @@
       <plugin id="org.w3c.dom.svg"/>
    </plugins>
 
+   <configurations>
+      <property name="osgi.instance.area" value="@noDefault" />
+   </configurations>
 
 </product>
