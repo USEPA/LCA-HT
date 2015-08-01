@@ -161,7 +161,10 @@ public class MatchFlowables extends ViewPart {
 		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
 		new Label(innerComposite, SWT.NONE);
 		chooseSearchFieldText.addSelectionListener(new SelectionListener() {
-
+			/*
+			 * TAHOWARD TODO = chooseSearchFieldText is where the user can edit the text they want to search for. We
+			 * need to be able to paste into here, and I guess copy out of here, too, if that's easy.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				resetSearchButton();
@@ -176,6 +179,13 @@ public class MatchFlowables extends ViewPart {
 		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
+		/*
+		 * TAHOWARD TODO = Provide the magic necessary for users to be able to capture parts text in fields in this
+		 * table. They should be able to do Control-c / Control-v to capture text and paste it into the selection text
+		 * (see below) The OS provides the Control-c / Control-v functionality, I think, but you can check to see if
+		 * right click to "cut" and right click to "paste" is easy. If so, do that, too, but don't sweat it if it will
+		 * take more than 30 minutes.
+		 */
 	}
 
 	private static void initializeTable() {
@@ -487,7 +497,7 @@ public class MatchFlowables extends ViewPart {
 		}
 		comparisonProvider.appendToComment(" - Udpated by curator");
 		comparisonProvider.syncToTDB();
-//		AnnotationProvider.updateCurrentAnnotationModifiedDate();
+		// AnnotationProvider.updateCurrentAnnotationModifiedDate();
 		// CSVTableView.colorOneFlowableRow(flowableToMatch.getFirstRow());
 		updateMatchCounts();
 		rematchFlows();

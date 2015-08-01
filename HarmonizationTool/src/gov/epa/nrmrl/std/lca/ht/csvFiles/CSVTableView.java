@@ -125,7 +125,6 @@ public class CSVTableView extends ViewPart {
 	private static int colNumSelected = -1;
 	private static Point clickPoint;
 
-
 	private static List<Integer> rowsToIgnore = new ArrayList<Integer>();
 
 	private static ViewerSorter sorter;
@@ -405,18 +404,18 @@ public class CSVTableView extends ViewPart {
 			return (filterRowNumbers.isEmpty() || filterRowNumbers.contains(dataRowNum));
 		}
 	}
-	
+
 	private static MouseListener tableMousePointListener = new MouseListener() {
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			
+
 		}
 
 		@Override
 		public void mouseDown(MouseEvent e) {
 			if (e.button == 1) {
 				clickPoint = new Point(e.x, e.y);
-			} 
+			}
 		}
 
 		@Override
@@ -424,143 +423,142 @@ public class CSVTableView extends ViewPart {
 		}
 	};
 
-
-//	private static MouseListener tableMouseListener = new MouseListener() {
-//		@Override
-//		public void mouseDoubleClick(MouseEvent e) {
-//			Point ptClick = new Point(e.x, e.y);
-//			TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
-//			if (tableColumn.getWidth() > 30) {
-//				tableColumn.setWidth(25);
-//			} else {
-//				tableColumn.setWidth(100);
-//			}
-//			// tableViewer.refresh();
-//		}
-//
-//		@Override
-//		public void mouseDown(MouseEvent e) {
-//			// System.out.println("mouse down event :e =" + e);
-////			if (e.button == 1) {
-////				leftClick(e);
-////			} else if (e.button == 3) {
-////				table.deselectAll();
-////				rightClick(e);
-////			}
-//		}
-//
-//		@Override
-//		public void mouseUp(MouseEvent e) {
-//			if (e.button == 1) {
-//				leftClick(e);
-//			} else if (e.button == 3) {
-//				table.deselectAll();
-//				rightClick(e);
-//			}
-//			// System.out.println("mouse up event :e =" + e);
-//		}
-//
-//		private void leftClick(MouseEvent event) {
-//			// System.out.println("cellSelectionMouseDownListener event " + event);
-//			int scrollPos = table.getHorizontalBar().getSelection();
-//			int index = table.getSelectionIndex();
-//			Point ptLeft = new Point(1 - scrollPos, event.y);
-//			Point ptClick = new Point(event.x, event.y);
-//
-//			TableItem newTableItem = table.getItem(ptLeft);
-//
-//
-//			if (newTableItem == null) {
-//				return;
-//			}
-//			TableItem lastTableItem = null;
-//			if (rowNumSelected > -1 && rowNumSelected < table.getItemCount()) {
-//				lastTableItem = table.getItem(rowNumSelected);
-//			}
-//			int newRow = table.indexOf(newTableItem);
-//			if (newRow == rowNumSelected) {
-//				return;
-//			}
-//			rowNumSelected = newRow;
-//			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
-//
-//			if (preCommit && (colNumSelected == 0)) {
-//				table.select(rowNumSelected);
-//				rowMenu.setVisible(true);
-//				return;
-//			}
-//
-//			table.deselectAll();
-//
-//			if (preCommit) {
-//				return;
-//			}
-//			String dataRowNumString = newTableItem.getText(0);
-//			Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
-//			if (rowsToIgnore.contains(dataRowNum)) {
-//				return;
-//			}
-//
-//			if (defaultFont == null) {
-//				createFonts(newTableItem);
-//			}
-//			if (lastTableItem != null) {
-//				lastTableItem.setFont(defaultFont);
-//			}
-//			newTableItem.setFont(boldFont);
-//
-//			matchRowContents();
-//			return;
-//			// }
-//
-//		}
-//
-//		private void rightClick(MouseEvent event) {
-//			// System.out.println("cellSelectionMouseDownListener event " + event);
-//			// Point ptLeft = new Point(1, event.y);
-//			Point ptClick = new Point(event.x, event.y);
-//			int clickedRow = 0;
-//			int clickedCol = 0;
-//			TableItem item = table.getItem(ptClick);
-//			if (item == null) {
-//				return;
-//			}
-//			clickedRow = table.indexOf(item);
-//			clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			if (clickedCol < 0) {
-//				return;
-//			}
-//
-//			rowNumSelected = clickedRow;
-//			colNumSelected = clickedCol;
-//			if (colNumSelected == 0) {
-//				rowMenu.setVisible(true);
-//			} else {
-//				Issue issueOfThisCell = null;
-//				// boolean firstResolvable = false;
-//				initializeFixCellMenu(false);
-//
-//				for (Issue issue : getIssuesByColumn(clickedCol)) {
-//					if (issue.getRowNumber() == rowNumSelected) {
-//						issueOfThisCell = issue;
-//						if (issue.getQaCheck().getReplacement() != null) {
-//							// firstResolvable = true;
-//							initializeFixCellMenu(true);
-//						} else {
-//							// firstResolvable = false;
-//						}
-//						break;
-//					}
-//				}
-//				if (issueOfThisCell != null) {
-//					fixCellMenu.setVisible(true);
-//				} else {
-//					rowMenu.setVisible(false);
-//					fixCellMenu.setVisible(false);
-//				}
-//			}
-//		}
-//	};
+	// private static MouseListener tableMouseListener = new MouseListener() {
+	// @Override
+	// public void mouseDoubleClick(MouseEvent e) {
+	// Point ptClick = new Point(e.x, e.y);
+	// TableColumn tableColumn = table.getColumn(getColumnNumSelected(ptClick));
+	// if (tableColumn.getWidth() > 30) {
+	// tableColumn.setWidth(25);
+	// } else {
+	// tableColumn.setWidth(100);
+	// }
+	// // tableViewer.refresh();
+	// }
+	//
+	// @Override
+	// public void mouseDown(MouseEvent e) {
+	// // System.out.println("mouse down event :e =" + e);
+	// // if (e.button == 1) {
+	// // leftClick(e);
+	// // } else if (e.button == 3) {
+	// // table.deselectAll();
+	// // rightClick(e);
+	// // }
+	// }
+	//
+	// @Override
+	// public void mouseUp(MouseEvent e) {
+	// if (e.button == 1) {
+	// leftClick(e);
+	// } else if (e.button == 3) {
+	// table.deselectAll();
+	// rightClick(e);
+	// }
+	// // System.out.println("mouse up event :e =" + e);
+	// }
+	//
+	// private void leftClick(MouseEvent event) {
+	// // System.out.println("cellSelectionMouseDownListener event " + event);
+	// int scrollPos = table.getHorizontalBar().getSelection();
+	// int index = table.getSelectionIndex();
+	// Point ptLeft = new Point(1 - scrollPos, event.y);
+	// Point ptClick = new Point(event.x, event.y);
+	//
+	// TableItem newTableItem = table.getItem(ptLeft);
+	//
+	//
+	// if (newTableItem == null) {
+	// return;
+	// }
+	// TableItem lastTableItem = null;
+	// if (rowNumSelected > -1 && rowNumSelected < table.getItemCount()) {
+	// lastTableItem = table.getItem(rowNumSelected);
+	// }
+	// int newRow = table.indexOf(newTableItem);
+	// if (newRow == rowNumSelected) {
+	// return;
+	// }
+	// rowNumSelected = newRow;
+	// colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
+	//
+	// if (preCommit && (colNumSelected == 0)) {
+	// table.select(rowNumSelected);
+	// rowMenu.setVisible(true);
+	// return;
+	// }
+	//
+	// table.deselectAll();
+	//
+	// if (preCommit) {
+	// return;
+	// }
+	// String dataRowNumString = newTableItem.getText(0);
+	// Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
+	// if (rowsToIgnore.contains(dataRowNum)) {
+	// return;
+	// }
+	//
+	// if (defaultFont == null) {
+	// createFonts(newTableItem);
+	// }
+	// if (lastTableItem != null) {
+	// lastTableItem.setFont(defaultFont);
+	// }
+	// newTableItem.setFont(boldFont);
+	//
+	// matchRowContents();
+	// return;
+	// // }
+	//
+	// }
+	//
+	// private void rightClick(MouseEvent event) {
+	// // System.out.println("cellSelectionMouseDownListener event " + event);
+	// // Point ptLeft = new Point(1, event.y);
+	// Point ptClick = new Point(event.x, event.y);
+	// int clickedRow = 0;
+	// int clickedCol = 0;
+	// TableItem item = table.getItem(ptClick);
+	// if (item == null) {
+	// return;
+	// }
+	// clickedRow = table.indexOf(item);
+	// clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// if (clickedCol < 0) {
+	// return;
+	// }
+	//
+	// rowNumSelected = clickedRow;
+	// colNumSelected = clickedCol;
+	// if (colNumSelected == 0) {
+	// rowMenu.setVisible(true);
+	// } else {
+	// Issue issueOfThisCell = null;
+	// // boolean firstResolvable = false;
+	// initializeFixCellMenu(false);
+	//
+	// for (Issue issue : getIssuesByColumn(clickedCol)) {
+	// if (issue.getRowNumber() == rowNumSelected) {
+	// issueOfThisCell = issue;
+	// if (issue.getQaCheck().getReplacement() != null) {
+	// // firstResolvable = true;
+	// initializeFixCellMenu(true);
+	// } else {
+	// // firstResolvable = false;
+	// }
+	// break;
+	// }
+	// }
+	// if (issueOfThisCell != null) {
+	// fixCellMenu.setVisible(true);
+	// } else {
+	// rowMenu.setVisible(false);
+	// fixCellMenu.setVisible(false);
+	// }
+	// }
+	// }
+	// };
 
 	private static void createFonts(TableItem tableItem) {
 		defaultFont = tableItem.getFont();
@@ -570,14 +568,14 @@ public class CSVTableView extends ViewPart {
 
 	}
 
-//	private static int getColumnNumSelected(Point point) {
-//		int clickedRow = getRowNumSelected(point);
-//		int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
-//		if (clickedCol < 0) {
-//			return -1;
-//		}
-//		return clickedCol;
-//	}
+	// private static int getColumnNumSelected(Point point) {
+	// int clickedRow = getRowNumSelected(point);
+	// int clickedCol = getTableColumnNumFromPoint(clickedRow, point);
+	// if (clickedCol < 0) {
+	// return -1;
+	// }
+	// return clickedCol;
+	// }
 
 	public static void matchRowContents() {
 		if (colNumSelected < 0)
@@ -981,9 +979,23 @@ public class CSVTableView extends ViewPart {
 							}
 						});
 
+						/*
+						 * TAHOWARD TODO = The three lines below will be the new ones to allow editing. See below for
+						 * more details.
+						 */
+						// menuItem = new MenuItem(headerMenu, SWT.NORMAL);
+						// menuItem.setText("Edit content of fields");
+						// menuItem.addListener(SWT.Selection, new EditFieldsListener());
+						/*
+						 * TAHOWARD TODO = Create an EditFieldsListener() so that people can edit the fields. Make sure
+						 * that there is some place in the code for me to save the old value and put it in the TDB as a
+						 * "originalValue" type field value.
+						 */
+
 						menuItem = new MenuItem(headerMenu, SWT.NORMAL);
 						menuItem.setText("Change issue fields to blank");
 						menuItem.addListener(SWT.Selection, new BlankFieldsListener());
+
 					}
 				}
 
@@ -1155,8 +1167,8 @@ public class CSVTableView extends ViewPart {
 				return;
 			}
 			// System.out.println("rowNumSelected = " + rowNumSelected);
-//			Point point = new Point(event.x, event.y);
-//			int rowNum = getRowNumSelected(point);
+			// Point point = new Point(event.x, event.y);
+			// int rowNum = getRowNumSelected(point);
 			// System.out.println("rowNum = " + rowNum);
 
 			// String[] options = new String[2];
