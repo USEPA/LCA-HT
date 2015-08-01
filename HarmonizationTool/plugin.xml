@@ -48,7 +48,7 @@
       <view
             class="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
             id="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
-            name="Properties"
+            name="Units"
             restorable="true">
       </view>
       <view
@@ -148,7 +148,7 @@
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties"
-                     label="Show Properties Window"
+                     label="Show Units Window"
                      style="push">
                </command>
                <command
