@@ -1,9 +1,11 @@
 package gov.epa.nrmrl.std.lca.ht.preferences;
 
 import java.io.File;
+import java.util.prefs.Preferences;
 
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Application;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -11,9 +13,13 @@ import gov.epa.nrmrl.std.lca.ht.utils.Util;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
@@ -26,11 +32,13 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 
 	// private StringFieldEditor logFileName;
 	
-	String defaultTDB;
-	String workingDirectory;
-	String inputDirectory;
-	String outputDirectory;
-	String logDirectory;
+	String workspaceDirectory;
+	
+	LCADirectoryFieldEditor workspaceEditor;
+	
+	Button prefsButton;
+	
+	Preferences osPrefs = null;
 	
 	class LCADirectoryFieldEditor extends DirectoryFieldEditor {
 		public LCADirectoryFieldEditor(String name, String labelText, Composite parent) {
@@ -43,12 +51,14 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 	}
 
 	public DirectoryPreferences() {
+		osPrefs = Preferences.userNodeForPackage(Application.class);
+
 	}
 
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("sets preferences");
+		setDescription("The Harmonization Tool (HT) requires the user to specify directories for local storage.  Please choose a location to store its data.");
 	}
 
 	@Override
@@ -59,67 +69,52 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 
 		Composite composite = getFieldEditorParent();
 		
-		defaultTDB = Util.getPreferenceStore().getDefaultString("defaultTDB");
-		workingDirectory = Util.getPreferenceStore().getDefaultString("workingDirectory");
-		inputDirectory = Util.getPreferenceStore().getDefaultString("inputDirectory");
-		outputDirectory = Util.getPreferenceStore().getDefaultString("outputDirectory");
-		logDirectory = Util.getPreferenceStore().getDefaultString("logDirectory");
-
-		addField(new LCADirectoryFieldEditor("defaultTDB", "Triples DB Directory:", composite));
-		addField(new LCADirectoryFieldEditor("workingDirectory", "Project Direcotry:", composite));
-		addField(new LCADirectoryFieldEditor("inputDirectory", "Input Direcotry:", composite));
-		addField(new LCADirectoryFieldEditor("outputDirectory", "Output Direcotry:", composite));
-		addField(new LCADirectoryFieldEditor("logDirectory", "Log Direcotry:", composite));
-
-		composite = getFieldEditorParent();
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
-		StringFieldEditor runfileRootEditor = new StringFieldEditor("runfileRoot", "Runfile Root", composite);
-		Text runfileRoot = runfileRootEditor.getTextControl(composite);
+		workspaceDirectory = osPrefs.get("workspaceDir", null);
 
-		final StringFieldEditor resultingRunfile = new StringFieldEditor("id", "Resulting Runfile", -1,
-				StringFieldEditor.VALIDATE_ON_KEY_STROKE, composite);
-		resultingRunfile.getTextControl(composite).setEditable(false);
-		resultingRunfile.getTextControl(composite).setText(runFile);
+		Label label = new Label(composite, SWT.NONE);
+		label.setText("Harmonization Tool Workspace:");
+		new Label(composite, SWT.NONE);
 
-		runfileRoot.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-
-				Text sourceText = (Text) e.getSource();
-				String logFile = sourceText.getText();
-				logFile += "_";
-				logFile += LoggerManager.getTimeStampValidFmt() + ".txt";
-				resultingRunfile.setStringValue("[Output Directory]" + File.separator + "runfiles" + File.separator
-						+ logFile);
-				// Util.getPreferenceStore().setValue("logFile", logFile);
-			}
-		});
-
-		addField(runfileRootEditor);
+		workspaceEditor = new LCADirectoryFieldEditor("workspaceDir", "", composite);
+		addField(workspaceEditor);
+		
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+			
+		prefsButton = new Button(composite, SWT.CHECK);
+		prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
+		prefsButton.setText("Use this as the default and do not ask agiain");
+		prefsButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		new Label(composite, SWT.NONE);
 	}
 	
 	@Override
 	public boolean performOk() {
 		boolean valid = super.performOk();
+		String wsDir = null;
 		try {
 			if (valid) {
 				Util.getPreferenceStore().save();
-				String[] newDirs = new String[] { "defaultTDB", "workingDirectory", "inputDirectory", "outputDirectory", "logDirectory" };
-				for (int i = 0; valid && i < newDirs.length; ++i) {
-					File file = new File(Util.getPreferenceStore().getString(newDirs[i]));
-					if (!file.isDirectory())
-						valid = file.mkdirs() && file.isDirectory();
-					if (!valid) {
-						Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-						String error = "Could not access " + newDirs[i] + " - please check the location and try again.";
-						new GenericMessageBox(shell, "Error", error);
-						return valid;
-					}
-					boolean dir = file.isDirectory();
-					System.out.println(file + " is dir " + dir);
-					
+
+				wsDir = Util.getPreferenceStore().getString("workspaceDir");
+				File file = new File(wsDir);
+				if (!file.isDirectory())
+					valid = file.mkdirs() && file.isDirectory();
+				if (!valid) {
+					Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+					String error = "Could not access the workspace directory - please check the location and try again.";
+					new GenericMessageBox(shell, "Error", error);
+					return valid;
 				}
+				boolean dir = file.isDirectory();
+				System.out.println(file + " is dir " + dir);
+					
+				
 			}
 			System.out.println("Stored directory preferences");
 		}
@@ -127,17 +122,15 @@ public class DirectoryPreferences extends FieldEditorPreferencePage implements I
 			valid = false;
 			e.printStackTrace();
 		}
+		if (valid) {
+			osPrefs.put("lca.wsDir", wsDir);
+			osPrefs.putBoolean("lca.chooseWorkspace", !prefsButton.getSelection());
+		}
 		return valid;
 	}
 	
 	@Override
 	public boolean performCancel() {
-		Util.getPreferenceStore().setDefault("defaultTDB", defaultTDB);
-		Util.getPreferenceStore().setDefault("workingDirectory", workingDirectory);
-		Util.getPreferenceStore().setDefault("inputDirectory", inputDirectory);
-		Util.getPreferenceStore().setDefault("outputDirectory", outputDirectory);
-		Util.getPreferenceStore().setDefault("logDirectory", logDirectory);
-		ActiveTDB.markPrefsCanceled();
 		return true;
 	}
 }

@@ -1,7 +1,24 @@
 package gov.epa.nrmrl.std.lca.ht.harmonizationtool;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.prefs.Preferences;
+
+import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
+import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
+import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
+import gov.epa.nrmrl.std.lca.ht.preferences.Initializer;
+import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
+import gov.epa.nrmrl.std.lca.ht.utils.Util;
+
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -16,6 +33,41 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		Display display = PlatformUI.createDisplay();
+		Preferences osPrefs = Preferences.userNodeForPackage(this.getClass());
+		boolean askLocation = osPrefs.getBoolean("lca.chooseWorkspace", true);
+		String workspaceDir = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
+		if (!askLocation)
+			askLocation = !Initializer.initializeDefaultPreferences(workspaceDir);
+
+		while (askLocation) {
+			System.out.println("Install " + Platform.getInstallLocation().getURL().getFile());
+			StorageLocationDialog dlg = new StorageLocationDialog(display.getActiveShell(), osPrefs);
+			dlg.open();
+			if (dlg.getReturnCode() == StorageLocationDialog.RET_CANCEL)
+				System.exit(0);
+			workspaceDir = osPrefs.get("lca.wsDir", null);
+			if (!Initializer.initializeDefaultPreferences(workspaceDir)) {
+				StringBuilder b = new StringBuilder();
+				b.append("Sorry, but the selected directory is not accessible.  Please ensure the selected directory is available and writeable.");
+				String errMsg = b.toString();
+				System.out.println("Displaying shell " + null);
+				new MessageDialog(null, "Error", null, errMsg, MessageDialog.ERROR, new String[] { "Ok" }, 0).open();
+				osPrefs.put("lca.wsDir", Util.getInitialWorkspaceLocation());
+			}
+			else
+				askLocation = false;
+		}		
+
+		Location instanceLoc = Platform.getInstanceLocation();
+		try {
+			instanceLoc.set(new URL("file", null, workspaceDir), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}  
+		new LoggerManager();
+		LoggerManager.Init();
+		//ActiveTDB.openTDB();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {

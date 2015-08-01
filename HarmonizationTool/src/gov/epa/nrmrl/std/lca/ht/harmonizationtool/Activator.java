@@ -36,9 +36,6 @@ public class Activator extends AbstractUIPlugin {
 //		new ProjectDirectoryManager();
 //		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 //		ProjectDirectoryManager.Init(shell);
-
-		new LoggerManager();
-		LoggerManager.Init();
 	}
 
 	/*
