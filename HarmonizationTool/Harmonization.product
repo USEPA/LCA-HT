@@ -15,7 +15,7 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="icons/alt_window_16.gif" i32="icons/alt_window_32_lca2.gif"/>
+   <windowImages i16="icons/alt_window_16.gif" i32="/HarmonizationTool/icons/alt_window_32_lca3.gif"/>
 
    <splash
       location="HarmonizationTool" />
@@ -30,7 +30,6 @@
 
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="CSV-tools"/>

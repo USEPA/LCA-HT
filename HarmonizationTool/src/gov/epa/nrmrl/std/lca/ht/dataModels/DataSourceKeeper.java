@@ -449,6 +449,7 @@ public class DataSourceKeeper {
 
 			boolean direct = ImportRDFFileDirectlyToGraph.loadToDefaultGraph(
 					"classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip", null);
+//			boolean direct = false;
 			// ImportRDFFileDirectlyToGraph.loadToDefaultGraph("C:\\Users\\Tom\\lca\\master_files\\possible_complete_new_master_flows_lcaht.n3",
 			// null);
 			if (direct) {

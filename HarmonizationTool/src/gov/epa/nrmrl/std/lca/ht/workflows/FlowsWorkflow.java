@@ -1228,7 +1228,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-			setTooltipStatusUserData("[File path]");
+//			setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Checking...");
 			setButtonState(btnCheckData, false);
