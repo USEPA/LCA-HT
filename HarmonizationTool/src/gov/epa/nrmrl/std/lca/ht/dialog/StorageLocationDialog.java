@@ -1,5 +1,9 @@
 package gov.epa.nrmrl.std.lca.ht.dialog;
 
+import java.io.File;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+
 import gov.epa.nrmrl.std.lca.ht.preferences.Initializer;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
 
@@ -14,6 +18,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Text;
@@ -26,6 +31,7 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	public static final int RET_SUCCESS=0;
 	public static final int RET_NO_DIRECTORY = 1;
 	public static final int RET_SHOW_PREFS = 2;
+	public static final int RET_CANCEL = 3;
 
 	
 	private Text text;
@@ -34,15 +40,16 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	
 	String storageLocation = null;
 	
-	boolean showPrefs = false;
-
+	Preferences osPrefs = null;
+		
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public StorageLocationDialog(Shell parentShell) {
+	public StorageLocationDialog(Shell parentShell, Preferences prefs) {
 		super(parentShell);
 		this.setBlockOnOpen(true);
+		osPrefs = prefs;
 	}
 
 	/**
@@ -75,7 +82,7 @@ public class StorageLocationDialog extends TitleAreaDialog {
 
 		text = new Text(container, SWT.SINGLE | SWT.BORDER);
 		
-		storageLocation = Util.getInitialStorageLocation();
+		storageLocation = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
 
 		text.setText(storageLocation);
 		gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -108,13 +115,8 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		new Label(container, SWT.NONE);
 		
 		prefsButton = new Button(container, SWT.CHECK);
-		prefsButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				showPrefs = prefsButton.getSelection();
-			}
-		});
-		prefsButton.setText("Choose individual locations");
+		prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
+		prefsButton.setText("Use this as the default and do not ask agiain");
 		prefsButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		new Label(container, SWT.NONE);
 		
@@ -145,38 +147,24 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	
 	
 	@Override
-	protected void okPressed() {
-		if (showPrefs) {
-			this.setReturnCode(RET_SHOW_PREFS);
-			close();
+	protected void okPressed() {	
+		setReturnCode(RET_SUCCESS);
+		osPrefs.put("lca.wsDir", text.getText());
+		osPrefs.putBoolean("lca.chooseWorkspace", !prefsButton.getSelection());
+		try {
+			osPrefs.sync();
+			osPrefs.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
 		}
-		else if (Initializer.initializeDefaultPreferences(text.getText())) {
-			setReturnCode(RET_SUCCESS);
-			close();
-		}
-		else {
-			StringBuilder b = new StringBuilder();
-			b.append("Sorry, but the selected directory is not accessible.  Please ensure the selected directory is available and writeable.");
-			String errMsg = b.toString();
-			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			new GenericMessageBox(shell, "Error", errMsg);
-			text.setText(Util.getInitialStorageLocation());
-		}
+		close();
 	}
 	
 	@Override
 	protected void cancelPressed() {
-		if (Initializer.initializeDefaultPreferences(text.getText())) {
-			setReturnCode(RET_SUCCESS);
-			close();
-		}
-		else {
-			String errMsg = "The selected directory is not accessible - exiting now.";
-			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			new GenericMessageBox(shell, "Error", errMsg);
-			close();
-			System.exit(1);
-		}
+		setReturnCode(RET_CANCEL);
+		close();
+		return;
 	}
 	
 }

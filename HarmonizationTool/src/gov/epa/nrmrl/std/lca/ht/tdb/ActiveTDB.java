@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 //import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -15,6 +16,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
+import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
@@ -135,11 +137,15 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		System.out.println("Done syncing");
 		// AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
+	
+	public static void initPrefs() {
+		
+	}
 
 	private static void openTDB() {
 		if (tdbDataset == null) {
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			String activeTDB = Util.getPreferenceStore().getString("activeTDB");
+			/*String activeTDB = Util.getPreferenceStore().getString("defaultTDB");
 			if (Util.EMPTY_STRING.equals(activeTDB)) {
 				StorageLocationDialog dialog = new StorageLocationDialog(shell);
 				shell.setVisible(false);
@@ -152,7 +158,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				creationMessage.setBlockOnOpen(false);
 				creationMessage.open();
 				creationMessage.getShell().getDisplay().update();
-			}
+			}*/
 
 			String defaultTDB = null;
 			File defaultTDBFile = null;
@@ -163,6 +169,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				defaultTDBFile = new File(defaultTDB);
 
 				if (defaultTDBFile.isDirectory()) {
+					String infoMessage = "Initializing TDB Data - please wait...";
+					creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION,
+							new String[] {}, 0);
+					creationMessage.setBlockOnOpen(false);
+					creationMessage.open();
+					creationMessage.getShell().getDisplay().update();
 					System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 					try {
 						tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());

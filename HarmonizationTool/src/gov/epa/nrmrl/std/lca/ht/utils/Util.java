@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.utils;
 
+import java.io.File;
 import java.util.UUID;
 
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Activator;
@@ -121,10 +122,17 @@ public class Util {
 		return null;
 	}
 
-	private static String initialStorageLocation = Platform.getLocation().toFile().getPath();
+	private static String initialStorageLocation = System.getProperty("user.home");
 
 	public static String getInitialStorageLocation() {
 		return initialStorageLocation;
+	}
+	
+	public static String getInitialWorkspaceLocation() {
+		String location = getInitialStorageLocation();
+		if (!location.endsWith(File.separator))
+			location += File.separator;
+		return location + "Harmonization Tool Workspace";
 	}
 
 	public static void setInitialStorageLocation(String location) {

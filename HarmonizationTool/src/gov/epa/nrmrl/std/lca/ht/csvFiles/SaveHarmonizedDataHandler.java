@@ -114,9 +114,6 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		String[] filterExtensions = new String[] { "*.csv", "*.txt", "*" };
 
 		String outputDirectory = Util.getPreferenceStore().getString("outputDirectory");
-		if (outputDirectory.startsWith("(same as") || outputDirectory.length() == 0) {
-			outputDirectory = Util.getPreferenceStore().getString("workingDirectory");
-		}
 		if (outputDirectory.length() > 0) {
 			dialog.setFilterPath(outputDirectory);
 		} else {
