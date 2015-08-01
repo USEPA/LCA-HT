@@ -138,7 +138,8 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 					e.printStackTrace();
 				}
 				Display.getDefault().syncExec(new Runnable() { public void run() {
-					FlowsWorkflow.restoreAllButtons();
+//					FlowsWorkflow.restoreAllButtons();
+					FlowsWorkflow.switchToWorkflowState(3);
 				}});
 			}}).start();
 		}

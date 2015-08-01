@@ -95,28 +95,13 @@
          <menu
                label="File">
             <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportReferenceDataHandler"
-                  label="Load Reference Data List"
-                  style="push">
-            </command>
-            <command
                   commandId="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
-                  label="Save Harmonized Data"
-                  style="push">
-            </command>
-            <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
-                  label="Export entire TDB"
+                  label="Export Harmonized Data..."
                   style="push">
             </command>
             <command
                   commandId="org.eclipse.ui.window.preferences"
-                  label="Preferences"
-                  style="push">
-            </command>
-            <command
-                  commandId="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
-                  label="Prepare output"
+                  label="Preferences..."
                   style="push">
             </command>
             <command
@@ -125,40 +110,35 @@
             </command>
          </menu>
          <menu
-               label="Data Set">
+               label="Dataset">
             <command
                   commandId="HarmonizationTool.EditMetadataId"
-                  label="Edit Metadata"
+                  label="Edit Metadata..."
                   style="push">
             </command>
             <command
                   commandId="HarmonizationTool.LoadDataSet"
-                  label="Load Data Set"
+                  label="Re-Load Dataset..."
                   style="push">
             </command>
          </menu>
          <menu
                label="Window Manager">
             <menu
-                  label="Views">
+                  label="Restore Views">
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
-                     label="Show Workflow"
+                     label="Show Inventory Workflow"
                      style="push">
                </command>
                <command
                      commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView"
-                     label="Show CSV Table"
+                     label="Show User Data (Table)"
                      style="toggle">
                </command>
                <command
                      commandId="harmonizationtool.handler.GenericShowViewHandler"
                      label="Show Logger Window"
-                     style="push">
-               </command>
-               <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
-                     label="Show Flowables Window"
                      style="push">
                </command>
                <command
@@ -172,14 +152,14 @@
                      style="push">
                </command>
                <command
-                     commandId="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
-                     label="Show Output Harmonized Data"
+                     commandId="gov.epa.nrmrl.std.lca.ht.flowable.MatchFlowableTableView"
+                     label="Show Flowables Window"
                      style="push">
                </command>
             </menu>
          </menu>
          <menu
-               label="SPARQL">
+               label="Advanced">
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.QueryView"
                   label="Show SPARQL Query Window"
@@ -192,20 +172,30 @@
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveResultsHandler"
-                  label="Save SPARQL Results"
+                  label="Save SPARQL Results..."
                   style="push">
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.handler.ExtQueryHandler"
-                  label="Query From File"
+                  label="Run SPARQL Query From File..."
                   style="push"
                   tooltip="Run a (read-only) query from a file">
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.handler.ExtUpdateHandler"
-                  label="Update From File"
+                  label="Run SPARQL Update From File..."
                   style="push"
                   tooltip="Run a (delete or insert) update from a file">
+            </command>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
+                  label="Export entire TDB..."
+                  style="push">
+            </command>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.handler.ImportReferenceDataHandler"
+                  label="Load Reference Data List..."
+                  style="push">
             </command>
          </menu>
          <menu
@@ -248,14 +238,18 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="HarmonizationTool.application"
-            name="LCA Harmonization Tool">
+            name="LCA-Harmonization Tool">
          <property
                name="windowImages"
                value="icons/alt_window_16.gif,icons/alt_window_32_lca2.gif">
          </property>
          <property
                name="appName"
-               value="LCA Harmonization Tool">
+               value="LCA-Harmonization Tool">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/about_dialog_image.png">
          </property>
       </product>
    </extension>
@@ -393,14 +387,9 @@
             name="Restore FlowsWorkflow Perspective">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
-            id="gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler"
-            name="Save Harmonized Data (CSV)">
-      </command>
-      <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
             id="gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip"
-            name="Save Harmonized Data (All Formats)">
+            name="Export Harmonized Data (All Formats)">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowResultsViewHandler"

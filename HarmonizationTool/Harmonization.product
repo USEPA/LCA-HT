@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="LCA Harmonization Tool" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
+<product name="LCA-Harmonization Tool" uid="HarmonizationProduct" id="HarmonizationTool.product" application="HarmonizationTool.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
+   <aboutInfo>
+      <image path="/HarmonizationTool/icons/about_dialog_image.png"/>
+   </aboutInfo>
 
    <configIni use="default">
    </configIni>
@@ -16,7 +19,7 @@
 
    <splash
       location="HarmonizationTool" />
-   <launcher name="HarmonizeLCA">
+   <launcher name="LCA-HT">
       <solaris/>
       <win useIco="true">
          <ico path="/HarmonizationTool/icons/win_icons.ico"/>
@@ -27,6 +30,7 @@
 
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="CSV-tools"/>

@@ -169,7 +169,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	
 	private void enableButtons() {
 		Display.getDefault().syncExec(new Runnable() { public void run() {
-			FlowsWorkflow.restoreAllButtons();
+//			FlowsWorkflow.restoreAllButtons();
+			FlowsWorkflow.switchToWorkflowState(3);
 		}});
 	}
 	
@@ -442,7 +443,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextConcludeStatus("0/3 steps to complete");
+				FlowsWorkflow.setStatusConclude("0/3 steps to complete");
 			}
 		});
 		Map<String, String> userFlow2masterFlow = new HashMap<String, String>();
@@ -659,7 +660,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 					final int percentToWrite = percent;
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setTextConcludeStatus("1/3 preparing components " + percentToWrite + "%");
+							FlowsWorkflow.setStatusConclude("1/3 preparing components " + percentToWrite + "%");
 						}
 					});
 					System.out.println("1/3 " + percent + "% complete");
@@ -877,7 +878,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				final int percentToWrite = percent;
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
 					}
 				});
 				System.out.println("2/3 " + percent + "% complete");
@@ -997,7 +998,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				final int percentToWrite = percent;
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
 					}
 				});
 				System.out.println("2/3 " + percent + "% complete");
@@ -1078,7 +1079,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				final int percentToWrite = percent;
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
 					}
 				});
 				System.out.println("2/3 " + percent + "% complete");
@@ -1134,7 +1135,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				final int percentToWrite = percent;
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextConcludeStatus("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
 					}
 				});
 				System.out.println("2/3 " + percent + "% complete");
@@ -1184,7 +1185,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextConcludeStatus("");
+				FlowsWorkflow.setStatusConclude("");
 			}
 		});
 	}
