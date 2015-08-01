@@ -25,6 +25,7 @@ public class Activator extends AbstractUIPlugin {
 	public Activator() {
 	}
 
+	public static BundleContext ctx;
 	
 	/*
 	 * (non-Javadoc)
@@ -32,6 +33,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		ctx = context;
 		plugin = this;
 //		new ProjectDirectoryManager();
 //		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();

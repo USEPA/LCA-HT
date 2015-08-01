@@ -104,7 +104,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (tdbDataset != null) {
+		/*if (tdbDataset != null) {
 			if (tdbDataset.getDefaultModel() != null) {
 				System.out.println("Attempting to execute ActiveTDB after the TDB is open!");
 				return null;
@@ -119,7 +119,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
 			e2.printStackTrace();
 			System.exit(1);
-		}
+		}*/
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		shell.setVisible(true);
 		shell.getDisplay().update();
@@ -142,10 +142,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		
 	}
 
-	private static void openTDB() {
+	public static void openTDB() {
 		if (tdbDataset == null) {
-			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			/*String activeTDB = Util.getPreferenceStore().getString("defaultTDB");
+			/*Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			String activeTDB = Util.getPreferenceStore().getString("defaultTDB");
 			if (Util.EMPTY_STRING.equals(activeTDB)) {
 				StorageLocationDialog dialog = new StorageLocationDialog(shell);
 				shell.setVisible(false);
@@ -169,12 +169,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				defaultTDBFile = new File(defaultTDB);
 
 				if (defaultTDBFile.isDirectory()) {
-					String infoMessage = "Initializing TDB Data - please wait...";
+					/*String infoMessage = "Initializing TDB Data - please wait...";
 					creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION,
 							new String[] {}, 0);
 					creationMessage.setBlockOnOpen(false);
 					creationMessage.open();
-					creationMessage.getShell().getDisplay().update();
+					creationMessage.getShell().getDisplay().update();*/
 					System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 					try {
 						tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
@@ -190,8 +190,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 						Util.getPreferenceStore().save();
 
 						tdbCreated = true;
-						if (creationMessage != null)
-							creationMessage.close();
+						/*if (creationMessage != null)
+							creationMessage.close();*/
 						// TODO: Write to the Logger whether the TDB is freshly
 						// created or has contents already. Also
 						// write
@@ -219,11 +219,11 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 					// ask user for TDB directory
 					// TODO: Determine when this message might display and what
 					// the user and software shoul do about it.
-					new GenericMessageBox(shell, "Error", errMsg);
+					new GenericMessageBox(null, "Error", errMsg);
 					// If user has previously canceled with invalid data, quit.
 					if (prefsCanceled) {
 						errMsg = "The selected directory is not accessible - exiting now.";
-						new GenericMessageBox(shell, "Error", errMsg);
+						new GenericMessageBox(null, "Error", errMsg);
 						System.exit(1);
 					}
 					redirectToPreferences();

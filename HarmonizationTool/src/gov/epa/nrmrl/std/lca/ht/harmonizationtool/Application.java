@@ -19,9 +19,11 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.osgi.service.runnable.StartupMonitor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * This class controls all aspects of the application's execution
@@ -36,11 +38,15 @@ public class Application implements IApplication {
 		Preferences osPrefs = Preferences.userNodeForPackage(this.getClass());
 		boolean askLocation = osPrefs.getBoolean("lca.chooseWorkspace", true);
 		String workspaceDir = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
+		
+
+
+
+		
 		if (!askLocation)
 			askLocation = !Initializer.initializeDefaultPreferences(workspaceDir);
 
 		while (askLocation) {
-			System.out.println("Install " + Platform.getInstallLocation().getURL().getFile());
 			StorageLocationDialog dlg = new StorageLocationDialog(display.getActiveShell(), osPrefs);
 			dlg.open();
 			if (dlg.getReturnCode() == StorageLocationDialog.RET_CANCEL)
@@ -52,10 +58,26 @@ public class Application implements IApplication {
 				String errMsg = b.toString();
 				System.out.println("Displaying shell " + null);
 				new MessageDialog(null, "Error", null, errMsg, MessageDialog.ERROR, new String[] { "Ok" }, 0).open();
-				osPrefs.put("lca.wsDir", Util.getInitialWorkspaceLocation());
 			}
-			else
+			else {
 				askLocation = false;
+				
+				//Needed to repaint the splash screen after the startup dialog closes.  Don't ask me what it does.
+				ServiceTracker<StartupMonitor, StartupMonitor> monitorTracker = new ServiceTracker<StartupMonitor, StartupMonitor>(Activator.ctx, StartupMonitor.class.getName(), null);
+				monitorTracker.open();
+				try {
+						StartupMonitor monitor = monitorTracker.getService();
+						if (monitor != null) {
+							try {
+								monitor.update();
+							} catch (Throwable e) {
+								// ignore exceptions thrown by the monitor
+							}
+						}			
+				} finally {
+					monitorTracker.close();
+				}
+			}
 		}		
 
 		Location instanceLoc = Platform.getInstanceLocation();
@@ -65,9 +87,11 @@ public class Application implements IApplication {
 			e.printStackTrace();
 			System.exit(0);
 		}  
+		
 		new LoggerManager();
 		LoggerManager.Init();
-		//ActiveTDB.openTDB();
+		ActiveTDB.openTDB();
+		ActiveTDB.syncTDBtoLCAHT();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {
