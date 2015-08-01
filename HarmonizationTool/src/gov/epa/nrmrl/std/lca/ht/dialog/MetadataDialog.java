@@ -34,7 +34,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class MetaDataDialog extends TitleAreaDialog {
+public class MetadataDialog extends TitleAreaDialog {
 
 	private DataSourceProvider curDataSourceProvider = null;
 	private DataSourceProvider newDataSourceProvider = null;
@@ -62,7 +62,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	 * @wbp.parser.constructor
 	 */
 
-	public MetaDataDialog(Shell parentShell) {
+	public MetadataDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
 		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
@@ -87,7 +87,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("SET META existing DataSource");
 	}
 
-	public MetaDataDialog(Shell parentShell, FileMD fileMD) {
+	public MetadataDialog(Shell parentShell, FileMD fileMD) {
 		super(parentShell);
 		// CASE 2) WITH A NEW FILE TO
 		// 2a) CREATE A NEW DATA SOURCE
@@ -103,7 +103,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("SET META start - new file");
 	}
 
-	public MetaDataDialog(Shell parentShell, FileMD fileMD, String newProposedName) {
+	public MetadataDialog(Shell parentShell, FileMD fileMD, String newProposedName) {
 		super(parentShell);
 		// CASE 2) WITH A NEW FILE TO
 		// 2a) CREATE A NEW DATA SOURCE
@@ -118,7 +118,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 		runLogger.info("SET META start - new file");
 	}
 
-	public MetaDataDialog(Shell parentShell, DataSourceProvider dataSourceProvider) {
+	public MetadataDialog(Shell parentShell, DataSourceProvider dataSourceProvider) {
 		super(parentShell);
 		assert dataSourceProvider != null : "dataSourceProvider cannot be null";
 		this.curDataSourceProvider = dataSourceProvider;
@@ -153,7 +153,7 @@ public class MetaDataDialog extends TitleAreaDialog {
 	}
 
 	private void layoutDialog(Composite parent) {
-		setTitle("View / Edit Dataset Meta Data");
+		setTitle("Edit Dataset Metadata");
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		// composite.setBounds(0, 0, 600, 1200);

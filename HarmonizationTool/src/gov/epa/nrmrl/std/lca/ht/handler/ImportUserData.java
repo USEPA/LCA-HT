@@ -9,7 +9,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.MetadataDialog;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -92,8 +92,8 @@ public class ImportUserData implements IHandler {
 		String path = null;
 		File file = null;
 		FileMD fileMD = null;
-		MetaDataDialog dialog = null;
-//		Calendar readDate = GregorianCalendar.getInstance();
+		MetadataDialog dialog = null;
+		// Calendar readDate = GregorianCalendar.getInstance();
 		Date readDate = new Date();
 		ImportUserData importCommand;
 		Display display = null;
@@ -126,8 +126,10 @@ public class ImportUserData implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
-			//Save button state, disable everything
-			FlowsWorkflow.disableAllButtons();
+			// Save button state, disable everything
+//			FlowsWorkflow.disableAllButtons();
+			FlowsWorkflow.switchToWorkflowState(2);
+
 
 			RunData data = new RunData(this);
 			data.display = Display.getCurrent();
@@ -147,7 +149,8 @@ public class ImportUserData implements IHandler {
 			data.path = fileDialog.open();
 			if (data.path == null) {
 				runLogger.info("# Cancelling data file read");
-				FlowsWorkflow.restoreAllButtons();
+//				FlowsWorkflow.restoreAllButtons();
+				FlowsWorkflow.switchToWorkflowState(3);
 				return null;
 			}
 			data.file = new File(data.path);
@@ -155,7 +158,8 @@ public class ImportUserData implements IHandler {
 				String errMsg = "Could not open the file \"" + data.path + "\".";
 				new GenericMessageBox(Display.getCurrent().getActiveShell(), "Error", errMsg);
 				runLogger.info("# Cancelling data file read");
-				FlowsWorkflow.restoreAllButtons();
+//				FlowsWorkflow.restoreAllButtons();
+				FlowsWorkflow.switchToWorkflowState(3);
 				return null;
 			}
 			data.fileMD = new FileMD(false);
@@ -167,30 +171,31 @@ public class ImportUserData implements IHandler {
 			Date readDate = new Date();
 			data.fileMD.setReadDate(readDate);
 
-//			data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
-//			data.readDate = new Date();
-//			data.fileMD.setReadDate(data.readDate);
+			// data.fileMD.setModifiedDate(new Date(data.file.lastModified()));
+			// data.readDate = new Date();
+			// data.fileMD.setReadDate(data.readDate);
 			runLogger.info("# File read at: " + Temporal.getLocalDateFmt(data.readDate));
 			long time = data.file.lastModified();
 			Date date = new Date(time);
-//			calednar.setTimeInMillis(time);
+			// calednar.setTimeInMillis(time);
 			runLogger.info("# File last modified: " + Temporal.getLocalDateFmt(date));
 			runLogger.info("# File size: " + data.file.length());
 
-			System.out.println("All's fine before opening dialog");
-			data.dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), data.fileMD);
-			System.out.println("meta initialized");
+//			System.out.println("All's fine before opening dialog");
+			data.dialog = new MetadataDialog(Display.getCurrent().getActiveShell(), data.fileMD);
+//			System.out.println("meta initialized");
 			data.dialog.create();
-			System.out.println("meta created");
-			if (data.dialog.open() == MetaDataDialog.CANCEL) {
+//			System.out.println("meta created");
+			if (data.dialog.open() == MetadataDialog.CANCEL) {
 				data.fileMD.remove();
-				FlowsWorkflow.restoreAllButtons();
+//				FlowsWorkflow.restoreAllButtons();
+				FlowsWorkflow.switchToWorkflowState(3);
 				return null;
 			}
-			FlowsWorkflow.clearButtonText();
+			FlowsWorkflow.clearStatusText();
 			data.fileMD.createTDBResource();
-			FlowsWorkflow.textLoadUserData.setText("... loading ...");
-			FlowsWorkflow.textLoadUserData.setToolTipText("... loading ...");
+//			FlowsWorkflow.statusLoadUserData.setText("... loading ...");
+//			FlowsWorkflow.statusLoadUserData.setToolTipText("... loading ...");
 			new Thread(data).start();
 		}
 		return null;
@@ -217,27 +222,23 @@ public class ImportUserData implements IHandler {
 
 		try {
 			CSVParser parser = new CSVParser(fileReader, CSVFormat.EXCEL);
-			//CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
-			// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW, MANY
+			// CSVParser parser = new CSVParser(fileReader, CSVStrategy.EXCEL_STRATEGY);
+			// FIXME - IF THE CSV FILE HAS WINDOWS CARRIAGE RETURNS, THE HT DOESN'T SPLIT ON THEM, SO YOU GET ONE ROW,
+			// MANY
 			// COLUMNS
-			/*String[] values = null;
-			try {
-				parser.getRecordNumber();
-				values = parser.getLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
-	
-			}*/
-			
-			 for (CSVRecord csvRecord : parser) {		 
-					DataRow dataRow = initDataRow(csvRecord);
-					tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
+			/*
+			 * String[] values = null; try { parser.getRecordNumber(); values = parser.getLine(); } catch (IOException
+			 * e) { e.printStackTrace(); } if (values == null) { // BLANK FILE STILL HAS values (BUT ZERO LENGTH)
+			 * 
+			 * }
+			 */
+
+			for (CSVRecord csvRecord : parser) {
+				DataRow dataRow = initDataRow(csvRecord);
+				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
 			}
 			parser.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		if (tableProvider.getData().size() == 0) {
@@ -296,7 +297,8 @@ public class ImportUserData implements IHandler {
 					int newPercent = ++i * 100 / size;
 					if (percent != newPercent) {
 						percent = newPercent;
-						updateText(FlowsWorkflow.textLoadUserData, "1/4 Loading: " + percent + "%");
+						int percentPart = percent / 4;
+						updateText(FlowsWorkflow.statusLoadUserData, percentPart + "% (loading)");
 
 					}
 					ZipEntry ze = (ZipEntry) entries.nextElement();
@@ -372,7 +374,7 @@ public class ImportUserData implements IHandler {
 		/* TRANSFER DATA TO DEFAULT GRAPH */
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
-
+		updateText(FlowsWorkflow.statusLoadUserData, "90% (finalizing)");
 		runLogger.info("Syncing TDB to LCAHT " + new Date());
 		ActiveTDB.syncTDBtoLCAHT();
 
@@ -383,7 +385,6 @@ public class ImportUserData implements IHandler {
 		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
 		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
 		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
-
 	}
 
 	private static void placeContentsInDataset() {
@@ -421,11 +422,9 @@ public class ImportUserData implements IHandler {
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importGraphName);
 
-		updateText(FlowsWorkflow.textLoadUserData, "3/4 Dataset");
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
 		List<Resource> flowsToTagWithUUID = new ArrayList<Resource>();
-
 		while (resultSet.hasNext()) {
 			QuerySolution querySolution = resultSet.next();
 			Resource item = querySolution.get("s").asResource();
@@ -435,30 +434,38 @@ public class ImportUserData implements IHandler {
 				flowsToTagWithUUID.add(item);
 			}
 		}
+		int piecesToDo = itemsToAddToDatasource.size() + flowsToTagWithUUID.size();
 
 		Pattern uuidCheckPattern = FormatCheck.getUUIDCheck().get(0).getPattern();
 		// --- BEGIN SAFE -WRITE- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(ActiveTDB.importGraphName);
 		try {
+			int done = 0;
 			for (Resource itemToAdd : itemsToAddToDatasource) {
 				tdbModel.add(itemToAdd, ECO.hasDataSource, datasetResource);
+				done++;
+				int percentPart = 50 + (25 * done / piecesToDo);
+				updateText(FlowsWorkflow.statusLoadUserData, percentPart + "% (assigning dataset)");
 			}
 			for (Resource flowResource : flowsToTagWithUUID) {
+				done++;
+				int percentPart = 50 + (25 * done / piecesToDo);
+				updateText(FlowsWorkflow.statusLoadUserData, percentPart + "% (assigning dataset)");
 				String uriFull = flowResource.getURI();
 				String uuidCandidate = uriFull.substring(uriFull.length() - 36);
 				Matcher uuidCheck = uuidCheckPattern.matcher(uuidCandidate);
 				if (uuidCheck.find()) {
 					Literal uuidLiteral = tdbModel.createTypedLiteral(uuidCandidate);
 					tdbModel.add(flowResource, FedLCA.hasOpenLCAUUID, uuidLiteral);
-				} else {
-					System.out.println("No match for " + uuidCandidate);
+//				} else {
+//					System.out.println("No match for " + uuidCandidate);
 				}
 			}
 			ActiveTDB.tdbDataset.commit();
 			// runLogger.info(" Finished adding items to datasource " + new Date());
 		} catch (Exception e) {
-			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
+//			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -510,13 +517,12 @@ public class ImportUserData implements IHandler {
 			b.append("  ?lcaflowable \n");
 			b.append("  ?flowCtx \n");
 			b.append("  ?flowUnit \n");
-			b.append("  ?adhoc \n"); 
+			b.append("  ?adhoc \n");
 			b.append("  ?cp \n");
 			b.append("  ?mf \n");
 			b.append("  ?ctxMatch \n");
 			b.append("  ?unMatch \n");
-		}
-		else
+		} else
 			b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
@@ -559,18 +565,18 @@ public class ImportUserData implements IHandler {
 		b.append("  ?ru olca:name ?reference_unit . \n");
 		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
 		b.append(" \n");
-		if ( dataSourceName != null) {
+		if (dataSourceName != null) {
 			b.append("  optional { \n");
 			b.append("    select ?adhoc \n");
 			b.append("      where { \n");
-			//b.append("      ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			// b.append("      ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
 			b.append("        ?f eco:hasDataSource ?ds . \n");
 			b.append("        ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
 			b.append("    } \n");
 			b.append("    LIMIT 1 \n ");
 			b.append("  } \n");
 			b.append("  optional { \n");
-			//b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
+			// b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
 			b.append("    ?lcaflow eco:hasDataSource ?ds . \n");
 			b.append("    ?f fedlca:hasOpenLCAUUID ?lcid . \n");
 			b.append("    ?lcaflow fedlca:hasOpenLCAUUID ?lcid . \n");
@@ -605,7 +611,7 @@ public class ImportUserData implements IHandler {
 		b.append("order by ?flowable \n");
 
 		String query = b.toString();
-		System.out.println("Query \n" + query);
+//		System.out.println("Query \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -614,34 +620,34 @@ public class ImportUserData implements IHandler {
 
 		// runLogger.info("querying current user data " + new Date());
 		if (dataSourceName == null)
-			updateText(FlowsWorkflow.textLoadUserData, "4/4 Building table");
+			updateText(FlowsWorkflow.statusLoadUserData, "75% (building table)");
 		return (ResultSetRewindable) harmonyQuery2Impl.getResultSet();
 	}
-		
+
 	public static void buildUserDataTableFromOLCADataViaQuery(String dataSourceName, TableProvider tblProvider) {
-	
+
 		ResultSetRewindable results = queryOLCATAbleData(dataSourceName);
-		
+
 		if (dataSourceName != null)
 			tblProvider.setExistingData(dataSourceName != null);
 
 		// runLogger.info("adding user data to table " + new Date());
+		updateText(FlowsWorkflow.statusLoadUserData, "85% (displaying table)");
+
 		tblProvider.createUserData(results);
 
 		tblProvider.getHeaderRow().add(""); // THIS MAKES THE SIZE OF THE HEADER ROW ONE GREATER TODO: ADD A COLUMN
-												// COUNT FIELD TO TABLES
+											// COUNT FIELD TO TABLES
 
 		tblProvider.setLCADataPropertyProvider(1, Flow.getDataPropertyMap().get(Flow.openLCAUUID));
 		tblProvider.setLCADataPropertyProvider(2, Flowable.getDataPropertyMap().get(Flowable.flowableNameString));
 		tblProvider.setLCADataPropertyProvider(3, Flowable.getDataPropertyMap().get(Flowable.casString));
 		tblProvider.setLCADataPropertyProvider(4, Flowable.getDataPropertyMap().get(Flowable.chemicalFormulaString));
-		tblProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap()
-				.get(FlowContext.flowContextGeneral));
-		tblProvider.setLCADataPropertyProvider(6,
-				FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
+		tblProvider.setLCADataPropertyProvider(5, FlowContext.getDataPropertyMap().get(FlowContext.flowContextGeneral));
+		tblProvider
+				.setLCADataPropertyProvider(6, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
-		
 		return;
 	}
 
@@ -754,8 +760,8 @@ public class ImportUserData implements IHandler {
 				int newPercent = ++i * 100 / size;
 				if (percent != newPercent) {
 					percent = newPercent;
-					updateText(FlowsWorkflow.textLoadUserData, "2/4 Importing: " + percent + "%");
-
+					final int percentPart = 25 + (percent / 4);
+					updateText(FlowsWorkflow.statusLoadUserData, percentPart + "% (importing)");
 				}
 				failedString = fileContents;
 				String inputType = fileContentsList.get(fileContents);
@@ -770,8 +776,8 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);
 		} catch (Exception e) {
-			System.out.println("Import failed with Exception: " + e);
-			System.out.println("The failing string was: \n" + failedString);
+//			System.out.println("Import failed with Exception: " + e);
+//			System.out.println("The failing string was: \n" + failedString);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -814,12 +820,12 @@ public class ImportUserData implements IHandler {
 		}
 
 		Date readEndDate = new Date();
-		System.out.println("readEndDate.getTime() "+readEndDate.getTime());
+//		System.out.println("readEndDate.getTime() " + readEndDate.getTime());
 		Date readDate = data.fileMD.getReadDate();
-		System.out.println("data.readDate.getTime() "+readDate.getTime());
+//		System.out.println("data.readDate.getTime() " + readDate.getTime());
 
-		long secondsRead = (readEndDate.getTime() - data.readDate.getTime())/1000 ; 
-//				- data.readDate.getTime()) / 1000);
+		long secondsRead = (readEndDate.getTime() - data.readDate.getTime()) / 1000;
+		// - data.readDate.getTime()) / 1000);
 		runLogger.info("# File read time (in seconds): " + secondsRead);
 		// display.readAndDispatch();
 		displayTableView(data);
@@ -840,23 +846,31 @@ public class ImportUserData implements IHandler {
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				}
-				System.out.println("About to update CSVTableView");
+//				System.out.println("About to update CSVTableView");
 				CSVTableView.update(data.path);
 
 				String key = CSVTableView.getTableProviderKey();
 				if (key == null) {
-					System.out.println("The CSVTableView does not have a table!");
-					FlowsWorkflow.textLoadUserData.setText("");
-					FlowsWorkflow.textLoadUserData.setToolTipText("");
+//					System.out.println("The CSVTableView does not have a table!");
+					// FlowsWorkflow.statusLoadUserData.setText("");
+					// FlowsWorkflow.statusLoadUserData.setToolTipText("");
+					FlowsWorkflow.switchToWorkflowState(1);
 				} else {
-					FlowsWorkflow.btnConcludeFile.setEnabled(true);
+					FlowsWorkflow.switchToWorkflowState(2);
 
-					FlowsWorkflow.textLoadUserData.setText(TableKeeper
-							.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
-					FlowsWorkflow.textLoadUserData.setToolTipText(TableKeeper
+					// FlowsWorkflow.btnConcludeFile.setEnabled(true);
+					FlowsWorkflow.setStatusUserData(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+							.getFileMD().getFilename());
+					FlowsWorkflow.setTooltipStatusUserData(TableKeeper
 							.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
-					FlowsWorkflow.btnCheckData.setEnabled(true);
-					System.out.println("About to do setHeaderInfo()");
+					FlowsWorkflow.switchToWorkflowState(3);
+
+					// FlowsWorkflow.statusLoadUserData.setText(TableKeeper
+					// .getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
+					// FlowsWorkflow.statusLoadUserData.setToolTipText(TableKeeper
+					// .getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
+					// FlowsWorkflow.btnCheckData.setEnabled(true);
+					// System.out.println("About to do setHeaderInfo()");
 				}
 				FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
 			}

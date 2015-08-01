@@ -2,7 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
-import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.MetadataDialog;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -32,7 +32,7 @@ public class EditMetadataHandler implements IHandler {
 					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
 			return null;
 		}
-		MetaDataDialog dialog = new MetaDataDialog(HandlerUtil.getActiveShell(event));
+		MetadataDialog dialog = new MetadataDialog(HandlerUtil.getActiveShell(event));
 		dialog.create();
 		dialog.open();
 		return null;

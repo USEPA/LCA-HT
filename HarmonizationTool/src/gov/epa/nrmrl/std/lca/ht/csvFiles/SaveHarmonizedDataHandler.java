@@ -129,7 +129,8 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		System.out.println("Save to: " + saveTo);
 		
 		if (saveTo == null) {
-			FlowsWorkflow.restoreAllButtons();
+//			FlowsWorkflow.restoreAllButtons();
+			FlowsWorkflow.switchToWorkflowState(3);
 		}
 		
 		
@@ -137,7 +138,8 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			if (dataSetName != null) {
 				writeStoredData(dataSetName, saveTo);
 				Display.getDefault().syncExec(new Runnable() { public void run() {
-					FlowsWorkflow.restoreAllButtons();
+//					FlowsWorkflow.restoreAllButtons();
+					FlowsWorkflow.switchToWorkflowState(3);
 				}});
 			}
 			
@@ -148,7 +150,8 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			
 			writeTableData(headerRow, dataRows, saveTo);
 			Display.getDefault().syncExec(new Runnable() { public void run() {
-				FlowsWorkflow.restoreAllButtons();
+//				FlowsWorkflow.restoreAllButtons();
+				FlowsWorkflow.switchToWorkflowState(3);
 			}});
 			}}).start();
 		return null;

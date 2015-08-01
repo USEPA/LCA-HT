@@ -44,7 +44,7 @@ public class OpenDataSet implements IHandler {
 		dlg.open();
 		if (dlg.getReturnCode() == ChooseDataSetDialog.CANCEL)
 			return null;
-		FlowsWorkflow.clearButtonText();
+		FlowsWorkflow.clearStatusText();
 		FlowsWorkflow.buttonModePostLoad();
 		String dataSet = dlg.getSelection();
 		
@@ -76,8 +76,10 @@ public class OpenDataSet implements IHandler {
 		if (CSVTableView.preCommit)
 			FlowsWorkflow.buttonModePostLoad();
 		else {
-			FlowsWorkflow.textCheckData.setText("");
+			FlowsWorkflow.statusCheckData.setText("");
 			FlowsWorkflow.buttonModePostCommit();
+//			FlowsWorkflow.switchToWorkflowState(8);
+
 		}
 		System.out.println("Data set opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 

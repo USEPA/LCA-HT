@@ -38,7 +38,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 		Logger.getLogger("run").info("Job: " + key + " started: " + startDate);
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextCommit("Starting...");
+				FlowsWorkflow.setStatusSaveMatch("Starting...");
 			}
 		});
 	}
@@ -70,7 +70,7 @@ public class AutoMatchJobChangeListener implements IJobChangeListener {
 		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextCommit("Done");
+				FlowsWorkflow.setStatusSaveMatch("Done");
 			}
 		});
 

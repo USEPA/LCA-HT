@@ -115,6 +115,22 @@ public class OpenLCA {
 	/** Conversion factors between flow properties that can be used to express amounts of the flow. */
 	public static final Property flowProperties = m_model.createProperty(NS + "flowProperties");
 
+	/**  
+	 * Predicate connecting an Exchange or ImpactFactor to its Flow .
+	 */
+	public static final Property flow = m_model.createProperty(NS + "flow");
+
+	/**  
+	 * Amount associated with an Exchange .
+	 */
+	public static final Property amount = m_model.createProperty(NS + "amount");
+	
+	/**
+	 * The value of the impact assessment factor.
+	 */
+	public static final Property value = m_model.createProperty(NS + "value");
+	
+
 	/** 
 	 * A FlowPropertyFactor is a conversion factor between flow properties (quantities) of a flow. As an example the
 	 * amount of the flow 'water' in a process could be expressed in 'kg' mass or 'm3' volume. In this case the flow
@@ -136,6 +152,11 @@ public class OpenLCA {
 	 * An input or output of a process.
 	 */
 	public static final Resource Exchange = m_model.createResource(NS + "Exchange");
+	
+	/**
+	 * A single characterisation factor of a LCIA category for a flow.
+	 */
+	public static final Resource ImpactFactor = m_model.createResource(NS + "ImpactFactor");
 
 	public static final Resource ProcessDocumentation = m_model.createResource(NS + "ProcessDocumentation");
 
@@ -199,6 +220,9 @@ public class OpenLCA {
 	/** Unit - A unit of measure */
 	public static final Resource Unit = m_model.createResource(NS + "Unit");
 
+	/** Predicate linking an Exchange or ImpactFactor to the Unit in which it is measured (e.g. kg). */
+	public static final Property unit = m_model.createProperty(NS + "unit");
+	
 	/**
 	 * conversionFactor - The conversion factor to the reference unit of the unit group to which this unit belongs. As
 	 * of 2015-02-12 applies to a FlowPropertyFactor

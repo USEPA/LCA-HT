@@ -130,7 +130,7 @@ public class AutoMatchJob extends Job {
 		if (flowableCSVColumnNumbers.size() == 0) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					FlowsWorkflow.setTextMatchFlowables("N/A");
+					FlowsWorkflow.setStatusFlowable("N/A");
 					FlowsWorkflow.disableFlowableBtn();
 				}
 			});
@@ -139,7 +139,7 @@ public class AutoMatchJob extends Job {
 		if (flowContextCSVColumnNumbers.size() == 0) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					FlowsWorkflow.setTextFlowContexts("N/A");
+					FlowsWorkflow.setStatusFlowContext("N/A");
 					FlowsWorkflow.disableContextBtn();
 
 				}
@@ -149,7 +149,7 @@ public class AutoMatchJob extends Job {
 		if (flowPropertyCSVColumnNumbers.size() == 0) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					FlowsWorkflow.setTextFlowProperties("N/A");
+					FlowsWorkflow.setStatusFlowUnit("N/A");
 					FlowsWorkflow.disablePropertyBtn();
 				}
 			});
@@ -157,7 +157,7 @@ public class AutoMatchJob extends Job {
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setTextCommit("0/3 steps");
+				FlowsWorkflow.setStatusSaveMatch("0/3 steps");
 			}
 		});
 		int percentComplete = 0;
@@ -197,7 +197,7 @@ public class AutoMatchJob extends Job {
 
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextCommit(state);
+						FlowsWorkflow.setStatusSaveMatch(state);
 					}
 				});
 				percentComplete += 1;
@@ -391,7 +391,7 @@ public class AutoMatchJob extends Job {
 					final String state = "2/3: " + percentComplete + "%";
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setTextCommit(state);
+							FlowsWorkflow.setStatusSaveMatch(state);
 							// Flow.addAllFlowData();
 						}
 					});
@@ -445,10 +445,10 @@ public class AutoMatchJob extends Job {
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
-		}	
+		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
-//		Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
+		// Map<Resource, Resource> flowMap = new HashMap<Resource, Resource>();
 		// TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
 		String dataSourceName = tableProvider.getDataSourceProvider().getDataSourceName();
 		percentComplete = 0;
@@ -459,7 +459,7 @@ public class AutoMatchJob extends Job {
 				final String state = "3/3: " + percentComplete + "%";
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setTextCommit(state);
+						FlowsWorkflow.setStatusSaveMatch(state);
 						// Flow.addAllFlowData();
 					}
 				});
@@ -521,7 +521,7 @@ public class AutoMatchJob extends Job {
 				// ActiveTDB.getModel(null).createResource(OpenLCA.NS+uuidString);
 				// }
 				new ComparisonProvider(userFlowResource, masterFlowResource, FedLCA.Equivalent);
-//				flowMap.put(userFlowResource, masterFlowResource);
+				// flowMap.put(userFlowResource, masterFlowResource);
 
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -537,26 +537,26 @@ public class AutoMatchJob extends Job {
 			}
 		}
 
-//		for (Resource key: flowMap.keySet()){
-//			new ComparisonProvider(key, flowMap.get(key),FedLCA.Equivalent);
-//		}
+		// for (Resource key: flowMap.keySet()){
+		// new ComparisonProvider(key, flowMap.get(key),FedLCA.Equivalent);
+		// }
 		ComparisonKeeper.commitUncommittedComparisons("Added during AutoMatch; ");
-	
-//
-//		// --- BEGIN SAFE -WRITE- TRANSACTION ---
-//		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-//		tdbModel = ActiveTDB.getModel(null);
-//		try {
-//			for (Resource key : flowMap.keySet()) {
-//				tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
-//			}
-//			ActiveTDB.tdbDataset.commit();
-//		} catch (Exception e) {
-//			System.out.println("addFlowData failed; see Exception: " + e);
-//			ActiveTDB.tdbDataset.abort();
-//		} finally {
-//			ActiveTDB.tdbDataset.end();
-//		}
+
+		//
+		// // --- BEGIN SAFE -WRITE- TRANSACTION ---
+		// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		// tdbModel = ActiveTDB.getModel(null);
+		// try {
+		// for (Resource key : flowMap.keySet()) {
+		// tdbModel.add(key, OWL2.sameAs, flowMap.get(key));
+		// }
+		// ActiveTDB.tdbDataset.commit();
+		// } catch (Exception e) {
+		// System.out.println("addFlowData failed; see Exception: " + e);
+		// ActiveTDB.tdbDataset.abort();
+		// } finally {
+		// ActiveTDB.tdbDataset.end();
+		// }
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
 		// return flowMap.size();
@@ -571,7 +571,9 @@ public class AutoMatchJob extends Job {
 		System.out.println(stopWatch01);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.buttonModePostCommit();
+				// FlowsWorkflow.buttonModePostCommit();
+				FlowsWorkflow.switchToWorkflowState(8);
+				CSVTableView.setPostCommit();
 			}
 		});
 		// System.out.println(stopWatch02);
@@ -583,7 +585,7 @@ public class AutoMatchJob extends Job {
 		// ========================== ROW BY ROW LOOP IS COMPLETE ==========================
 		return Status.OK_STATUS;
 	}
-	
+
 	public Integer[] getHitCounts() {
 		return results;
 	}

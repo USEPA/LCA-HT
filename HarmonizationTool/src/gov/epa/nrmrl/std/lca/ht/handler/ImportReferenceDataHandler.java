@@ -3,7 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.handler;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.FileMD;
-import gov.epa.nrmrl.std.lca.ht.dialog.MetaDataDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.MetadataDialog;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -203,12 +203,12 @@ public class ImportReferenceDataHandler implements IHandler {
 				dataSourceProvider.addFileMD(fileMD);
 				long time3 = System.currentTimeMillis();
 
-				MetaDataDialog dialog = new MetaDataDialog(Display.getCurrent().getActiveShell(), dataSourceProvider);
+				MetadataDialog dialog = new MetadataDialog(Display.getCurrent().getActiveShell(), dataSourceProvider);
 				System.out.println("meta initialized");
 				dialog.create();
 				System.out.println("meta created");
 				int metaStatus = dialog.open();
-				if (metaStatus == MetaDataDialog.CANCEL) {
+				if (metaStatus == MetadataDialog.CANCEL) {
 					ActiveTDB.clearImportGraphContents();
 				}
 				boolean isMaster = true;
