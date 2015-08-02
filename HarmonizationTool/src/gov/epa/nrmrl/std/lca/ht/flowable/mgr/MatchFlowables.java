@@ -225,7 +225,7 @@ public class MatchFlowables extends ViewPart {
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
-		CellEditor[] editors = new CellEditor[10];
+		CellEditor[] editors = new CellEditor[11];
 		String[] columnProperties = new String[editors.length];
 		for (int i = 6; i < 11; ++i) {
 			editors[i] = new ReadOnlyCellEditor(tableViewer.getTable());
