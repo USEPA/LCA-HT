@@ -27,21 +27,20 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.ui.PlatformUI;
 
 public class StorageLocationDialog extends TitleAreaDialog {
-	
-	public static final int RET_SUCCESS=0;
+
+	public static final int RET_SUCCESS = 0;
 	public static final int RET_NO_DIRECTORY = 1;
 	public static final int RET_SHOW_PREFS = 2;
 	public static final int RET_CANCEL = 3;
 
-	
 	private Text text;
-	
+
 	Button prefsButton = null;
-	
+
 	String storageLocation = null;
-	
+
 	Preferences osPrefs = null;
-		
+
 	/**
 	 * Create the dialog.
 	 * @param parentShell
@@ -58,13 +57,13 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	 */
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		
-		setTitle("Choose Storage Location");
-		setMessage("The Harmonization Tool (HT) requires the user to specify directories for local storage.  Please choose a location to store its data.");
-		
+
+		setTitle("Choose Harmonization Tool Workspace");
+		setMessage("The Harmonization Tool uses a workspace directory to store its database, input files, output files, and log files in subdirectories.  Please specify a location for this directory.");
+
 		Composite area = (Composite) super.createDialogArea(parent);
 		Composite container = new Composite(area, SWT.NONE);
-		
+
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		container.setLayout(new GridLayout(3, false));
 		container.setLayoutData(gd);
@@ -72,54 +71,54 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 
-		/*Web*/
+		/* Web */
 		gd.grabExcessHorizontalSpace = true;
 		gd.horizontalAlignment = GridData.FILL;
-		
+
 		Label label = new Label(container, SWT.NONE);
 		label.setText("Directory");
 		label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
 		text = new Text(container, SWT.SINGLE | SWT.BORDER);
-		
+
 		storageLocation = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
 
 		text.setText(storageLocation);
 		gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd.grabExcessHorizontalSpace = true;
 		text.setLayoutData(gd);
-		
+
 		final Button button = new Button(container, SWT.NONE);
 		button.setText("Browse");
 		button.addSelectionListener(new SelectionListener() {
- 
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
- 
+
 			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dlg = new DirectoryDialog(button.getShell(),  SWT.OPEN  );
+				DirectoryDialog dlg = new DirectoryDialog(button.getShell(), SWT.OPEN);
 				dlg.setFilterPath(storageLocation);
 				dlg.setText("Open");
 				String path = dlg.open();
-				if (path == null) return;
+				if (path == null)
+					return;
 				text.setText(path);
 			}
 		});
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-		
+
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
-		
+
 		prefsButton = new Button(container, SWT.CHECK);
 		prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
-		prefsButton.setText("Use this as the default and do not ask agiain");
+		prefsButton.setText("Use this directory as the default and do not ask agiain");
 		prefsButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		new Label(container, SWT.NONE);
-		
 
 		return area;
 	}
@@ -130,10 +129,8 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 
 	/**
@@ -143,11 +140,9 @@ public class StorageLocationDialog extends TitleAreaDialog {
 	protected Point getInitialSize() {
 		return new Point(635, 300);
 	}
-	
-	
-	
+
 	@Override
-	protected void okPressed() {	
+	protected void okPressed() {
 		setReturnCode(RET_SUCCESS);
 		osPrefs.put("lca.wsDir", text.getText());
 		osPrefs.putBoolean("lca.chooseWorkspace", !prefsButton.getSelection());
@@ -159,12 +154,12 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		}
 		close();
 	}
-	
+
 	@Override
 	protected void cancelPressed() {
 		setReturnCode(RET_CANCEL);
 		close();
 		return;
 	}
-	
+
 }

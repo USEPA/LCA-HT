@@ -56,8 +56,8 @@ public class MatchProperties extends ViewPart {
 	private static Tree masterTree;
 	private static TreeViewer masterTreeViewer;
 	private static Text userDataLabel;
-	private static int rowNumSelected;
-	private static int colNumSelected;
+//	private static int rowNumSelected;
+//	private static int colNumSelected;
 	private static FlowUnit unitToMatch;
 	// private static TreeItem currentFlowPropertySelection;
 	private static TreeItem currentFlowUnitSelection;
@@ -205,7 +205,6 @@ public class MatchProperties extends ViewPart {
 			masterTree.deselectAll();
 			if (currentFlowUnitSelection != null) {
 				currentFlowUnitSelection.setBackground(null);
-
 			}
 			currentFlowUnitSelection = null;
 
@@ -274,7 +273,6 @@ public class MatchProperties extends ViewPart {
 			if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
 				if (currentFlowUnitSelection != null) {
 					currentFlowUnitSelection.setBackground(null);
-
 				}
 				currentFlowUnitSelection = selectedTreeItem;
 				currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -1127,12 +1125,12 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-	private static void setUserDataLabel(String labelString, Color color) {
-		if (labelString != null) {
-			userDataLabel.setText(labelString);
-		}
-		userDataLabel.setBackground(color);
-	}
+//	private static void setUserDataLabel(String labelString, Color color) {
+//		if (labelString != null) {
+//			userDataLabel.setText(labelString);
+//		}
+//		userDataLabel.setBackground(color);
+//	}
 
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {

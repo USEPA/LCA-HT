@@ -22,6 +22,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,12 +40,15 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class MatchContexts extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
 	private static Tree masterTree;
-	private static List<String> contextsToMatch;
-	private static List<Resource> contextResourcesToMatch;
+//	private static List<String> contextsToMatch;
+//	private static List<Resource> contextResourcesToMatch;
 	private static Composite outerComposite;
 	private static Button unAssignButton;
 	private static Button nextButton;
 	private static Text userDataLabel;
+	
+	private static TreeItem currentFlowContextSelection;
+
 
 	// private class ContentProvider implements IStructuredContentProvider {
 	// public Object[] getElements(Object inputElement) {
@@ -182,6 +186,10 @@ public class MatchContexts extends ViewPart {
 			}
 			TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 			masterTree.deselectAll();
+			if (currentFlowContextSelection != null){
+				currentFlowContextSelection.setBackground(null);
+			}
+			currentFlowContextSelection = null;
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
@@ -227,11 +235,26 @@ public class MatchContexts extends ViewPart {
 			masterTree.deselectAll();
 			return;
 		}
+		//
+		int count = masterTree.getSelectionCount();
+		if (count > 0) {
+			TreeItem selectedTreeItem = masterTree.getSelection()[0];
+			TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+				if (currentFlowContextSelection != null) {
+					currentFlowContextSelection.setBackground(null);
+				}
+				currentFlowContextSelection = selectedTreeItem;
+				currentFlowContextSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				contextToMatch.setMatchingResource(selectedTreeNode.uri);
+		}
+//		masterTree.deselectAll();
+		//
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
 		if (masterTree.getSelectionCount() == 0) {
 			return;
 		}
+		
 		TreeItem treeItem = masterTree.getSelection()[0];
 		TreeNode treeNode = (TreeNode) treeItem.getData();
 		if (treeNode.hasChildren()) {
@@ -685,14 +708,14 @@ public class MatchContexts extends ViewPart {
 		return null;
 	}
 
-	public List<String> getContextsToMatch() {
-		return contextsToMatch;
-	}
-
-	public void setContextsToMatch(List<String> contexts) {
-		contextsToMatch = contexts;
-		// update();
-	}
+//	public List<String> getContextsToMatch() {
+//		return contextsToMatch;
+//	}
+//
+//	public void setContextsToMatch(List<String> contexts) {
+//		contextsToMatch = contexts;
+//		// update();
+//	}
 
 	public class MatchModel {
 		private Resource resource = null;
@@ -797,9 +820,9 @@ public class MatchContexts extends ViewPart {
 	// return -1;
 	// }
 
-	public List<Resource> getContextResourcesToMatch() {
-		return contextResourcesToMatch;
-	}
+//	public List<Resource> getContextResourcesToMatch() {
+//		return contextResourcesToMatch;
+//	}
 
 //	public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
 //		this.contextResourcesToMatch = contextResourcesToMatch;
@@ -811,9 +834,16 @@ public class MatchContexts extends ViewPart {
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {
 			masterTree.deselectAll();
+			if (currentFlowContextSelection != null) {
+				currentFlowContextSelection.setBackground(null);
+				currentFlowContextSelection = null;
+			}
 			setUserDataLabel("", false);
 			return;
 		}
+
+		//
+		
 
 		String generalString = (String) contextToMatch.getOneProperty(FlowContext.flowContextGeneral);
 		String specificString = contextToMatch.getSpecificString();
@@ -828,7 +858,9 @@ public class MatchContexts extends ViewPart {
 				}
 			}
 		}
-		
+		if (currentFlowContextSelection != null) {
+			currentFlowContextSelection.setBackground(null);
+		}
 		String labelString = null;
 
 		if (specificString == null) {
@@ -843,18 +875,21 @@ public class MatchContexts extends ViewPart {
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
 			if (treeItem != null) {
-				masterTree.setSelection(getTreeItemByURI(contextResource));
+				TreeItem parentItem = treeItem.getParentItem();
+				parentItem.setExpanded(true);
+				currentFlowContextSelection = treeItem;
+				treeItem.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+//				masterTree.deselectAll();
+//				masterTree.setSelection(getTreeItemByURI(contextResource));
 				setUserDataLabel(labelString, true);
-
+				
 			} else {
 				masterTree.deselectAll();
 				setUserDataLabel(labelString, false);
-
 			}
 		} else {
 			masterTree.deselectAll();
 			setUserDataLabel(labelString, false);
-
 		}
 	}
 
