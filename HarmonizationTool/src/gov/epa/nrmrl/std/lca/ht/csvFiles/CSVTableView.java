@@ -48,6 +48,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -802,6 +803,58 @@ public class CSVTableView extends ViewPart {
 	protected boolean canEdit(Object element) {
 		return true;
 	}
+	
+	public static class LCACellModifier implements ICellModifier {
+
+		@Override
+		public Object getValue(Object element, String property) {
+			int index = Integer.valueOf(property);
+			if (index >= 0)
+				return ((DataRow)element).get(index);
+			return null;
+		}
+		
+		//Allows modification of any cell with an issue
+		@Override
+		public boolean canModify(Object element, String property) {
+			int index = Integer.valueOf(property);
+			DataRow row = (DataRow)element;
+			List<Issue> issues = getIssuesByColumn(index + 1);
+			
+			for (Issue issue: issues)
+				if (issue.getRowNumber() == row.getRowNumber()) {
+					return true;
+				}
+			
+
+			return false;
+		}
+
+
+		@Override
+		public void modify(Object element, String property, Object newValue) {
+			DataRow row = (DataRow)((TableItem)element).getData();
+			int index = Integer.valueOf(property);
+			
+			Object oldValue = row.get(index);
+			if (!oldValue.equals(newValue)) {
+				TableItem item = (TableItem)element;
+				//tableViewer.update() resets background colors.  Not sure how to tell it not to, so save and restore instead
+				Color[] c = new Color[row.getSize() + 1];
+				for (int i = 0; i < c.length; ++i)
+					c[i] = item.getBackground(i);
+				row.set(index,  newValue.toString());
+				tableViewer.update(row, new String[] {property});
+				for (int i = 0; i < c.length; ++i)
+					item.setBackground(i, c[i]);
+				
+				//TODO - Tom, store newValue in the TDB.  provider has info on what property is being edited, and row has the TDB object to modify.
+				LCADataPropertyProvider provider = lcaDataPropertyProviders.get(index);
+			}
+			
+		}
+		
+	}
 
 	// ===========================================
 	public static void update(String key) {
@@ -819,6 +872,15 @@ public class CSVTableView extends ViewPart {
 		Date loadStartDate = new Date();
 
 		tableViewer.setInput(tableProvider.getData());
+		CellEditor[] editors = new CellEditor[lcaDataPropertyProviders.size()];
+		String[] columnProperties = new String[editors.length];
+		for (int i = 0; i < editors.length; ++i) {
+			editors[i] = new TextCellEditor(getTable());
+			columnProperties[i] = String.valueOf(i - 1);
+		}
+		tableViewer.setCellEditors(editors);
+		tableViewer.setCellModifier(new LCACellModifier());
+		tableViewer.setColumnProperties(columnProperties);
 
 		Date loadEndDate = new Date();
 

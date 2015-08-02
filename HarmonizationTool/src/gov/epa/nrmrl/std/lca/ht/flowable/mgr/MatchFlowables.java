@@ -1,12 +1,15 @@
 package gov.epa.nrmrl.std.lca.ht.flowable.mgr;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
+import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView.LCACellModifier;
 //import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
+import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.Issue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
@@ -19,15 +22,19 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,6 +43,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -100,6 +108,47 @@ public class MatchFlowables extends ViewPart {
 		initializeTableViewer(outerComposite);
 		initialize();
 	}
+	
+	public static class ReadOnlyCellEditor extends TextCellEditor {
+		
+		public static Color currentColor = null;
+		
+		public ReadOnlyCellEditor(Composite parent) {
+			super(parent, SWT.READ_ONLY);
+		}
+		protected void doSetFocus() {
+			text.setBackground(currentColor);
+		}
+		protected void doSetValue(Object value) {
+			if (value != null)
+				super.doSetValue(value);
+		}
+		
+	}
+	
+	public static class MatchCellModifier implements ICellModifier {
+
+		@Override
+		public Object getValue(Object element, String property) {
+			int tableRow = ((FlowableTableRow)element).getRowNumber();
+			int index = Integer.valueOf(property) + 1;
+
+			ReadOnlyCellEditor.currentColor = table.getItem(tableRow).getBackground();
+			if (index >= 0)
+				return ((DataRow)element).get(index);
+			return null;
+		}
+		
+		@Override
+		public boolean canModify(Object element, String property) {
+			return true;
+		}
+
+		@Override
+		public void modify(Object element, String property, Object newValue) {		
+		}
+		
+	}
 
 	private static void initializeTableViewer(Composite composite) {
 
@@ -161,10 +210,6 @@ public class MatchFlowables extends ViewPart {
 		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
 		new Label(innerComposite, SWT.NONE);
 		chooseSearchFieldText.addSelectionListener(new SelectionListener() {
-			/*
-			 * TAHOWARD TODO = chooseSearchFieldText is where the user can edit the text they want to search for. We
-			 * need to be able to paste into here, and I guess copy out of here, too, if that's easy.
-			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				resetSearchButton();
@@ -179,13 +224,16 @@ public class MatchFlowables extends ViewPart {
 		tableViewer = new TableViewer(composite, SWT.FULL_SELECTION);
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		/*
-		 * TAHOWARD TODO = Provide the magic necessary for users to be able to capture parts text in fields in this
-		 * table. They should be able to do Control-c / Control-v to capture text and paste it into the selection text
-		 * (see below) The OS provides the Control-c / Control-v functionality, I think, but you can check to see if
-		 * right click to "cut" and right click to "paste" is easy. If so, do that, too, but don't sweat it if it will
-		 * take more than 30 minutes.
-		 */
+
+		CellEditor[] editors = new CellEditor[11];
+		String[] columnProperties = new String[editors.length];
+		for (int i = 6; i < 11; ++i) {
+			editors[i] = new ReadOnlyCellEditor(tableViewer.getTable());
+			columnProperties[i] = String.valueOf(i - 1);
+		}
+		tableViewer.setCellEditors(editors);
+		tableViewer.setCellModifier(new MatchCellModifier());
+		tableViewer.setColumnProperties(columnProperties);
 	}
 
 	private static void initializeTable() {
