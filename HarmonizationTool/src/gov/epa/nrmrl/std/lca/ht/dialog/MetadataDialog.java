@@ -538,7 +538,7 @@ public class MetadataDialog extends TitleAreaDialog {
 					comboSelectorDataSource.getItems());
 			System.out.println("About to create box...");
 
-			genericStringBox.create("Name Dataset", "Please type a new dataset name");
+			genericStringBox.create("Change Dataset Name", "Please type a new name for the selected dataset");
 			System.out.println("About to open box...");
 
 			genericStringBox.open();

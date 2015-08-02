@@ -172,8 +172,8 @@ public class MatchFlowables extends ViewPart {
 
 		rowCountText = new Text(innerComposite, SWT.BORDER);
 		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_text.widthHint = 80;
-		gd_text.minimumWidth = 70;
+		gd_text.widthHint = 120;
+//		gd_text.minimumWidth = 70;
 		rowCountText.setEditable(false);
 		rowCountText.setLayoutData(gd_text);
 
@@ -330,11 +330,12 @@ public class MatchFlowables extends ViewPart {
 				}
 			}
 		}
-		rowCountText.setText(rowCount + " rows");
-		System.out.println("got rows:" + rowCount);
-
-		// flowableToMatch.clearSyncDataFromTDB(); // NECESSARY? GOOD? TODO: CHECK THIS
-		// LinkedHashMap<Resource, String> matchCandidateResources = flowableToMatch.getMatchCandidates();
+		if (rowCount == 1){
+			rowCountText.setText("1 flow contains");
+		} else {
+			rowCountText.setText(rowCount+ " flows contain");
+		}
+		
 		List<ComparisonProvider> comparisonProviders = flowableToMatch.getComparisons();
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
@@ -373,6 +374,7 @@ public class MatchFlowables extends ViewPart {
 		p.y -= 30;
 		table.setSize(p);
 		table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		updateMatchCounts();
 		autosizeColumns();
 	}
@@ -483,17 +485,21 @@ public class MatchFlowables extends ViewPart {
 		if (adHoc) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
+			rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 		} else if (hits == 0 && comparisons.size() == 0) {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-
+			rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		} else if (hits == 1) {
 			FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+			rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		} else {
 			FlowsWorkflow.removeMatchFlowableRowNum(flowableToMatch.getFirstRow());
 			table.getItem(0).setBackground(orange);
+			rowCountText.setBackground(orange);
+
 		}
 		table.redraw();
 		tableViewer.refresh();
@@ -812,6 +818,7 @@ public class MatchFlowables extends ViewPart {
 						LCAHT.QCStatusAdHocMaster, null);
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
+				rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				addToMaster.setText("Remove from Master");
 			} else {
 				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
