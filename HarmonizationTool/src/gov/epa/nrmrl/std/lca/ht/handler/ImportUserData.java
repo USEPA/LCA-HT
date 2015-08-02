@@ -109,7 +109,7 @@ public class ImportUserData implements IHandler {
 		}
 	}
 
-	private static void updateText(final StyledText target, final String message) {
+	public static void updateText(final StyledText target, final String message) {
 		try {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

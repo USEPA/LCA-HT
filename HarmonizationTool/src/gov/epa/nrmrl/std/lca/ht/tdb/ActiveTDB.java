@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 
+
+
+import java.util.prefs.Preferences;
+
+
+
 //import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -16,6 +22,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.FileMDKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.PersonKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
+import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Application;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
@@ -35,6 +42,7 @@ import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -205,6 +213,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 							// about it.
 							StringBuilder b = new StringBuilder();
 							b.append("It appears that the HT can not create a TDB in the default directory. ");
+							b.append("Please ensure that another instance of the HT is not using it.");
 							b.append("You may need to create a new TDB.");
 							errMsg = b.toString();
 						}
@@ -217,17 +226,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 				if (!tdbCreated) {
 					// ask user for TDB directory
-					// TODO: Determine when this message might display and what
-					// the user and software shoul do about it.
-					new GenericMessageBox(null, "Error", errMsg);
-					// If user has previously canceled with invalid data, quit.
-					if (prefsCanceled) {
-						errMsg = "The selected directory is not accessible - exiting now.";
-						new GenericMessageBox(null, "Error", errMsg);
-						System.exit(1);
-					}
-					redirectToPreferences();
-
+					new MessageDialog(null, "Error", null, errMsg, MessageDialog.ERROR, new String[] { "Ok" }, 0).open();
+					
+					Preferences osPrefs = Preferences.userNodeForPackage(Application.class);
+					StorageLocationDialog dlg = new StorageLocationDialog(null, osPrefs);
+					dlg.open();
+					if (dlg.getReturnCode() == StorageLocationDialog.RET_CANCEL)
+						System.exit(0);
 				}
 			}
 

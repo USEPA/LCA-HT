@@ -54,10 +54,12 @@ public class OpenDataSet implements IHandler {
 		TableProvider provider = new TableProvider();
 		provider.setDataSourceProvider(ds);
 		String filePath = null;
+		String fileName = "";
 		//TODO - find out what it means when this has more than one FileMD
 		List<FileMD> fileList = ds.getFileMDListNewestFirst();
 		if (fileList.size() > 0) {
 			FileMD fileMd = fileList.get(0);
+			fileName = fileMd.getFilenameString();
 			filePath = fileMd.getPath();
 			provider.setFileMD(fileList.get(0));
 		}
@@ -81,6 +83,9 @@ public class OpenDataSet implements IHandler {
 //			FlowsWorkflow.switchToWorkflowState(8);
 
 		}
+		
+		//Run in asyncExec to avoid race condition where 85% message replaces completed message
+		ImportUserData.updateText(FlowsWorkflow.statusLoadUserData, fileName);
 		System.out.println("Data set opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 
 		return null;
