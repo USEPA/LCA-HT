@@ -2321,6 +2321,10 @@ public class CSVTableView extends ViewPart {
 		int digitWidth = (int) (digits * 5);
 		// table.getColumn(0).pack();
 		table.getColumn(0).setWidth(digitWidth);
+		String matchedMessage = matched + " of " + total + " flows matched.";
+		table.getColumn(0).setToolTipText(matchedMessage);
+		Logger.getLogger("run").info(matchedMessage);
+
 	}
 
 	public static void colorFlowRows() {
