@@ -667,8 +667,8 @@ public class CSVTableView extends ViewPart {
 		popup.setEditable(false);
 		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		popup.moveAbove(composite);
-		popup.setText("");
-		popup.setVisible(false);
+		popup.setText("popup");
+		popup.setVisible(true);
 		popup.setLocation(90, 90);
 		popup.setBounds(90, 90, 300, 60);
 	}

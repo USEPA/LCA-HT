@@ -137,7 +137,8 @@ public class ImportUserData implements IHandler {
 			tableProvider = new TableProvider();
 
 			FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
+//			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
+			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip" });
 			String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
 			if (inputDirectory.length() > 0) {
 				fileDialog.setFilterPath(inputDirectory);

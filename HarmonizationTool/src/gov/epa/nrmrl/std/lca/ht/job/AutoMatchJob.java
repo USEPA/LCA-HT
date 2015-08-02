@@ -157,7 +157,7 @@ public class AutoMatchJob extends Job {
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setStatusSaveMatch("0/3 steps");
+				FlowsWorkflow.setStatusSaveMatch("starting...");
 			}
 		});
 		int percentComplete = 0;
@@ -193,7 +193,8 @@ public class AutoMatchJob extends Job {
 			}
 
 			if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
-				final String state = "1/3: " + percentComplete + "%";
+				int percentPart = percentComplete / 3;
+				final String state = percentPart + "% (matching components)";
 
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -388,7 +389,8 @@ public class AutoMatchJob extends Job {
 					continue;
 				}
 				if (100 * rowNumber / tableProvider.getData().size() >= percentComplete) {
-					final String state = "2/3: " + percentComplete + "%";
+					int percentPart = (percentComplete / 3) + 33;
+					final String state = percentPart + "% (matching Flows)";
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setStatusSaveMatch(state);
@@ -456,7 +458,8 @@ public class AutoMatchJob extends Job {
 		for (int i : rowsToCheck) {
 			counter++;
 			if (100 * counter / rowsToCheck.size() >= percentComplete) {
-				final String state = "3/3: " + percentComplete + "%";
+				int percentPart = percentComplete / 3 + 67;
+				final String state = percentPart + "% (saving data)";
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.setStatusSaveMatch(state);

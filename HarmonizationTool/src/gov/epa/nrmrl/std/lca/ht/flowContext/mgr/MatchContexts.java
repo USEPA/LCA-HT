@@ -22,6 +22,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.TreeNode;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,16 +36,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Tree;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.eclipse.swt.widgets.Label;
 
 public class MatchContexts extends ViewPart {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts";
 	private static Tree masterTree;
-	private static List<String> contextsToMatch;
-	private static List<Resource> contextResourcesToMatch;
+	// private static List<String> contextsToMatch;
+	// private static List<Resource> contextResourcesToMatch;
 	private static Composite outerComposite;
 	private static Button unAssignButton;
 	private static Button nextButton;
+	private static Button nextUnmatchedButton;
 	private static Text userDataLabel;
+
+	private static TreeItem currentFlowContextSelection;
 
 	// private class ContentProvider implements IStructuredContentProvider {
 	// public Object[] getElements(Object inputElement) {
@@ -96,7 +101,7 @@ public class MatchContexts extends ViewPart {
 		GridData gd_innerComposite = new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1);
 		gd_innerComposite.heightHint = 25;
 		innerComposite.setLayoutData(gd_innerComposite);
-		GridLayout gl_innerComposite = new GridLayout(2, false);
+		GridLayout gl_innerComposite = new GridLayout(3, false);
 		gl_innerComposite.marginLeft = 5;
 		gl_innerComposite.marginHeight = 0;
 		gl_innerComposite.verticalSpacing = 0;
@@ -106,17 +111,24 @@ public class MatchContexts extends ViewPart {
 
 		unAssignButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_unAssignButton.widthHint = 100;
+		gd_unAssignButton.widthHint = 85;
 		unAssignButton.setLayoutData(gd_unAssignButton);
 		unAssignButton.setText("Unassign");
 		unAssignButton.addSelectionListener(unassignListener);
 
 		nextButton = new Button(innerComposite, SWT.NONE);
-		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_assignButton.widthHint = 100;
+		GridData gd_assignButton = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_assignButton.widthHint = 85;
 		nextButton.setLayoutData(gd_assignButton);
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
+
+		nextUnmatchedButton = new Button(innerComposite, SWT.NONE);
+		GridData gridNextUnmatched = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gridNextUnmatched.widthHint = 85;
+		nextUnmatchedButton.setLayoutData(gridNextUnmatched);
+		nextUnmatchedButton.setText("Next Unmatched");
+		nextUnmatchedButton.addSelectionListener(nextListener);
 
 		userDataLabel = new Text(parent, SWT.MULTI);
 		GridData gd_userDataLabel = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
@@ -182,6 +194,10 @@ public class MatchContexts extends ViewPart {
 			}
 			TableItem tableItem = CSVTableView.getTable().getItem(csvRowNumSelected);
 			masterTree.deselectAll();
+			if (currentFlowContextSelection != null) {
+				currentFlowContextSelection.setBackground(null);
+			}
+			currentFlowContextSelection = null;
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
@@ -227,11 +243,25 @@ public class MatchContexts extends ViewPart {
 			masterTree.deselectAll();
 			return;
 		}
+		//
+		int count = masterTree.getSelectionCount();
+		if (count > 0) {
+			TreeItem selectedTreeItem = masterTree.getSelection()[0];
+			TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+			if (currentFlowContextSelection != null) {
+				currentFlowContextSelection.setBackground(null);
+			}
+			currentFlowContextSelection = selectedTreeItem;
+			currentFlowContextSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+			contextToMatch.setMatchingResource(selectedTreeNode.uri);
+		}
+		masterTree.deselectAll();
 		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
 		if (masterTree.getSelectionCount() == 0) {
 			return;
 		}
+
 		TreeItem treeItem = masterTree.getSelection()[0];
 		TreeNode treeNode = (TreeNode) treeItem.getData();
 		if (treeNode.hasChildren()) {
@@ -619,40 +649,40 @@ public class MatchContexts extends ViewPart {
 
 	}
 
-//	private static TreeNode getTreeNodeByURI(Resource resource) {
-//		for (TreeItem treeItem1 : masterTree.getItems()) {
-//			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
-//			if (treeNode1.getUri() != null) {
-//				System.out.println("treeNode1 = " + treeNode1);
-//				if (resource.equals(treeNode1.getUri())) {
-//					return treeNode1;
-//
-//				}
-//			}
-//
-//			for (TreeItem treeItem2 : treeItem1.getItems()) {
-//				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
-//				System.out.println("treeNode2 = " + treeNode2);
-//
-//				if (treeNode2.getUri() != null) {
-//					if (resource.equals(treeNode2.getUri())) {
-//						return treeNode2;
-//					}
-//				}
-//				for (TreeItem treeItem3 : treeItem2.getItems()) {
-//					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
-//					System.out.println("treeNode3 = " + treeNode3);
-//
-//					if (treeNode3.getUri() != null) {
-//						if (resource.equals(treeNode3.getUri())) {
-//							return treeNode3;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		return null;
-//	}
+	// private static TreeNode getTreeNodeByURI(Resource resource) {
+	// for (TreeItem treeItem1 : masterTree.getItems()) {
+	// TreeNode treeNode1 = (TreeNode) treeItem1.getData();
+	// if (treeNode1.getUri() != null) {
+	// System.out.println("treeNode1 = " + treeNode1);
+	// if (resource.equals(treeNode1.getUri())) {
+	// return treeNode1;
+	//
+	// }
+	// }
+	//
+	// for (TreeItem treeItem2 : treeItem1.getItems()) {
+	// TreeNode treeNode2 = (TreeNode) treeItem2.getData();
+	// System.out.println("treeNode2 = " + treeNode2);
+	//
+	// if (treeNode2.getUri() != null) {
+	// if (resource.equals(treeNode2.getUri())) {
+	// return treeNode2;
+	// }
+	// }
+	// for (TreeItem treeItem3 : treeItem2.getItems()) {
+	// TreeNode treeNode3 = (TreeNode) treeItem3.getData();
+	// System.out.println("treeNode3 = " + treeNode3);
+	//
+	// if (treeNode3.getUri() != null) {
+	// if (resource.equals(treeNode3.getUri())) {
+	// return treeNode3;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return null;
+	// }
 
 	private static TreeItem getTreeItemByURI(Resource resource) {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
@@ -685,14 +715,14 @@ public class MatchContexts extends ViewPart {
 		return null;
 	}
 
-	public List<String> getContextsToMatch() {
-		return contextsToMatch;
-	}
-
-	public void setContextsToMatch(List<String> contexts) {
-		contextsToMatch = contexts;
-		// update();
-	}
+	// public List<String> getContextsToMatch() {
+	// return contextsToMatch;
+	// }
+	//
+	// public void setContextsToMatch(List<String> contexts) {
+	// contextsToMatch = contexts;
+	// // update();
+	// }
 
 	public class MatchModel {
 		private Resource resource = null;
@@ -715,76 +745,76 @@ public class MatchContexts extends ViewPart {
 		}
 	}
 
-//	private MouseListener columnMouseListener = new MouseListener() {
-//
-//		@Override
-//		public void mouseDoubleClick(MouseEvent e) {
-//			System.out.println("double click event :e =" + e);
-//		}
-//
-//		@Override
-//		public void mouseDown(MouseEvent e) {
-//			System.out.println("mouse down event :e =" + e);
-//			// if (e.button == 1) {
-//			// leftClick(e);
-//			// } else if (e.button == 3) {
-//			// // queryTbl.deselectAll();
-//			// rightClick(e);
-//			// }
-//		}
-//
-//		@Override
-//		public void mouseUp(MouseEvent e) {
-//			System.out.println("mouse up event :e =" + e);
-//		}
-//
-//		private void leftClick(MouseEvent event) {
-//			System.out.println("cellSelectionMouseDownListener event " + event);
-//			// Point ptLeft = new Point(1, event.y);
-//			// Point ptClick = new Point(event.x, event.y);
-//			// int clickedRow = 0;
-//			// int clickedCol = 0;
-//			// // TableItem item = queryTbl.getItem(ptLeft);
-//			// // if (item == null) {
-//			// // return;
-//			// // }
-//			// // clickedRow = queryTbl.indexOf(item);
-//			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			// // if (clickedCol > 0) {
-//			// // queryTbl.deselectAll();
-//			// // return;
-//			// // }
-//			// // queryTbl.select(clickedRow);
-//			// rowNumSelected = clickedRow;
-//			// colNumSelected = clickedCol;
-//			// System.out.println("rowNumSelected = " + rowNumSelected);
-//			// System.out.println("colNumSelected = " + colNumSelected);
-//			// rowMenu.setVisible(true);
-//		}
-//
-//		private void rightClick(MouseEvent event) {
-//			System.out.println("cellSelectionMouseDownListener event " + event);
-//			// Point ptLeft = new Point(1, event.y);
-//			// Point ptClick = new Point(event.x, event.y);
-//			// int clickedRow = 0;
-//			// int clickedCol = 0;
-//			// // TableItem item = queryTbl.getItem(ptLeft);
-//			// // if (item == null) {
-//			// // return;
-//			// // }
-//			// // clickedRow = queryTbl.indexOf(item);
-//			// // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
-//			// // int dataClickedCol = clickedCol - 1;
-//			// if (clickedCol < 0) {
-//			// return;
-//			// }
-//			//
-//			// rowNumSelected = clickedRow;
-//			// colNumSelected = clickedCol;
-//			// System.out.println("rowNumSelected = " + rowNumSelected);
-//			// System.out.println("colNumSelected = " + colNumSelected);
-//		}
-//	};
+	// private MouseListener columnMouseListener = new MouseListener() {
+	//
+	// @Override
+	// public void mouseDoubleClick(MouseEvent e) {
+	// System.out.println("double click event :e =" + e);
+	// }
+	//
+	// @Override
+	// public void mouseDown(MouseEvent e) {
+	// System.out.println("mouse down event :e =" + e);
+	// // if (e.button == 1) {
+	// // leftClick(e);
+	// // } else if (e.button == 3) {
+	// // // queryTbl.deselectAll();
+	// // rightClick(e);
+	// // }
+	// }
+	//
+	// @Override
+	// public void mouseUp(MouseEvent e) {
+	// System.out.println("mouse up event :e =" + e);
+	// }
+	//
+	// private void leftClick(MouseEvent event) {
+	// System.out.println("cellSelectionMouseDownListener event " + event);
+	// // Point ptLeft = new Point(1, event.y);
+	// // Point ptClick = new Point(event.x, event.y);
+	// // int clickedRow = 0;
+	// // int clickedCol = 0;
+	// // // TableItem item = queryTbl.getItem(ptLeft);
+	// // // if (item == null) {
+	// // // return;
+	// // // }
+	// // // clickedRow = queryTbl.indexOf(item);
+	// // // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// // // if (clickedCol > 0) {
+	// // // queryTbl.deselectAll();
+	// // // return;
+	// // // }
+	// // // queryTbl.select(clickedRow);
+	// // rowNumSelected = clickedRow;
+	// // colNumSelected = clickedCol;
+	// // System.out.println("rowNumSelected = " + rowNumSelected);
+	// // System.out.println("colNumSelected = " + colNumSelected);
+	// // rowMenu.setVisible(true);
+	// }
+	//
+	// private void rightClick(MouseEvent event) {
+	// System.out.println("cellSelectionMouseDownListener event " + event);
+	// // Point ptLeft = new Point(1, event.y);
+	// // Point ptClick = new Point(event.x, event.y);
+	// // int clickedRow = 0;
+	// // int clickedCol = 0;
+	// // // TableItem item = queryTbl.getItem(ptLeft);
+	// // // if (item == null) {
+	// // // return;
+	// // // }
+	// // // clickedRow = queryTbl.indexOf(item);
+	// // // clickedCol = getTableColumnNumFromPoint(clickedRow, ptClick);
+	// // // int dataClickedCol = clickedCol - 1;
+	// // if (clickedCol < 0) {
+	// // return;
+	// // }
+	// //
+	// // rowNumSelected = clickedRow;
+	// // colNumSelected = clickedCol;
+	// // System.out.println("rowNumSelected = " + rowNumSelected);
+	// // System.out.println("colNumSelected = " + colNumSelected);
+	// }
+	// };
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
@@ -797,13 +827,13 @@ public class MatchContexts extends ViewPart {
 	// return -1;
 	// }
 
-	public List<Resource> getContextResourcesToMatch() {
-		return contextResourcesToMatch;
-	}
+	// public List<Resource> getContextResourcesToMatch() {
+	// return contextResourcesToMatch;
+	// }
 
-//	public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
-//		this.contextResourcesToMatch = contextResourcesToMatch;
-//	}
+	// public void setContextResourcesToMatch(List<Resource> contextResourcesToMatch) {
+	// this.contextResourcesToMatch = contextResourcesToMatch;
+	// }
 
 	public static void update(int rowNumber) {
 		List<DataRow> data = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData();
@@ -811,50 +841,61 @@ public class MatchContexts extends ViewPart {
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {
 			masterTree.deselectAll();
+			if (currentFlowContextSelection != null) {
+				currentFlowContextSelection.setBackground(null);
+				currentFlowContextSelection = null;
+			}
 			setUserDataLabel("", false);
 			return;
 		}
 
+		//
+
 		String generalString = (String) contextToMatch.getOneProperty(FlowContext.flowContextGeneral);
 		String specificString = contextToMatch.getSpecificString();
 
-
 		int rowCount = 0;
-		for (int i = contextToMatch.getFirstRow();i<data.size();i++){
+		for (int i = contextToMatch.getFirstRow(); i < data.size(); i++) {
 			FlowContext flowContextOfRow = data.get(i).getFlowContext();
-			if (flowContextOfRow != null){
-				if (flowContextOfRow.equals(contextToMatch)){
+			if (flowContextOfRow != null) {
+				if (flowContextOfRow.equals(contextToMatch)) {
 					rowCount++;
 				}
 			}
 		}
-		
-		String labelString = null;
-
-		if (specificString == null) {
-			labelString = generalString;
-		} else {
-			labelString = generalString + System.getProperty("line.separator") + "   " + specificString;
+		if (currentFlowContextSelection != null) {
+			currentFlowContextSelection.setBackground(null);
 		}
-		labelString+=System.getProperty("line.separator") + rowCount + " rows";
+		String nounVerb = " flows contain";
+		if (rowCount == 1) {
+			nounVerb = " flow contains";
+		}
+		String labelString = rowCount + nounVerb + System.getProperty("line.separator");
+		if (specificString == null) {
+			labelString += generalString;
+		} else {
+			labelString += generalString + "; " + specificString;
+		}
 
-		 
 		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
 			if (treeItem != null) {
-				masterTree.setSelection(getTreeItemByURI(contextResource));
+				TreeItem parentItem = treeItem.getParentItem();
+				parentItem.setExpanded(true);
+				currentFlowContextSelection = treeItem;
+				treeItem.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				// masterTree.deselectAll();
+				// masterTree.setSelection(getTreeItemByURI(contextResource));
 				setUserDataLabel(labelString, true);
 
 			} else {
 				masterTree.deselectAll();
 				setUserDataLabel(labelString, false);
-
 			}
 		} else {
 			masterTree.deselectAll();
 			setUserDataLabel(labelString, false);
-
 		}
 	}
 

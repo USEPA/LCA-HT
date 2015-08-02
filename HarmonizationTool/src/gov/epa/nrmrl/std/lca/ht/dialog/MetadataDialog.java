@@ -68,8 +68,8 @@ public class MetadataDialog extends TitleAreaDialog {
 		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
 		if (DataSourceKeeper.size() == 0) {
 			// THIS IS A PROBLEM. FIXME - HOW TO EXIT GRACEFULLY?
-			new GenericMessageBox(parentShell, "No Data Sets",
-					"The HT does not contain any DataSources at this time.  Read a CSV or RDF file to create some.");
+			new GenericMessageBox(parentShell, "No Data",
+					"The LCA-HT does not appear to contain any user or master data.");
 			cancelPressed();
 			return;
 		}
@@ -138,7 +138,7 @@ public class MetadataDialog extends TitleAreaDialog {
 		int index = comboSelectorDataSource.indexOf(curDataSourceProviderName);
 		comboSelectorDataSource.select(index);
 		comboSelectorDataSource.addSelectionListener(new ComboSelectorDataSourceListener());
-		comboSelectorFileMD.setToolTipText("Files associated with this data set.");
+		comboSelectorFileMD.setToolTipText("File(s) associated with this dataset.");
 		comboSelectorFileMD.addModifyListener(new ComboSelectorFileMDListener());
 		redrawDialogRows();
 		createComboSelectorFileMD();
@@ -171,25 +171,25 @@ public class MetadataDialog extends TitleAreaDialog {
 		Label label_section1 = new Label(composite, SWT.LEFT);
 		label_section1.setFont(SWTResourceManager.getFont("Lucida Grande", 16, SWT.BOLD));
 		label_section1.setBounds(col1Left, rowIndex * disBtwnRows, col1Width + col2Width, rowHeight);
-		label_section1.setText("Data Set Information:");
+		label_section1.setText("Dataset Information");
 
 		rowIndex++;
 		Label labelSelectDataSource = new Label(composite, SWT.RIGHT);
 		labelSelectDataSource.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		labelSelectDataSource.setText("Data set name");
+		labelSelectDataSource.setText("Dataset name");
 
 		comboSelectorDataSource = new Combo(composite, SWT.READ_ONLY);
 		comboSelectorDataSource.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
 
 		Button dataSourceRename = new Button(composite, SWT.BORDER);
-		dataSourceRename.setToolTipText("Click to rename this data set.");
+		dataSourceRename.setToolTipText("Click to change this dataset's name.");
 		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 2, 70, 25);
 		dataSourceRename.setText("Rename");
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
 
 		if (callingFileMD == null) {
 			Button deleteDataSource = new Button(composite, SWT.NONE);
-			deleteDataSource.setToolTipText("Click to delete this data set.");
+			deleteDataSource.setToolTipText("Click to delete this dataset.");
 			deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
 			deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			deleteDataSource.setText("X");
@@ -316,13 +316,13 @@ public class MetadataDialog extends TitleAreaDialog {
 		textFileReadTime.setEditable(false);
 		textFileReadTime.setBackground(defaultBG);
 
-		dialogValues[0] = textVersion; // ------------ 00 Data Set Version
-		dialogValues[1] = textComments; // ----------- 01 Data Set Comments
+		dialogValues[0] = textVersion; // ------------ 00 Dataset Version
+		dialogValues[1] = textComments; // ----------- 01 Dataset Comments
 
-		dialogValues[2] = textContactName; // -------- 02 Data Set Contact Name
-		dialogValues[3] = textContactAffiliation; // - 03 Data Set Contact Affiliation
-		dialogValues[4] = textContactEmail; // ------- 04 Data Set Contact Email
-		dialogValues[5] = textContactPhone; // ------- 05 Data Set Contact Phone
+		dialogValues[2] = textContactName; // -------- 02 Dataset Contact Name
+		dialogValues[3] = textContactAffiliation; // - 03 Dataset Contact Affiliation
+		dialogValues[4] = textContactEmail; // ------- 04 Dataset Contact Email
+		dialogValues[5] = textContactPhone; // ------- 05 Dataset Contact Phone
 
 		dialogValues[6] = textFileSize; // ----------- 06 File Size (bytes)
 		dialogValues[7] = textLastModified; // ------- 07 File Last Modified
@@ -361,7 +361,7 @@ public class MetadataDialog extends TitleAreaDialog {
 			String dataSourceToDelete = comboSelectorDataSource.getText();
 
 			MessageDialog messageDialog = new MessageDialog(getShell(), "Confirm", null,
-					"Are you sure you wish to remove the label and contents of the data set with the label: "
+					"Are you sure you wish to remove the label and contents of the dataset with the label: "
 							+ dataSourceToDelete + "?", MessageDialog.QUESTION, new String[] { "Cancel",
 							"Confirm Deletion" }, 0);
 			// messageDialog.create();
@@ -370,7 +370,7 @@ public class MetadataDialog extends TitleAreaDialog {
 				System.out.println("Deleting " + dataSourceToDelete);
 				comboSelectorDataSource.remove(dataSourceToDelete);
 				comboSelectorDataSource.select(0);
-				runLogger.info("User deleted data set: " + dataSourceToDelete);
+				runLogger.info("User deleted dataset: " + dataSourceToDelete);
 			}
 		}
 
@@ -538,7 +538,7 @@ public class MetadataDialog extends TitleAreaDialog {
 					comboSelectorDataSource.getItems());
 			System.out.println("About to create box...");
 
-			genericStringBox.create("Name Data Set", "Please type a new data set name");
+			genericStringBox.create("Name Dataset", "Please type a new dataset name");
 			System.out.println("About to open box...");
 
 			genericStringBox.open();
@@ -558,7 +558,7 @@ public class MetadataDialog extends TitleAreaDialog {
 
 			if (DataSourceKeeper.indexOfDataSourceName(newFileName) > -1) {
 				new GenericMessageBox(getParentShell(), "Duplicate Name",
-						"Data Set names must be onePerParentGroup.  Please choose a new name.");
+						"Dataset names must be distinct.  Please choose a new name.");
 				return;
 			}
 			curDataSourceProvider.setDataSourceName(newFileName);

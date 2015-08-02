@@ -56,8 +56,8 @@ public class MatchProperties extends ViewPart {
 	private static Tree masterTree;
 	private static TreeViewer masterTreeViewer;
 	private static Text userDataLabel;
-	private static int rowNumSelected;
-	private static int colNumSelected;
+	// private static int rowNumSelected;
+	// private static int colNumSelected;
 	private static FlowUnit unitToMatch;
 	// private static TreeItem currentFlowPropertySelection;
 	private static TreeItem currentFlowUnitSelection;
@@ -99,7 +99,7 @@ public class MatchProperties extends ViewPart {
 		GridData gd_innerComposite = new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1);
 		gd_innerComposite.heightHint = 25;
 		innerComposite.setLayoutData(gd_innerComposite);
-		GridLayout gl_innerComposite = new GridLayout(2, false);
+		GridLayout gl_innerComposite = new GridLayout(3, false);
 		gl_innerComposite.horizontalSpacing = 15;
 		gl_innerComposite.marginHeight = 0;
 		gl_innerComposite.marginLeft = 5;
@@ -110,17 +110,24 @@ public class MatchProperties extends ViewPart {
 		unAssignButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_unAssignButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_unAssignButton.heightHint = 20;
-		gd_unAssignButton.widthHint = 90;
+		gd_unAssignButton.widthHint = 85;
 		unAssignButton.setLayoutData(gd_unAssignButton);
 		unAssignButton.setText("Unassign");
 		unAssignButton.addSelectionListener(unassignListener);
 
 		nextButton = new Button(innerComposite, SWT.NONE);
 		GridData gd_assignButton = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
-		gd_assignButton.widthHint = 90;
+		gd_assignButton.widthHint = 85;
 		nextButton.setLayoutData(gd_assignButton);
 		nextButton.setText("Next");
 		nextButton.addSelectionListener(nextListener);
+
+		nextUnmatchedButton = new Button(innerComposite, SWT.NONE);
+		GridData gridNextUnmatched = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gridNextUnmatched.widthHint = 85;
+		nextUnmatchedButton.setLayoutData(gridNextUnmatched);
+		nextUnmatchedButton.setText("Next Unmatched");
+		nextUnmatchedButton.addSelectionListener(nextListener);
 
 		userDataLabel = new Text(parent, SWT.MULTI);
 		GridData gd_userDataLabel = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
@@ -205,7 +212,6 @@ public class MatchProperties extends ViewPart {
 			masterTree.deselectAll();
 			if (currentFlowUnitSelection != null) {
 				currentFlowUnitSelection.setBackground(null);
-
 			}
 			currentFlowUnitSelection = null;
 
@@ -274,7 +280,6 @@ public class MatchProperties extends ViewPart {
 			if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
 				if (currentFlowUnitSelection != null) {
 					currentFlowUnitSelection.setBackground(null);
-
 				}
 				currentFlowUnitSelection = selectedTreeItem;
 				currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -954,6 +959,7 @@ public class MatchProperties extends ViewPart {
 	private Composite outerComposite;
 	private Button unAssignButton;
 	private Button nextButton;
+	private Button nextUnmatchedButton;
 
 	// private int getTableColumnNumFromPoint(int row, Point pt) {
 	// TableItem item = queryTbl.getItem(row);
@@ -988,10 +994,10 @@ public class MatchProperties extends ViewPart {
 			return;
 		}
 		int rowCount = 0;
-		for (int i = unitToMatch.getFirstRow();i<data.size();i++){
+		for (int i = unitToMatch.getFirstRow(); i < data.size(); i++) {
 			FlowUnit flowUnitOfRow = data.get(i).getFlowUnit();
-			if (flowUnitOfRow != null){
-				if (flowUnitOfRow.equals(unitToMatch)){
+			if (flowUnitOfRow != null) {
+				if (flowUnitOfRow.equals(unitToMatch)) {
 					rowCount++;
 				}
 			}
@@ -999,15 +1005,19 @@ public class MatchProperties extends ViewPart {
 		if (currentFlowUnitSelection != null) {
 			currentFlowUnitSelection.setBackground(null);
 		}
-		String labelString;
+		String nounVerb = " flows contain";
+		if (rowCount == 1) {
+			nounVerb = " flow contains";
+		}
+		String labelString = rowCount + nounVerb + System.getProperty("line.separator");
+
 		if (unitToMatch.getUnitGroup() != null) {
-			labelString = unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
+			labelString += unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
 					+ System.getProperty("line.separator") + "   "
 					+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 		} else {
-			labelString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
+			labelString += (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 		}
-		labelString+=System.getProperty("line.separator") + rowCount + " rows";
 
 		partialCollapse();
 		Resource propertyResource = unitToMatch.getMatchingResource();
@@ -1127,12 +1137,12 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-	private static void setUserDataLabel(String labelString, Color color) {
-		if (labelString != null) {
-			userDataLabel.setText(labelString);
-		}
-		userDataLabel.setBackground(color);
-	}
+	// private static void setUserDataLabel(String labelString, Color color) {
+	// if (labelString != null) {
+	// userDataLabel.setText(labelString);
+	// }
+	// userDataLabel.setBackground(color);
+	// }
 
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {
