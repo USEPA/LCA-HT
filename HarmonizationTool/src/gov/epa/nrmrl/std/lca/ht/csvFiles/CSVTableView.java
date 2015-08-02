@@ -803,57 +803,57 @@ public class CSVTableView extends ViewPart {
 	protected boolean canEdit(Object element) {
 		return true;
 	}
-	
+
 	public static class LCACellModifier implements ICellModifier {
 
 		@Override
 		public Object getValue(Object element, String property) {
 			int index = Integer.valueOf(property);
 			if (index >= 0)
-				return ((DataRow)element).get(index);
+				return ((DataRow) element).get(index);
 			return null;
 		}
-		
-		//Allows modification of any cell with an issue
+
+		// Allows modification of any cell with an issue
 		@Override
 		public boolean canModify(Object element, String property) {
 			int index = Integer.valueOf(property);
-			DataRow row = (DataRow)element;
+			DataRow row = (DataRow) element;
 			List<Issue> issues = getIssuesByColumn(index + 1);
-			
-			for (Issue issue: issues)
+
+			for (Issue issue : issues)
 				if (issue.getRowNumber() == row.getRowNumber()) {
 					return true;
 				}
-			
 
 			return false;
 		}
 
-
 		@Override
 		public void modify(Object element, String property, Object newValue) {
-			DataRow row = (DataRow)((TableItem)element).getData();
+			DataRow row = (DataRow) ((TableItem) element).getData();
 			int index = Integer.valueOf(property);
-			
+
 			Object oldValue = row.get(index);
 			if (!oldValue.equals(newValue)) {
-				TableItem item = (TableItem)element;
-				//tableViewer.update() resets background colors.  Not sure how to tell it not to, so save and restore instead
+				TableItem item = (TableItem) element;
+				// tableViewer.update() resets background colors. Not sure how to tell it not to, so save and restore
+				// instead
 				Color[] c = new Color[row.getSize() + 1];
 				for (int i = 0; i < c.length; ++i)
 					c[i] = item.getBackground(i);
-				row.set(index,  newValue.toString());
-				tableViewer.update(row, new String[] {property});
+				row.set(index, newValue.toString());
+				tableViewer.update(row, new String[] { property });
 				for (int i = 0; i < c.length; ++i)
 					item.setBackground(i, c[i]);
-				
-				//TODO - Tom, store newValue in the TDB.  provider has info on what property is being edited, and row has the TDB object to modify.
-				LCADataPropertyProvider provider = lcaDataPropertyProviders.get(index);
+
+				// TODO - Tom, store newValue in the TDB. provider has info on what property is being edited, and row
+				// has the TDB object to modify.
+				LCADataPropertyProvider lcaDataPropertyProvider = lcaDataPropertyProviders.get(index);
 			}
-			
+
 		}
-		
+
 	}
 
 	// ===========================================
@@ -1287,20 +1287,71 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
+	/**
+	 * This method advances the highlighted (selected) row in the User Data table.  If <strong>nextUnmatched</strong>
+	 * is <i>false</i> the next visible row in the table will become selected.  If <strong>nextUnmatched</strong>
+	 * is <i>true</i>, the next unmatched item of the type specified by the calling Class becomes the new highlighted
+	 * row.
+	 * @param String <strong>viewCallerID</strong> is the Class ID string associated with the calling Class.
+	 * @param boolean <strong>nextUnmatched</strong> tells the method to advance to the next unmatched item (if true)
+	 * or the next item (if false).
+	 */
 	public static void selectNext(String viewCallerID, boolean nextUnmatched) {
 		if (rowNumSelected < 0 || rowNumSelected >= table.getItemCount()) {
 			rowNumSelected = 0;
 		}
 		if (nextUnmatched) {
 			if (viewCallerID.equals(MatchContexts.ID)) {
-
+				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
+				TableItem lastTableItem = table.getItem(rowNumSelected);
+				int nextUnmatchedContextNum = -1;
+				for (int i : uniqueFlowContextRowNumbers) {
+					if (i > rowNum) {
+						if (!matchedFlowContextRowNumbers.contains(i)) {
+							nextUnmatchedContextNum = i;
+							break;
+						}
+					}
+				}
+				for (int i = rowNumSelected; i < table.getItems().length; i++) {
+					TableItem tableItem = table.getItem(i);
+					int nextRowNum = getDataIndexOfRowNumber(i);
+					if (nextRowNum == nextUnmatchedContextNum) {
+						lastTableItem = table.getItem(rowNumSelected);
+						lastTableItem.setFont(defaultFont);
+						rowNumSelected = table.indexOf(tableItem);
+						tableItem.setFont(boldFont);
+						table.setTopIndex(rowNumSelected);
+						break;
+					}
+				}
 			} else if (viewCallerID.equals(MatchProperties.ID)) {
-				
+				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
+				TableItem lastTableItem = table.getItem(rowNumSelected);
+				int nextUnmatchedPropertyNum = -1;
+				for (int i : uniqueFlowPropertyRowNumbers) {
+					if (i > rowNum) {
+						if (!matchedFlowPropertyRowNumbers.contains(i)) {
+							nextUnmatchedPropertyNum = i;
+							break;
+						}
+					}
+				}
+				for (int i = rowNumSelected; i < table.getItems().length; i++) {
+					TableItem tableItem = table.getItem(i);
+					int nextRowNum = getDataIndexOfRowNumber(i);
+					if (nextRowNum == nextUnmatchedPropertyNum) {
+						lastTableItem = table.getItem(rowNumSelected);
+						lastTableItem.setFont(defaultFont);
+						rowNumSelected = table.indexOf(tableItem);
+						tableItem.setFont(boldFont);
+						table.setTopIndex(rowNumSelected);
+						break;
+					}
+				}
 			} else if (viewCallerID.equals(MatchFlowables.ID)) {
 				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
 				TableItem lastTableItem = table.getItem(rowNumSelected);
-//				String rowNumString = lastTableItem.getText(0);
-//				int rowNum = Integer.parseInt(rowNumString) - 1;
 				int nextUnmatchedFlowableNum = -1;
 				for (int i : uniqueFlowableRowNumbers) {
 					if (i > rowNum) {
@@ -1311,9 +1362,8 @@ public class CSVTableView extends ViewPart {
 					}
 				}
 				for (int i = rowNumSelected; i < table.getItems().length; i++) {
+					int nextRowNum = getDataIndexOfRowNumber(i);
 					TableItem tableItem = table.getItem(i);
-					String nextRowNumString = tableItem.getText(0);
-					int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
 					if (nextRowNum == nextUnmatchedFlowableNum) {
 						lastTableItem = table.getItem(rowNumSelected);
 						lastTableItem.setFont(defaultFont);
@@ -1323,11 +1373,8 @@ public class CSVTableView extends ViewPart {
 						break;
 					}
 				}
-
 			}
-
 		} else {
-
 			TableItem lastTableItem = table.getItem(rowNumSelected);
 			rowNumSelected++;
 			TableItem tableItem = table.getItem(rowNumSelected);
@@ -1337,7 +1384,6 @@ public class CSVTableView extends ViewPart {
 			}
 			lastTableItem.setFont(defaultFont);
 			tableItem.setFont(boldFont);
-
 		}
 
 		matchRowContents();
@@ -2462,8 +2508,8 @@ public class CSVTableView extends ViewPart {
 	 * <li>the parameter is out of range of the current User Data table view</li>
 	 * <li>the 0th column of the specified row does not contain a parsable integer</li>
 	 * <li>the resulting integer would be outside the range of the current tableProvider
-	 * @param rowNumber: the int index of the User Data table as currently displayed
-	 * @return the int index in the tableProvider represented by the specified row in the User Data table
+	 * @param int <strong> rowNumber</strong> the index of the User Data table as currently displayed
+	 * @return The int index in the tableProvider represented by the specified row in the User Data table
 	 */
 	public static int getDataIndexOfRowNumber(int rowNumber) {
 		if (rowNumber < 0 || rowNumber >= table.getItemCount()) {
@@ -2472,7 +2518,7 @@ public class CSVTableView extends ViewPart {
 		String rowNumString = table.getItem(rowNumber).getText(0);
 		int dataRowIndex;
 		try {
-			dataRowIndex = Integer.parseInt(rowNumString) - 1;
+			dataRowIndex = Integer.valueOf(rowNumString) - 1;
 		} catch (NumberFormatException e) {
 			return -1;
 		}

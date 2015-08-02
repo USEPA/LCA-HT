@@ -37,6 +37,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -89,7 +91,6 @@ public class MatchFlowables extends ViewPart {
 	private static Text rowCountText;
 	public static Text editorText;
 	private static Composite outerComposite;
-	private static Combo chooseSearchFieldCombo;
 	private static Text chooseSearchFieldText;
 	private static Button searchButton;
 
@@ -108,52 +109,54 @@ public class MatchFlowables extends ViewPart {
 		initializeTableViewer(outerComposite);
 		initialize();
 	}
-	
+
 	public static class ReadOnlyCellEditor extends TextCellEditor {
-		
+
 		public static Color currentColor = null;
-		
+
 		public ReadOnlyCellEditor(Composite parent) {
 			super(parent, SWT.READ_ONLY);
 		}
+
 		protected void doSetFocus() {
 			text.setBackground(currentColor);
 		}
+
 		protected void doSetValue(Object value) {
 			if (value != null)
 				super.doSetValue(value);
 		}
-		
+
 	}
-	
+
 	public static class MatchCellModifier implements ICellModifier {
 
 		@Override
 		public Object getValue(Object element, String property) {
-			int tableRow = ((FlowableTableRow)element).getRowNumber();
+			int tableRow = ((FlowableTableRow) element).getRowNumber();
 			int index = Integer.valueOf(property) + 1;
 
 			ReadOnlyCellEditor.currentColor = table.getItem(tableRow).getBackground();
 			if (index >= 0)
-				return ((DataRow)element).get(index);
+				return ((DataRow) element).get(index);
 			return null;
 		}
-		
+
 		@Override
 		public boolean canModify(Object element, String property) {
 			return true;
 		}
 
 		@Override
-		public void modify(Object element, String property, Object newValue) {		
+		public void modify(Object element, String property, Object newValue) {
 		}
-		
+
 	}
 
 	private static void initializeTableViewer(Composite composite) {
 
 		Composite innerComposite = new Composite(outerComposite, SWT.NONE);
-		innerComposite.setLayout(new GridLayout(7, false));
+		innerComposite.setLayout(new GridLayout(6, false));
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gridData.heightHint = 30;
 		innerComposite.setLayoutData(gridData);
@@ -167,48 +170,48 @@ public class MatchFlowables extends ViewPart {
 			// WHEN THE WINDOW IS RESIZED SMALLER, THE TABLE OVER RUNS A LITTLE
 		});
 
+		rowCountText = new Text(innerComposite, SWT.BORDER);
+		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_text.widthHint = 80;
+		gd_text.minimumWidth = 70;
+		rowCountText.setEditable(false);
+		rowCountText.setLayoutData(gd_text);
+
 		Button acceptAdvance = new Button(innerComposite, SWT.NONE);
 		acceptAdvance.setText("Next");
 		acceptAdvance.addSelectionListener(nextSelectionListener);
+
+		Button btnNewButton = new Button(innerComposite, SWT.NONE);
+		btnNewButton.setText("Next Unmatched");
+		btnNewButton.addSelectionListener(nextSelectionListener);
 
 		addToMaster = new Button(innerComposite, SWT.NONE);
 		addToMaster.setText("Add to Master");
 		addToMaster.setVisible(true);
 		addToMaster.addSelectionListener(addToMasterListener);
 
-		rowCountText = new Text(innerComposite, SWT.BORDER);
-		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_text.minimumWidth = 70;
-		rowCountText.setEditable(false);
-		rowCountText.setLayoutData(gd_text);
-
 		searchButton = new Button(innerComposite, SWT.NONE);
 		searchButton.setText("Search:");
 		searchButton.addSelectionListener(searchListener);
-
-		chooseSearchFieldCombo = new Combo(innerComposite, SWT.NONE);
-		chooseSearchFieldCombo.add("Name / synonym");
-		chooseSearchFieldCombo.add("CAS RN");
-		chooseSearchFieldCombo.add("(other)");
-		chooseSearchFieldCombo.select(0);
-		chooseSearchFieldCombo.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				resetSearchButton();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				resetSearchButton();
-			}
-		});
 
 		chooseSearchFieldText = new Text(innerComposite, SWT.BORDER);
 		GridData gd_chooseSearchFieldText = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_chooseSearchFieldText.widthHint = 6000;
 		chooseSearchFieldText.setLayoutData(gd_chooseSearchFieldText);
-		new Label(innerComposite, SWT.NONE);
+		chooseSearchFieldText.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int keyCode = e.keyCode;
+				if (keyCode == 13){
+					findMatches();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+		});
 		chooseSearchFieldText.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -301,7 +304,7 @@ public class MatchFlowables extends ViewPart {
 		}
 
 		resetSearchButton();
-		chooseSearchFieldCombo.select(0);
+		// chooseSearchFieldCombo.select(0);
 		chooseSearchFieldText.setText("");
 
 		// flowableToMatch.transferSearchResults();
@@ -828,6 +831,8 @@ public class MatchFlowables extends ViewPart {
 			doit(e);
 		}
 	};
+
+	// private static Button btnNewButton;
 
 	public static void initialize() {
 		initializeTable();

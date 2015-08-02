@@ -245,39 +245,30 @@ public class MatchContexts extends ViewPart {
 		}
 		//
 		int count = masterTree.getSelectionCount();
-		if (count > 0) {
-			TreeItem selectedTreeItem = masterTree.getSelection()[0];
-			TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
-			if (currentFlowContextSelection != null) {
-				currentFlowContextSelection.setBackground(null);
-			}
-			currentFlowContextSelection = selectedTreeItem;
-			currentFlowContextSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-			contextToMatch.setMatchingResource(selectedTreeNode.uri);
+		if (count < 1) {
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			currentFlowContextSelection.setBackground(null);
+			return;
 		}
+
+		TreeItem selectedTreeItem = masterTree.getSelection()[0];
+		TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+		if (currentFlowContextSelection != null) {
+			currentFlowContextSelection.setBackground(null);
+		}
+		currentFlowContextSelection = selectedTreeItem;
+		currentFlowContextSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		contextToMatch.setMatchingResource(selectedTreeNode.uri);
+
 		masterTree.deselectAll();
-		DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
 
-		if (masterTree.getSelectionCount() == 0) {
-			return;
-		}
-
-		TreeItem treeItem = masterTree.getSelection()[0];
-		TreeNode treeNode = (TreeNode) treeItem.getData();
-		if (treeNode.hasChildren()) {
-			if (treeItem.getExpanded()) {
-				treeItem.setExpanded(false);
-			} else {
-				expandItem(treeItem);
-			}
-			masterTree.deselectAll();
-			return;
-		}
-		Resource newResource = treeNode.getUri();
+		Resource newResource = selectedTreeNode.getUri();
 		if (newResource == null) {
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			currentFlowContextSelection.setBackground(null);
 			return;
 		}
-		dataRow.getFlowContext().setMatchingResource(newResource);
+		contextToMatch.setMatchingResource(newResource);
 		FlowsWorkflow.addMatchContextRowNum(contextToMatch.getFirstRow());
 		CSVTableView.colorFlowContextRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -309,9 +300,9 @@ public class MatchContexts extends ViewPart {
 		private void doit(SelectionEvent e) {
 			Object source = e.getSource();
 			boolean nextUnmatched = false;
-			if (source instanceof Button){
-				String buttonText =  ((Button)source).getText();
-				if (buttonText.matches(".*Unmatched.*")){
+			if (source instanceof Button) {
+				String buttonText = ((Button) source).getText();
+				if (buttonText.matches(".*Unmatched.*")) {
 					nextUnmatched = true;
 				}
 			}

@@ -273,33 +273,25 @@ public class MatchProperties extends ViewPart {
 		 * will be set to "none" and all other fields changed to white If that choice is a FlowUnit, the corresponding
 		 * FlowProperty will be selected as well.
 		 */
-		int thing = masterTree.getSelectionCount();
-		if (thing > 0) {
-			TreeItem selectedTreeItem = masterTree.getSelection()[0];
-			TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
-			if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
-				if (currentFlowUnitSelection != null) {
-					currentFlowUnitSelection.setBackground(null);
-				}
-				currentFlowUnitSelection = selectedTreeItem;
-				currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-				unitToMatch.setMatchingResource(selectedTreeNode.uri);
-			}
+		int count = masterTree.getSelectionCount();
+		if (count < 1) {
+			userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			currentFlowUnitSelection.setBackground(null);
+			return;
 		}
+
+		TreeItem selectedTreeItem = masterTree.getSelection()[0];
+		TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+		if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
+			if (currentFlowUnitSelection != null) {
+				currentFlowUnitSelection.setBackground(null);
+			}
+			currentFlowUnitSelection = selectedTreeItem;
+			currentFlowUnitSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+			unitToMatch.setMatchingResource(selectedTreeNode.uri);
+		}
+
 		masterTree.deselectAll();
-
-		// unitToMatch.setMatchingResource(newMasterFlowProperty);
-
-		// FlowUnit flowUnit = unitToMatch.getUserDataFlowUnit();
-		// if (flowUnit == null) {
-		// if (newMasterFlowUnit != null) {
-		// flowUnit = new FlowUnit(newMasterFlowUnit);
-		// unitToMatch.setUserDataFlowUnit(flowUnit);
-		// }
-		// } else {
-		// flowUnit.setMatchingResource(newMasterFlowUnit);
-		// }
-
 		FlowsWorkflow.addMatchPropertyRowNum(unitToMatch.getFirstRow());
 		CSVTableView.colorFlowPropertyRows();
 		userDataLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
@@ -331,9 +323,9 @@ public class MatchProperties extends ViewPart {
 		private void doit(SelectionEvent e) {
 			Object source = e.getSource();
 			boolean nextUnmatched = false;
-			if (source instanceof Button){
-				String buttonText =  ((Button)source).getText();
-				if (buttonText.matches(".*Unmatched.*")){
+			if (source instanceof Button) {
+				String buttonText = ((Button) source).getText();
+				if (buttonText.matches(".*Unmatched.*")) {
 					nextUnmatched = true;
 				}
 			}
