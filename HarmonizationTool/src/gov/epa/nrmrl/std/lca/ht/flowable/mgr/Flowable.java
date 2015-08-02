@@ -471,7 +471,9 @@ public class Flowable {
 	}
 
 	/**
-	 * 
+	 * This method strips all non-digits from the input string, removes leading zeros, and adds two dashes 
+	 * prior to the last and third from last digits.
+
 	 * @param candidate	candidate is a CASRN of type string.
 	 * @return a standard CAS with 2 to 7 digits (not starting with a zero), a dash, two digits, a dash, and one digit
 	 */

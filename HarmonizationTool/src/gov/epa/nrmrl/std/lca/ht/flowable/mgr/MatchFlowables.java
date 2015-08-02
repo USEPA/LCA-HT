@@ -555,33 +555,39 @@ public class MatchFlowables extends ViewPart {
 
 	private static void findMatches() {
 		String uneditedParam = chooseSearchFieldText.getText();
-		String whereParam = star2regex(uneditedParam.toLowerCase());
-		whereParam.replaceAll("\"", "\\\\\"").toLowerCase();
+		boolean casSearch = false;
+		String whereParam = uneditedParam;
+		if (uneditedParam.matches("[0-9][0-9]+-[0-9][0-9]-[0-9]")) {
+			whereParam = Flowable.standardizeCAS(uneditedParam);
+			casSearch = true;
+		} else {
+			String whereParamPre = star2regex(uneditedParam.toLowerCase());
+			whereParam = whereParamPre.replaceAll("\"", "\\\\\"");
+		}
 
 		if (whereParam.matches("\\s*")) {
 			return;
 		}
 		String whereClause = "";
-		if (chooseSearchFieldCombo.getSelectionIndex() == 0) {
+		if (!casSearch) {
 			/* Name / synonym search - Must have at least on alphanumeric */
 			if (!uneditedParam.matches(".*[a-zA-Z0-9].*")) {
 				return;
 			}
 			whereClause = "?f skos:altLabel ?syn . \n" + "filter regex(str(?syn),\"" + whereParam + "\") \n";
-		}
-		if (chooseSearchFieldCombo.getSelectionIndex() == 1) {
+		} else {
 			/* CAS RN search */
 			if (!uneditedParam.matches(".*[0-9].*")) {
 				return;
 			}
 			whereClause = "?f fedlca:hasFormattedCAS ?cas . \n" + "filter regex(str(?cas),\"" + whereParam + "\") \n";
 		}
-		if (chooseSearchFieldCombo.getSelectionIndex() == 2) {
-			// if (!uneditedParam.matches(".*[0-9].*")) {
-			// return;
-			// }
-			whereClause = "    ?f ?p ?other . \n" + "    filter regex(str(?other),\"" + whereParam + "\") \n";
-		}
+		// if (searchAllFields) {
+		// // if (!uneditedParam.matches(".*[0-9].*")) {
+		// // return;
+		// // }
+		// whereClause = "    ?f ?p ?other . \n" + "    filter regex(str(?other),\"" + whereParam + "\") \n";
+		// }
 
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
@@ -715,9 +721,18 @@ public class MatchFlowables extends ViewPart {
 	private static SelectionListener nextSelectionListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			System.out.println("event e = " + e);
-			// CSVTableView.selectNext(ID);
-			CSVTableView.selectNextFlowable();
+			Object source = e.getSource();
+			boolean nextUnmatched = false;
+			if (source instanceof Button) {
+				String buttonText = ((Button) source).getText();
+				if (buttonText.matches(".*Unmatched.*")) {
+					nextUnmatched = true;
+				}
+			}
+			CSVTableView.selectNext(ID, nextUnmatched);
+			// System.out.println("event e = " + e);
+			// CSVTableView.selectNext(ID, false);
+			// CSVTableView.selectNextFlowable();
 		}
 
 		@Override

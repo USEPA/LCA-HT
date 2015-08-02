@@ -307,7 +307,15 @@ public class MatchContexts extends ViewPart {
 
 	private SelectionListener nextListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			CSVTableView.selectNext(ID);
+			Object source = e.getSource();
+			boolean nextUnmatched = false;
+			if (source instanceof Button){
+				String buttonText =  ((Button)source).getText();
+				if (buttonText.matches(".*Unmatched.*")){
+					nextUnmatched = true;
+				}
+			}
+			CSVTableView.selectNext(ID, nextUnmatched);
 		}
 
 		@Override

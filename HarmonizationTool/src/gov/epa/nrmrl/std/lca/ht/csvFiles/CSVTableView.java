@@ -1225,6 +1225,69 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
+	public static void selectNext(String viewCallerID, boolean nextUnmatched) {
+		if (rowNumSelected < 0 || rowNumSelected >= table.getItemCount()) {
+			rowNumSelected = 0;
+		}
+		if (nextUnmatched) {
+			if (viewCallerID.equals(MatchContexts.ID)) {
+
+			} else if (viewCallerID.equals(MatchProperties.ID)) {
+				
+			} else if (viewCallerID.equals(MatchFlowables.ID)) {
+				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
+				TableItem lastTableItem = table.getItem(rowNumSelected);
+//				String rowNumString = lastTableItem.getText(0);
+//				int rowNum = Integer.parseInt(rowNumString) - 1;
+				int nextUnmatchedFlowableNum = -1;
+				for (int i : uniqueFlowableRowNumbers) {
+					if (i > rowNum) {
+						if (!matchedFlowableRowNumbers.contains(i)) {
+							nextUnmatchedFlowableNum = i;
+							break;
+						}
+					}
+				}
+				for (int i = rowNumSelected; i < table.getItems().length; i++) {
+					TableItem tableItem = table.getItem(i);
+					String nextRowNumString = tableItem.getText(0);
+					int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
+					if (nextRowNum == nextUnmatchedFlowableNum) {
+						lastTableItem = table.getItem(rowNumSelected);
+						lastTableItem.setFont(defaultFont);
+						rowNumSelected = table.indexOf(tableItem);
+						tableItem.setFont(boldFont);
+						table.setTopIndex(rowNumSelected);
+						break;
+					}
+				}
+
+			}
+
+		} else {
+
+			TableItem lastTableItem = table.getItem(rowNumSelected);
+			rowNumSelected++;
+			TableItem tableItem = table.getItem(rowNumSelected);
+			table.deselectAll();
+			if (defaultFont == null) {
+				createFonts(tableItem);
+			}
+			lastTableItem.setFont(defaultFont);
+			tableItem.setFont(boldFont);
+
+		}
+
+		matchRowContents();
+
+		try {
+			Util.showView(viewCallerID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public static void selectNext(String viewCallerID) {
 		// System.out.println("RowNumSelected = " + rowNumSelected);
 		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
@@ -2328,6 +2391,33 @@ public class CSVTableView extends ViewPart {
 
 	public static int getRowNumSelected() {
 		return rowNumSelected;
+	}
+
+	/**
+	 * This method provides the tableProvider (data) index number for a given row in the User Data table based
+	 * on the integer in the 0th column of the specified displayed row in the User Data table.
+	 * It returns -1 if<br/><ul>
+	 * <li>the parameter is out of range of the current User Data table view</li>
+	 * <li>the 0th column of the specified row does not contain a parsable integer</li>
+	 * <li>the resulting integer would be outside the range of the current tableProvider
+	 * @param rowNumber: the int index of the User Data table as currently displayed
+	 * @return the int index in the tableProvider represented by the specified row in the User Data table
+	 */
+	public static int getDataIndexOfRowNumber(int rowNumber) {
+		if (rowNumber < 0 || rowNumber >= table.getItemCount()) {
+			return -1;
+		}
+		String rowNumString = table.getItem(rowNumber).getText(0);
+		int dataRowIndex;
+		try {
+			dataRowIndex = Integer.parseInt(rowNumString) - 1;
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+		if (dataRowIndex > 0 && dataRowIndex < TableKeeper.getTableProvider(tableProviderKey).getData().size()) {
+			return dataRowIndex;
+		}
+		return -1;
 	}
 
 	public static void setPostCommit() {
