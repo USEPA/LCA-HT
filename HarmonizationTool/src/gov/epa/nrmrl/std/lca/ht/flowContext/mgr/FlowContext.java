@@ -484,130 +484,84 @@ public class FlowContext {
 		return b.toString();
 	}
 
-	public static void loadMasterFlowContexts() {
+	public static void reLoadMasterFlowContexts() {
 		Logger runLogger = Logger.getLogger("run");
-		while (lcaMasterContexts.size() == 0) {
-			runLogger.info("Creating Master Context list");
-			// boolean needToReadMasterFile = true;
-			// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-			// Model tdbModel = ActiveTDB.getModel(null);
-			// // ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDF.type, rdfClass);
-			// ResIterator resIterator = tdbModel.listSubjectsWithProperty(RDF.type, LCAHT.MasterDataset);
-			// while (resIterator.hasNext()) {
-			// Resource masterDataset = resIterator.next();
-			// ResIterator resIterator2 = tdbModel.listSubjectsWithProperty(ECO.hasDataSource, masterDataset);
-			// if (tdbModel.contains(context, RDF.type, LCAHT.MasterDataset)) {
-			// ActiveTDB.tdbDataset.end();
-			// needToReadMasterFile = false;
-			// break;
-			// }
-			// }
-			// ActiveTDB.tdbDataset.end();
-			//
-			// if (needToReadMasterFile) {
-			// String flowContextFileName = "master_flow_contexts_lcaht.zip";
-			// String resourceDirectory = Util.getPreferenceStore().getString("resourceDirectory");
-			// String path = resourceDirectory + File.separator + flowContextFileName;
-			// File file = null;
-			// try {
-			// file = new File(path);
-			// /* To allow Tom to get file during development */
-			// if (!file.exists()) {
-			// path = "/Users/transue/lca/master_contexts/" + flowContextFileName;
-			// file = new File(path);
-			// }
-			// System.out.println("Platform.getOS() = "+Platform.getOS());
-			//
-			// if (!file.exists() && Platform.getOS().matches(".*win.*")) {
-			// System.out.println("Platform.getOS() = "+Platform.getOS());
-			// // TODO - Check the above pattern
-			// path = "C:\\Users\\Tom\\lca\\"+flowContextFileName;
-			// file = new File(path);
-			// System.out.println("We got the file!  It's at: " + file.getPath());
-			// }
-			// } catch (Exception e1) {
-			// System.out.println("The Master Contexts file: " + path + " was not found.");
-			// runLogger.warn("The Master Contexts file: " + path + " was not found.");
-			// return;
-			// }
-			// ImportRDFFileDirectlyToGraph.loadToDefaultGraph(path, null);
-			// DataSourceKeeper.syncFromTDB();
-			// }
+		if (lcaMasterContexts.size() > 0) {
+			lcaMasterContexts.clear();
+		}
+		if (ActiveTDB.getMasterFlowContextDatasetResources() == null) {
+			String masterContextFile = "classpath:/RDFResources/master_contexts_v1.4a_lcaht.n3";
+			runLogger.info("Need to load data: " + masterContextFile);
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterContextFile, null);
+			DataSourceKeeper.syncFromTDB();
+		}
 
-			StringBuilder b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());
-			b.append("select ?fc \n");
-			b.append("       ?fc_uuid \n");
-			b.append("       ?fc_gen \n");
-			b.append("       ?fc_spec \n");
-			b.append("       ?fc_nec_regex \n");
-			b.append("       ?fc_suf_regex \n");
-			b.append("       ?fc_forbid_regex \n");
-			b.append("where {\n");
-			b.append("  ?fc a fedlca:FlowContext .  \n");
-			b.append("  ?fc eco:hasDataSource ?ds . \n");
-			b.append("  ?ds a lcaht:MasterDataset .  \n");
-			b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
-			b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
-			b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
-			b.append("  ?fc fedlca:presentationSortIndex ?sort .  \n");
+		runLogger.info("Creating Master Context list");
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select ?fc \n");
+		b.append("       ?fc_uuid \n");
+		b.append("       ?fc_gen \n");
+		b.append("       ?fc_spec \n");
+		b.append("       ?fc_nec_regex \n");
+		b.append("       ?fc_suf_regex \n");
+		b.append("       ?fc_forbid_regex \n");
+		b.append("where {\n");
+		b.append("  ?fc a fedlca:FlowContext .  \n");
+		b.append("  ?fc eco:hasDataSource ?ds . \n");
+		b.append("  ?ds a lcaht:MasterDataset .  \n");
+		b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
+		b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
+		b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
+		b.append("  ?fc fedlca:presentationSortIndex ?sort .  \n");
+		b.append("  filter (?sort > -1 ) .  \n");
 
-			b.append("  optional { ?fc fedlca:flowContextNecessaryRegexPattern ?fc_nec_regex } \n");
-			b.append("  optional { ?fc fedlca:flowContextSufficientRegexPattern ?fc_suf_regex } \n");
-			b.append("  optional { ?fc fedlca:flowContextForbiddenRegexPattern ?fc_forbid_regex } \n");
-			b.append("} \n");
-			b.append("order by ?sort \n");
+		b.append("  optional { ?fc fedlca:flowContextNecessaryRegexPattern ?fc_nec_regex } \n");
+		b.append("  optional { ?fc fedlca:flowContextSufficientRegexPattern ?fc_suf_regex } \n");
+		b.append("  optional { ?fc fedlca:flowContextForbiddenRegexPattern ?fc_forbid_regex } \n");
+		b.append("} \n");
+		b.append("order by ?sort \n");
 
-			String query = b.toString();
-			System.out.println("Query = \n" + query);
-			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-			harmonyQuery2Impl.setQuery(query);
-			harmonyQuery2Impl.setGraphName(null);
+		String query = b.toString();
+		System.out.println("Query = \n" + query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(null);
 
-			ResultSet resultSet = harmonyQuery2Impl.getResultSet();
-			// List<Resource> itemsToAddToDatasource = new ArrayList<Resource>();
-			Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
-			while (resultSet.hasNext()) {
-				QuerySolution querySolution = resultSet.next();
-				Resource fcResource = querySolution.get("fc").asResource();
-				FlowContext newFlowContext;
-				if (masterMapTemp.containsKey(fcResource)) {
-					newFlowContext = masterMapTemp.get(fcResource);
-				} else {
-					newFlowContext = new FlowContext(fcResource, false);
-					String uuid = querySolution.get("fc_uuid").asLiteral().getString();
-					newFlowContext.setProperty(openLCAUUID, uuid);
-					String general = querySolution.get("fc_gen").asLiteral().getString();
-					newFlowContext.setProperty(flowContextGeneral, general);
-					String specific = querySolution.get("fc_spec").asLiteral().getString();
-					newFlowContext.setProperty(flowContextSpecific, specific);
-					lcaMasterContexts.add(newFlowContext);
-					masterMapTemp.put(fcResource, newFlowContext);
-				}
-
-				RDFNode necNode = querySolution.get("fc_nec_regex");
-				if (necNode != null) {
-					String necessaryRegex = necNode.asLiteral().getString();
-					newFlowContext.addRequiredMatchPatterns(Pattern.compile(necessaryRegex));
-				}
-				RDFNode sufNode = querySolution.get("fc_nec_regex");
-				if (sufNode != null) {
-					String sufficientRegex = sufNode.asLiteral().getString();
-					newFlowContext.addRequiredMatchPatterns(Pattern.compile(sufficientRegex));
-				}
-				RDFNode forbiddenNode = querySolution.get("fc_nec_regex");
-				if (forbiddenNode != null) {
-					String forbiddenRegex = forbiddenNode.asLiteral().getString();
-					newFlowContext.addRequiredMatchPatterns(Pattern.compile(forbiddenRegex));
-				}
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		Map<Resource, FlowContext> masterMapTemp = new HashMap<Resource, FlowContext>();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			Resource fcResource = querySolution.get("fc").asResource();
+			FlowContext newFlowContext;
+			if (masterMapTemp.containsKey(fcResource)) {
+				newFlowContext = masterMapTemp.get(fcResource);
+			} else {
+				newFlowContext = new FlowContext(fcResource, false);
+				String uuid = querySolution.get("fc_uuid").asLiteral().getString();
+				newFlowContext.setProperty(openLCAUUID, uuid);
+				String general = querySolution.get("fc_gen").asLiteral().getString();
+				newFlowContext.setProperty(flowContextGeneral, general);
+				String specific = querySolution.get("fc_spec").asLiteral().getString();
+				newFlowContext.setProperty(flowContextSpecific, specific);
+				lcaMasterContexts.add(newFlowContext);
+				masterMapTemp.put(fcResource, newFlowContext);
 			}
-			if (lcaMasterContexts.size() == 0) {
-//				String masterContextFile = "classpath:/RDFResources/master_properties_lcaht.n3";
-				String masterContextFile = "classpath:/RDFResources/master_contexts_v1.4a_lcaht.n3";
 
-				runLogger.info("Need to load data: " + masterContextFile);
-				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterContextFile, null);
-				DataSourceKeeper.syncFromTDB();
+			RDFNode necNode = querySolution.get("fc_nec_regex");
+			if (necNode != null) {
+				String necessaryRegex = necNode.asLiteral().getString();
+				newFlowContext.addRequiredMatchPatterns(Pattern.compile(necessaryRegex));
+			}
+			RDFNode sufNode = querySolution.get("fc_nec_regex");
+			if (sufNode != null) {
+				String sufficientRegex = sufNode.asLiteral().getString();
+				newFlowContext.addRequiredMatchPatterns(Pattern.compile(sufficientRegex));
+			}
+			RDFNode forbiddenNode = querySolution.get("fc_nec_regex");
+			if (forbiddenNode != null) {
+				String forbiddenRegex = forbiddenNode.asLiteral().getString();
+				newFlowContext.addRequiredMatchPatterns(Pattern.compile(forbiddenRegex));
 			}
 		}
 	}

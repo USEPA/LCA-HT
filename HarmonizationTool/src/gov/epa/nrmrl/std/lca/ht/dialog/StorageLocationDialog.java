@@ -62,62 +62,58 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		setMessage("The Harmonization Tool uses a workspace directory to store its database, input files, output files, and log files in subdirectories.  Please specify a location for this directory.");
 
 		Composite area = (Composite) super.createDialogArea(parent);
+		GridLayout gridLayout = (GridLayout) area.getLayout();
 		Composite container = new Composite(area, SWT.NONE);
 
 		GridData gd = new GridData(GridData.FILL_BOTH);
-		container.setLayout(new GridLayout(3, false));
+		gd.verticalAlignment = SWT.TOP;
+		gd.minimumHeight = -1;
+		gd.grabExcessVerticalSpace = false;
+		GridLayout gl_container = new GridLayout(3, false);
+		gl_container.marginHeight = 0;
+		gl_container.verticalSpacing = 1;
+		container.setLayout(gl_container);
 		container.setLayoutData(gd);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
+		
+				Label label = new Label(container, SWT.NONE);
+				label.setText("Directory");
+				label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		
+				text = new Text(container, SWT.SINGLE | SWT.BORDER);
+				
+						text.setText(storageLocation);
+						gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+						gd.grabExcessHorizontalSpace = true;
+						text.setLayoutData(gd);
+		
+				final Button button = new Button(container, SWT.NONE);
+				button.setText("Browse");
+				button.addSelectionListener(new SelectionListener() {
+
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+
+					public void widgetSelected(SelectionEvent e) {
+						DirectoryDialog dlg = new DirectoryDialog(button.getShell(), SWT.OPEN);
+						dlg.setFilterPath(storageLocation);
+						dlg.setText("Open");
+						String path = dlg.open();
+						if (path == null)
+							return;
+						text.setText(path);
+					}
+				});
+				button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
 		/* Web */
 		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = GridData.FILL;
-
-		Label label = new Label(container, SWT.NONE);
-		label.setText("Directory");
-		label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-
-		text = new Text(container, SWT.SINGLE | SWT.BORDER);
+		new Label(container, SWT.NONE);
 
 		storageLocation = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
-
-		text.setText(storageLocation);
-		gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd.grabExcessHorizontalSpace = true;
-		text.setLayoutData(gd);
-
-		final Button button = new Button(container, SWT.NONE);
-		button.setText("Browse");
-		button.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dlg = new DirectoryDialog(button.getShell(), SWT.OPEN);
-				dlg.setFilterPath(storageLocation);
-				dlg.setText("Open");
-				String path = dlg.open();
-				if (path == null)
-					return;
-				text.setText(path);
-			}
-		});
-		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-
-		prefsButton = new Button(container, SWT.CHECK);
-		prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
-		prefsButton.setText("Use this directory as the default and do not ask agiain");
-		prefsButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		
+				prefsButton = new Button(container, SWT.CHECK);
+				prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
+				prefsButton.setText("Use this directory as the default and do not ask again");
 		new Label(container, SWT.NONE);
 
 		return area;

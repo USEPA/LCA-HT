@@ -321,7 +321,7 @@ fedlca:property_groundwaterReplenishmentOcc
 fedlca:unitGroup_length_area
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
         rdfs:label               "length*area"^^xsd:string ;
-        fedlca:displaySortIndex  36 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_mm_m2 ;
         fedlca:hasOpenLCAUUID    "36932b14-ba61-417b-a80c-eb9935d193f1"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_mm_m2 ;
@@ -338,7 +338,7 @@ fedlca:property_groundwaterReplenishmentTransf
 fedlca:unitGroup_groundwaterReplenishmentTransf
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
         rdfs:label               "groundwater replenishment (transf.)"^^xsd:string ;
-        fedlca:displaySortIndex  35 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_mm_m2PerYear ;
         fedlca:hasOpenLCAUUID    "9e5a91be-b3d1-4268-8e7d-e5e93f6a75d4"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_mm_m2PerYear ;
@@ -354,7 +354,7 @@ fedlca:property_itemCount
 
 fedlca:unitGroup_items
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
-        rdfs:label               "items"^^xsd:string ;
+        rdfs:label               "number of items"^^xsd:string ;
         fedlca:displaySortIndex  31 ;
         fedlca:hasFlowUnit       fedlca:unit_DozenItems , fedlca:unit_Item , fedlca:unit_kt ;
         fedlca:hasOpenLCAUUID    "5beb6eed-33a9-47b8-9ede-1dfe8f679159"^^xsd:string ;
@@ -363,7 +363,7 @@ fedlca:unitGroup_items
 
 fedlca:property_items_length
         a                          owl:NamedIndividual , fedlca:FlowProperty ;
-        rdfs:label                 "Items*Length"^^xsd:string ;
+        rdfs:label                 "Items * length"^^xsd:string ;
         fedlca:belongsToUnitGroup  fedlca:unitGroup_items_length ;
         fedlca:hasOpenLCAUUID      "0ddc622a-bc4a-4cf8-a551-9e112864b77f"^^xsd:string ;
         fedlca:hasUnitGroupUUID    "5454b231-270e-45e6-89b2-7f4f3e482245"^^xsd:string ;
@@ -422,7 +422,7 @@ fedlca:property_marketValueUS2000Bulk
 
 fedlca:unitGroup_currency2000
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
-        rdfs:label               "currency 2000"^^xsd:string ;
+        rdfs:label               "Market value US 2000, bulk prices"^^xsd:string ;
         fedlca:displaySortIndex  40 ;
         fedlca:hasFlowUnit       fedlca:unit_currency_AUD , fedlca:unit_currency_CAD , fedlca:unit_currency_CHF , fedlca:unit_currency_CZK , fedlca:unit_currency_DKK , fedlca:unit_currency_EEK , fedlca:unit_currency_EUR , fedlca:unit_currency_GBP , fedlca:unit_currency_HUF , fedlca:unit_currency_ISK , fedlca:unit_currency_JPY , fedlca:unit_currency_KRW , fedlca:unit_currency_LTL , fedlca:unit_currency_LVL , fedlca:unit_currency_NOK , fedlca:unit_currency_SEK , fedlca:unit_currency_USD , fedlca:unit_currency_ZAR ;
         fedlca:hasOpenLCAUUID    "da299c4d-1741-4da8-9fbd-5ccfb5e1d688"^^xsd:string ;
@@ -457,7 +457,7 @@ fedlca:property_mechanicalFiltrationOcc
 fedlca:unitGroup_mechanicalFiltrationOcc
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
         rdfs:label               "mechanical filtration (occ.)"^^xsd:string ;
-        fedlca:displaySortIndex  37 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_cm_m3 ;
         fedlca:hasOpenLCAUUID    "59f6a0a2-731f-41c3-86df-d383dc673dfe"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_cm_m3 ;
@@ -474,7 +474,7 @@ fedlca:property_mechanicalFiltrationTransf
 fedlca:unitGroup_length_areaPerTime
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
         rdfs:label               "length*area/time"^^xsd:string ;
-        fedlca:displaySortIndex  38 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_cm_m2PerDay ;
         fedlca:hasOpenLCAUUID    "f2275057-f8be-4db9-bb78-5dfc276967a0"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_cm_m2PerDay ;
@@ -507,7 +507,7 @@ fedlca:property_personTransport
 
 fedlca:unitGroup_personTransport
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
-        rdfs:label               "person transport"^^xsd:string ;
+        rdfs:label               "person*length"^^xsd:string ;
         fedlca:displaySortIndex  33 ;
         fedlca:hasFlowUnit       fedlca:unit_person_km ;
         fedlca:hasOpenLCAUUID    "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7"^^xsd:string ;
@@ -525,7 +525,7 @@ fedlca:property_physicochemicalFiltrationOcc
 fedlca:unitGroup_mole_area_timePerMass
         a                        owl:NamedIndividual , fedlca:UnitGroup , fedlca:PhysicalHybrid ;
         rdfs:label               "mole*area*time/mass"^^xsd:string ;
-        fedlca:displaySortIndex  21 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_cmol_m2_yearPerkg ;
         fedlca:hasOpenLCAUUID    "a6941776-ee4b-40fe-9a05-e19faac45240"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_cmol_m2_yearPerkg ;
@@ -542,7 +542,7 @@ fedlca:property_physicochemicalFiltrationTransf
 fedlca:unitGroup_mole_areaPerMass
         a                        owl:NamedIndividual , fedlca:UnitGroup , fedlca:PhysicalHybrid ;
         rdfs:label               "mole*area/mass"^^xsd:string ;
-        fedlca:displaySortIndex  20 ;
+        fedlca:displaySortIndex  -1 ;
         fedlca:hasFlowUnit       fedlca:unit_cmol_m2Perkg ;
         fedlca:hasOpenLCAUUID    "3dbb60e1-edde-49f7-b28d-f34b4af727b3"^^xsd:string ;
         fedlca:hasReferenceUnit  fedlca:unit_cmol_m2Perkg ;
@@ -567,7 +567,7 @@ fedlca:property_vehicleTransport
 
 fedlca:unitGroup_vehicleTransport
         a                        owl:NamedIndividual , fedlca:UnitGroup ;
-        rdfs:label               "vehicle transport"^^xsd:string ;
+        rdfs:label               "vehicle*length"^^xsd:string ;
         fedlca:displaySortIndex  34 ;
         fedlca:hasFlowUnit       fedlca:unit_vehicle_km ;
         fedlca:hasOpenLCAUUID    "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9"^^xsd:string ;

@@ -15,6 +15,8 @@ import java.util.prefs.Preferences;
 
 
 
+
+
 //import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
@@ -24,6 +26,7 @@ import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
 import gov.epa.nrmrl.std.lca.ht.harmonizationtool.Application;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
@@ -53,7 +56,9 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.query.DatasetAccessorFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -1427,4 +1432,112 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		return null;
 	}
+	
+	public static List<Resource> getMasterFlowPropertyDatasetResources(){
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select  distinct ?ds where { \n");
+		b.append("  ?mug a fedlca:UnitGroup . \n");
+		b.append("  ?mug fedlca:displaySortIndex ?ug_index . \n");
+		b.append("  ?mug eco:hasDataSource ?ds . \n");
+		b.append("  ?mug fedlca:hasFlowUnit ?mu . \n");
+		b.append("  ?mu a fedlca:FlowUnit . \n");
+		b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
+		b.append("  filter(?ug_index > -1) \n");
+		b.append("  filter(?u_index > -1) \n");
+		b.append("  ?mu eco:hasDataSource ?ds . \n");
+		b.append("  ?ds a lcaht:MasterDataset . \n");
+		b.append("} \n");
+		b.append("");
+
+		String query = b.toString();
+		
+		tdbDataset.begin(ReadWrite.READ);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(null);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<Resource> datasets = new ArrayList<Resource>();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			Resource ds = querySolution.get("ds").asResource();
+			datasets.add(ds);
+		}
+		tdbDataset.end();
+		if (datasets.size() > 0){
+			return datasets;
+		}
+		return null;
+	}
+	
+	public static List<Resource> getMasterFlowContextDatasetResources(){
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct ?ds \n");
+		b.append("where {\n");
+		b.append("  ?fc a fedlca:FlowContext .  \n");
+		b.append("  ?fc eco:hasDataSource ?ds . \n");
+		b.append("  ?ds a lcaht:MasterDataset .  \n");
+		b.append("  ?fc fedlca:flowContextGeneral ?fc_gen .  \n");
+		b.append("  ?fc fedlca:flowContextSpecific ?fc_spec .  \n");
+		b.append("  ?fc fedlca:hasOpenLCAUUID ?fc_uuid . \n");
+		b.append("  ?fc fedlca:presentationSortIndex ?sort .  \n");
+		b.append("  filter (?sort > -1 ) .  \n");
+		b.append("} \n");
+
+		String query = b.toString();
+		
+		tdbDataset.begin(ReadWrite.READ);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(null);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<Resource> datasets = new ArrayList<Resource>();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			Resource ds = querySolution.get("ds").asResource();
+			datasets.add(ds);
+		}
+		tdbDataset.end();
+		if (datasets.size() > 0){
+			return datasets;
+		}
+		return null;
+	}
+	
+	public static List<Resource> getMasterFlowableDatasetResources(){
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct ?ds \n");
+		b.append("where {\n");
+		b.append("  ?f a eco:Flowable .  \n");
+		b.append("  ?f rdfs:label ?label .  \n");
+		b.append("  ?f eco:hasDataSource ?ds . \n");
+		b.append("  ?ds a lcaht:MasterDataset .  \n");
+		b.append("} \n");
+
+		String query = b.toString();
+		
+		tdbDataset.begin(ReadWrite.READ);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		harmonyQuery2Impl.setGraphName(null);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		List<Resource> datasets = new ArrayList<Resource>();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			Resource ds = querySolution.get("ds").asResource();
+			datasets.add(ds);
+		}
+		tdbDataset.end();
+		if (datasets.size() > 0){
+			return datasets;
+		}
+		return null;
+	}
+
+	
 }

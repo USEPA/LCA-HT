@@ -437,7 +437,7 @@ public class MatchProperties extends ViewPart {
 		// }
 		// ActiveTDB.tdbDataset.end();
 
-		FlowProperty.loadMasterFlowUnits();
+		FlowProperty.reLoadMasterFlowUnits();
 		TreeNode masterPropertyTree = new TreeNode(null);
 
 		TreeNode curSuperGroupNode = null;
@@ -460,7 +460,6 @@ public class MatchProperties extends ViewPart {
 				curGroupNode.uri = unitGroup;
 				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
 				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
-
 				curGroupNode.nodeClass = FedLCA.UnitGroup;
 				// curGroupNode.relatedObject = flowProperty;
 			} else if (!lastUnitGroup.equals(unitGroup)) {
@@ -469,7 +468,6 @@ public class MatchProperties extends ViewPart {
 				curGroupNode.uri = unitGroup;
 				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
 				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
-
 				curGroupNode.nodeClass = FedLCA.UnitGroup;
 			}
 
@@ -484,221 +482,6 @@ public class MatchProperties extends ViewPart {
 			curNode.relatedObject = flowUnit;
 			// }
 		}
-		// partialCollapse();
-
-		// TreeNode physicalIndividual = new TreeNode(masterPropertyTree);
-		// physicalIndividual.nodeName = "Physical individual";
-		//
-		// TreeNode physicalCombined = new TreeNode(masterPropertyTree);
-		// physicalCombined.nodeName = "Physical hybrid";
-		//
-		// TreeNode other = new TreeNode(masterPropertyTree);
-		// other.nodeName = "Other";
-
-		// // -------- PHYSICAL
-		// TreeNode mass = new TreeNode(physicalIndividual);
-		// mass.nodeName = "Mass";
-		// mass.uri = FedLCA.Mass;
-		// mass.uuid = "93a60a57-a4c8-11da-a746-0800200c9a66";
-		// mass.referenceDescription = "Kilogram";
-		// mass.referenceUnit = "kg";
-		// createSubNodes(mass);
-		//
-		// TreeNode length = new TreeNode(physicalIndividual);
-		// length.nodeName = "Length";
-		// length.uri = FedLCA.Length;
-		// length.uuid = "838aaa22-0117-11db-92e3-0800200c9a66";
-		// length.referenceDescription = "Meter";
-		// length.referenceUnit = "m";
-		// createSubNodes(length);
-		//
-		// TreeNode area = new TreeNode(physicalIndividual);
-		// area.nodeName = "Area";
-		// area.uri = FedLCA.Area;
-		// area.uuid = "93a60a57-a3c8-18da-a746-0800200c9a66";
-		// area.referenceDescription = "Square meter";
-		// area.referenceUnit = "m2";
-		// createSubNodes(area);
-		//
-		// TreeNode volume = new TreeNode(physicalIndividual);
-		// volume.nodeName = "Volume";
-		// volume.uri = FedLCA.Volume;
-		// volume.uuid = "93a60a57-a3c8-12da-a746-0800200c9a66";
-		// volume.referenceDescription = "Cubic meter";
-		// volume.referenceUnit = "m3";
-		// createSubNodes(volume);
-		//
-		// TreeNode duration = new TreeNode(physicalIndividual);
-		// duration.nodeName = "Time";
-		// // duration.nodeName = "Duration";
-		// duration.uri = FedLCA.Duration;
-		// duration.uuid = "af638906-3ec7-4314-8de7-f76039f2dd01";
-		// duration.referenceDescription = "Day";
-		// duration.referenceUnit = "d";
-		// createSubNodes(duration);
-		//
-		// TreeNode energy = new TreeNode(physicalIndividual);
-		// energy.nodeName = "Energy";
-		// energy.uri = FedLCA.Energy;
-		// energy.uuid = "93a60a57-a3c8-11da-a746-0800200c9a66";
-		// energy.referenceDescription = "Megajoule";
-		// energy.referenceUnit = "MJ";
-		// createSubNodes(energy);
-		//
-		// TreeNode radioactivity = new TreeNode(physicalIndividual);
-		// radioactivity.nodeName = "Radioactivity";
-		// radioactivity.uri = FedLCA.Radioactivity;
-		// radioactivity.uuid = "93a60a57-a3c8-16da-a746-0800200c9a66";
-		// radioactivity.referenceDescription = "Kilo-Bequerel, 1000 events per second";
-		// radioactivity.referenceUnit = "kBq";
-		// createSubNodes(radioactivity);
-		//
-		// // -------- PHYSICAL HYBRID
-		// TreeNode massTime = new TreeNode(physicalCombined);
-		// massTime.nodeName = "Mass*time";
-		// massTime.uri = FedLCA.MassTime;
-		// massTime.uuid = "59f191d6-5dd3-4553-af88-1a32accfe308";
-		// massTime.referenceDescription = "Kilogram times year";
-		// massTime.referenceUnit = "kg*a";
-		// createSubNodes(massTime);
-		//
-		// TreeNode massPerTime = new TreeNode(physicalCombined);
-		// massPerTime.nodeName = "Mass/time";
-		// massPerTime.uri = FedLCA.MassPerTime;
-		// massPerTime.uuid = "94b84332-8f2d-4592-b2a0-e19da33a69e9";
-		// massPerTime.referenceDescription = "Kilogram per year";
-		// massPerTime.referenceUnit = "kg/a";
-		// createSubNodes(massPerTime);
-		//
-		// TreeNode massLength = new TreeNode(physicalCombined);
-		// massLength.nodeName = "Mass*length";
-		// massLength.uri = FedLCA.MassLength;
-		// massLength.uuid = "838aaa21-0117-11db-92e3-0800200c9a66";
-		// massLength.referenceDescription = "Metric ton-kilometer";
-		// massLength.referenceUnit = "t*km";
-		// createSubNodes(massLength);
-		//
-		// TreeNode lengthTime = new TreeNode(physicalCombined);
-		// lengthTime.nodeName = "Length*time";
-		// lengthTime.uri = FedLCA.LengthTime;
-		// lengthTime.uuid = "326eb58b-e5b3-4cea-b45a-2398c25109f8";
-		// lengthTime.referenceDescription = "Meter times year";
-		// lengthTime.referenceUnit = "m*a";
-		// createSubNodes(lengthTime);
-		//
-		// TreeNode areaTime = new TreeNode(physicalCombined);
-		// areaTime.nodeName = "Area*time";
-		// areaTime.uri = FedLCA.AreaTime;
-		// areaTime.uuid = "93a60a57-a3c8-20da-a746-0800200c9a66";
-		// areaTime.referenceDescription = "Square meter times year";
-		// areaTime.referenceUnit = "m2*a";
-		// createSubNodes(areaTime);
-		//
-		// TreeNode volumeTime = new TreeNode(physicalCombined);
-		// volumeTime.nodeName = "Volume*time";
-		// volumeTime.uri = FedLCA.VolumeTime;
-		// volumeTime.uuid = "93a60a57-a3c8-23da-a746-0800200c9a66";
-		// volumeTime.referenceDescription = "Cubic meter times year";
-		// volumeTime.referenceUnit = "m3*a";
-		// createSubNodes(volumeTime);
-		//
-		// TreeNode volumeLength = new TreeNode(physicalCombined);
-		// volumeLength.nodeName = "Volume*length";
-		// volumeLength.uri = FedLCA.VolumeLength;
-		// volumeLength.uuid = "ff8ed45d-bbfb-4531-8c7b-9b95e52bd41d";
-		// volumeLength.referenceDescription = "Cubic metre times kilometre";
-		// volumeLength.referenceUnit = "m3*km";
-		// createSubNodes(volumeLength);
-		//
-		// TreeNode energyPerMassTime = new TreeNode(physicalCombined);
-		// energyPerMassTime.nodeName = "Energy/mass*time";
-		// energyPerMassTime.uri = FedLCA.EnergyPerMassTime;
-		// energyPerMassTime.uuid = "258d6abd-14f2-4484-956c-c88e8f6fd8ed";
-		// energyPerMassTime.referenceDescription = "Megajoule per kilogram times day";
-		// energyPerMassTime.referenceUnit = "MJ/kg*d";
-		// createSubNodes(energyPerMassTime);
-		//
-		// TreeNode energyPerAreaTime = new TreeNode(physicalCombined);
-		// energyPerAreaTime.nodeName = "Energy/area*time";
-		// energyPerAreaTime.uri = FedLCA.EnergyPerAreaTime;
-		// energyPerAreaTime.uuid = "876adcd3-29e6-44e2-acdd-11be304ae654";
-		// energyPerAreaTime.referenceDescription = "Kilowatthour per square meter times day";
-		// energyPerAreaTime.referenceUnit = "kWh/m2*d";
-		// createSubNodes(energyPerAreaTime);
-		//
-		// // -------- OTHER
-		// TreeNode itemCount = new TreeNode(other);
-		// itemCount.nodeName = "Number of items";
-		// itemCount.uri = FedLCA.ItemCount;
-		// itemCount.uuid = "5beb6eed-33a9-47b8-9ede-1dfe8f679159";
-		// itemCount.referenceDescription = "Number of items";
-		// itemCount.referenceUnit = "Item(s)";
-		// createSubNodes(itemCount);
-		//
-		// TreeNode itemsLength = new TreeNode(other);
-		// itemsLength.nodeName = "Items*length";
-		// itemsLength.uri = FedLCA.ItemsLength;
-		// itemsLength.uuid = "5454b231-270e-45e6-89b2-7f4f3e482245";
-		// itemsLength.referenceDescription = "Items times kilometre";
-		// itemsLength.referenceUnit = "Items*km";
-		// createSubNodes(itemsLength);
-		//
-		// TreeNode goodsTransportMassDistance = new TreeNode(other);
-		// goodsTransportMassDistance.nodeName = "Goods transport (mass*distance)";
-		// goodsTransportMassDistance.uri = FedLCA.GoodsTransportMassDistance;
-		// goodsTransportMassDistance.uuid = "";
-		// goodsTransportMassDistance.referenceDescription = "";
-		// goodsTransportMassDistance.referenceUnit = "";
-		// createSubNodes(goodsTransportMassDistance);
-		//
-		// TreeNode personTransport = new TreeNode(other);
-		// personTransport.nodeName = "Person transport";
-		// personTransport.uri = FedLCA.PersonTransport;
-		// personTransport.uuid = "11d161f0-37e3-4d49-bf7a-ff4f31a9e5c7";
-		// personTransport.referenceDescription = "Person kilometer";
-		// personTransport.referenceUnit = "p*km";
-		// createSubNodes(personTransport);
-		//
-		// TreeNode vehicleTransport = new TreeNode(other);
-		// vehicleTransport.nodeName = "Vehicle transport";
-		// vehicleTransport.uri = FedLCA.VehicleTransport;
-		// vehicleTransport.uuid = "af16ae7e-3e04-408a-b8ae-5b3666dbe7f9";
-		// vehicleTransport.referenceDescription = "Vehicle-kilometer";
-		// vehicleTransport.referenceUnit = "v*km";
-		// createSubNodes(vehicleTransport);
-		//
-		// TreeNode netCalorificValue = new TreeNode(other);
-		// netCalorificValue.nodeName = "Net calorific value";
-		// netCalorificValue.uri = FedLCA.NetCalorificValue;
-		// netCalorificValue.uuid = "";
-		// netCalorificValue.referenceDescription = "";
-		// netCalorificValue.referenceUnit = "";
-		// createSubNodes(netCalorificValue);
-		//
-		// TreeNode grossCalorificValue = new TreeNode(other);
-		// grossCalorificValue.nodeName = "Gross calorific value";
-		// grossCalorificValue.uri = FedLCA.GrossCalorificValue;
-		// grossCalorificValue.uuid = "";
-		// grossCalorificValue.referenceDescription = "";
-		// grossCalorificValue.referenceUnit = "";
-		// createSubNodes(grossCalorificValue);
-		//
-		// TreeNode normalVolume = new TreeNode(other);
-		// normalVolume.nodeName = "Normal Volume";
-		// normalVolume.uri = FedLCA.NormalVolume;
-		// normalVolume.uuid = "";
-		// normalVolume.referenceDescription = "";
-		// normalVolume.referenceUnit = "";
-		// createSubNodes(normalVolume);
-		//
-		// TreeNode valueUS2000BulkPrices = new TreeNode(other);
-		// valueUS2000BulkPrices.nodeName = "Market value US 2000, bulk prices";
-		// valueUS2000BulkPrices.uri = FedLCA.ValueUS2000BulkPrices;
-		// valueUS2000BulkPrices.uuid = "";
-		// valueUS2000BulkPrices.referenceDescription = "";
-		// valueUS2000BulkPrices.referenceUnit = "";
-		// createSubNodes(valueUS2000BulkPrices);
-
 		return masterPropertyTree;
 	}
 

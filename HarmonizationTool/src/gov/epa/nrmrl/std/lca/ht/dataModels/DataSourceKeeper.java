@@ -420,14 +420,17 @@ public class DataSourceKeeper {
 	}
 
 	public static void syncFromTDB() {
+		if (ActiveTDB.getMasterFlowableDatasetResources() == null) {
+			System.out.println("No master flow data present, loading master flows and flowables");
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip",
+					null);
+		}
 		Model tdbModel = ActiveTDB.getModel(null);
 		List<Resource> dataSourceResourcesToAdd = new ArrayList<Resource>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		ResIterator iterator = tdbModel.listSubjectsWithProperty(RDF.type, ECO.DataSource);
 		// TODO - Choose better ways of checking TDB for content
-		boolean dataPresent = false;
 		while (iterator.hasNext()) {
-			dataPresent = true;
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
@@ -435,28 +438,11 @@ public class DataSourceKeeper {
 			if (dataSourceIndex < 0) {
 				System.out.println("... new one");
 				dataSourceResourcesToAdd.add(dataSourceRDFResource);
-				// new DataSourceProvider(dataSourceRDFResource);
 			}
 		}
 		ActiveTDB.tdbDataset.end();
 		for (Resource resource : dataSourceResourcesToAdd) {
 			new DataSourceProvider(resource);
 		}
-
-		if (!dataPresent) {
-//			boolean firstTry = true;
-			System.out.println("No data present, loading master flows and flowables");
-
-			boolean direct = ImportRDFFileDirectlyToGraph.loadToDefaultGraph(
-					"classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip", null);
-			// ImportRDFFileDirectlyToGraph.loadToDefaultGraph("C:\\Users\\Tom\\lca\\master_files\\possible_complete_new_master_flows_lcaht.n3",
-			// null);
-			//if (direct) {
-				System.out.println("Load finished");
-				syncFromTDB();
-				//ActiveTDB.getInstance().creationMessage.close();
-			//}
-		}
 	}
-
 }

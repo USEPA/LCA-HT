@@ -873,7 +873,7 @@ public class ImportUserData implements IHandler {
 					// FlowsWorkflow.btnCheckData.setEnabled(true);
 					// System.out.println("About to do setHeaderInfo()");
 				}
-				FlowContext.loadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
+				FlowContext.reLoadMasterFlowContexts(); /* THERE MAY BE A BETTER TIME TO DO THIS */
 			}
 		});
 		// }

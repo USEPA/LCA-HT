@@ -9,7 +9,6 @@ import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 
 import java.util.ArrayList;
@@ -25,15 +24,10 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
 
 /**
  * The FlowProperty class handles all Flow Properties and Flow Property Units
@@ -49,11 +43,12 @@ public class FlowProperty {
 	public static final String flowPropertyString = "Property";
 	public static final String flowPropertyAdditionalIdentifier = "Additional Info";
 	public static final Resource rdfClass = null;
-//	public static final Resource rdfClass = FedLCA.FlowProperty;
+	// public static final Resource rdfClass = FedLCA.FlowProperty;
 
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Property";
-//	public static final String comment = "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
+	// public static final String comment =
+	// "The Flow Property is the characteristic used to measure the quanitity of the flowable.  Examples include 'volume', 'mass*time', and 'person transport'.  For a given Flow Property, only certain units are valid: e.g. 'm3' for 'volume', 'kg*hr' for 'mass*time', and 'people*km' for 'person transport'.";
 	public static List<FlowUnit> lcaMasterUnits = new ArrayList<FlowUnit>();
 	// public static List<FlowProperty> lcaMasterProperties = new ArrayList<FlowProperty>();
 	private static Map<String, LCADataPropertyProvider> dataPropertyMap;
@@ -108,10 +103,11 @@ public class FlowProperty {
 	private List<LCADataValue> lcaDataValues;
 	private Resource matchingResource;
 	private int firstRow;
-//	private List<FlowUnit> flowUnits;
-//	private FlowUnit userDataFlowUnit;
-//	private FlowUnit referenceFlowUnit;
-//	public String superGroup;
+
+	// private List<FlowUnit> flowUnits;
+	// private FlowUnit userDataFlowUnit;
+	// private FlowUnit referenceFlowUnit;
+	// public String superGroup;
 
 	// CONSTRUCTORS
 	public FlowProperty() {
@@ -251,14 +247,18 @@ public class FlowProperty {
 		updateSyncDataFromTDB();
 	}
 
-	public static void loadMasterFlowUnits() {
+	public static void reLoadMasterFlowUnits() {
 		Logger runLogger = Logger.getLogger("run");
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model model = ActiveTDB.getModel(null);
-		if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)){
-			System.out.println("Hey!");
+		if (ActiveTDB.getMasterFlowPropertyDatasetResources() == null){
+			String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
+			runLogger.info("Need to load data: " + masterPropertiesFile);
+			ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterPropertiesFile, null);
+			DataSourceKeeper.syncFromTDB();
 		}
-		ActiveTDB.tdbDataset.end();
+		if (lcaMasterUnits.size() > 0){
+			lcaMasterUnits.clear();
+		}
+
 		List<Resource> flowUnitResources = new ArrayList<Resource>();
 		while (flowUnitResources.size() == 0) {
 			runLogger.info("Creating Master Property list");
@@ -272,9 +272,10 @@ public class FlowProperty {
 			b.append("  ?mug fedlca:hasFlowUnit ?mu . \n");
 			b.append("  ?mu a fedlca:FlowUnit . \n");
 			b.append("  ?mu fedlca:displaySortIndex ?u_index . \n");
+			b.append("  filter(?ug_index > -1) \n");
+			b.append("  filter(?u_index > -1) \n");
 			b.append("  ?mu eco:hasDataSource ?ds . \n");
 			b.append("  ?ds a lcaht:MasterDataset . \n");
-
 			b.append("} \n");
 			b.append("order by ?ug_index ?u_index\n");
 
@@ -293,14 +294,6 @@ public class FlowProperty {
 				flowUnitResources.add(refUnit);
 			}
 			ActiveTDB.tdbDataset.end();
-
-
-			if (flowUnitResources.size() == 0) {
-				String masterPropertiesFile = "classpath:/RDFResources/master_properties_v1.4a_lcaht.n3";
-				runLogger.info("Need to load data: " + masterPropertiesFile);
-				ImportRDFFileDirectlyToGraph.loadToDefaultGraph(masterPropertiesFile, null);
-				DataSourceKeeper.syncFromTDB();
-			}
 		}
 
 		for (Resource resource : flowUnitResources) {
@@ -308,7 +301,7 @@ public class FlowProperty {
 			lcaMasterUnits.add(unitToAdd);
 		}
 	}
-
+	
 	private static List<FormatCheck> getPropertyNameCheckList() {
 		List<FormatCheck> qaChecks = FormatCheck.getGeneralQAChecks();
 		return qaChecks;
@@ -352,9 +345,9 @@ public class FlowProperty {
 		this.firstRow = firstRow;
 	}
 
-//	public String getDataSource() {
-//		return "Master List";
-//	}
+	// public String getDataSource() {
+	// return "Master List";
+	// }
 
 	public String getUnitStr() {
 		return (String) getOneProperty(flowPropertyUnit);

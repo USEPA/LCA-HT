@@ -189,7 +189,7 @@
             </command>
             <command
                   commandId="gov.epa.nrmrl.std.lca.ht.handler.ExportTDBHandler"
-                  label="Export entire TDB..."
+                  label="Export entire TDB Database..."
                   style="push">
             </command>
             <command
