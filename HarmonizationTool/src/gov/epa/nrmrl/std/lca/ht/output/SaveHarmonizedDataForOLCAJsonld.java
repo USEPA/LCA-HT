@@ -98,14 +98,14 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		boolean nestedCall = true;
 		Shell shell = null;
 		String currentName = event.getParameter("LCA-HT.exportDataSetName");
-		
+
 		if (currentName == null) {
 			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell, false);
 			dlg.open();
 			currentName = dlg.getSelection();
 		}
-		
+
 		String saveTo = event.getParameter("LCA-HT.outputFilename");
 
 		Logger runLogger = Logger.getLogger("run");
@@ -144,33 +144,39 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
-		if (nestedCall) 
+		if (nestedCall) {
 			writeData(saveTo, currentName);
-		else {
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					FlowsWorkflow.setStatusConclude("Export complete");
+					FlowsWorkflow.switchToWorkflowState(8);
+				}
+			});
+		} else {
 			final String save = saveTo;
 			final String ds = currentName;
-			new Thread(new Runnable() { public void run() {
-				disableButtons();
-				writeData(save, ds);
-				enableButtons();
-			}}).start();
+			new Thread(new Runnable() {
+				public void run() {
+					writeData(save, ds);
+				}
+			}).start();
 		}
 		return null;
 	}
-	
-	private void disableButtons() {
-		Display.getDefault().syncExec(new Runnable() { public void run() {
-			FlowsWorkflow.disableAllButtons();
-		}});
-	}
-	
-	private void enableButtons() {
-		Display.getDefault().syncExec(new Runnable() { public void run() {
-//			FlowsWorkflow.restoreAllButtons();
-			FlowsWorkflow.switchToWorkflowState(3);
-		}});
-	}
-	
+
+	// private void disableButtons() {
+	// Display.getDefault().syncExec(new Runnable() { public void run() {
+	// FlowsWorkflow.disableAllButtons();
+	// }});
+	// }
+	//
+	// private void enableButtons() {
+	// Display.getDefault().syncExec(new Runnable() { public void run() {
+	// // FlowsWorkflow.restoreAllButtons();
+	// FlowsWorkflow.switchToWorkflowState(3);
+	// }});
+	// }
+
 	public void writeData(String saveTo, String currentName) {
 		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
@@ -438,11 +444,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		 * ===========================================================================================================
 		 */
 
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				FlowsWorkflow.setStatusConclude("0/3 steps to complete");
-			}
-		});
 		Map<String, String> userFlow2masterFlow = new HashMap<String, String>();
 		Map<String, String> userFlow2masterUnit = new HashMap<String, String>();
 		Map<String, Double> masterUnit2convFactor = new HashMap<String, Double>();
@@ -591,7 +592,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Location)) {
 				resourceMap.get("locations").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Process)) {
-//				System.out.println("Process count: " + resourceMap.get("processes").size());
+				// System.out.println("Process count: " + resourceMap.get("processes").size());
 				resourceMap.get("processes").add(itemResource);
 			} else if (itemResource.hasProperty(RDF.type, OpenLCA.Source)) {
 				resourceMap.get("sources").add(itemResource);
@@ -646,7 +647,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		int lastPercent = -1;
 		for (String folderKey : resourceMap.keySet()) {
 			// List<String> uuidsToReplace = new LinkedList<String>();
-//			System.out.println("Working on '" + folderKey + "' files");
+			// System.out.println("Working on '" + folderKey + "' files");
 			Set<Resource> hashSet = resourceMap.get(folderKey);
 			for (Resource itemResource : hashSet) {
 				total++;
@@ -654,13 +655,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 				if (percent >= lastPercent + 1) {
 					// Ready for when this routine becomes threaded
-					final int percentToWrite = percent;
+					final int percentToWrite = percent / 2;
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							FlowsWorkflow.setStatusConclude("1/3 preparing components " + percentToWrite + "%");
+							FlowsWorkflow.setStatusConclude(percentToWrite + "% (preparing components)");
 						}
 					});
-					System.out.println("1/3 " + percent + "% complete");
 					lastPercent = percent;
 				}
 
@@ -696,9 +696,9 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				 * "lastChange" 2) processes require changing the "flow" info and info about Exchanges
 				 */
 				if (folderKey.equals("flows")) {
-//					if (itemUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
-//						System.out.println("pause here");
-//					}
+					// if (itemUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
+					// System.out.println("pause here");
+					// }
 					// Only ELEMENTARY_FLOW Flows will have changes (at this point)
 					if (ActiveTDB.getModel(ActiveTDB.exportGraphName).contains(itemResource, OpenLCA.flowType,
 							OpenLCA.ELEMENTARY_FLOW)) {
@@ -750,24 +750,24 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 								}
 							}
 							// Handle FlowProperty and FlowUnit
-//							if (userFlow2masterFlow.containsKey(itemUUID)) {
-//								System.out.println("UUID and master are: " + itemUUID + " and "
-//										+ userFlow2masterFlow.get(itemUUID));
-//							}
+							// if (userFlow2masterFlow.containsKey(itemUUID)) {
+							// System.out.println("UUID and master are: " + itemUUID + " and "
+							// + userFlow2masterFlow.get(itemUUID));
+							// }
 							RDFNode itemProperty = itemProperties.get("flow_properties");
 							Statement firstFlowPropertyStatement = itemProperty.asResource().getProperty(
 									OpenLCA.flowProperty);
 							String itemPropertyUUID = ActiveTDB.getUUIDFromRDFNode(firstFlowPropertyStatement
 									.getObject().asResource());
-//							if (!itemPropertyUUID.equals(userFlow2masterUnit.get(itemUUID))) {
-								// Careful here. Because the same flow can have different units, we must update the unit
-								// in this flow, but not all instances this unit...
-								// so, do nothing here, but deal with it in phase 2
-//								if (userFlow2masterFlow.containsKey(itemUUID)) {
-//									System.out.println("Flow: " + itemUUID + " will get new unit: "
-//											+ userFlow2masterUnit.get(itemUUID) + ". Not: " + itemPropertyUUID);
-//								}
-//							}
+							// if (!itemPropertyUUID.equals(userFlow2masterUnit.get(itemUUID))) {
+							// Careful here. Because the same flow can have different units, we must update the unit
+							// in this flow, but not all instances this unit...
+							// so, do nothing here, but deal with it in phase 2
+							// if (userFlow2masterFlow.containsKey(itemUUID)) {
+							// System.out.println("Flow: " + itemUUID + " will get new unit: "
+							// + userFlow2masterUnit.get(itemUUID) + ". Not: " + itemPropertyUUID);
+							// }
+							// }
 							if (!oldNewOtherUUIDMap.containsKey(itemPropertyUUID)) {
 								RDFNode masterProperty = masterProperties.get("flow_properties");
 								Statement findUUIDStatement = masterProperty.asResource().getProperty(
@@ -786,7 +786,6 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		// runAllUUIDReplacements(oldNewFlowUUIDMap, oldNewOtherUUIDMap, stopAtTheseClasses);
 		// runUnitUUIDReplacements(userFlow2masterFlow, userFlow2masterUnit, masterUnit2convFactor);
 		runAllUUIDReplacements2(oldNewFlowUUIDMap, oldNewOtherUUIDMap, userFlow2masterUnit, masterUnit2convFactor);
-
 		try {
 			FileOutputStream fout = new FileOutputStream(saveTo);
 			String outType = ActiveTDB.getRDFTypeFromSuffix(saveTo);
@@ -798,6 +797,14 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			ActiveTDB.tdbDataset.end();
 			fout.close();
 			removePrefix(saveTo);
+			if (!saveTo.matches(".*\\.tmp.json")) {
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setStatusConclude("Export complete");
+						FlowsWorkflow.switchToWorkflowState(8);
+					}
+				});
+			}
 			// ---- END SAFE -WRITE- TRANSACTION ---
 
 		} catch (FileNotFoundException e1) {
@@ -830,20 +837,20 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 	}
 
-	private void removeFlowProperty(RDFNode propertyRDFNode) {
-		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
-		Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-		try {
-			Resource propertyResource = propertyRDFNode.asResource();
-			tdbModel.removeAll(propertyResource, null, null);
-			ActiveTDB.tdbDataset.commit();
-		} catch (Exception e) {
-			System.out.println("Update description failed; see Exception: " + e);
-			ActiveTDB.tdbDataset.abort();
-		} finally {
-			ActiveTDB.tdbDataset.end();
-		}
-	}
+	// private void removeFlowProperty(RDFNode propertyRDFNode) {
+	// ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+	// Model tdbModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+	// try {
+	// Resource propertyResource = propertyRDFNode.asResource();
+	// tdbModel.removeAll(propertyResource, null, null);
+	// ActiveTDB.tdbDataset.commit();
+	// } catch (Exception e) {
+	// System.out.println("Update description failed; see Exception: " + e);
+	// ActiveTDB.tdbDataset.abort();
+	// } finally {
+	// ActiveTDB.tdbDataset.end();
+	// }
+	// }
 
 	private void runAllUUIDReplacements2(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
 			Map<String, String> oldNewFlowUnitUUIDMap, Map<String, Double> oldNewConvFactorMap) {
@@ -862,23 +869,15 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 		Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
 		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
-			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
-				System.out.println("pause here");
-			}
-			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
-				System.out.println("pause here");
-			}
-
 			totalDone++;
 			int percent = 100 * totalDone / totalToDo;
 			if (percent >= lastPercentComplete + 1) {
-				final int percentToWrite = percent;
+				final int percentToWrite = 50 + (percent / 6);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude(percentToWrite + "% (updating components)");
 					}
 				});
-				System.out.println("2/3 " + percent + "% complete");
 				lastPercentComplete = percent;
 			}
 			String newUUID = oldNewFlowUUIDMap.get(oldUUID);
@@ -894,7 +893,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				Statement statement = stmtIterator0.next();
 				statementsToRemove.add(statement);
 				RDFNode predicate = statement.getPredicate();
-//				System.out.println("Predicate : " + predicate.asResource().getURI());
+				// System.out.println("Predicate : " + predicate.asResource().getURI());
 				RDFNode object = statement.getObject();
 				if (!object.isLiteral() && !object.isAnon()) {
 					String uri = object.asResource().getURI();
@@ -992,19 +991,18 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			totalDone++;
 			int percent = 100 * totalDone / totalToDo;
 			if (percent >= lastPercentComplete + 1) {
-				final int percentToWrite = percent;
+				final int percentToWrite = 50 + (percent / 6);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
+						FlowsWorkflow.setStatusConclude(percentToWrite + "% (updating components)");
 					}
 				});
-				System.out.println("2/3 " + percent + "% complete");
 				lastPercentComplete = percent;
 			}
 			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
-//			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
-//				System.out.println("pause here");
-//			}
+			// if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
+			// System.out.println("pause here");
+			// }
 			Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
 			Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
 
@@ -1039,141 +1037,11 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		}
 		ActiveTDB.tdbDataset.end();
 
-		// Now collect the item which is new from the default graph so as to replace the removed one.
-		statementsToAdd.addAll(ActiveTDB.collectStatementsTraversingNodeSet(otherThingsToBringIn, null));
-
-		// Now remove and add the new batches of statements (whose objects have changed)
-		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
-	}
-
-	private void runAllUUIDReplacements(Map<String, String> oldNewFlowUUIDMap, Map<String, String> oldNewOtherUUIDMap,
-			Set<RDFNode> stopAtTheseClasses) {
-		// while (ActiveTDB.tdbDataset.isInTransaction()){
-		// ActiveTDB.tdbDataset.end();
-		// }
-		int totalToDo = oldNewFlowUUIDMap.size() + oldNewOtherUUIDMap.size();
-		int totalDone = 0;
-		int lastPercentComplete = -1;
-		Set<RDFNode> otherThingsToBringIn = new HashSet<RDFNode>();
-		List<Statement> statementsToAdd = new ArrayList<Statement>();
-		List<Statement> statementsToRemove = new ArrayList<Statement>();
-		// List<RDFNode> objectsToAdd = new ArrayList<RDFNode>();
-		// List<RDFNode> objectsToRemove = new ArrayList<RDFNode>();
-
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
-		for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
-//			if (oldUUID.equals("37236b2f-b18d-35a7-9860-d9149c1763f1")) {
-//				System.out.println("pause here");
-//			}
-//			if (oldUUID.equals("fc1c42ce-a759-49fa-b987-f1ec5e503db1")) {
-//				System.out.println("pause here");
-//			}
-
-			totalDone++;
-			int percent = 100 * totalDone / totalToDo;
-			if (percent >= lastPercentComplete + 1) {
-				final int percentToWrite = percent;
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
-					}
-				});
-				System.out.println("2/3 " + percent + "% complete");
-				lastPercentComplete = percent;
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setStatusConclude("70% (writing components)");
 			}
-			String newUUID = oldNewFlowUUIDMap.get(oldUUID);
-			Resource oldFlowResource = expModel.createResource(OpenLCA.NS + oldUUID);
-			Resource newFlowResource = expModel.createResource(OpenLCA.NS + newUUID);
-			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
-			// StmtIterator stmtIterator0 = expModel.listStatements(oldFlowResource, null, null, null);
-			Selector selector0 = new SimpleSelector(oldFlowResource, null, null, null);
-			StmtIterator stmtIterator0 = expModel.listStatements(selector0);
-			while (stmtIterator0.hasNext()) {
-				Statement statement = stmtIterator0.next();
-				statementsToRemove.add(statement);
-				RDFNode object = statement.getObject();
-				if (!object.isLiteral() && !object.isAnon()) {
-					String uri = object.asResource().getURI();
-					if (uri.length() == 36 + OpenLCA.NS.length()) {
-						String oldUUIDObject = uri.substring(uri.length() - 36);
-						if (oldNewOtherUUIDMap.containsKey(oldUUIDObject)) {
-							String newUUIDObject = oldNewOtherUUIDMap.get(oldUUIDObject);
-							object = expModel.createResource(OpenLCA.NS + newUUIDObject);
-						}
-					}
-				}
-				Statement addStatement = expModel.createStatement(newFlowResource, statement.getPredicate(), object);
-				statementsToAdd.add(addStatement);
-			}
-
-			Selector selector1 = new SimpleSelector(null, null, oldFlowResource);
-			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
-			while (stmtIterator1.hasNext()) {
-				Statement statement = stmtIterator1.next();
-				statementsToRemove.add(statement);
-				Statement addStatement = expModel.createStatement(statement.getSubject(), statement.getPredicate(),
-						newFlowResource);
-				statementsToAdd.add(addStatement);
-			}
-		}
-		ActiveTDB.tdbDataset.end();
-
-		// It is necessary to do this once because otherwise, the Flow won't be present to have it's objects replaced
-		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
-		statementsToAdd.clear();
-		statementsToRemove.clear();
-
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		for (String oldUUID : oldNewOtherUUIDMap.keySet()) {
-			totalDone++;
-			int percent = 100 * totalDone / totalToDo;
-			if (percent >= lastPercentComplete + 1) {
-				final int percentToWrite = percent;
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
-					}
-				});
-				System.out.println("2/3 " + percent + "% complete");
-				lastPercentComplete = percent;
-			}
-			String newUUID = oldNewOtherUUIDMap.get(oldUUID);
-			if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
-				System.out.println("pause here");
-			}
-			Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
-			Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
-
-			otherThingsToBringIn.add(newOtherResource);
-			// BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
-			// StmtIterator stmtIterator0 = expModel.listStatements(oldOtherResource, null, null, null);
-			// Selector selector0 = new SimpleSelector(oldOtherResource, null, null, null);
-			// StmtIterator stmtIterator0 = expModel.listStatements(selector0);
-			// while (stmtIterator0.hasNext()) {
-			// Statement statement = stmtIterator0.next();
-			// statementsToRemove.add(statement);
-			// }
-
-			Selector selector1 = new SimpleSelector(null, null, oldOtherResource);
-			StmtIterator stmtIterator1 = expModel.listStatements(selector1);
-			while (stmtIterator1.hasNext()) {
-				Statement statement = stmtIterator1.next();
-				statementsToRemove.add(statement);
-				RDFNode object = statement.getObject();
-				if (!object.isLiteral() && !object.isAnon()) {
-					String uri = object.asResource().getURI();
-					String oldUUIDObject = uri.substring(uri.length() - 36);
-					if (!oldNewFlowUUIDMap.containsKey(oldUUIDObject)) {
-
-						Statement addStatement = expModel.createStatement(statement.getSubject(),
-								statement.getPredicate(), newOtherResource);
-						statementsToAdd.add(addStatement);
-					}
-				}
-			}
-		}
-		ActiveTDB.tdbDataset.end();
+		});
 
 		// Now collect the item which is new from the default graph so as to replace the removed one.
 		statementsToAdd.addAll(ActiveTDB.collectStatementsTraversingNodeSet(otherThingsToBringIn, null));
@@ -1182,10 +1050,141 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.setStatusConclude("");
+				FlowsWorkflow.setStatusConclude("80% (creating file)");
 			}
 		});
 	}
+
+	// private void runAllUUIDReplacements(Map<String, String> oldNewFlowUUIDMap, Map<String, String>
+	// oldNewOtherUUIDMap,
+	// Set<RDFNode> stopAtTheseClasses) {
+	//
+	// int totalToDo = oldNewFlowUUIDMap.size() + oldNewOtherUUIDMap.size();
+	// int totalDone = 0;
+	// int lastPercentComplete = -1;
+	// Set<RDFNode> otherThingsToBringIn = new HashSet<RDFNode>();
+	// List<Statement> statementsToAdd = new ArrayList<Statement>();
+	// List<Statement> statementsToRemove = new ArrayList<Statement>();
+	//
+	// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+	// Model expModel = ActiveTDB.getModel(ActiveTDB.exportGraphName);
+	// for (String oldUUID : oldNewFlowUUIDMap.keySet()) {
+	// totalDone++;
+	// int percent = 100 * totalDone / totalToDo;
+	// if (percent >= lastPercentComplete + 1) {
+	// final int percentToWrite = percent;
+	// Display.getDefault().asyncExec(new Runnable() {
+	// public void run() {
+	// FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
+	// }
+	// });
+	// System.out.println("2/3 " + percent + "% complete");
+	// lastPercentComplete = percent;
+	// }
+	// String newUUID = oldNewFlowUUIDMap.get(oldUUID);
+	// Resource oldFlowResource = expModel.createResource(OpenLCA.NS + oldUUID);
+	// Resource newFlowResource = expModel.createResource(OpenLCA.NS + newUUID);
+	// // BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+	// // StmtIterator stmtIterator0 = expModel.listStatements(oldFlowResource, null, null, null);
+	// Selector selector0 = new SimpleSelector(oldFlowResource, null, null, null);
+	// StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+	// while (stmtIterator0.hasNext()) {
+	// Statement statement = stmtIterator0.next();
+	// statementsToRemove.add(statement);
+	// RDFNode object = statement.getObject();
+	// if (!object.isLiteral() && !object.isAnon()) {
+	// String uri = object.asResource().getURI();
+	// if (uri.length() == 36 + OpenLCA.NS.length()) {
+	// String oldUUIDObject = uri.substring(uri.length() - 36);
+	// if (oldNewOtherUUIDMap.containsKey(oldUUIDObject)) {
+	// String newUUIDObject = oldNewOtherUUIDMap.get(oldUUIDObject);
+	// object = expModel.createResource(OpenLCA.NS + newUUIDObject);
+	// }
+	// }
+	// }
+	// Statement addStatement = expModel.createStatement(newFlowResource, statement.getPredicate(), object);
+	// statementsToAdd.add(addStatement);
+	// }
+	//
+	// Selector selector1 = new SimpleSelector(null, null, oldFlowResource);
+	// StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+	// while (stmtIterator1.hasNext()) {
+	// Statement statement = stmtIterator1.next();
+	// statementsToRemove.add(statement);
+	// Statement addStatement = expModel.createStatement(statement.getSubject(), statement.getPredicate(),
+	// newFlowResource);
+	// statementsToAdd.add(addStatement);
+	// }
+	// }
+	// ActiveTDB.tdbDataset.end();
+	//
+	// // It is necessary to do this once because otherwise, the Flow won't be present to have it's objects replaced
+	// tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+	// statementsToAdd.clear();
+	// statementsToRemove.clear();
+	//
+	// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+	// for (String oldUUID : oldNewOtherUUIDMap.keySet()) {
+	// totalDone++;
+	// int percent = 100 * totalDone / totalToDo;
+	// if (percent >= lastPercentComplete + 1) {
+	// final int percentToWrite = percent;
+	// Display.getDefault().asyncExec(new Runnable() {
+	// public void run() {
+	// FlowsWorkflow.setStatusConclude("2/3 updating components " + percentToWrite + "%");
+	// }
+	// });
+	// System.out.println("2/3 " + percent + "% complete");
+	// lastPercentComplete = percent;
+	// }
+	// String newUUID = oldNewOtherUUIDMap.get(oldUUID);
+	// if (newUUID.equals("2d9498c8-6873-45e1-af33-e1a298c119b9")) {
+	// System.out.println("pause here");
+	// }
+	// Resource oldOtherResource = expModel.createResource(OpenLCA.NS + oldUUID);
+	// Resource newOtherResource = expModel.createResource(OpenLCA.NS + newUUID);
+	//
+	// otherThingsToBringIn.add(newOtherResource);
+	// // BEWARE: listStatements DOES NOT seem to capture statements with non-literal objects
+	// // StmtIterator stmtIterator0 = expModel.listStatements(oldOtherResource, null, null, null);
+	// // Selector selector0 = new SimpleSelector(oldOtherResource, null, null, null);
+	// // StmtIterator stmtIterator0 = expModel.listStatements(selector0);
+	// // while (stmtIterator0.hasNext()) {
+	// // Statement statement = stmtIterator0.next();
+	// // statementsToRemove.add(statement);
+	// // }
+	//
+	// Selector selector1 = new SimpleSelector(null, null, oldOtherResource);
+	// StmtIterator stmtIterator1 = expModel.listStatements(selector1);
+	// while (stmtIterator1.hasNext()) {
+	// Statement statement = stmtIterator1.next();
+	// statementsToRemove.add(statement);
+	// RDFNode object = statement.getObject();
+	// if (!object.isLiteral() && !object.isAnon()) {
+	// String uri = object.asResource().getURI();
+	// String oldUUIDObject = uri.substring(uri.length() - 36);
+	// if (!oldNewFlowUUIDMap.containsKey(oldUUIDObject)) {
+	//
+	// Statement addStatement = expModel.createStatement(statement.getSubject(),
+	// statement.getPredicate(), newOtherResource);
+	// statementsToAdd.add(addStatement);
+	// }
+	// }
+	// }
+	// }
+	// ActiveTDB.tdbDataset.end();
+	//
+	// // Now collect the item which is new from the default graph so as to replace the removed one.
+	// statementsToAdd.addAll(ActiveTDB.collectStatementsTraversingNodeSet(otherThingsToBringIn, null));
+	//
+	// // Now remove and add the new batches of statements (whose objects have changed)
+	// tsRemoveStatementsFromGraph(statementsToRemove, statementsToAdd, ActiveTDB.exportGraphName);
+	// Display.getDefault().asyncExec(new Runnable() {
+	// public void run() {
+	// FlowsWorkflow.setStatusConclude("");
+	// }
+	// });
+	// }
 
 	private static void tsRemoveStatementsFromGraph(List<Statement> statementsToRemove,
 			List<Statement> statementsToAdd, String graphName) {

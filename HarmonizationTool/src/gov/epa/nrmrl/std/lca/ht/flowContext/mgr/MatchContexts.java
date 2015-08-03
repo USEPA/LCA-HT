@@ -321,7 +321,7 @@ public class MatchContexts extends ViewPart {
 	};
 
 	private void expandItem(TreeItem item) {
-		System.out.println("Item expanded: item.getText() " + item.getText());
+//		System.out.println("Item expanded: item.getText() " + item.getText());
 		item.setExpanded(true);
 		masterTreeViewer.refresh();
 		for (TreeItem child : item.getItems()) {

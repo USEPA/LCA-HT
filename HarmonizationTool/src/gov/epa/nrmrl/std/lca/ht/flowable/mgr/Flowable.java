@@ -706,43 +706,43 @@ public class Flowable {
 
 		if (lcQName.matches(".*, in water")) {
 			String firstPart = lcQName.split(", in water")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in water")) {
 			String firstPart = lcQName.split(" in water")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in soil")) {
 			String firstPart = lcQName.split(", in soil")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in soil")) {
 			String firstPart = lcQName.split(" in soil")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in air")) {
 			String firstPart = lcQName.split(", in air")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in air")) {
 			String firstPart = lcQName.split(" in air")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in biomass")) {
 			String firstPart = lcQName.split(", in biomass")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in biomass")) {
 			String firstPart = lcQName.split(" in biomass")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in ground")) {
 			String firstPart = lcQName.split(", in ground")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in ground")) {
 			String firstPart = lcQName.split(" in ground")[0];
-			System.out.println("First part = " + firstPart);
+//			System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		}
 
@@ -758,52 +758,52 @@ public class Flowable {
 			}
 			if (lcSyn.matches(".*, in water")) {
 				String firstPart = lcSyn.split(", in water")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in water")) {
 				String firstPart = lcSyn.split(" in water")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in soil")) {
 				String firstPart = lcSyn.split(", in soil")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in soil")) {
 				String firstPart = lcSyn.split(" in soil")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in air")) {
 				String firstPart = lcSyn.split(", in air")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in air")) {
 				String firstPart = lcSyn.split(" in air")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in biomass")) {
 				String firstPart = lcSyn.split(", in biomass")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in biomass")) {
 				String firstPart = lcSyn.split(" in biomass")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in ground")) {
 				String firstPart = lcSyn.split(", in ground")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in ground")) {
 				String firstPart = lcSyn.split(" in ground")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			}
 
-			System.out.println(lcSyn);
+//			System.out.println(lcSyn);
 
 			/* Special rule to attempt to match text prior to ", in ground" */
 			if (lcSyn.matches(".*, in ground")) {
 				String firstPart = lcSyn.split(", in ground")[0];
-				System.out.println("First part = " + firstPart);
+//				System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			}
 		}

@@ -344,7 +344,7 @@ public class MatchProperties extends ViewPart {
 	};
 
 	private void expandItem(TreeItem item) {
-		System.out.println("Item expanded: item.getText() " + item.getText());
+//		System.out.println("Item expanded: item.getText() " + item.getText());
 		item.setExpanded(true);
 		masterTreeViewer.refresh();
 		for (TreeItem child : item.getItems()) {
@@ -554,7 +554,7 @@ public class MatchProperties extends ViewPart {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
 			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
 			if (treeNode1.getUri() != null) {
-				System.out.println("treeNode1 = " + treeNode1);
+//				System.out.println("treeNode1 = " + treeNode1);
 				if (resource.equals(treeNode1.getUri())) {
 					return treeNode1;
 
@@ -563,7 +563,7 @@ public class MatchProperties extends ViewPart {
 
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
-				System.out.println("treeNode2 = " + treeNode2);
+//				System.out.println("treeNode2 = " + treeNode2);
 
 				if (treeNode2.getUri() != null) {
 					if (resource.equals(treeNode2.getUri())) {
@@ -572,7 +572,7 @@ public class MatchProperties extends ViewPart {
 				}
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
-					System.out.println("treeNode3 = " + treeNode3);
+//					System.out.println("treeNode3 = " + treeNode3);
 
 					if (treeNode3.getUri() != null) {
 						if (resource.equals(treeNode3.getUri())) {
@@ -599,7 +599,7 @@ public class MatchProperties extends ViewPart {
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
 				if (treeNode2 == null) {
-					System.out.println("Choke at level 2 with" + node1Name);
+//					System.out.println("Choke at level 2 with" + node1Name);
 					return null;
 				}
 				String node2Name = treeNode2.nodeName;
@@ -612,7 +612,7 @@ public class MatchProperties extends ViewPart {
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
 					if (treeNode3 == null) {
-						System.out.println("Choke at level 3 with" + node2Name);
+//						System.out.println("Choke at level 3 with" + node2Name);
 						return null;
 					}
 					String node3Name = treeNode3.nodeName;

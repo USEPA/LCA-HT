@@ -60,7 +60,7 @@ public class FlowContext {
 				// ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
 				// ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
-				System.out.println("label assigned to Flow Context");
+//				System.out.println("label assigned to Flow Context");
 
 				LCADataPropertyProvider lcaDataPropertyProvider;
 
@@ -523,7 +523,7 @@ public class FlowContext {
 		b.append("order by ?sort \n");
 
 		String query = b.toString();
-		System.out.println("Query = \n" + query);
+//		System.out.println("Query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(null);

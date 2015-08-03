@@ -25,7 +25,7 @@ public class ChooseDataSetDialog extends Dialog {
 	
 	boolean filterMasters = false;
 	
-	static String defaultPrompt = "Please choose a data set to export:";
+	static String defaultPrompt = "Please choose a dataset to export:";
 	
 	String prompt;
 	
@@ -171,9 +171,9 @@ public class ChooseDataSetDialog extends Dialog {
 			dataSetCombo.setLayoutData(gd);
 					
 			List<String> formats = new ArrayList<String>();
-			formats.add("Text file (csv)");
-			formats.add("LCA-HT (json, jsonld, ttl)");
-			formats.add("OpenLCA (zip)");
+			formats.add("Tab-delimited text file (.csv)");
+			formats.add("Zipped .json for OpenLCA (.zip)");
+			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
 			
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
 			outputFormatCombo.select(1);

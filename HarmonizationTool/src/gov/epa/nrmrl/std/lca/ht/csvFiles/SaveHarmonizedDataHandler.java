@@ -50,16 +50,16 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	@Override
 	public void dispose() {
 	}
-	
+
 	public void writeStoredData(String dataSourceName, String saveLocation) {
 		ResultSetRewindable resultSetRewindable = ImportUserData.queryOLCATAbleData(dataSourceName);
 
 		DataRow headerRow = new DataRow();
-		
+
 		TableProvider.setHeaderNames(headerRow, resultSetRewindable.getResultVars());
-		
+
 		List<DataRow> dataRows = new ArrayList<DataRow>();
-				
+
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
@@ -78,12 +78,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-				}				
+				}
 			}
 		}
 		writeTableData(headerRow, dataRows, saveLocation);
 	}
-	
+
 	public List<DataRow> getOpenTableData() {
 		List<DataRow> dataRows = new ArrayList<DataRow>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
@@ -94,17 +94,16 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		return dataRows;
 	}
 
-
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		
+
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
-		
+
 		FlowsWorkflow.disableAllButtons();
 
 		System.out.println("Saving Harmonized Data");
-		
+
 		final String dataSetName = event.getParameter("LCA-HT.exportDataSetName");
 
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -127,36 +126,50 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		final String saveTo = dialog.open();
 		System.out.println("Save to: " + saveTo);
-		
+
 		if (saveTo == null) {
-//			FlowsWorkflow.restoreAllButtons();
-			FlowsWorkflow.switchToWorkflowState(3);
+			// FlowsWorkflow.restoreAllButtons();
+			FlowsWorkflow.switchToWorkflowState(8);
 		}
-		
-		
-		new Thread(new Runnable() { public void run() {
-			if (dataSetName != null) {
-				writeStoredData(dataSetName, saveTo);
-				Display.getDefault().syncExec(new Runnable() { public void run() {
-//					FlowsWorkflow.restoreAllButtons();
-					FlowsWorkflow.switchToWorkflowState(3);
-				}});
+
+		new Thread(new Runnable() {
+			public void run() {
+				if (dataSetName != null) {
+					writeStoredData(dataSetName, saveTo);
+					Display.getDefault().syncExec(new Runnable() {
+						public void run() {
+							// FlowsWorkflow.restoreAllButtons();
+							FlowsWorkflow.switchToWorkflowState(12);
+						}
+					});
+				}
+
+				DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
+				if (headerRow == null) {
+					Display.getDefault().syncExec(new Runnable() {
+						public void run() {
+							FlowsWorkflow.setStatusConclude("Export failed");
+							FlowsWorkflow.switchToWorkflowState(8);
+						}
+					});
+					return;
+				}
+				System.out.println("headerRow " + headerRow);
+
+				List<DataRow> dataRows = getOpenTableData();
+
+				writeTableData(headerRow, dataRows, saveTo);
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setStatusConclude("Export complete");
+						FlowsWorkflow.switchToWorkflowState(8);
+					}
+				});
 			}
-			
-			DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
-			System.out.println("headerRow " + headerRow);
-	
-			List<DataRow> dataRows = getOpenTableData();
-			
-			writeTableData(headerRow, dataRows, saveTo);
-			Display.getDefault().syncExec(new Runnable() { public void run() {
-//				FlowsWorkflow.restoreAllButtons();
-				FlowsWorkflow.switchToWorkflowState(3);
-			}});
-			}}).start();
+		}).start();
 		return null;
 	}
-	
+
 	public void writeTableData(DataRow headerRow, List<DataRow> dataRows, String saveTo) {
 
 		try {
@@ -183,7 +196,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 			// prepare and write data
 			for (DataRow dataRow : dataRows) {
-//				System.out.println("Row: "+row++);
+				// System.out.println("Row: "+row++);
 				for (i = 0; i < dataRow.getColumnValues().size(); i++) {
 					csvPrinter.printRecord(dataRow.getColumnValues());
 				}

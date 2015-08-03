@@ -593,8 +593,14 @@ public class HarmonizedDataSelector extends ViewPart {
 
 	public static DataRow getHarmonizedDataHeader() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		if (tableProvider == null){
+			return null;
+		}
 		// String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
 		DataRow inputHeader = tableProvider.getHeaderRow();
+		if (inputHeader == null){
+			return null;
+		}
 
 		DataRow outputHeader = new DataRow();
 		for (int i = 1; i < inputHeader.getSize(); i++) {

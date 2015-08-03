@@ -8,14 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-
-
 import java.util.prefs.Preferences;
-
-
-
-
 
 //import gov.epa.nrmrl.std.lca.ht.dataCuration.AnnotationProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
@@ -117,22 +110,14 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		/*if (tdbDataset != null) {
-			if (tdbDataset.getDefaultModel() != null) {
-				System.out.println("Attempting to execute ActiveTDB after the TDB is open!");
-				return null;
-			}
-		}
-		openTDB();
-		try {
-			syncTDBtoLCAHT();
-		} catch (Exception e) {
-			System.out.println("syncTDBtoLCAHT() failed with Exception: " + e);
-			e.printStackTrace();
-			Exception e2 = new ExecutionException("***********THE TDB MAY BE BAD*******************");
-			e2.printStackTrace();
-			System.exit(1);
-		}*/
+		/*
+		 * if (tdbDataset != null) { if (tdbDataset.getDefaultModel() != null) {
+		 * System.out.println("Attempting to execute ActiveTDB after the TDB is open!"); return null; } } openTDB(); try
+		 * { syncTDBtoLCAHT(); } catch (Exception e) { System.out.println("syncTDBtoLCAHT() failed with Exception: " +
+		 * e); e.printStackTrace(); Exception e2 = new
+		 * ExecutionException("***********THE TDB MAY BE BAD*******************"); e2.printStackTrace(); System.exit(1);
+		 * }
+		 */
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		shell.setVisible(true);
 		shell.getDisplay().update();
@@ -141,37 +126,32 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	}
 
 	public static void syncTDBtoLCAHT() {
-		System.out.println("Syncing data sources");
+		// System.out.println("Syncing data sources");
 		DataSourceKeeper.syncFromTDB();
 		// System.out.println("Syncing people");
 		// PersonKeeper.syncFromTDB();
 		// System.out.println("Syncing files");
 		// FileMDKeeper.syncFromTDB();
-		System.out.println("Done syncing");
+		// System.out.println("Done syncing");
 		// AnnotationProvider.updateCurrentAnnotationModifiedDate();
 	}
-	
+
 	public static void initPrefs() {
-		
+
 	}
 
 	public static void openTDB() {
 		if (tdbDataset == null) {
-			/*Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			String activeTDB = Util.getPreferenceStore().getString("defaultTDB");
-			if (Util.EMPTY_STRING.equals(activeTDB)) {
-				StorageLocationDialog dialog = new StorageLocationDialog(shell);
-				shell.setVisible(false);
-				dialog.open();
-				if (dialog.getReturnCode() == StorageLocationDialog.RET_SHOW_PREFS)
-					redirectToPreferences();
-				String infoMessage = "Initializing TDB Data - please wait...";
-				creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION,
-						new String[] {}, 0);
-				creationMessage.setBlockOnOpen(false);
-				creationMessage.open();
-				creationMessage.getShell().getDisplay().update();
-			}*/
+			/*
+			 * Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(); String activeTDB =
+			 * Util.getPreferenceStore().getString("defaultTDB"); if (Util.EMPTY_STRING.equals(activeTDB)) {
+			 * StorageLocationDialog dialog = new StorageLocationDialog(shell); shell.setVisible(false); dialog.open();
+			 * if (dialog.getReturnCode() == StorageLocationDialog.RET_SHOW_PREFS) redirectToPreferences(); String
+			 * infoMessage = "Initializing TDB Data - please wait..."; creationMessage = new MessageDialog(shell,
+			 * "Info", null, infoMessage, MessageDialog.INFORMATION, new String[] {}, 0);
+			 * creationMessage.setBlockOnOpen(false); creationMessage.open();
+			 * creationMessage.getShell().getDisplay().update(); }
+			 */
 
 			String defaultTDB = null;
 			File defaultTDBFile = null;
@@ -182,13 +162,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				defaultTDBFile = new File(defaultTDB);
 
 				if (defaultTDBFile.isDirectory()) {
-					/*String infoMessage = "Initializing TDB Data - please wait...";
-					creationMessage = new MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION,
-							new String[] {}, 0);
-					creationMessage.setBlockOnOpen(false);
-					creationMessage.open();
-					creationMessage.getShell().getDisplay().update();*/
-					System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
+					/*
+					 * String infoMessage = "Initializing TDB Data - please wait..."; creationMessage = new
+					 * MessageDialog(shell, "Info", null, infoMessage, MessageDialog.INFORMATION, new String[] {}, 0);
+					 * creationMessage.setBlockOnOpen(false); creationMessage.open();
+					 * creationMessage.getShell().getDisplay().update();
+					 */
+					// System.out.println("defaultTDBFile.list().length=" + defaultTDBFile.list().length);
 					try {
 						tdbDataset = TDBFactory.createDataset(defaultTDBFile.getPath());
 						assert tdbDataset != null : "tdbDataset cannot be null";
@@ -203,15 +183,16 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 						Util.getPreferenceStore().save();
 
 						tdbCreated = true;
-						/*if (creationMessage != null)
-							creationMessage.close();*/
+						/*
+						 * if (creationMessage != null) creationMessage.close();
+						 */
 						// TODO: Write to the Logger whether the TDB is freshly
 						// created or has contents already. Also
 						// write
 						// to the TDB that the session has started
 						// Prefixes.syncPrefixMapToTDBModel();
 					} catch (Exception e1) {
-						System.out.println("Exception: " + e1);
+						// System.out.println("Exception: " + e1);
 						if (!prefsCanceled) {
 							// TODO: Determine when this message might display
 							// and what the user and software shoul do
@@ -231,8 +212,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 				if (!tdbCreated) {
 					// ask user for TDB directory
-					new MessageDialog(null, "Error", null, errMsg, MessageDialog.ERROR, new String[] { "Ok" }, 0).open();
-					
+					new MessageDialog(null, "Error", null, errMsg, MessageDialog.ERROR, new String[] { "Ok" }, 0)
+							.open();
+
 					Preferences osPrefs = Preferences.userNodeForPackage(Application.class);
 					StorageLocationDialog dlg = new StorageLocationDialog(null, osPrefs);
 					dlg.open();
@@ -250,7 +232,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.setNsPrefixes(prefixMapping);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Prefix mapping sync ActiveTDB default failed with Exception: " + e);
+			// System.out.println("Prefix mapping sync ActiveTDB default failed with Exception: " + e);
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
@@ -265,7 +247,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.setNsPrefixes(prefixMapping);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Prefix mapping sync ActiveTDB import failed with Exception: " + e);
+			// System.out.println("Prefix mapping sync ActiveTDB import failed with Exception: " + e);
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
@@ -280,7 +262,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.setNsPrefixes(prefixMapping);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Prefix mapping sync ActiveTDB export failed with Exception: " + e);
+			// System.out.println("Prefix mapping sync ActiveTDB export failed with Exception: " + e);
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
@@ -297,7 +279,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			datasetAccessor.add(importModel);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("01 TDB transaction failed; see Exception: " + e);
+			// System.out.println("01 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -314,12 +296,12 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			exportModel.add(defaultModel);
 			// Model unionModel = ModelFactory.createUnion(defaultModel, exportModel);
 
-			System.out.println("defaultModel: " + defaultModel.size());
-			System.out.println("exportModel: " + exportModel.size());
+			// System.out.println("defaultModel: " + defaultModel.size());
+			// System.out.println("exportModel: " + exportModel.size());
 			// System.out.println("unionModel: " + unionModel.size());
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
+			// System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -536,8 +518,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		int cycle = 0;
 		while (newNodesToCheck.size() > 0) {
 			cycle++;
-			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
-					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
 			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
 			nodesAlreadyFound.addAll(newNodesToCheck);
 			newNodesToCheck.clear();
@@ -555,8 +537,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
-		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
-				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return returnStatements;
 	}
 
@@ -584,8 +566,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		int cycle = 0;
 		while (newNodesToCheck.size() > 0) {
 			cycle++;
-			System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
-					+ " statements, and " + newNodesToCheck.size() + " new nodes to check");
+			// System.out.println("Beginning cycle " + cycle + " . Starting with " + returnStatements.size()
+			// + " statements, and " + newNodesToCheck.size() + " new nodes to check");
 			List<Statement> newStatements = collectStatements(newNodesToCheck, graphName);
 			nodesAlreadyFound.addAll(newNodesToCheck);
 			newNodesToCheck.clear();
@@ -603,8 +585,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 				}
 			}
 		}
-		System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
-				+ " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
+		// System.out.println("Completed after " + cycle + " + cycle(s). Found " + returnStatements.size()
+		// + " statements, after checking a total of " + nodesAlreadyFound.size() + " nodes.");
 		return nodesAlreadyFound;
 	}
 
@@ -726,15 +708,15 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.add(statementsToCopy);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
+			// System.out.println("copyDatasetContentsToExportGraph(String datasetName) failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
 
-		System.out.println("defaultModel: " + getModel(null).size());
-		System.out.println("exportModel: " + getModel(exportGraphName).size());
+		// System.out.println("defaultModel: " + getModel(null).size());
+		// System.out.println("exportModel: " + getModel(exportGraphName).size());
 	}
 
 	public static void copyStatementsToGraph(List<Statement> statementsToCopy, String graphTo) {
@@ -746,7 +728,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.add(statementsToCopy);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("copyStatementsToGraph(" + graphTo + ") failed; see Exception: " + e);
+			// System.out.println("copyStatementsToGraph(" + graphTo + ") failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -762,7 +744,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			importModel.removeAll();
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("clearImportGraphContents() failed; see Exception: " + e);
+			// System.out.println("clearImportGraphContents() failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -778,7 +760,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			exportModel.removeAll();
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("clearExportGraphContents() failed; see Exception: " + e);
+			// System.out.println("clearExportGraphContents() failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -887,7 +869,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			result = tdbModel.createResource(rdfclass);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsCreateResource(Resource rdfclass) failed; see Exception: " + e);
+			// System.out.println("tsCreateResource(Resource rdfclass) failed; see Exception: " + e);
 			tdbModel.abort();
 		} finally {
 			tdbDataset.end();
@@ -905,7 +887,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			result = tdbModel.createResource(uri);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsCreateResource(String uri) failed; see Exception: " + e);
+			// System.out.println("tsCreateResource(String uri) failed; see Exception: " + e);
 			tdbModel.abort();
 		} finally {
 			tdbDataset.end();
@@ -926,9 +908,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.removeAll(subject, predicate, object);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out
-					.println("tsRemoveGenericTriple(Resource subject, Property predicate, RDFNode object, String graphName) failed; see Exception: "
-							+ e);
+			// System.out
+			// .println("tsRemoveGenericTriple(Resource subject, Property predicate, RDFNode object, String graphName) failed; see Exception: "
+			// + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -961,9 +943,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out
-					.println("tsRemoveAllNonLiteralObjects(Resource subject, Property predicate, String graphName) failed; see Exception: "
-							+ e);
+//			System.out
+//					.println("tsRemoveAllNonLiteralObjects(Resource subject, Property predicate, String graphName) failed; see Exception: "
+//							+ e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1005,7 +987,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: ");
+//			System.out.println("tsRemoveAllLikeLiterals failed; see Exception: ");
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
@@ -1024,7 +1006,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbDataset.commit();
 			// sync();
 		} catch (Exception e) {
-			System.out.println("10 TDB transaction failed; see Exception: " + e);
+//			System.out.println("10 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1067,7 +1049,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("04 TDB transaction failed; see Exception: " + e);
+//			System.out.println("04 TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1121,9 +1103,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.add(subject, predicate, object);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out
-					.println("tsReplaceResourceSameType(Resource subject, Property predicate, Resource object, String graphName) failed; see Exception: "
-							+ e);
+//			System.out
+//					.println("tsReplaceResourceSameType(Resource subject, Property predicate, Resource object, String graphName) failed; see Exception: "
+//							+ e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1181,9 +1163,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out
-					.println("tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) failed; see Exception: "
-							+ e);
+//			System.out
+//					.println("tsRemoveAllLikeObjects(Resource subject, Property predicate, Resource object, String graphName) failed; see Exception: "
+//							+ e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1219,8 +1201,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			}
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsCreateTypedLiteral(Object thingLiteral, String graphName) failed; see Exception: "
-					+ e);
+//			System.out.println("tsCreateTypedLiteral(Object thingLiteral, String graphName) failed; see Exception: "
+//					+ e);
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
@@ -1296,10 +1278,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 		try {
 			long size = tdbModel.size();
-			System.out.println("Model on refresh has size: " + size);
+//			System.out.println("Model on refresh has size: " + size);
 			success = true;
 		} catch (Exception e) {
-			System.out.println("TDB transaction failed; see Exception: " + e);
+//			System.out.println("TDB transaction failed; see Exception: " + e);
 			tdbDataset.abort();
 			success = false;
 		} finally {
@@ -1358,14 +1340,14 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.setNsPrefixes(Prefixes.getPrefixmapping());
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
+//			System.out.println("Prefix mapping sync from ActiveTDB failed with Exception: " + e);
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
 			tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		System.out.println("Mapping = " + tdbModel.getNsPrefixMap());
+//		System.out.println("Mapping = " + tdbModel.getNsPrefixMap());
 	}
 
 	public static void tsReplaceObject(Resource subject, Property predicate, Resource newObject) {
@@ -1385,7 +1367,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			tdbModel.add(subject, predicate, newObject);
 			tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("tsReplaceObject from ActiveTDB failed with Exception: " + e);
+//			System.out.println("tsReplaceObject from ActiveTDB failed with Exception: " + e);
 			e.printStackTrace();
 			tdbDataset.abort();
 		} finally {
@@ -1432,8 +1414,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		}
 		return null;
 	}
-	
-	public static List<Resource> getMasterFlowPropertyDatasetResources(){
+
+	public static List<Resource> getMasterFlowPropertyDatasetResources() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select  distinct ?ds where { \n");
@@ -1451,7 +1433,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		b.append("");
 
 		String query = b.toString();
-		
+
 		tdbDataset.begin(ReadWrite.READ);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -1465,13 +1447,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			datasets.add(ds);
 		}
 		tdbDataset.end();
-		if (datasets.size() > 0){
+		if (datasets.size() > 0) {
 			return datasets;
 		}
 		return null;
 	}
-	
-	public static List<Resource> getMasterFlowContextDatasetResources(){
+
+	public static List<Resource> getMasterFlowContextDatasetResources() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct ?ds \n");
@@ -1487,7 +1469,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		b.append("} \n");
 
 		String query = b.toString();
-		
+
 		tdbDataset.begin(ReadWrite.READ);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -1501,13 +1483,13 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			datasets.add(ds);
 		}
 		tdbDataset.end();
-		if (datasets.size() > 0){
+		if (datasets.size() > 0) {
 			return datasets;
 		}
 		return null;
 	}
-	
-	public static List<Resource> getMasterFlowableDatasetResources(){
+
+	public static List<Resource> getMasterFlowableDatasetResources() {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select distinct ?ds \n");
@@ -1519,7 +1501,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 		b.append("} \n");
 
 		String query = b.toString();
-		
+
 		tdbDataset.begin(ReadWrite.READ);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -1533,11 +1515,10 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 			datasets.add(ds);
 		}
 		tdbDataset.end();
-		if (datasets.size() > 0){
+		if (datasets.size() > 0) {
 			return datasets;
 		}
 		return null;
 	}
 
-	
 }

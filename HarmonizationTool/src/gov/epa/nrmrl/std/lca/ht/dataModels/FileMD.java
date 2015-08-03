@@ -173,8 +173,6 @@ public class FileMD {
 				readDate = Temporal.getDateObject(rdfNode.asLiteral());
 			}
 		}
-
-		System.out.println("sync line: 8");
 	}
 	
 	public void createTDBResource() {

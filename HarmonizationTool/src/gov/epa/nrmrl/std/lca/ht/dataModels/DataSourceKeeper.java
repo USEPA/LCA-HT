@@ -211,7 +211,7 @@ public class DataSourceKeeper {
 		b.append("} \n");
 		String query = b.toString();
 
-		System.out.println("query = " + query);
+//		System.out.println("query = " + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -304,7 +304,7 @@ public class DataSourceKeeper {
 			RDFNode rdfNode = nodeIterator.next();
 			name = rdfNode.asLiteral().getString();
 		} catch (Exception e) {
-			System.out.println("Import failed with Exception: " + e);
+//			System.out.println("Import failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -325,7 +325,7 @@ public class DataSourceKeeper {
 
 		List<Resource> orphans = getOrphanResources();
 		count = orphans.size();
-		System.out.println("Orphans found: " + count);
+//		System.out.println("Orphans found: " + count);
 		if (count > 0) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
@@ -361,7 +361,7 @@ public class DataSourceKeeper {
 		b.append("} \n ");
 
 		String query = b.toString();
-		System.out.println("Query: \n" + query);
+//		System.out.println("Query: \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
@@ -386,7 +386,7 @@ public class DataSourceKeeper {
 		b.append("} \n ");
 
 		String query = b.toString();
-		System.out.println("Query: \n" + query);
+//		System.out.println("Query: \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setGraphName(graphName);
 		harmonyQuery2Impl.setQuery(query);
@@ -421,7 +421,7 @@ public class DataSourceKeeper {
 
 	public static void syncFromTDB() {
 		if (ActiveTDB.getMasterFlowableDatasetResources() == null) {
-			System.out.println("No master flow data present, loading master flows and flowables");
+//			System.out.println("No master flow data present, loading master flows and flowables");
 			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip",
 					null);
 		}
@@ -434,9 +434,9 @@ public class DataSourceKeeper {
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-			System.out.println("another DataSource found in TDB");
+//			System.out.println("another DataSource found in TDB");
 			if (dataSourceIndex < 0) {
-				System.out.println("... new one");
+//				System.out.println("... new one");
 				dataSourceResourcesToAdd.add(dataSourceRDFResource);
 			}
 		}

@@ -14,13 +14,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-
-
-
-
-
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -35,7 +28,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.openlca.lcaht.converter.Json2Zip;
 
-
 public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.output.SaveHarmonizedDataForOLCAJsonldZip";
 
@@ -46,10 +38,15 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 	@Override
 	public void dispose() {
 	}
-	
+
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.switchToWorkflowState(12);
+				FlowsWorkflow.setStatusConclude("Starting export...");
+			}
+		});
 		Shell shell = HandlerUtil.getActiveShell(event);
 		ChooseDataSetDialog dlg = new ChooseDataSetDialog(shell);
 		dlg.open();
@@ -57,12 +54,18 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 		String saveTo = null;
 		final Logger runLogger = Logger.getLogger("run");
 
-		if (currentName == null)
+		if (currentName == null) {
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					FlowsWorkflow.setStatusConclude("Export canceled");
+					FlowsWorkflow.switchToWorkflowState(8);
+				}
+			});
 			return null;
-		if (dlg.getFormat() == 2) {
+		}
+		if (dlg.getFormat() == 1) {
 			Util.findView(MatchContexts.ID);
 			Util.findView(MatchProperties.ID);
-
 
 			System.out.println("Saving Harmonized Data to .zip file");
 
@@ -87,59 +90,77 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 
 			saveTo = dialog.open();
 			System.out.println("Save to: " + saveTo);
-			
+
 			if (saveTo == null) {
 				// "dialog was cancelled or an error occurred"
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setStatusConclude("Export canceled");
+						FlowsWorkflow.switchToWorkflowState(8);
+					}
+				});
 				return null;
 			}
 		}
 		if (dlg.getFormat() == 0) {
-			HashMap<String, String> newParams = new HashMap<String,String>(event.getParameters());
+			HashMap<String, String> newParams = new HashMap<String, String>(event.getParameters());
 			newParams.put("LCA-HT.exportDataSetName", currentName);
-			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),event.getApplicationContext());
-			
+			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),
+					event.getApplicationContext());
+
 			IHandler innerHandler = new SaveHarmonizedDataHandler();
 			innerHandler.execute(newEvent);
 			return null;
-		}
-		else if (dlg.getFormat() == 1) {
-			HashMap<String, String> newParams = new HashMap<String,String>(event.getParameters());
+		} else if (dlg.getFormat() == 2) {
+			HashMap<String, String> newParams = new HashMap<String, String>(event.getParameters());
 			newParams.put("LCA-HT.exportDataSetName", currentName);
-			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),event.getApplicationContext());
-			
+			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),
+					event.getApplicationContext());
+
 			IHandler innerHandler = new SaveHarmonizedDataForOLCAJsonld();
 			innerHandler.execute(newEvent);
 			return null;
-		}
-		else if (dlg.getFormat() == 2) {
+		} else if (dlg.getFormat() == 1) {
+			// TODO = this temp filename helps trigger the next routine to report when
+			// it is finished
 			final String tempOutputName = saveTo + ".tmp.json";
 			final String originalName = saveTo;
 			FlowsWorkflow.disableAllButtons();
-			new Thread(new Runnable() { public void run() {
-				try {
-					HashMap<String, String> newParams = new HashMap<String,String>(event.getParameters());
-					newParams.put("LCA-HT.outputFilename", tempOutputName);
-					newParams.put("LCA-HT.exportDataSetName", currentName);
-					ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),event.getApplicationContext());
-					
-					runLogger.debug("Converting to OpenLCA Zip");
-					SaveHarmonizedDataForOLCAJsonld innerHandler = new SaveHarmonizedDataForOLCAJsonld();
-					innerHandler.execute(newEvent);
-					
-					File input = new File(tempOutputName);
-					File output = new File(originalName);
-					new Json2Zip(input, output).run();
-					input.delete();
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						HashMap<String, String> newParams = new HashMap<String, String>(event.getParameters());
+						newParams.put("LCA-HT.outputFilename", tempOutputName);
+						newParams.put("LCA-HT.exportDataSetName", currentName);
+						ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),
+								event.getApplicationContext());
+
+						runLogger.debug("Converting to OpenLCA Zip");
+						SaveHarmonizedDataForOLCAJsonld innerHandler = new SaveHarmonizedDataForOLCAJsonld();
+						innerHandler.execute(newEvent);
+
+						File input = new File(tempOutputName);
+						File output = new File(originalName);
+						new Json2Zip(input, output).run();
+						input.delete();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+//					Display.getDefault().syncExec(new Runnable() {
+//						public void run() {
+//							FlowsWorkflow.setStatusConclude("Export complete");
+//							FlowsWorkflow.switchToWorkflowState(8);
+//						}
+//					});
 				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				Display.getDefault().syncExec(new Runnable() { public void run() {
-//					FlowsWorkflow.restoreAllButtons();
-					FlowsWorkflow.switchToWorkflowState(3);
-				}});
-			}}).start();
+			}).start();
 		}
+		// Display.getDefault().syncExec(new Runnable() {
+		// public void run() {
+		// FlowsWorkflow.setStatusConclude("Export complete");
+		// FlowsWorkflow.switchToWorkflowState(8);
+		// }
+		// });
 		return null;
 	}
 

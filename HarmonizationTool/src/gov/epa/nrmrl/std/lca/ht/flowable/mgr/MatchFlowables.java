@@ -657,7 +657,7 @@ public class MatchFlowables extends ViewPart {
 		b.append("   } order by afn:localname(?masterTest) \n");
 		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
-		System.out.println("query = \n" + query);
+//		System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		Logger.getLogger("run").info("Searching master list for matching flowables...");
