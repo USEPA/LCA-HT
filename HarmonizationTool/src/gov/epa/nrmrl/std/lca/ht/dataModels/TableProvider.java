@@ -181,11 +181,11 @@ public class TableProvider {
 
 					} else {
 						dataRow.add(rdfNode.toString());
-						System.out.println("Resource string is " + rdfNode.toString());
-						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+						//System.out.println("Resource string is " + rdfNode.toString());
+						//System.out.println("Type of RDFNode = " + RDFNode.class.getName());
 						// System.out.println("  soln.getResource(header) =" +
 						// soln.getResource(header));
-						System.out.println("  soln.get(header)  = " + rdfNode);
+						//System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -560,8 +560,10 @@ public class TableProvider {
 					tableItem.setBackground(j, color);
 				}
 				tableItem.setBackground(0, color);
-			}
-			if (flowCSVColumnNumberForUUID != -1) {
+			} 
+			else if (flowCSVColumnNumberForUUID != -1) {
+				//Auto match appears to color these orange, then recolor green later.  Keep this on the off
+				//chance something wasn't matched but is a master flow (is that even possible)?
 				String uuid = row.get(flowCSVColumnNumberForUUID - 1);
 				if (masterFlowUUIDs.contains(uuid)) {
 					tableItem.setBackground(0, CSVTableView.orange);
