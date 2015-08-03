@@ -61,6 +61,8 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		setTitle("Choose Harmonization Tool Workspace");
 		setMessage("The Harmonization Tool uses a workspace directory to store its database, input files, output files, and log files in subdirectories.  Please specify a location for this directory.");
 
+		storageLocation = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
+
 		Composite area = (Composite) super.createDialogArea(parent);
 		GridLayout gridLayout = (GridLayout) area.getLayout();
 		Composite container = new Composite(area, SWT.NONE);
@@ -108,8 +110,6 @@ public class StorageLocationDialog extends TitleAreaDialog {
 		/* Web */
 		gd.grabExcessHorizontalSpace = true;
 		new Label(container, SWT.NONE);
-
-		storageLocation = osPrefs.get("lca.wsDir", Util.getInitialWorkspaceLocation());
 		
 				prefsButton = new Button(container, SWT.CHECK);
 				prefsButton.setSelection(!osPrefs.getBoolean("lca.chooseWorkspace", false));
