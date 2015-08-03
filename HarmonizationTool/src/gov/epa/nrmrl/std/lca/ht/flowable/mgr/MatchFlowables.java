@@ -228,9 +228,9 @@ public class MatchFlowables extends ViewPart {
 		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
-		CellEditor[] editors = new CellEditor[11];
+		CellEditor[] editors = new CellEditor[10];
 		String[] columnProperties = new String[editors.length];
-		for (int i = 6; i < 11; ++i) {
+		for (int i = 6; i < 10; ++i) {
 			editors[i] = new ReadOnlyCellEditor(tableViewer.getTable());
 			columnProperties[i] = String.valueOf(i - 1);
 		}
@@ -445,9 +445,6 @@ public class MatchFlowables extends ViewPart {
 
 		tableViewerColumn = createTableViewerColumn(Flowable.flowableSynonymString, SWT.LEFT, 300, 9);
 		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(9));
-
-		tableViewerColumn = createTableViewerColumn("Other", SWT.LEFT, 200, 10);
-		tableViewerColumn.setLabelProvider(new MyColumnLabelProvider(10));
 	}
 
 	private static void updateMatchCounts() {

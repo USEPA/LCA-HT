@@ -5,6 +5,8 @@ import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class TableProvider {
 	private boolean containsUntranslatedOpenLCAData = false;
 	
 	private boolean existingLcaData = false;
+	private String existingDataSource = null;
 	
 	private static Set<String> metaDataColumns = new HashSet();
 	static {
@@ -129,8 +132,12 @@ public class TableProvider {
 		// headerNames.getSize());
 		return headerNamesAsStrings;
 	}
-
+	
 	public static void setHeaderNames(DataRow headerRow, List<String> columnNames) {
+		setHeaderNames(headerRow, columnNames, false);
+	}
+
+	public static void setHeaderNames(DataRow headerRow, List<String> columnNames, boolean debugMode) {
 		assert columnNames != null : "columnNames cannot be null";
 		assert columnNames.size() != 0 : "columnNames cannot be empty";
 		if (headerRow == null) {
@@ -139,14 +146,18 @@ public class TableProvider {
 			headerRow.clear();
 		}
 		for (String name : columnNames) {
-			if (metaDataColumns.contains(name))
+			if (!debugMode && metaDataColumns.contains(name))
 				continue;
 			headerRow.add(name);
 			headerRow.setRowNumber(-1);
 		}
 	}
-
+	
 	public static TableProvider create(ResultSetRewindable resultSetRewindable) {
+		return create(resultSetRewindable, false);
+	}
+
+	public static TableProvider create(ResultSetRewindable resultSetRewindable, boolean debugMode) {
 		TableProvider tableProvider = new TableProvider();
 		resultSetRewindable.reset();
 		if (tableProvider.headerRow == null) {
@@ -154,7 +165,7 @@ public class TableProvider {
 		} else {
 			tableProvider.headerRow.clear();
 		}
-		tableProvider.setHeaderNames(tableProvider.headerRow, resultSetRewindable.getResultVars());
+		TableProvider.setHeaderNames(tableProvider.headerRow, resultSetRewindable.getResultVars(), debugMode);
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
 			DataRow dataRow = new DataRow();
@@ -170,11 +181,11 @@ public class TableProvider {
 
 					} else {
 						dataRow.add(rdfNode.toString());
-						System.out.println("Resource string is " + rdfNode.toString());
-						System.out.println("Type of RDFNode = " + RDFNode.class.getName());
+						//System.out.println("Resource string is " + rdfNode.toString());
+						//System.out.println("Type of RDFNode = " + RDFNode.class.getName());
 						// System.out.println("  soln.getResource(header) =" +
 						// soln.getResource(header));
-						System.out.println("  soln.get(header)  = " + rdfNode);
+						//System.out.println("  soln.get(header)  = " + rdfNode);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -259,8 +270,9 @@ public class TableProvider {
 //		return tableProvider;
 //	}
 	
-	public void setExistingData(boolean existingData) {
-		existingLcaData = existingData;
+	public void setExistingDataSource(String dataSource) {
+		existingDataSource = dataSource;
+		existingLcaData = existingDataSource != null;
 	}
 
 	public void createUserData(ResultSetRewindable resultSetRewindable) {
@@ -303,7 +315,92 @@ public class TableProvider {
 					e.printStackTrace();
 				}				
 			}
-			if (existingLcaData) {
+		}
+		
+		if (existingLcaData) {
+			StringBuilder b = new StringBuilder();
+			b.append(Prefixes.getPrefixesForQuery());
+			b.append("select \n");
+			b.append(" \n");
+			b.append(" ?tablerow \n");
+			b.append(" ?lcaflowable \n");
+			b.append(" ?flowCtx \n");
+			b.append(" ?flowUnit \n");
+			b.append(" ?mf \n");
+			b.append(" ?adhoc \n");
+			b.append(" (count (?cp) as ?flowableMatch) \n");
+			b.append(" (count (?ctxMatch) as ?contextMatch) \n");
+			b.append(" (count (?unMatch) as ?unitMatch) \n");
+			b.append("where { {select distinct \n");
+			b.append(" \n");
+			b.append(" ?tablerow \n");
+			b.append(" ?lcaflowable \n");
+			b.append(" ?flowCtx \n");
+			b.append(" ?flowUnit \n");
+			b.append(" ?adhoc \n");
+			b.append(" ?cp \n");
+			b.append(" ?mf \n");
+			b.append(" ?ctxMatch \n");
+			b.append(" ?unMatch \n");
+			b.append(" \n");
+			b.append("where { \n");
+			b.append(" \n");
+			b.append(" ?ds rdfs:label \"" + existingDataSource + "\"^^xsd:string . \n");
+			b.append(" ?lcaflow eco:hasDataSource ?ds . \n");
+			b.append(" ?lcaflow eco:hasFlowable ?lcaflowable . \n");
+			b.append(" ?lcaflow rdf:type ?lcatype . \n");
+			b.append(" ?lcaflow fedlca:sourceTableRowNumber ?tablerow . \n");
+			b.append(" optional { \n");
+			b.append(" ?cp fedlca:comparedSource ?lcaflowable . \n");
+			b.append(" ?cp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append(" } \n");
+			b.append(" optional { \n");
+			b.append(" ?lcaflow fedlca:hasFlowContext ?flowCtx . \n");
+			b.append(" optional { \n");
+			b.append(" ?flowCtx owl:sameAs ?ctxMatch . \n");
+			b.append(" } \n");
+			b.append(" } \n");
+			b.append(" optional { \n");
+			b.append(" ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
+			b.append(" optional { \n");
+			b.append(" ?flowUnit owl:sameAs ?unMatch . \n");
+			b.append(" } \n");
+			b.append(" } \n");
+			b.append(" optional { \n");
+			b.append(" ?mf fedlca:comparedSource ?lcaflow . \n");
+			b.append(" ?mf fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append(" } \n");
+			b.append(" \n");
+			b.append(" optional { \n");
+			b.append(" select ?adhoc \n");
+			b.append(" where { \n");
+			b.append(" ?f eco:hasDataSource ?ds . \n");
+			b.append(" ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
+			b.append(" } \n");
+			b.append(" LIMIT 1 \n");
+			b.append(" } \n");
+			b.append(" \n");
+			b.append(" \n");
+			b.append("} \n");
+			b.append("} } \n");
+			b.append(" group by ?tablerow ?adhoc ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
+			b.append("order by ?tablerow \n");
+
+			String query = b.toString();
+			//System.out.println("Query \n" + query);
+
+			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+			harmonyQuery2Impl.setQuery(query);
+		
+			ResultSetRewindable res = (ResultSetRewindable) harmonyQuery2Impl.getResultSet();
+			
+			while (res.hasNext()) {
+				QuerySolution soln = res.nextSolution();
+				if (!soln.contains("tablerow"))
+					continue;
+				int rowIndex = soln.getLiteral("tablerow").getInt() - 1;
+				DataRow dataRow = data.get(rowIndex);
+				
 				RDFNode rdfNode = soln.get("lcaflowable");
 				String flowable = null;
 				if (rdfNode != null)
@@ -383,7 +480,6 @@ public class TableProvider {
 				if (dataRow.getFlowMatched())
 					CSVTableView.matchedFlowRowNumbers.add(dataRow.getRowNumber());
 			}
-
 		}
 		
 		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
@@ -464,8 +560,10 @@ public class TableProvider {
 					tableItem.setBackground(j, color);
 				}
 				tableItem.setBackground(0, color);
-			}
-			if (flowCSVColumnNumberForUUID != -1) {
+			} 
+			else if (flowCSVColumnNumberForUUID != -1) {
+				//Auto match appears to color these orange, then recolor green later.  Keep this on the off
+				//chance something wasn't matched but is a master flow (is that even possible)?
 				String uuid = row.get(flowCSVColumnNumberForUUID - 1);
 				if (masterFlowUUIDs.contains(uuid)) {
 					tableItem.setBackground(0, CSVTableView.orange);

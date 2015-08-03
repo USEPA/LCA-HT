@@ -111,9 +111,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	@Override
 	public void run() {
-		threadedAppInit();
 	}
 	
+	/*
+	//Moved into Application.java on main thread while splash screen is up - app can't do anything until this completes
 	private void threadedAppInit() {
 		synchronized (Util.getInitLock()) {
 			long start = System.currentTimeMillis();
@@ -124,4 +125,5 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			System.out.println("Finished threaded init in " + (end - start) + "ms");
 		}
 	}
+	*/
 }

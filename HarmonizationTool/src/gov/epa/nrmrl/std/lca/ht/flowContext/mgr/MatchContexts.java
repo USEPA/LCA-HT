@@ -400,9 +400,23 @@ public class MatchContexts extends ViewPart {
 		}
 		return result;
 	}
+	
+	//preloaded during app startup but not meant to be cached
+	private static TreeNode initialTree = null;
+	
+	public static void preloadHarmonizedCompartments() {
+		TreeNode tree = createHarmonizeCompartments();
+		initialTree = tree;
+	}
 
 	private static TreeNode createHarmonizeCompartments() {
+
 		FlowContext.reLoadMasterFlowContexts();
+		if (initialTree != null) {
+			TreeNode tree = initialTree;
+			initialTree = null;
+			return tree;
+		}
 		TreeNode masterCompartmentTree = new TreeNode(null);
 		String general = "";
 		TreeNode tn = null;

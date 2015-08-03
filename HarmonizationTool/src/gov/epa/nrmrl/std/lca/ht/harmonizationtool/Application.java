@@ -9,10 +9,13 @@ import java.util.prefs.Preferences;
 import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
 import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.dialog.StorageLocationDialog;
+import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
+import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
 import gov.epa.nrmrl.std.lca.ht.log.LoggerManager;
 import gov.epa.nrmrl.std.lca.ht.preferences.Initializer;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
@@ -92,6 +95,10 @@ public class Application implements IApplication {
 		LoggerManager.Init();
 		ActiveTDB.openTDB();
 		ActiveTDB.syncTDBtoLCAHT();
+		//Preload classes
+		new OpenLCA();
+		new Flowable();
+		MatchContexts.preloadHarmonizedCompartments();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {

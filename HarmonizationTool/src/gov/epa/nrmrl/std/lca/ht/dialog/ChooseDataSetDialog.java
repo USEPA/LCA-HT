@@ -31,6 +31,8 @@ public class ChooseDataSetDialog extends Dialog {
 	
 	int height = 200;
 	
+	private static boolean DEFAULT_FILTER_MASTER_DATASETS = true;
+	
 	private static Set<String> masterNames = new HashSet<String>();
 	
 	static {
@@ -40,15 +42,15 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 	
 	public ChooseDataSetDialog(Shell parentShell) {
-		this(parentShell, false, defaultPrompt, true);
+		this(parentShell, DEFAULT_FILTER_MASTER_DATASETS, defaultPrompt, true);
 	}
 	
 	public ChooseDataSetDialog(Shell parentShell, boolean askFormat) {
-		this(parentShell, false, defaultPrompt, askFormat);
+		this(parentShell, DEFAULT_FILTER_MASTER_DATASETS, defaultPrompt, askFormat);
 	}	
 	
-	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message) {
-		this(parentShell, filterMasterDataSets, message, false);
+	public ChooseDataSetDialog(Shell parentShell, String message) {
+		this(parentShell, DEFAULT_FILTER_MASTER_DATASETS, message, false);
 	}
 
 	/**

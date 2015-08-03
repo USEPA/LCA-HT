@@ -176,6 +176,7 @@ public class QueryView extends ViewPart {
 	}
 
 	private static void runQuery() {
+		long start = System.currentTimeMillis();
 		try {
 			Util.showView(ResultsView.ID);
 		} catch (PartInitException e1) {
@@ -190,8 +191,10 @@ public class QueryView extends ViewPart {
 		harmonyQuery2Impl.setGraphName(ActiveTDB.importPlusDefault);
 		ResultSet resultSet = ((HarmonyQuery2Impl) harmonyQuery2Impl).getResultSet();
 
-		TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet);
+		TableProvider tableProvider = TableProvider.create((ResultSetRewindable) resultSet, true);
 		resultsView.update(tableProvider);
+		long end = System.currentTimeMillis();
+		System.out.println("Finished query in " + (end - start) + "ms");
 	}
 
 	private static void runUpdate() {
