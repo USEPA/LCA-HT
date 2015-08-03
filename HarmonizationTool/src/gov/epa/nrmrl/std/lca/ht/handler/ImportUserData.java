@@ -482,26 +482,6 @@ public class ImportUserData implements IHandler {
 	public static ResultSetRewindable queryOLCATAbleData(String dataSourceName) {
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		if (dataSourceName != null) {
-			b.append("select \n ");
-			b.append("  ?flowable_uuid \n");
-			b.append("  ?flowable \n");
-			b.append("  ?cas \n");
-			b.append("  ?formula \n");
-			b.append("  ?context_general \n");
-			b.append("  ?context_specific \n");
-			b.append("  ?reference_unit \n");
-			b.append("  ?flow_property \n");
-			b.append("  ?lcaflowable \n");
-			b.append("  ?flowCtx \n");
-			b.append("  ?flowUnit \n");
-			b.append("  ?mf \n");
-			b.append("  ?adhoc \n");
-			b.append("  (count (?cp) as ?flowableMatch) \n");
-			b.append("  (count (?ctxMatch) as ?contextMatch) \n");
-			b.append("  (count (?unMatch) as ?unitMatch) \n");
-			b.append("where { {");
-		}
 		b.append("select distinct \n");
 		b.append("  (fn:substring(str(?f), ?flowable_length - 35) as ?flowable_uuid) \n");
 		b.append("  ?flowable  \n");
@@ -514,17 +494,7 @@ public class ImportUserData implements IHandler {
 		// b.append("  (fn:substring(str(?ru), ?ru_length - 35) as?reference_unit_uuid) \n");
 		b.append("  ?flow_property \n");
 		// b.append("  (fn:substring(str(?fp), ?fp_length - 35) as?flow_property_uuid) \n");
-		if (dataSourceName != null) {
-			b.append("  ?lcaflowable \n");
-			b.append("  ?flowCtx \n");
-			b.append("  ?flowUnit \n");
-			b.append("  ?adhoc \n");
-			b.append("  ?cp \n");
-			b.append("  ?mf \n");
-			b.append("  ?ctxMatch \n");
-			b.append("  ?unMatch \n");
-		} else
-			b.append("from <" + ActiveTDB.importGraphName + ">\n");
+		b.append("from <" + ActiveTDB.importGraphName + ">\n");
 		b.append(" \n");
 		b.append("where { \n");
 		b.append(" \n");
@@ -566,53 +536,11 @@ public class ImportUserData implements IHandler {
 		b.append("  ?ru olca:name ?reference_unit . \n");
 		b.append("  bind (fn:string-length(str(?ru)) as ?ru_length) \n");
 		b.append(" \n");
-		if (dataSourceName != null) {
-			b.append("  optional { \n");
-			b.append("    select ?adhoc \n");
-			b.append("      where { \n");
-			// b.append("      ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
-			b.append("        ?f eco:hasDataSource ?ds . \n");
-			b.append("        ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
-			b.append("    } \n");
-			b.append("    LIMIT 1 \n ");
-			b.append("  } \n");
-			b.append("  optional { \n");
-			// b.append("    ?ds rdfs:label \"" + dataSourceName + "\"^^xsd:string .\n");
-			b.append("    ?lcaflow eco:hasDataSource ?ds . \n");
-			b.append("    ?f fedlca:hasOpenLCAUUID ?lcid . \n");
-			b.append("    ?lcaflow fedlca:hasOpenLCAUUID ?lcid . \n");
-			b.append("    ?lcaflow eco:hasFlowable ?lcaflowable . \n");
-			b.append("    optional { \n");
-			b.append("      ?cp fedlca:comparedSource ?lcaflowable . \n");
-			b.append("      ?cp fedlca:comparedEquivalence fedlca:Equivalent \n");
-			b.append("    } \n");
-			b.append("    optional { \n");
-			b.append("      ?lcaflow fedlca:hasFlowContext ?flowCtx . \n");
-			b.append("      optional { \n");
-			b.append("        ?flowCtx owl:sameAs ?ctxMatch . \n");
-			b.append("      } \n");
-			b.append("    } \n");
-			b.append("    optional { \n");
-			b.append("      ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
-			b.append("      optional { \n");
-			b.append("        ?flowUnit owl:sameAs ?unMatch . \n");
-			b.append("      } \n");
-			b.append("    } \n");
-			b.append("    optional { \n");
-			b.append("      ?mf fedlca:comparedSource ?lcaflow . \n");
-			b.append("      ?mf fedlca:comparedEquivalence fedlca:Equivalent \n");
-			b.append("    } \n");
-			b.append("  } \n");
-		}
 		b.append("} \n");
-		if (dataSourceName != null) {
-			b.append("} } \n");
-			b.append(" group by ?flowable_uuid ?flowable ?cas ?formula ?context_general ?context_specific ?reference_unit ?flow_property ?adhoc ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
-		}
 		b.append("order by ?flowable \n");
 
 		String query = b.toString();
-//		System.out.println("Query \n" + query);
+		//System.out.println("Query \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -630,7 +558,7 @@ public class ImportUserData implements IHandler {
 		ResultSetRewindable results = queryOLCATAbleData(dataSourceName);
 
 		if (dataSourceName != null)
-			tblProvider.setExistingData(dataSourceName != null);
+			tblProvider.setExistingDataSource(dataSourceName);
 
 		// runLogger.info("adding user data to table " + new Date());
 		updateText(FlowsWorkflow.statusLoadUserData, "85% (displaying table)");
