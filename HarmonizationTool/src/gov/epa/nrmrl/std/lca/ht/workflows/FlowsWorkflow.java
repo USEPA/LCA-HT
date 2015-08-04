@@ -2,9 +2,10 @@ package gov.epa.nrmrl.std.lca.ht.workflows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
@@ -103,15 +104,15 @@ public class FlowsWorkflow extends ViewPart {
 //		buttonState.clear();
 //	}
 
-	private static LinkedHashSet<Integer> uniqueFlowableRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> uniqueFlowContextRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> uniqueFlowRowNumbers = new LinkedHashSet<Integer>();
+	private static SortedSet<Integer> uniqueFlowableRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> uniqueFlowContextRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> uniqueFlowPropertyRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> uniqueFlowRowNumbers = new TreeSet<Integer>();
 
-	private static LinkedHashSet<Integer> matchedFlowableRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> matchedFlowContextRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers = new LinkedHashSet<Integer>();
-	private static LinkedHashSet<Integer> matchedFlowRowNumbers = new LinkedHashSet<Integer>();
+	private static SortedSet<Integer> matchedFlowableRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> matchedFlowContextRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> matchedFlowPropertyRowNumbers = new TreeSet<Integer>();
+	private static SortedSet<Integer> matchedFlowRowNumbers = new TreeSet<Integer>();
 
 	// private static FileMD fileMD;
 	// private static DataSourceProvider dataSourceProvider;
@@ -523,10 +524,6 @@ public class FlowsWorkflow extends ViewPart {
 			switchToWorkflowState(4);
 
 			CSVTableView.clearIssues();
-			// statusCheckData.setText(" ... checking data ...");
-			// btnCheckData.setEnabled(false);
-			// btnLoadUserData.setEnabled(false);
-
 			final LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
 					CSVTableView.getTableProviderKey()).getLcaDataProperties();
 			final List<LCADataPropertyProvider> requiredLCADataPropertyProvider = new ArrayList<LCADataPropertyProvider>();
@@ -710,7 +707,6 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-			// btnConcludeFile.setText("Export");
 			switchToWorkflowState(8);
 		}
 
@@ -732,23 +728,12 @@ public class FlowsWorkflow extends ViewPart {
 			btnCheckData.setEnabled(false);
 			if (btnMatchFlowContexts.getText().equals(matchContextsString)) {
 				switchToWorkflowState(10);
-//				btnMatchFlowContexts.setText("Show All");
-//				btnMatchFlowProperties.setEnabled(false);
-//				btnMatchFlowables.setEnabled(false);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowContextRowNumbers);
 				CSVTableView.colorFlowContextRows();
 			} else {
 				switchToWorkflowState(8);
-//				btnMatchFlowContexts.setText(matchContextsString);
-//				btnMatchFlowProperties.setEnabled(true);
-//				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
-				// CSVTableView.colorFlowContextRows();
 			}
-			// CSVTableView.setSelection(0);
-			CSVTableView.setRowNumSelected(0);
-			CSVTableView.matchRowContents();
-			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchContexts.ID);
@@ -776,22 +761,13 @@ public class FlowsWorkflow extends ViewPart {
 			btnCheckData.setEnabled(false);
 			if (btnMatchFlowProperties.getText().equals(matchPropertiesString)) {
 				switchToWorkflowState(11);
-//				btnMatchFlowProperties.setText("Show All");
-//				btnMatchFlowContexts.setEnabled(false);
-//				btnMatchFlowables.setEnabled(false);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowPropertyRowNumbers);
 				CSVTableView.colorFlowPropertyRows();
 
 			} else {
 				switchToWorkflowState(8);
-//				btnMatchFlowProperties.setText(matchPropertiesString);
-//				btnMatchFlowContexts.setEnabled(true);
-//				btnMatchFlowables.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			CSVTableView.setRowNumSelected(0);
-			CSVTableView.matchRowContents();
-			// Util.setPerspective(FlowDataV4.ID);
 			Util.setPerspective(LCIWorkflowPerspective.ID);
 			try {
 				Util.showView(MatchProperties.ID);
@@ -814,26 +790,17 @@ public class FlowsWorkflow extends ViewPart {
 	// ------------- FLOWABLE LISTENER ----------------
 	private SelectionListener matchFlowablesListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-			btnCommit.setEnabled(false);
-			btnCheckData.setEnabled(false);
 			if (btnMatchFlowables.getText().equals(matchFlowablesString)) {
 				switchToWorkflowState(9);
-//				btnMatchFlowables.setText("Show All");
-//				btnMatchFlowContexts.setEnabled(false);
-//				btnMatchFlowProperties.setEnabled(false);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowableRowNumbers);
 				CSVTableView.colorFlowableRows();
-
 			} else {
 				switchToWorkflowState(8);
-//				btnMatchFlowables.setText(matchFlowablesString);
-//				btnMatchFlowContexts.setEnabled(true);
-//				btnMatchFlowProperties.setEnabled(true);
 				CSVTableView.clearFilterRowNumbers();
 			}
-			CSVTableView.setRowNumSelected(0);
-			CSVTableView.setColNumSelected(1);
-			CSVTableView.matchRowContents();
+//			CSVTableView.selectTableRow(0);
+//			CSVTableView.setColNumSelected(1);
+//			CSVTableView.selectRowColumn();
 
 			try {
 				Util.showView(MatchFlowables.ID);
@@ -908,7 +875,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				CSVTableView.reset();
 				CSVTableView.initialize();
-				CSVTableView.setSelection(0);
+				CSVTableView.selectTableRow(0);
 				switchToWorkflowState(1);
 
 				btnLoadUserData.setEnabled(true);
@@ -1010,10 +977,10 @@ public class FlowsWorkflow extends ViewPart {
 		statusFlowable.setText(matched + " matched. " + total + " found.");
 	}
 
-	public static void addFlowableRowNum(int rowNumToSend) {
-		uniqueFlowableRowNumbers.add(rowNumToSend);
+	public static void addFlowableRowNum(int dataRowNumberToSend) {
+		uniqueFlowableRowNumbers.add(dataRowNumberToSend);
 		showFlowableMatchCount(matchedFlowableRowNumbers.size(), uniqueFlowableRowNumbers.size());
-		CSVTableView.colorOneFlowableRow(rowNumToSend);
+		CSVTableView.colorOneFlowableRow(dataRowNumberToSend);
 	}
 
 	public static void addFlowRowNum(int rowNumToSend) {
@@ -1055,22 +1022,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void addMatchFlowableRowNum(int rowNumToSend) {
-		// if (!uniqueFlowableRowNumbers.contains(rowNumToSend)){
-		// Flowable flowable =
-		// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumToSend).getFlowable();
-		// int firstRowWithSameFlowable = rowNumToSend;
-		// for (int row = rowNumToSend-1;row>=0;row--){
-		// Flowable otherFlowable =
-		// TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(row).getFlowable();
-		// if (otherFlowable.equals(flowable)){
-		// firstRowWithSameFlowable = row;
-		// }
-		// }
-		// if (!uniqueFlowableRowNumbers.contains(firstRowWithSameFlowable)){
-		// return;
-		// }
-		// rowNumToSend = firstRowWithSameFlowable;
-		// }
+		uniqueFlowableRowNumbers.add(rowNumToSend);
 		matchedFlowableRowNumbers.add(rowNumToSend);
 		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
@@ -1159,6 +1111,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("");
 			setButtonState(btnConcludeFile, false);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// Running step 1
 		else if (stateNumber == 2) {
@@ -1190,6 +1143,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("");
 			setButtonState(btnConcludeFile, false);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// End of step 1
 		else if (stateNumber == 3) {
@@ -1222,6 +1176,7 @@ public class FlowsWorkflow extends ViewPart {
 					.setToolTipText("Click to cancel working with this dataset.  Nothing will be saved to the database.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// During step 2
 		else if (stateNumber == 4) {
@@ -1253,6 +1208,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("");
 			setButtonState(btnConcludeFile, false);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// Following step 2 (if issues)
 		else if (stateNumber == 5) {
@@ -1285,6 +1241,7 @@ public class FlowsWorkflow extends ViewPart {
 					.setToolTipText("Click to cancel working with this dataset.  Nothing will be saved to the database.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// Following step 2 (if no issues)
 		else if (stateNumber == 6) {
@@ -1317,6 +1274,7 @@ public class FlowsWorkflow extends ViewPart {
 					.setToolTipText("Click to cancel working with this dataset.  Nothing will be saved to the database.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = true;
 		}
 		// During step 3
 		else if (stateNumber == 7) {
@@ -1348,6 +1306,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("");
 			setButtonState(btnConcludeFile, false);
 			setTooltipStatusConclude("");
+//			CSVTableView.preCommit = false;
 		}
 		// Following step 3
 		else if (stateNumber == 8) {
@@ -1383,6 +1342,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 4 is toggled
 		else if (stateNumber == 9) {
@@ -1417,6 +1377,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 5 is toggled
 		else if (stateNumber == 10) {
@@ -1451,6 +1412,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 6 is toggled
 		else if (stateNumber == 11) {
@@ -1485,6 +1447,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;
 		}
 		// During step 7 (following dialogs)
 		else if (stateNumber == 12) {
@@ -1516,6 +1479,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnConcludeFile.setToolTipText("Click to cancel the export process.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;
 		}
 	}
 

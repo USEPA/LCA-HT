@@ -94,9 +94,9 @@ public class FormatCheck {
 		List<FormatCheck> qaCheckPack = new ArrayList<FormatCheck>();
 		String d1 = "UUID format";
 		String e1 = "The text does not match a properly formatted UUID: hex digits separated by dashes: 8-4-4-4-12.";
-		String s1 = "Check format.  For example, sometimes leading zeros get removed.";
+		String s1 = "Check format.  For example, sometimes leading zeros get removed. Note that a blank string is acceptable, but space characters are not.";
 		Pattern p1 = Pattern
-				.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
+				.compile("^$||^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
 		String r1 = null;
 		qaCheckPack.add(new FormatCheck(d1, e1, s1, p1, r1, true));
 

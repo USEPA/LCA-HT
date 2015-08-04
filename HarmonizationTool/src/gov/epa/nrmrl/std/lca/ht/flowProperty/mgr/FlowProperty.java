@@ -280,7 +280,7 @@ public class FlowProperty {
 			b.append("order by ?ug_index ?u_index\n");
 
 			String query = b.toString();
-			System.out.println("Query = \n" + query);
+//			System.out.println("Query = \n" + query);
 			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
 			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 			harmonyQuery2Impl.setQuery(query);

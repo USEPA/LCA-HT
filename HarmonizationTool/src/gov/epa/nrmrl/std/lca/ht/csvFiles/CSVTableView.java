@@ -34,11 +34,11 @@ import java.util.Date;
 //import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
@@ -152,15 +152,15 @@ public class CSVTableView extends ViewPart {
 	// private static Font boldFont = new Font(Display.getCurrent(), new FontData("Lucida Grande", 11, SWT.BOLD));
 
 	// THESE 6 ARE MANAGED IN FlowsWorkflow, BUT BROUGHT OVER FOR CONVENIENCE
-	public static LinkedHashSet<Integer> uniqueFlowableRowNumbers;
-	public static LinkedHashSet<Integer> uniqueFlowContextRowNumbers;
-	public static LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers;
-	public static LinkedHashSet<Integer> uniqueFlowRowNumbers;
+	public static SortedSet<Integer> uniqueFlowableRowNumbers;
+	public static SortedSet<Integer> uniqueFlowContextRowNumbers;
+	public static SortedSet<Integer> uniqueFlowPropertyRowNumbers;
+	public static SortedSet<Integer> uniqueFlowRowNumbers;
 
-	public static LinkedHashSet<Integer> matchedFlowableRowNumbers;
-	public static LinkedHashSet<Integer> matchedFlowContextRowNumbers;
-	public static LinkedHashSet<Integer> matchedFlowPropertyRowNumbers;
-	public static LinkedHashSet<Integer> matchedFlowRowNumbers;
+	public static SortedSet<Integer> matchedFlowableRowNumbers;
+	public static SortedSet<Integer> matchedFlowContextRowNumbers;
+	public static SortedSet<Integer> matchedFlowPropertyRowNumbers;
+	public static SortedSet<Integer> matchedFlowRowNumbers;
 
 	private static class LCAArrayContentProvider extends ArrayContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -255,7 +255,7 @@ public class CSVTableView extends ViewPart {
 			}
 			newTableItem.setFont(boldFont);
 
-			matchRowContents();
+			selectRowColumn();
 			return;
 		}
 
@@ -339,13 +339,13 @@ public class CSVTableView extends ViewPart {
 
 	};
 
-	public static LinkedHashSet<Integer> getFilterRowNumbers() {
+	public static SortedSet<Integer> getFilterRowNumbers() {
 		return rowFilter.getFilterRowNumbers();
 	}
 
-	public static void setFilterRowNumbersWCopy(LinkedHashSet<Integer> filterRowNumbers) {
-		LinkedHashSet<Integer> copyOfUnique = new LinkedHashSet<Integer>();
-		for (Integer rowNumber : filterRowNumbers) {
+	public static void setFilterRowNumbersWCopy(SortedSet<Integer> filterRowNumbers) {
+		SortedSet<Integer> copyOfUnique = new TreeSet<Integer>();
+		for (int rowNumber : filterRowNumbers) {
 			copyOfUnique.add(rowNumber);
 		}
 		rowFilter.setFilterRowNumbers(copyOfUnique);
@@ -379,16 +379,16 @@ public class CSVTableView extends ViewPart {
 
 	private static class TableRowFilter extends ViewerFilter {
 		// private List<Integer> filterRowNumbers = new ArrayList<Integer>();
-		private static LinkedHashSet<Integer> filterRowNumbers = new LinkedHashSet<Integer>();
+		private static SortedSet<Integer> filterRowNumbers = new TreeSet<Integer>();
 
-		public LinkedHashSet<Integer> getFilterRowNumbers() {
+		public SortedSet<Integer> getFilterRowNumbers() {
 			if (filterRowNumbers == null) {
-				filterRowNumbers = new LinkedHashSet<Integer>();
+				filterRowNumbers = new TreeSet<Integer>();
 			}
 			return filterRowNumbers;
 		}
 
-		public void setFilterRowNumbers(LinkedHashSet<Integer> newFilterRowNumbers) {
+		public void setFilterRowNumbers(SortedSet<Integer> newFilterRowNumbers) {
 			filterRowNumbers = newFilterRowNumbers;
 			tableViewer.refresh();
 		}
@@ -578,68 +578,36 @@ public class CSVTableView extends ViewPart {
 	// return clickedCol;
 	// }
 
-	public static void matchRowContents() {
+	public static void selectRowColumn() {
 		if (colNumSelected < 0)
 			return;
 		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
 		LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLcaDataProperties()[colNumSelected];
-		// TODO - figure out why I (Tom) wanted the file date here...
-		// Resource fileResource = tableProvider.getFileMD().getTdbResource();
-		// Statement modifiedStatement = fileResource.getProperty(DCTerms.modified);
-		// RDFNode modifiedObject = modifiedStatement.getObject();
-		// Literal modifiedLiteral = modifiedObject.asLiteral();
-		// Object dateThang = modifiedLiteral.getValue();
-		// XSDDateTime fred = (XSDDateTime) dateThang;
-		// long seconds = fred.asCalendar().getTimeInMillis();
 
-		// RDFDatatype modifiedDatatype = modifiedLiteral.getDatatype();
-		// String thing = modifiedLiteral.getString();
-		// if (modifiedLiteral instanceof Literal) {
-		// Object thing2 = modifiedLiteral.getValue();
-		// }
-
-		// Object thing = modifiedLiteral.getValue();
-
-		// Long thing = modifiedLiteral.getLong();
-
-		// if (lcaDataPropertyProvider == null) {
-		// return;
-		// }
-		String dataRowNumString = table.getItem(rowNumSelected).getText(0);
-		Integer dataRowNum = Integer.parseInt(dataRowNumString) - 1;
-
-		try {
-			Util.showView(MatchFlowables.ID);
-		} catch (PartInitException e1) {
-			e1.printStackTrace();
-		}
-
-		try {
-			Util.showView(MatchProperties.ID);
-		} catch (PartInitException e1) {
-			e1.printStackTrace();
-		}
-
-		try {
-			Util.showView(MatchContexts.ID);
-		} catch (PartInitException e1) {
-			e1.printStackTrace();
-		}
-		if (lcaDataPropertyProvider != null) {
-			if (lcaDataPropertyProvider.getPropertyClass().equals(FlowUnit.label)) {
-				try {
-					Util.showView(MatchProperties.ID);
-				} catch (PartInitException e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
-
+		int dataRowNum = getDataRowNumberFromTableRowNumber(rowNumSelected);
 		MatchFlowables.update(dataRowNum);
-		// MatchContexts.update(dataRowNum);
-		// MatchProperties.update(dataRowNum);
 		MatchContexts.update(dataRowNum);
 		MatchProperties.update(dataRowNum);
+		if (lcaDataPropertyProvider == null){
+			return;
+		}
+		Resource columnType = lcaDataPropertyProvider.getRDFClass();
+		if (columnType == null){
+			return;
+		}
+		if (columnType.equals(FlowUnit.rdfClass)) {
+			try {
+				Util.showView(MatchProperties.ID);
+			} catch (PartInitException e1) {
+				e1.printStackTrace();
+			}
+		}	else if (columnType.equals(FlowContext.rdfClass)) {
+			try {
+				Util.showView(MatchProperties.ID);
+			} catch (PartInitException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
@@ -695,25 +663,21 @@ public class CSVTableView extends ViewPart {
 		@Override
 		public void handleEvent(Event event) {
 			if (event.widget instanceof MenuItem) {
-				// System.out.println("RowMenuSelectionListener event = " +
-				// event);
 				String menuItemText = ((MenuItem) event.widget).getText();
 				if (menuItemText.equals("ignore row")) {
 					for (TableItem tableItem : table.getSelection()) {
 						tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
-						String rowNumString = tableItem.getText(0);
-						int rowNum = Integer.parseInt(rowNumString) - 1;
-						// int rowNum = table.indexOf(tableItem);
-						if (!rowsToIgnore.contains(rowNum)) {
-							rowsToIgnore.add(rowNum);
+						int dataRowNumber = getDataRowNumberFromTableRowNumber(table.indexOf(tableItem));
+						if (!rowsToIgnore.contains(dataRowNumber)) {
+							rowsToIgnore.add(dataRowNumber);
 						}
 					}
 				} else if (menuItemText.equals("use row")) {
 					for (TableItem tableItem : table.getSelection()) {
 						tableItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-						int rowNum = table.indexOf(tableItem);
-						if (rowsToIgnore.contains(rowNum)) {
-							rowsToIgnore.remove(rowsToIgnore.indexOf(rowNum));
+						int dataRowNumber = getDataRowNumberFromTableRowNumber(table.indexOf(tableItem));
+						if (rowsToIgnore.contains(dataRowNumber)) {
+							rowsToIgnore.remove(rowsToIgnore.indexOf(dataRowNumber));
 						}
 					}
 				}
@@ -971,12 +935,12 @@ public class CSVTableView extends ViewPart {
 				origRowsToYellow.add(issue.getRowNumber());
 			}
 		}
-		LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+		SortedSet<Integer> filterRowNumbers = getFilterRowNumbers();
 		int curRow = 0;
 
 		// if (getFilterRowNumbers() != null) {
 		if (!filterRowNumbers.isEmpty()) {
-			for (Integer integer : filterRowNumbers) {
+			for (int integer : filterRowNumbers) {
 				if (origRowsToYellow.contains(integer)) {
 					table.getItem(curRow).setBackground(colNumber, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
@@ -1027,7 +991,7 @@ public class CSVTableView extends ViewPart {
 					menuItem.addListener(SWT.Selection, new FilterByIssuesListener());
 
 				} else {
-					LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+					SortedSet<Integer> filterRowNumbers = getFilterRowNumbers();
 					if (!filterRowNumbers.isEmpty()) {
 						final int newIssueCount = getIssuesByColumn(colNumSelected).size();
 
@@ -1168,8 +1132,7 @@ public class CSVTableView extends ViewPart {
 			}
 			for (int i = 0; i < table.getItemCount(); i++) {
 				TableItem item = table.getItem(i);
-				String rowNumString = item.getText(0);
-				int rowNum = Integer.parseInt(rowNumString) - 1;
+				int rowNum = getDataRowNumberFromTableRowNumber(i);
 				String value = item.getText(colNumSelected);
 				String fixedValue = Flowable.standardizeCAS(value);
 				if (fixedValue != null) {
@@ -1248,7 +1211,7 @@ public class CSVTableView extends ViewPart {
 					issue.setStatus(Status.RESOLVED);
 					DataRow dataRow = tableProvider.getData().get(issue.getRowNumber());
 					dataRow.set(issue.getColNumber() - 1, "");
-					LinkedHashSet<Integer> filterRowNumbers = getFilterRowNumbers();
+					SortedSet<Integer> filterRowNumbers = getFilterRowNumbers();
 					if (filterRowNumbers != null) {
 						if (filterRowNumbers.isEmpty()) {
 							table.getItem(rowNumSelected).setText(issue.getColNumber(), "");
@@ -1283,7 +1246,7 @@ public class CSVTableView extends ViewPart {
 			}
 			lastTableItem.setFont(defaultFont);
 			tableItem.setFont(boldFont);
-			matchRowContents();
+			selectRowColumn();
 		}
 	}
 
@@ -1300,100 +1263,104 @@ public class CSVTableView extends ViewPart {
 		if (rowNumSelected < 0 || rowNumSelected >= table.getItemCount()) {
 			rowNumSelected = 0;
 		}
-		if (nextUnmatched) {
-			if (viewCallerID.equals(MatchContexts.ID)) {
-				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
-				TableItem lastTableItem = table.getItem(rowNumSelected);
-				int nextUnmatchedContextNum = -1;
-				for (int i : uniqueFlowContextRowNumbers) {
-					if (i > rowNum) {
-						if (!matchedFlowContextRowNumbers.contains(i)) {
-							nextUnmatchedContextNum = i;
-							break;
-						}
-					}
-				}
-				for (int i = rowNumSelected; i < table.getItems().length; i++) {
-					TableItem tableItem = table.getItem(i);
-					int nextRowNum = getDataIndexOfRowNumber(i);
-					if (nextRowNum == nextUnmatchedContextNum) {
-						lastTableItem = table.getItem(rowNumSelected);
-						lastTableItem.setFont(defaultFont);
-						rowNumSelected = table.indexOf(tableItem);
-						tableItem.setFont(boldFont);
-						table.setTopIndex(rowNumSelected);
+		int nextTableRowNum = rowNumSelected;
+		int nextDataRowNum = -1;
+		if (viewCallerID.equals(MatchContexts.ID)) {
+			int curDataRowNum = getDataRowNumberFromTableRowNumber(rowNumSelected);
+			for (int i : uniqueFlowContextRowNumbers) {
+				if (i > curDataRowNum) {
+					if (!nextUnmatched) {
+						nextDataRowNum = i;
 						break;
-					}
-				}
-			} else if (viewCallerID.equals(MatchProperties.ID)) {
-				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
-				TableItem lastTableItem = table.getItem(rowNumSelected);
-				int nextUnmatchedPropertyNum = -1;
-				for (int i : uniqueFlowPropertyRowNumbers) {
-					if (i > rowNum) {
-						if (!matchedFlowPropertyRowNumbers.contains(i)) {
-							nextUnmatchedPropertyNum = i;
-							break;
-						}
-					}
-				}
-				for (int i = rowNumSelected; i < table.getItems().length; i++) {
-					TableItem tableItem = table.getItem(i);
-					int nextRowNum = getDataIndexOfRowNumber(i);
-					if (nextRowNum == nextUnmatchedPropertyNum) {
-						lastTableItem = table.getItem(rowNumSelected);
-						lastTableItem.setFont(defaultFont);
-						rowNumSelected = table.indexOf(tableItem);
-						tableItem.setFont(boldFont);
-						table.setTopIndex(rowNumSelected);
-						break;
-					}
-				}
-			} else if (viewCallerID.equals(MatchFlowables.ID)) {
-				int rowNum = getDataIndexOfRowNumber(rowNumSelected);
-				TableItem lastTableItem = table.getItem(rowNumSelected);
-				int nextUnmatchedFlowableNum = -1;
-				for (int i : uniqueFlowableRowNumbers) {
-					if (i > rowNum) {
-						if (!matchedFlowableRowNumbers.contains(i)) {
-							nextUnmatchedFlowableNum = i;
-							break;
-						}
-					}
-				}
-				for (int i = rowNumSelected; i < table.getItems().length; i++) {
-					int nextRowNum = getDataIndexOfRowNumber(i);
-					TableItem tableItem = table.getItem(i);
-					if (nextRowNum == nextUnmatchedFlowableNum) {
-						lastTableItem = table.getItem(rowNumSelected);
-						lastTableItem.setFont(defaultFont);
-						rowNumSelected = table.indexOf(tableItem);
-						tableItem.setFont(boldFont);
-						table.setTopIndex(rowNumSelected);
+					} else if (!matchedFlowContextRowNumbers.contains(i)) {
+						nextDataRowNum = i;
 						break;
 					}
 				}
 			}
-		} else {
-			TableItem lastTableItem = table.getItem(rowNumSelected);
-			rowNumSelected++;
-			TableItem tableItem = table.getItem(rowNumSelected);
-			table.deselectAll();
-			if (defaultFont == null) {
-				createFonts(tableItem);
+			if (nextDataRowNum == -1) {
+				return;
 			}
-			lastTableItem.setFont(defaultFont);
-			tableItem.setFont(boldFont);
+			for (int i = rowNumSelected; i < table.getItems().length; i++) {
+				int nextRowNum = getDataRowNumberFromTableRowNumber(i);
+				if (nextRowNum == nextDataRowNum) {
+					nextTableRowNum = i;
+					break;
+				}
+			}
+			MatchContexts.update(nextDataRowNum);
+			selectTableRow(nextTableRowNum);
+		} else if (viewCallerID.equals(MatchProperties.ID)) {
+			int curDataRowNum = getDataRowNumberFromTableRowNumber(rowNumSelected);
+			for (int i : uniqueFlowPropertyRowNumbers) {
+				if (i > curDataRowNum) {
+					if (!nextUnmatched) {
+						nextDataRowNum = i;
+						break;
+					} else if (!matchedFlowPropertyRowNumbers.contains(i)) {
+						nextDataRowNum = i;
+						break;
+					}
+				}
+			}
+			if (nextDataRowNum == -1) {
+				return;
+			}
+			for (int i = rowNumSelected; i < table.getItems().length; i++) {
+				int nextRowNum = getDataRowNumberFromTableRowNumber(i);
+				if (nextRowNum == nextDataRowNum) {
+					nextTableRowNum = i;
+					break;
+				}
+			}
+			MatchProperties.update(nextDataRowNum);
+			selectTableRow(nextTableRowNum);
+		} else if (viewCallerID.equals(MatchFlowables.ID)) {
+			int curDataRowNum = getDataRowNumberFromTableRowNumber(rowNumSelected);
+			for (int i : uniqueFlowableRowNumbers) {
+				if (i > curDataRowNum) {
+					if (!nextUnmatched) {
+						nextDataRowNum = i;
+						break;
+					} else if (!matchedFlowableRowNumbers.contains(i)) {
+						nextDataRowNum = i;
+						break;
+					}
+				}
+			}
+			if (nextDataRowNum == -1) {
+				return;
+			}
+			for (int i = rowNumSelected; i < table.getItems().length; i++) {
+				int nextRowNum = getDataRowNumberFromTableRowNumber(i);
+				if (nextRowNum == nextDataRowNum) {
+					nextTableRowNum = i;
+					break;
+				}
+			}
+			MatchFlowables.update(nextDataRowNum);
+			selectTableRow(nextTableRowNum);
 		}
-
-		matchRowContents();
+		// matchRowContents();
 
 		try {
 			Util.showView(viewCallerID);
 		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static void selectTableRow(int tableRowNum) {
+		if (tableRowNum < 0 || tableRowNum > table.getItemCount()){
+			return;
+		}
+		TableItem tableItem = table.getItem(rowNumSelected);
+		tableItem.setFont(defaultFont);
+		rowNumSelected = tableRowNum;
+		TableItem newTableItem = table.getItem(rowNumSelected);
+		newTableItem.setFont(boldFont);
+		table.deselectAll();
+		table.setTopIndex(rowNumSelected);
 	}
 
 	public static void selectNext(String viewCallerID) {
@@ -1409,7 +1376,7 @@ public class CSVTableView extends ViewPart {
 			}
 			lastTableItem.setFont(defaultFont);
 			tableItem.setFont(boldFont);
-			matchRowContents();
+			selectRowColumn();
 		}
 		try {
 			Util.showView(viewCallerID);
@@ -1419,38 +1386,37 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public static void selectNextFlowable() {
-		// System.out.println("RowNumSelected = " + rowNumSelected);
-		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
-		if (rowNumSelected < (table.getItemCount() - 1)) {
-			TableItem lastTableItem = table.getItem(rowNumSelected);
-			String rowNumString = lastTableItem.getText(0);
-			int rowNum = Integer.parseInt(rowNumString) - 1;
-			int nextUnmatchedFlowableNum = -1;
-			for (int i : uniqueFlowableRowNumbers) {
-				if (i > rowNum) {
-					if (!matchedFlowableRowNumbers.contains(i)) {
-						nextUnmatchedFlowableNum = i;
-						break;
-					}
-				}
-			}
-			for (int i = rowNumSelected; i < table.getItems().length; i++) {
-				TableItem tableItem = table.getItem(i);
-				String nextRowNumString = tableItem.getText(0);
-				int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
-				if (nextRowNum == nextUnmatchedFlowableNum) {
-					lastTableItem = table.getItem(rowNumSelected);
-					lastTableItem.setFont(defaultFont);
-					rowNumSelected = table.indexOf(tableItem);
-					tableItem.setFont(boldFont);
-					table.setTopIndex(rowNumSelected);
-					break;
-				}
-			}
-			matchRowContents();
-		}
-	}
+//	public static void selectNextFlowable() {
+//		// System.out.println("RowNumSelected = " + rowNumSelected);
+//		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+//		if (rowNumSelected < (table.getItemCount() - 1)) {
+//			TableItem lastTableItem = table.getItem(rowNumSelected);
+//			int dataRowNumber = getDataRowNumberFromTableRowNumber(rowNumSelected);
+//			int nextUnmatchedFlowableNum = -1;
+//			for (Integer i : uniqueFlowableRowNumbers) {
+//				if (i > dataRowNumber) {
+//					if (!matchedFlowableRowNumbers.contains(i)) {
+//						nextUnmatchedFlowableNum = i;
+//						break;
+//					}
+//				}
+//			}
+//			for (int i = rowNumSelected; i < table.getItems().length; i++) {
+//				TableItem tableItem = table.getItem(i);
+//				String nextRowNumString = tableItem.getText(0);
+//				int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
+//				if (nextRowNum == nextUnmatchedFlowableNum) {
+//					lastTableItem = table.getItem(rowNumSelected);
+//					lastTableItem.setFont(defaultFont);
+//					rowNumSelected = table.indexOf(tableItem);
+//					tableItem.setFont(boldFont);
+//					table.setTopIndex(rowNumSelected);
+//					break;
+//				}
+//			}
+//			selectRowColumn();
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	private static List<Issue> getIssuesByColumn(int columnNumber) {
@@ -1471,7 +1437,7 @@ public class CSVTableView extends ViewPart {
 			if (colNumSelected == 0) {
 				return;
 			}
-			LinkedHashSet<Integer> issueSet = new LinkedHashSet<Integer>();
+			SortedSet<Integer> issueSet = new TreeSet<Integer>();
 			for (Issue issue : issueList) {
 				if (issue.getColNumber() == colNumSelected) {
 					if (!issue.getStatus().equals(Status.RESOLVED)) {
@@ -1994,15 +1960,15 @@ public class CSVTableView extends ViewPart {
 		return totalIssueCount;
 	}
 
-	public static void colorCell(int rowNumber, int colNumber, Color color) {
-		if (rowNumber > -1 && rowNumber < table.getItemCount()) {
-			TableItem tableItem = table.getItem(rowNumber);
+	public static void colorCell(int tableRowNumber, int colNumber, Color color) {
+		if (tableRowNumber > -1 && tableRowNumber < table.getItemCount()) {
+			TableItem tableItem = table.getItem(tableRowNumber);
 			tableItem.setBackground(colNumber, color);
 		}
 	}
 
 	private static void colorCell(Issue issue) {
-		LinkedHashSet<Integer> filterRows = getFilterRowNumbers();
+		SortedSet<Integer> filterRows = getFilterRowNumbers();
 		int colIndex = issue.getColNumber();
 		if ((filterRows == null) || (filterRows.size() == 0)) {
 			TableItem tableItem = table.getItem(issue.getRowNumber());
@@ -2011,11 +1977,11 @@ public class CSVTableView extends ViewPart {
 				tableItem.setBackground(colIndex, issue.getStatus().getColor());
 			}
 		} else {
-			if (filterRows.contains(issue.getRowNumber())) {
+			if (filterRows.contains((Integer)issue.getRowNumber())) {
 				int row = 0;
 				Iterator<Integer> iterator = filterRows.iterator();
 				while (iterator.hasNext()) {
-					Integer origRowNum = iterator.next();
+					int origRowNum = iterator.next();
 					if (origRowNum == issue.getRowNumber()) {
 						colorCell(row, colIndex, issue.getStatus().getColor());
 						continue;
@@ -2087,88 +2053,51 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	private static int getTableRowFromDataRow(int dataRow) {
-		Set<Integer> filterRowNumbers = getFilterRowNumbers();
-		if (filterRowNumbers != null) {
-			if (filterRowNumbers.size() == 0) {
-				return dataRow;
-			}
-		}
-		for (int i = 0; i < table.getItemCount(); i++) {
-			String rowNumString = table.getItem(i).getText(0);
-			int rowNum = Integer.parseInt(rowNumString) - 1;
-			if (rowNum == dataRow) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public static void colorOneFlowableRow(int rowToColor) {
-		if (!uniqueFlowableRowNumbers.contains(rowToColor)) {
+	public static void colorOneFlowableRow(int dataRowNumber) {
+		if (!uniqueFlowableRowNumbers.contains(dataRowNumber)) {
 			return;
 		}
-		int tableRowToColor = getTableRowFromDataRow(rowToColor);
-		if (tableRowToColor < 0) {
+		int tableRowNumberToColor = getTableRowNumberFromDataRowNumber(dataRowNumber);
+		if (tableRowNumberToColor < 0) {
 			return;
 		}
 
 		// WHAT COLOR ARE WE GOING TO COLOR IT?
-		// int hitCount = 0;
-		boolean anyCandidate = false;
 		Color color;
 
 		List<DataRow> data = TableKeeper.getTableProvider(tableProviderKey).getData();
-		DataRow dataRow = data.get(rowToColor);
+		DataRow dataRow = data.get(dataRowNumber);
 		Flowable flowable = dataRow.getFlowable();
-		// TODO: FIX THIS HACK BELOW
-		if (flowable != null) { // HACK TO AVOID RACE CONDITION IN WINDOWS
-			Resource resource = flowable.getTdbResource();
-			ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-			boolean adHoc = ActiveTDB.getModel(null).contains(resource, LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
-			ActiveTDB.tdbDataset.end();
-			if (adHoc) {
-				color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+		if (flowable == null) {
+			return;
+		}
+		Resource resource = flowable.getTdbResource();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		boolean adHoc = ActiveTDB.getModel(null).contains(resource, LCAHT.hasQCStatus, LCAHT.QCStatusAdHocMaster);
+		ActiveTDB.tdbDataset.end();
+		if (adHoc) {
+			color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+		} else {
+			int assignedMatches = flowable.countAssignedComparisons();
+			if (assignedMatches == 1) {
+				color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+			} else if (assignedMatches > 1) {
+				color = orange;
 			} else {
-				int assignedMatches = flowable.countAssignedComparisons();
-				// LinkedHashMap<Resource, String> thing = flowable.getMatchCandidates();
-				// for (String symbol : thing.values()) {
-				// int matchNum = MatchStatus.getNumberBySymbol(symbol);
-				// if (matchNum > 0 && matchNum < 5) {
-				// hitCount++;
-				// } else if (matchNum == 0) {
-				// anyCandidate = true;
-				// }
-				// if (hitCount > 1)
-				// break;
-				// // if (matchNum == 0) {
-				// // hitCount = 2;
-				// // break;
-				// // }
-				// }
-
-				if (assignedMatches == 1) {
-					color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-				} else if (assignedMatches > 1 || anyCandidate) {
-					color = orange;
-				} else {
-					color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-				}
-
+				color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 			}
-
-			TableItem tableItem = table.getItem(tableRowToColor);
-
-			for (int i : flowableColumns) {
-				tableItem.setBackground(i, color);
-			}
+		}
+		TableItem tableItem = table.getItem(tableRowNumberToColor);
+		for (int i : flowableColumns) {
+			tableItem.setBackground(i, color);
 		}
 	}
 
 	public static void colorFlowableRows() {
-		for (int i = 0; i < table.getItemCount(); ++i) {
-			if (uniqueFlowableRowNumbers.contains(i))
-				colorOneFlowableRow(i);
+		for (int tableRowNumber = 0; tableRowNumber < table.getItemCount(); ++tableRowNumber) {
+			int dataRowNumber = getDataRowNumberFromTableRowNumber(tableRowNumber);
+			if (uniqueFlowableRowNumbers.contains(dataRowNumber))
+				colorOneFlowableRow(dataRowNumber);
 		}
 	}
 
@@ -2292,20 +2221,21 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public static void colorOneFlowRow(int rowToColor, boolean matched) {
-		colorOneFlowRow(rowToColor, matched, false);
+	public static void colorOneFlowRow(int dataRowNumber, boolean matched) {
+		colorOneFlowRow(dataRowNumber, matched, false);
 	}
 
-	public static void colorOneFlowRow(int rowToColor, boolean matched, boolean updateHeader) {
+	public static void colorOneFlowRow(int dataRowNumber, boolean matched, boolean updateHeader) {
 		Color color;
+		int tableRowNumber = getTableRowNumberFromDataRowNumber(dataRowNumber);
 		if (matched)
 			color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 		else
 			color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
 		for (int j : flowColumns) {
-			colorCell(rowToColor, j, color);
+			colorCell(tableRowNumber, j, color);
 		}
-		colorCell(rowToColor, 0, color);
+		colorCell(tableRowNumber, 0, color);
 
 		if (updateHeader) {
 			updateFlowHeaderCount(matchedFlowRowNumbers.size(), uniqueFlowRowNumbers.size());
@@ -2329,11 +2259,10 @@ public class CSVTableView extends ViewPart {
 
 	public static void colorFlowRows() {
 		Set<Integer> filterRowNumbers = getFilterRowNumbers();
-
 		if (filterRowNumbers.size() > 0) {
-			for (int i : filterRowNumbers) {
-				if (uniqueFlowRowNumbers.contains(i)) {
-					colorOneFlowRow(i, matchedFlowRowNumbers.contains(i));
+			for (int dataRowNumber : filterRowNumbers) {
+				if (uniqueFlowRowNumbers.contains(dataRowNumber)) {
+					colorOneFlowRow(dataRowNumber, matchedFlowRowNumbers.contains(dataRowNumber));
 				}
 			}
 		} else {
@@ -2374,7 +2303,7 @@ public class CSVTableView extends ViewPart {
 	// return uniqueFlowableRowNumbers;
 	// }
 
-	public static void setUniqueFlowableRowNumbers(LinkedHashSet<Integer> uniqueFlowableRowNumbers) {
+	public static void setUniqueFlowableRowNumbers(SortedSet<Integer> uniqueFlowableRowNumbers) {
 		CSVTableView.uniqueFlowableRowNumbers = uniqueFlowableRowNumbers;
 	}
 
@@ -2382,7 +2311,7 @@ public class CSVTableView extends ViewPart {
 	// return uniqueFlowContextRowNumbers;
 	// }
 
-	public static void setUniqueFlowContextRowNumbers(LinkedHashSet<Integer> uniqueFlowContextRowNumbers) {
+	public static void setUniqueFlowContextRowNumbers(SortedSet<Integer> uniqueFlowContextRowNumbers) {
 		CSVTableView.uniqueFlowContextRowNumbers = uniqueFlowContextRowNumbers;
 	}
 
@@ -2390,7 +2319,7 @@ public class CSVTableView extends ViewPart {
 	// return uniqueFlowPropertyRowNumbers;
 	// }
 
-	public static void setUniqueFlowPropertyRowNumbers(LinkedHashSet<Integer> uniqueFlowPropertyRowNumbers) {
+	public static void setUniqueFlowPropertyRowNumbers(SortedSet<Integer> uniqueFlowPropertyRowNumbers) {
 		CSVTableView.uniqueFlowPropertyRowNumbers = uniqueFlowPropertyRowNumbers;
 	}
 
@@ -2398,7 +2327,7 @@ public class CSVTableView extends ViewPart {
 	// return uniqueFlowRowNumbers;
 	// }
 
-	public static void setUniqueFlowRowNumbers(LinkedHashSet<Integer> uniqueFlowRowNumbers) {
+	public static void setUniqueFlowRowNumbers(SortedSet<Integer> uniqueFlowRowNumbers) {
 		CSVTableView.uniqueFlowRowNumbers = uniqueFlowRowNumbers;
 	}
 
@@ -2408,7 +2337,7 @@ public class CSVTableView extends ViewPart {
 	// return matchedFlowableRowNumbers;
 	// }
 
-	public static void setMatchedFlowableRowNumbers(LinkedHashSet<Integer> matchedFlowableRowNumbers) {
+	public static void setMatchedFlowableRowNumbers(SortedSet<Integer> matchedFlowableRowNumbers) {
 		CSVTableView.matchedFlowableRowNumbers = matchedFlowableRowNumbers;
 	}
 
@@ -2416,7 +2345,7 @@ public class CSVTableView extends ViewPart {
 	// return matchedFlowContextRowNumbers;
 	// }
 
-	public static void setMatchedFlowContextRowNumbers(LinkedHashSet<Integer> matchedFlowContextRowNumbers) {
+	public static void setMatchedFlowContextRowNumbers(SortedSet<Integer> matchedFlowContextRowNumbers) {
 		CSVTableView.matchedFlowContextRowNumbers = matchedFlowContextRowNumbers;
 	}
 
@@ -2424,7 +2353,7 @@ public class CSVTableView extends ViewPart {
 	// return matchedFlowPropertyRowNumbers;
 	// }
 
-	public static void setMatchedFlowPropertyRowNumbers(LinkedHashSet<Integer> matchedFlowPropertyRowNumbers) {
+	public static void setMatchedFlowPropertyRowNumbers(SortedSet<Integer> matchedFlowPropertyRowNumbers) {
 		CSVTableView.matchedFlowPropertyRowNumbers = matchedFlowPropertyRowNumbers;
 	}
 
@@ -2432,46 +2361,46 @@ public class CSVTableView extends ViewPart {
 	// return matchedFlowPropertyRowNumbers;
 	// }
 
-	public static void setMatchedFlowRowNumbers(LinkedHashSet<Integer> matchedFlowRowNumbers) {
+	public static void setMatchedFlowRowNumbers(SortedSet<Integer> matchedFlowRowNumbers) {
 		CSVTableView.matchedFlowRowNumbers = matchedFlowRowNumbers;
 	}
 
-	public static void setSelection(int i) {
-		if (i < 0 || i >= table.getItemCount()) {
-			return;
-		}
-		String rowNumString = table.getItem(i).getText(0);
-		int dataRowNumber = Integer.parseInt(rowNumString) - 1;
-		while (rowsToIgnore.contains(dataRowNumber)) {
-			i++;
-			rowNumString = table.getItem(i).getText(0);
-			dataRowNumber = Integer.parseInt(rowNumString) - 1;
-		}
-		if (i >= table.getItemCount()) {
-			table.deselectAll();
-			return;
-		}
-		rowNumSelected = i;
-		table.setSelection(i);
-		matchRowContents();
-	}
-
-	public static void setRowNumSelected(int i) {
-		int oldRowNumSelected = rowNumSelected;
-		if (i < 0 || i >= table.getItemCount()) {
-			rowNumSelected = 0;
-		} else {
-			rowNumSelected = i;
-		}
-		TableItem tableItem = table.getItem(rowNumSelected);
-		if (defaultFont == null) {
-			createFonts(tableItem);
-		}
-		if (oldRowNumSelected >= 0 & oldRowNumSelected < table.getItemCount()) {
-			table.getItem(oldRowNumSelected).setFont(defaultFont);
-		}
-		tableItem.setFont(boldFont);
-	}
+	// public static void setSelection(int i) {
+	// if (i < 0 || i >= table.getItemCount()) {
+	// return;
+	// }
+	// String rowNumString = table.getItem(i).getText(0);
+	// int dataRowNumber = Integer.parseInt(rowNumString) - 1;
+	// while (rowsToIgnore.contains(dataRowNumber)) {
+	// i++;
+	// rowNumString = table.getItem(i).getText(0);
+	// dataRowNumber = Integer.parseInt(rowNumString) - 1;
+	// }
+	// if (i >= table.getItemCount()) {
+	// table.deselectAll();
+	// return;
+	// }
+	// rowNumSelected = i;
+	// table.setSelection(i);
+	// matchRowContents();
+	// }
+	//
+	// public static void setRowNumSelected(int i) {
+	// int oldRowNumSelected = rowNumSelected;
+	// if (i < 0 || i >= table.getItemCount()) {
+	// rowNumSelected = 0;
+	// } else {
+	// rowNumSelected = i;
+	// }
+	// TableItem tableItem = table.getItem(rowNumSelected);
+	// if (defaultFont == null) {
+	// createFonts(tableItem);
+	// }
+	// if (oldRowNumSelected >= 0 & oldRowNumSelected < table.getItemCount()) {
+	// table.getItem(oldRowNumSelected).setFont(defaultFont);
+	// }
+	// tableItem.setFont(boldFont);
+	// }
 
 	public static List<String> getMasterFlowUUIDs() {
 		if (masterFlowUUIDs == null) {
@@ -2515,19 +2444,35 @@ public class CSVTableView extends ViewPart {
 	 * @param int <strong> rowNumber</strong> the index of the User Data table as currently displayed
 	 * @return The int index in the tableProvider represented by the specified row in the User Data table
 	 */
-	public static int getDataIndexOfRowNumber(int rowNumber) {
-		if (rowNumber < 0 || rowNumber >= table.getItemCount()) {
+	public static int getDataRowNumberFromTableRowNumber(int tableRowNumber) {
+		if (tableRowNumber < 0 || tableRowNumber >= table.getItemCount()) {
 			return -1;
 		}
-		String rowNumString = table.getItem(rowNumber).getText(0);
+		String rowNumString = table.getItem(tableRowNumber).getText(0);
 		int dataRowIndex;
 		try {
 			dataRowIndex = Integer.valueOf(rowNumString) - 1;
 		} catch (NumberFormatException e) {
 			return -1;
 		}
-		if (dataRowIndex > 0 && dataRowIndex < TableKeeper.getTableProvider(tableProviderKey).getData().size()) {
+		if (dataRowIndex >= 0 && dataRowIndex < TableKeeper.getTableProvider(tableProviderKey).getData().size()) {
 			return dataRowIndex;
+		}
+		return -1;
+	}
+
+	private static int getTableRowNumberFromDataRowNumber(int dataRowNumber) {
+		Set<Integer> filterRowNumbers = getFilterRowNumbers();
+		if (filterRowNumbers != null) {
+			if (filterRowNumbers.size() == 0) {
+				return dataRowNumber;
+			}
+		}
+		for (int tableRowNumberCandidate = 0; tableRowNumberCandidate < table.getItemCount(); tableRowNumberCandidate++) {
+			int dataRowNumberCandidate = getDataRowNumberFromTableRowNumber(tableRowNumberCandidate);
+			if (dataRowNumberCandidate == dataRowNumber) {
+				return tableRowNumberCandidate;
+			}
 		}
 		return -1;
 	}

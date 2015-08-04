@@ -171,7 +171,7 @@ public class ChooseDataSetDialog extends Dialog {
 			dataSetCombo.setLayoutData(gd);
 					
 			List<String> formats = new ArrayList<String>();
-			formats.add("Tab-delimited text file (.csv)");
+			formats.add("(Available soon - Tab-delimited text file (.csv))");
 			formats.add("Zipped .json for OpenLCA (.zip)");
 			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
 			

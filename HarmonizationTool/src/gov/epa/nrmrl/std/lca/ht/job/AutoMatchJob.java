@@ -256,9 +256,10 @@ public class AutoMatchJob extends Job {
 				flowable.setFirstRow(rowNumToSend);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						FlowsWorkflow.addFlowableRowNum(rowNumToSend);
 						if (hitCount > 0) {
 							FlowsWorkflow.addMatchFlowableRowNum(rowNumToSend);
+						} else {
+							FlowsWorkflow.addFlowableRowNum(rowNumToSend);
 						}
 					}
 

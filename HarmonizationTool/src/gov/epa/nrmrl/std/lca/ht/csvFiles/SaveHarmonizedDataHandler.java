@@ -100,7 +100,8 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
 
-		FlowsWorkflow.disableAllButtons();
+		FlowsWorkflow.switchToWorkflowState(12);
+//		FlowsWorkflow.setStatusConclude("Export complete");
 
 		System.out.println("Saving Harmonized Data");
 
@@ -129,6 +130,8 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		if (saveTo == null) {
 			// FlowsWorkflow.restoreAllButtons();
+//			FlowsWorkflow.switchToWorkflowState(12);
+			FlowsWorkflow.setStatusConclude("Export failed...");
 			FlowsWorkflow.switchToWorkflowState(8);
 		}
 
@@ -159,12 +162,6 @@ public class SaveHarmonizedDataHandler implements IHandler {
 				List<DataRow> dataRows = getOpenTableData();
 
 				writeTableData(headerRow, dataRows, saveTo);
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						FlowsWorkflow.setStatusConclude("Export complete");
-						FlowsWorkflow.switchToWorkflowState(8);
-					}
-				});
 			}
 		}).start();
 		return null;
@@ -208,7 +205,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				FlowsWorkflow.setStatusConclude("Export complete");
+				FlowsWorkflow.switchToWorkflowState(8);
+			}
+		});
 	}
 
 	@Override

@@ -146,12 +146,6 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-//					Display.getDefault().syncExec(new Runnable() {
-//						public void run() {
-//							FlowsWorkflow.setStatusConclude("Export complete");
-//							FlowsWorkflow.switchToWorkflowState(8);
-//						}
-//					});
 				}
 			}).start();
 		}

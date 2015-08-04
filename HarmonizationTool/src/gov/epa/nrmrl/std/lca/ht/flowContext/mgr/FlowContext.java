@@ -36,7 +36,7 @@ public class FlowContext {
 	public static final String flowContextGeneral = "General";
 	public static final String flowContextSpecific = "Specific";
 	public static final String openLCAUUID = "openLCA UUID";
-	private static final Resource rdfClass = FedLCA.FlowContext;
+	public static final Resource rdfClass = FedLCA.FlowContext;
 	// NOTE: EVENTUALLY label AND comment SHOULD COME FROM ONTOLOGY
 	public static final String label = "Flow Context";
 	//

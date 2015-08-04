@@ -663,9 +663,9 @@ public class MatchContexts extends ViewPart {
 	// this.contextResourcesToMatch = contextResourcesToMatch;
 	// }
 
-	public static void update(int rowNumber) {
+	public static void update(int dataRowNumber) {
 		List<DataRow> data = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData();
-		DataRow dataRow = data.get(rowNumber);
+		DataRow dataRow = data.get(dataRowNumber);
 		contextToMatch = dataRow.getFlowContext();
 		if (contextToMatch == null) {
 			masterTree.deselectAll();
