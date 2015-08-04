@@ -156,6 +156,11 @@
                      label="Show Flowables Window"
                      style="push">
                </command>
+               <command
+                     commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
+                     label="Show Harmonized Data Selector"
+                     style="push">
+               </command>
             </menu>
          </menu>
          <menu
@@ -342,9 +347,9 @@
             name="Re-load data from TDB">
       </command>
       <command
-            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowLightWeightConsoleHandler"
-            id="harmonizationtool.handler.ShowLightWeightConsoleHandler"
-            name="Show Console">
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
+            id="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
+            name="Restore Data Selector">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"

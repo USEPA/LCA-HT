@@ -33,6 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -87,6 +88,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	public List<DataRow> getOpenTableData() {
 		List<DataRow> dataRows = new ArrayList<DataRow>();
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		try {
+			Util.showView(HarmonizedDataSelector.ID);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (int i = 0; i < tableProvider.getData().size(); i++) {
 			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 			dataRows.add(dataRow);
@@ -100,7 +107,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
 
-		FlowsWorkflow.switchToWorkflowState(12);
+		FlowsWorkflow.switchToWorkflowState(8);
 //		FlowsWorkflow.setStatusConclude("Export complete");
 
 		System.out.println("Saving Harmonized Data");
@@ -142,11 +149,16 @@ public class SaveHarmonizedDataHandler implements IHandler {
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							// FlowsWorkflow.restoreAllButtons();
-							FlowsWorkflow.switchToWorkflowState(12);
+							FlowsWorkflow.switchToWorkflowState(8);
 						}
 					});
 				}
-
+				try {
+					Util.showView(HarmonizedDataSelector.ID);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 				if (headerRow == null) {
 					Display.getDefault().syncExec(new Runnable() {
@@ -162,8 +174,16 @@ public class SaveHarmonizedDataHandler implements IHandler {
 				List<DataRow> dataRows = getOpenTableData();
 
 				writeTableData(headerRow, dataRows, saveTo);
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						FlowsWorkflow.setStatusConclude("Export complete");
+						FlowsWorkflow.switchToWorkflowState(8);
+					}
+				});
 			}
+
 		}).start();
+
 		return null;
 	}
 
