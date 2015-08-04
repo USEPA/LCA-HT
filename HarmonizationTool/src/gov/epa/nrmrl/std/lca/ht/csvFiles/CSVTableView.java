@@ -603,7 +603,7 @@ public class CSVTableView extends ViewPart {
 			}
 		}	else if (columnType.equals(FlowContext.rdfClass)) {
 			try {
-				Util.showView(MatchProperties.ID);
+				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 			}

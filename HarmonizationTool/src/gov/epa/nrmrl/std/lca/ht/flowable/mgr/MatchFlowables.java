@@ -255,10 +255,17 @@ public class MatchFlowables extends ViewPart {
 			Point ptClick = new Point(event.x, event.y);
 			TableItem tableItem = table.getItem(ptLeft);
 			if (tableItem == null) {
+				table.deselect(rowNumSelected);
 				return;
 			}
-			rowNumSelected = table.indexOf(tableItem);
-			colNumSelected = getTableColumnNumFromPoint(rowNumSelected, ptClick);
+			int newRowSelected = table.indexOf(tableItem);
+			int newColSelected = getTableColumnNumFromPoint(newRowSelected, ptClick);
+			if (newRowSelected == rowNumSelected && newColSelected == colNumSelected){
+				table.deselect(rowNumSelected);
+				return;
+			}
+			rowNumSelected = newRowSelected;
+			colNumSelected = newColSelected;
 
 			if ((rowNumSelected > 0) && (colNumSelected < 6) && (colNumSelected > -1)) {
 				assignMatch();
@@ -268,6 +275,9 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
+		if (row < 0 || row > table.getItemCount()-1){
+			return -1;
+		}
 		TableItem item = table.getItem(row);
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			Rectangle rect = item.getBounds(i);
@@ -288,6 +298,9 @@ public class MatchFlowables extends ViewPart {
 		}
 		removeColumns();
 		createColumns();
+		rowNumSelected = -1;
+		colNumSelected = -1;
+		
 		dataTableRowNum = rowNumber;
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
@@ -706,6 +719,8 @@ public class MatchFlowables extends ViewPart {
 		}
 		Logger.getLogger("run").info("... search complete. " + count + " matching field are shown.");
 		displayNewSearchResults();
+		rowNumSelected = -1;
+		colNumSelected = -1;
 	}
 
 	private static void resetSearchButton() {
