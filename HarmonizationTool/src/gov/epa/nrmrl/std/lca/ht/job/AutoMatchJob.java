@@ -576,7 +576,7 @@ public class AutoMatchJob extends Job {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				// FlowsWorkflow.buttonModePostCommit();
-				FlowsWorkflow.switchToWorkflowState(8);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				CSVTableView.setPostCommit();
 			}
 		});

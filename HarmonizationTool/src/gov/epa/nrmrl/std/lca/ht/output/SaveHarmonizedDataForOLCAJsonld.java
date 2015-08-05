@@ -149,7 +149,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					FlowsWorkflow.setStatusConclude("Export complete");
-					FlowsWorkflow.switchToWorkflowState(8);
+					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				}
 			});
 		} else {
@@ -801,7 +801,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.setStatusConclude("Export complete");
-						FlowsWorkflow.switchToWorkflowState(8);
+						FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 					}
 				});
 			}

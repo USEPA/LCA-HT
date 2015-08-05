@@ -308,7 +308,7 @@ public class FlowsWorkflow extends ViewPart {
 		CSVTableView.setMatchedFlowContextRowNumbers(matchedFlowContextRowNumbers);
 		CSVTableView.setMatchedFlowPropertyRowNumbers(matchedFlowPropertyRowNumbers);
 		CSVTableView.setMatchedFlowRowNumbers(matchedFlowRowNumbers);
-		switchToWorkflowState(1);
+		switchToWorkflowState(ST_BEFORE_LOAD);
 	}
 
 	// Access to 1. User Data
@@ -450,7 +450,7 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void buttonModePostLoad() {
 //		FlowsWorkflow.restoreAllButtons();
-		switchToWorkflowState(3);
+		switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 		CSVTableView.preCommit = true;
 	}
 
@@ -465,13 +465,13 @@ public class FlowsWorkflow extends ViewPart {
 		/*
 		 * btnLoadUserData.setEnabled(false); btnLoadUserData.setGrayed(true);
 		 */
-		switchToWorkflowState(7);
+		switchToWorkflowState(FlowsWorkflow.ST_DURING_COMMIT);
 		btnConcludeFile.setEnabled(false);
 		btnConcludeFile.setGrayed(true);
 	}
 
 	public static void buttonModePostCommit() {
-		switchToWorkflowState(8);
+		switchToWorkflowState(ST_BEFORE_EXPORT);
 //		FlowsWorkflow.restoreAllButtons();
 //		btnCommit.setEnabled(false);
 //		btnCheckData.setEnabled(false);
@@ -494,7 +494,7 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener loadUserDataListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			switchToWorkflowState(2);
+			switchToWorkflowState(FlowsWorkflow.ST_DURING_LOAD);
 
 			IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 			try {
@@ -521,7 +521,7 @@ public class FlowsWorkflow extends ViewPart {
 	// TODO - disable buttons sensibly
 	SelectionListener checkDataListener = new SelectionListener() {
 		private void doit(final SelectionEvent e) {
-			switchToWorkflowState(4);
+			switchToWorkflowState(ST_DURING_CHECK);
 
 			CSVTableView.clearIssues();
 			final LCADataPropertyProvider[] lcaDataPropreties = TableKeeper.getTableProvider(
@@ -647,12 +647,12 @@ public class FlowsWorkflow extends ViewPart {
 												+ " columns checked");
 										if (issueCount == 0) {
 											// btnMatchFlowables.setEnabled(true);
-											switchToWorkflowState(6);
+											switchToWorkflowState(FlowsWorkflow.ST_BEFORE_COMMIT);
 
 											// btnCommit.setEnabled(true);
 											// setTooltipStatusSaveMatch("Click to begin saving to database and matching data.");
 										} else {
-											switchToWorkflowState(5);
+											switchToWorkflowState(FlowsWorkflow.ST_FIX_ISSUES);
 
 											// btnMatchFlowables.setEnabled(false);
 											// btnCommit.setEnabled(false);
@@ -685,7 +685,7 @@ public class FlowsWorkflow extends ViewPart {
 	SelectionListener commitListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
-			switchToWorkflowState(7);
+			switchToWorkflowState(FlowsWorkflow.ST_DURING_COMMIT);
 			FlowsWorkflow.disableAllButtons();
 			// btnCommit.setEnabled(false);
 			Util.findView(CSVTableView.ID);
@@ -694,7 +694,7 @@ public class FlowsWorkflow extends ViewPart {
 				statusSaveMatch.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				statusSaveMatch.setText("Assign and check columns first)");
 //				FlowsWorkflow.restoreAllButtons();
-				switchToWorkflowState(3);
+				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 				return;
 			}
 			buttonModeWhileCommit();
@@ -707,7 +707,7 @@ public class FlowsWorkflow extends ViewPart {
 			autoMatchJob.addJobChangeListener(new AutoMatchJobChangeListener((FlowsWorkflow) Util
 					.findView(FlowsWorkflow.ID), jobKey));
 			autoMatchJob.schedule();
-			switchToWorkflowState(8);
+			switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 		}
 
 		@Override
@@ -727,11 +727,11 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setEnabled(false);
 			btnCheckData.setEnabled(false);
 			if (btnMatchFlowContexts.getText().equals(matchContextsString)) {
-				switchToWorkflowState(10);
+				switchToWorkflowState(FlowsWorkflow.ST_SHOW_CONTEXT);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowContextRowNumbers);
 				CSVTableView.colorFlowContextRows();
 			} else {
-				switchToWorkflowState(8);
+				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				CSVTableView.clearFilterRowNumbers();
 			}
 			Util.setPerspective(LCIWorkflowPerspective.ID);
@@ -760,12 +760,12 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setEnabled(false);
 			btnCheckData.setEnabled(false);
 			if (btnMatchFlowProperties.getText().equals(matchPropertiesString)) {
-				switchToWorkflowState(11);
+				switchToWorkflowState(FlowsWorkflow.ST_SHOW_UNIT);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowPropertyRowNumbers);
 				CSVTableView.colorFlowPropertyRows();
 
 			} else {
-				switchToWorkflowState(8);
+				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				CSVTableView.clearFilterRowNumbers();
 			}
 			Util.setPerspective(LCIWorkflowPerspective.ID);
@@ -791,11 +791,11 @@ public class FlowsWorkflow extends ViewPart {
 	private SelectionListener matchFlowablesListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			if (btnMatchFlowables.getText().equals(matchFlowablesString)) {
-				switchToWorkflowState(9);
+				switchToWorkflowState(FlowsWorkflow.ST_SHOW_FLOWABLE);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowableRowNumbers);
 				CSVTableView.colorFlowableRows();
 			} else {
-				switchToWorkflowState(8);
+				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				CSVTableView.clearFilterRowNumbers();
 			}
 //			CSVTableView.selectTableRow(0);
@@ -859,7 +859,7 @@ public class FlowsWorkflow extends ViewPart {
 			// matchedFlowRowNumbers.clear();
 
 			if (btnConcludeFile.getText().matches(".*Export.*")) {
-				switchToWorkflowState(12);
+				switchToWorkflowState(FlowsWorkflow.ST_DURING_EXPORT);
 				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 				try {
 //					handlerService.executeCommand(SaveHarmonizedDataForOLCAJsonld.ID, null);
@@ -876,7 +876,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.reset();
 				CSVTableView.initialize();
 				CSVTableView.selectTableRow(0);
-				switchToWorkflowState(1);
+				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 
 				btnLoadUserData.setEnabled(true);
 				statusLoadUserData.setText("");
@@ -1078,10 +1078,23 @@ public class FlowsWorkflow extends ViewPart {
 		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 	}
+	
+	public static final int ST_BEFORE_LOAD = 1;
+	public static final int ST_DURING_LOAD = 2;
+	public static final int ST_BEFORE_CHECK = 3;
+	public static final int ST_DURING_CHECK = 4;
+	public static final int ST_FIX_ISSUES = 5;
+	public static final int ST_BEFORE_COMMIT = 6;
+	public static final int ST_DURING_COMMIT = 7;
+	public static final int ST_BEFORE_EXPORT = 8;
+	public static final int ST_SHOW_CONTEXT = 9;
+	public static final int ST_SHOW_UNIT = 10;
+	public static final int ST_SHOW_FLOWABLE = 11;
+	public static final int ST_DURING_EXPORT = 12;
 
 	public static void switchToWorkflowState(int stateNumber) {
 		// Opening
-		if (stateNumber == 1) {
+		if (stateNumber == ST_BEFORE_LOAD) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData
 					.setToolTipText("Click to load user data.  To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1114,7 +1127,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// Running step 1
-		else if (stateNumber == 2) {
+		else if (stateNumber == ST_DURING_LOAD) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("Load in progress...");
 			setButtonState(btnLoadUserData, false);
@@ -1146,7 +1159,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// End of step 1
-		else if (stateNumber == 3) {
+		else if (stateNumber == ST_BEFORE_CHECK) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
@@ -1179,7 +1192,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// During step 2
-		else if (stateNumber == 4) {
+		else if (stateNumber == ST_DURING_CHECK) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
@@ -1211,7 +1224,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// Following step 2 (if issues)
-		else if (stateNumber == 5) {
+		else if (stateNumber == ST_FIX_ISSUES) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
@@ -1244,7 +1257,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// Following step 2 (if no issues)
-		else if (stateNumber == 6) {
+		else if (stateNumber == ST_BEFORE_COMMIT) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
@@ -1277,7 +1290,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = true;
 		}
 		// During step 3
-		else if (stateNumber == 7) {
+		else if (stateNumber == ST_DURING_COMMIT) {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
@@ -1309,7 +1322,7 @@ public class FlowsWorkflow extends ViewPart {
 //			CSVTableView.preCommit = false;
 		}
 		// Following step 3
-		else if (stateNumber == 8) {
+		else if (stateNumber == ST_BEFORE_EXPORT) {
 			btnLoadUserData.setText("Load new...");
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1345,7 +1358,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 4 is toggled
-		else if (stateNumber == 9) {
+		else if (stateNumber == ST_SHOW_CONTEXT) {
 			btnLoadUserData.setText("Load new...");
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1380,7 +1393,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 5 is toggled
-		else if (stateNumber == 10) {
+		else if (stateNumber == ST_SHOW_UNIT) {
 			btnLoadUserData.setText("Load new...");
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1415,7 +1428,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 6 is toggled
-		else if (stateNumber == 11) {
+		else if (stateNumber == ST_SHOW_FLOWABLE) {
 			btnLoadUserData.setText("Load new...");
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1450,7 +1463,7 @@ public class FlowsWorkflow extends ViewPart {
 			CSVTableView.preCommit = false;
 		}
 		// During step 7 (following dialogs)
-		else if (stateNumber == 12) {
+		else if (stateNumber == ST_DURING_EXPORT) {
 			btnLoadUserData.setText("");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);

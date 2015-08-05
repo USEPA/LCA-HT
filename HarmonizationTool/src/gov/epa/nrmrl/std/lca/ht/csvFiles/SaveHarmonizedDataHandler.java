@@ -111,7 +111,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		Util.findView(MatchContexts.ID);
 		Util.findView(MatchProperties.ID);
 
-		FlowsWorkflow.switchToWorkflowState(8);
+		FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_EXPORT);
 //		FlowsWorkflow.setStatusConclude("Export complete");
 
 		System.out.println("Saving Harmonized Data");
@@ -143,7 +143,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			// FlowsWorkflow.restoreAllButtons();
 //			FlowsWorkflow.switchToWorkflowState(12);
 			FlowsWorkflow.setStatusConclude("Export failed...");
-			FlowsWorkflow.switchToWorkflowState(8);
+			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 		}
 
 		new Thread(new Runnable() {
@@ -153,7 +153,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							// FlowsWorkflow.restoreAllButtons();
-							FlowsWorkflow.switchToWorkflowState(8);
+							FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 						}
 					});
 				}
@@ -168,7 +168,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							FlowsWorkflow.setStatusConclude("Export failed");
-							FlowsWorkflow.switchToWorkflowState(8);
+							FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 						}
 					});
 					return;
@@ -181,7 +181,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.setStatusConclude("Export complete");
-						FlowsWorkflow.switchToWorkflowState(8);
+						FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 					}
 				});
 			}
@@ -232,7 +232,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				FlowsWorkflow.setStatusConclude("Export complete");
-				FlowsWorkflow.switchToWorkflowState(8);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 			}
 		});
 	}

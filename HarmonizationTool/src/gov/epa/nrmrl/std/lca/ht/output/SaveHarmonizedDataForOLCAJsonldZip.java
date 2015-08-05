@@ -43,7 +43,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				FlowsWorkflow.switchToWorkflowState(12);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_EXPORT);
 				FlowsWorkflow.setStatusConclude("Starting export...");
 			}
 		});
@@ -58,7 +58,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					FlowsWorkflow.setStatusConclude("Export canceled");
-					FlowsWorkflow.switchToWorkflowState(8);
+					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				}
 			});
 			return null;
@@ -96,7 +96,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						FlowsWorkflow.setStatusConclude("Export canceled");
-						FlowsWorkflow.switchToWorkflowState(8);
+						FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 					}
 				});
 				return null;

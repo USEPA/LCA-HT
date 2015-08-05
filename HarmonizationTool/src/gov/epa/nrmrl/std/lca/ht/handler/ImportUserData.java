@@ -128,7 +128,7 @@ public class ImportUserData implements IHandler {
 		synchronized (Util.getInitLock()) {
 			// Save button state, disable everything
 //			FlowsWorkflow.disableAllButtons();
-			FlowsWorkflow.switchToWorkflowState(2);
+			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_LOAD);
 
 
 			RunData data = new RunData(this);
@@ -151,7 +151,7 @@ public class ImportUserData implements IHandler {
 			if (data.path == null) {
 				runLogger.info("# Cancelling data file read");
 //				FlowsWorkflow.restoreAllButtons();
-				FlowsWorkflow.switchToWorkflowState(3);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
 			data.file = new File(data.path);
@@ -160,7 +160,7 @@ public class ImportUserData implements IHandler {
 				new GenericMessageBox(Display.getCurrent().getActiveShell(), "Error", errMsg);
 				runLogger.info("# Cancelling data file read");
 //				FlowsWorkflow.restoreAllButtons();
-				FlowsWorkflow.switchToWorkflowState(3);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
 			data.fileMD = new FileMD(false);
@@ -190,7 +190,7 @@ public class ImportUserData implements IHandler {
 			if (data.dialog.open() == MetadataDialog.CANCEL) {
 				data.fileMD.remove();
 //				FlowsWorkflow.restoreAllButtons();
-				FlowsWorkflow.switchToWorkflowState(3);
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
 			FlowsWorkflow.clearStatusText();
@@ -783,16 +783,16 @@ public class ImportUserData implements IHandler {
 //					System.out.println("The CSVTableView does not have a table!");
 					// FlowsWorkflow.statusLoadUserData.setText("");
 					// FlowsWorkflow.statusLoadUserData.setToolTipText("");
-					FlowsWorkflow.switchToWorkflowState(1);
+					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				} else {
-					FlowsWorkflow.switchToWorkflowState(2);
+					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_LOAD);
 
 					// FlowsWorkflow.btnConcludeFile.setEnabled(true);
 					FlowsWorkflow.setStatusUserData(TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
 							.getFileMD().getFilename());
 					FlowsWorkflow.setTooltipStatusUserData(TableKeeper
 							.getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getPath());
-					FlowsWorkflow.switchToWorkflowState(3);
+					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 
 					// FlowsWorkflow.statusLoadUserData.setText(TableKeeper
 					// .getTableProvider(CSVTableView.getTableProviderKey()).getFileMD().getFilename());
