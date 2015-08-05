@@ -86,18 +86,22 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	}
 
 	public List<DataRow> getOpenTableData() {
-		List<DataRow> dataRows = new ArrayList<DataRow>();
-		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		try {
+		final List<DataRow> dataRows = new ArrayList<DataRow>();
+		final TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
+		/*try {
 			Util.showView(HarmonizedDataSelector.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+		
 		for (int i = 0; i < tableProvider.getData().size(); i++) {
 			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
 			dataRows.add(dataRow);
 		}
+			}});
 		return dataRows;
 	}
 
@@ -153,12 +157,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 						}
 					});
 				}
-				try {
+				/*try {
 					Util.showView(HarmonizedDataSelector.ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 				DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 				if (headerRow == null) {
 					Display.getDefault().syncExec(new Runnable() {

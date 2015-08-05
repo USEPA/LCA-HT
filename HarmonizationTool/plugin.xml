@@ -69,12 +69,12 @@
             name="SPARQL Results"
             restorable="true">
       </view>
-      <view
+      <!-- <view
             class="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
             id="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
             name="Output Harmonized Data"
             restorable="true">
-      </view>
+      </view> -->
       <view
             class="gov.epa.nrmrl.std.lca.ht.job.jobStatus"
             id="gov.epa.nrmrl.std.lca.ht.job.jobStatus"
@@ -156,11 +156,11 @@
                      label="Show Flowables Window"
                      style="push">
                </command>
-               <command
+               <!-- <command
                      commandId="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
                      label="Show Harmonized Data Selector"
                      style="push">
-               </command>
+               </command> -->
             </menu>
          </menu>
          <menu
@@ -346,16 +346,16 @@
             id="HarmonizationTool.LoadDataSet"
             name="Re-load data from TDB">
       </command>
-      <command
+      <!-- <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
             id="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
             name="Restore Data Selector">
-      </command>
-      <command
+      </command>  -->
+      <!-- <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowHarmonizedDataSelectorHandler"
             id="gov.epa.nrmrl.std.lca.ht.output.HarmonizedDataSelector"
             name="Show Control View">
-      </command>
+      </command> -->
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowLoggerViewerHandler"
             id="harmonizationtool.handler.ShowLoggerViewerHandler"

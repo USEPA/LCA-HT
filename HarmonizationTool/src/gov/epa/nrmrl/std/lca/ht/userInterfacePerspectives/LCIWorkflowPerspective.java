@@ -32,7 +32,7 @@ public class LCIWorkflowPerspective implements IPerspectiveFactory {
 		// FLOAT AFTER IPageLayout.RIGHT ABOVE IS THE WIDTH OF THE FIRST Workflow and Logger WINDOWS
 		dataLayout.addView(CSVTableView.ID);
 //		dataLayout.addView(QueryView.ID);
-		dataLayout.addView(HarmonizedDataSelector.ID);
+//		dataLayout.addView(HarmonizedDataSelector.ID);
 
 //		addPerspectiveShortcuts(layout);
 
