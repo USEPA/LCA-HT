@@ -34,9 +34,12 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -61,6 +64,8 @@ public class MatchProperties extends ViewPart {
 	private static FlowUnit unitToMatch;
 	// private static TreeItem currentFlowPropertySelection;
 	private static TreeItem currentFlowUnitSelection;
+	private static Font defaultFont = null;
+	private static Font boldFont = null;
 
 	private class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
@@ -149,7 +154,53 @@ public class MatchProperties extends ViewPart {
 			public String getText(Object treeNode) {
 				return ((TreeNode) treeNode).nodeName;
 			}
+			
+			// @Override
+			public Font getFont(Object treeNode) {
+				TreeNode castAsTreeNode = (TreeNode) treeNode;
+				if (defaultFont == null){
+					createFonts(masterTree.getItem(0));
+				}
+				if (castAsTreeNode.isReference()){
+					return boldFont;
+				}
+				return defaultFont;
+			}
+			
 		});
+		// TODO - thinking about something like this below so that reference tree nodes can be bold and have a tooltip
+//		masterTreeViewer.setLabelProvider(new CellLabelProvider() {
+//			// private Color currentColor = null;
+//
+//			// @Override
+//			public String getText(Object treeNode) {
+//				return ((TreeNode) treeNode).nodeName;
+//			}
+//			
+//			// @Override
+//			public Font getFont(Object treeNode) {
+//				TreeNode castAsTreeNode = (TreeNode) treeNode;
+//				if (defaultFont == null){
+//					createFonts(masterTree.getItem(0));
+//				}
+//				if (castAsTreeNode.isReference()){
+//					return boldFont;
+//				}
+//				return defaultFont;
+//			}
+//
+//			@Override
+//			public void update(ViewerCell cell) {
+//				TreeItem treeItem = (TreeItem) cell.getElement();
+//				TreeNode treeNode = (TreeNode) treeItem.getData();
+//				System.out.println("TreeItem: "+treeNode);
+//				
+//				
+//			}
+//			
+//		});
+		
+		
 		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -198,6 +249,13 @@ public class MatchProperties extends ViewPart {
 		partialCollapse();
 	}
 
+	private static void createFonts(TreeItem treeItem) {
+		defaultFont = treeItem.getFont();
+		FontData boldFontData = defaultFont.getFontData()[0];
+		boldFontData.setStyle(SWT.BOLD);
+		boldFont = new Font(Display.getCurrent(), boldFontData);
+	}
+	
 	private SelectionListener unassignListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -344,7 +402,7 @@ public class MatchProperties extends ViewPart {
 	};
 
 	private void expandItem(TreeItem item) {
-//		System.out.println("Item expanded: item.getText() " + item.getText());
+		// System.out.println("Item expanded: item.getText() " + item.getText());
 		item.setExpanded(true);
 		masterTreeViewer.refresh();
 		for (TreeItem child : item.getItems()) {
@@ -430,13 +488,6 @@ public class MatchProperties extends ViewPart {
 	}
 
 	private TreeNode createPropertyTree() {
-		// ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		// Model model = ActiveTDB.getModel(null);
-		// if (model.contains(FedLCA.FlowUnit, ECO.hasDataSource, FedLCA.UnitGroup)) {
-		// System.out.println("Hey!");
-		// }
-		// ActiveTDB.tdbDataset.end();
-
 		FlowProperty.reLoadMasterFlowUnits();
 		TreeNode masterPropertyTree = new TreeNode(null);
 
@@ -444,9 +495,9 @@ public class MatchProperties extends ViewPart {
 		TreeNode curGroupNode = null;
 		String lastSuperGroupString = "";
 		Resource lastUnitGroup = null;
+		boolean isReferenceUnit = false;
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			String superGroupString = flowUnit.getUnitSuperGroup();
-			// for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			if (!superGroupString.equals(lastSuperGroupString)) {
 				lastSuperGroupString = superGroupString;
 				curSuperGroupNode = new TreeNode(masterPropertyTree);
@@ -454,21 +505,19 @@ public class MatchProperties extends ViewPart {
 				curSuperGroupNode.nodeClass = FedLCA.UnitSuperGroup;
 			}
 			Resource unitGroup = flowUnit.getUnitGroup();
-			if (lastUnitGroup == null) {
+			if (lastUnitGroup == null || !lastUnitGroup.equals(unitGroup)) {
+				isReferenceUnit = true;
 				lastUnitGroup = unitGroup;
 				curGroupNode = new TreeNode(curSuperGroupNode);
 				curGroupNode.uri = unitGroup;
 				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
 				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
 				curGroupNode.nodeClass = FedLCA.UnitGroup;
+				curGroupNode.setReference(true);
+				/*
+				 * TODO: consider whether the user should be able to choose a property (UnitGroup) without having a Unit
+				 */
 				// curGroupNode.relatedObject = flowProperty;
-			} else if (!lastUnitGroup.equals(unitGroup)) {
-				lastUnitGroup = unitGroup;
-				curGroupNode = new TreeNode(curSuperGroupNode);
-				curGroupNode.uri = unitGroup;
-				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
-				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
-				curGroupNode.nodeClass = FedLCA.UnitGroup;
 			}
 
 			TreeNode curNode = new TreeNode(curGroupNode);
@@ -480,7 +529,10 @@ public class MatchProperties extends ViewPart {
 			curNode.uuid = (String) flowUnit.getOneProperty(FlowUnit.openLCAUUID);
 			curNode.referenceDescription = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription);
 			curNode.relatedObject = flowUnit;
-			// }
+			if (isReferenceUnit) {
+				curNode.setReference(true);
+				isReferenceUnit = false;
+			}
 		}
 		return masterPropertyTree;
 	}
@@ -554,7 +606,7 @@ public class MatchProperties extends ViewPart {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
 			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
 			if (treeNode1.getUri() != null) {
-//				System.out.println("treeNode1 = " + treeNode1);
+				// System.out.println("treeNode1 = " + treeNode1);
 				if (resource.equals(treeNode1.getUri())) {
 					return treeNode1;
 
@@ -563,7 +615,7 @@ public class MatchProperties extends ViewPart {
 
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
-//				System.out.println("treeNode2 = " + treeNode2);
+				// System.out.println("treeNode2 = " + treeNode2);
 
 				if (treeNode2.getUri() != null) {
 					if (resource.equals(treeNode2.getUri())) {
@@ -572,7 +624,7 @@ public class MatchProperties extends ViewPart {
 				}
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
-//					System.out.println("treeNode3 = " + treeNode3);
+					// System.out.println("treeNode3 = " + treeNode3);
 
 					if (treeNode3.getUri() != null) {
 						if (resource.equals(treeNode3.getUri())) {
@@ -599,7 +651,7 @@ public class MatchProperties extends ViewPart {
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
 				if (treeNode2 == null) {
-//					System.out.println("Choke at level 2 with" + node1Name);
+					// System.out.println("Choke at level 2 with" + node1Name);
 					return null;
 				}
 				String node2Name = treeNode2.nodeName;
@@ -612,7 +664,7 @@ public class MatchProperties extends ViewPart {
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
 					if (treeNode3 == null) {
-//						System.out.println("Choke at level 3 with" + node2Name);
+						// System.out.println("Choke at level 3 with" + node2Name);
 						return null;
 					}
 					String node3Name = treeNode3.nodeName;
@@ -825,91 +877,6 @@ public class MatchProperties extends ViewPart {
 		}
 	}
 
-	// public static void update() {
-	// Util.findView(CSVTableView.ID);
-	// if (CSVTableView.getTable().getSelectionCount() == 0) {
-	// return;
-	// }
-	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-	// String rowNumString = tableItem.getText(0);
-	// int rowNumber = Integer.parseInt(rowNumString) - 1;
-	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-	// unitToMatch = dataRow.getFlowProperty();
-	// if (unitToMatch == null) {
-	// masterTree.deselectAll();
-	// setUserDataLabel("", false);
-	// } else {
-	//
-	// String labelString = null;
-	// String propertyString = unitToMatch.getPropertyStr();
-	// String unitString = unitToMatch.getUnitStr();
-	// if (propertyString == null) {
-	// labelString = unitString;
-	// } else {
-	// // labelString = propertyString + ": " + unitString;
-	//
-	// labelString = propertyString + System.getProperty("line.separator") + "   " + unitString;
-	// }
-	//
-	// partialCollapse();
-	// Resource propertyResource = unitToMatch.getMatchingResource();
-	// if (propertyResource != null) {
-	// TreeItem treeItem = getTreeItemByURI(propertyResource);
-	// if (treeItem != null) {
-	// masterTree.setSelection(treeItem);
-	// setUserDataLabel(labelString, true);
-	//
-	// } else {
-	// masterTree.deselectAll();
-	// setUserDataLabel(labelString, false);
-	// }
-	// } else {
-	// masterTree.deselectAll();
-	// setUserDataLabel(labelString, false);
-	// }
-	// }
-	// }
-
-	// public static void update(Integer dataRowNum) {
-	// Util.findView(CSVTableView.ID);
-	// if (CSVTableView.getTable().getSelectionCount() == 0){
-	// return;
-	// }
-	// TableItem tableItem = CSVTableView.getTable().getSelection()[0];
-	// String rowNumString = tableItem.getText(0);
-	// int rowNumber = Integer.parseInt(rowNumString) - 1;
-	// DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
-	// unitToMatch = dataRow.getFlowProperty();
-	// Resource propertyResource = unitToMatch.getMatchingResource();
-	// String labelString = null;
-	// String propertyString = unitToMatch.getPropertyStr();
-	// String unitString = unitToMatch.getUnitStr();
-	// if (propertyString == null) {
-	// labelString = unitString;
-	// } else {
-	// labelString = propertyString + ": " + unitString;
-	// }
-	//
-	// partialCollapse();
-	// if (propertyResource != null) {
-	// TreeItem treeItem = getTreeItemByURI(propertyResource);
-	// if (treeItem != null) {
-	// masterTree.setSelection(treeItem);
-	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-	// setUserDataLabel(labelString, true);
-	//
-	// } else {
-	// masterTree.deselectAll();
-	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_GREEN));
-	// setUserDataLabel(labelString, true);
-	// }
-	// } else {
-	// masterTree.deselectAll();
-	// // setUserDataLabel(labelString, SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-	// setUserDataLabel(labelString, false);
-	// }
-	// }
-
 	private static void partialCollapse() {
 		for (TreeItem treeItem1 : masterTreeViewer.getTree().getItems()) {
 			treeItem1.setExpanded(true);
@@ -918,13 +885,6 @@ public class MatchProperties extends ViewPart {
 			}
 		}
 	}
-
-	// private static void setUserDataLabel(String labelString, Color color) {
-	// if (labelString != null) {
-	// userDataLabel.setText(labelString);
-	// }
-	// userDataLabel.setBackground(color);
-	// }
 
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
 		if (labelString != null) {

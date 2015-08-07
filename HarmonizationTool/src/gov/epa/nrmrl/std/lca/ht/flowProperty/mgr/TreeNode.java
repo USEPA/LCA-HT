@@ -20,6 +20,7 @@ public class TreeNode extends Node {
 	protected String referenceUnit = null;
 	protected Resource nodeClass = null;
 	public Object relatedObject = null;
+	protected boolean isReference;
 	
 	public String getNodeName() {
 		return nodeName;
@@ -110,4 +111,12 @@ public class TreeNode extends Node {
 	// }
 	// return childList;
 	// }
+
+	public boolean isReference() {
+		return isReference;
+	}
+
+	public void setReference(boolean isReference) {
+		this.isReference = isReference;
+	}
 }
