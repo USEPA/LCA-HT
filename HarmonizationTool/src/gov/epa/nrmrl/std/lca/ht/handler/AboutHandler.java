@@ -30,7 +30,7 @@ public class AboutHandler implements IHandler {
 //		Logger runLogger = Logger.getLogger("run");
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		String version = Util.getProductVersion();
-		new GenericMessageBox(shell, "Version", "You are using HT version "+version+". It uses TDB version "+ActiveTDB.getTDBVersion());
+		new GenericMessageBox(shell, "Version", "You are using HT version "+version+". Its database uses the Jena TDB version "+ActiveTDB.getTDBVersion());
 		return null;
 		}
 

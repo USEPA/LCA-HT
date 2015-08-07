@@ -376,16 +376,16 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 		updateText(FlowsWorkflow.statusLoadUserData, "90% (finalizing)");
-		runLogger.info("Syncing TDB to LCAHT " + new Date());
+//		runLogger.info("Syncing TDB to LCAHT " + new Date());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		long now = ActiveTDB.getModel(null).size();
 		long change = now - was;
 		runLogger.info(fileContents.size() + " files imported in " + elapsedTimeSec + "seconds.");
-		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
-		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
-		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
+//		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
+//		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
+//		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 	}
 
 	private static void placeContentsInDataset() {
@@ -472,7 +472,7 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
+//		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
 	}
 
 	public static void buildUserDataTableFromOLCADataViaQuery() {

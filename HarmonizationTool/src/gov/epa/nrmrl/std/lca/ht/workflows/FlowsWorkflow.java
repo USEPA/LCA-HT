@@ -634,8 +634,9 @@ public class FlowsWorkflow extends ViewPart {
 									if (fieldCount == 0) {
 										statusCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 										statusCheckData.setText("Assign at least one column first)");
-										btnMatchFlowables.setEnabled(false);
-										btnCommit.setEnabled(false);
+										switchToWorkflowState(ST_BEFORE_CHECK);
+//										btnMatchFlowables.setEnabled(false);
+//										btnCommit.setEnabled(false);
 									} else {
 										int issueCount = CSVTableView.checkCols();
 										/* The above function tells CSVTableView to do all the data checking */

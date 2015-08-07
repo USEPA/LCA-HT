@@ -423,7 +423,7 @@ public class ComparisonProvider {
 			tdbModel.add(tdbResource, DCTerms.modified, literal);
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("syncToTDB failed with Exception: " + e);
+//			System.out.println("syncToTDB failed with Exception: " + e);
 			e.printStackTrace();
 			ActiveTDB.tdbDataset.abort();
 		} finally {

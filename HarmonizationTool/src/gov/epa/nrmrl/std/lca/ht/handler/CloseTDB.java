@@ -23,7 +23,7 @@ public class CloseTDB implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		System.out.println("Closing TDB");
+//		System.out.println("Closing TDB");
 		if (ActiveTDB.tdbDataset != null) {
 			ActiveTDB.cleanUp();
 //			ActiveTDB.tdbDataset.close();

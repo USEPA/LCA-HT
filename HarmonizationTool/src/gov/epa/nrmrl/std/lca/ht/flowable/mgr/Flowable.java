@@ -528,7 +528,7 @@ public class Flowable {
 	public static FormatCheck createBadCheckSumQACheck() {
 
 		String d = "Invalid CAS";
-		String e = "A bad checksum has been detected.  Data will be used but flagged in TDB for bad checksum.";
+		String e = "A bad checksum has been detected.  Data will be used but flagged in LCA-HT database for bad checksum.";
 		String s = "Select ignore row or change CAS in data file.";
 		Pattern p = null;
 		String r = null;

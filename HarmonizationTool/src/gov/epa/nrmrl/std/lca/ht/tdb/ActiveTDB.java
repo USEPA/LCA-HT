@@ -104,7 +104,7 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 	private static DatasetAccessor datasetAccessor;
 
 	public ActiveTDB() {
-		System.out.println("created ActiveTDB");
+//		System.out.println("created ActiveTDB");
 		setInstance(this);
 	}
 
@@ -198,8 +198,8 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 							// and what the user and software shoul do
 							// about it.
 							StringBuilder b = new StringBuilder();
-							b.append("It appears that the HT can not create a TDB in the default directory. ");
-							b.append("Please ensure that another instance of the HT is not using it.");
+							b.append("It appears that the LCA-HT can not create a database in the default directory. ");
+							b.append("Please ensure that this directory is accessible and another instance of the LCA-HT is not using it.");
 							b.append("You may need to create a new TDB.");
 							errMsg = b.toString();
 						}

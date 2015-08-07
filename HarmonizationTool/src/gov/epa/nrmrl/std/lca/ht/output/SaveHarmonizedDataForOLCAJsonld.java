@@ -1365,7 +1365,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			}
 			ActiveTDB.tdbDataset.commit();
 		} catch (Exception e) {
-			System.out.println("01 TDB transaction failed; see Exception: " + e);
+//			System.out.println("01 TDB transaction failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
