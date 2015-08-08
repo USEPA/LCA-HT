@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
@@ -29,18 +30,14 @@ import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -67,17 +64,17 @@ public class MatchProperties extends ViewPart {
 	private static Font defaultFont = null;
 	private static Font boldFont = null;
 
-	private class ContentProvider implements IStructuredContentProvider {
-		public Object[] getElements(Object inputElement) {
-			return new Object[0];
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
+	// private class ContentProvider implements IStructuredContentProvider {
+	// public Object[] getElements(Object inputElement) {
+	// return new Object[0];
+	// }
+	//
+	// public void dispose() {
+	// }
+	//
+	// public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+	// }
+	// }
 
 	public MatchProperties() {
 		// MatchContexts = this;
@@ -146,68 +143,151 @@ public class MatchProperties extends ViewPart {
 		masterTree = masterTreeViewer.getTree();
 		masterTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		masterTree.setLinesVisible(true);
+		ColumnViewerToolTipSupport.enableFor(masterTreeViewer);
 
-		masterTreeViewer.setLabelProvider(new ColumnLabelProvider() {
+		// masterTreeViewer.setLabelProvider(new ColumnLabelProvider() {
+		// // private Color currentColor = null;
+		//
+		// // @Override
+		// public String getText(Object treeNode) {
+		// return ((TreeNode) treeNode).nodeName;
+		// }
+		//
+		// // @Override
+		// public Font getFont(Object treeNode) {
+		// TreeNode castAsTreeNode = (TreeNode) treeNode;
+		// if (defaultFont == null){
+		// createFonts(masterTree.getItem(0));
+		// }
+		// if (castAsTreeNode.isReference()){
+		// return boldFont;
+		// }
+		// return defaultFont;
+		// }
+		//
+		// });
+		// TODO - thinking about something like this below so that reference tree nodes can be bold and have a tooltip
+		// masterTreeViewer.setLabelProvider(new CellLabelProvider() {
+		// // private Color currentColor = null;
+		//
+		// // @Override
+		// public String getText(Object treeNode) {
+		// return ((TreeNode) treeNode).nodeName;
+		// }
+		//
+		// // @Override
+		// public Font getFont(Object treeNode) {
+		// TreeNode castAsTreeNode = (TreeNode) treeNode;
+		// if (defaultFont == null){
+		// createFonts(masterTree.getItem(0));
+		// }
+		// if (castAsTreeNode.isReference()){
+		// return boldFont;
+		// }
+		// return defaultFont;
+		// }
+		//
+		// @Override
+		// public void update(ViewerCell cell) {
+		// TreeItem treeItem = (TreeItem) cell.getElement();
+		// TreeNode treeNode = (TreeNode) treeItem.getData();
+		// System.out.println("TreeItem: "+treeNode);
+		//
+		//
+		// }
+		//
+		// });
+
+		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
+		masterTreeColumn.getColumn().setWidth(300);
+		// masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
+		// @Override
+		// public String getText(Object treeNode) {
+		// return ((TreeNode) treeNode).nodeName;
+		// }
+		// });
+		masterTreeColumn.setLabelProvider(new CellLabelProvider() {
+
+			@Override
+			public String getToolTipText(Object element) {
+				TreeNode treeNode = (TreeNode) element;
+				String referenceUnitStatus = "";
+				if (!treeNode.isReference) {
+					referenceUnitStatus = treeNode.conversionFactor + " conversion factor meaning 1 "
+							+ treeNode.referenceUnit + " (Reference Unit) = " + treeNode.conversionFactor + " "
+							+ treeNode.nodeName;
+				} else {
+					referenceUnitStatus = "Reference Unit";
+				}
+				if (treeNode.referenceDescription != null) {
+					return treeNode.referenceDescription + System.getProperty("line.separator") + referenceUnitStatus;
+				}
+				return referenceUnitStatus;
+			}
+
+			@Override
+			public Point getToolTipShift(Object object) {
+				return new Point(15, 15);
+			}
+
+			@Override
+			public int getToolTipDisplayDelayTime(Object object) {
+				return 100;
+			}
+
+			@Override
+			public int getToolTipTimeDisplayed(Object object) {
+				return 5000;
+			}
+
+			// @Override
+			// public void update(ViewerCell cell) {
+			// cell.setText(cell.getElement().toString());
+			//
+			// }
+
 			// private Color currentColor = null;
 
 			// @Override
-			public String getText(Object treeNode) {
-				return ((TreeNode) treeNode).nodeName;
-			}
-			
-			// @Override
-			public Font getFont(Object treeNode) {
-				TreeNode castAsTreeNode = (TreeNode) treeNode;
-				if (defaultFont == null){
-					createFonts(masterTree.getItem(0));
-				}
-				if (castAsTreeNode.isReference()){
-					return boldFont;
-				}
-				return defaultFont;
-			}
-			
-		});
-		// TODO - thinking about something like this below so that reference tree nodes can be bold and have a tooltip
-//		masterTreeViewer.setLabelProvider(new CellLabelProvider() {
-//			// private Color currentColor = null;
-//
-//			// @Override
-//			public String getText(Object treeNode) {
-//				return ((TreeNode) treeNode).nodeName;
-//			}
-//			
-//			// @Override
-//			public Font getFont(Object treeNode) {
-//				TreeNode castAsTreeNode = (TreeNode) treeNode;
-//				if (defaultFont == null){
-//					createFonts(masterTree.getItem(0));
-//				}
-//				if (castAsTreeNode.isReference()){
-//					return boldFont;
-//				}
-//				return defaultFont;
-//			}
-//
-//			@Override
-//			public void update(ViewerCell cell) {
-//				TreeItem treeItem = (TreeItem) cell.getElement();
-//				TreeNode treeNode = (TreeNode) treeItem.getData();
-//				System.out.println("TreeItem: "+treeNode);
-//				
-//				
-//			}
-//			
-//		});
-		
-		
-		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
-		masterTreeColumn.getColumn().setWidth(300);
-		masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
+			// public String getText(Object treeNode) {
+			// return ((TreeNode) treeNode).nodeName;
+			// }
+			//
+			// // @Override
+			// public Font getFont(Object treeNode) {
+			// TreeNode castAsTreeNode = (TreeNode) treeNode;
+			// if (defaultFont == null){
+			// createFonts(masterTree.getItem(0));
+			// }
+			// if (castAsTreeNode.isReference()){
+			// return boldFont;
+			// }
+			// return defaultFont;
+			// }
+
 			@Override
-			public String getText(Object treeNode) {
-				return ((TreeNode) treeNode).nodeName;
+			public void update(ViewerCell cell) {
+				if (cell.getText().equals("")) {
+					TreeNode treeNode = (TreeNode) cell.getElement();
+					cell.setText(treeNode.nodeName);
+					if (defaultFont == null) {
+						createFonts(masterTree.getItem(0));
+					}
+					if (treeNode.isReference) {
+						cell.setFont(boldFont);
+					}
+				}
+				// TreeNode castAsTreeNode = (TreeNode) treeNode;
+				// if (defaultFont == null){
+				// createFonts(masterTree.getItem(0));
+				// }
+				// if (castAsTreeNode.isReference()){
+				// return boldFont;
+				// }
+				// return defaultFont;
+
 			}
+
 		});
 
 		masterTreeViewer.setContentProvider(new MyContentProvider());
@@ -255,7 +335,7 @@ public class MatchProperties extends ViewPart {
 		boldFontData.setStyle(SWT.BOLD);
 		boldFont = new Font(Display.getCurrent(), boldFontData);
 	}
-	
+
 	private SelectionListener unassignListener = new SelectionListener() {
 
 		private void doit(SelectionEvent e) {
@@ -340,6 +420,14 @@ public class MatchProperties extends ViewPart {
 
 		TreeItem selectedTreeItem = masterTree.getSelection()[0];
 		TreeNode selectedTreeNode = (TreeNode) selectedTreeItem.getData();
+
+		if (selectedTreeNode.isReference) {
+			if (boldFont == null) {
+				createFonts(selectedTreeItem);
+			}
+			selectedTreeItem.setFont(boldFont);
+		}
+
 		if (selectedTreeNode.nodeClass == FedLCA.FlowUnit) {
 			if (currentFlowUnitSelection != null) {
 				currentFlowUnitSelection.setBackground(null);
@@ -498,11 +586,13 @@ public class MatchProperties extends ViewPart {
 		boolean isReferenceUnit = false;
 		for (FlowUnit flowUnit : FlowProperty.lcaMasterUnits) {
 			String superGroupString = flowUnit.getUnitSuperGroup();
+			// boolean isUnitNode = true;
 			if (!superGroupString.equals(lastSuperGroupString)) {
 				lastSuperGroupString = superGroupString;
 				curSuperGroupNode = new TreeNode(masterPropertyTree);
 				curSuperGroupNode.nodeName = superGroupString;
 				curSuperGroupNode.nodeClass = FedLCA.UnitSuperGroup;
+				// isUnitNode = false;
 			}
 			Resource unitGroup = flowUnit.getUnitGroup();
 			if (lastUnitGroup == null || !lastUnitGroup.equals(unitGroup)) {
@@ -513,7 +603,7 @@ public class MatchProperties extends ViewPart {
 				curGroupNode.nodeName = unitGroup.getProperty(RDFS.label).getObject().asLiteral().getString();
 				curGroupNode.uuid = unitGroup.getProperty(FedLCA.hasOpenLCAUUID).getObject().asLiteral().getString();
 				curGroupNode.nodeClass = FedLCA.UnitGroup;
-				curGroupNode.setReference(true);
+				// curGroupNode.setReference(true);
 				/*
 				 * TODO: consider whether the user should be able to choose a property (UnitGroup) without having a Unit
 				 */
@@ -522,16 +612,22 @@ public class MatchProperties extends ViewPart {
 
 			TreeNode curNode = new TreeNode(curGroupNode);
 
-			curNode.nodeName = flowUnit.getOneProperty(FlowUnit.flowUnitString) + " ("
-					+ flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription) + ")";
+			curNode.nodeName = flowUnit.getOneProperty(FlowUnit.flowUnitString).toString();
 			curNode.uri = flowUnit.getTdbResource();
 			curNode.nodeClass = FedLCA.FlowUnit;
 			curNode.uuid = (String) flowUnit.getOneProperty(FlowUnit.openLCAUUID);
 			curNode.referenceDescription = (String) flowUnit.getOneProperty(FlowUnit.flowPropertyUnitDescription);
+			if (flowUnit.getOneProperty(FlowUnit.conversionFactor) != null) {
+				curNode.conversionFactor = (Double) flowUnit.getOneProperty(FlowUnit.conversionFactor);
+			}
 			curNode.relatedObject = flowUnit;
 			if (isReferenceUnit) {
-				curNode.setReference(true);
+				curNode.isReference = true;
 				isReferenceUnit = false;
+			} else {
+				Resource resourceReferenceUnit = flowUnit.getReferenceFlowUnit();
+				String refUnitString = resourceReferenceUnit.getProperty(RDFS.label).getString();
+				curNode.setReferenceUnit(refUnitString);
 			}
 		}
 		return masterPropertyTree;
@@ -602,87 +698,68 @@ public class MatchProperties extends ViewPart {
 
 	}
 
-	private static TreeNode getTreeNodeByURI(Resource resource) {
-		for (TreeItem treeItem1 : masterTree.getItems()) {
-			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
-			if (treeNode1.getUri() != null) {
-				// System.out.println("treeNode1 = " + treeNode1);
-				if (resource.equals(treeNode1.getUri())) {
-					return treeNode1;
-
-				}
-			}
-
-			for (TreeItem treeItem2 : treeItem1.getItems()) {
-				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
-				// System.out.println("treeNode2 = " + treeNode2);
-
-				if (treeNode2.getUri() != null) {
-					if (resource.equals(treeNode2.getUri())) {
-						return treeNode2;
-					}
-				}
-				for (TreeItem treeItem3 : treeItem2.getItems()) {
-					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
-					// System.out.println("treeNode3 = " + treeNode3);
-
-					if (treeNode3.getUri() != null) {
-						if (resource.equals(treeNode3.getUri())) {
-							return treeNode3;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
+	// private static TreeNode getTreeNodeByURI(Resource resource) {
+	// for (TreeItem treeItem1 : masterTree.getItems()) {
+	// TreeNode treeNode1 = (TreeNode) treeItem1.getData();
+	// if (treeNode1.getUri() != null) {
+	// // System.out.println("treeNode1 = " + treeNode1);
+	// if (resource.equals(treeNode1.getUri())) {
+	// return treeNode1;
+	//
+	// }
+	// }
+	//
+	// for (TreeItem treeItem2 : treeItem1.getItems()) {
+	// TreeNode treeNode2 = (TreeNode) treeItem2.getData();
+	// // System.out.println("treeNode2 = " + treeNode2);
+	//
+	// if (treeNode2.getUri() != null) {
+	// if (resource.equals(treeNode2.getUri())) {
+	// return treeNode2;
+	// }
+	// }
+	// for (TreeItem treeItem3 : treeItem2.getItems()) {
+	// TreeNode treeNode3 = (TreeNode) treeItem3.getData();
+	// // System.out.println("treeNode3 = " + treeNode3);
+	//
+	// if (treeNode3.getUri() != null) {
+	// if (resource.equals(treeNode3.getUri())) {
+	// return treeNode3;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return null;
+	// }
 
 	private static TreeItem getTreeItemByURI(Resource resource) {
 		for (TreeItem treeItem1 : masterTree.getItems()) {
 			TreeNode treeNode1 = (TreeNode) treeItem1.getData();
-			String node1Name = treeNode1.nodeName;
-
-			if (treeNode1.getUri() != null) {
-				// System.out.println("treeNode1 = " + treeNode1);
-				if (resource.equals(treeNode1.getUri())) {
+			if (treeNode1.uri != null) {
+				if (resource.equals(treeNode1.uri)) {
 					return treeItem1;
 				}
 			}
 			for (TreeItem treeItem2 : treeItem1.getItems()) {
 				TreeNode treeNode2 = (TreeNode) treeItem2.getData();
 				if (treeNode2 == null) {
-					// System.out.println("Choke at level 2 with" + node1Name);
 					return null;
 				}
-				String node2Name = treeNode2.nodeName;
-				// System.out.println("treeNode2 = " + treeNode2);
-				if (treeNode2.getUri() != null) {
-					if (resource.equals(treeNode2.getUri())) {
+				if (treeNode2.uri != null) {
+					if (resource.equals(treeNode2.uri)) {
 						return treeItem2;
 					}
 				}
 				for (TreeItem treeItem3 : treeItem2.getItems()) {
 					TreeNode treeNode3 = (TreeNode) treeItem3.getData();
 					if (treeNode3 == null) {
-						// System.out.println("Choke at level 3 with" + node2Name);
 						return null;
 					}
-					String node3Name = treeNode3.nodeName;
-
-					// System.out.println("treeNode3 = " + treeNode3);
-					if (treeNode3.getUri() != null) {
-						if (resource.equals(treeNode3.getUri())) {
+					if (treeNode3.uri != null) {
+						if (resource.equals(treeNode3.uri)) {
 							return treeItem3;
 						}
-						// for (TreeItem treeItem4 : treeItem3.getItems()) {
-						// TreeNode treeNode4 = (TreeNode) treeItem4.getData();
-						// // System.out.println("treeNode4 = " + treeNode4);
-						// if (treeNode4.getUri() != null) {
-						// if (resource.equals(treeNode4.getUri())) {
-						// return treeItem4;
-						// }
-						// }
-						// }
 					}
 				}
 			}

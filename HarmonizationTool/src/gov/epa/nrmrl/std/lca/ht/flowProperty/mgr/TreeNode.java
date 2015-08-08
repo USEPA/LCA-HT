@@ -21,6 +21,7 @@ public class TreeNode extends Node {
 	protected Resource nodeClass = null;
 	public Object relatedObject = null;
 	protected boolean isReference;
+	protected Double conversionFactor = null;
 	
 	public String getNodeName() {
 		return nodeName;
@@ -55,14 +56,14 @@ public class TreeNode extends Node {
 	}
 
 	static int count = 0;
-
-	public Resource getUri() {
-		return uri;
-	}
-
-	public void setUri(Resource uri) {
-		this.uri = uri;
-	}
+//
+//	public Resource getUri() {
+//		return uri;
+//	}
+//
+//	public void setUri(Resource uri) {
+//		this.uri = uri;
+//	}
 
 	public TreeNode(TreeNode parent) {
 		super(parent);
@@ -112,11 +113,4 @@ public class TreeNode extends Node {
 	// return childList;
 	// }
 
-	public boolean isReference() {
-		return isReference;
-	}
-
-	public void setReference(boolean isReference) {
-		this.isReference = isReference;
-	}
 }

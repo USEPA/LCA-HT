@@ -94,7 +94,7 @@ public class FlowUnit {
 				lcaDataPropertyProvider = new LCADataPropertyProvider(conversionFactor);
 				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDdouble);
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(true);
 				lcaDataPropertyProvider.setLeftJustified(false);
@@ -240,6 +240,7 @@ public class FlowUnit {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
 				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
 						.getValue();
+				System.out.println("value class is "+value.getClass());
 				if (value.getClass().equals(
 						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();
