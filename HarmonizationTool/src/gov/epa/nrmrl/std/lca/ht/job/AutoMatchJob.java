@@ -317,7 +317,10 @@ public class AutoMatchJob extends Job {
 					// REQUIRED FIELDS CAN NOT BE BLANK
 					break;
 				}
-				flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
+				// If the conversion factor (Double) is different, that doesn't change the FlowUnit
+				if (!lcaDataProperties[i].getPropertyName().equals(FlowUnit.conversionFactor)){
+					flowPropertyConcatinated += dataRow.get(i - 1) + "\t";
+				}
 			}
 			if (!flowPropertyConcatinated.matches("^\\s*$")) {
 				flowUnit = flowPropertyMap.get(flowPropertyConcatinated);

@@ -68,6 +68,9 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			Iterator<String> iterator = headerRow.getIterator();
 			while (iterator.hasNext()) {
 				String header = iterator.next();
+				if (header.matches(".*Not assigned.*")) {
+					continue;
+				}
 				try {
 					RDFNode rdfNode = null;
 					rdfNode = soln.get(header);
@@ -88,20 +91,19 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	public List<DataRow> getOpenTableData() {
 		final List<DataRow> dataRows = new ArrayList<DataRow>();
 		final TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		/*try {
-			Util.showView(HarmonizedDataSelector.ID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		/*
+		 * try { Util.showView(HarmonizedDataSelector.ID); } catch (PartInitException e) { // TODO Auto-generated catch
+		 * block e.printStackTrace(); }
+		 */
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-		
-		for (int i = 0; i < tableProvider.getData().size(); i++) {
-			DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
-			dataRows.add(dataRow);
-		}
-			}});
+
+				for (int i = 0; i < tableProvider.getData().size(); i++) {
+					DataRow dataRow = HarmonizedDataSelector.getHarmonizedDataRow(i);
+					dataRows.add(dataRow);
+				}
+			}
+		});
 		return dataRows;
 	}
 
@@ -112,7 +114,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		Util.findView(MatchProperties.ID);
 
 		FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_EXPORT);
-//		FlowsWorkflow.setStatusConclude("Export complete");
+		// FlowsWorkflow.setStatusConclude("Export complete");
 
 		System.out.println("Saving Harmonized Data");
 
@@ -141,7 +143,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		if (saveTo == null) {
 			// FlowsWorkflow.restoreAllButtons();
-//			FlowsWorkflow.switchToWorkflowState(12);
+			// FlowsWorkflow.switchToWorkflowState(12);
 			FlowsWorkflow.setStatusConclude("Export failed...");
 			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 		}
@@ -157,12 +159,10 @@ public class SaveHarmonizedDataHandler implements IHandler {
 						}
 					});
 				}
-				/*try {
-					Util.showView(HarmonizedDataSelector.ID);
-				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
+				/*
+				 * try { Util.showView(HarmonizedDataSelector.ID); } catch (PartInitException e) { // TODO
+				 * Auto-generated catch block e.printStackTrace(); }
+				 */
 				DataRow headerRow = HarmonizedDataSelector.getHarmonizedDataHeader();
 				if (headerRow == null) {
 					Display.getDefault().syncExec(new Runnable() {
@@ -210,6 +210,9 @@ public class SaveHarmonizedDataHandler implements IHandler {
 			String[] headers = new String[headerRow.getColumnValues().size()];
 			int i = 0;
 			for (String header : headerRow.getColumnValues()) {
+				if (header.matches(".*Not assigned.*")) {
+					header+=" - row "+i;
+				}
 				headers[i++] = header;
 			}
 			format = format.withHeader(headers).withRecordSeparator("\n");

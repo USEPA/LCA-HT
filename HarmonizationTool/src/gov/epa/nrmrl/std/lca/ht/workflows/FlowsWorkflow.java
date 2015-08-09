@@ -1373,41 +1373,6 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
-			btnMatchFlowables.setText("Show All");
-			btnMatchFlowables.setToolTipText("Click to show all rows in the User Data table.");
-			setButtonState(btnMatchFlowables, true);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
-			btnMatchFlowContexts.setText("Show Unique");
-			btnMatchFlowContexts
-					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
-			setButtonState(btnMatchFlowContexts, false);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties
-					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
-			setButtonState(btnMatchFlowProperties, false);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
-			btnConcludeFile.setText("Export...");
-			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
-			setButtonState(btnConcludeFile, true);
-			setTooltipStatusConclude("");
-			CSVTableView.preCommit = false;
-		}
-		// Following step 3, if 5 is toggled
-		else if (stateNumber == ST_SHOW_UNIT) {
-			btnLoadUserData.setText("Load new...");
-			btnLoadUserData
-					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
-			setButtonState(btnLoadUserData, true);
-//			setTooltipStatusUserData("[File path]");
-			btnCheckData.setText("");
-			btnCheckData.setToolTipText("");
-			setButtonState(btnCheckData, false);
-			setTooltipStatusCheckData("");
-			btnCommit.setText("");
-			btnCommit.setToolTipText("");
-			setButtonState(btnCommit, false);
-			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
 			btnMatchFlowables.setText("Show Unique");
 			btnMatchFlowables
 					.setToolTipText("You must click \"Show All\" next to \"5. Flow Unit\" to use this function.");
@@ -1428,8 +1393,8 @@ public class FlowsWorkflow extends ViewPart {
 			setTooltipStatusConclude("");
 			CSVTableView.preCommit = false;
 		}
-		// Following step 3, if 6 is toggled
-		else if (stateNumber == ST_SHOW_FLOWABLE) {
+		// Following step 3, if 5 is toggled
+		else if (stateNumber == ST_SHOW_UNIT) {
 			btnLoadUserData.setText("Load new...");
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
@@ -1456,6 +1421,41 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowProperties.setText("Show All");
 			btnMatchFlowProperties.setToolTipText("Click to show all rows in the User Data table.");
 			setButtonState(btnMatchFlowProperties, true);
+			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
+			btnConcludeFile.setText("Export...");
+			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
+			setButtonState(btnConcludeFile, true);
+			setTooltipStatusConclude("");
+			CSVTableView.preCommit = false;	
+		}
+		// Following step 3, if 6 is toggled
+		else if (stateNumber == ST_SHOW_FLOWABLE) {
+			btnLoadUserData.setText("Load new...");
+			btnLoadUserData
+					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
+			setButtonState(btnLoadUserData, true);
+//			setTooltipStatusUserData("[File path]");
+			btnCheckData.setText("");
+			btnCheckData.setToolTipText("");
+			setButtonState(btnCheckData, false);
+			setTooltipStatusCheckData("");
+			btnCommit.setText("");
+			btnCommit.setToolTipText("");
+			setButtonState(btnCommit, false);
+			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
+			btnMatchFlowables.setText("Show All");
+			btnMatchFlowables.setToolTipText("Click to show all rows in the User Data table.");
+			setButtonState(btnMatchFlowables, true);
+			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
+			btnMatchFlowContexts.setText("Show Unique");
+			btnMatchFlowContexts
+					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
+			setButtonState(btnMatchFlowContexts, false);
+			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
+			btnMatchFlowProperties.setText("Show Unique");
+			btnMatchFlowProperties
+					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
+			setButtonState(btnMatchFlowProperties, false);
 			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
 			btnConcludeFile.setText("Export...");
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
