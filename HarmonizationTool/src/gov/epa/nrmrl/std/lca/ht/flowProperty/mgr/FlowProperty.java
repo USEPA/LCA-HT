@@ -94,6 +94,7 @@ public class FlowProperty {
 				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 			}
 		}
 	}

@@ -112,6 +112,7 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 			}
 		}
 	}

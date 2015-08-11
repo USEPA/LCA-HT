@@ -60,7 +60,7 @@ public class FlowContext {
 				// ActiveTDB.tsAddGeneralTriple(rdfClass, RDFS.comment, comment, null);
 				// ActiveTDB.tsAddGeneralTriple(rdfClass, RDF.type, OWL.Class, null);
 
-//				System.out.println("label assigned to Flow Context");
+				// System.out.println("label assigned to Flow Context");
 
 				LCADataPropertyProvider lcaDataPropertyProvider;
 
@@ -143,6 +143,7 @@ public class FlowContext {
 				// "75c87bc3-468b-4d9f-b2c5-9d521fb4822e");
 				// addContext("resource", "in land", FedLCA.resourceIn_land, "54f7604f-c04e-4404-a229-852ede4379dc");
 				// addContext("resource", "in water", FedLCA.resourceIn_water, "bcfc6117-3461-4f85-a5c8-fe59a533cc29");
+				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 			}
 		}
 	}
@@ -523,7 +524,7 @@ public class FlowContext {
 		b.append("order by ?sort \n");
 
 		String query = b.toString();
-//		System.out.println("Query = \n" + query);
+		// System.out.println("Query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		harmonyQuery2Impl.setGraphName(null);

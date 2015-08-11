@@ -161,6 +161,7 @@ public class Flowable {
 		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		LCADataPropertyProvider.registerProviders(dataPropertyMap);
 	}
 
 	// INSTANCE VARIABLES

@@ -73,6 +73,7 @@ public class Flow {
 		lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
 		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		LCADataPropertyProvider.registerProviders(dataPropertyMap);
 	}
 
 	// private static final Resource rdfClass = FASC.FlowAggregationCategory;

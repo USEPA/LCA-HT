@@ -588,11 +588,11 @@ public class CSVTableView extends ViewPart {
 		MatchFlowables.update(dataRowNum);
 		MatchContexts.update(dataRowNum);
 		MatchProperties.update(dataRowNum);
-		if (lcaDataPropertyProvider == null){
+		if (lcaDataPropertyProvider == null) {
 			return;
 		}
 		Resource columnType = lcaDataPropertyProvider.getRDFClass();
-		if (columnType == null){
+		if (columnType == null) {
 			return;
 		}
 		if (columnType.equals(FlowUnit.rdfClass)) {
@@ -601,7 +601,7 @@ public class CSVTableView extends ViewPart {
 			} catch (PartInitException e1) {
 				e1.printStackTrace();
 			}
-		}	else if (columnType.equals(FlowContext.rdfClass)) {
+		} else if (columnType.equals(FlowContext.rdfClass)) {
 			try {
 				Util.showView(MatchContexts.ID);
 			} catch (PartInitException e1) {
@@ -1100,6 +1100,7 @@ public class CSVTableView extends ViewPart {
 		TableColumn tableColumn = table.getColumn(colNumSelected);
 		tableColumn.setText("- " + colNumSelected + " -");
 		tableColumn.setToolTipText(csvColumnDefaultTooltip);
+		LCADataPropertyProvider.storeOneCurrentColumnAssignment(colNumSelected);
 	}
 
 	private static class StandardizeAllCASListener implements Listener {
@@ -1351,7 +1352,7 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void selectTableRow(int tableRowNum) {
-		if (tableRowNum < 0 || tableRowNum > table.getItemCount()){
+		if (tableRowNum < 0 || tableRowNum > table.getItemCount()) {
 			return;
 		}
 		TableItem tableItem = table.getItem(rowNumSelected);
@@ -1386,37 +1387,37 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-//	public static void selectNextFlowable() {
-//		// System.out.println("RowNumSelected = " + rowNumSelected);
-//		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
-//		if (rowNumSelected < (table.getItemCount() - 1)) {
-//			TableItem lastTableItem = table.getItem(rowNumSelected);
-//			int dataRowNumber = getDataRowNumberFromTableRowNumber(rowNumSelected);
-//			int nextUnmatchedFlowableNum = -1;
-//			for (Integer i : uniqueFlowableRowNumbers) {
-//				if (i > dataRowNumber) {
-//					if (!matchedFlowableRowNumbers.contains(i)) {
-//						nextUnmatchedFlowableNum = i;
-//						break;
-//					}
-//				}
-//			}
-//			for (int i = rowNumSelected; i < table.getItems().length; i++) {
-//				TableItem tableItem = table.getItem(i);
-//				String nextRowNumString = tableItem.getText(0);
-//				int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
-//				if (nextRowNum == nextUnmatchedFlowableNum) {
-//					lastTableItem = table.getItem(rowNumSelected);
-//					lastTableItem.setFont(defaultFont);
-//					rowNumSelected = table.indexOf(tableItem);
-//					tableItem.setFont(boldFont);
-//					table.setTopIndex(rowNumSelected);
-//					break;
-//				}
-//			}
-//			selectRowColumn();
-//		}
-//	}
+	// public static void selectNextFlowable() {
+	// // System.out.println("RowNumSelected = " + rowNumSelected);
+	// // System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+	// if (rowNumSelected < (table.getItemCount() - 1)) {
+	// TableItem lastTableItem = table.getItem(rowNumSelected);
+	// int dataRowNumber = getDataRowNumberFromTableRowNumber(rowNumSelected);
+	// int nextUnmatchedFlowableNum = -1;
+	// for (Integer i : uniqueFlowableRowNumbers) {
+	// if (i > dataRowNumber) {
+	// if (!matchedFlowableRowNumbers.contains(i)) {
+	// nextUnmatchedFlowableNum = i;
+	// break;
+	// }
+	// }
+	// }
+	// for (int i = rowNumSelected; i < table.getItems().length; i++) {
+	// TableItem tableItem = table.getItem(i);
+	// String nextRowNumString = tableItem.getText(0);
+	// int nextRowNum = Integer.parseInt(nextRowNumString) - 1;
+	// if (nextRowNum == nextUnmatchedFlowableNum) {
+	// lastTableItem = table.getItem(rowNumSelected);
+	// lastTableItem.setFont(defaultFont);
+	// rowNumSelected = table.indexOf(tableItem);
+	// tableItem.setFont(boldFont);
+	// table.setTopIndex(rowNumSelected);
+	// break;
+	// }
+	// }
+	// selectRowColumn();
+	// }
+	// }
 
 	@SuppressWarnings("unchecked")
 	private static List<Issue> getIssuesByColumn(int columnNumber) {
@@ -1482,7 +1483,6 @@ public class CSVTableView extends ViewPart {
 				// ASSIGNING A COLUMN
 				String menuItemClass = menuItem.getParent().getParentItem().getText(); // WOULD FAIL IF MENU DOESN'T
 																						// HAVE PARENT
-
 				LCADataPropertyProvider lcaDataPropertyProvider = null;
 				if (menuItemClass.equals(Flowable.label)) {
 					lcaDataPropertyProvider = Flowable.getDataPropertyMap().get(menuItemName);
@@ -1516,6 +1516,7 @@ public class CSVTableView extends ViewPart {
 				} else {
 					tableColumn.setAlignment(SWT.RIGHT);
 				}
+				LCADataPropertyProvider.storeOneCurrentColumnAssignment(colNumSelected);
 			}
 		}
 	}
@@ -1649,8 +1650,7 @@ public class CSVTableView extends ViewPart {
 				TableColumn col = (TableColumn) e.getSource();
 				colNumSelected = table.indexOf(col);
 				if (colNumSelected > 0) {
-					// FIRST CHECK TO SEE IF THIS COLUMN HAS BEEN ASSIGNED OR
-					// NOT
+					// FIRST CHECK TO SEE IF THIS COLUMN HAS BEEN ASSIGNED OR NOT
 					if (table.getColumn(colNumSelected).getText().equals("- " + colNumSelected + " -")) {
 						// initializeHeaderMenu();
 						setHeaderMenu(1);
@@ -1977,7 +1977,7 @@ public class CSVTableView extends ViewPart {
 				tableItem.setBackground(colIndex, issue.getStatus().getColor());
 			}
 		} else {
-			if (filterRows.contains((Integer)issue.getRowNumber())) {
+			if (filterRows.contains((Integer) issue.getRowNumber())) {
 				int row = 0;
 				Iterator<Integer> iterator = filterRows.iterator();
 				while (iterator.hasNext()) {
@@ -2158,6 +2158,24 @@ public class CSVTableView extends ViewPart {
 		for (int j : propertyColumns) {
 			colorCell(rowToColor, j, color);
 		}
+	}
+
+	/**
+	 * This method returns the unique dataset name associated with the current Dataset Table
+	 * @return a String containing the name of the current dataset.
+	 */
+	public static String getCurrentDatasetName() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		return tableProvider.getDataSourceProvider().getDataSourceName();
+	}
+
+	/**
+	 * This method returns the RDF Resource associated with the current Dataset Table
+	 * @return an RDF Resource of RDF Class ECO:DataSource containing the current dataset
+	 */
+	public static Resource getCurrentDatasetTDBResource() {
+		TableProvider tableProvider = TableKeeper.getTableProvider(tableProviderKey);
+		return tableProvider.getDataSourceProvider().getTdbResource();
 	}
 
 	public static void colorFlowPropertyRows() {
