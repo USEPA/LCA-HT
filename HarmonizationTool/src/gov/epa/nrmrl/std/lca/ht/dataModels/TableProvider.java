@@ -283,17 +283,6 @@ public class TableProvider {
 			headerRow.clear();
 		}
 		setHeaderNames(headerRow, resultSetRewindable.getResultVars());
-		// int count = 0;
-		
-		int matchedFlowables = 0;
-		int matchedFlowContexts = 0;
-		int matchedFlowUnits = 0;
-		
-		Map<String, Flowable> uniqueFlowables = new HashMap<String, Flowable>();
-		Map<String, FlowContext> uniqueFlowContexts = new HashMap<String, FlowContext>();
-		Map<String, FlowUnit> uniqueFlowUnits = new HashMap<String, FlowUnit>();
-		
-		CSVTableView.clearItemCounts();
 		
 		while (resultSetRewindable.hasNext()) {
 			QuerySolution soln = resultSetRewindable.nextSolution();
@@ -317,180 +306,194 @@ public class TableProvider {
 			}
 		}
 		
-		if (existingLcaData) {
-			StringBuilder b = new StringBuilder();
-			b.append(Prefixes.getPrefixesForQuery());
-			b.append("select \n");
-			b.append(" \n");
-			b.append(" ?tablerow \n");
-			b.append(" ?lcaflowable \n");
-			b.append(" ?flowCtx \n");
-			b.append(" ?flowUnit \n");
-			b.append(" ?mf \n");
-			b.append(" ?adhoc \n");
-			b.append(" (count (?cp) as ?flowableMatch) \n");
-			b.append(" (count (?ctxMatch) as ?contextMatch) \n");
-			b.append(" (count (?unMatch) as ?unitMatch) \n");
-			b.append("where { {select distinct \n");
-			b.append(" \n");
-			b.append(" ?tablerow \n");
-			b.append(" ?lcaflowable \n");
-			b.append(" ?flowCtx \n");
-			b.append(" ?flowUnit \n");
-			b.append(" ?adhoc \n");
-			b.append(" ?cp \n");
-			b.append(" ?mf \n");
-			b.append(" ?ctxMatch \n");
-			b.append(" ?unMatch \n");
-			b.append(" \n");
-			b.append("where { \n");
-			b.append(" \n");
-			b.append(" ?ds rdfs:label \"" + existingDataSource + "\"^^xsd:string . \n");
-			b.append(" ?lcaflow eco:hasDataSource ?ds . \n");
-			b.append(" ?lcaflow eco:hasFlowable ?lcaflowable . \n");
-			b.append(" ?lcaflow rdf:type ?lcatype . \n");
-			b.append(" ?lcaflow fedlca:sourceTableRowNumber ?tablerow . \n");
-			b.append(" optional { \n");
-			b.append(" ?cp fedlca:comparedSource ?lcaflowable . \n");
-			b.append(" ?cp fedlca:comparedEquivalence fedlca:Equivalent . \n");
-			b.append(" } \n");
-			b.append(" optional { \n");
-			b.append(" ?lcaflow fedlca:hasFlowContext ?flowCtx . \n");
-			b.append(" optional { \n");
-			b.append(" ?flowCtx owl:sameAs ?ctxMatch . \n");
-			b.append(" } \n");
-			b.append(" } \n");
-			b.append(" optional { \n");
-			b.append(" ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
-			b.append(" optional { \n");
-			b.append(" ?flowUnit owl:sameAs ?unMatch . \n");
-			b.append(" } \n");
-			b.append(" } \n");
-			b.append(" optional { \n");
-			b.append(" ?mf fedlca:comparedSource ?lcaflow . \n");
-			b.append(" ?mf fedlca:comparedEquivalence fedlca:Equivalent . \n");
-			b.append(" } \n");
-			b.append(" \n");
-			b.append(" optional { \n");
-			b.append(" select ?adhoc \n");
-			b.append(" where { \n");
-			b.append(" ?f eco:hasDataSource ?ds . \n");
-			b.append(" ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
-			b.append(" } \n");
-			b.append(" LIMIT 1 \n");
-			b.append(" } \n");
-			b.append(" \n");
-			b.append(" \n");
-			b.append("} \n");
-			b.append("} } \n");
-			b.append(" group by ?tablerow ?adhoc ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
-			b.append("order by ?tablerow \n");
-
-			String query = b.toString();
-			//System.out.println("Query \n" + query);
-
-			HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
-			harmonyQuery2Impl.setQuery(query);
-		
-			ResultSetRewindable res = (ResultSetRewindable) harmonyQuery2Impl.getResultSet();
-			
-			while (res.hasNext()) {
-				QuerySolution soln = res.nextSolution();
-				if (!soln.contains("tablerow"))
-					continue;
-				int rowIndex = soln.getLiteral("tablerow").getInt() - 1;
-				DataRow dataRow = data.get(rowIndex);
-				
-				RDFNode rdfNode = soln.get("lcaflowable");
-				String flowable = null;
-				if (rdfNode != null)
-					flowable = rdfNode.toString();
-				Color color = null;
-				if (flowable != null &&!uniqueFlowables.containsKey(flowable)) {
-					Flowable flowableObj = new Flowable((Resource)rdfNode);
-					flowableObj.setComparisons(ComparisonKeeper.getComparisons(flowableObj.getTdbResource()));
-					flowableObj.setFirstRow(dataRow.getRowNumber());
-					uniqueFlowables.put(flowable, flowableObj);
-					CSVTableView.uniqueFlowableRowNumbers.add(dataRow.getRowNumber());
-					dataRow.setFlowable(flowableObj);
-					
-					int flowableMatches = soln.getLiteral("flowableMatch").getInt();
-					if (soln.contains("adHoc")) {
-						color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
-					} else {
-						if (flowableMatches == 1) {
-							color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
-							++matchedFlowables;
-							CSVTableView.matchedFlowableRowNumbers.add(dataRow.getRowNumber());
-						}
-						else if (flowableMatches > 1)
-							color = CSVTableView.orange;
-						else
-							color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
-					}
-					dataRow.setFlowableColor(color);
-				}
-				else if (flowable != null)
-					dataRow.setFlowable(uniqueFlowables.get(flowable));
-				String flowContext = null;
-				rdfNode = soln.get("flowCtx");
-				if (rdfNode != null)
-					flowContext = rdfNode.toString();
-				if (flowContext != null && !uniqueFlowContexts.containsKey(flowContext)) {
-					FlowContext fcObj = new FlowContext((Resource)rdfNode, true);
-					fcObj.setFirstRow(dataRow.getRowNumber());
-					uniqueFlowContexts.put(flowContext, fcObj);
-					CSVTableView.uniqueFlowContextRowNumbers.add(dataRow.getRowNumber());
-					dataRow.setFlowContext(fcObj);
-					int contextMatches = soln.getLiteral("contextMatch").getInt();
-					if (contextMatches > 0) {
-						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-						++matchedFlowContexts;
-						CSVTableView.matchedFlowContextRowNumbers.add(dataRow.getRowNumber());
-					}
-					else
-						dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-				}
-				else if (flowContext != null)
-					dataRow.setFlowContext(uniqueFlowContexts.get(flowContext));
-				String flowUnit = null;
-				rdfNode = soln.get("flowUnit");
-				if (rdfNode != null)
-					flowUnit = rdfNode.toString();
-				if (flowUnit != null && !uniqueFlowUnits.containsKey(flowUnit)) {
-					FlowUnit fuObj = new FlowUnit((Resource)rdfNode, false);
-					fuObj.setFirstRow(dataRow.getRowNumber());
-					uniqueFlowUnits.put(flowUnit, fuObj);
-					CSVTableView.uniqueFlowPropertyRowNumbers.add(dataRow.getRowNumber());
-					dataRow.setFlowUnit(fuObj);
-					int unitMatches = soln.getLiteral("unitMatch").getInt();
-					if (unitMatches > 0) {
-						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-						++matchedFlowUnits;
-						CSVTableView.matchedFlowPropertyRowNumbers.add(dataRow.getRowNumber());
-					}
-					else
-						dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-				}
-				else if (flowUnit != null)
-					dataRow.setFlowUnit(uniqueFlowUnits.get(flowUnit));
-				rdfNode = soln.get("mf");
-				CSVTableView.uniqueFlowRowNumbers.add(dataRow.getRowNumber());
-				dataRow.setFlowMatched(rdfNode != null);
-				if (dataRow.getFlowMatched())
-					CSVTableView.matchedFlowRowNumbers.add(dataRow.getRowNumber());
-			}
-		}
-		
-		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
-		
-		if (existingLcaData) {
-			FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
-			FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
-			FlowsWorkflow.showFlowUnitMatchCount(matchedFlowUnits, uniqueFlowUnits.size());
-		}
+		if (existingLcaData) 
+			addStoredMatchInfo();
 
 		return;
+	}
+	
+	public void addStoredMatchInfo( ) {
+		
+		int matchedFlowables = 0;
+		int matchedFlowContexts = 0;
+		int matchedFlowUnits = 0;
+		
+		Map<String, Flowable> uniqueFlowables = new HashMap<String, Flowable>();
+		Map<String, FlowContext> uniqueFlowContexts = new HashMap<String, FlowContext>();
+		Map<String, FlowUnit> uniqueFlowUnits = new HashMap<String, FlowUnit>();
+		
+		CSVTableView.clearItemCounts();
+
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select \n");
+		b.append(" \n");
+		b.append(" ?tablerow \n");
+		b.append(" ?lcaflowable \n");
+		b.append(" ?flowCtx \n");
+		b.append(" ?flowUnit \n");
+		b.append(" ?mf \n");
+		b.append(" ?adhoc \n");
+		b.append(" (count (?cp) as ?flowableMatch) \n");
+		b.append(" (count (?ctxMatch) as ?contextMatch) \n");
+		b.append(" (count (?unMatch) as ?unitMatch) \n");
+		b.append("where { {select distinct \n");
+		b.append(" \n");
+		b.append(" ?tablerow \n");
+		b.append(" ?lcaflowable \n");
+		b.append(" ?flowCtx \n");
+		b.append(" ?flowUnit \n");
+		b.append(" ?adhoc \n");
+		b.append(" ?cp \n");
+		b.append(" ?mf \n");
+		b.append(" ?ctxMatch \n");
+		b.append(" ?unMatch \n");
+		b.append(" \n");
+		b.append("where { \n");
+		b.append(" \n");
+		b.append(" ?ds rdfs:label \"" + existingDataSource + "\"^^xsd:string . \n");
+		b.append(" ?lcaflow eco:hasDataSource ?ds . \n");
+		b.append(" ?lcaflow eco:hasFlowable ?lcaflowable . \n");
+		b.append(" ?lcaflow rdf:type ?lcatype . \n");
+		b.append(" ?lcaflow fedlca:sourceTableRowNumber ?tablerow . \n");
+		b.append(" optional { \n");
+		b.append(" ?cp fedlca:comparedSource ?lcaflowable . \n");
+		b.append(" ?cp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+		b.append(" } \n");
+		b.append(" optional { \n");
+		b.append(" ?lcaflow fedlca:hasFlowContext ?flowCtx . \n");
+		b.append(" optional { \n");
+		b.append(" ?flowCtx owl:sameAs ?ctxMatch . \n");
+		b.append(" } \n");
+		b.append(" } \n");
+		b.append(" optional { \n");
+		b.append(" ?lcaflow fedlca:hasFlowUnit ?flowUnit . \n");
+		b.append(" optional { \n");
+		b.append(" ?flowUnit owl:sameAs ?unMatch . \n");
+		b.append(" } \n");
+		b.append(" } \n");
+		b.append(" optional { \n");
+		b.append(" ?mf fedlca:comparedSource ?lcaflow . \n");
+		b.append(" ?mf fedlca:comparedEquivalence fedlca:Equivalent . \n");
+		b.append(" } \n");
+		b.append(" \n");
+		b.append(" optional { \n");
+		b.append(" select ?adhoc \n");
+		b.append(" where { \n");
+		b.append(" ?f eco:hasDataSource ?ds . \n");
+		b.append(" ?adhoc lcaht:hasQCStatus lcaht:QCStatusAdHocMaster . \n");
+		b.append(" } \n");
+		b.append(" LIMIT 1 \n");
+		b.append(" } \n");
+		b.append(" \n");
+		b.append(" \n");
+		b.append("} \n");
+		b.append("} } \n");
+		b.append(" group by ?tablerow ?adhoc ?lcaflowable ?flowCtx ?flowUnit ?mf \n");
+		b.append("order by ?tablerow \n");
+
+		String query = b.toString();
+		//System.out.println("Query \n" + query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+	
+		ResultSetRewindable res = (ResultSetRewindable) harmonyQuery2Impl.getResultSet();
+		
+		while (res.hasNext()) {
+			QuerySolution soln = res.nextSolution();
+			if (!soln.contains("tablerow"))
+				continue;
+			int rowIndex = soln.getLiteral("tablerow").getInt() - 1;
+			DataRow dataRow = data.get(rowIndex);
+			
+			RDFNode rdfNode = soln.get("lcaflowable");
+			String flowable = null;
+			if (rdfNode != null)
+				flowable = rdfNode.toString();
+			Color color = null;
+			if (flowable != null &&!uniqueFlowables.containsKey(flowable)) {
+				Flowable flowableObj = new Flowable((Resource)rdfNode);
+				flowableObj.setComparisons(ComparisonKeeper.getComparisons(flowableObj.getTdbResource()));
+				flowableObj.setFirstRow(dataRow.getRowNumber());
+				uniqueFlowables.put(flowable, flowableObj);
+				CSVTableView.uniqueFlowableRowNumbers.add(dataRow.getRowNumber());
+				dataRow.setFlowable(flowableObj);
+				
+				int flowableMatches = soln.getLiteral("flowableMatch").getInt();
+				if (soln.contains("adHoc")) {
+					color = SWTResourceManager.getColor(SWT.COLOR_CYAN);
+				} else {
+					if (flowableMatches == 1) {
+						color = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+						++matchedFlowables;
+						CSVTableView.matchedFlowableRowNumbers.add(dataRow.getRowNumber());
+					}
+					else if (flowableMatches > 1)
+						color = CSVTableView.orange;
+					else
+						color = SWTResourceManager.getColor(SWT.COLOR_YELLOW);
+				}
+				dataRow.setFlowableColor(color);
+			}
+			else if (flowable != null)
+				dataRow.setFlowable(uniqueFlowables.get(flowable));
+			String flowContext = null;
+			rdfNode = soln.get("flowCtx");
+			if (rdfNode != null)
+				flowContext = rdfNode.toString();
+			if (flowContext != null && !uniqueFlowContexts.containsKey(flowContext)) {
+				FlowContext fcObj = new FlowContext((Resource)rdfNode, true);
+				fcObj.setFirstRow(dataRow.getRowNumber());
+				uniqueFlowContexts.put(flowContext, fcObj);
+				CSVTableView.uniqueFlowContextRowNumbers.add(dataRow.getRowNumber());
+				dataRow.setFlowContext(fcObj);
+				int contextMatches = soln.getLiteral("contextMatch").getInt();
+				if (contextMatches > 0) {
+					dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					++matchedFlowContexts;
+					CSVTableView.matchedFlowContextRowNumbers.add(dataRow.getRowNumber());
+				}
+				else
+					dataRow.setFlowContextColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			}
+			else if (flowContext != null)
+				dataRow.setFlowContext(uniqueFlowContexts.get(flowContext));
+			String flowUnit = null;
+			rdfNode = soln.get("flowUnit");
+			if (rdfNode != null)
+				flowUnit = rdfNode.toString();
+			if (flowUnit != null && !uniqueFlowUnits.containsKey(flowUnit)) {
+				FlowUnit fuObj = new FlowUnit((Resource)rdfNode, false);
+				fuObj.setFirstRow(dataRow.getRowNumber());
+				uniqueFlowUnits.put(flowUnit, fuObj);
+				CSVTableView.uniqueFlowPropertyRowNumbers.add(dataRow.getRowNumber());
+				dataRow.setFlowUnit(fuObj);
+				int unitMatches = soln.getLiteral("unitMatch").getInt();
+				if (unitMatches > 0) {
+					dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					++matchedFlowUnits;
+					CSVTableView.matchedFlowPropertyRowNumbers.add(dataRow.getRowNumber());
+				}
+				else
+					dataRow.setFlowPropertyColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			}
+			else if (flowUnit != null)
+				dataRow.setFlowUnit(uniqueFlowUnits.get(flowUnit));
+			rdfNode = soln.get("mf");
+			CSVTableView.uniqueFlowRowNumbers.add(dataRow.getRowNumber());
+			dataRow.setFlowMatched(rdfNode != null);
+			if (dataRow.getFlowMatched())
+				CSVTableView.matchedFlowRowNumbers.add(dataRow.getRowNumber());
+		}
+	
+	
+		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
+	
+		FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
+		FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
+		FlowsWorkflow.showFlowUnitMatchCount(matchedFlowUnits, uniqueFlowUnits.size());
+	
 	}
 
 	public void colorExistingRows() {

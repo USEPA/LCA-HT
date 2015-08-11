@@ -67,7 +67,14 @@ public class OpenDataSet implements IHandler {
 		TableKeeper.saveTableProvider(filePath, provider);
 		//TODO - make sure we handle buildUserDataTableFromLCAHTDataViaQuery case also
 		long startTime = System.currentTimeMillis();
-		ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
+		if (fileName.endsWith(".csv")) {
+			if (!ImportUserData.buildUserDataTableFromCSVData(dataSet, provider)) {
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
+				return null;
+			}
+		}
+		else
+			ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
 		
 		ImportUserData.RunData data = new ImportUserData.RunData(null);
 		data.path = filePath;

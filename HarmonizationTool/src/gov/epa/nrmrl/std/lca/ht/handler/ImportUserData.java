@@ -26,10 +26,13 @@ import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 //import java.util.Calendar;
@@ -43,6 +46,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -85,8 +90,6 @@ public class ImportUserData implements IHandler {
 	public static final String ID = "gov.epa.nrmrl.std.lca.ht.handler.ImportUserData";
 	private static TableProvider tableProvider;
 	private static Logger runLogger = Logger.getLogger("run");
-
-	private Display display = null;
 
 	public static class RunData implements Runnable {
 		String path = null;
@@ -220,6 +223,10 @@ public class ImportUserData implements IHandler {
 			runLogger.error("# File not readable\n");
 			return;
 		}
+		loadUserDataFromReader(fileReader, tableProvider);
+	}
+	
+	private static void loadUserDataFromReader(Reader fileReader, TableProvider provider) {
 
 		try {
 			CSVParser parser = new CSVParser(fileReader, CSVFormat.EXCEL);
@@ -236,17 +243,57 @@ public class ImportUserData implements IHandler {
 
 			for (CSVRecord csvRecord : parser) {
 				DataRow dataRow = initDataRow(csvRecord);
-				tableProvider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
+				provider.addDataRow(dataRow); // SLOW PROCESS: JUNO FIXME
 			}
 			parser.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (tableProvider.getData().size() == 0) {
+		if (provider.getData().size() == 0) {
 			runLogger.warn("# No content in CSV file!");
 			return;
 		}
 		return;
+	}
+	
+	private static class CSVRecorder implements Runnable {
+		String targetName;
+		File input;
+		public CSVRecorder(File src, String target) {
+			input = src;
+			targetName = target;
+		}
+		
+		public void run() {
+			FileInputStream reader = null;
+			try {
+				reader = new FileInputStream(input);
+				//TODO - copy to zip
+				String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + targetName + ".zip";
+				ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(target));
+				zipFile.putNextEntry(new ZipEntry(target + ".csv"));
+
+			       // buffer size
+		        byte[] b = new byte[1024];
+		        int count;
+
+		        while ((count = reader.read(b)) > 0) {
+		            zipFile.write(b, 0, count);
+		        }
+		        zipFile.close();
+		        reader.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (reader != null)
+						reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private static void loadUserDataFromRDFFile(File file) {
@@ -474,6 +521,34 @@ public class ImportUserData implements IHandler {
 		// ---- END SAFE -WRITE- TRANSACTION ---
 //		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
 	}
+	
+	public static boolean buildUserDataTableFromCSVData(String dataSourceName, TableProvider tblProvider) {
+		ZipFile zipFile = null;
+		try {
+			String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + dataSourceName + ".zip";
+			zipFile = new ZipFile(target);
+			ZipEntry entry = zipFile.entries().nextElement();
+			BufferedReader zipStream = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry)));
+			loadUserDataFromReader(zipStream, tblProvider);
+			tblProvider.setExistingDataSource(dataSourceName);
+			tblProvider.addStoredMatchInfo();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			if (zipFile != null) {
+				try {
+					zipFile.close();
+				} catch (Exception e) {
+					
+				}
+			}
+		}
+		
+	}
+		
 
 	public static void buildUserDataTableFromOLCADataViaQuery() {
 		buildUserDataTableFromOLCADataViaQuery(null, tableProvider);
@@ -744,6 +819,8 @@ public class ImportUserData implements IHandler {
 
 		if (data.path.matches(".*\\.csv")) {
 			loadUserDataFromCSVFile(data.file);
+			CSVRecorder rec = new CSVRecorder(data.file, data.dialog.getCurDataSourceProvider().getDataSourceName());
+			new Thread(rec).start();
 		} else {
 			loadUserDataFromRDFFile(data.file);
 		}

@@ -46,6 +46,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 		String inputPath = workspacePath + "input";
 		String outputPath = workspacePath + "output";
 		String logPath = workspacePath + "log";
+		String csvPath = workspacePath + "csv";
 
 		File tdbDir = new File(tdbPath);
 		tdbDir.mkdirs();
@@ -57,9 +58,11 @@ public class Initializer extends AbstractPreferenceInitializer {
 		outputDir.mkdirs();
 		File logDir = new File(logPath);
 		logDir.mkdirs();
+		File csvDir = new File(csvPath);
+		csvDir.mkdirs();
 
 		if (!tdbDir.exists() || !workspaceDir.exists() || !inputDir.exists()
-				|| !outputDir.exists() || !logDir.exists())
+				|| !outputDir.exists() || !logDir.exists() || !csvDir.exists())
 			return false;
 		
 
@@ -87,6 +90,8 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("outputDirectory", outputPath);
 
 		store.setDefault("logDirectory", logPath);
+		
+		store.setDefault("csvDirectory", csvPath);
 
 		store.setDefault("runfileRoot", "LCAHT");
 		store.setDefault("startTimestamp", Temporal.getLocalDateFmt(new Date()));
