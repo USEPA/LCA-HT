@@ -4,18 +4,13 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
-import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
-
 import java.util.ArrayList;
-//import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
@@ -37,10 +32,13 @@ public class DataSourceProvider {
 	// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
 	private Resource tdbResource;
 	private Integer referenceDataStatus = null;
+	public boolean hasSourceZippedJson = false;
+
 
 	// private boolean isMaster = false;
 	
 	public Exception creation = new Exception();
+
 	
 	public DataSourceProvider() {
 		this(true);

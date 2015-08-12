@@ -41,7 +41,7 @@ public class OpenDataSet implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ChooseDataSetDialog dlg = new ChooseDataSetDialog(HandlerUtil.getActiveShell(event),
-				"Please choose a data set to load:");
+				"Please choose a dataset to re-load:");
 		dlg.open();
 		if (dlg.getReturnCode() == ChooseDataSetDialog.CANCEL)
 			return null;
@@ -73,8 +73,10 @@ public class OpenDataSet implements IHandler {
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
-		} else
+		} else {
 			ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
+			ds.hasSourceZippedJson = true;
+		}
 
 		ImportUserData.RunData data = new ImportUserData.RunData(null);
 		data.path = filePath;
@@ -96,7 +98,7 @@ public class OpenDataSet implements IHandler {
 
 		// Run in asyncExec to avoid race condition where 85% message replaces completed message
 		ImportUserData.updateText(FlowsWorkflow.statusLoadUserData, fileName);
-		System.out.println("Data set opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
+		System.out.println("Dataset opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 
 		return null;
 	}
