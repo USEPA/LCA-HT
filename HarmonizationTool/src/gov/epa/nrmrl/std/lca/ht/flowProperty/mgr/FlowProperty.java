@@ -62,39 +62,39 @@ public class FlowProperty {
 				dataPropertyMap = new LinkedHashMap<String, LCADataPropertyProvider>();
 				LCADataPropertyProvider lcaDataPropertyProvider;
 
-				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnit);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(true);
-				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyUnitString);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-
-				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyString);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-
-				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyAdditionalIdentifier);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(false);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-				LCADataPropertyProvider.registerProviders(dataPropertyMap);
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnit);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(true);
+//				lcaDataPropertyProvider.setUnique(true);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+//				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyUnitString);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+//
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyString);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(false);
+//				lcaDataPropertyProvider.setUnique(true);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+//				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+//
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyAdditionalIdentifier);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(false);
+//				lcaDataPropertyProvider.setUnique(false);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+//				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertySupplementalDescription);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+//				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 			}
 		}
 	}

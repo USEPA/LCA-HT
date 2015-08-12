@@ -151,17 +151,17 @@ public class Flowable {
 		lcaDataPropertyProvider.setTDBProperty(ECO.chemicalFormula);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
-		lcaDataPropertyProvider.setPropertyClass(label);
-		lcaDataPropertyProvider.setRDFClass(rdfClass);
-		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-		lcaDataPropertyProvider.setRequired(false);
-		lcaDataPropertyProvider.setUnique(false);
-		lcaDataPropertyProvider.setLeftJustified(true);
-		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
-		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
-		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-		LCADataPropertyProvider.registerProviders(dataPropertyMap);
+//		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
+//		lcaDataPropertyProvider.setPropertyClass(label);
+//		lcaDataPropertyProvider.setRDFClass(rdfClass);
+//		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//		lcaDataPropertyProvider.setRequired(false);
+//		lcaDataPropertyProvider.setUnique(false);
+//		lcaDataPropertyProvider.setLeftJustified(true);
+//		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
+//		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
+//		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+//		LCADataPropertyProvider.registerProviders(dataPropertyMap);
 	}
 
 	// INSTANCE VARIABLES

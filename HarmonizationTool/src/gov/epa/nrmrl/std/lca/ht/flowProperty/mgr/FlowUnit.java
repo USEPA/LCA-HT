@@ -69,39 +69,6 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setTDBProperty(RDFS.label);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnitDescription);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(DCTerms.description);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-
-				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-
-				lcaDataPropertyProvider = new LCADataPropertyProvider(conversionFactor);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDdouble);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(false);
-				lcaDataPropertyProvider.setCheckLists(FormatCheck.getFloatCheck());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.unitConversionFactor);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-
 				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyString);
 				lcaDataPropertyProvider.setRDFClass(rdfClass);
 				lcaDataPropertyProvider.setPropertyClass(label);
@@ -113,6 +80,39 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 				LCADataPropertyProvider.registerProviders(dataPropertyMap);
+
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnitDescription);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(false);
+//				lcaDataPropertyProvider.setUnique(true);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+//				lcaDataPropertyProvider.setTDBProperty(DCTerms.description);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(false);
+//				lcaDataPropertyProvider.setUnique(true);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
+//				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+
+				lcaDataPropertyProvider = new LCADataPropertyProvider(conversionFactor);
+				lcaDataPropertyProvider.setRDFClass(rdfClass);
+				lcaDataPropertyProvider.setPropertyClass(label);
+				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDdouble);
+				lcaDataPropertyProvider.setRequired(false);
+				lcaDataPropertyProvider.setUnique(true);
+				lcaDataPropertyProvider.setLeftJustified(false);
+				lcaDataPropertyProvider.setCheckLists(FormatCheck.getFloatCheck());
+				lcaDataPropertyProvider.setTDBProperty(FedLCA.unitConversionFactor);
+				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 			}
 		}
 	}
@@ -241,7 +241,7 @@ public class FlowUnit {
 				removeValues(lcaDataPropertyProvider.getPropertyName());
 				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
 						.getValue();
-				System.out.println("value class is "+value.getClass());
+//				System.out.println("value class is "+value.getClass());
 				if (value.getClass().equals(
 						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
 					LCADataValue lcaDataValue = new LCADataValue();

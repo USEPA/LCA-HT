@@ -98,42 +98,42 @@ public class LCADataPropertyProvider {
 	 * TODO: TAHOWARD - The following two or three methods should allow us to assign columns at the time of assignment,
 	 * and to restore them when restoring a table.
 	 */
-	/**
-	 * This method gets from the TDB each assigned DatasetColumnAssignment and creates an ArrayList of
-	 * LCADataPropertyProviders.  If none are found the method returns null.  The length of the ArrayList is not
-	 * guaranteed to be the same as the length of the current Dataset Table column count.  Also, all un-assigned
-	 * entries in the List will be null.
-	 * @return An ArrayList<LCADataPropertyProvider> or null if none are found
-	 */
-	public static List<LCADataPropertyProvider> retrieveCurrentDatasetLCADataPropertyProviderList() {
-		List<LCADataPropertyProvider> currentDatasetLCADataPropertyProviderList = new ArrayList<LCADataPropertyProvider>();
-		String curDataSourceProviderName = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
-				.getDataSourceProvider().getDataSourceName();
 
+	public static List<LCADataPropertyProvider> retrieveDatasetLCADataPropertyProviderList(String datasetName) {
+		List<LCADataPropertyProvider> currentDatasetLCADataPropertyProviderList = new ArrayList<LCADataPropertyProvider>();
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
-		b.append("select distinct ?col ?dataProp \n");
+		b.append("select distinct ?col ?dataProp ?dataClass \n");
 		b.append("where {  \n");
 		b.append("  ?dca a fedlca:DatasetColumnAssignment . \n");
 		b.append("  ?dca eco:hasDataSource ?ds . \n");
-		b.append("  ?ds rdfs:label \"" + curDataSourceProviderName + "\"^^xsd:string . \n");
+		b.append("  ?ds rdfs:label \"" + datasetName + "\"^^xsd:string . \n");
 		b.append("  ?dca fedlca:columnNumber ?col . \n");
 		b.append("  ?dca fedlca:dataColumnProperty ?dataProp . \n");
+		b.append("  ?dca fedlca:dataColumnClass ?dataClass . \n");
 		b.append("} \n");
 		b.append("order by ?col \n");
 		String query = b.toString();
-
+		System.out.println("Query " + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
 		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
 		boolean noHits = true;
+		List<Resource> classList = new ArrayList<Resource>();
 		List<RDFNode> propertyList = new ArrayList<RDFNode>();
 		while (resultSet.hasNext()) {
 			noHits = false;
 			QuerySolution querySolution = resultSet.next();
 			int col = querySolution.get("col").asLiteral().getInt();
 			RDFNode rdfNode = querySolution.get("dataProp");
+			Resource dataClass = querySolution.get("dataClass").asResource();
+
+			while (col >= propertyList.size()) {
+				classList.add(null);
+				propertyList.add(null);
+			}
+			classList.add(col, dataClass);
 			propertyList.add(col, rdfNode);
 		}
 		if (noHits) {
@@ -146,18 +146,36 @@ public class LCADataPropertyProvider {
 
 		for (int i = 1; i < propertyList.size(); i++) {
 			RDFNode rdfNode = propertyList.get(i);
+			Resource classValue = classList.get(i);
 			if (rdfNode == null) {
 				continue;
 			}
 			for (LCADataPropertyProvider lcaDataPropertyProvider : allRegisteredProviders) {
 				Property property = lcaDataPropertyProvider.tdbProperty;
-				if (property.equals(rdfNode)) {
+				Resource classResource = lcaDataPropertyProvider.getRDFClass();
+				if (property.equals(rdfNode) && classResource.equals(classValue)) {
+					while (currentDatasetLCADataPropertyProviderList.size() <= i) {
+						currentDatasetLCADataPropertyProviderList.add(null);
+					}
 					currentDatasetLCADataPropertyProviderList.add(i, lcaDataPropertyProvider);
 					break;
 				}
 			}
 		}
 		return currentDatasetLCADataPropertyProviderList;
+	}
+
+	/**
+	 * This method gets from the TDB each assigned DatasetColumnAssignment and creates an ArrayList of
+	 * LCADataPropertyProviders.  If none are found the method returns null.  The length of the ArrayList is not
+	 * guaranteed to be the same as the length of the current Dataset Table column count.  Also, all un-assigned
+	 * entries in the List will be null.
+	 * @return An ArrayList<LCADataPropertyProvider> or null if none are found
+	 */
+	public static List<LCADataPropertyProvider> retrieveCurrentDatasetLCADataPropertyProviderList() {
+		String curDataSourceProviderName = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey())
+				.getDataSourceProvider().getDataSourceName();
+		return retrieveDatasetLCADataPropertyProviderList(curDataSourceProviderName);
 	}
 
 	/**
@@ -225,8 +243,13 @@ public class LCADataPropertyProvider {
 			} else {
 				tdbModel.removeAll(currentValue, FedLCA.columnNumber, null);
 				tdbModel.addLiteral(currentValue, FedLCA.columnNumber, columnNumber);
-				tdbModel.removeAll(currentValue, FedLCA.dataColumnProperty, null);
+
+				Resource dataClass = lcaDataPropertyProvider.getRDFClass();
+				tdbModel.removeAll(currentValue, FedLCA.dataColumnClass, null);
+				tdbModel.add(currentValue, FedLCA.dataColumnClass, dataClass);
+
 				Property property = lcaDataPropertyProvider.getTDBProperty();
+				tdbModel.removeAll(currentValue, FedLCA.dataColumnProperty, null);
 				tdbModel.add(currentValue, FedLCA.dataColumnProperty, property);
 				// If currentValue did not exist, this is needed
 				tdbModel.add(currentValue, ECO.hasDataSource, curDataSourceProviderResource);

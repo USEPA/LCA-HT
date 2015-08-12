@@ -181,6 +181,8 @@ public class FedLCA {
 
 	public static final Property columnNumber = m_model.createProperty(NS + "columnNumber");
 
+	public static final Property dataColumnClass = m_model.createProperty(NS + "dataColumnClass");
+	
 	public static final Property dataColumnProperty = m_model.createProperty(NS + "dataColumnProperty");
 
 	public static final Property hasCategory1 = m_model.createProperty(NS + "hasCategory1");

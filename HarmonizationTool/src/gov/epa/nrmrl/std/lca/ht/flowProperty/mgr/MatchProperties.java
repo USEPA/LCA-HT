@@ -214,8 +214,8 @@ public class MatchProperties extends ViewPart {
 				String referenceUnitStatus = "";
 				if (!treeNode.isReference) {
 					referenceUnitStatus = treeNode.conversionFactor + " conversion factor meaning 1 "
-							+ treeNode.referenceUnit + " (Reference Unit) = " + treeNode.conversionFactor + " "
-							+ treeNode.nodeName;
+							+ treeNode.nodeName + " = " + treeNode.conversionFactor + " "
+							+ treeNode.referenceUnit + " (Reference Unit)";
 				} else {
 					referenceUnitStatus = "Reference Unit";
 				}
@@ -237,7 +237,7 @@ public class MatchProperties extends ViewPart {
 
 			@Override
 			public int getToolTipTimeDisplayed(Object object) {
-				return 5000;
+				return 15000;
 			}
 
 			// @Override

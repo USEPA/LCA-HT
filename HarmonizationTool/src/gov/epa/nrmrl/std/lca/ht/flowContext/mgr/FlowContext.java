@@ -86,16 +86,16 @@ public class FlowContext {
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSpecific);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
-				lcaDataPropertyProvider.setRDFClass(rdfClass);
-				lcaDataPropertyProvider.setPropertyClass(label);
-				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-				lcaDataPropertyProvider.setRequired(false);
-				lcaDataPropertyProvider.setUnique(false);
-				lcaDataPropertyProvider.setLeftJustified(true);
-				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
-				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
-				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+//				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
+//				lcaDataPropertyProvider.setRDFClass(rdfClass);
+//				lcaDataPropertyProvider.setPropertyClass(label);
+//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+//				lcaDataPropertyProvider.setRequired(false);
+//				lcaDataPropertyProvider.setUnique(false);
+//				lcaDataPropertyProvider.setLeftJustified(true);
+//				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
+//				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
+//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				// Pattern airGeneralRE = Pattern.compile("air", Pattern.CASE_INSENSITIVE);
 				// regexGeneralString.add(airGeneralRE);

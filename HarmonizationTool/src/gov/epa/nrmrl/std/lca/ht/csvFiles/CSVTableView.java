@@ -357,7 +357,7 @@ public class CSVTableView extends ViewPart {
 		reColor();
 	}
 
-	private static void reColor() {
+	public static void reColor() {
 		if (preCommit) {
 			colorByIssues();
 		} else {
@@ -635,10 +635,9 @@ public class CSVTableView extends ViewPart {
 		popup.setEditable(false);
 		popup.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 		popup.moveAbove(composite);
-		popup.setText("popup");
+		popup.setText("User Data Table");
 		popup.setVisible(true);
-		popup.setLocation(90, 90);
-		popup.setBounds(90, 90, 300, 60);
+		popup.setBounds(0, 0, 300, 60);
 	}
 
 	public static void initializeRowMenu() {
@@ -2263,10 +2262,10 @@ public class CSVTableView extends ViewPart {
 	public static void updateFlowHeaderCount(int matched, int total) {
 		TableColumn tc = table.getColumn(0);
 		tc.setText(matched + "/" + total);
-		double digits = Math.floor(Math.log(matched) * Math.log(10));
-		digits += Math.floor(Math.log(total) * Math.log(10));
+		double digits = Math.floor(Math.log(matched) / Math.log(10));
+		digits += Math.floor(Math.log(total) / Math.log(10));
 		digits += 1;
-		int digitWidth = (int) (digits * 5);
+		int digitWidth = (int) (digits * 7);
 		// table.getColumn(0).pack();
 		table.getColumn(0).setWidth(digitWidth);
 		String matchedMessage = matched + " of " + total + " flows matched.";
