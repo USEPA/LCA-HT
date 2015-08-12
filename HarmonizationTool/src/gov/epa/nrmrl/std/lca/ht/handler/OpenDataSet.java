@@ -25,12 +25,12 @@ public class OpenDataSet implements IHandler {
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		
+
 	}
 
 	@Override
 	public void dispose() {
-		
+
 	}
 
 	@Override
@@ -40,22 +40,23 @@ public class OpenDataSet implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ChooseDataSetDialog dlg = new ChooseDataSetDialog(HandlerUtil.getActiveShell(event), "Please choose a data set to load:");
+		ChooseDataSetDialog dlg = new ChooseDataSetDialog(HandlerUtil.getActiveShell(event),
+				"Please choose a data set to load:");
 		dlg.open();
 		if (dlg.getReturnCode() == ChooseDataSetDialog.CANCEL)
 			return null;
 		FlowsWorkflow.clearStatusText();
 		FlowsWorkflow.buttonModePostLoad();
 		String dataSet = dlg.getSelection();
-		
-		//dataSet = chooseDataSetDialog.getit()
+
+		// dataSet = chooseDataSetDialog.getit()
 		DataSourceProvider ds = DataSourceKeeper.getByName(dataSet);
 		ds.syncFromTDB(null);
 		TableProvider provider = new TableProvider();
 		provider.setDataSourceProvider(ds);
 		String filePath = null;
 		String fileName = "";
-		//TODO - find out what it means when this has more than one FileMD
+		// TODO - find out what it means when this has more than one FileMD
 		List<FileMD> fileList = ds.getFileMDListNewestFirst();
 		if (fileList.size() > 0) {
 			FileMD fileMd = fileList.get(0);
@@ -63,35 +64,37 @@ public class OpenDataSet implements IHandler {
 			filePath = fileMd.getPath();
 			provider.setFileMD(fileList.get(0));
 		}
-		//TODO - does it matter if there was an old one?
+		// TODO - does it matter if there was an old one?
 		TableKeeper.saveTableProvider(filePath, provider);
-		//TODO - make sure we handle buildUserDataTableFromLCAHTDataViaQuery case also
+		// TODO - make sure we handle buildUserDataTableFromLCAHTDataViaQuery case also
 		long startTime = System.currentTimeMillis();
 		if (fileName.endsWith(".csv")) {
 			if (!ImportUserData.buildUserDataTableFromCSVData(dataSet, provider)) {
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
-		}
-		else
+		} else
 			ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
-		
+
 		ImportUserData.RunData data = new ImportUserData.RunData(null);
 		data.path = filePath;
 		data.display = Display.getCurrent();
 		ImportUserData.displayTableView(data);
-	
 
-		if (CSVTableView.preCommit)
-			FlowsWorkflow.buttonModePostLoad();
-		else {
-			FlowsWorkflow.statusCheckData.setText("");
-			FlowsWorkflow.buttonModePostCommit();
-//			FlowsWorkflow.switchToWorkflowState(8);
-
+		if (CSVTableView.preCommit) {
+			if (CSVTableView.matchedFlowableRowNumbers.size() > 0
+					|| CSVTableView.matchedFlowContextRowNumbers.size() > 0
+					|| CSVTableView.matchedFlowPropertyRowNumbers.size() > 0) {
+				CSVTableView.preCommit = false;
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
+			} else {
+				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
+			}
+		} else {
+			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 		}
-		
-		//Run in asyncExec to avoid race condition where 85% message replaces completed message
+
+		// Run in asyncExec to avoid race condition where 85% message replaces completed message
 		ImportUserData.updateText(FlowsWorkflow.statusLoadUserData, fileName);
 		System.out.println("Data set opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 
@@ -105,7 +108,7 @@ public class OpenDataSet implements IHandler {
 
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		
+
 	}
 
 }

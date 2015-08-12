@@ -79,7 +79,6 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
-				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 
 //				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnitDescription);
 //				lcaDataPropertyProvider.setRDFClass(rdfClass);
@@ -113,6 +112,7 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setCheckLists(FormatCheck.getFloatCheck());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.unitConversionFactor);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				LCADataPropertyProvider.registerProviders(dataPropertyMap);
 			}
 		}
 	}

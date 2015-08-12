@@ -528,7 +528,11 @@ public class TableProvider {
 
 		// LCADataPropertyProvider.retrieveCurrentDatasetLCADataPropertyProviderList();
 		CSVTableView.preCommit = (matchedFlowables == 0 && matchedFlowContexts == 0 && matchedFlowUnits == 0);
-
+//		if (CSVTableView.preCommit) {
+//			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
+//		} else {
+//			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
+//		}
 		FlowsWorkflow.showFlowableMatchCount(matchedFlowables, uniqueFlowables.size());
 		FlowsWorkflow.showFlowContextMatchCount(matchedFlowContexts, uniqueFlowContexts.size());
 		FlowsWorkflow.showFlowUnitMatchCount(matchedFlowUnits, uniqueFlowUnits.size());
