@@ -115,7 +115,8 @@ public class LCADataPropertyProvider {
 		b.append("select distinct ?col ?dataProp \n");
 		b.append("where {  \n");
 		b.append("  ?dca a fedlca:DatasetColumnAssignment . \n");
-		b.append("  ?dca eco:hasDataSource " + curDataSourceProviderName + " . \n");
+		b.append("  ?dca eco:hasDataSource ?ds . \n");
+		b.append("  ?ds rdfs:label \"" + curDataSourceProviderName + "\"^^xsd:string . \n");
 		b.append("  ?dca fedlca:columnNumber ?col . \n");
 		b.append("  ?dca fedlca:dataColumnProperty ?dataProp . \n");
 		b.append("} \n");
@@ -175,8 +176,9 @@ public class LCADataPropertyProvider {
 		b.append("select distinct ?dca \n");
 		b.append("where {  \n");
 		b.append("  ?dca a fedlca:DatasetColumnAssignment . \n");
-		b.append("  ?dca eco:hasDataSource " + curDataSourceProviderName + " . \n");
-		b.append("  ?dca fedlca:columnNumber " + columnNumber + "^^xsd:int . \n");
+		b.append("  ?dca eco:hasDataSource ?ds . \n");
+		b.append("  ?ds rdfs:label \"" + curDataSourceProviderName + "\"^^xsd:string . \n");
+		b.append("  ?dca fedlca:columnNumber " + columnNumber + " . \n");
 		b.append("} \n");
 		b.append("limit 1 \n");
 		String query = b.toString();
@@ -212,7 +214,7 @@ public class LCADataPropertyProvider {
 		}
 		Resource curDataSourceProviderResource = CSVTableView.getCurrentDatasetTDBResource();
 		// BEGIN WRITE TRANSACTION
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
 		Model tdbModel = ActiveTDB.getModel(null);
 		try {
 			if (currentValue == null) {
