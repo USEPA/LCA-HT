@@ -865,6 +865,11 @@ public class CSVTableView extends ViewPart {
 		initializeOtherViews();
 
 		tableProvider.colorExistingRows();
+		flowableColumns = new ArrayList<Integer>();
+		propertyColumns = new ArrayList<Integer>();
+		contextColumns = new ArrayList<Integer>();
+		flowColumns = new ArrayList<Integer>();
+
 	}
 
 	// private static void tinyRoutine(List<DataRow> data) {
@@ -2498,10 +2503,6 @@ public class CSVTableView extends ViewPart {
 		preCommit = false;
 		// tableViewer.
 
-		flowableColumns = new ArrayList<Integer>();
-		propertyColumns = new ArrayList<Integer>();
-		contextColumns = new ArrayList<Integer>();
-		flowColumns = new ArrayList<Integer>();
 		LCADataPropertyProvider[] lcaDataProperties = TableKeeper.getTableProvider(tableProviderKey)
 				.getLcaDataProperties();
 		for (int i = 0; i < lcaDataProperties.length; i++) {
