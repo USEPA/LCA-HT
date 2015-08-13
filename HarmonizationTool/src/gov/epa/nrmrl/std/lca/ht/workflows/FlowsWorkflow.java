@@ -876,7 +876,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				CSVTableView.reset();
 				CSVTableView.initialize();
-				CSVTableView.selectTableRow(0);
+				//CSVTableView.selectTableRow(0);
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 
 				btnLoadUserData.setEnabled(true);
@@ -1107,19 +1107,23 @@ public class FlowsWorkflow extends ViewPart {
 			setTooltipStatusCheckData("");
 			btnCommit.setText("Begin");
 			btnCommit.setToolTipText("");
+			statusCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("");
 			btnMatchFlowables.setText("Show Unique");
 			btnMatchFlowables.setToolTipText("");
 			setButtonState(btnMatchFlowables, false);
+			statusFlowable.setText("");
 			setTooltipStatusFlowContext("");
 			btnMatchFlowContexts.setText("Show Unique");
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
+			statusFlowContext.setText("");
 			setTooltipStatusFlowUnit("");
 			btnMatchFlowProperties.setText("Show Unique");
 			btnMatchFlowProperties.setToolTipText("");
 			setButtonState(btnMatchFlowProperties, false);
+			statusFlowUnit.setText("");
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("");
 			btnConcludeFile.setToolTipText("");
@@ -1333,6 +1337,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnCheckData.setToolTipText("Complete");
 			setButtonState(btnCheckData, false);
 			setTooltipStatusCheckData("");
+			statusCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
 			btnCommit.setText("");
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);

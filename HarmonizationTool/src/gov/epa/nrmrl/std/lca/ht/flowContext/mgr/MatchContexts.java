@@ -718,11 +718,13 @@ public class MatchContexts extends ViewPart {
 				setUserDataLabel(labelString, true);
 
 			} else {
-				masterTree.deselectAll();
+				if (masterTree != null)
+					masterTree.deselectAll();
 				setUserDataLabel(labelString, false);
 			}
 		} else {
-			masterTree.deselectAll();
+			if (masterTree != null)
+				masterTree.deselectAll();
 			setUserDataLabel(labelString, false);
 		}
 	}
@@ -773,6 +775,8 @@ public class MatchContexts extends ViewPart {
 	// }
 
 	private static void setUserDataLabel(String labelString, boolean isMatched) {
+		if (userDataLabel == null)
+			return;
 		if (labelString != null) {
 			userDataLabel.setText(labelString);
 		}
