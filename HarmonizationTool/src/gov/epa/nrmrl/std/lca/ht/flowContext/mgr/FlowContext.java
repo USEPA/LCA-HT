@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowContext.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
@@ -26,10 +28,16 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Comparison;
 
 public class FlowContext {
 	// CLASS VARIABLES
@@ -86,16 +94,16 @@ public class FlowContext {
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowContextSpecific);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-//				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
-//				lcaDataPropertyProvider.setRDFClass(rdfClass);
-//				lcaDataPropertyProvider.setPropertyClass(label);
-//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-//				lcaDataPropertyProvider.setRequired(false);
-//				lcaDataPropertyProvider.setUnique(false);
-//				lcaDataPropertyProvider.setLeftJustified(true);
-//				lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
-//				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
-//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				// lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
+				// lcaDataPropertyProvider.setRDFClass(rdfClass);
+				// lcaDataPropertyProvider.setPropertyClass(label);
+				// lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+				// lcaDataPropertyProvider.setRequired(false);
+				// lcaDataPropertyProvider.setUnique(false);
+				// lcaDataPropertyProvider.setLeftJustified(true);
+				// lcaDataPropertyProvider.setCheckLists(getContextNameCheckList());
+				// lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
+				// dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				// Pattern airGeneralRE = Pattern.compile("air", Pattern.CASE_INSENSITIVE);
 				// regexGeneralString.add(airGeneralRE);
@@ -290,38 +298,59 @@ public class FlowContext {
 		if (tdbResource == null) {
 			return;
 		}
-		// LCADataPropertyProvider LIST IS ALL LITERALS
+		// --- BEGIN SAFE -READ- TRANSACTION ---
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+
+		// LCADataPropertyProvider LIST IS ALL LITERALS
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
-				continue;
-			}
-			if (lcaDataPropertyProvider.isUnique()) {
-				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
-						.getValue();
-				if (value.getClass().equals(
+			Property property = lcaDataPropertyProvider.getTDBProperty();
+			Selector selector = new SimpleSelector(tdbResource, property, null, null);
+			StmtIterator stmtIterator = tdbModel.listStatements(selector);
+			int objectCount = 0;
+			while (stmtIterator.hasNext()) {
+				objectCount++;
+				Statement statement = stmtIterator.next();
+				Object value = statement.getObject().asLiteral().getValue();
+				if (!value.getClass().equals(
 						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
-					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-					lcaDataValue.setValue(value);
-					lcaDataValues.add(lcaDataValue);
+					continue;
 				}
-			} else {
-				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
-				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.nextStatement().getLiteral().getValue();
-					if (value.getClass().equals(
-							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+				if (lcaDataPropertyProvider.isUnique()) {
+					if (objectCount == 1) {
+						removeValues(lcaDataPropertyProvider.getPropertyName());
 						LCADataValue lcaDataValue = new LCADataValue();
 						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
+				} else {
+					LCADataValue lcaDataValue = new LCADataValue();
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setValue(value);
+					lcaDataValues.add(lcaDataValue);
 				}
 			}
 		}
+
+		// Now get the matchingResource
+		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Resource comparison = statement.getSubject();
+			if (!tdbModel.contains(comparison, FedLCA.comparedEquivalence, FedLCA.Equivalent)) {
+				continue;
+			}
+			Selector selector1 = new SimpleSelector(comparison, FedLCA.comparedMaster, null, null);
+			StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement1 = stmtIterator1.next();
+				matchingResource = statement1.getObject().asResource();
+			}
+		}
 		ActiveTDB.tdbDataset.end();
+		return;
 	}
 
 	public void clearSyncDataFromTDB() {
@@ -347,16 +376,34 @@ public class FlowContext {
 	}
 
 	public Resource getMatchingResource() {
+		if (matchingResource == null) {
+			updateSyncDataFromTDB();
+		}
 		return matchingResource;
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
 		this.matchingResource = matchingResource;
-		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, null, null);
-		} else {
-			ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
+		// First line here cleans up old matching assignments
+		ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, null, null);
+
+		Resource comparisonResource = ComparisonProvider.findComparisonResource(tdbResource, matchingResource);
+		if (matchingResource == null && comparisonResource == null) {
+			return;
 		}
+		if (comparisonResource == null) {
+			new ComparisonProvider(tdbResource, matchingResource, FedLCA.Equivalent);
+			ComparisonKeeper.commitUncommittedComparisons("Set in setMatchingResource");
+			return;
+		}
+		if (matchingResource == null) {
+			ActiveTDB.tsRemoveAllLikeObjects(comparisonResource, null, null, null);
+			return;
+		}
+		ComparisonProvider comparisonProvider = new ComparisonProvider(comparisonResource);
+		comparisonProvider.updateNow();
+		comparisonProvider.setMasterDataObject(matchingResource);
+		comparisonProvider.syncToTDB();
 	}
 
 	public int getFirstRow() {

@@ -475,7 +475,12 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		b.append("  ?uf fedlca:hasFlowUnit ?ufu . \n ");
 		b.append("  ?ufu a fedlca:FlowUnit . \n ");
 		b.append(" \n ");
-		b.append("  ?ufu owl:sameAs ?mfu . \n ");
+//		b.append("  ?ufu owl:sameAs ?mfu . \n ");
+		b.append("  ?unCmp fedlca:comparedSource ?ufu . \n");
+		b.append("  ?unCmp fedlca:comparedMaster ?mfu . \n");
+		b.append("  ?unCmp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+		b.append("  ?unCmp a fedlca:Comparison . \n");
+
 		b.append("  ?mfu fedlca:unitConversionFactor ?masterConversionFactor . \n ");
 		b.append("  ?mug a fedlca:UnitGroup . \n ");
 		b.append("  ?mug fedlca:hasFlowUnit ?mfu . \n ");

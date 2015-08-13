@@ -36,6 +36,7 @@ public class LCADataPropertyProvider {
 	private boolean leftJustified = true; // e.g. true
 	private List<FormatCheck> qaChecks; // A LIST OF WAYS OF CHECKING THIS COLUMN FOR VALIDITY
 	private Property tdbProperty;
+	private boolean includeInList = true;
 
 	// private List<Issue> issues = new ArrayList<Issue>();
 	// private List<String> values = new ArrayList<String>();
@@ -398,5 +399,13 @@ public class LCADataPropertyProvider {
 
 	public void setTDBProperty(Property tdbProperty) {
 		this.tdbProperty = tdbProperty;
+	}
+
+	public boolean isIncludeInList() {
+		return includeInList;
+	}
+
+	public void setIncludeInList(boolean includeInList) {
+		this.includeInList = includeInList;
 	}
 }

@@ -593,23 +593,31 @@ public class HarmonizedDataSelector extends ViewPart {
 
 	public static DataRow getHarmonizedDataHeader() {
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
-		if (tableProvider == null){
+		if (tableProvider == null) {
 			return null;
 		}
 		// String csvDataSetName = tableProvider.getDataSourceProvider().getDataSourceName();
 		DataRow inputHeader = tableProvider.getHeaderRow();
-		if (inputHeader == null){
+		if (inputHeader == null) {
 			return null;
 		}
 
 		DataRow outputHeader = new DataRow();
+		List<String> seen = new ArrayList<String>();
 		for (int i = 1; i < inputHeader.getSize(); i++) {
 			LCADataPropertyProvider lcaDataPropertyProvider = tableProvider.getLCADataPropertyProvider(i);
 			if (lcaDataPropertyProvider == null) {
-				outputHeader.add("(Not assigned)");
+				outputHeader.add("(Column: " + i + " - not assigned)");
 			} else {
-				outputHeader.add(lcaDataPropertyProvider.getPropertyClass() + ": "
-						+ lcaDataPropertyProvider.getPropertyName());
+				String thisColName = lcaDataPropertyProvider.getPropertyClass() + ": "
+						+ lcaDataPropertyProvider.getPropertyName();
+				int next = 2;
+				String stringToTest = thisColName;
+				while (seen.contains(stringToTest)) {
+					stringToTest = thisColName + "(" + next + ")";
+				}
+				seen.add(stringToTest);
+				outputHeader.add(stringToTest);
 			}
 		}
 		outputHeader.add("Master List Flowable Match Condition");
@@ -651,11 +659,11 @@ public class HarmonizedDataSelector extends ViewPart {
 				outputRow.add("");
 			}
 		} else {
-//			LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
+			// LinkedHashMap<Resource, String> matchCandidates = flowable.getMatchCandidates();
 			boolean hit = false;
-//			for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
+			// for (Entry<Resource, String> matchCandidate : matchCandidates.entrySet()) {
 
-			for (ComparisonProvider comparisonProvider:flowable.getComparisons()) {
+			for (ComparisonProvider comparisonProvider : flowable.getComparisons()) {
 				MatchStatus matchStatus = MatchStatus.getByResource(comparisonProvider.getEquivalence());
 				String matchCondition = matchStatus.getSymbol();
 				outputRow.add(matchCondition);

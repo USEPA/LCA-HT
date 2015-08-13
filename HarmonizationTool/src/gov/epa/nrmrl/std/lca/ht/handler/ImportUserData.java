@@ -130,9 +130,8 @@ public class ImportUserData implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		synchronized (Util.getInitLock()) {
 			// Save button state, disable everything
-//			FlowsWorkflow.disableAllButtons();
+			// FlowsWorkflow.disableAllButtons();
 			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_DURING_LOAD);
-
 
 			RunData data = new RunData(this);
 			data.display = Display.getCurrent();
@@ -140,7 +139,7 @@ public class ImportUserData implements IHandler {
 			tableProvider = new TableProvider();
 
 			FileDialog fileDialog = new FileDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell(), SWT.OPEN);
-//			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
+			// fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip;*.n3;*.ttl;*.rdf;*.jsonld;*.json" });
 			fileDialog.setFilterExtensions(new String[] { "*.csv;*.zip" });
 			String inputDirectory = Util.getPreferenceStore().getString("inputDirectory");
 			if (inputDirectory.length() > 0) {
@@ -153,7 +152,7 @@ public class ImportUserData implements IHandler {
 			data.path = fileDialog.open();
 			if (data.path == null) {
 				runLogger.info("# Cancelling data file read");
-//				FlowsWorkflow.restoreAllButtons();
+				// FlowsWorkflow.restoreAllButtons();
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
@@ -162,7 +161,7 @@ public class ImportUserData implements IHandler {
 				String errMsg = "Could not open the file \"" + data.path + "\".";
 				new GenericMessageBox(Display.getCurrent().getActiveShell(), "Error", errMsg);
 				runLogger.info("# Cancelling data file read");
-//				FlowsWorkflow.restoreAllButtons();
+				// FlowsWorkflow.restoreAllButtons();
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
@@ -185,21 +184,21 @@ public class ImportUserData implements IHandler {
 			runLogger.info("# File last modified: " + Temporal.getLocalDateFmt(date));
 			runLogger.info("# File size: " + data.file.length());
 
-//			System.out.println("All's fine before opening dialog");
+			// System.out.println("All's fine before opening dialog");
 			data.dialog = new MetadataDialog(Display.getCurrent().getActiveShell(), data.fileMD);
-//			System.out.println("meta initialized");
+			// System.out.println("meta initialized");
 			data.dialog.create();
-//			System.out.println("meta created");
+			// System.out.println("meta created");
 			if (data.dialog.open() == MetadataDialog.CANCEL) {
 				data.fileMD.remove();
-//				FlowsWorkflow.restoreAllButtons();
+				// FlowsWorkflow.restoreAllButtons();
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 				return null;
 			}
 			FlowsWorkflow.clearStatusText();
 			data.fileMD.createTDBResource();
-//			FlowsWorkflow.statusLoadUserData.setText("... loading ...");
-//			FlowsWorkflow.statusLoadUserData.setToolTipText("... loading ...");
+			// FlowsWorkflow.statusLoadUserData.setText("... loading ...");
+			// FlowsWorkflow.statusLoadUserData.setToolTipText("... loading ...");
 			new Thread(data).start();
 		}
 		return null;
@@ -225,7 +224,7 @@ public class ImportUserData implements IHandler {
 		}
 		loadUserDataFromReader(fileReader, tableProvider);
 	}
-	
+
 	private static void loadUserDataFromReader(Reader fileReader, TableProvider provider) {
 
 		try {
@@ -255,33 +254,35 @@ public class ImportUserData implements IHandler {
 		}
 		return;
 	}
-	
+
 	private static class CSVRecorder implements Runnable {
 		String targetName;
 		File input;
+
 		public CSVRecorder(File src, String target) {
 			input = src;
 			targetName = target;
 		}
-		
+
 		public void run() {
 			FileInputStream reader = null;
 			try {
 				reader = new FileInputStream(input);
-				//TODO - copy to zip
-				String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + targetName + ".zip";
+				// TODO - copy to zip
+				String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + targetName
+						+ ".zip";
 				ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(target));
 				zipFile.putNextEntry(new ZipEntry(target + ".csv"));
 
-			       // buffer size
-		        byte[] b = new byte[1024];
-		        int count;
+				// buffer size
+				byte[] b = new byte[1024];
+				int count;
 
-		        while ((count = reader.read(b)) > 0) {
-		            zipFile.write(b, 0, count);
-		        }
-		        zipFile.close();
-		        reader.close();
+				while ((count = reader.read(b)) > 0) {
+					zipFile.write(b, 0, count);
+				}
+				zipFile.close();
+				reader.close();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -423,16 +424,16 @@ public class ImportUserData implements IHandler {
 		ActiveTDB.copyImportGraphContentsToDefault();
 		ActiveTDB.clearImportGraphContents();
 		updateText(FlowsWorkflow.statusLoadUserData, "90% (finalizing)");
-//		runLogger.info("Syncing TDB to LCAHT " + new Date());
+		// runLogger.info("Syncing TDB to LCAHT " + new Date());
 		ActiveTDB.syncTDBtoLCAHT();
 
 		float elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000F;
 		long now = ActiveTDB.getModel(null).size();
 		long change = now - was;
 		runLogger.info(fileContents.size() + " files imported in " + elapsedTimeSec + "seconds.");
-//		runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
-//		runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
-//		runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
+		// runLogger.info("  # RDF triples before: " + NumberFormat.getIntegerInstance().format(was));
+		// runLogger.info("  # RDF triples after:  " + NumberFormat.getIntegerInstance().format(now));
+		// runLogger.info("  # RDF triples added:  " + NumberFormat.getIntegerInstance().format(change));
 	}
 
 	private static void placeContentsInDataset() {
@@ -506,26 +507,27 @@ public class ImportUserData implements IHandler {
 				if (uuidCheck.find()) {
 					Literal uuidLiteral = tdbModel.createTypedLiteral(uuidCandidate);
 					tdbModel.add(flowResource, FedLCA.hasOpenLCAUUID, uuidLiteral);
-//				} else {
-//					System.out.println("No match for " + uuidCandidate);
+					// } else {
+					// System.out.println("No match for " + uuidCandidate);
 				}
 			}
 			ActiveTDB.tdbDataset.commit();
 			// runLogger.info(" Finished adding items to datasource " + new Date());
 		} catch (Exception e) {
-//			System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
+			// System.out.println("Assigning openLCA items to DataSource failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION ---
-//		runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
+		// runLogger.info("  # Data items added to dataset: " + itemsToAddToDatasource.size());
 	}
-	
+
 	public static boolean buildUserDataTableFromCSVData(String dataSourceName, TableProvider tblProvider) {
 		ZipFile zipFile = null;
 		try {
-			String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + dataSourceName + ".zip";
+			String target = Util.getPreferenceStore().getString("csvDirectory") + File.separator + dataSourceName
+					+ ".zip";
 			zipFile = new ZipFile(target);
 			ZipEntry entry = zipFile.entries().nextElement();
 			BufferedReader zipStream = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry)));
@@ -536,22 +538,21 @@ public class ImportUserData implements IHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}
-		finally {
+		} finally {
 			if (zipFile != null) {
 				try {
 					zipFile.close();
 				} catch (Exception e) {
-					
+
 				}
 			}
 		}
-		
+
 	}
-		
 
 	public static void buildUserDataTableFromOLCADataViaQuery() {
 		buildUserDataTableFromOLCADataViaQuery(null, tableProvider);
+		tableProvider.getDataSourceProvider().hasSourceZippedJson = true;
 	}
 
 	public static ResultSetRewindable queryOLCATAbleData(String dataSourceName) {
@@ -615,7 +616,7 @@ public class ImportUserData implements IHandler {
 		b.append("order by ?flowable \n");
 
 		String query = b.toString();
-		//System.out.println("Query \n" + query);
+		// System.out.println("Query \n" + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -652,6 +653,7 @@ public class ImportUserData implements IHandler {
 				.setLCADataPropertyProvider(6, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
+		tblProvider.getDataSourceProvider().hasSourceZippedJson = true;
 		return;
 	}
 
@@ -780,8 +782,8 @@ public class ImportUserData implements IHandler {
 			ActiveTDB.tdbDataset.commit();
 			// TDB.sync(ActiveTDB.tdbDataset);
 		} catch (Exception e) {
-//			System.out.println("Import failed with Exception: " + e);
-//			System.out.println("The failing string was: \n" + failedString);
+			// System.out.println("Import failed with Exception: " + e);
+			// System.out.println("The failing string was: \n" + failedString);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -821,14 +823,16 @@ public class ImportUserData implements IHandler {
 			loadUserDataFromCSVFile(data.file);
 			CSVRecorder rec = new CSVRecorder(data.file, data.dialog.getCurDataSourceProvider().getDataSourceName());
 			new Thread(rec).start();
+			tableProvider.getDataSourceProvider().hasSourceZippedJson = false;
 		} else {
 			loadUserDataFromRDFFile(data.file);
+			tableProvider.getDataSourceProvider().hasSourceZippedJson = true;
 		}
 
 		Date readEndDate = new Date();
-//		System.out.println("readEndDate.getTime() " + readEndDate.getTime());
+		// System.out.println("readEndDate.getTime() " + readEndDate.getTime());
 		Date readDate = data.fileMD.getReadDate();
-//		System.out.println("data.readDate.getTime() " + readDate.getTime());
+		// System.out.println("data.readDate.getTime() " + readDate.getTime());
 
 		long secondsRead = (readEndDate.getTime() - data.readDate.getTime()) / 1000;
 		// - data.readDate.getTime()) / 1000);
@@ -852,12 +856,12 @@ public class ImportUserData implements IHandler {
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				}
-//				System.out.println("About to update CSVTableView");
+				// System.out.println("About to update CSVTableView");
 				CSVTableView.update(data.path);
 
 				String key = CSVTableView.getTableProviderKey();
 				if (key == null) {
-//					System.out.println("The CSVTableView does not have a table!");
+					// System.out.println("The CSVTableView does not have a table!");
 					// FlowsWorkflow.statusLoadUserData.setText("");
 					// FlowsWorkflow.statusLoadUserData.setToolTipText("");
 					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);

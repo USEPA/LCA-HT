@@ -1,5 +1,7 @@
 package gov.epa.nrmrl.std.lca.ht.flowProperty.mgr;
 
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonKeeper;
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.FormatCheck;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataValue;
@@ -18,8 +20,11 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -42,7 +47,7 @@ public class FlowUnit {
 	// - name
 	// - description
 	// synonyms
-	
+
 	// - uuid
 	// referenceUnit
 	// - conversionFactor
@@ -64,7 +69,6 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 				lcaDataPropertyProvider.setRequired(true);
 				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
 				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(RDFS.label);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
@@ -75,32 +79,30 @@ public class FlowUnit {
 				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
 				lcaDataPropertyProvider.setRequired(false);
 				lcaDataPropertyProvider.setUnique(true);
-				lcaDataPropertyProvider.setLeftJustified(true);
 				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
 				lcaDataPropertyProvider.setTDBProperty(FedLCA.flowPropertyString);
 				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-//				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnitDescription);
-//				lcaDataPropertyProvider.setRDFClass(rdfClass);
-//				lcaDataPropertyProvider.setPropertyClass(label);
-//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-//				lcaDataPropertyProvider.setRequired(false);
-//				lcaDataPropertyProvider.setUnique(true);
-//				lcaDataPropertyProvider.setLeftJustified(true);
-//				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
-//				lcaDataPropertyProvider.setTDBProperty(DCTerms.description);
-//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				lcaDataPropertyProvider = new LCADataPropertyProvider(flowPropertyUnitDescription);
+				lcaDataPropertyProvider.setRDFClass(rdfClass);
+				lcaDataPropertyProvider.setPropertyClass(label);
+				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+				lcaDataPropertyProvider.setRequired(false);
+				lcaDataPropertyProvider.setUnique(true);
+				lcaDataPropertyProvider.setCheckLists(getPropertyNameCheckList());
+				lcaDataPropertyProvider.setTDBProperty(DCTerms.description);
+				lcaDataPropertyProvider.setIncludeInList(false);
+				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-//				lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
-//				lcaDataPropertyProvider.setRDFClass(rdfClass);
-//				lcaDataPropertyProvider.setPropertyClass(label);
-//				lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-//				lcaDataPropertyProvider.setRequired(false);
-//				lcaDataPropertyProvider.setUnique(true);
-//				lcaDataPropertyProvider.setLeftJustified(true);
-//				lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
-//				lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
-//				dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+				// lcaDataPropertyProvider = new LCADataPropertyProvider(openLCAUUID);
+				// lcaDataPropertyProvider.setRDFClass(rdfClass);
+				// lcaDataPropertyProvider.setPropertyClass(label);
+				// lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+				// lcaDataPropertyProvider.setRequired(false);
+				// lcaDataPropertyProvider.setUnique(true);
+				// lcaDataPropertyProvider.setCheckLists(FormatCheck.getUUIDCheck());
+				// lcaDataPropertyProvider.setTDBProperty(FedLCA.hasOpenLCAUUID);
+				// dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
 				lcaDataPropertyProvider = new LCADataPropertyProvider(conversionFactor);
 				lcaDataPropertyProvider.setRDFClass(rdfClass);
@@ -141,7 +143,7 @@ public class FlowUnit {
 		lcaDataValues = new ArrayList<LCADataValue>();
 		matchingResource = null;
 	}
-	
+
 	public FlowUnit(Resource res) {
 		this(res, true);
 	}
@@ -232,58 +234,72 @@ public class FlowUnit {
 		if (tdbResource == null) {
 			return;
 		}
+		// --- BEGIN SAFE -READ- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+
 		// LCADataPropertyProvider LIST IS ALL LITERALS
 		for (LCADataPropertyProvider lcaDataPropertyProvider : dataPropertyMap.values()) {
-			if (!tdbResource.hasProperty(lcaDataPropertyProvider.getTDBProperty())) {
-				continue;
-			}
-			if (lcaDataPropertyProvider.isUnique()) {
-				removeValues(lcaDataPropertyProvider.getPropertyName());
-				Object value = tdbResource.getProperty(lcaDataPropertyProvider.getTDBProperty()).getLiteral()
-						.getValue();
-//				System.out.println("value class is "+value.getClass());
-				if (value.getClass().equals(
+			Property property = lcaDataPropertyProvider.getTDBProperty();
+			Selector selector = new SimpleSelector(tdbResource, property, null, null);
+			StmtIterator stmtIterator = tdbModel.listStatements(selector);
+			int objectCount = 0;
+			while (stmtIterator.hasNext()) {
+				objectCount++;
+				Statement statement = stmtIterator.next();
+				Object value = statement.getObject().asLiteral().getValue();
+				if (!value.getClass().equals(
 						RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
-					LCADataValue lcaDataValue = new LCADataValue();
-					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
-					lcaDataValue.setValue(value);
-					lcaDataValues.add(lcaDataValue);
+					continue;
 				}
-			} else {
-				StmtIterator stmtIterator = tdbResource.listProperties(lcaDataPropertyProvider.getTDBProperty());
-				while (stmtIterator.hasNext()) {
-					Object value = stmtIterator.nextStatement().getLiteral().getValue();
-					if (value.getClass().equals(
-							RDFUtil.getJavaClassFromRDFDatatype(lcaDataPropertyProvider.getRdfDatatype()))) {
+				if (lcaDataPropertyProvider.isUnique()) {
+					if (objectCount == 1) {
+						removeValues(lcaDataPropertyProvider.getPropertyName());
 						LCADataValue lcaDataValue = new LCADataValue();
 						lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
 						lcaDataValue.setValue(value);
 						lcaDataValues.add(lcaDataValue);
 					}
+				} else {
+					LCADataValue lcaDataValue = new LCADataValue();
+					lcaDataValue.setLcaDataPropertyProvider(lcaDataPropertyProvider);
+					lcaDataValue.setValue(value);
+					lcaDataValues.add(lcaDataValue);
 				}
 			}
 		}
-		// --- BEGIN SAFE -READ- TRANSACTION ---
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		ResIterator resIterator = ActiveTDB.getModel(null).listSubjectsWithProperty(FedLCA.comparedSource, tdbResource);
-		// ActiveTDB.tdbDataset.end();
-		if (resIterator.hasNext()) {
-			matchingResource = resIterator.next();
+
+		// Now get the matchingResource
+		Selector selector = new SimpleSelector(null, FedLCA.comparedSource, tdbResource);
+		StmtIterator stmtIterator = tdbModel.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Resource comparison = statement.getSubject();
+			if (!tdbModel.contains(comparison, FedLCA.comparedEquivalence, FedLCA.Equivalent)) {
+				continue;
+			}
+			Selector selector1 = new SimpleSelector(comparison, FedLCA.comparedMaster, null, null);
+			StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+			while (stmtIterator1.hasNext()) {
+				Statement statement1 = stmtIterator1.next();
+				matchingResource = statement1.getObject().asResource();
+			}
 		}
-		resIterator = ActiveTDB.getModel(null).listSubjectsWithProperty(FedLCA.hasFlowUnit, tdbResource);
-		// ActiveTDB.tdbDataset.end();
-		if (resIterator.hasNext()) {
-			unitGroup = resIterator.next();
+
+		Selector selector1 = new SimpleSelector(null, FedLCA.hasFlowUnit, tdbResource);
+		StmtIterator stmtIterator1 = tdbModel.listStatements(selector1);
+		while (stmtIterator1.hasNext()) {
+			Statement statement1 = stmtIterator1.next();
+			unitGroup = statement1.getSubject();
 		}
-		if (unitGroup != null){
-			referenceFlowUnit = unitGroup.getProperty(FedLCA.hasReferenceUnit).getObject().asResource();
+		if (unitGroup != null) {
+			Selector selector2 = new SimpleSelector(unitGroup, FedLCA.hasReferenceUnit, null, null);
+			StmtIterator stmtIterator2 = tdbModel.listStatements(selector2);
+			while (stmtIterator2.hasNext()) {
+				Statement statement2 = stmtIterator2.next();
+				referenceFlowUnit = statement2.getObject().asResource();
+			}
 		}
-		resIterator = ActiveTDB.getModel(null).listSubjectsWithProperty(FedLCA.hasFlowUnit, tdbResource);
-		// ActiveTDB.tdbDataset.end();
-		if (resIterator.hasNext()) {
-			unitGroup = resIterator.next();
-		}
-		
 		ActiveTDB.tdbDataset.end();
 		return;
 	}
@@ -302,13 +318,26 @@ public class FlowUnit {
 	}
 
 	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllLikeObjects(matchingResource, OWL.sameAs, null, null);
-			this.matchingResource = null;
+		this.matchingResource = matchingResource;
+		// First line here cleans up old matching assignments
+		ActiveTDB.tsRemoveAllLikeObjects(tdbResource, OWL.sameAs, null, null);
+
+		Resource comparisonResource = ComparisonProvider.findComparisonResource(tdbResource, matchingResource);
+		if (matchingResource == null && comparisonResource == null) {
 			return;
 		}
-		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
+		if (comparisonResource == null) {
+			new ComparisonProvider(tdbResource, matchingResource, FedLCA.Equivalent);
+			ComparisonKeeper.commitUncommittedComparisons("Set in setMatchingResource");
+			return;
+		}
+		if (matchingResource == null) {
+			ActiveTDB.tsRemoveAllLikeObjects(comparisonResource, null, null, null);
+			return;
+		}
+		ComparisonProvider comparisonProvider = new ComparisonProvider(comparisonResource);
+		comparisonProvider.updateNow();
+		comparisonProvider.setMasterDataObject(matchingResource);
 	}
 
 	public Resource getMatchingResource() {
@@ -336,6 +365,13 @@ public class FlowUnit {
 				return lcaDataValue.getValue();
 			}
 		}
+		// // If you didn't find anything, try syncing...
+		// clearSyncDataFromTDB();
+		// for (LCADataValue lcaDataValue : lcaDataValues) {
+		// if (lcaDataValue.getLcaDataPropertyProvider().getPropertyName().equals(key)) {
+		// return lcaDataValue.getValue();
+		// }
+		// }
 		return null;
 	}
 

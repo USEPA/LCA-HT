@@ -87,7 +87,7 @@ public class OpenDataSet implements IHandler {
 			if (CSVTableView.matchedFlowableRowNumbers.size() > 0
 					|| CSVTableView.matchedFlowContextRowNumbers.size() > 0
 					|| CSVTableView.matchedFlowPropertyRowNumbers.size() > 0) {
-				CSVTableView.preCommit = false;
+				CSVTableView.setPostCommit();
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 			} else {
 				FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);

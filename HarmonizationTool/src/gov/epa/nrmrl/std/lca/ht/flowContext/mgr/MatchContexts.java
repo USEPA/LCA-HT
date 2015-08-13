@@ -258,7 +258,7 @@ public class MatchContexts extends ViewPart {
 		}
 		currentFlowContextSelection = selectedTreeItem;
 		currentFlowContextSelection.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-		contextToMatch.setMatchingResource(selectedTreeNode.uri);
+//		contextToMatch.setMatchingResource(selectedTreeNode.uri);
 
 		masterTree.deselectAll();
 
@@ -321,7 +321,7 @@ public class MatchContexts extends ViewPart {
 	};
 
 	private void expandItem(TreeItem item) {
-//		System.out.println("Item expanded: item.getText() " + item.getText());
+		// System.out.println("Item expanded: item.getText() " + item.getText());
 		item.setExpanded(true);
 		masterTreeViewer.refresh();
 		for (TreeItem child : item.getItems()) {
@@ -400,10 +400,10 @@ public class MatchContexts extends ViewPart {
 		}
 		return result;
 	}
-	
-	//preloaded during app startup but not meant to be cached
+
+	// preloaded during app startup but not meant to be cached
 	private static TreeNode initialTree = null;
-	
+
 	public static void preloadHarmonizedCompartments() {
 		TreeNode tree = createHarmonizeCompartments();
 		initialTree = tree;
@@ -699,13 +699,15 @@ public class MatchContexts extends ViewPart {
 			nounVerb = " flow contains";
 		}
 		String labelString = rowCount + nounVerb + System.getProperty("line.separator");
-		if (specificString == null) {
+		if (generalString != null && specificString != null) {
+			labelString += generalString + "; " + specificString;
+		} else if (generalString != null) {
 			labelString += generalString;
 		} else {
-			labelString += generalString + "; " + specificString;
+			labelString += specificString;
 		}
 
-		Resource contextResource = dataRow.getFlowContext().getMatchingResource();
+		Resource contextResource = contextToMatch.getMatchingResource();
 		if (contextResource != null) {
 			TreeItem treeItem = getTreeItemByURI(contextResource);
 			if (treeItem != null) {

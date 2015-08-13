@@ -322,13 +322,21 @@ public class Flow {
 			b.append("  ?mf eco:hasFlowable ?mflowable . \n");
 
 			b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
-			b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+//			b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+			b.append("  ?unCmp fedlca:comparedSource ?flowUnit . \n");
+			b.append("  ?unCmp fedlca:comparedMaster ?mflowUnit . \n");
+			b.append("  ?unCmp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append("  ?unCmp a fedlca:Comparison . \n");
 			b.append("  ?mug fedlca:hasFlowUnit ?mflowUnit . \n");
 			b.append("  ?mFlowProperty fedlca:belongsToUnitGroup ?mug . \n");
 			b.append("  ?mf fedlca:hasFlowProperty ?mFlowProperty . \n");
 
 			b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
-			b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+//			b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+			b.append("  ?ctxCmp fedlca:comparedSource ?flowContext . \n");
+			b.append("  ?ctxCmp fedlca:comparedMaster ?mflowContext . \n");
+			b.append("  ?ctxCmp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+			b.append("  ?ctxCmp a fedlca:Comparison . \n");
 			b.append("  ?mf fedlca:hasFlowContext ?mflowContext . \n");
 
 			b.append("  ?f a fedlca:Flow . \n");
@@ -508,13 +516,22 @@ public class Flow {
 		b.append("  ?mf eco:hasFlowable ?mflowable . \n");
 
 		b.append("  ?f fedlca:hasFlowUnit ?flowUnit . \n");
-		b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+		
+//		b.append("  ?flowUnit owl:sameAs ?mflowUnit . \n");
+		b.append("  ?unCmp fedlca:comparedSource ?flowUnit . \n");
+		b.append("  ?unCmp fedlca:comparedMaster ?mflowUnit . \n");
+		b.append("  ?unCmp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+		b.append("  ?unCmp a fedlca:Comparison . \n");
 		b.append("  ?mug fedlca:hasFlowUnit ?mflowUnit . \n");
 		b.append("  ?mFlowProperty fedlca:belongsToUnitGroup ?mug . \n");
 		b.append("  ?mf fedlca:hasFlowProperty ?mFlowProperty . \n");
 
 		b.append("  ?f fedlca:hasFlowContext ?flowContext . \n");
-		b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+//		b.append("  ?flowContext owl:sameAs ?mflowContext . \n");
+		b.append("  ?ctxCmp fedlca:comparedSource ?flowContext . \n");
+		b.append("  ?ctxCmp fedlca:comparedMaster ?mflowContext . \n");
+		b.append("  ?ctxCmp fedlca:comparedEquivalence fedlca:Equivalent . \n");
+		b.append("  ?ctxCmp a fedlca:Comparison . \n");
 		b.append("  ?mf fedlca:hasFlowContext ?mflowContext . \n");
 
 		b.append("  ?f a fedlca:Flow . \n");

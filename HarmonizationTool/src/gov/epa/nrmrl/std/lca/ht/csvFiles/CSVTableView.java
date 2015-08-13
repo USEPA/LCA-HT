@@ -136,10 +136,10 @@ public class CSVTableView extends ViewPart {
 
 	public static boolean preCommit = true;
 
-	private static List<Integer> flowableColumns = null;
-	private static List<Integer> propertyColumns = null;
-	private static List<Integer> contextColumns = null;
-	private static List<Integer> flowColumns = null;
+	private static Set<Integer> flowableColumns = null;
+	private static Set<Integer> propertyColumns = null;
+	private static Set<Integer> contextColumns = null;
+	private static Set<Integer> flowColumns = null;
 
 	private static List<String> masterFlowUUIDs = null;
 
@@ -865,10 +865,10 @@ public class CSVTableView extends ViewPart {
 		initializeOtherViews();
 
 		tableProvider.colorExistingRows();
-		flowableColumns = new ArrayList<Integer>();
-		propertyColumns = new ArrayList<Integer>();
-		contextColumns = new ArrayList<Integer>();
-		flowColumns = new ArrayList<Integer>();
+		flowableColumns = new TreeSet<Integer>();
+		propertyColumns = new TreeSet<Integer>();
+		contextColumns = new TreeSet<Integer>();
+		flowColumns = new TreeSet<Integer>();
 
 	}
 
@@ -1240,20 +1240,20 @@ public class CSVTableView extends ViewPart {
 		}
 	}
 
-	public static void selectNext() {
-		if (rowNumSelected < (table.getItemCount() - 1)) {
-			TableItem lastTableItem = table.getItem(rowNumSelected);
-			rowNumSelected++;
-			TableItem tableItem = table.getItem(rowNumSelected);
-			table.deselectAll();
-			if (defaultFont == null) {
-				createFonts(tableItem);
-			}
-			lastTableItem.setFont(defaultFont);
-			tableItem.setFont(boldFont);
-			selectRowColumn();
-		}
-	}
+	// public static void selectNext() {
+	// if (rowNumSelected < (table.getItemCount() - 1)) {
+	// TableItem lastTableItem = table.getItem(rowNumSelected);
+	// rowNumSelected++;
+	// TableItem tableItem = table.getItem(rowNumSelected);
+	// table.deselectAll();
+	// if (defaultFont == null) {
+	// createFonts(tableItem);
+	// }
+	// lastTableItem.setFont(defaultFont);
+	// tableItem.setFont(boldFont);
+	// selectRowColumn();
+	// }
+	// }
 
 	/**
 	 * This method advances the highlighted (selected) row in the User Data table.  If <strong>nextUnmatched</strong>
@@ -1267,18 +1267,18 @@ public class CSVTableView extends ViewPart {
 	public static void selectNext(String viewCallerID, boolean nextUnmatched) {
 		selectNext(viewCallerID, nextUnmatched, false);
 	}
-	
+
 	private static void selectNext(String viewCallerID, boolean nextUnmatched, boolean searchFromStart) {
 		int origSelection = rowNumSelected;
 		if (rowNumSelected < 1 || rowNumSelected >= table.getItemCount() || searchFromStart) {
 			rowNumSelected = 0;
 		}
-			
+
 		int nextTableRowNum = rowNumSelected;
 		int nextDataRowNum = -1;
 		int curDataRowNum = getDataRowNumberFromTableRowNumber(rowNumSelected);
 		if (searchFromStart)
-			--curDataRowNum; //Needed to allow selection of row 0
+			--curDataRowNum; // Needed to allow selection of row 0
 		if (viewCallerID.equals(MatchContexts.ID)) {
 			for (int i : uniqueFlowContextRowNumbers) {
 				if (i > curDataRowNum) {
@@ -1294,11 +1294,10 @@ public class CSVTableView extends ViewPart {
 			if (nextDataRowNum == -1) {
 				if (searchFromStart) {
 					if (!CSVTableView.preCommit)
-						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert",
-								"No results found.");
+						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert", "No results found.");
 					return;
 				}
-									
+
 				selectNext(viewCallerID, nextUnmatched, true);
 				return;
 			}
@@ -1308,6 +1307,11 @@ public class CSVTableView extends ViewPart {
 					nextTableRowNum = i;
 					break;
 				}
+			}
+			for (int j = contextColumns.size() - 1; j >= 0; j--) {
+				int colNum = (int) contextColumns.toArray()[j];
+				TableColumn tableColumn = table.getColumn(colNum);
+				table.showColumn(tableColumn);
 			}
 			MatchContexts.update(nextDataRowNum);
 		} else if (viewCallerID.equals(MatchProperties.ID)) {
@@ -1325,11 +1329,10 @@ public class CSVTableView extends ViewPart {
 			if (nextDataRowNum == -1) {
 				if (searchFromStart) {
 					if (!CSVTableView.preCommit)
-						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert",
-								"No results found.");
+						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert", "No results found.");
 					return;
 				}
-									
+
 				selectNext(viewCallerID, nextUnmatched, true);
 				return;
 			}
@@ -1339,6 +1342,11 @@ public class CSVTableView extends ViewPart {
 					nextTableRowNum = i;
 					break;
 				}
+			}
+			for (int j = propertyColumns.size() - 1; j >= 0; j--) {
+				int colNum = (int) propertyColumns.toArray()[j];
+				TableColumn tableColumn = table.getColumn(colNum);
+				table.showColumn(tableColumn);
 			}
 			MatchProperties.update(nextDataRowNum);
 		} else if (viewCallerID.equals(MatchFlowables.ID)) {
@@ -1356,11 +1364,10 @@ public class CSVTableView extends ViewPart {
 			if (nextDataRowNum == -1) {
 				if (searchFromStart) {
 					if (!CSVTableView.preCommit)
-						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert",
-								"No results found.");
+						new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert", "No results found.");
 					return;
 				}
-									
+
 				selectNext(viewCallerID, nextUnmatched, true);
 				return;
 			}
@@ -1370,6 +1377,11 @@ public class CSVTableView extends ViewPart {
 					nextTableRowNum = i;
 					break;
 				}
+			}
+			for (int j = flowableColumns.size() - 1; j >= 0; j--) {
+				int colNum = (int) flowableColumns.toArray()[j];
+				TableColumn tableColumn = table.getColumn(colNum);
+				table.showColumn(tableColumn);
 			}
 			MatchFlowables.update(nextDataRowNum);
 		}
@@ -1403,28 +1415,27 @@ public class CSVTableView extends ViewPart {
 			createFonts(tableItem);
 		}
 		newTableItem.setFont(boldFont);
-
 	}
 
-	public static void selectNext(String viewCallerID) {
-		// System.out.println("RowNumSelected = " + rowNumSelected);
-		// System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
-		if (rowNumSelected < (table.getItemCount() - 1)) {
-			TableItem lastTableItem = table.getItem(rowNumSelected);
-			rowNumSelected++;
-			TableItem tableItem = table.getItem(rowNumSelected);
-			table.deselectAll();
-			lastTableItem.setFont(defaultFont);
-			tableItem.setFont(boldFont);
-			selectRowColumn();
-		}
-		try {
-			Util.showView(viewCallerID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	// public static void selectNext(String viewCallerID) {
+	// // System.out.println("RowNumSelected = " + rowNumSelected);
+	// // System.out.println("table.getSelectionIndex() = " + table.getSelectionIndex());
+	// if (rowNumSelected < (table.getItemCount() - 1)) {
+	// TableItem lastTableItem = table.getItem(rowNumSelected);
+	// rowNumSelected++;
+	// TableItem tableItem = table.getItem(rowNumSelected);
+	// table.deselectAll();
+	// lastTableItem.setFont(defaultFont);
+	// tableItem.setFont(boldFont);
+	// selectRowColumn();
+	// }
+	// try {
+	// Util.showView(viewCallerID);
+	// } catch (PartInitException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	// public static void selectNextFlowable() {
 	// // System.out.println("RowNumSelected = " + rowNumSelected);
@@ -1829,6 +1840,9 @@ public class CSVTableView extends ViewPart {
 		String curMenuName = "";
 		Menu curMenu = null;
 		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
+			if (!lcaDataPropertyProvider.isIncludeInList()){
+				continue;
+			}
 			String newMenuName = lcaDataPropertyProvider.getPropertyClass();
 			// System.out.println("newMenuName = " + newMenuName);
 			MenuItem menuParent = null;
@@ -2554,7 +2568,6 @@ public class CSVTableView extends ViewPart {
 				}
 			}
 		}
-
 	}
 
 	public static void setColNumSelected(int col) {

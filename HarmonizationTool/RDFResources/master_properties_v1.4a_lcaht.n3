@@ -1468,7 +1468,7 @@ fedlca:unit_Rutherford
 
 fedlca:unit_kBq  a                   owl:NamedIndividual , fedlca:FlowUnit ;
         rdfs:label                   "kBq"^^xsd:string ;
-        fedlca:displaySortIndex      84 ;
+        fedlca:displaySortIndex      81 ;
         fedlca:hasOpenLCAUUID        "e9773595-284e-46dd-9671-5fc9ff406833"^^xsd:string ;
         fedlca:unitConversionFactor  "1.0"^^xsd:double ;
         eco:hasDataSource            fedlca:master_properties_v1.4a ;

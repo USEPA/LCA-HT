@@ -145,59 +145,6 @@ public class MatchProperties extends ViewPart {
 		masterTree.setLinesVisible(true);
 		ColumnViewerToolTipSupport.enableFor(masterTreeViewer);
 
-		// masterTreeViewer.setLabelProvider(new ColumnLabelProvider() {
-		// // private Color currentColor = null;
-		//
-		// // @Override
-		// public String getText(Object treeNode) {
-		// return ((TreeNode) treeNode).nodeName;
-		// }
-		//
-		// // @Override
-		// public Font getFont(Object treeNode) {
-		// TreeNode castAsTreeNode = (TreeNode) treeNode;
-		// if (defaultFont == null){
-		// createFonts(masterTree.getItem(0));
-		// }
-		// if (castAsTreeNode.isReference()){
-		// return boldFont;
-		// }
-		// return defaultFont;
-		// }
-		//
-		// });
-		// TODO - thinking about something like this below so that reference tree nodes can be bold and have a tooltip
-		// masterTreeViewer.setLabelProvider(new CellLabelProvider() {
-		// // private Color currentColor = null;
-		//
-		// // @Override
-		// public String getText(Object treeNode) {
-		// return ((TreeNode) treeNode).nodeName;
-		// }
-		//
-		// // @Override
-		// public Font getFont(Object treeNode) {
-		// TreeNode castAsTreeNode = (TreeNode) treeNode;
-		// if (defaultFont == null){
-		// createFonts(masterTree.getItem(0));
-		// }
-		// if (castAsTreeNode.isReference()){
-		// return boldFont;
-		// }
-		// return defaultFont;
-		// }
-		//
-		// @Override
-		// public void update(ViewerCell cell) {
-		// TreeItem treeItem = (TreeItem) cell.getElement();
-		// TreeNode treeNode = (TreeNode) treeItem.getData();
-		// System.out.println("TreeItem: "+treeNode);
-		//
-		//
-		// }
-		//
-		// });
-
 		TreeViewerColumn masterTreeColumn = new TreeViewerColumn(masterTreeViewer, SWT.NONE);
 		masterTreeColumn.getColumn().setWidth(300);
 		// masterTreeColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -214,8 +161,8 @@ public class MatchProperties extends ViewPart {
 				String referenceUnitStatus = "";
 				if (!treeNode.isReference) {
 					referenceUnitStatus = treeNode.conversionFactor + " conversion factor meaning 1 "
-							+ treeNode.nodeName + " = " + treeNode.conversionFactor + " "
-							+ treeNode.referenceUnit + " (Reference Unit)";
+							+ treeNode.nodeName + " = " + treeNode.conversionFactor + " " + treeNode.referenceUnit
+							+ " (Reference Unit)";
 				} else {
 					referenceUnitStatus = "Reference Unit";
 				}
@@ -352,7 +299,7 @@ public class MatchProperties extends ViewPart {
 				currentFlowUnitSelection.setBackground(null);
 			}
 			currentFlowUnitSelection = null;
-
+			unitToMatch.setMatchingResource(null);
 			String rowNumString = tableItem.getText(0);
 			int rowNumber = Integer.parseInt(rowNumString) - 1;
 			DataRow dataRow = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey()).getData().get(rowNumber);
@@ -921,14 +868,20 @@ public class MatchProperties extends ViewPart {
 			nounVerb = " flow contains";
 		}
 		String labelString = rowCount + nounVerb + System.getProperty("line.separator");
-
-		if (unitToMatch.getUnitGroup() != null) {
-			labelString += unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
-					+ System.getProperty("line.separator") + "   "
-					+ (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
-		} else {
-			labelString += (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
+		// unitToMatch.clearSyncDataFromTDB();
+		// String unitString = null;
+		// if (unitToMatch.getUnitGroup() != null) {
+		// labelString += unitToMatch.getUnitGroup().getProperty(RDFS.label).getString()
+		// + System.getProperty("line.separator") + "   "
+		// + (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
+		// } else {
+		String unitString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
+		if (unitString == null) {
+			unitToMatch.updateSyncDataFromTDB();
+			unitString = (String) unitToMatch.getOneProperty(FlowUnit.flowUnitString);
 		}
+		labelString += unitString;
+		// }
 
 		partialCollapse();
 		Resource propertyResource = unitToMatch.getMatchingResource();

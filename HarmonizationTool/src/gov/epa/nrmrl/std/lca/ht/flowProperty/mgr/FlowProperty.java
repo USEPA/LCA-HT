@@ -328,15 +328,15 @@ public class FlowProperty {
 		return matchingResource;
 	}
 
-	public void setMatchingResource(Resource matchingResource) {
-		if (matchingResource == null) {
-			ActiveTDB.tsRemoveAllLikeObjects(matchingResource, OWL.sameAs, null, null);
-			this.matchingResource = null;
-			return;
-		}
-		this.matchingResource = matchingResource;
-		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
-	}
+//	public void setMatchingResource(Resource matchingResource) {
+//		if (matchingResource == null) {
+//			ActiveTDB.tsRemoveAllLikeObjects(matchingResource, OWL.sameAs, null, null);
+//			this.matchingResource = null;
+//			return;
+//		}
+//		this.matchingResource = matchingResource;
+//		ActiveTDB.tsReplaceResourceSameType(tdbResource, OWL.sameAs, matchingResource, null);
+//	}
 
 	public int getFirstRow() {
 		return firstRow;

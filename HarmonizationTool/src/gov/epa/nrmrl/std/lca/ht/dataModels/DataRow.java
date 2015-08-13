@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
 import gov.epa.nrmrl.std.lca.ht.flowable.mgr.Flowable;
@@ -87,15 +88,12 @@ public class DataRow {
 	public Resource getMatchingMasterContext() {
 		if (flowContext == null) {
 			return null;
+		}		
+		List<Resource> matches = ComparisonProvider.findMatchingResourcesFromSource(flowContext.getTdbResource());
+		if (matches.isEmpty()){
+			return null;
 		}
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		Statement statement = tdbModel.getProperty(flowContext.getTdbResource(), OWL.sameAs);
-		ActiveTDB.tdbDataset.end();
-		if (statement != null) {
-			return statement.getObject().asResource();
-		}
-		return null;
+		return matches.get(0);
 	}
 
 //	public Resource getMatchingMasterProperty() {
@@ -113,21 +111,14 @@ public class DataRow {
 //	}
 
 	public Resource getMatchingMasterFlowUnit() {
-//		if (flowProperty == null) {
-//			return null;
-//		}
-//		FlowUnit flowUnit = flowProperty.getUserDataFlowUnit();
 		if (flowUnit == null) {
 			return null;
+		}		
+		List<Resource> matches = ComparisonProvider.findMatchingResourcesFromSource(flowUnit.getTdbResource());
+		if (matches.isEmpty()){
+			return null;
 		}
-		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
-		Model tdbModel = ActiveTDB.getModel(null);
-		Statement statement = tdbModel.getProperty(flowUnit.getTdbResource(), OWL.sameAs);
-		ActiveTDB.tdbDataset.end();
-		if (statement != null) {
-			return statement.getObject().asResource();
-		}
-		return null;
+		return matches.get(0);
 	}
 
 	public Iterator<String> getIterator() {

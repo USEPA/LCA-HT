@@ -1,6 +1,8 @@
 package gov.epa.nrmrl.std.lca.ht.dataCuration;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
@@ -199,6 +201,36 @@ public class ComparisonProvider {
 		}
 		ActiveTDB.tdbDataset.end();
 		return comparisonResource;
+	}
+	
+	public static List<Resource> findComparisonResourcesFromSource(Resource userObject) {
+		List<Resource> comparisonResources = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, userObject);
+		while (resIterator.hasNext()) {
+			Resource comparisonResource = resIterator.next();
+			if (tdbModel.contains(comparisonResource, RDF.type , FedLCA.Comparison)) {
+				comparisonResources.add(comparisonResource);
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		return comparisonResources;
+	}
+
+	public static List<Resource> findMatchingResourcesFromSource(Resource userObject) {
+		List<Resource> masterResources = new ArrayList<Resource>();
+		ActiveTDB.tdbDataset.begin(ReadWrite.READ);
+		Model tdbModel = ActiveTDB.getModel(null);
+		ResIterator resIterator = tdbModel.listResourcesWithProperty(FedLCA.comparedSource, userObject);
+		while (resIterator.hasNext()) {
+			Resource comparisonResource = resIterator.next();
+			if (tdbModel.contains(comparisonResource, RDF.type , FedLCA.Comparison)) {
+				masterResources.add(comparisonResource.getPropertyResourceValue(FedLCA.comparedMaster));
+			}
+		}
+		ActiveTDB.tdbDataset.end();
+		return masterResources;
 	}
 
 	public Resource findComparisonResource() {
