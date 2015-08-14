@@ -225,16 +225,17 @@ public class ChooseDataSetDialog extends Dialog {
 
 	private void updateOutputFormatCombo() {
 		List<String> formats = new ArrayList<String>();
-		formats.add("Tab-delimited text file (.csv)");
+		// TODO - TAHOWARD - I changed this so that the right options are presented, but the index will be wrong on the
+		// other end
 		if (zippedJson) {
 			formats.add("Zipped .json for OpenLCA (.zip)");
 			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
-			outputFormatCombo.select(1);
 		} else {
+			formats.add("Tab-delimited text file (.csv)");
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
-			outputFormatCombo.select(0);
 		}
+		outputFormatCombo.select(0);
 		outputFormatCombo.redraw();
 		outputFormatCombo.pack();
 	}
@@ -249,8 +250,12 @@ public class ChooseDataSetDialog extends Dialog {
 
 	protected void okPressed() {
 		selection = dsPositionMap.get(dataSetCombo.getSelectionIndex());
-		if (askFileFormat)
+		if (askFileFormat) {
+			// String outputFormatString = outputFormatCombo.getText();
 			format = outputFormatCombo.getSelectionIndex();
+			// TODO ==> TAHOWARD - we can't just get the selection index if it is 0 for one setup and 0 or 1 for the
+			// other.
+		}
 		if (selection.endsWith(" (Current)"))
 			selection = selection.substring(0, selection.length() - " (Current)".length());
 		System.out.println("Setting selection = " + selection);
