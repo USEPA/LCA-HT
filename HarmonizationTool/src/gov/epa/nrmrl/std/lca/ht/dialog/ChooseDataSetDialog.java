@@ -1,8 +1,10 @@
 package gov.epa.nrmrl.std.lca.ht.dialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
@@ -70,6 +72,7 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 
 	private Combo dataSetCombo;
+	private Map<Integer, String> dsPositionMap = new HashMap<Integer, String>();
 	private Combo outputFormatCombo;
 	String storageLocation;
 	Label dialogLabel;
@@ -124,6 +127,8 @@ public class ChooseDataSetDialog extends Dialog {
 					filteredNames.add(name);
 			}
 			names = filteredNames;
+			for (int i = 0; i < names.size(); ++i)
+				dsPositionMap.put(i,  names.get(i));
 		}
 
 		if (names.isEmpty()) {
@@ -155,7 +160,7 @@ public class ChooseDataSetDialog extends Dialog {
 		}
 		dataSetCombo.addSelectionListener(new SelectionListener() {
 			private void doit(SelectionEvent e) {
-				String datasetName = dataSetCombo.getText();
+				String datasetName = dsPositionMap.get(dataSetCombo.getSelectionIndex());
 				DataSourceProvider dataSourceProvider = DataSourceKeeper.getByName(datasetName);
 				zippedJson = dataSourceProvider.hasSourceZippedJson;
 			}
@@ -218,7 +223,7 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 
 	protected void okPressed() {
-		selection = dataSetCombo.getText();
+		selection = dsPositionMap.get(dataSetCombo.getSelectionIndex());
 		if (askFileFormat)
 			format = outputFormatCombo.getSelectionIndex();
 		if (selection.endsWith(" (Current)"))

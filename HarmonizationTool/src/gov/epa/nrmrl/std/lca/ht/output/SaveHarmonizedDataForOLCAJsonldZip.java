@@ -5,6 +5,7 @@ import gov.epa.nrmrl.std.lca.ht.csvFiles.SaveHarmonizedDataHandler;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
@@ -13,6 +14,7 @@ import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 
 //import java.util.Calendar;
 import org.apache.log4j.Logger;
@@ -137,13 +139,18 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 
 						runLogger.debug("Converting to OpenLCA Zip");
 						SaveHarmonizedDataForOLCAJsonld innerHandler = new SaveHarmonizedDataForOLCAJsonld();
-						innerHandler.execute(newEvent);
+						Object rc = innerHandler.execute(newEvent);
+						if (rc != null && Boolean.FALSE.equals(rc))
+							return;
 
 						File input = new File(tempOutputName);
 						File output = new File(originalName);
 						new Json2Zip(input, output).run();
 						input.delete();
 					} catch (Exception e) {
+						Display.getDefault().syncExec( new Runnable() { public void run() {
+							new GenericMessageBox(Display.getDefault().getActiveShell(), "Error", "Error writing " + originalName + ".  Please ensure the location exists, is writable, and has available space.");
+						}});
 						e.printStackTrace();
 					}
 				}

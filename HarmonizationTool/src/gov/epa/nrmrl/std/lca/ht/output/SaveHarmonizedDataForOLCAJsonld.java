@@ -2,6 +2,7 @@ package gov.epa.nrmrl.std.lca.ht.output;
 
 import gov.epa.nrmrl.std.lca.ht.csvFiles.CSVTableView;
 import gov.epa.nrmrl.std.lca.ht.dialog.ChooseDataSetDialog;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.MatchProperties;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
@@ -145,13 +146,14 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 		runLogger.info("  # Writing RDF triples to " + saveTo.toString());
 		if (nestedCall) {
-			writeData(saveTo, currentName);
+			boolean ret = writeData(saveTo, currentName);
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					FlowsWorkflow.setStatusConclude("Export complete");
 					FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				}
 			});
+			return ret;
 		} else {
 			final String save = saveTo;
 			final String ds = currentName;
@@ -177,7 +179,8 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 	// }});
 	// }
 
-	public void writeData(String saveTo, String currentName) {
+	public boolean writeData(final String saveTo, String currentName) {
+		boolean ret = true;
 		// ActiveTDB.copyDatasetContentsToExportGraph(currentName);
 		// List<Statement> statements = ActiveTDB.collectAllStatementsForDataset(currentName, null);
 		/*
@@ -812,14 +815,16 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 			}
 			// ---- END SAFE -WRITE- TRANSACTION ---
 
-		} catch (FileNotFoundException e1) {
-			ActiveTDB.tdbDataset.abort();
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+			//PlatformUI.getWorkbench().getDisplay().getActiveShell()
+			Display.getDefault().syncExec( new Runnable() { public void run() {
+				new GenericMessageBox(Display.getDefault().getActiveShell(), "Error", "Error writing " + saveTo + ".  Please ensure the location exists, is writable, and has available space.");
+			}});
+			e.printStackTrace();
+			ret = false;
 		}
 		ActiveTDB.clearExportGraphContents();
+		return ret;
 
 		/* To copy a dataset to the export graph */
 		// ActiveTDB.copyDatasetContentsToExportGraph(olca);
@@ -837,6 +842,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 			System.out.println("Update description failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1202,6 +1208,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 			System.out.println("Replace URI failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1242,6 +1249,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 			System.out.println("Replace URI failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1258,6 +1266,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 			System.out.println("Update description failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1275,6 +1284,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 			System.out.println("Update description failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1372,6 +1382,7 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 		} catch (Exception e) {
 //			System.out.println("01 TDB transaction failed; see Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
+			throw e;
 		} finally {
 			ActiveTDB.tdbDataset.end();
 		}
@@ -1448,27 +1459,24 @@ public class SaveHarmonizedDataForOLCAJsonld implements IHandler {
 
 	// OpenLCA does not handle the olca: prefix correctly. Resolve by removing and letting the @context declaration
 	// handle
-	private void removePrefix(String path) {
+	private void removePrefix(String path) throws Exception {
 		String tempPath = path + ".lcaht.tmp";
 		File oldFile = new File(path);
 		File newFile = new File(tempPath);
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(oldFile));
-			String line = bufferedReader.readLine();
-			PrintWriter printWriter = new PrintWriter(new PrintWriter(newFile));
-			while (line != null) {
-				line = line.replaceAll("olca:", "");
-				printWriter.println(line);
-				line = bufferedReader.readLine();
-			}
-			printWriter.close();
-			bufferedReader.close();
-			oldFile.delete();
-			newFile.renameTo(oldFile);
-
-		} catch (IOException e) {
-			e.printStackTrace();
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(oldFile));
+		String line = bufferedReader.readLine();
+		PrintWriter printWriter = new PrintWriter(new PrintWriter(newFile));
+		while (line != null) {
+			line = line.replaceAll("olca:", "");
+			printWriter.println(line);
+			line = bufferedReader.readLine();
 		}
+		printWriter.close();
+		bufferedReader.close();
+		oldFile.delete();
+		newFile.renameTo(oldFile);
+
+
 	}
 
 	@Override

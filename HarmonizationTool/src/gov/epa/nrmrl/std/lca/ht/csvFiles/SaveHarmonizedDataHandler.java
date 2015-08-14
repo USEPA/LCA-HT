@@ -3,6 +3,7 @@ package gov.epa.nrmrl.std.lca.ht.csvFiles;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableProvider;
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.FlowContext;
 import gov.epa.nrmrl.std.lca.ht.flowContext.mgr.MatchContexts;
 import gov.epa.nrmrl.std.lca.ht.flowProperty.mgr.FlowUnit;
@@ -52,7 +53,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 	public void dispose() {
 	}
 
-	public void writeStoredData(String dataSourceName, String saveLocation) {
+	public void writeStoredData(String dataSourceName, String saveLocation) throws IOException {
 		ResultSetRewindable resultSetRewindable = ImportUserData.queryOLCATAbleData(dataSourceName);
 
 		DataRow headerRow = new DataRow();
@@ -150,6 +151,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		new Thread(new Runnable() {
 			public void run() {
+				try {
 				if (dataSetName != null) {
 					writeStoredData(dataSetName, saveTo);
 					Display.getDefault().syncExec(new Runnable() {
@@ -184,6 +186,12 @@ public class SaveHarmonizedDataHandler implements IHandler {
 						FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 					}
 				});
+				} catch (Exception e) {
+					Display.getDefault().syncExec( new Runnable() { public void run() {
+						new GenericMessageBox(Display.getDefault().getActiveShell(), "Error", "Error writing " + saveTo + ".  Please ensure the location exists, is writable, and has available space.");
+					}});
+					e.printStackTrace();
+				}
 			}
 
 		}).start();
@@ -191,47 +199,45 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		return null;
 	}
 
-	public void writeTableData(DataRow headerRow, List<DataRow> dataRows, String saveTo) {
+	public void writeTableData(DataRow headerRow, List<DataRow> dataRows, final String saveTo) throws IOException {
 
-		try {
-			// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
-			// csvConfig.setIgnoreValueDelimiter(true);
-			// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
+	
+		// FIXME - FOR CONSISTENCY, WRITE TRUE CSV (GOOFY, THOUGH IT IS), NOT TSV
+		// csvConfig.setIgnoreValueDelimiter(true);
+		// csvConfig.setValueDelimiter('"'); //IS THIS RIGHT?
 
-			// configure file for output
-			File file = new File(saveTo);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			Writer fileWriter = new FileWriter(file);
-			CSVFormat format = CSVFormat.newFormat('\t');
-
-			// configure fields
-			String[] headers = new String[headerRow.getColumnValues().size()];
-			int i = 0;
-			for (String header : headerRow.getColumnValues()) {
-				if (header.matches(".*Not assigned.*")) {
-					header+=" - row "+i;
-				}
-				headers[i++] = header;
-			}
-			format = format.withHeader(headers).withRecordSeparator("\n");
-			CSVPrinter csvPrinter = new CSVPrinter(fileWriter, format);
-
-			// prepare and write data
-			for (DataRow dataRow : dataRows) {
-				// System.out.println("Row: "+row++);
-				for (i = 0; i < dataRow.getColumnValues().size(); i++) {
-					csvPrinter.printRecord(dataRow.getColumnValues());
-				}
-			}
-
-			// flush and close writer (closes underlying writer)
-			csvPrinter.flush();
-			csvPrinter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		// configure file for output
+		File file = new File(saveTo);
+		if (!file.exists()) {
+			file.createNewFile();
 		}
+		Writer fileWriter = new FileWriter(file);
+		CSVFormat format = CSVFormat.newFormat('\t');
+
+		// configure fields
+		String[] headers = new String[headerRow.getColumnValues().size()];
+		int i = 0;
+		for (String header : headerRow.getColumnValues()) {
+			if (header.matches(".*Not assigned.*")) {
+				header+=" - row "+i;
+			}
+			headers[i++] = header;
+		}
+		format = format.withHeader(headers).withRecordSeparator("\n");
+		CSVPrinter csvPrinter = new CSVPrinter(fileWriter, format);
+
+		// prepare and write data
+		for (DataRow dataRow : dataRows) {
+			// System.out.println("Row: "+row++);
+			for (i = 0; i < dataRow.getColumnValues().size(); i++) {
+				csvPrinter.printRecord(dataRow.getColumnValues());
+			}
+		}
+
+		// flush and close writer (closes underlying writer)
+		csvPrinter.flush();
+		csvPrinter.close();
+
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				FlowsWorkflow.setStatusConclude("Export complete");
