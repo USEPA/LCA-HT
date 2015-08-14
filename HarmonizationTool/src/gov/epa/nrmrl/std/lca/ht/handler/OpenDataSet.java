@@ -48,6 +48,7 @@ public class OpenDataSet implements IHandler {
 		FlowsWorkflow.clearStatusText();
 		FlowsWorkflow.buttonModePostLoad();
 		String dataSet = dlg.getSelection();
+		CSVTableView.reset();
 
 		// dataSet = chooseDataSetDialog.getit()
 		DataSourceProvider ds = DataSourceKeeper.getByName(dataSet);
@@ -75,7 +76,6 @@ public class OpenDataSet implements IHandler {
 			}
 		} else {
 			ImportUserData.buildUserDataTableFromOLCADataViaQuery(dataSet, provider);
-			ds.hasSourceZippedJson = true;
 		}
 
 		ImportUserData.RunData data = new ImportUserData.RunData(null);
@@ -83,6 +83,9 @@ public class OpenDataSet implements IHandler {
 		data.display = Display.getCurrent();
 		ImportUserData.displayTableView(data);
 
+		// Run in asyncExec to avoid race condition where 85% message replaces completed message
+		ImportUserData.updateText(FlowsWorkflow.statusLoadUserData, fileName);
+		System.out.println("Dataset opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
 		if (CSVTableView.preCommit) {
 			if (CSVTableView.matchedFlowableRowNumbers.size() > 0
 					|| CSVTableView.matchedFlowContextRowNumbers.size() > 0
@@ -95,11 +98,6 @@ public class OpenDataSet implements IHandler {
 		} else {
 			FlowsWorkflow.switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 		}
-
-		// Run in asyncExec to avoid race condition where 85% message replaces completed message
-		ImportUserData.updateText(FlowsWorkflow.statusLoadUserData, fileName);
-		System.out.println("Dataset opened in " + (System.currentTimeMillis() - startTime) / 1000 + "s");
-
 		return null;
 	}
 

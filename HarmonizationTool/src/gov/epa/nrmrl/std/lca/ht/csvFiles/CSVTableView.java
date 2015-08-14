@@ -136,10 +136,10 @@ public class CSVTableView extends ViewPart {
 
 	public static boolean preCommit = true;
 
-	private static Set<Integer> flowableColumns = null;
-	private static Set<Integer> propertyColumns = null;
-	private static Set<Integer> contextColumns = null;
-	private static Set<Integer> flowColumns = null;
+	private static SortedSet<Integer> flowableColumns = new TreeSet<Integer>();
+	private static SortedSet<Integer> propertyColumns = new TreeSet<Integer>();
+	private static SortedSet<Integer> contextColumns = new TreeSet<Integer>();
+	private static SortedSet<Integer> flowColumns = new TreeSet<Integer>();
 
 	private static List<String> masterFlowUUIDs = null;
 
@@ -822,9 +822,14 @@ public class CSVTableView extends ViewPart {
 	// ===========================================
 	public static void update(String key) {
 		table.removeAll();
-		while (table.getColumnCount() > 0) {
-			table.getColumns()[0].dispose();
-		}
+		// Don't do this (below), because it screws up re-load....
+		// clearItemCounts();
+		removeColumns();
+		flowableColumns.clear();
+		propertyColumns.clear();
+		contextColumns.clear();
+		flowColumns.clear();
+
 		tableProviderKey = key;
 		createColumns();
 		resetFields();
@@ -865,11 +870,6 @@ public class CSVTableView extends ViewPart {
 		initializeOtherViews();
 
 		tableProvider.colorExistingRows();
-		flowableColumns = new TreeSet<Integer>();
-		propertyColumns = new TreeSet<Integer>();
-		contextColumns = new TreeSet<Integer>();
-		flowColumns = new TreeSet<Integer>();
-
 	}
 
 	// private static void tinyRoutine(List<DataRow> data) {
@@ -1783,7 +1783,15 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void reset() {
+		table.removeAll();
+		clearItemCounts();
+		flowableColumns.clear();
+		propertyColumns.clear();
+		contextColumns.clear();
+		flowColumns.clear();
+
 		tableViewer.setInput(null);
+		rowsToIgnore.clear();
 		initializeRowMenu();
 		removeColumns();
 		preCommit = true;
@@ -1840,7 +1848,7 @@ public class CSVTableView extends ViewPart {
 		String curMenuName = "";
 		Menu curMenu = null;
 		for (LCADataPropertyProvider lcaDataPropertyProvider : lcaDataPropertyProviders) {
-			if (!lcaDataPropertyProvider.isIncludeInList()){
+			if (!lcaDataPropertyProvider.isIncludeInList()) {
 				continue;
 			}
 			String newMenuName = lcaDataPropertyProvider.getPropertyClass();
@@ -2358,7 +2366,6 @@ public class CSVTableView extends ViewPart {
 	}
 
 	public static void clearItemCounts() {
-		uniqueFlowableRowNumbers.clear();
 		uniqueFlowableRowNumbers.clear();
 		uniqueFlowContextRowNumbers.clear();
 		uniqueFlowPropertyRowNumbers.clear();

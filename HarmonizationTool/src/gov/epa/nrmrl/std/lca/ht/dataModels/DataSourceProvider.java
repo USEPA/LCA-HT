@@ -1,14 +1,20 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
+import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.OpenLCA;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -29,17 +35,11 @@ public class DataSourceProvider {
 	private Person contactPerson = null;
 	private List<FileMD> fileMDList = new ArrayList<FileMD>();
 	private List<FileMD> newFileMDList = new ArrayList<FileMD>();
-	// private List<AnnotationProvider> annotationList = new ArrayList<AnnotationProvider>();
 	private Resource tdbResource;
 	private Integer referenceDataStatus = null;
-	public boolean hasSourceZippedJson = false;
 
-
-	// private boolean isMaster = false;
-	
 	public Exception creation = new Exception();
 
-	
 	public DataSourceProvider() {
 		this(true);
 	}
@@ -66,7 +66,7 @@ public class DataSourceProvider {
 			DataSourceKeeper.add(this);
 		}
 	}
-	
+
 	public void createTDBResource() {
 		if (tdbResource != null)
 			return;
@@ -124,8 +124,7 @@ public class DataSourceProvider {
 			if (fileMD.getTdbResource() == null)
 				fileMD.createTDBResource();
 			ActiveTDB.tsAddGeneralTriple(tdbResource, LCAHT.containsFile, fileMD.getTdbResource(), null);
-		}
-		else
+		} else
 			newFileMDList.add(fileMD);
 		// }
 	}
@@ -167,13 +166,45 @@ public class DataSourceProvider {
 		}
 		return results;
 	}
-	
+
 	public void remove(FileMD fileMD) {
 		// fileMD.remove(); -- BETTER NOT REMOVE THIS IN CASE SOME OTHER
 		// DATASOURCE HAS THIS FILE
 		fileMDList.remove(fileMD);
 		if (tdbResource != null)
 			ActiveTDB.tsRemoveStatement(tdbResource, LCAHT.containsFile, fileMD.getTdbResource());
+	}
+
+	public boolean containsOLCAData() {
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct ?ds \n");
+		b.append("where {  \n");
+		b.append("  ?ds rdfs:label \"" + getDataSourceName() + "\"^^xsd:string .  \n");
+		b.append("  ?f a olca:Flow .  \n");
+		b.append("  ?f eco:hasDataSource ?ds .  \n");
+		b.append("  ?f olca:category ?fc .  \n");
+		b.append("  ?fc a olca:Category .  \n");
+		b.append("  ?fc eco:hasDataSource ?ds .  \n");
+		b.append("  ?f olca:flowProperties ?fpf .  \n");
+		b.append("  ?fpf a olca:FlowPropertyFactor .  \n");
+		b.append("  ?fpf eco:hasDataSource ?ds .  \n");
+		b.append("  ?ds a eco:DataSource .  \n");
+		b.append("} \n");
+		b.append("limit 1 \n");
+
+		String query = b.toString();
+
+		System.out.println("query = " + query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		if (resultSet.hasNext()) {
+			return true;
+		}
+		return false;
 	}
 
 	public void removeFileMDList() {
@@ -348,7 +379,7 @@ public class DataSourceProvider {
 
 		// FIXME - TONY HOWARD - PUT A BREAK POINT JUST BELOW HERE, THEN RUN THE HT
 		contactPerson = new Person(personResource);
-		for (Resource fileMDResource : fileMDResources) {			
+		for (Resource fileMDResource : fileMDResources) {
 			FileMD fileMD = new FileMD();
 			fileMD.setTdbResource(fileMDResource);
 			fileMD.syncDataFromTDB();

@@ -137,10 +137,11 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
-		dialog.setFileName("query_results");
+		//  Can do better!
+		dialog.setFileName(dataSetName+"_harmnoized");
 
 		final String saveTo = dialog.open();
-		System.out.println("Save to: " + saveTo);
+//		System.out.println("Save to: " + saveTo);
 
 		if (saveTo == null) {
 			// FlowsWorkflow.restoreAllButtons();
@@ -228,10 +229,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 
 		// prepare and write data
 		for (DataRow dataRow : dataRows) {
-			// System.out.println("Row: "+row++);
-			for (i = 0; i < dataRow.getColumnValues().size(); i++) {
-				csvPrinter.printRecord(dataRow.getColumnValues());
-			}
+			csvPrinter.printRecord(dataRow.getColumnValues());
 		}
 
 		// flush and close writer (closes underlying writer)

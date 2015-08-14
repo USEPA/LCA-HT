@@ -61,6 +61,7 @@ public class ChooseDataSetDialog extends Dialog {
 	/**
 	 * Create the dialog.
 	 * @param parentShell
+	 * @wbp.parser.constructor
 	 */
 	public ChooseDataSetDialog(Shell parentShell, boolean filterMasterDataSets, String message, boolean askFormat) {
 		super(parentShell);
@@ -128,7 +129,7 @@ public class ChooseDataSetDialog extends Dialog {
 			}
 			names = filteredNames;
 			for (int i = 0; i < names.size(); ++i)
-				dsPositionMap.put(i,  names.get(i));
+				dsPositionMap.put(i, names.get(i));
 		}
 
 		if (names.isEmpty()) {
@@ -143,6 +144,12 @@ public class ChooseDataSetDialog extends Dialog {
 		if (key != null) {
 			String curDataSourceProviderName = TableKeeper.getTableProvider(key).getDataSourceProvider()
 					.getDataSourceName();
+			DataSourceProvider dataSourceProvider = DataSourceKeeper.getByName(curDataSourceProviderName);
+			if (dataSourceProvider.containsOLCAData()) {
+				zippedJson = true;
+			} else {
+				zippedJson = false;
+			}
 			int index = dataSetCombo.indexOf(curDataSourceProviderName);
 			String text = dataSetCombo.getItem(index) + " (Current)";
 			dataSetCombo.setItem(index, text);
@@ -157,12 +164,24 @@ public class ChooseDataSetDialog extends Dialog {
 					break;
 				}
 			}
+			DataSourceProvider dataSourceProvider = DataSourceKeeper.getByName(dataSetCombo.getSelection().toString());
+			if (dataSourceProvider != null && dataSourceProvider.containsOLCAData()) {
+				zippedJson = true;
+			} else {
+				zippedJson = false;
+			}
 		}
 		dataSetCombo.addSelectionListener(new SelectionListener() {
 			private void doit(SelectionEvent e) {
 				String datasetName = dsPositionMap.get(dataSetCombo.getSelectionIndex());
 				DataSourceProvider dataSourceProvider = DataSourceKeeper.getByName(datasetName);
-				zippedJson = dataSourceProvider.hasSourceZippedJson;
+				if (dataSourceProvider.containsOLCAData()) {
+					zippedJson = true;
+					updateOutputFormatCombo();
+				} else {
+					zippedJson = false;
+					updateOutputFormatCombo();
+				}
 			}
 
 			@Override
@@ -193,17 +212,7 @@ public class ChooseDataSetDialog extends Dialog {
 			gd.grabExcessHorizontalSpace = true;
 			dataSetCombo.setLayoutData(gd);
 
-			List<String> formats = new ArrayList<String>();
-			formats.add("Tab-delimited text file (.csv)");
-			if (zippedJson) {
-				formats.add("Zipped .json for OpenLCA (.zip)");
-				formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
-				outputFormatCombo.setItems(formats.toArray(new String[0]));
-				outputFormatCombo.select(1);
-			} else {
-				outputFormatCombo.setItems(formats.toArray(new String[0]));
-				outputFormatCombo.select(0);
-			}
+			updateOutputFormatCombo();
 
 			new Label(container, SWT.NONE);
 			new Label(container, SWT.NONE);
@@ -212,6 +221,22 @@ public class ChooseDataSetDialog extends Dialog {
 		}
 
 		return area;
+	}
+
+	private void updateOutputFormatCombo() {
+		List<String> formats = new ArrayList<String>();
+		formats.add("Tab-delimited text file (.csv)");
+		if (zippedJson) {
+			formats.add("Zipped .json for OpenLCA (.zip)");
+			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
+			outputFormatCombo.setItems(formats.toArray(new String[0]));
+			outputFormatCombo.select(1);
+		} else {
+			outputFormatCombo.setItems(formats.toArray(new String[0]));
+			outputFormatCombo.select(0);
+		}
+		outputFormatCombo.redraw();
+		outputFormatCombo.pack();
 	}
 
 	protected Control createContents(Composite parent) {

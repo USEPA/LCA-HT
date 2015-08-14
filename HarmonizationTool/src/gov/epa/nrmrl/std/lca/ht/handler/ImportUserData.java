@@ -197,6 +197,7 @@ public class ImportUserData implements IHandler {
 			}
 			FlowsWorkflow.clearStatusText();
 			data.fileMD.createTDBResource();
+			CSVTableView.reset();
 			// FlowsWorkflow.statusLoadUserData.setText("... loading ...");
 			// FlowsWorkflow.statusLoadUserData.setToolTipText("... loading ...");
 			new Thread(data).start();
@@ -552,7 +553,6 @@ public class ImportUserData implements IHandler {
 
 	public static void buildUserDataTableFromOLCADataViaQuery() {
 		buildUserDataTableFromOLCADataViaQuery(null, tableProvider);
-		tableProvider.getDataSourceProvider().hasSourceZippedJson = true;
 	}
 
 	public static ResultSetRewindable queryOLCATAbleData(String dataSourceName) {
@@ -653,7 +653,6 @@ public class ImportUserData implements IHandler {
 				.setLCADataPropertyProvider(6, FlowContext.getDataPropertyMap().get(FlowContext.flowContextSpecific));
 		tblProvider.setLCADataPropertyProvider(7, FlowUnit.getDataPropertyMap().get(FlowUnit.flowUnitString));
 		tblProvider.setLCADataPropertyProvider(8, FlowUnit.getDataPropertyMap().get(FlowUnit.flowPropertyString));
-		tblProvider.getDataSourceProvider().hasSourceZippedJson = true;
 		return;
 	}
 
@@ -823,10 +822,8 @@ public class ImportUserData implements IHandler {
 			loadUserDataFromCSVFile(data.file);
 			CSVRecorder rec = new CSVRecorder(data.file, data.dialog.getCurDataSourceProvider().getDataSourceName());
 			new Thread(rec).start();
-			tableProvider.getDataSourceProvider().hasSourceZippedJson = false;
 		} else {
 			loadUserDataFromRDFFile(data.file);
-			tableProvider.getDataSourceProvider().hasSourceZippedJson = true;
 		}
 
 		Date readEndDate = new Date();
