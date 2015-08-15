@@ -12,6 +12,7 @@ import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
 
+import org.apache.jena.riot.out.OutputPolicy;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +36,10 @@ public class ChooseDataSetDialog extends Dialog {
 	String prompt;
 
 	int height = 200;
+	
+	public static final int OUTPUT_FORMAT_ZIP = 0;
+	public static final int OUTPUT_FORMAT_JSON = 1;
+	public static final int OUTPUT_FORMAT_CSV = 2;
 
 	private static boolean DEFAULT_FILTER_MASTER_DATASETS = true;
 
@@ -75,6 +80,7 @@ public class ChooseDataSetDialog extends Dialog {
 	private Combo dataSetCombo;
 	private Map<Integer, String> dsPositionMap = new HashMap<Integer, String>();
 	private Combo outputFormatCombo;
+	private Map<Integer, Integer> outputFormatMap = new HashMap<Integer, Integer>();
 	String storageLocation;
 	Label dialogLabel;
 	boolean showPrefs = false;
@@ -225,14 +231,18 @@ public class ChooseDataSetDialog extends Dialog {
 
 	private void updateOutputFormatCombo() {
 		List<String> formats = new ArrayList<String>();
+		outputFormatMap.clear();
 		// TODO - TAHOWARD - I changed this so that the right options are presented, but the index will be wrong on the
 		// other end
 		if (zippedJson) {
 			formats.add("Zipped .json for OpenLCA (.zip)");
 			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
+			outputFormatMap.put(0,  OUTPUT_FORMAT_ZIP);
+			outputFormatMap.put(1,  OUTPUT_FORMAT_JSON);
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
 		} else {
 			formats.add("Tab-delimited text file (.csv)");
+			outputFormatMap.put(0,  OUTPUT_FORMAT_CSV);
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
 		}
 		outputFormatCombo.select(0);
@@ -251,13 +261,8 @@ public class ChooseDataSetDialog extends Dialog {
 	protected void okPressed() {
 		selection = dsPositionMap.get(dataSetCombo.getSelectionIndex());
 		if (askFileFormat) {
-			// String outputFormatString = outputFormatCombo.getText();
-			format = outputFormatCombo.getSelectionIndex();
-			// TODO ==> TAHOWARD - we can't just get the selection index if it is 0 for one setup and 0 or 1 for the
-			// other.
+			format = outputFormatMap.get(outputFormatCombo.getSelectionIndex());
 		}
-		if (selection.endsWith(" (Current)"))
-			selection = selection.substring(0, selection.length() - " (Current)".length());
 		System.out.println("Setting selection = " + selection);
 		super.okPressed();
 	}

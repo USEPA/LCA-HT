@@ -65,7 +65,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 			});
 			return null;
 		}
-		if (dlg.getFormat() == 1) {
+		if (dlg.getFormat() == ChooseDataSetDialog.OUTPUT_FORMAT_ZIP) {
 			Util.findView(MatchContexts.ID);
 			Util.findView(MatchProperties.ID);
 
@@ -104,7 +104,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 				return null;
 			}
 		}
-		if (dlg.getFormat() == 0) {
+		if (dlg.getFormat() == ChooseDataSetDialog.OUTPUT_FORMAT_CSV) {
 			HashMap<String, String> newParams = new HashMap<String, String>(event.getParameters());
 			newParams.put("LCA-HT.exportDataSetName", currentName);
 			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),
@@ -113,7 +113,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 			IHandler innerHandler = new SaveHarmonizedDataHandler();
 			innerHandler.execute(newEvent);
 			return null;
-		} else if (dlg.getFormat() == 2) {
+		} else if (dlg.getFormat() == ChooseDataSetDialog.OUTPUT_FORMAT_JSON) {
 			HashMap<String, String> newParams = new HashMap<String, String>(event.getParameters());
 			newParams.put("LCA-HT.exportDataSetName", currentName);
 			ExecutionEvent newEvent = new ExecutionEvent(event.getCommand(), newParams, event.getTrigger(),
@@ -122,7 +122,7 @@ public class SaveHarmonizedDataForOLCAJsonldZip implements IHandler {
 			IHandler innerHandler = new SaveHarmonizedDataForOLCAJsonld();
 			innerHandler.execute(newEvent);
 			return null;
-		} else if (dlg.getFormat() == 1) {
+		} else if (dlg.getFormat() == ChooseDataSetDialog.OUTPUT_FORMAT_ZIP) {
 			// TODO = this temp filename helps trigger the next routine to report when
 			// it is finished
 			final String tempOutputName = saveTo + ".tmp.json";
