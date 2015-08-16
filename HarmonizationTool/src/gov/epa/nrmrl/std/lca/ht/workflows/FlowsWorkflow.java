@@ -71,7 +71,7 @@ public class FlowsWorkflow extends ViewPart {
 	public static Button btnCommit;
 	public static Button btnMatchFlowables;
 	public static Button btnMatchFlowContexts;
-	public static Button btnMatchFlowProperties;
+	public static Button btnMatchFlowUnits;
 	public static Button btnConcludeFile;
 
 	public static StyledText statusLoadUserData;
@@ -91,19 +91,19 @@ public class FlowsWorkflow extends ViewPart {
 		buttonState.put(btnCommit, btnCommit.isEnabled());
 		buttonState.put(btnMatchFlowables, btnMatchFlowables.isEnabled());
 		buttonState.put(btnMatchFlowContexts, btnMatchFlowContexts.isEnabled());
-		buttonState.put(btnMatchFlowProperties, btnMatchFlowProperties.isEnabled());
+		buttonState.put(btnMatchFlowUnits, btnMatchFlowUnits.isEnabled());
 		buttonState.put(btnConcludeFile, btnConcludeFile.isEnabled());
 		for (Map.Entry<Button, Boolean> pair : buttonState.entrySet()) {
 			pair.getKey().setEnabled(false);
 		}
 	}
 
-//	public static void restoreAllButtons() {
-//		for (Map.Entry<Button, Boolean> pair : buttonState.entrySet()) {
-//			pair.getKey().setEnabled(pair.getValue());
-//		}
-//		buttonState.clear();
-//	}
+	// public static void restoreAllButtons() {
+	// for (Map.Entry<Button, Boolean> pair : buttonState.entrySet()) {
+	// pair.getKey().setEnabled(pair.getValue());
+	// }
+	// buttonState.clear();
+	// }
 
 	private static SortedSet<Integer> uniqueFlowableRowNumbers = new TreeSet<Integer>();
 	private static SortedSet<Integer> uniqueFlowContextRowNumbers = new TreeSet<Integer>();
@@ -242,14 +242,14 @@ public class FlowsWorkflow extends ViewPart {
 		lblUnit.setText("5. Flow Unit");
 		lblUnit.setToolTipText("The Flow Unit and its corresponding Flow Property must be matched for an LCA Flow to match.");
 
-		btnMatchFlowProperties = new Button(composite, SWT.NONE);
+		btnMatchFlowUnits = new Button(composite, SWT.NONE);
 		GridData gd_btnMatchFlowProperties = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		btnMatchFlowProperties.addSelectionListener(matchFlowPropertiesListener);
+		btnMatchFlowUnits.addSelectionListener(matchFlowPropertiesListener);
 
 		gd_btnMatchFlowProperties.widthHint = 80;
-		btnMatchFlowProperties.setLayoutData(gd_btnMatchFlowProperties);
-		btnMatchFlowProperties.setText("Show Unique");
-		btnMatchFlowProperties.setEnabled(false);
+		btnMatchFlowUnits.setLayoutData(gd_btnMatchFlowProperties);
+		btnMatchFlowUnits.setText("Show Unique");
+		btnMatchFlowUnits.setEnabled(false);
 
 		statusFlowUnit = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY);
 		statusFlowUnit.setBackground(SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND));
@@ -450,7 +450,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void buttonModePostLoad() {
-//		FlowsWorkflow.restoreAllButtons();
+		// FlowsWorkflow.restoreAllButtons();
 		switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 		CSVTableView.preCommit = true;
 	}
@@ -473,21 +473,21 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void buttonModePostCommit() {
 		switchToWorkflowState(ST_BEFORE_EXPORT);
-//		FlowsWorkflow.restoreAllButtons();
-//		btnCommit.setEnabled(false);
-//		btnCheckData.setEnabled(false);
-//		btnMatchFlowables.setEnabled(true);
-//		btnMatchFlowables.setGrayed(false);
-//		btnMatchFlowContexts.setEnabled(true);
-//		btnMatchFlowContexts.setGrayed(false);
-//		btnMatchFlowProperties.setEnabled(true);
-//		btnMatchFlowProperties.setGrayed(false);
+		// FlowsWorkflow.restoreAllButtons();
+		// btnCommit.setEnabled(false);
+		// btnCheckData.setEnabled(false);
+		// btnMatchFlowables.setEnabled(true);
+		// btnMatchFlowables.setGrayed(false);
+		// btnMatchFlowContexts.setEnabled(true);
+		// btnMatchFlowContexts.setGrayed(false);
+		// btnMatchFlowUnits.setEnabled(true);
+		// btnMatchFlowUnits.setGrayed(false);
 		/*
 		 * btnLoadUserData.setEnabled(true); btnLoadUserData.setGrayed(false);
 		 */
-//		btnConcludeFile.setEnabled(true);
-//		btnConcludeFile.setGrayed(false);
-//		btnConcludeFile.setText("Export");
+		// btnConcludeFile.setEnabled(true);
+		// btnConcludeFile.setGrayed(false);
+		// btnConcludeFile.setText("Export");
 		CSVTableView.setPostCommit();
 	}
 
@@ -636,8 +636,8 @@ public class FlowsWorkflow extends ViewPart {
 										statusCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 										statusCheckData.setText("Assign at least one column first)");
 										switchToWorkflowState(ST_BEFORE_CHECK);
-//										btnMatchFlowables.setEnabled(false);
-//										btnCommit.setEnabled(false);
+										// btnMatchFlowables.setEnabled(false);
+										// btnCommit.setEnabled(false);
 									} else {
 										int issueCount = CSVTableView.checkCols();
 										/* The above function tells CSVTableView to do all the data checking */
@@ -695,7 +695,7 @@ public class FlowsWorkflow extends ViewPart {
 			if (colsChecked == 0) {
 				statusSaveMatch.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				statusSaveMatch.setText("Assign and check columns first)");
-//				FlowsWorkflow.restoreAllButtons();
+				// FlowsWorkflow.restoreAllButtons();
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 				return;
 			}
@@ -761,7 +761,7 @@ public class FlowsWorkflow extends ViewPart {
 		private void doit(SelectionEvent e) {
 			btnCommit.setEnabled(false);
 			btnCheckData.setEnabled(false);
-			if (btnMatchFlowProperties.getText().equals(matchPropertiesString)) {
+			if (btnMatchFlowUnits.getText().equals(matchPropertiesString)) {
 				switchToWorkflowState(FlowsWorkflow.ST_SHOW_UNIT);
 				CSVTableView.setFilterRowNumbersWCopy(uniqueFlowPropertyRowNumbers);
 				CSVTableView.colorFlowPropertyRows();
@@ -800,9 +800,9 @@ public class FlowsWorkflow extends ViewPart {
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_EXPORT);
 				CSVTableView.clearFilterRowNumbers();
 			}
-//			CSVTableView.selectTableRow(0);
-//			CSVTableView.setColNumSelected(1);
-//			CSVTableView.selectRowColumn();
+			// CSVTableView.selectTableRow(0);
+			// CSVTableView.setColNumSelected(1);
+			// CSVTableView.selectRowColumn();
 
 			try {
 				Util.showView(MatchFlowables.ID);
@@ -845,7 +845,7 @@ public class FlowsWorkflow extends ViewPart {
 			// btnMatchFlowContexts.setEnabled(false);
 			// statusFlowContext.setText("");
 
-			// btnMatchFlowProperties.setEnabled(false);
+			// btnMatchFlowUnits.setEnabled(false);
 			// statusFlowUnit.setText("");
 
 			// btnConcludeFile.setEnabled(false);
@@ -864,7 +864,7 @@ public class FlowsWorkflow extends ViewPart {
 				switchToWorkflowState(FlowsWorkflow.ST_DURING_EXPORT);
 				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 				try {
-//					handlerService.executeCommand(SaveHarmonizedDataForOLCAJsonld.ID, null);
+					// handlerService.executeCommand(SaveHarmonizedDataForOLCAJsonld.ID, null);
 					handlerService.executeCommand(SaveHarmonizedDataForOLCAJsonldZip.ID, null);
 
 				} catch (Exception ex) {
@@ -877,7 +877,7 @@ public class FlowsWorkflow extends ViewPart {
 				CSVTableView.clearFilterRowNumbers();
 				CSVTableView.reset();
 				CSVTableView.initialize();
-				//CSVTableView.selectTableRow(0);
+				// CSVTableView.selectTableRow(0);
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 
 				btnLoadUserData.setEnabled(true);
@@ -951,8 +951,8 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void disablePropertyBtn() {
-		btnMatchFlowProperties.setGrayed(true);
-		btnMatchFlowProperties.setEnabled(false);
+		btnMatchFlowUnits.setGrayed(true);
+		btnMatchFlowUnits.setEnabled(false);
 	}
 
 	public static void showFlowContextMatchCount(int matched, int total) {
@@ -1080,7 +1080,7 @@ public class FlowsWorkflow extends ViewPart {
 		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 	}
-	
+
 	public static final int ST_BEFORE_LOAD = 1;
 	public static final int ST_DURING_LOAD = 2;
 	public static final int ST_BEFORE_CHECK = 3;
@@ -1121,9 +1121,9 @@ public class FlowsWorkflow extends ViewPart {
 			setButtonState(btnMatchFlowContexts, false);
 			statusFlowContext.setText("");
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			statusFlowUnit.setText("");
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("");
@@ -1154,9 +1154,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("");
 			btnConcludeFile.setToolTipText("");
@@ -1169,7 +1169,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Click to run format checks.");
 			setButtonState(btnCheckData, true);
@@ -1186,9 +1186,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile
@@ -1202,7 +1202,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Checking...");
 			setButtonState(btnCheckData, false);
@@ -1219,9 +1219,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile.setToolTipText("");
@@ -1234,7 +1234,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Complete");
 			setButtonState(btnCheckData, true);
@@ -1251,9 +1251,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile
@@ -1267,7 +1267,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Complete");
 			setButtonState(btnCheckData, true);
@@ -1284,9 +1284,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile
@@ -1300,7 +1300,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("Load...");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("Check Data");
 			btnCheckData.setToolTipText("Complete");
 			setButtonState(btnCheckData, false);
@@ -1317,15 +1317,15 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
 			setTooltipStatusFlowUnit("");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile.setToolTipText("");
 			setButtonState(btnConcludeFile, false);
 			setTooltipStatusConclude("");
-//			CSVTableView.preCommit = false;
+			// CSVTableView.preCommit = false;
 		}
 		// Following step 3
 		else if (stateNumber == ST_BEFORE_EXPORT) {
@@ -1333,7 +1333,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
 			setButtonState(btnLoadUserData, true);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("");
 			btnCheckData.setToolTipText("Complete");
 			setButtonState(btnCheckData, false);
@@ -1343,21 +1343,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
-			btnMatchFlowables.setText("Show Unique");
-			btnMatchFlowables
-					.setToolTipText("Click to show only the first row with each of the 8 distinct Flow Contexts in the User Data table.");
-			setButtonState(btnMatchFlowables, true);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
-			btnMatchFlowContexts.setText("Show Unique");
-			btnMatchFlowContexts
-					.setToolTipText("Click to show only the first row with each of the 6 distinct Flow Units in the User Data table.");
-			setButtonState(btnMatchFlowContexts, true);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties
-					.setToolTipText("Click to show only the first row with each of the 25 distinct Flowables in the User Data table.");
-			setButtonState(btnMatchFlowProperties, true);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
+
+			setMatchableToolTip("Flowable", false);
+
 			btnConcludeFile.setText("Export...");
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
@@ -1370,7 +1358,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
 			setButtonState(btnLoadUserData, true);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("");
 			btnCheckData.setToolTipText("");
 			setButtonState(btnCheckData, false);
@@ -1379,20 +1367,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
-			btnMatchFlowables.setText("Show Unique");
-			btnMatchFlowables
-					.setToolTipText("You must click \"Show All\" next to \"5. Flow Unit\" to use this function.");
-			setButtonState(btnMatchFlowables, false);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
-			btnMatchFlowContexts.setText("Show All");
-			btnMatchFlowContexts.setToolTipText("Click to show all rows in the User Data table.");
-			setButtonState(btnMatchFlowContexts, true);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties
-					.setToolTipText("You must click \"Show All\" next to \"5. Flow Unit\" to use this function.");
-			setButtonState(btnMatchFlowProperties, false);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
+
+			setMatchableToolTip("FlowContext", true);
+
 			btnConcludeFile.setText("Export...");
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
@@ -1405,7 +1382,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
 			setButtonState(btnLoadUserData, true);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("");
 			btnCheckData.setToolTipText("");
 			setButtonState(btnCheckData, false);
@@ -1414,25 +1391,14 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
-			btnMatchFlowables.setText("Show Unique");
-			btnMatchFlowables
-					.setToolTipText("You must click \"Show All\" next to \"6. Flowable\" to use this function.");
-			setButtonState(btnMatchFlowables, false);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
-			btnMatchFlowContexts.setText("Show Unique");
-			btnMatchFlowContexts
-					.setToolTipText("You must click \"Show All\" next to \"6. Flowable\" to use this function.");
-			setButtonState(btnMatchFlowContexts, false);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show All");
-			btnMatchFlowProperties.setToolTipText("Click to show all rows in the User Data table.");
-			setButtonState(btnMatchFlowProperties, true);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
+
+			setMatchableToolTip("FlowUnit", true);
+
 			btnConcludeFile.setText("Export...");
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
-			CSVTableView.preCommit = false;	
+			CSVTableView.preCommit = false;
 		}
 		// Following step 3, if 6 is toggled
 		else if (stateNumber == ST_SHOW_FLOWABLE) {
@@ -1440,7 +1406,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData
 					.setToolTipText("Click to load a new user dataset.  Current data may be reloaded in the future to continue harmonization.  To re-load a previously laoded dataset, use the menu item \"DataSet -> Reload dataset\". To load reference (master) data, see Advanced -> Load Reference Data List...");
 			setButtonState(btnLoadUserData, true);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("");
 			btnCheckData.setToolTipText("");
 			setButtonState(btnCheckData, false);
@@ -1449,20 +1415,9 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
 			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
-			btnMatchFlowables.setText("Show All");
-			btnMatchFlowables.setToolTipText("Click to show all rows in the User Data table.");
-			setButtonState(btnMatchFlowables, true);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 7 have been matched to master Flow Contexts");
-			btnMatchFlowContexts.setText("Show Unique");
-			btnMatchFlowContexts
-					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
-			setButtonState(btnMatchFlowContexts, false);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties
-					.setToolTipText("You must click \"Show All\" next to \"4. Flow Context\" to use this function.");
-			setButtonState(btnMatchFlowProperties, false);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 23 have been matched to master Flowables");
+
+			setMatchableToolTip("Flowable", true);
+
 			btnConcludeFile.setText("Export...");
 			btnConcludeFile.setToolTipText("Click to export this dataset to any of several formats.");
 			setButtonState(btnConcludeFile, true);
@@ -1474,7 +1429,7 @@ public class FlowsWorkflow extends ViewPart {
 			btnLoadUserData.setText("");
 			btnLoadUserData.setToolTipText("");
 			setButtonState(btnLoadUserData, false);
-//			setTooltipStatusUserData("[File path]");
+			// setTooltipStatusUserData("[File path]");
 			btnCheckData.setText("");
 			btnCheckData.setToolTipText("");
 			setButtonState(btnCheckData, false);
@@ -1482,24 +1437,163 @@ public class FlowsWorkflow extends ViewPart {
 			btnCommit.setText("");
 			btnCommit.setToolTipText("");
 			setButtonState(btnCommit, false);
-			setTooltipStatusSaveMatch("User data has been saved to the database and matched against master data.  Results are shown below.");
+			setTooltipStatusSaveMatch("");
 			btnMatchFlowables.setText("Show Unique");
 			btnMatchFlowables.setToolTipText("");
 			setButtonState(btnMatchFlowables, false);
-			setTooltipStatusFlowContext("A total of 8 distinct Flow Contexts were found, and 8 have been matched to master Flow Contexts");
+			setTooltipStatusFlowContext("");
 			btnMatchFlowContexts.setText("Show Unique");
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
-			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
-			btnMatchFlowProperties.setText("Show Unique");
-			btnMatchFlowProperties.setToolTipText("");
-			setButtonState(btnMatchFlowProperties, false);
-			setTooltipStatusFlowable("A total of 25 distinct Flowables were found, and 25 have been matched to master Flowables");
+//			setTooltipStatusFlowUnit("A total of 6 distinct Flow Units were found, and 6 have been matched to master Flow Units");
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowUnits.setToolTipText("");
+			setButtonState(btnMatchFlowUnits, false);
+			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("Cancel...");
 			btnConcludeFile.setToolTipText("Click to cancel the export process.");
 			setButtonState(btnConcludeFile, true);
 			setTooltipStatusConclude("");
 			CSVTableView.preCommit = false;
+		}
+	}
+
+	private static void setMatchableToolTip(String matchable, boolean unique) {
+		if (unique == false) {
+			btnMatchFlowContexts.setText("Show Unique");
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowables.setText("Show Unique");
+			setButtonState(btnMatchFlowContexts, true);
+			setButtonState(btnMatchFlowUnits, true);
+			setButtonState(btnMatchFlowables, true);
+
+			int uniqueCount = uniqueFlowContextRowNumbers.size();
+			String noun = "Flowables ";
+			String verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flowable ";
+				verb1 = "was";
+			}
+			int matched = matchedFlowableRowNumbers.size();
+			String verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowContexts.setToolTipText("Click to show only the first row with each of the " + uniqueCount
+					+ " distinct " + noun + "in the User Data table.");
+			setTooltipStatusFlowContext("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
+
+			uniqueCount = uniqueFlowPropertyRowNumbers.size();
+			noun = "Flow Properties ";
+			verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flow Property ";
+				verb1 = "was";
+			}
+			matched = matchedFlowableRowNumbers.size();
+			verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowUnits.setToolTipText("Click to show only the first row with each of the " + uniqueCount
+					+ " distinct " + noun + "in the User Data table.");
+			setTooltipStatusFlowUnit("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
+
+			btnMatchFlowUnits.setText("Show Unique");
+			uniqueCount = uniqueFlowableRowNumbers.size();
+			noun = "Flowables ";
+			verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flowable ";
+				verb1 = "was";
+			}
+			matched = matchedFlowableRowNumbers.size();
+			verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowables.setToolTipText("Click to show only the first row with each of the " + uniqueCount
+					+ " distinct " + noun + "in the User Data table.");
+			setTooltipStatusFlowable("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
+			return;
+		}
+		if (matchable.equals("FlowContext")) {
+			btnMatchFlowContexts.setText("Show All");
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowables.setText("Show Unique");
+			setButtonState(btnMatchFlowContexts, true);
+			setButtonState(btnMatchFlowUnits, false);
+			setButtonState(btnMatchFlowables, false);
+			int uniqueCount = uniqueFlowContextRowNumbers.size();
+			String noun = "Flowables ";
+			String verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flowable ";
+				verb1 = "was";
+			}
+			int matched = matchedFlowableRowNumbers.size();
+			String verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowContexts
+					.setToolTipText("Click to show all rows in the User Data tab.  Currently showing only the "
+							+ uniqueCount + " distinct " + noun);
+			setTooltipStatusFlowContext("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
+		} else if (matchable.equals("FlowUnit")) {
+			btnMatchFlowContexts.setText("Show Unique");
+			btnMatchFlowUnits.setText("Show All");
+			btnMatchFlowables.setText("Show Unique");
+			setButtonState(btnMatchFlowContexts, false);
+			setButtonState(btnMatchFlowUnits, true);
+			setButtonState(btnMatchFlowables, false);
+
+			int uniqueCount = uniqueFlowPropertyRowNumbers.size();
+			String noun = "Flow Properties ";
+			String verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flow Property ";
+				verb1 = "was";
+			}
+			int matched = matchedFlowableRowNumbers.size();
+			String verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowUnits
+					.setToolTipText("Click to show all rows in the User Data tab.  Currently showing only the "
+							+ uniqueCount + " distinct " + noun);
+			setTooltipStatusFlowUnit("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
+		} else if (matchable.equals("Flowable")) {
+			btnMatchFlowContexts.setText("Show Unique");
+			btnMatchFlowUnits.setText("Show Unique");
+			btnMatchFlowables.setText("Show All");
+			setButtonState(btnMatchFlowContexts, false);
+			setButtonState(btnMatchFlowUnits, false);
+			setButtonState(btnMatchFlowables, true);
+
+			int uniqueCount = uniqueFlowableRowNumbers.size();
+			String noun = "Flowables ";
+			String verb1 = "were";
+			if (uniqueCount == 1) {
+				noun = "Flowable ";
+				verb1 = "was";
+			}
+			int matched = matchedFlowableRowNumbers.size();
+			String verb2 = "have";
+			if (matched == 1) {
+				verb2 = "has";
+			}
+			btnMatchFlowables
+					.setToolTipText("Click to show all rows in the User Data tab.  Currently showing only the "
+							+ uniqueCount + " distinct " + noun);
+			setTooltipStatusFlowable("A total of " + uniqueCount + " distinct " + noun + verb1 + " found, and " + matched
+					+ verb2 + " been matched to master " + noun);
 		}
 	}
 
