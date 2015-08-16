@@ -195,7 +195,7 @@ public class DataSourceProvider {
 
 		String query = b.toString();
 
-		System.out.println("query = " + query);
+//		System.out.println("query = " + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);

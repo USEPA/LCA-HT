@@ -36,7 +36,7 @@ public class ChooseDataSetDialog extends Dialog {
 	String prompt;
 
 	int height = 200;
-	
+
 	public static final int OUTPUT_FORMAT_ZIP = 0;
 	public static final int OUTPUT_FORMAT_JSON = 1;
 	public static final int OUTPUT_FORMAT_CSV = 2;
@@ -230,6 +230,9 @@ public class ChooseDataSetDialog extends Dialog {
 	}
 
 	private void updateOutputFormatCombo() {
+		if (!askFileFormat) {
+			return;
+		}
 		List<String> formats = new ArrayList<String>();
 		outputFormatMap.clear();
 		// TODO - TAHOWARD - I changed this so that the right options are presented, but the index will be wrong on the
@@ -237,12 +240,12 @@ public class ChooseDataSetDialog extends Dialog {
 		if (zippedJson) {
 			formats.add("Zipped .json for OpenLCA (.zip)");
 			formats.add("Structured data in a single file (.json, .jsonld, .ttl)");
-			outputFormatMap.put(0,  OUTPUT_FORMAT_ZIP);
-			outputFormatMap.put(1,  OUTPUT_FORMAT_JSON);
+			outputFormatMap.put(0, OUTPUT_FORMAT_ZIP);
+			outputFormatMap.put(1, OUTPUT_FORMAT_JSON);
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
 		} else {
 			formats.add("Tab-delimited text file (.csv)");
-			outputFormatMap.put(0,  OUTPUT_FORMAT_CSV);
+			outputFormatMap.put(0, OUTPUT_FORMAT_CSV);
 			outputFormatCombo.setItems(formats.toArray(new String[0]));
 		}
 		outputFormatCombo.select(0);

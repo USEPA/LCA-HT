@@ -115,7 +115,7 @@ public class LCADataPropertyProvider {
 		b.append("} \n");
 		b.append("order by ?col \n");
 		String query = b.toString();
-		System.out.println("Query " + query);
+//		System.out.println("Query " + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
