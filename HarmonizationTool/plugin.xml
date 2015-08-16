@@ -162,6 +162,11 @@
                      style="push">
                </command> -->
             </menu>
+            <command
+                  commandId="gov.epa.nrmrl.std.lca.ht.workflows.ResetPerspective"
+                  label="Reset Perspective"
+                  style="push">
+            </command>
          </menu>
          <menu
                label="Advanced">
@@ -330,6 +335,11 @@
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ShowFlowsWorkflowHandler"
             id="gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow"
             name="Show Flows Workflow Command">
+      </command>
+      <command
+            defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ResetPerspectiveHandler"
+            id="gov.epa.nrmrl.std.lca.ht.workflows.ResetPerspective"
+            name="Reset Perspective Command">
       </command>
       <command
             defaultHandler="gov.epa.nrmrl.std.lca.ht.handler.ImportUserData"
