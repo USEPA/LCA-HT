@@ -138,7 +138,7 @@ public class SaveHarmonizedDataHandler implements IHandler {
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		//  Can do better!
-		dialog.setFileName(dataSetName+"_harmnoized");
+		dialog.setFileName(dataSetName+"_harmonized");
 
 		final String saveTo = dialog.open();
 //		System.out.println("Save to: " + saveTo);
