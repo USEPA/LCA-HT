@@ -15,11 +15,12 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="icons/alt_window_16.gif" i32="/HarmonizationTool/icons/alt_window_32_lca3.gif"/>
+   <windowImages i16="/HarmonizationTool/icons/running_16x16.gif" i32="/HarmonizationTool/icons/running_32x32.gif" i48="/HarmonizationTool/icons/running_48x48.gif"/>
 
    <splash
       location="HarmonizationTool" />
    <launcher name="LCA-HT">
+      <macosx icon="/HarmonizationTool/icons/LCA-HT.icns"/>
       <solaris/>
       <win useIco="true">
          <ico path="/HarmonizationTool/icons/win_icons.ico"/>

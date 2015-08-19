@@ -670,7 +670,9 @@ public class HarmonizedDataSelector extends ViewPart {
 				int matchNumber = matchStatus.getValue();
 				if (matchNumber > 0 && matchNumber < 5) {
 					hit = true;
-					Flowable mFlowable = new Flowable(comparisonProvider.getUserDataObject());
+//					Flowable mFlowable = new Flowable(comparisonProvider.getUserDataObject());
+					Flowable mFlowable = new Flowable(comparisonProvider.getMasterDataObject());
+
 					// String dataSourceName = mFlowable.getDataSource();
 					List<LCADataValue> lcaDataValues = mFlowable.getPropertyValuesInOrder();
 
