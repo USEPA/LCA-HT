@@ -113,17 +113,7 @@ public class ImportUserData implements IHandler {
 	}
 
 	public static void updateText(final StyledText target, final String message) {
-		try {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					target.setText(message);
-
-				}
-			});
-		} catch (Throwable t) {
-			t.printStackTrace();
-			throw t;
-		}
+		FlowsWorkflow.setButtonTextThreaded(target, message);
 	}
 
 	@Override

@@ -318,7 +318,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusUserData(String newStatus) {
-		statusLoadUserData.setText(newStatus);
+		setButtonText(statusLoadUserData, newStatus);
 	}
 
 	public static String getTooltipStatusUserData() {
@@ -335,7 +335,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void getStatusCheckData(String newStatus) {
-		statusCheckData.setText(newStatus);
+		setButtonText(statusCheckData, newStatus);
 	}
 
 	public static String getTooltipStatusCheckData() {
@@ -352,7 +352,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusSaveMatch(String newStatus) {
-		statusSaveMatch.setText(newStatus);
+		setButtonText(statusSaveMatch, newStatus);
 	}
 
 	public static String getTooltipStatusSaveMatch() {
@@ -369,7 +369,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusFlowContext(String newStatus) {
-		statusFlowContext.setText(newStatus);
+		setButtonText(statusFlowContext, newStatus);
 	}
 
 	public static String getTooltipStatusFlowContext() {
@@ -386,7 +386,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusFlowUnit(String newStatus) {
-		statusFlowUnit.setText(newStatus);
+		setButtonText(statusFlowUnit, newStatus);
 	}
 
 	public static String getTooltipFlowUnit() {
@@ -403,7 +403,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusFlowable(String newStatus) {
-		statusFlowable.setText(newStatus);
+		setButtonText(statusFlowable, newStatus);
 	}
 
 	public static String getTooltipStatusFlowable() {
@@ -420,7 +420,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void setStatusConclude(String newStatus) {
-		statusConclude.setText(newStatus);
+		setButtonText(statusConclude, newStatus);
 	}
 
 	public static String getTooltipStatusConclude() {
@@ -441,13 +441,49 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void clearStatusText() {
-		statusLoadUserData.setText("");
-		statusCheckData.setText("");
-		statusSaveMatch.setText("");
-		statusFlowable.setText("");
-		statusFlowContext.setText("");
-		statusFlowUnit.setText("");
+		setButtonText(statusLoadUserData, "");
+		setButtonText(statusCheckData, "");
+		setButtonText(statusSaveMatch, "");
+		setButtonText(statusFlowable, "");
+		setButtonText(statusFlowContext, "");
+		setButtonText(statusFlowUnit, "");
 	}
+	
+	/* StyleText.setText should NEVER be called on FlowsWorkflow fields outside of setButtonText(threaded) - otherwise
+	 * race conditions where messages written through syncAsync (90% complete) aren't written until after
+	 * sequentially later messages (Done), leaving task appearing unfinished
+	 */
+	public static void setButtonTextThreaded(final StyledText target, final String message) {
+		try {
+			if (!textValues.containsKey(target))
+				textValues.put(target, message);
+			final String previousText = textValues.get(target);
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					if (previousText.equals(textValues.get(target))) {
+						textValues.put(target, message);
+						target.setText(message);
+					}
+
+				}
+			});
+		} catch (Throwable t) {
+			t.printStackTrace();
+			throw t;
+		}
+	}
+	
+	private static HashMap<StyledText, String> textValues = new HashMap<StyledText, String>();
+	
+	/* StyleText.setText should NEVER be called on FlowsWorkflow fields outside of setButtonText(threaded) - otherwise
+	 * race conditions where messages written through syncAsync (90% complete) aren't written until after
+	 * sequentially later messages (Done), leaving task appearing unfinished
+	 */
+	public static void setButtonText(StyledText target, String message) {
+		textValues.put(target, message);
+		target.setText(message);
+	}
+
 
 	public static void buttonModePostLoad() {
 		// FlowsWorkflow.restoreAllButtons();
@@ -634,7 +670,7 @@ public class FlowsWorkflow extends ViewPart {
 								public void run() {
 									if (fieldCount == 0) {
 										statusCheckData.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-										statusCheckData.setText("Assign at least one column first)");
+										setButtonText(statusCheckData, "Assign at least one column first)");
 										switchToWorkflowState(ST_BEFORE_CHECK);
 										// btnMatchFlowables.setEnabled(false);
 										// btnCommit.setEnabled(false);
@@ -645,7 +681,7 @@ public class FlowsWorkflow extends ViewPart {
 										statusCheckData.setBackground(SWTResourceManager
 												.getColor(SWT.COLOR_INFO_BACKGROUND));
 
-										statusCheckData.setText(issueCount + " issues. " + fieldCount
+										setButtonText(statusCheckData, issueCount + " issues. " + fieldCount
 												+ " columns checked");
 										if (issueCount == 0) {
 											// btnMatchFlowables.setEnabled(true);
@@ -694,7 +730,7 @@ public class FlowsWorkflow extends ViewPart {
 			int colsChecked = CSVTableView.countAssignedColumns();
 			if (colsChecked == 0) {
 				statusSaveMatch.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-				statusSaveMatch.setText("Assign and check columns first)");
+				setButtonText(statusSaveMatch, "Assign and check columns first)");
 				// FlowsWorkflow.restoreAllButtons();
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_CHECK);
 				return;
@@ -881,10 +917,10 @@ public class FlowsWorkflow extends ViewPart {
 				switchToWorkflowState(FlowsWorkflow.ST_BEFORE_LOAD);
 
 				btnLoadUserData.setEnabled(true);
-				statusLoadUserData.setText("");
+				setButtonText(statusLoadUserData, "");
 
 				btnCheckData.setEnabled(false);
-				statusCheckData.setText("");
+				setButtonText(statusCheckData, "");
 
 				// TODO - CONFIRM WITH USER
 				// TODO - REMOVE THE FileMD
@@ -956,7 +992,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void showFlowContextMatchCount(int matched, int total) {
-		statusFlowContext.setText(matched + " matched. " + total + " found.");
+		setButtonText(statusFlowContext, matched + " matched. " + total + " found.");
 	}
 
 	public static void addContextRowNum(int rowNumToSend) {
@@ -966,7 +1002,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void showFlowUnitMatchCount(int matched, int total) {
-		statusFlowUnit.setText(matched + " matched. " + total + " found.");
+		setButtonText(statusFlowUnit, matched + " matched. " + total + " found.");
 	}
 
 	public static void addPropertyRowNum(int rowNumToSend) {
@@ -976,7 +1012,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void showFlowableMatchCount(int matched, int total) {
-		statusFlowable.setText(matched + " matched. " + total + " found.");
+		setButtonText(statusFlowable, matched + " matched. " + total + " found.");
 	}
 
 	public static void addFlowableRowNum(int dataRowNumberToSend) {
@@ -999,14 +1035,14 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void addMatchContextRowNum(int rowNumToSend) {
 		matchedFlowContextRowNumbers.add(rowNumToSend);
-		statusFlowContext.setText(matchedFlowContextRowNumbers.size() + " matched. "
+		setButtonText(statusFlowContext, matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
 		CSVTableView.colorFlowContextRows();
 	}
 
 	public static void addMatchPropertyRowNum(int rowNumToSend) {
 		matchedFlowPropertyRowNumbers.add(rowNumToSend);
-		statusFlowUnit.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+		setButtonText(statusFlowUnit, matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowPropertyRows();
 
@@ -1026,7 +1062,7 @@ public class FlowsWorkflow extends ViewPart {
 	public static void addMatchFlowableRowNum(int rowNumToSend) {
 		uniqueFlowableRowNumbers.add(rowNumToSend);
 		matchedFlowableRowNumbers.add(rowNumToSend);
-		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
+		setButtonText(statusFlowable, matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 		CSVTableView.colorOneFlowableRow(rowNumToSend);
 	}
@@ -1049,7 +1085,7 @@ public class FlowsWorkflow extends ViewPart {
 		// rowNumber = firstRowWithSameFlowable;
 		// }
 		matchedFlowContextRowNumbers.remove(rowNumber);
-		statusFlowContext.setText(matchedFlowContextRowNumbers.size() + " matched. "
+		setButtonText(statusFlowContext, matchedFlowContextRowNumbers.size() + " matched. "
 				+ uniqueFlowContextRowNumbers.size() + " found.");
 		// CSVTableView.colorFlowContextRows();
 		CSVTableView.colorOneFlowableRow(rowNumber);
@@ -1057,14 +1093,14 @@ public class FlowsWorkflow extends ViewPart {
 
 	public static void removeMatchPropertyRowNum(int rowNumber) {
 		matchedFlowPropertyRowNumbers.remove(rowNumber);
-		statusFlowUnit.setText(matchedFlowPropertyRowNumbers.size() + " matched. "
+		setButtonText(statusFlowUnit, matchedFlowPropertyRowNumbers.size() + " matched. "
 				+ uniqueFlowPropertyRowNumbers.size() + " found.");
 		CSVTableView.colorFlowPropertyRows();
 	}
 
 	public static void removeMatchFlowableRowNum(int rowNumber) {
 		matchedFlowableRowNumbers.remove(rowNumber);
-		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
+		setButtonText(statusFlowable, matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 		// CSVTableView.colorFlowableRows();
 		CSVTableView.colorOneFlowableRow(rowNumber);
@@ -1077,7 +1113,7 @@ public class FlowsWorkflow extends ViewPart {
 	}
 
 	public static void updateFlowableCount() {
-		statusFlowable.setText(matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
+		setButtonText(statusFlowable, matchedFlowableRowNumbers.size() + " matched. " + uniqueFlowableRowNumbers.size()
 				+ " found.");
 	}
 
@@ -1114,17 +1150,17 @@ public class FlowsWorkflow extends ViewPart {
 			btnMatchFlowables.setText("Show Unique");
 			btnMatchFlowables.setToolTipText("");
 			setButtonState(btnMatchFlowables, false);
-			statusFlowable.setText("");
+			setButtonText(statusFlowable, "");
 			setTooltipStatusFlowContext("");
 			btnMatchFlowContexts.setText("Show Unique");
 			btnMatchFlowContexts.setToolTipText("");
 			setButtonState(btnMatchFlowContexts, false);
-			statusFlowContext.setText("");
+			setButtonText(statusFlowContext, "");
 			setTooltipStatusFlowUnit("");
 			btnMatchFlowUnits.setText("Show Unique");
 			btnMatchFlowUnits.setToolTipText("");
 			setButtonState(btnMatchFlowUnits, false);
-			statusFlowUnit.setText("");
+			setButtonText(statusFlowUnit, "");
 			setTooltipStatusFlowable("");
 			btnConcludeFile.setText("");
 			btnConcludeFile.setToolTipText("");
