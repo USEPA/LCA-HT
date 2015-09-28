@@ -49,6 +49,8 @@ public class MetadataDialog extends TitleAreaDialog {
 	private Logger runLogger = Logger.getLogger("run");
 	private Button masterButton;
 	private Button supplementaryButton;
+	private Button adHocButton;
+	private Button userButton;
 
 	// protected String combDataSourceSelectorSavedText = "";
 
@@ -65,7 +67,7 @@ public class MetadataDialog extends TitleAreaDialog {
 	public MetadataDialog(Shell parentShell) {
 		super(parentShell);
 		// CASE 1) TO VIEW OR EDIT EXISTING DATA SOURCE INFO
-//		System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
+		// System.out.println("DataSourceKeeper.size() " + DataSourceKeeper.size());
 		if (DataSourceKeeper.size() == 0) {
 			// THIS IS A PROBLEM. FIXME - HOW TO EXIT GRACEFULLY?
 			new GenericMessageBox(parentShell, "No Data",
@@ -74,12 +76,11 @@ public class MetadataDialog extends TitleAreaDialog {
 			return;
 		}
 		this.callingFileMD = null;
-		
+
 		String key = CSVTableView.getTableProviderKey();
 		if (key != null) {
 			this.curDataSourceProvider = TableKeeper.getTableProvider(key).getDataSourceProvider();
-		}
-		else {
+		} else {
 			List<String> dataSources = DataSourceKeeper.getDataSourceNamesInTDB();
 			this.curDataSourceProvider = DataSourceKeeper.getByName(dataSources.get(dataSources.size() - 1));
 		}
@@ -129,7 +130,7 @@ public class MetadataDialog extends TitleAreaDialog {
 	// MAKE AND "WIRE" THE WHOLE DIALOG BOX
 	@Override
 	protected Control createDialogArea(Composite parent) {
-//		System.out.println("createDialogArea called");
+		// System.out.println("createDialogArea called");
 
 		layoutDialog(parent); // BUILD "BASIC STRUCTURE"
 
@@ -162,7 +163,7 @@ public class MetadataDialog extends TitleAreaDialog {
 		int col1LeftIndent = 25;
 		int col1Width = 100;
 		int col2Left = 125;
-		int col2Width = 250;
+		int col2Width = 330;
 		int rowHeight = 20;
 		int disBtwnRows = 30;
 		int rowIndex = 0;
@@ -183,7 +184,7 @@ public class MetadataDialog extends TitleAreaDialog {
 
 		Button dataSourceRename = new Button(composite, SWT.BORDER);
 		dataSourceRename.setToolTipText("Click to change this dataset's name.");
-		dataSourceRename.setBounds(col2Left + 250, rowIndex * disBtwnRows - 2, 70, 25);
+		dataSourceRename.setBounds(col2Left + col2Width, rowIndex * disBtwnRows - 2, 70, 25);
 		dataSourceRename.setText("Rename");
 		dataSourceRename.addListener(SWT.Selection, new RenameButtonClickListener());
 
@@ -200,15 +201,23 @@ public class MetadataDialog extends TitleAreaDialog {
 		rowIndex++;
 		Label labelReferenceDataStatus = new Label(composite, SWT.RIGHT);
 		labelReferenceDataStatus.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
-		labelReferenceDataStatus.setText("Reference Data");
+		labelReferenceDataStatus.setText("Dataset Type");
 		masterButton = new Button(composite, SWT.RADIO);
 		masterButton.setBounds(col2Left, rowIndex * disBtwnRows, col1Width - 10, rowHeight);
-		masterButton.setText("Master List");
+		masterButton.setText("Master");
 		masterButton.addSelectionListener(radioListener);
 		supplementaryButton = new Button(composite, SWT.RADIO);
-		supplementaryButton.setBounds(col2Left + 110, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
-		supplementaryButton.setText("Supplementary List");
+		supplementaryButton.setBounds(col2Left + 70, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		supplementaryButton.setText("Supplementary");
 		supplementaryButton.addSelectionListener(radioListener);
+		adHocButton = new Button(composite, SWT.RADIO);
+		adHocButton.setBounds(col2Left + 185, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		adHocButton.setText("Ad Hoc");
+		adHocButton.addSelectionListener(radioListener);
+		userButton = new Button(composite, SWT.RADIO);
+		userButton.setBounds(col2Left + 260, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		userButton.setText("User Data");
+		userButton.addSelectionListener(radioListener);
 		if (curDataSourceProvider.getReferenceDataStatus() == null) {
 			masterButton.setEnabled(true);
 			supplementaryButton.setEnabled(true);
@@ -332,13 +341,17 @@ public class MetadataDialog extends TitleAreaDialog {
 
 	SelectionListener radioListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
-//			System.out.println(e.getSource());
+			// System.out.println(e.getSource());
 			Button thing = (Button) e.getSource();
 			String thing2 = thing.getText();
-			if (thing2.matches(".*Master.*")) {
+			if (thing2.matches("Master.*")) {
 				curDataSourceProvider.setReferenceDataStatus(1);
-			} else if (thing2.matches(".*Supplementary.*")) {
+			} else if (thing2.matches("Supplementary.*")) {
 				curDataSourceProvider.setReferenceDataStatus(2);
+			} else if (thing2.matches("Ad.*")) {
+				curDataSourceProvider.setReferenceDataStatus(3);
+			} else if (thing2.matches("User.*")) {
+				curDataSourceProvider.setReferenceDataStatus(null);
 			}
 
 		}
@@ -367,7 +380,7 @@ public class MetadataDialog extends TitleAreaDialog {
 			// messageDialog.create();
 			if (messageDialog.open() == 1) {
 				DataSourceKeeper.remove(DataSourceKeeper.getByName(dataSourceToDelete));
-//				System.out.println("Deleting " + dataSourceToDelete);
+				// System.out.println("Deleting " + dataSourceToDelete);
 				comboSelectorDataSource.remove(dataSourceToDelete);
 				comboSelectorDataSource.select(0);
 				runLogger.info("User deleted dataset: " + dataSourceToDelete);
@@ -403,8 +416,8 @@ public class MetadataDialog extends TitleAreaDialog {
 
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		if (contactPerson == null) {
-			//contactPerson = new Person();
-			//curDataSourceProvider.setContactPerson(contactPerson);
+			// contactPerson = new Person();
+			// curDataSourceProvider.setContactPerson(contactPerson);
 			dialogValues[2].setText("");
 			dialogValues[3].setText("");
 			dialogValues[4].setText("");
@@ -481,7 +494,7 @@ public class MetadataDialog extends TitleAreaDialog {
 	@Override
 	protected void okPressed() {
 		String dataSourceName = comboSelectorDataSource.getText();
-//		System.out.println("comboSelectorDataSource.getText() " + comboSelectorDataSource.getText());
+		// System.out.println("comboSelectorDataSource.getText() " + comboSelectorDataSource.getText());
 		curDataSourceProvider.createTDBResource();
 		Person contactPerson = curDataSourceProvider.getContactPerson();
 		if (contactPerson == null) {
@@ -533,17 +546,17 @@ public class MetadataDialog extends TitleAreaDialog {
 	private final class RenameButtonClickListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-//			System.out.println("About to new box...");
+			// System.out.println("About to new box...");
 			GenericStringBox genericStringBox = new GenericStringBox(getShell(), comboSelectorDataSource.getText(),
 					comboSelectorDataSource.getItems());
-//			System.out.println("About to create box...");
+			// System.out.println("About to create box...");
 
 			genericStringBox.create("Change Dataset Name", "Please type a new name for the selected dataset");
-//			System.out.println("About to open box...");
+			// System.out.println("About to open box...");
 
 			genericStringBox.open();
 
-//			System.out.println("Box is open...");
+			// System.out.println("Box is open...");
 
 			String newFileName = genericStringBox.getResultString();
 			if (newFileName == null) {

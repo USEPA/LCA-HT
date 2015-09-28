@@ -514,7 +514,8 @@ public class AutoMatchJob extends Job {
 			b.append("  ?c a fedlca:Comparison . \n");
 			b.append("  ?mf a fedlca:Flow . \n");
 			b.append("  ?mf eco:hasDataSource ?mds . \n");
-			b.append("  ?mds a lcaht:MasterDataset . \n");
+			b.append("  {?mds a lcaht:MasterDataset } union {?mds a lcaht:AdHocDataset } \n");
+			// WORKING HERE
 
 			b.append("} \n");
 

@@ -2491,7 +2491,10 @@ public class CSVTableView extends ViewPart {
 			b.append("  ?f fedlca:hasOpenLCAUUID ?uuid .  \n");
 			b.append("  ?f a fedlca:Flow . \n");
 			b.append("  ?f eco:hasDataSource ?mds . \n");
-			b.append("  ?mds a lcaht:MasterDataset . \n");
+			b.append("  { ?mds a lcaht:MasterDataset } union \n");
+			b.append("  { ?mds a lcaht:SupplementaryReferenceDataset } union \n");
+			b.append("  { ?mds a lcaht:AdHocMasterDataset } \n");
+
 			b.append("} \n");
 			String query = b.toString();
 

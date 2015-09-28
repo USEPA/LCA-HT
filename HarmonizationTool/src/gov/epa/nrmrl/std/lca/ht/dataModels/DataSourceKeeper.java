@@ -4,11 +4,14 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.tdb.ImportRDFFileDirectlyToGraph;
+import gov.epa.nrmrl.std.lca.ht.utils.Temporal;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -105,7 +108,8 @@ public class DataSourceKeeper {
 	/**
 	 * THE FOLLOWING METHOD PRODUCES A DataSourceName DISTINCT FROM ANY IN THE TDB
 	 * 
-	 * @param proposedNewDataSourceName is a String proposed as a new dataset name
+	 * @param proposedNewDataSourceName
+	 *            is a String proposed as a new dataset name
 	 * @return a unique dataset name based on the proposed String (with an incremented integer at the end)
 	 */
 	public static String uniquify(String proposedNewDataSourceName) {
@@ -203,15 +207,16 @@ public class DataSourceKeeper {
 	}
 
 	public static int countDataSourcesInTDB() {
+		reEstablishLostDataSources();
 		StringBuilder b = new StringBuilder();
 		b.append(Prefixes.getPrefixesForQuery());
 		b.append("select (count(distinct ?ds) as ?count) \n");
 		b.append("where {  \n");
-		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("  ?ds a eco:DataSource .  \n");
 		b.append("} \n");
 		String query = b.toString();
 
-//		System.out.println("query = " + query);
+		// System.out.println("query = " + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -221,6 +226,69 @@ public class DataSourceKeeper {
 
 		RDFNode rdfNode = querySolution.get("count");
 		return (rdfNode.asLiteral().getInt());
+	}
+
+	public static void reEstablishLostDataSources() {
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append("select distinct ?ds \n");
+		b.append("where {  \n");
+		b.append("  ?s eco:hasDataSource ?ds .  \n");
+		b.append("  filter (not exists{?ds a eco:DataSource . })  \n");
+		b.append("} \n");
+		String query = b.toString();
+
+		// System.out.println("query = " + query);
+
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+		List<Resource> recreate = new ArrayList<Resource>();
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		boolean hit = false;
+		while (resultSet.hasNext()) {
+			hit = true;
+			QuerySolution querySolution = resultSet.next();
+			recreate.add(querySolution.getResource("ds"));
+		}
+		if (!hit) {
+			return;
+		}
+
+		String[] newNames = new String[recreate.size()];
+		for (int i = 0; i < recreate.size(); i++) {
+			int iPlus = i + 1;
+			boolean mayOverlap = true;
+			while (mayOverlap) {
+				newNames[i] = uniquify("Lost Data Set #" + iPlus);
+				mayOverlap = false;
+				for (int j = 0; j < i; j++) {
+					if (newNames[i].equals(newNames[j])) {
+						mayOverlap = true;
+						iPlus++;
+					}
+				}
+			}
+		}
+
+		String newDate = Temporal.getLocalDateFmt(new Date());
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			for (int i = 0; i < recreate.size(); i++) {
+				Resource restore = recreate.get(i);
+				tdbModel.add(restore, RDF.type, ECO.DataSource);
+				tdbModel.add(restore, RDFS.label, newNames[i]);
+				tdbModel.add(restore, RDFS.comment, "Dataset was restored on " + newDate);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION -
+		return;
 	}
 
 	public static List<String> getDataSourceNamesInTDB() {
@@ -304,7 +372,7 @@ public class DataSourceKeeper {
 			RDFNode rdfNode = nodeIterator.next();
 			name = rdfNode.asLiteral().getString();
 		} catch (Exception e) {
-//			System.out.println("Import failed with Exception: " + e);
+			// System.out.println("Import failed with Exception: " + e);
 			ActiveTDB.tdbDataset.abort();
 		} finally {
 			ActiveTDB.tdbDataset.end();
@@ -325,7 +393,7 @@ public class DataSourceKeeper {
 
 		List<Resource> orphans = getOrphanResources();
 		count = orphans.size();
-//		System.out.println("Orphans found: " + count);
+		// System.out.println("Orphans found: " + count);
 		if (count > 0) {
 			// --- BEGIN SAFE -WRITE- TRANSACTION ---
 			ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
@@ -361,7 +429,7 @@ public class DataSourceKeeper {
 		b.append("} \n ");
 
 		String query = b.toString();
-//		System.out.println("Query: \n" + query);
+		// System.out.println("Query: \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 
@@ -386,7 +454,7 @@ public class DataSourceKeeper {
 		b.append("} \n ");
 
 		String query = b.toString();
-//		System.out.println("Query: \n" + query);
+		// System.out.println("Query: \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setGraphName(graphName);
 		harmonyQuery2Impl.setQuery(query);
@@ -397,6 +465,59 @@ public class DataSourceKeeper {
 			results.add(querySolution.get("s").asResource());
 		}
 		return results;
+	}
+
+	private static boolean confirmAdHocDataSource() {
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(null, RDF.type, LCAHT.AdHocMasterDataset)) {
+			return true;
+		}
+		return false;
+	}
+
+	private static void createAdHocDataSource() {
+		String newDate = Temporal.getLocalDateFmt(new Date());
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			Resource newAdHocDataSource = tdbModel.createResource(ECO.DataSource);
+			tdbModel.add(newAdHocDataSource, RDF.type, ECO.DataSource);
+			tdbModel.add(newAdHocDataSource, RDF.type, LCAHT.AdHocMasterDataset);
+			tdbModel.add(newAdHocDataSource, RDFS.label, uniquify("Ad Hoc Master"));
+			tdbModel.add(newAdHocDataSource, RDFS.comment, "Dataset created on " + newDate);
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION -
+
+	}
+
+	private static boolean confirmFlowableLoaded() {
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(null, RDF.type, ECO.Flowable)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean confirmContextsLoaded() {
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(null, RDF.type, FedLCA.FlowContext)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean confirmPropertiesLoaded() {
+		Model model = ActiveTDB.getModel(null);
+		if (model.contains(null, RDF.type, FedLCA.FlowUnit)) {
+			return true;
+		}
+		return false;
 	}
 
 	public static void resolveUnsavedDataSources() {
@@ -420,10 +541,15 @@ public class DataSourceKeeper {
 	}
 
 	public static void syncFromTDB() {
-		if (ActiveTDB.getMasterFlowableDatasetResources() == null) {
-//			System.out.println("No master flow data present, loading master flows and flowables");
+		reEstablishLostDataSources();
+		if (!confirmFlowableLoaded()) {
+			// if (ActiveTDB.getMasterFlowableDatasetResources() == null) {
+			// System.out.println("No master flow data present, loading master flows and flowables");
 			ImportRDFFileDirectlyToGraph.loadToDefaultGraph("classpath:/RDFResources/master_flowables_v1.4a_lcaht.zip",
 					null);
+		}
+		if (!confirmAdHocDataSource()) {
+			createAdHocDataSource();
 		}
 		Model tdbModel = ActiveTDB.getModel(null);
 		List<Resource> dataSourceResourcesToAdd = new ArrayList<Resource>();
@@ -434,9 +560,9 @@ public class DataSourceKeeper {
 			Resource dataSourceRDFResource = iterator.next();
 			int dataSourceIndex = getByTdbResource(dataSourceRDFResource);
 			// NOW SEE IF THE DataSource IS IN THE DataSourceKeeper YET
-//			System.out.println("another DataSource found in TDB");
+			// System.out.println("another DataSource found in TDB");
 			if (dataSourceIndex < 0) {
-//				System.out.println("... new one");
+				// System.out.println("... new one");
 				dataSourceResourcesToAdd.add(dataSourceRDFResource);
 			}
 		}

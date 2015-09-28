@@ -44,6 +44,7 @@ public class LCAHT {
     public static final Resource QCStatusAdHocMaster = m_model.createResource( NS + "QCStatusAdHocMaster" );
     
     public static final Resource MasterDataset = m_model.createResource( NS + "MasterDataset" );
+    public static final Resource AdHocMasterDataset = m_model.createResource( NS + "AdHocMasterDataset" );
     public static final Resource SupplementaryReferenceDataset = m_model.createResource( NS + "SupplementaryReferenceDataset" );
 	public static final Resource OrphanDataset = m_model.createResource( NS + "OrphanDataset" );
 

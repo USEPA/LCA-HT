@@ -195,7 +195,7 @@ public class DataSourceProvider {
 
 		String query = b.toString();
 
-//		System.out.println("query = " + query);
+		// System.out.println("query = " + query);
 
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
@@ -221,15 +221,14 @@ public class DataSourceProvider {
 	}
 
 	/**
-	 * This method is intended to remove a DataSourceProvider including
-	 * 1) The DataSourceProvider itself
-	 * 2) The TDB objects associated with the ECO.DataSource
-	 * 3) Each TDB subject having a ECO.hasDataSource of that ECO.DataSource
+	 * This method is intended to remove a DataSourceProvider including 1) The DataSourceProvider itself 2) The TDB
+	 * objects associated with the ECO.DataSource 3) Each TDB subject having a ECO.hasDataSource of that ECO.DataSource
 	 * 4) Each triple beginning with the subject mentioned in 3)
 	 * 
 	 * Note: It should be adjusted to consider other triples
 	 * 
-	 * @param graph String representing the graph from which the ECO.DataSource should be removed
+	 * @param graph
+	 *            String representing the graph from which the ECO.DataSource should be removed
 	 */
 	public void remove(String graph) {
 		removeFileMDList();
@@ -327,15 +326,13 @@ public class DataSourceProvider {
 	}
 
 	/**
-	 * Items that need to be synced to the Java object from the TDB (using Resource tdbResource) include
-	 * String dataSourceName <= RDFS.label
-	 * String version <= DCTerms.hasVersion
-	 * String comments <= RDFS.comment
-	 * Person contactPerson <= FedLCA.hasContactPerson
-	 * List<FileMD> fileMDList <= LCAHT.containsFile
-	 * Integer referenceDataStatus <= [if belongs to class LCAHT.MasterDataset or LCAHT.SupplementaryReferenceDataset]
-
-	 * @param String indicating which graph is to be used to sync from
+	 * Items that need to be synced to the Java object from the TDB (using Resource tdbResource) include String
+	 * dataSourceName <= RDFS.label String version <= DCTerms.hasVersion String comments <= RDFS.comment Person
+	 * contactPerson <= FedLCA.hasContactPerson List<FileMD> fileMDList <= LCAHT.containsFile Integer
+	 * referenceDataStatus <= [if belongs to class LCAHT.MasterDataset or LCAHT.SupplementaryReferenceDataset]
+	 * 
+	 * @param String
+	 *            indicating which graph is to be used to sync from
 	 * @return True if succeeded, False if failed.
 	 */
 	public boolean syncFromTDB(String graphName) {
@@ -368,8 +365,12 @@ public class DataSourceProvider {
 				fileMDResources.add(statement.getObject().asResource());
 			} else if (property.equals(RDF.type)) {
 				Resource type = statement.getObject().asResource();
-				if (type.equals(LCAHT.MasterDataset) || type.equals(LCAHT.SupplementaryReferenceDataset)) {
+				if (type.equals(LCAHT.MasterDataset)) {
 					referenceDataStatus = 1;
+				} else if (type.equals(LCAHT.SupplementaryReferenceDataset)) {
+					referenceDataStatus = 2;
+				} else if (type.equals(LCAHT.AdHocMasterDataset)) {
+					referenceDataStatus = 3;
 				}
 			}
 		}
@@ -404,16 +405,24 @@ public class DataSourceProvider {
 		if (referenceDataStatus == null) {
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.AdHocMasterDataset);
 			return;
 		}
 		if (referenceDataStatus == 1) {
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.AdHocMasterDataset);
 			ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.MasterDataset, null);
 			return;
 		}
-		if (referenceDataStatus == 1) {
+		if (referenceDataStatus == 2) {
 			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.AdHocMasterDataset);
 			ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset, null);
+		}
+		if (referenceDataStatus == 3) {
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.MasterDataset);
+			ActiveTDB.tsRemoveStatement(tdbResource, RDF.type, LCAHT.SupplementaryReferenceDataset);
+			ActiveTDB.tsAddGeneralTriple(tdbResource, RDF.type, LCAHT.AdHocMasterDataset, null);
 		}
 	}
 }
