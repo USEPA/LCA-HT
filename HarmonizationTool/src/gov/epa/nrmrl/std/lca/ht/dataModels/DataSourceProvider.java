@@ -134,6 +134,10 @@ public class DataSourceProvider {
 	}
 
 	public List<FileMD> getFileMDListNewestFirst() {
+		if (fileMDList == null) {
+			return null;
+		}
+
 		List<FileMD> results = new ArrayList<FileMD>();
 		for (FileMD fileMD : fileMDList) {
 			Date readDate = fileMD.getReadDate();

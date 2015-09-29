@@ -1,5 +1,6 @@
 package gov.epa.nrmrl.std.lca.ht.dataModels;
 
+import gov.epa.nrmrl.std.lca.ht.dialog.GenericMessageBox;
 import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
@@ -28,6 +30,10 @@ import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -474,6 +480,18 @@ public class DataSourceKeeper {
 		}
 		return false;
 	}
+	
+	private static Resource getAdHocDataSource() {
+		Model model = ActiveTDB.getModel(null);
+		
+		Selector selector = new SimpleSelector(null, RDF.type, LCAHT.AdHocMasterDataset);
+		StmtIterator stmtIterator = model.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			return(statement.getSubject().asResource());
+		}
+		return null;
+	}
 
 	private static void createAdHocDataSource() {
 		String newDate = Temporal.getLocalDateFmt(new Date());
@@ -493,9 +511,57 @@ public class DataSourceKeeper {
 			ActiveTDB.tdbDataset.end();
 		}
 		// ---- END SAFE -WRITE- TRANSACTION -
-
 	}
 
+	private static void assignedAdHocFlowables(){
+		List<Resource> results = new ArrayList<Resource>();
+		StringBuilder b = new StringBuilder();
+		b.append(Prefixes.getPrefixesForQuery());
+		b.append(" \n");
+		b.append("select distinct ?f  \n");
+		b.append("where { \n");
+		b.append("    ?f a eco:Flowable .  \n ");
+		b.append("    ?f lcaht:hasQCStatus lcaht:QCStatusAdHocMaster .  \n ");
+		b.append("    filter (not exists \n ");
+		b.append("      { ?f eco:hasDataSource ?ds .  \n ");
+		b.append("        ?ds a lcaht:AdHocMasterDataset } \n ");
+		b.append("    ) \n ");
+		b.append("} \n ");
+
+		String query = b.toString();
+		// System.out.println("Query: \n" + query);
+		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
+		harmonyQuery2Impl.setQuery(query);
+
+		ResultSet resultSet = harmonyQuery2Impl.getResultSet();
+		while (resultSet.hasNext()) {
+			QuerySolution querySolution = resultSet.next();
+			results.add(querySolution.get("f").asResource());
+		}
+
+		int flowablesToAdd = results.size();
+		if (flowablesToAdd == 0){
+			return;
+		}
+//		new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert", flowablesToAdd+" flowables, previously identified as 'Ad Hoc Master' are being added to the local Ad Hoc Master dataset.");
+		Resource adHocMasterResource = getAdHocDataSource();
+		
+		// --- BEGIN SAFE -WRITE- TRANSACTION ---
+		ActiveTDB.tdbDataset.begin(ReadWrite.WRITE);
+		Model tdbModel = ActiveTDB.getModel(null);
+		try {
+			for (Resource flowableResource: results){
+				tdbModel.add(flowableResource, ECO.hasDataSource, adHocMasterResource);
+			}
+			ActiveTDB.tdbDataset.commit();
+		} catch (Exception e) {
+			ActiveTDB.tdbDataset.abort();
+		} finally {
+			ActiveTDB.tdbDataset.end();
+		}
+		// ---- END SAFE -WRITE- TRANSACTION -
+	}
+	
 	private static boolean confirmFlowableLoaded() {
 		Model model = ActiveTDB.getModel(null);
 		if (model.contains(null, RDF.type, ECO.Flowable)) {
@@ -551,6 +617,8 @@ public class DataSourceKeeper {
 		if (!confirmAdHocDataSource()) {
 			createAdHocDataSource();
 		}
+		assignedAdHocFlowables();
+		
 		Model tdbModel = ActiveTDB.getModel(null);
 		List<Resource> dataSourceResourcesToAdd = new ArrayList<Resource>();
 		ActiveTDB.tdbDataset.begin(ReadWrite.READ);

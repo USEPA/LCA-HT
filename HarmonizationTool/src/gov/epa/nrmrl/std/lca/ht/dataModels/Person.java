@@ -44,6 +44,9 @@ public class Person {
 	}
 
 	public void setName(String name) {
+		if (name == null) {
+			name = "";
+		}
 		this.name = name;
 		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.personName, name);
 	}
@@ -60,6 +63,9 @@ public class Person {
 	}
 
 	public void setAffiliation(String affiliation) {
+		if (affiliation == null) {
+			affiliation = "";
+		}
 		this.affiliation = affiliation;
 		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.affiliation, affiliation);
 	}
@@ -76,6 +82,9 @@ public class Person {
 	}
 
 	public void setEmail(String email) {
+		if (email == null) {
+			email = "";
+		}
 		this.email = email;
 		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.email, email);
 	}
@@ -92,6 +101,9 @@ public class Person {
 	}
 
 	public void setPhone(String phone) {
+		if (phone == null) {
+			phone = "";
+		}
 		this.phone = phone;
 		ActiveTDB.tsReplaceLiteral(tdbResource, FedLCA.voicePhone, phone);
 	}

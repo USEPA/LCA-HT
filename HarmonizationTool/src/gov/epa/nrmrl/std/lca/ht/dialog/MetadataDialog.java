@@ -180,7 +180,7 @@ public class MetadataDialog extends TitleAreaDialog {
 		labelSelectDataSource.setText("Dataset name");
 
 		comboSelectorDataSource = new Combo(composite, SWT.READ_ONLY);
-		comboSelectorDataSource.setBounds(col2Left, rowIndex * disBtwnRows, col2Width, rowHeight);
+		comboSelectorDataSource.setBounds(col2Left, rowIndex * disBtwnRows, col2Width - 40, rowHeight);
 
 		Button dataSourceRename = new Button(composite, SWT.BORDER);
 		dataSourceRename.setToolTipText("Click to change this dataset's name.");
@@ -191,7 +191,7 @@ public class MetadataDialog extends TitleAreaDialog {
 		if (callingFileMD == null) {
 			Button deleteDataSource = new Button(composite, SWT.NONE);
 			deleteDataSource.setToolTipText("Click to delete this dataset.");
-			deleteDataSource.setBounds(col2Left + 320, rowIndex * disBtwnRows - 4, 32, 28);
+			deleteDataSource.setBounds(col2Left + col2Width - 35, rowIndex * disBtwnRows - 4, 32, 28);
 			deleteDataSource.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			deleteDataSource.setText("X");
 			deleteDataSource.addSelectionListener(deleteDatasourceListener);
@@ -203,40 +203,48 @@ public class MetadataDialog extends TitleAreaDialog {
 		labelReferenceDataStatus.setBounds(col1LeftIndent, rowIndex * disBtwnRows, col1Width, rowHeight);
 		labelReferenceDataStatus.setText("Dataset Type");
 		masterButton = new Button(composite, SWT.RADIO);
-		masterButton.setBounds(col2Left, rowIndex * disBtwnRows, col1Width - 10, rowHeight);
+		masterButton.setBounds(col2Left, rowIndex * disBtwnRows, 60, rowHeight);
 		masterButton.setText("Master");
 		masterButton.addSelectionListener(radioListener);
+		masterButton.setEnabled(true);
+		
 		supplementaryButton = new Button(composite, SWT.RADIO);
-		supplementaryButton.setBounds(col2Left + 70, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		supplementaryButton.setBounds(col2Left + 70, rowIndex * disBtwnRows, 105, rowHeight);
 		supplementaryButton.setText("Supplementary");
 		supplementaryButton.addSelectionListener(radioListener);
+		supplementaryButton.setEnabled(true);
+
 		adHocButton = new Button(composite, SWT.RADIO);
-		adHocButton.setBounds(col2Left + 185, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		adHocButton.setBounds(col2Left + 185, rowIndex * disBtwnRows, 60, rowHeight);
 		adHocButton.setText("Ad Hoc");
 		adHocButton.addSelectionListener(radioListener);
+		adHocButton.setEnabled(true);
+
 		userButton = new Button(composite, SWT.RADIO);
-		userButton.setBounds(col2Left + 260, rowIndex * disBtwnRows, col1Width + 40, rowHeight);
+		userButton.setBounds(col2Left + 260, rowIndex * disBtwnRows, 75, rowHeight);
 		userButton.setText("User Data");
 		userButton.addSelectionListener(radioListener);
-		if (curDataSourceProvider.getReferenceDataStatus() == null) {
-			masterButton.setEnabled(true);
-			supplementaryButton.setEnabled(true);
-			masterButton.setSelection(false);
-			supplementaryButton.setSelection(false);
-			masterButton.setEnabled(false);
-			supplementaryButton.setEnabled(false);
-		} else {
-			masterButton.setEnabled(true);
-			supplementaryButton.setEnabled(true);
-			if (curDataSourceProvider.getReferenceDataStatus() == 2) {
-				supplementaryButton.setSelection(true);
-				masterButton.setSelection(false);
+		userButton.setEnabled(true);
 
-			} else if (curDataSourceProvider.getReferenceDataStatus() == 1) {
-				masterButton.setSelection(true);
-				supplementaryButton.setSelection(false);
-			}
-		}
+		// if (curDataSourceProvider.getReferenceDataStatus() == null) {
+		// masterButton.setEnabled(true);
+		// supplementaryButton.setEnabled(true);
+		// masterButton.setSelection(false);
+		// supplementaryButton.setSelection(false);
+		// masterButton.setEnabled(false);
+		// supplementaryButton.setEnabled(false);
+		// } else {
+		// masterButton.setEnabled(true);
+		// supplementaryButton.setEnabled(true);
+		// if (curDataSourceProvider.getReferenceDataStatus() == 2) {
+		// supplementaryButton.setSelection(true);
+		// masterButton.setSelection(false);
+		//
+		// } else if (curDataSourceProvider.getReferenceDataStatus() == 1) {
+		// masterButton.setSelection(true);
+		// supplementaryButton.setSelection(false);
+		// }
+		// }
 
 		rowIndex++;
 		Label labelVersion = new Label(composite, SWT.RIGHT);
@@ -337,20 +345,22 @@ public class MetadataDialog extends TitleAreaDialog {
 		dialogValues[7] = textLastModified; // ------- 07 File Last Modified
 		dialogValues[8] = textFileReadTime; // ------- 08 File Read Time
 
+		setDatasetType();
 	}
 
 	SelectionListener radioListener = new SelectionListener() {
 		private void doit(SelectionEvent e) {
 			// System.out.println(e.getSource());
-			Button thing = (Button) e.getSource();
-			String thing2 = thing.getText();
-			if (thing2.matches("Master.*")) {
+			Button button = (Button) e.getSource();
+			System.out.println(button);
+			String buttonText = button.getText();
+			if (buttonText.matches("Master.*")) {
 				curDataSourceProvider.setReferenceDataStatus(1);
-			} else if (thing2.matches("Supplementary.*")) {
+			} else if (buttonText.matches("Supplementary.*")) {
 				curDataSourceProvider.setReferenceDataStatus(2);
-			} else if (thing2.matches("Ad.*")) {
+			} else if (buttonText.matches("Ad.*")) {
 				curDataSourceProvider.setReferenceDataStatus(3);
-			} else if (thing2.matches("User.*")) {
+			} else if (buttonText.matches("User.*")) {
 				curDataSourceProvider.setReferenceDataStatus(null);
 			}
 
@@ -383,6 +393,9 @@ public class MetadataDialog extends TitleAreaDialog {
 				// System.out.println("Deleting " + dataSourceToDelete);
 				comboSelectorDataSource.remove(dataSourceToDelete);
 				comboSelectorDataSource.select(0);
+				redrawDialogDataSourceMD();
+				redrawDialogFileMD(0);
+				setDatasetType();
 				runLogger.info("User deleted dataset: " + dataSourceToDelete);
 			}
 		}
@@ -428,22 +441,22 @@ public class MetadataDialog extends TitleAreaDialog {
 			dialogValues[4].setText(contactPerson.getEmailString());
 			dialogValues[5].setText(contactPerson.getPhoneString());
 		}
-		if (curDataSourceProvider.getReferenceDataStatus() == null) {
-			masterButton.setEnabled(false);
-			supplementaryButton.setEnabled(false);
-			masterButton.setSelection(false);
-			supplementaryButton.setSelection(false);
-		} else {
-			masterButton.setEnabled(true);
-			supplementaryButton.setEnabled(true);
-			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
-				masterButton.setSelection(true);
-				supplementaryButton.setSelection(false);
-			} else if (curDataSourceProvider.getReferenceDataStatus() == 2) {
-				supplementaryButton.setSelection(true);
-				masterButton.setSelection(false);
-			}
-		}
+//		if (curDataSourceProvider.getReferenceDataStatus() == null) {
+//			masterButton.setEnabled(false);
+//			supplementaryButton.setEnabled(false);
+//			masterButton.setSelection(false);
+//			supplementaryButton.setSelection(false);
+//		} else {
+//			masterButton.setEnabled(true);
+//			supplementaryButton.setEnabled(true);
+//			if (curDataSourceProvider.getReferenceDataStatus() == 1) {
+//				masterButton.setSelection(true);
+//				supplementaryButton.setSelection(false);
+//			} else if (curDataSourceProvider.getReferenceDataStatus() == 2) {
+//				supplementaryButton.setSelection(true);
+//				masterButton.setSelection(false);
+//			}
+//		}
 	}
 
 	protected void createComboSelectorFileMD() {
@@ -466,7 +479,7 @@ public class MetadataDialog extends TitleAreaDialog {
 
 	protected void redrawDialogFileMD(int index) {
 		List<FileMD> fileMDs = curDataSourceProvider.getFileMDListNewestFirst();
-		if (fileMDs.size() == 0) {
+		if (fileMDs == null || fileMDs.size() == 0) {
 			dialogValues[6].setText("");
 			dialogValues[7].setText("");
 			dialogValues[8].setText("");
@@ -520,6 +533,23 @@ public class MetadataDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 
+	private void setDatasetType() {
+		Integer status = curDataSourceProvider.getReferenceDataStatus();
+		masterButton.setSelection(false);
+		supplementaryButton.setSelection(false);
+		adHocButton.setSelection(false);
+		userButton.setSelection(false);
+		if (status == null) {
+			userButton.setSelection(true);
+		} else if (status == 1) {
+			masterButton.setSelection(true);
+		} else if (status == 2) {
+			supplementaryButton.setSelection(true);
+		} else if (status == 3) {
+			adHocButton.setSelection(true);
+		}
+	}
+
 	private final class ComboSelectorDataSourceListener implements SelectionListener {
 		private void doit(SelectionEvent e) {
 			String newSelectionName = comboSelectorDataSource.getText();
@@ -527,6 +557,7 @@ public class MetadataDialog extends TitleAreaDialog {
 				return;
 			}
 			curDataSourceProvider = DataSourceKeeper.getByName(newSelectionName);
+			setDatasetType();
 			redrawDialogRows();
 			createComboSelectorFileMD();
 			runLogger.info("  DATASOURCE SELECTED: " + comboSelectorDataSource.getText());

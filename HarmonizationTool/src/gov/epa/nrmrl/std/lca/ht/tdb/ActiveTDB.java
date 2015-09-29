@@ -956,6 +956,9 @@ public class ActiveTDB implements IHandler, IActiveTDB {
 
 	public static int tsRemoveAllLikeLiterals(Resource subject, Property predicate, Object thingLiteral,
 			String graphName) {
+		if (subject == null || predicate == null || thingLiteral == null){
+			return -1;
+		}
 		int countOfRemovedItems = -1;
 		RDFDatatype rdfDatatype = RDFUtil.getRDFDatatypeFromJavaClass(thingLiteral);
 		List<RDFNode> rdfNodesToRemove = new ArrayList<RDFNode>();
