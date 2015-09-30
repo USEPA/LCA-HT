@@ -474,13 +474,24 @@ public class MatchFlowables extends ViewPart {
 		if (table.getItemCount() == 0) {
 			return;
 		}
+		List<Resource> alreadySeen = new ArrayList<Resource>();
+		List<ComparisonProvider> toRemove = new ArrayList<ComparisonProvider>();
+
 		List<ComparisonProvider> comparisons = flowableToMatch.getComparisons();
 		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		// int tableRow = 1;
+		
 		for (ComparisonProvider comparisonProvider : comparisons) {
 			if (comparisonProvider.getEquivalence() == null){
-				break;
+				// FIXME: There should not be Comparisons with null content, but until they are cleaned up, skip them.
+				toRemove.add(comparisonProvider);
+				continue;
 			}
+			if (alreadySeen.contains(comparisonProvider.getMasterDataObject())){
+				toRemove.add(comparisonProvider);
+				continue;
+			}
+			alreadySeen.add(comparisonProvider.getMasterDataObject());
 			int col = MatchStatus.getByResource(comparisonProvider.getEquivalence()).getValue();
 			if (col > 0 && col < 5) {
 				hits++;
@@ -488,6 +499,10 @@ public class MatchFlowables extends ViewPart {
 			// TableItem tableItem = table.getItem(tableRow);
 			// tableItem.setText(col,value);
 			matchSummary[col]++;
+		}
+		
+		for (ComparisonProvider comparisonProvider:toRemove){
+			flowableToMatch.removeComparison(comparisonProvider);
 		}
 
 		// TableItem tableItem = table.getItem(0);
