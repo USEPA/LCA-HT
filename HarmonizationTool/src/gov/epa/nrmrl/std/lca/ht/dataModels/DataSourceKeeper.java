@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -481,7 +482,7 @@ public class DataSourceKeeper {
 		return false;
 	}
 	
-	private static Resource getAdHocDataSource() {
+	public static Resource getAdHocDataSource() {
 		Model model = ActiveTDB.getModel(null);
 		
 		Selector selector = new SimpleSelector(null, RDF.type, LCAHT.AdHocMasterDataset);
@@ -543,6 +544,8 @@ public class DataSourceKeeper {
 		if (flowablesToAdd == 0){
 			return;
 		}
+		Logger runLogger = Logger.getLogger("run");
+		runLogger.info(flowablesToAdd+" flowables, previously identified as 'Ad Hoc Master' are being added to the local Ad Hoc Master dataset.");
 //		new GenericMessageBox(Display.getDefault().getActiveShell(), "Alert", flowablesToAdd+" flowables, previously identified as 'Ad Hoc Master' are being added to the local Ad Hoc Master dataset.");
 		Resource adHocMasterResource = getAdHocDataSource();
 		

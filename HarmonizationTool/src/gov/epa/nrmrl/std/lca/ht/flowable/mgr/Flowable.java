@@ -12,6 +12,7 @@ import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.RDFUtil;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.SKOS;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -151,16 +154,16 @@ public class Flowable {
 		lcaDataPropertyProvider.setTDBProperty(ECO.chemicalFormula);
 		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 
-//		lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
-//		lcaDataPropertyProvider.setPropertyClass(label);
-//		lcaDataPropertyProvider.setRDFClass(rdfClass);
-//		lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
-//		lcaDataPropertyProvider.setRequired(false);
-//		lcaDataPropertyProvider.setUnique(false);
-//		lcaDataPropertyProvider.setLeftJustified(true);
-//		lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
-//		lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
-//		dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
+		// lcaDataPropertyProvider = new LCADataPropertyProvider(smilesString);
+		// lcaDataPropertyProvider.setPropertyClass(label);
+		// lcaDataPropertyProvider.setRDFClass(rdfClass);
+		// lcaDataPropertyProvider.setRDFDatatype(XSDDatatype.XSDstring);
+		// lcaDataPropertyProvider.setRequired(false);
+		// lcaDataPropertyProvider.setUnique(false);
+		// lcaDataPropertyProvider.setLeftJustified(true);
+		// lcaDataPropertyProvider.setCheckLists(getSmilesCheckList());
+		// lcaDataPropertyProvider.setTDBProperty(FedLCA.hasSmilesString);
+		// dataPropertyMap.put(lcaDataPropertyProvider.getPropertyName(), lcaDataPropertyProvider);
 		LCADataPropertyProvider.registerProviders(dataPropertyMap);
 	}
 
@@ -455,7 +458,8 @@ public class Flowable {
 	/**
 	 * Removes all leading zeroes and dashes in the CASRN if possible.
 	 * 
-	 * @param candidate	candidate is a CASRN of type string.  
+	 * @param candidate
+	 *            candidate is a CASRN of type string.
 	 * @return a sequence of 5 to 10 digits NOT starting with zero
 	 */
 	public static String stripCASdigits(String candidate) {
@@ -472,10 +476,11 @@ public class Flowable {
 	}
 
 	/**
-	 * This method strips all non-digits from the input string, removes leading zeros, and adds two dashes 
-	 * prior to the last and third from last digits.
-
-	 * @param candidate	candidate is a CASRN of type string.
+	 * This method strips all non-digits from the input string, removes leading zeros, and adds two dashes prior to the
+	 * last and third from last digits.
+	 * 
+	 * @param candidate
+	 *            candidate is a CASRN of type string.
 	 * @return a standard CAS with 2 to 7 digits (not starting with a zero), a dash, two digits, a dash, and one digit
 	 */
 	public static String standardizeCAS(String candidate) {
@@ -497,11 +502,13 @@ public class Flowable {
 	}
 
 	/**
-	 * This function is a simple CAS checksum checker.  Enter a CASRN (with or without dashes) and either the test will pass or fail. 
-	 * Recall that a CASRN must be 5-7 digits - 2 digits - 1 digit and that the last digit is the checksum value.
+	 * This function is a simple CAS checksum checker. Enter a CASRN (with or without dashes) and either the test will
+	 * pass or fail. Recall that a CASRN must be 5-7 digits - 2 digits - 1 digit and that the last digit is the checksum
+	 * value.
 	 * 
-	 * @param casNumber	Enter a CASRN with or without dashes.  The CASRN must be of type string.
-	 * @return	True if checksum passes, False if checksum fails.
+	 * @param casNumber
+	 *            Enter a CASRN with or without dashes. The CASRN must be of type string.
+	 * @return True if checksum passes, False if checksum fails.
 	 */
 	public static boolean correctCASCheckSum(String casNumber) {
 
@@ -707,43 +714,43 @@ public class Flowable {
 
 		if (lcQName.matches(".*, in water")) {
 			String firstPart = lcQName.split(", in water")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in water")) {
 			String firstPart = lcQName.split(" in water")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in soil")) {
 			String firstPart = lcQName.split(", in soil")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in soil")) {
 			String firstPart = lcQName.split(" in soil")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in air")) {
 			String firstPart = lcQName.split(", in air")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in air")) {
 			String firstPart = lcQName.split(" in air")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in biomass")) {
 			String firstPart = lcQName.split(", in biomass")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in biomass")) {
 			String firstPart = lcQName.split(" in biomass")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".*, in ground")) {
 			String firstPart = lcQName.split(", in ground")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		} else if (lcQName.matches(".* in ground")) {
 			String firstPart = lcQName.split(" in ground")[0];
-//			System.out.println("First part = " + firstPart);
+			// System.out.println("First part = " + firstPart);
 			namesToMatch.add(firstPart);
 		}
 
@@ -759,52 +766,52 @@ public class Flowable {
 			}
 			if (lcSyn.matches(".*, in water")) {
 				String firstPart = lcSyn.split(", in water")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in water")) {
 				String firstPart = lcSyn.split(" in water")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in soil")) {
 				String firstPart = lcSyn.split(", in soil")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in soil")) {
 				String firstPart = lcSyn.split(" in soil")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in air")) {
 				String firstPart = lcSyn.split(", in air")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in air")) {
 				String firstPart = lcSyn.split(" in air")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in biomass")) {
 				String firstPart = lcSyn.split(", in biomass")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in biomass")) {
 				String firstPart = lcSyn.split(" in biomass")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".*, in ground")) {
 				String firstPart = lcSyn.split(", in ground")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			} else if (lcSyn.matches(".* in ground")) {
 				String firstPart = lcSyn.split(" in ground")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			}
 
-//			System.out.println(lcSyn);
+			// System.out.println(lcSyn);
 
 			/* Special rule to attempt to match text prior to ", in ground" */
 			if (lcSyn.matches(".*, in ground")) {
 				String firstPart = lcSyn.split(", in ground")[0];
-//				System.out.println("First part = " + firstPart);
+				// System.out.println("First part = " + firstPart);
 				namesToMatch.add(firstPart);
 			}
 		}
@@ -860,17 +867,37 @@ public class Flowable {
 	}
 
 	public String getDataSource() {
-		if (tdbResource.hasProperty(ECO.hasDataSource)) {
-			Resource qDataSource = tdbResource.getPropertyResourceValue(ECO.hasDataSource);
-			if (qDataSource.hasProperty(RDFS.label)) {
-				String value = qDataSource.getProperty(RDFS.label).getString();
-				return value;
-			} else {
-				return "[no source]";
+		if (tdbResource == null) {
+			return null;
+		}
+		Model model = ActiveTDB.getModel(null);
+		Selector selector = new SimpleSelector(tdbResource, ECO.hasDataSource, null, null);
+		StmtIterator stmtIterator = model.listStatements(selector);
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Resource dataSource = statement.getObject().asResource();
+			String name = dataSource.getProperty(RDFS.label).getString();
+			if (!name.matches("Ad Hoc.*")) {
+				return name;
 			}
 		}
-		return null;
+		return "[no source]";
 	}
+
+	// public String getDataSource(boolean notAdHoc) {
+	// Model model = ActiveTDB.getModel(null);
+	// Selector selector = new SimpleSelector(tdbResource, ECO.hasDataSource, null, null);
+	// StmtIterator stmtIterator = model.listStatements(selector);
+	// while (stmtIterator.hasNext()) {
+	// Statement statement = stmtIterator.next();
+	// Resource dataSource = statement.getObject().asResource();
+	// String name = dataSource.getProperty(RDFS.label).getString();
+	// if (name.matches("Ad Hoc.*") ^ notAdHoc) {
+	// return name;
+	// }
+	// }
+	// return "[no source]";
+	// }
 
 	public int getFirstRow() {
 		return firstRow;

@@ -8,6 +8,7 @@ import gov.epa.nrmrl.std.lca.ht.dataCuration.ComparisonProvider;
 import gov.epa.nrmrl.std.lca.ht.dataCuration.CurationMethods;
 import gov.epa.nrmrl.std.lca.ht.dataFormatCheck.Issue;
 import gov.epa.nrmrl.std.lca.ht.dataModels.DataRow;
+import gov.epa.nrmrl.std.lca.ht.dataModels.DataSourceKeeper;
 import gov.epa.nrmrl.std.lca.ht.dataModels.Flow;
 import gov.epa.nrmrl.std.lca.ht.dataModels.LCADataPropertyProvider;
 import gov.epa.nrmrl.std.lca.ht.dataModels.TableKeeper;
@@ -17,6 +18,7 @@ import gov.epa.nrmrl.std.lca.ht.sparql.HarmonyQuery2Impl;
 import gov.epa.nrmrl.std.lca.ht.sparql.Prefixes;
 import gov.epa.nrmrl.std.lca.ht.tdb.ActiveTDB;
 import gov.epa.nrmrl.std.lca.ht.utils.Util;
+import gov.epa.nrmrl.std.lca.ht.vocabulary.ECO;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.FedLCA;
 import gov.epa.nrmrl.std.lca.ht.vocabulary.LCAHT;
 import gov.epa.nrmrl.std.lca.ht.workflows.FlowsWorkflow;
@@ -173,7 +175,7 @@ public class MatchFlowables extends ViewPart {
 		rowCountText = new Text(innerComposite, SWT.BORDER);
 		GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_text.widthHint = 120;
-//		gd_text.minimumWidth = 70;
+		// gd_text.minimumWidth = 70;
 		rowCountText.setEditable(false);
 		rowCountText.setLayoutData(gd_text);
 
@@ -203,7 +205,7 @@ public class MatchFlowables extends ViewPart {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				int keyCode = e.keyCode;
-				if (keyCode == 13){
+				if (keyCode == 13) {
 					findMatches();
 				}
 			}
@@ -260,7 +262,7 @@ public class MatchFlowables extends ViewPart {
 			}
 			int newRowSelected = table.indexOf(tableItem);
 			int newColSelected = getTableColumnNumFromPoint(newRowSelected, ptClick);
-			if (newRowSelected == rowNumSelected && newColSelected == colNumSelected){
+			if (newRowSelected == rowNumSelected && newColSelected == colNumSelected) {
 				table.deselect(rowNumSelected);
 				return;
 			}
@@ -275,7 +277,7 @@ public class MatchFlowables extends ViewPart {
 	};
 
 	private static int getTableColumnNumFromPoint(int row, Point pt) {
-		if (row < 0 || row > table.getItemCount()-1){
+		if (row < 0 || row > table.getItemCount() - 1) {
 			return -1;
 		}
 		TableItem item = table.getItem(row);
@@ -300,7 +302,7 @@ public class MatchFlowables extends ViewPart {
 		createColumns();
 		rowNumSelected = -1;
 		colNumSelected = -1;
-		
+
 		dataTableRowNum = rowNumber;
 
 		TableProvider tableProvider = TableKeeper.getTableProvider(CSVTableView.getTableProviderKey());
@@ -312,9 +314,9 @@ public class MatchFlowables extends ViewPart {
 			return;
 		}
 
-		if (!flowableToMatch.wasDoubleChedked) {
+//		if (!flowableToMatch.wasDoubleChedked) {
 			flowableToMatch.setCandidates();
-		}
+//		}
 
 		resetSearchButton();
 		// chooseSearchFieldCombo.select(0);
@@ -343,12 +345,12 @@ public class MatchFlowables extends ViewPart {
 				}
 			}
 		}
-		if (rowCount == 1){
+		if (rowCount == 1) {
 			rowCountText.setText("1 flow contains");
 		} else {
-			rowCountText.setText(rowCount+ " flows contain");
+			rowCountText.setText(rowCount + " flows contain");
 		}
-		
+
 		List<ComparisonProvider> comparisonProviders = flowableToMatch.getComparisons();
 
 		flowableTableRows = new ArrayList<FlowableTableRow>();
@@ -360,6 +362,9 @@ public class MatchFlowables extends ViewPart {
 
 		int row = 1;
 		for (ComparisonProvider comparisonProvider : comparisonProviders) {
+			if (comparisonProvider.getEquivalence() == null) {
+				break;
+			}
 			Flowable dFlowable = new Flowable(comparisonProvider.getMasterDataObject());
 			FlowableTableRow flowableTableRow = new FlowableTableRow();
 			flowableTableRow.setFlowable(dFlowable);
@@ -463,6 +468,9 @@ public class MatchFlowables extends ViewPart {
 	private static void updateMatchCounts() {
 		Integer[] matchSummary = new Integer[] { 0, 0, 0, 0, 0, 0 };
 		int hits = 0;
+		if (table.getData() == null){
+			initializeTable();
+		}
 		if (table.getItemCount() == 0) {
 			return;
 		}
@@ -470,6 +478,9 @@ public class MatchFlowables extends ViewPart {
 		// LinkedHashMap<Resource, String> candidateMap = flowableToMatch.getMatchCandidates();
 		// int tableRow = 1;
 		for (ComparisonProvider comparisonProvider : comparisons) {
+			if (comparisonProvider.getEquivalence() == null){
+				break;
+			}
 			int col = MatchStatus.getByResource(comparisonProvider.getEquivalence()).getValue();
 			if (col > 0 && col < 5) {
 				hits++;
@@ -670,7 +681,7 @@ public class MatchFlowables extends ViewPart {
 		b.append("   } order by afn:localname(?masterTest) \n");
 		b.append("   limit " + maxSearchResults + " offset " + nextStartResult + "\n");
 		String query = b.toString();
-//		System.out.println("query = \n" + query);
+		// System.out.println("query = \n" + query);
 		HarmonyQuery2Impl harmonyQuery2Impl = new HarmonyQuery2Impl();
 		harmonyQuery2Impl.setQuery(query);
 		Logger.getLogger("run").info("Searching master list for matching flowables...");
@@ -828,6 +839,8 @@ public class MatchFlowables extends ViewPart {
 			if (addToMaster.getText().equals("Add to Master")) {
 				ActiveTDB.tsAddGeneralTriple(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 						LCAHT.QCStatusAdHocMaster, null);
+				ActiveTDB.tsAddGeneralTriple(flowableToMatch.getTdbResource(), ECO.hasDataSource,
+						DataSourceKeeper.getAdHocDataSource(), null);
 				FlowsWorkflow.addMatchFlowableRowNum(flowableToMatch.getFirstRow());
 				table.getItem(0).setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				rowCountText.setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
@@ -835,6 +848,8 @@ public class MatchFlowables extends ViewPart {
 			} else {
 				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), LCAHT.hasQCStatus,
 						LCAHT.QCStatusAdHocMaster);
+				ActiveTDB.tsRemoveStatement(flowableToMatch.getTdbResource(), ECO.hasDataSource,
+						DataSourceKeeper.getAdHocDataSource());
 				updateMatchCounts();
 				addToMaster.setText("Add to Master");
 			}

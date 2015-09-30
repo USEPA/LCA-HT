@@ -97,6 +97,9 @@ public class ComparisonProvider {
 	 */
 	public ComparisonProvider(Resource userDataObject, Resource masterDataObject, Resource equivalence) {
 		// do not check for duplicates
+		if (userDataObject.equals(masterDataObject)){
+			return;
+		}
 		this.userDataObject = userDataObject;
 		this.masterDataObject = masterDataObject;
 		this.equivalence = equivalence;
